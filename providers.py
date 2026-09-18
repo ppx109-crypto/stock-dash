@@ -14,12 +14,13 @@ class DataError(RuntimeError):
     pass
 
 
-# 공공데이터포털이 V2로 옮기면서 경로가 바뀌었습니다. 확인될 때까지 후보를 차례로 시도합니다.
+# 2026-09-18 개발계정 화면에서 확인한 주소입니다. 서비스와 오퍼레이션 양쪽에 _V2가 붙습니다.
 PRICE_BASES = (
-    "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService_V2",
     "https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2",
+    "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService_V2",
     "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService",
 )
+PRICE_SUFFIXES = ("_V2", "", "V2")
 _price_base = None
 
 
@@ -33,9 +34,9 @@ def price_call(operation, params):
     if _price_base:
         candidates = [_price_base]
     else:
-        candidates = [f"{base}/{name}"
+        candidates = [f"{base}/{operation}{suffix}"
                       for base in PRICE_BASES
-                      for name in dict.fromkeys((operation, operation + "V2", operation + "_V2"))]
+                      for suffix in PRICE_SUFFIXES]
     last = None
     for url in candidates:
         try:
