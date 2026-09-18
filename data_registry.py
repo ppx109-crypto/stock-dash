@@ -126,11 +126,23 @@ def health(spec: ProviderSpec) -> dict:
         if spec.provider_id == "kiwoom_rest":
             # 토큰만 받아보고 끝냅니다. 시세·주문은 호출하지 않습니다.
             import quotes
+            mode = os.getenv("KIWOOM_ENV", "real").strip() or "real"
             try:
                 quotes.Kiwoom().authorize()
+                return _result(spec.provider_id, "ok", f"토큰 발급 정상 · {quotes.LABEL.get(mode, mode)} 서버", started)
             except quotes.QuoteError as error:
-                return _result(spec.provider_id, "error", str(error), started)
-            return _result(spec.provider_id, "ok", "토큰 발급 정상", started)
+                detail = str(error)
+            # 키가 반대쪽 서버의 것이면 바로 알려줍니다.
+            other = "mock" if mode == "real" else "real"
+            try:
+                client = quotes.Kiwoom()
+                client.base, client.mode = (quotes.MOCK if other == "mock" else quotes.REAL), other
+                client.authorize()
+            except Exception:
+                return _result(spec.provider_id, "error", detail, started)
+            return _result(spec.provider_id, "error",
+                           f"이 키는 {quotes.LABEL[other]} 서버에서 인증됩니다. "
+                           f'KIWOOM_ENV를 "{other}"로 바꾸세요.', started)
 
         return _result(spec.provider_id, "unknown", "진단 미구현", started)
     except requests.Timeout:

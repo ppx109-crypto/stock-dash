@@ -14,6 +14,7 @@ import requests
 
 REAL = "https://api.kiwoom.com"
 MOCK = "https://mockapi.kiwoom.com"
+LABEL = {"real": "실전", "mock": "모의"}
 
 
 class QuoteError(RuntimeError):
@@ -67,7 +68,7 @@ class Kiwoom:
             if reason:
                 detail += f" · {reason}"
             raise QuoteError(f"키움이 토큰을 돌려주지 않았습니다 ({detail}). "
-                             f"현재 {'실전' if self.mode == 'real' else '모의'} 서버로 요청했습니다.")
+                             f"현재 {LABEL.get(self.mode, self.mode)} 서버로 요청했습니다.")
         self.token = token
         # 만료 시각 형식이 바뀌어도 동작하도록 짧게 잡고 갱신합니다.
         self.expires = time.time() + 1800
