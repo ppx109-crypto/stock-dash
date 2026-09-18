@@ -7,6 +7,22 @@
       "revenue": 1537068.2,
       "profit": 113613.29,
       "receipt": "20250814003156",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 57 기 반기",
+          "add": "153706820000000",
+          "amount": "74566317000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 57 기 반기",
+          "add": "11361329000000",
+          "amount": "4676057000000"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003156"
     },
     {
@@ -14,6 +30,22 @@
       "revenue": 3053729.14,
       "profit": 1467252.09,
       "receipt": "20260814003699",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 58 기 반기",
+          "add": "305372914000000",
+          "amount": "171499470000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 58 기 반기",
+          "add": "146725209000000",
+          "amount": "89492412000000"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699"
     }
   ],

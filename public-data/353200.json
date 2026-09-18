@@ -7,6 +7,22 @@
       "revenue": 4612.33491217,
       "profit": -43.3540641,
       "receipt": "20250813001285",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 6 기 반기",
+          "add": "461233491217",
+          "amount": "245857719982"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 6 기 반기",
+          "add": "-4335406410",
+          "amount": "1866095223"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813001285"
     },
     {
@@ -14,6 +30,22 @@
       "revenue": 7472.89416199,
       "profit": 1215.7451681,
       "receipt": "20260813001620",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 7 기 반기",
+          "add": "747289416199",
+          "amount": "400975252509"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 7 기 반기",
+          "add": "121574516810",
+          "amount": "70276407960"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001620"
     }
   ],
