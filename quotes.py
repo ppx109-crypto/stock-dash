@@ -12,8 +12,6 @@ from zoneinfo import ZoneInfo
 
 import requests
 
-PUBLIC_PRICE = ("https://apis.data.go.kr/1160100/service/"
-                "GetStockSecuritiesInfoService/getStockPriceInfo")
 REAL = "https://api.kiwoom.com"
 MOCK = "https://mockapi.kiwoom.com"
 LABEL = {"real": "실전", "mock": "모의"}
@@ -104,6 +102,7 @@ def public_rows(codes) -> tuple[list, str]:
     그래서 최근 10일을 거슬러 올라가며 값이 있는 마지막 거래일을 찾습니다.
     """
     from urllib.parse import unquote
+    from providers import price_call, DataError
     key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
     if not key:
         raise QuoteError("공공데이터포털 인증키를 설정하세요.")
@@ -113,11 +112,13 @@ def public_rows(codes) -> tuple[list, str]:
         for back in range(10):
             target = (datetime.now(ZoneInfo("Asia/Seoul")).date() - timedelta(days=back)).strftime("%Y%m%d")
             try:
-                payload = requests.get(PUBLIC_PRICE, timeout=(5, 15), params={
+                payload = price_call("getStockPriceInfo", {
                     "serviceKey": key, "resultType": "json", "numOfRows": 50,
-                    "basDt": target, "likeSrtnCd": code}).json()
+                    "basDt": target, "likeSrtnCd": code})
                 header = payload["response"]["header"]
-            except (requests.RequestException, ValueError, KeyError, TypeError):
+            except DataError as error:
+                raise QuoteError(str(error)) from None
+            except (ValueError, KeyError, TypeError):
                 raise QuoteError("공공데이터포털 시세 응답을 읽지 못했습니다.") from None
             if str(header.get("resultCode")) not in ("00", "0"):
                 raise QuoteError("공공데이터포털: " + str(header.get("resultMsg") or "인증키와 활용 신청 상태를 확인하세요."))

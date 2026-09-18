@@ -14,6 +14,41 @@ class DataError(RuntimeError):
     pass
 
 
+# 공공데이터포털이 V2로 옮기면서 경로가 바뀌었습니다. 확인될 때까지 후보를 차례로 시도합니다.
+PRICE_BASES = (
+    "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService_V2",
+    "https://apis.data.go.kr/1160100/GetStockSecuritiesInfoService_V2",
+    "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService",
+)
+_price_base = None
+
+
+def price_call(operation, params):
+    """살아 있는 경로를 찾아 호출하고, 찾은 경로는 기억해 둡니다."""
+    global _price_base
+    bases = (_price_base,) if _price_base else PRICE_BASES
+    last = None
+    for base in bases:
+        try:
+            payload = get(base + "/" + operation, params).json()
+            header = payload["response"]["header"]
+        except (ValueError, KeyError, TypeError, DataError) as error:
+            last = error
+            continue
+        code = str(header.get("resultCode", ""))
+        if code in ("00", "0"):
+            _price_base = base
+            return payload
+        # 인증·한도 문제는 경로를 바꿔도 같으므로 그대로 돌려줍니다.
+        if code not in ("", "04", "12", "20", "30", "31", "32", "99"):
+            return payload
+        last = DataError("공공데이터포털 시세: " + str(header.get("resultMsg") or code))
+    if _price_base:
+        _price_base = None
+        return price_call(operation, params)
+    raise last or DataError("공공데이터포털 시세 경로를 찾지 못했습니다.")
+
+
 DART_ERRORS = {
     "010": "등록되지 않은 DART 키입니다. DART_CRTFC_KEY 값을 확인하세요.",
     "011": "DART 키가 사용 중지 상태입니다. 인증키 관리에서 상태를 확인하세요.",
@@ -151,7 +186,7 @@ class Official:
         for days in range(10):
             target = (date.today()-timedelta(days=days)).strftime("%Y%m%d")
             try:
-                response = get("https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo", {**params,"basDt":target}).json()["response"]
+                response = price_call("getStockPriceInfo", {**params,"basDt":target})["response"]
                 if str(response["header"].get("resultCode")) not in ("00","0"):
                     raise DataError("공공데이터포털 종목 검색: 시세 서비스 승인과 인증키를 확인하세요.")
                 items = (response.get("body",{}).get("items") or {}).get("item",[])
@@ -173,9 +208,9 @@ class Official:
         for days in range(10):
             target = (asof - timedelta(days=days)).strftime("%Y%m%d")
             try:
-                payload = get("https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo",
+                payload = price_call("getStockPriceInfo",
                     {"serviceKey": self.price_key, "resultType": "json", "numOfRows": 100,
-                     "basDt": target, "likeSrtnCd": code}).json()
+                     "basDt": target, "likeSrtnCd": code})
                 response = payload["response"]
                 if str(response["header"].get("resultCode")) not in ("00", "0"):
                     raise DataError("시세 API 승인·인증 오류")

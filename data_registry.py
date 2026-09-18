@@ -96,25 +96,20 @@ def health(spec: ProviderSpec) -> dict:
             return _result(spec.provider_id, "error", known.get(code, f"응답코드 {code or '확인 필요'}"), started)
 
         if spec.provider_id == "data_go_kr_stock":
+            from providers import price_call, DataError
             key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
-            response = requests.get(
-                "https://apis.data.go.kr/1160100/service/GetStockSecuritiesInfoService/getStockPriceInfo",
-                params={"serviceKey": key, "resultType": "json", "numOfRows": 1},
-                timeout=(5, 12),
-            )
-            response.raise_for_status()
             try:
-                payload = response.json()
-            except ValueError:
-                # 키가 등록되지 않으면 JSON 대신 XML 오류가 옵니다.
-                text = response.text
+                payload = price_call("getStockPriceInfo",
+                                     {"serviceKey": key, "resultType": "json", "numOfRows": 1})
+            except DataError as error:
+                text = str(error)
                 for mark, reason in (("SERVICE_KEY_IS_NOT_REGISTERED", "등록되지 않은 서비스키"),
                                      ("LIMITED_NUMBER_OF_SERVICE_REQUESTS", "호출 한도 초과"),
                                      ("SERVICE_ACCESS_DENIED", "활용 신청 승인 대기"),
                                      ("DEADLINE_HAS_EXPIRED", "서비스키 사용 기간 만료")):
                     if mark in text:
                         return _result(spec.provider_id, "error", reason, started)
-                return _result(spec.provider_id, "error", "JSON이 아닌 오류 응답", started)
+                return _result(spec.provider_id, "error", text[:80], started)
             header = payload.get("response", {}).get("header", {})
             code = str(header.get("resultCode", ""))
             if code in {"00", "0"}:
