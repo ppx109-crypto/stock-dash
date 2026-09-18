@@ -44,8 +44,11 @@ def collect(code,p=None):
     if not years:raise ValueError('Missing annuals')
     info=p.dart('company.json',corp_code=corp) or {}
     recent=p.dart('list.json',corp_code=corp,bgn_de=(today-timedelta(days=90)).strftime('%Y%m%d'),end_de=today.strftime('%Y%m%d'),page_count=30,sort='date',sort_mth='desc') or {}
-    try:excerpt=p.business_excerpt(years[-1].get('receipt'))
-    except Exception:excerpt=''
+    # 사업보고서 원문은 종목당 수십 MB라 여러 종목을 모을 때는 건너뜁니다.
+    excerpt=''
+    if os.getenv('PUBLIC_WITH_EXCERPT','1').strip() not in ('0','false','False'):
+        try:excerpt=p.business_excerpt(years[-1].get('receipt'))
+        except Exception:excerpt=''
     halves=[]
     for y in (today.year-1,today.year):
         try:

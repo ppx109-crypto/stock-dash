@@ -244,10 +244,12 @@ def live_strip(live: dict | None) -> str:
     """관심종목 실시간 시세 줄. 연결 전에는 안내만 보여줍니다."""
     if not live:
         return ""
-    mock = live.get("mode") == "mock"
+    mode = live.get("mode")
+    mock = mode in ("mock", "public")
+    title = {"mock": "모의 시세", "public": "종가 시세"}.get(mode, "실시간 시세")
     head = ('<div class="pxb-live-head"><b>'
             + ('' if mock else '<i class="pxb-live-dot"></i>')
-            + ('모의 시세' if mock else '실시간 시세') + '</b>'
+            + title + '</b>'
             f'<span>{_e(live.get("state", ""))}'
             + (f' · {_e(live["at"])}' if live.get("at") else "") + "</span></div>")
     rows = live.get("rows") or []

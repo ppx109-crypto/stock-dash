@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import requests
 
+PUBLIC_PRICE = ("https://apis.data.go.kr/1160100/service/"
+                "GetStockSecuritiesInfoService/getStockPriceInfo")
 REAL = "https://api.kiwoom.com"
 MOCK = "https://mockapi.kiwoom.com"
 LABEL = {"real": "실전", "mock": "모의"}
@@ -95,17 +97,69 @@ class Kiwoom:
                 "price": abs(price), "change": change, "rate": rate}
 
 
+def public_rows(codes) -> tuple[list, str]:
+    """공공데이터포털 주식시세. 실시간이 아니라 마지막 거래일 종가입니다."""
+    from urllib.parse import unquote
+    key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
+    if not key:
+        raise QuoteError("공공데이터포털 인증키를 설정하세요.")
+    rows, basis_date = [], ""
+    for code in codes:
+        row = None
+        for back in range(10):
+            target = (datetime.now(ZoneInfo("Asia/Seoul")).date() - timedelta(days=back)).strftime("%Y%m%d")
+            try:
+                payload = requests.get(PUBLIC_PRICE, timeout=(5, 15), params={
+                    "serviceKey": key, "resultType": "json", "numOfRows": 50,
+                    "basDt": target, "likeSrtnCd": code}).json()
+                header = payload["response"]["header"]
+            except (requests.RequestException, ValueError, KeyError, TypeError):
+                raise QuoteError("공공데이터포털 시세 응답을 읽지 못했습니다.") from None
+            if str(header.get("resultCode")) not in ("00", "0"):
+                raise QuoteError("공공데이터포털: " + str(header.get("resultMsg") or "인증키와 활용 신청 상태를 확인하세요."))
+            items = (payload["response"].get("body", {}).get("items") or {}).get("item", [])
+            if isinstance(items, dict):
+                items = [items]
+            for item in items:
+                if str(item.get("srtnCd", "")).removeprefix("A").zfill(6) == str(code):
+                    row = item
+                    break
+            if row:
+                break
+        if not row:
+            continue
+        price = _number(row.get("clpr"))
+        if price is None or price <= 0:
+            continue
+        basis_date = str(row.get("basDt") or basis_date)
+        rows.append({"code": code, "name": (row.get("itmsNm") or "").strip(), "price": abs(price),
+                     "change": _number(row.get("vs")), "rate": _number(row.get("fltRt"))})
+    label = "전일 종가 · 공공데이터포털"
+    if basis_date and len(basis_date) == 8:
+        label += f" · {basis_date[:4]}-{basis_date[4:6]}-{basis_date[6:]} 기준"
+    return rows, label
+
+
 def snapshot(codes) -> dict:
     """여러 종목 시세를 한 번에 읽습니다. 실패한 종목은 빼고 돌려줍니다."""
     codes = [c for c in codes if c and not str(c).startswith("pending-")]
     if not codes:
         return {"rows": [], "state": "종목 없음", "at": None}
+    codes = codes[:12]
     try:
         client = Kiwoom()
-    except QuoteError as error:
-        return {"rows": [], "state": str(error), "at": None}
+    except QuoteError as kiwoom_error:
+        # 키움 키가 없으면 공공데이터포털 종가로 대신합니다.
+        try:
+            rows, label = public_rows(codes)
+        except QuoteError as public_error:
+            return {"rows": [], "state": f"{kiwoom_error} / {public_error}", "at": None}
+        at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%H:%M:%S")
+        if not rows:
+            return {"rows": [], "state": "공공데이터포털에서 최근 10일 시세를 찾지 못했습니다.", "at": at}
+        return {"rows": rows, "state": label, "at": at, "mode": "public"}
     rows, failed = [], 0
-    for code in codes[:12]:
+    for code in codes:
         try:
             rows.append(client.quote(code))
         except QuoteError:

@@ -7,6 +7,10 @@ on:
         description: '공개 수업 예제 종목코드 (쉼표 구분, 최대 25개)'
         default: '005930,000660'
         required: true
+      excerpt:
+        description: '사업보고서 원문까지 받기 (종목당 수십 MB, 느림)'
+        type: boolean
+        default: false
   push:
     paths:
       - '.github/workflows/public-dart.yml'
@@ -29,6 +33,7 @@ jobs:
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           PUBLIC_CODES: ${{ inputs.codes || '005930,000660' }}
+          PUBLIC_WITH_EXCERPT: ${{ inputs.excerpt && '1' || '0' }}
       - name: Save public issuer data
         run: |
           git config user.name 'github-actions[bot]'
