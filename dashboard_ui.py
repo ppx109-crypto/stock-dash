@@ -63,6 +63,7 @@ _CSS = """
 .pxb-quote{flex:none;min-width:132px;padding:12px 15px;border-radius:14px;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
   border:1px solid #EDE3D2;box-shadow:0 8px 20px rgba(90,72,44,.05)}
 .pxb-quote span{display:block;font-size:11px;color:#8A8271;white-space:nowrap}
+.pxb-live.mock .pxb-quote{background:linear-gradient(170deg,#FCFAF4,#F6F1E6);border-style:dashed}
 .pxb-quote b{display:block;margin-top:6px;font:600 20px/1 "Playfair Display",Georgia,serif;letter-spacing:-.4px}
 .pxb-quote em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:800}
 .pxb-live-off{flex:1;display:flex;align-items:center;padding:14px 16px;border-radius:14px;border:1px dashed #E0D3B8;
@@ -243,12 +244,15 @@ def live_strip(live: dict | None) -> str:
     """관심종목 실시간 시세 줄. 연결 전에는 안내만 보여줍니다."""
     if not live:
         return ""
-    head = ('<div class="pxb-live-head"><b><i class="pxb-live-dot"></i>실시간 시세</b>'
+    mock = live.get("mode") == "mock"
+    head = ('<div class="pxb-live-head"><b>'
+            + ('' if mock else '<i class="pxb-live-dot"></i>')
+            + ('모의 시세' if mock else '실시간 시세') + '</b>'
             f'<span>{_e(live.get("state", ""))}'
             + (f' · {_e(live["at"])}' if live.get("at") else "") + "</span></div>")
     rows = live.get("rows") or []
     if not rows:
-        return (f'<div class="pxb-live">{head}<div class="pxb-live-off">'
+        return (f'<div class="pxb-live{" mock" if mock else ""}">{head}<div class="pxb-live-off">'
                 '관심종목 실시간 시세는 키움 앱키·시크릿키를 설정하면 여기에 표시됩니다.</div></div>')
     cards = ""
     for row in rows:
@@ -259,7 +263,7 @@ def live_strip(live: dict | None) -> str:
             move += f' ({row["change"]:+,.0f})'
         cards += (f'<div class="pxb-quote"><span>{_e(row.get("name") or row["code"])}</span>'
                   f'<b>{row["price"]:,.0f}</b><em style="color:{color}">{_e(move)}</em></div>')
-    return f'<div class="pxb-live">{head}{cards}</div>'
+    return f'<div class="pxb-live{" mock" if mock else ""}">{head}{cards}</div>'
 
 
 def render_decision_dashboard(details: dict, live: dict | None = None) -> None:

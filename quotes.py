@@ -112,6 +112,9 @@ def snapshot(codes) -> dict:
             failed += 1
     at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%H:%M:%S")
     if not rows:
-        return {"rows": [], "state": "시세를 받지 못했습니다. 키움 사용 신청과 실전 키 여부를 확인하세요.", "at": at}
-    state = "실시간 · 키움" + (f" · {failed}개 실패" if failed else "")
-    return {"rows": rows, "state": state, "at": at}
+        return {"rows": [], "state": "시세를 받지 못했습니다. 키움 사용 신청과 키 종류를 확인하세요.", "at": at}
+    # 모의 서버 값은 실제 체결가와 다를 수 있으므로 반드시 구분해 보여줍니다.
+    state = "실시간 · 키움 실전" if client.mode == "real" else "키움 모의 서버 · 실제 시세와 다를 수 있음"
+    if failed:
+        state += f" · {failed}개 실패"
+    return {"rows": rows, "state": state, "at": at, "mode": client.mode}
