@@ -12,9 +12,33 @@ from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import render_decision_dashboard
 
 
+def link_codes(store, state, known):
+    """이름이 같은 조사 결과가 있으면 임시 코드를 공식 종목코드로 바꿉니다."""
+    by_name = {}
+    for r in known.values():
+        by_name.setdefault(r['name'].strip().casefold(), r['code'])
+    fixes = {s['code']: by_name[s['name'].strip().casefold()] for s in state.get('stocks', [])
+             if s['code'].startswith('pending-') and s['name'].strip().casefold() in by_name}
+    if not fixes: return False
+    def update(data):
+        merged = {}
+        for stock in data.get('stocks', []):
+            stock = {**stock, 'code': fixes.get(stock['code'], stock['code'])}
+            merged[stock['code']] = {**merged.get(stock['code'], {}), **stock}
+        data['stocks'] = list(merged.values())
+    try:
+        store.change(update)
+    except Exception:
+        return False
+    return True
+
+
 def render_research(store, state, sample_mode):
     theme()
     research = published()
+    known = {**research, **{r['code']: r for r in state.get('chat_research', [])}}
+    if not sample_mode and link_codes(store, state, known):
+        state = store.read()
     render_decision_dashboard(research)
     hero('내 투자의 현재를 한눈에', '관심 있는 기업을 담고, 판단에 필요한 변화만 확인하세요.', 'PLANX · STOCK RESEARCH')
     if sample_mode:
@@ -38,7 +62,7 @@ def render_research(store, state, sample_mode):
                         except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
         if state.get('stocks'):
             with st.expander('－ 종목 빼기'):
-                labels = {s['code']: s['name'] + (' · 코드 확인 필요' if s['code'].startswith('pending-') else ' · ' + s['code']) for s in state['stocks']}
+                labels = {s['code']: s['name'] + (' · 종목코드 미확인' if s['code'].startswith('pending-') else ' · ' + s['code']) for s in state['stocks']}
                 drop = st.multiselect('내 목록에서 뺄 종목', list(labels), format_func=lambda c: labels[c], key='drop_stocks')
                 st.caption('조사 결과는 그대로 두고 목록에서만 뺍니다.')
                 if st.button('선택한 종목 빼기', disabled=not drop):
