@@ -32,8 +32,8 @@ def half(p, corp, year, basis):
             'url': 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + receipt}
 
 
-def collect(code):
-    p=Official();corp=p.corp(code);today=date.today()
+def collect(code,p=None):
+    p=p or Official();corp=p.corp(code);today=date.today()
     years=None
     for year in range(today.year-1,today.year-4,-1):
         for basis in ('CFS','OFS'):
@@ -61,13 +61,14 @@ def collect(code):
 
 if __name__=='__main__':
     codes=[c.strip() for c in os.getenv('PUBLIC_CODES','005930,000660').split(',')]
-    if not codes or len(codes)>10 or any(not re.fullmatch(r'[0-9]{6}',c) for c in codes):
-        raise SystemExit('Use 1-10 six-digit public issuer codes')
+    if not codes or len(codes)>25 or any(not re.fullmatch(r'[0-9]{6}',c) for c in codes):
+        raise SystemExit('Use 1-25 six-digit public issuer codes')
     Path('public-data').mkdir(exist_ok=True)
     failures=0
+    shared=Official()
     for code in codes:
         try:
-            data=collect(code)
+            data=collect(code,shared)
             Path('public-data',code+'.json').write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf-8')
             print(code,'public-data collected')
         except Exception:
