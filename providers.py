@@ -46,7 +46,8 @@ def price_call(operation, params):
     if _price_base:
         _price_base = None
         return price_call(operation, params)
-    raise last or DataError("공공데이터포털 시세 경로를 찾지 못했습니다.")
+    tried = " / ".join(b.rsplit("/", 1)[-1] for b in PRICE_BASES)
+    raise DataError(f"{last or '응답 없음'} · 시도한 경로: {tried}")
 
 
 DART_ERRORS = {
