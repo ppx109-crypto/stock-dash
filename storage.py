@@ -72,6 +72,16 @@ class Store:
             data["stocks"].append(stock)
         self.change(update)
 
+    def add_stocks(self, stocks):
+        def update(data):
+            known = {old["code"]: index for index, old in enumerate(data["stocks"])}
+            for stock in stocks:
+                if stock["code"] in known:
+                    data["stocks"][known[stock["code"]]] = {**data["stocks"][known[stock["code"]]], **stock}
+                else:
+                    data["stocks"].append(stock)
+        self.change(update)
+
     def remove_stocks(self, codes):
         drop = set(codes)
         def update(data):

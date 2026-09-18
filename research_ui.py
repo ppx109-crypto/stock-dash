@@ -60,6 +60,23 @@ def render_research(store, state, sample_mode):
                             store.save_stock({'code':identity, 'name':name.strip(), 'kind':known.get('kind','관심')})
                             st.rerun()
                         except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
+        pool = {code: r['name'] for code, r in known.items() if code not in {s['code'] for s in state.get('stocks', [])}}
+        if pool:
+            with st.expander(f'＋ 조사된 종목 담기 · {len(pool)}개'):
+                picks = st.multiselect('조사 자료가 있는 종목', list(pool), format_func=lambda c: f'{pool[c]} · {c}', key='add_researched')
+                col_all, col_pick = st.columns(2)
+                with col_all:
+                    if st.button(f'전체 {len(pool)}개 담기', use_container_width=True):
+                        try:
+                            store.add_stocks([{'code': c, 'name': n, 'kind': '관심'} for c, n in pool.items()])
+                            st.rerun()
+                        except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
+                with col_pick:
+                    if st.button('선택한 종목 담기', disabled=not picks, use_container_width=True):
+                        try:
+                            store.add_stocks([{'code': c, 'name': pool[c], 'kind': '관심'} for c in picks])
+                            st.rerun()
+                        except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
         if state.get('stocks'):
             with st.expander('－ 종목 빼기'):
                 labels = {s['code']: s['name'] + (' · 종목코드 미확인' if s['code'].startswith('pending-') else ' · ' + s['code']) for s in state['stocks']}
