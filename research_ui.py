@@ -36,6 +36,16 @@ def render_research(store, state, sample_mode):
                             store.save_stock({'code':identity, 'name':name.strip(), 'kind':known.get('kind','관심')})
                             st.rerun()
                         except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
+        if state.get('stocks'):
+            with st.expander('－ 종목 빼기'):
+                labels = {s['code']: s['name'] + (' · 코드 확인 필요' if s['code'].startswith('pending-') else ' · ' + s['code']) for s in state['stocks']}
+                drop = st.multiselect('내 목록에서 뺄 종목', list(labels), format_func=lambda c: labels[c], key='drop_stocks')
+                st.caption('조사 결과는 그대로 두고 목록에서만 뺍니다.')
+                if st.button('선택한 종목 빼기', disabled=not drop):
+                    try:
+                        store.remove_stocks(drop)
+                        st.rerun()
+                    except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
     for r in state.get('chat_research', []):
         if r['code'] not in research or r['as_of'] >= research[r['code']]['as_of']: research[r['code']] = r
     stocks = {s['code']:s for s in state.get('stocks', [])}

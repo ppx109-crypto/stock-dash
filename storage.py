@@ -72,6 +72,12 @@ class Store:
             data["stocks"].append(stock)
         self.change(update)
 
+    def remove_stocks(self, codes):
+        drop = set(codes)
+        def update(data):
+            data["stocks"] = [s for s in data["stocks"] if s["code"] not in drop]
+        self.change(update)
+
     def log(self, collection, item):
         def update(data):
             data[collection].append(item)
