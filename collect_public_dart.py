@@ -14,12 +14,16 @@ def half(p, corp, year, basis):
     if not result:
         return None
     rows = result.get('list', [])
+    seen = []
     def account(ids, names):
         for row in rows:
             if row.get('sj_div') not in ('IS', 'CIS'):
                 continue
             if row.get('account_id') in ids or row.get('account_nm') in names:
                 raw = number(row.get('thstrm_add_amount')) or number(row.get('thstrm_amount'))
+                seen.append({'account_nm': row.get('account_nm'), 'sj_div': row.get('sj_div'),
+                             'thstrm_nm': row.get('thstrm_nm'),
+                             'add': row.get('thstrm_add_amount'), 'amount': row.get('thstrm_amount')})
                 if raw is not None:
                     return raw / 100_000_000
         return None
@@ -29,6 +33,7 @@ def half(p, corp, year, basis):
     if revenue is None or profit is None:
         return None
     return {'period': f'{year}-06', 'revenue': revenue, 'profit': profit, 'receipt': receipt,
+            'matched': seen[:4],
             'url': 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + receipt}
 
 
