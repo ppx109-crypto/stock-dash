@@ -36,6 +36,12 @@ PROVIDERS = (
         ("stock.search", "stock.quote"),
         ("DATA_GO_KR_SERVICE_KEY",),
     ),
+    ProviderSpec(
+        "kiwoom_rest",
+        "키움 REST API · 국내주식 시세",
+        ("stock.live_quote",),
+        ("KIWOOM_APP_KEY", "KIWOOM_APP_SECRET"),
+    ),
 )
 
 
@@ -102,6 +108,15 @@ def health(spec: ProviderSpec) -> dict:
             if code in {"00", "0"}:
                 return _result(spec.provider_id, "ok", "연결·인증 정상", started)
             return _result(spec.provider_id, "error", f"응답코드 {code or '확인 필요'}", started)
+
+        if spec.provider_id == "kiwoom_rest":
+            # 토큰만 받아보고 끝냅니다. 시세·주문은 호출하지 않습니다.
+            import quotes
+            try:
+                quotes.Kiwoom().authorize()
+            except quotes.QuoteError as error:
+                return _result(spec.provider_id, "error", str(error), started)
+            return _result(spec.provider_id, "ok", "토큰 발급 정상", started)
 
         return _result(spec.provider_id, "unknown", "진단 미구현", started)
     except requests.Timeout:
