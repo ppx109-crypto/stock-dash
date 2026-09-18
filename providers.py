@@ -24,20 +24,29 @@ _price_base = None
 
 
 def price_call(operation, params):
-    """살아 있는 경로를 찾아 호출하고, 찾은 경로는 기억해 둡니다."""
+    """살아 있는 주소를 찾아 호출하고, 찾은 주소는 기억해 둡니다.
+
+    공공데이터포털이 V2로 옮기면서 서비스 경로와 오퍼레이션 이름이 함께 바뀔 수
+    있어, 확인된 조합을 찾을 때까지 후보를 차례로 시도합니다.
+    """
     global _price_base
-    bases = (_price_base,) if _price_base else PRICE_BASES
+    if _price_base:
+        candidates = [_price_base]
+    else:
+        candidates = [f"{base}/{name}"
+                      for base in PRICE_BASES
+                      for name in dict.fromkeys((operation, operation + "V2", operation + "_V2"))]
     last = None
-    for base in bases:
+    for url in candidates:
         try:
-            payload = get(base + "/" + operation, params).json()
+            payload = get(url, params).json()
             header = payload["response"]["header"]
         except (ValueError, KeyError, TypeError, DataError) as error:
             last = error
             continue
         code = str(header.get("resultCode", ""))
         if code in ("00", "0"):
-            _price_base = base
+            _price_base = url
             return payload
         # 인증·한도 문제는 경로를 바꿔도 같으므로 그대로 돌려줍니다.
         if code not in ("", "04", "12", "20", "30", "31", "32", "99"):
@@ -46,8 +55,8 @@ def price_call(operation, params):
     if _price_base:
         _price_base = None
         return price_call(operation, params)
-    tried = " / ".join(b.rsplit("/", 1)[-1] for b in PRICE_BASES)
-    raise DataError(f"{last or '응답 없음'} · 시도한 경로: {tried}")
+    tried = " / ".join(u.split("/1160100/", 1)[-1] for u in candidates)
+    raise DataError(f"{last or '응답 없음'} · 시도한 주소: {tried}")
 
 
 DART_ERRORS = {
