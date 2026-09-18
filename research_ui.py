@@ -10,6 +10,7 @@ from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import render_decision_dashboard
+import quotes
 
 
 def link_codes(store, state, known):
@@ -33,13 +34,19 @@ def link_codes(store, state, known):
     return True
 
 
+@st.cache_data(ttl=10, show_spinner=False)
+def live_quotes(codes):
+    """관심종목 시세를 10초 동안 재사용합니다."""
+    return quotes.snapshot(codes)
+
+
 def render_research(store, state, sample_mode):
     theme()
     research = published()
     known = {**research, **{r['code']: r for r in state.get('chat_research', [])}}
     if not sample_mode and link_codes(store, state, known):
         state = store.read()
-    render_decision_dashboard(research)
+    render_decision_dashboard(research, live_quotes([s['code'] for s in state.get('stocks', [])]))
     hero('내 투자의 현재를 한눈에', '관심 있는 기업을 담고, 판단에 필요한 변화만 확인하세요.', 'PLANX · STOCK RESEARCH')
     if sample_mode:
         st.info('둘러보기 중입니다. 개인 목록을 저장하려면 먼저 대시보드 비밀번호를 설정하세요.')

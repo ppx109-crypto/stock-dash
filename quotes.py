@@ -1,0 +1,105 @@
+"""키움 REST API 국내주식 시세. 조회 전용이며 주문 기능은 두지 않습니다.
+
+토큰 발급은 POST /oauth2/token, 시세는 POST /api/dostk/stkinfo (api-id ka10001)입니다.
+키가 없으면 호출하지 않고 연결 안 됨 상태만 돌려줍니다.
+"""
+from __future__ import annotations
+
+import os
+import time
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+import requests
+
+REAL = "https://api.kiwoom.com"
+MOCK = "https://mockapi.kiwoom.com"
+
+
+class QuoteError(RuntimeError):
+    pass
+
+
+def _number(value):
+    """키움 수치는 '+72,400'처럼 부호와 쉼표가 붙어 옵니다."""
+    try:
+        text = str(value).replace(",", "").strip()
+        if not text or text in ("+", "-"):
+            return None
+        return float(text)
+    except (TypeError, ValueError):
+        return None
+
+
+class Kiwoom:
+    def __init__(self):
+        self.key = os.getenv("KIWOOM_APP_KEY", "").strip()
+        self.secret = os.getenv("KIWOOM_APP_SECRET", "").strip()
+        self.mode = os.getenv("KIWOOM_ENV", "real").strip()
+        if not self.key or not self.secret:
+            raise QuoteError("키움 앱키와 시크릿키를 설정하세요.")
+        if self.mode not in ("real", "mock"):
+            raise QuoteError("KIWOOM_ENV는 real 또는 mock으로 입력하세요.")
+        self.base = REAL if self.mode == "real" else MOCK
+        self.token = None
+        self.expires = 0.0
+
+    def authorize(self):
+        if self.token and time.time() < self.expires:
+            return
+        try:
+            response = requests.post(self.base + "/oauth2/token", timeout=(5, 20),
+                headers={"Content-Type": "application/json;charset=UTF-8"},
+                json={"grant_type": "client_credentials", "appkey": self.key, "secretkey": self.secret})
+            response.raise_for_status()
+            data = response.json()
+        except (requests.RequestException, ValueError):
+            raise QuoteError("키움 인증에 실패했습니다. 키와 서비스 상태를 확인하세요.") from None
+        if not isinstance(data, dict) or not data.get("token"):
+            raise QuoteError("키움이 토큰을 돌려주지 않았습니다. 실전·모의 구분과 사용 신청 상태를 확인하세요.")
+        self.token = data["token"]
+        # 만료 시각 형식이 바뀌어도 동작하도록 짧게 잡고 갱신합니다.
+        self.expires = time.time() + 1800
+
+    def quote(self, code: str) -> dict:
+        self.authorize()
+        try:
+            response = requests.post(self.base + "/api/dostk/stkinfo", timeout=(5, 15),
+                headers={"Content-Type": "application/json;charset=UTF-8", "api-id": "ka10001",
+                         "cont-yn": "N", "next-key": "", "authorization": "Bearer " + self.token},
+                json={"stk_cd": code})
+            response.raise_for_status()
+            data = response.json()
+        except (requests.RequestException, ValueError):
+            raise QuoteError("키움 시세 조회에 실패했습니다.") from None
+        if not isinstance(data, dict) or data.get("return_code") not in (0, "0"):
+            raise QuoteError(str(data.get("return_msg") or "키움이 시세를 돌려주지 않았습니다."))
+        price = _number(data.get("cur_prc"))
+        if price is None:
+            raise QuoteError("시세 응답에 현재가가 없습니다.")
+        change = _number(data.get("pred_pre")) or _number(data.get("prdy_vrss"))
+        rate = _number(data.get("flu_rt")) or _number(data.get("prdy_ctrt"))
+        return {"code": code, "name": (data.get("stk_nm") or "").strip(),
+                "price": abs(price), "change": change, "rate": rate}
+
+
+def snapshot(codes) -> dict:
+    """여러 종목 시세를 한 번에 읽습니다. 실패한 종목은 빼고 돌려줍니다."""
+    codes = [c for c in codes if c and not str(c).startswith("pending-")]
+    if not codes:
+        return {"rows": [], "state": "종목 없음", "at": None}
+    try:
+        client = Kiwoom()
+    except QuoteError as error:
+        return {"rows": [], "state": str(error), "at": None}
+    rows, failed = [], 0
+    for code in codes[:12]:
+        try:
+            rows.append(client.quote(code))
+        except QuoteError:
+            failed += 1
+    at = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%H:%M:%S")
+    if not rows:
+        return {"rows": [], "state": "시세를 받지 못했습니다. 키움 사용 신청과 실전 키 여부를 확인하세요.", "at": at}
+    state = "실시간 · 키움" + (f" · {failed}개 실패" if failed else "")
+    return {"rows": rows, "state": state, "at": at}

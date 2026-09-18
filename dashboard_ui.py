@@ -52,7 +52,22 @@ _CSS = """
 .pxb-meta{text-align:right;font-size:12px;color:#8A8271;line-height:1.9}
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#B08343}
 
-.pxb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.pxb-live{display:flex;align-items:stretch;gap:10px;overflow-x:auto;margin-top:18px;padding-bottom:2px}
+.pxb-live-head{flex:none;display:flex;flex-direction:column;justify-content:center;padding-right:16px;
+  border-right:1px solid #EDE3D2}
+.pxb-live-head b{font-size:11px;font-weight:800;letter-spacing:.16em;color:#B08343;white-space:nowrap}
+.pxb-live-head span{margin-top:5px;font-size:10.5px;color:#A39781;white-space:nowrap}
+.pxb-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#7FA98B;margin-right:6px;
+  animation:pxbPulse 1.8s ease-in-out infinite}
+@keyframes pxbPulse{0%,100%{opacity:1}50%{opacity:.25}}
+.pxb-quote{flex:none;min-width:132px;padding:12px 15px;border-radius:14px;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
+  border:1px solid #EDE3D2;box-shadow:0 8px 20px rgba(90,72,44,.05)}
+.pxb-quote span{display:block;font-size:11px;color:#8A8271;white-space:nowrap}
+.pxb-quote b{display:block;margin-top:6px;font:600 20px/1 "Playfair Display",Georgia,serif;letter-spacing:-.4px}
+.pxb-quote em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:800}
+.pxb-live-off{flex:1;display:flex;align-items:center;padding:14px 16px;border-radius:14px;border:1px dashed #E0D3B8;
+  font-size:11.5px;color:#8A8271;background:rgba(255,255,255,.5)}
+.pxb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
 .pxb-card{position:relative;overflow:hidden;padding:24px 24px 22px;border-radius:20px;min-height:208px;
   background:linear-gradient(170deg,#FFFDF8,#FBF6EC);border:1px solid #EDE3D2;
   box-shadow:0 14px 34px rgba(90,72,44,.07);animation:pxbRise .55s ease both;
@@ -224,7 +239,30 @@ def _pct(current, prior) -> float | None:
         return None
 
 
-def render_decision_dashboard(details: dict) -> None:
+def live_strip(live: dict | None) -> str:
+    """관심종목 실시간 시세 줄. 연결 전에는 안내만 보여줍니다."""
+    if not live:
+        return ""
+    head = ('<div class="pxb-live-head"><b><i class="pxb-live-dot"></i>실시간 시세</b>'
+            f'<span>{_e(live.get("state", ""))}'
+            + (f' · {_e(live["at"])}' if live.get("at") else "") + "</span></div>")
+    rows = live.get("rows") or []
+    if not rows:
+        return (f'<div class="pxb-live">{head}<div class="pxb-live-off">'
+                '관심종목 실시간 시세는 키움 앱키·시크릿키를 설정하면 여기에 표시됩니다.</div></div>')
+    cards = ""
+    for row in rows:
+        rate = row.get("rate")
+        color = DOWN if (rate or 0) < 0 else UP
+        move = f'{rate:+.2f}%' if rate is not None else "—"
+        if row.get("change") is not None:
+            move += f' ({row["change"]:+,.0f})'
+        cards += (f'<div class="pxb-quote"><span>{_e(row.get("name") or row["code"])}</span>'
+                  f'<b>{row["price"]:,.0f}</b><em style="color:{color}">{_e(move)}</em></div>')
+    return f'<div class="pxb-live">{head}{cards}</div>'
+
+
+def render_decision_dashboard(details: dict, live: dict | None = None) -> None:
     """3열 카드 한 판으로 첫 화면을 그립니다."""
     st.markdown(_CSS, unsafe_allow_html=True)
     reports = sorted((details or {}).values(), key=lambda r: r.get("as_of", ""), reverse=True)
@@ -350,7 +388,8 @@ def render_decision_dashboard(details: dict) -> None:
         '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
         "<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다.</span></div>"
         f'<div class="pxb-meta"><b>PLANX · STOCK INTELLIGENCE</b>{date.today():%Y년 %m월 %d일}</div></div>'
-        f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
+        + live_strip(live)
+        + f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
         f"{card_trend}{card_earnings}{card_value}"
         f"{card_watch}{card_todo}{card_learn}</div></div>",
         unsafe_allow_html=True,

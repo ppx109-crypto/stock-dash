@@ -38,6 +38,7 @@ try:
         "OPENAI_API_KEY",
         "OPENAI_MODEL",
         "KIS_ENV", "KIS_APP_KEY", "KIS_APP_SECRET", "KIS_CANO", "KIS_ACNT_PRDT_CD",
+        "KIWOOM_ENV", "KIWOOM_APP_KEY", "KIWOOM_APP_SECRET",
     ]:
         if key in st.secrets:
             os.environ[key] = str(st.secrets[key])
