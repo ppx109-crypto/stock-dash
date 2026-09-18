@@ -98,7 +98,11 @@ class Kiwoom:
 
 
 def public_rows(codes) -> tuple[list, str]:
-    """공공데이터포털 주식시세. 실시간이 아니라 마지막 거래일 종가입니다."""
+    """공공데이터포털 주식시세.
+
+    실시간이 아니고, 기준일 다음 영업일 오후에 갱신됩니다.
+    그래서 최근 10일을 거슬러 올라가며 값이 있는 마지막 거래일을 찾습니다.
+    """
     from urllib.parse import unquote
     key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
     if not key:
@@ -134,7 +138,7 @@ def public_rows(codes) -> tuple[list, str]:
         basis_date = str(row.get("basDt") or basis_date)
         rows.append({"code": code, "name": (row.get("itmsNm") or "").strip(), "price": abs(price),
                      "change": _number(row.get("vs")), "rate": _number(row.get("fltRt"))})
-    label = "전일 종가 · 공공데이터포털"
+    label = "최근 거래일 종가 · 공공데이터포털"
     if basis_date and len(basis_date) == 8:
         label += f" · {basis_date[:4]}-{basis_date[4:6]}-{basis_date[6:]} 기준"
     return rows, label
