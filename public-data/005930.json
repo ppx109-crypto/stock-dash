@@ -1,6 +1,22 @@
 {
   "code": "005930",
   "name": "삼성전자",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 1537068.2,
+      "profit": 113613.29,
+      "receipt": "20250814003156",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003156"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 3053729.14,
+      "profit": 1467252.09,
+      "receipt": "20260814003699",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699"
+    }
+  ],
   "company": {
     "corp_name": "삼성전자(주)",
     "induty_code": "264",
@@ -35,9 +51,34 @@
     }
   ],
   "basis": "CFS",
-  "business_excerpt": "II. 사업의 내용'의 '5. 위험관리 및 파생거래'와 'Ⅲ. 재무에 관한 사항'의 '3. 연결재무제표 주석'을 참고하시기 바랍니다. V. 회계감사인의 감사의견 등 1. 외부감사에 관한 사항 가. 회계감사인의 감사의견 등 삼정회계법인은 당사의 제55기, 제56기 및 제57기 감사를 수행하였고, 감사의견은 모두 적정입니다. 한편, 당사의 감사 대상 종속기업은 공시대상기간 중 모두 적정의견을 받았습니다. [회계감사인의 명칭 및 감사의견] 사업연도 구분 감사인 감사의견 의견변형사유 계속기업 관련중요한 불확실성 강조사항 핵심감사사항 제57기 (당기) 감사보고서 삼정회계법인 적정의견 - 해당사항 없음 해당사항 없음 1. 건설중인자산의 감가상각개시시점 평가2. 재화의 판매장려활동에 대한 매출차감의 정확성과 완전성 연결감사보고서 삼정회계법인 적정의견 - 해당사항 없음 해당사항 없음 1. 건설중인자산의 감가상각개시시점 평가2. 재화의 판매장려활동에 대한 매출차감의 정확성과 완전성 제56기(전기) 감사보고서 삼정회계법인 적정의견 - 해당사항 없음 해당사항 없음 1. 건설중인자산의 감가상각개시시점 평가2. 재화의 판매장려활동에 대한 매출차감의 정확성과 완전성 연결감사보고서 삼정회계법인 적정의견 - 해당사항 없음 해당사항 없음 1. 건설중인자산의 감가상각개시시점 평가2. 재화의 판매장려활동에 대한 매출차감의 정확성과 완전성 제55기(전전기) 감사보고서 삼정회계법인 적정의견 - 해당사항 없음 해당사항 없음 1. 메모리 반도체 재고자산 순실현가치 평가 2. 재화의 판매장려활동에 대한 매출차감의 정확성과 완전성 연결감사보고서 삼정회계법인 적정의견 - 해당사항 없음 해당사항 없음 1. 메모리 반도체 재고자산 순실현가치 평가 2. 재화의 판매장려활동에 대한 매출차감의 정확성과 완전성 [감사용역 체결 현황] (단위 : 백만원, 시간) 사업연도 감사인 내 용 감사계약내역 실제수행내역 보수 시간 보수 시간 제57기(당기) 삼정회계법인 분ㆍ반기 재무제표 검토별도 및 연결 재무제표에 대한 감사별도 및 연결 내부회계관리제도 감사 8,100 81,000 8,100 80,540 제56기(당기) 삼정회계법인 분ㆍ반기 재무제표 검토별도 및 연결 재무제표에 대한 감사별도 및 연결 내부회계관리제도 감사 7,800 78,000 7,800 76,830 제55기(당기) 삼정회계법인 분ㆍ반기 재무제표 검토별도 및 연결 재무제표에 대한 감사별도 및 연결 내부회계관리제도 감사 7,800 85,700 7,800 85,036 (제57기 일정) 구 분 일 정 제57기 1분기 사전검토 2025.03.10 ~ 2025.03.28 본검토 2025.04.07 ~ 2025.05.14 제57기 2분기 사전검토 2025.06.09 ~ 2025.06.27 본검토 2025.07.07 ~ 2025.08.13 제57기 3분기 사전검토 2025.09.08 ~ 2025.09.26 본검토 2025.10.13 ~ 2025.11.13 시스템 및 자동 내부통제 감사 2025.04.07 ~ 2026.01.31 조기입증감사(연중감사) 2025.03.10 ~ 2025.12.31 내부회계관리제도 감사 2025.04.07 ~ 2026.01.31 조기입증 절차 업데이트 및 재무제표 감사 2026.01.02 ~ 2026.02.12 ※ 별도ㆍ연결 재무제표 검토 및 감사와 내부회계관리제도 감사에 대한 일정입니다. [비감사용역 체결 현황] (단위 : 백만원) 사업연도 계약체결일 용역내용 용역수행기간 용역보수 비고 제57기(당기) - - - - - 제56기(전기) 2017.02 세무자문업무(해외종속기업) 2024.01~2024.06 43 삼정회계법인 2018.09 세무자문업무(해외종속기업) 2024.01~2024.05 - 삼정회계법인 2019.05 세무자문업무(해외종속기업) 2024.01~2024.06 73 삼정회계법인 제55기(전전기) 2017.02 세무자문업무(해외종속기업) 2023.01~2023.12 202 삼정회계법인 2018.09 세무자문업무(해외종속기업) 2023.01~2023.12 27 삼정회계법인 2019.05 세무자문업무(해외종속기업) 2023.01~2023.12 79 삼정회계법인 2023.05 ESG 인증업무(국내종속기업 ) 2023.05~2023.07 25 삼정회계법인 [네트워크 회계법인과의 비감사용역 계약체결 현황] 해당사항 없습니다. 사업연도 네트워크회계법인명 계약체결일 용역내용 용역수행기간 용역보수 비고 제57(당기) - - - - - - - - - - - - 제56기(전기) - - - - - - - - - - - - 제55기(전전기) - - - - - - - - - - - - [내부감사기구가 회계감사인과 논의한 결과] 구분 일자 참석자 방식 주요 논의 내용 1 2025.01.24 ㆍ감사위원회: 위원 3명ㆍ회사: 감사팀장, 감사위원회 사무국장 등ㆍ감사인: 업무수행이사 외 5명 대면회의 ㆍ연간 회계감사 진행 상황 ㆍ핵심 감사사항 등 중점 감사사항 ㆍ내부회계관리제도 감사 진행 상황 ㆍ기타 감사종료단계 필수 커뮤니케이션 사항 2 2025.04.28 ㆍ감사위원회: 위원 3명ㆍ회사: 감사위원회 사무국장ㆍ감사인: 업무수행이사 외 4명 대면회의 ㆍ분기 검토 경과 보고ㆍ연간 회계감사 계획ㆍ기타 감사계획단계 필수 커뮤니케이션 사항 3 2025.07.29 ㆍ감사위원회: 위원 3명ㆍ회사: 감사위원회 사무국장ㆍ감사인: 업무수행이사 외 4명 대면회의 ㆍ연간 회계감사 진행 상황ㆍ핵심 감사사항 선정 계획ㆍ기타 감사계획단계 필수 커뮤니케이션 사항 4 2025.10.28 ㆍ감사위원회: 위원 3명ㆍ회사: 감사위원회 사무국장ㆍ감사인: 업무수행이사 외 4명 대면회의 ㆍ연간 회계감사 진행 상황ㆍ핵심 감사사항 선정 계획ㆍ내부회계관리제도 감사 진행 상황ㆍ분기 중점 검토사항 및 기타 필수 커뮤니케이션 사항 5 2026.01.28 ㆍ감사위원회: 위원 3명ㆍ회사: 감사위원회 사무국장ㆍ감사인: 업무수행이사 외 4명 대면회의 ㆍ연간 회계감사 진행 상황ㆍ핵심 감사사항 등 중점 감사사항ㆍ내부회계관리제도 감사 진행 상황ㆍ기타 감사종료단계 필수 커뮤니케이션 사항 나. 회계감사인의 변경 제57기말(당기말) 현재 당사의 종속기업은 308개이며, 당기 중 해외 종속기업 중 Harman Belgium SA 외 6개 종속기업은 PwC에서 KPMG로, Samsung Electronics Rus Company LLC가 TeDO에서 B1으로 회계감사인을 변경하였습니다. 국내 종속기업 중 스테코㈜와 삼성메디슨㈜은 삼일회계법인에서 삼정회계법인으로 회계감사인을 변경하였으며, SVIC 21호 신기술투자조합 외 15개 종속기업은 삼정회계법인에서 안진회계법인으로 회계감사인을 변경하였습니다. 당기 중 설립된 SVIC 74호 신기술투자조합 및 SVIC 76호 신기술투자조합은 안진회계법인을 회계감사인으로 신규 선임하였습니다. 종속기업의 회계감사인 변경 및 신규 선임은 각 회사의 결정에 의한 것입니다. [제57기 종속기업의 회계감사인 변경 현황] 종속기업명 변경전 회계감사인 변경후 회계감사인 스테코㈜ 삼일회계법인(PwC) 삼정회계법인(KPMG) 삼성메디슨㈜ 삼일회계법인(PwC) 삼정회계법인(KPMG) SVIC 21호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 22호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 26호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 28호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 32호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 33호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 37호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 42호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 43호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 45호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 52호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 55호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 56호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 57호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 62호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) SVIC 67호 신기술투자조합 삼정회계법인(KPMG) 안진회계법인(Deloitte) Samsung Electronics Rus Kaluga LLC TeDO B1 Harman Belgium SA PwC KPMG Harman Connected Services AB. PwC KPMG Harman Finland Oy PwC KPMG Harman Inc. & Co. KG PwC KPMG Harman International Romania SRL PwC KPMG Harman Connected Services Corp. India Pvt. Ltd. PwC KPMG Harman International (India) Private Limited PwC KPMG 제56기말(전기말) 현재 당사의 종속기업은 228개이며, 당기 중 해외 종속기업 중 Harman International Industires, Inc. 외 16개 종속기업은 PwC에서 KPMG로 회계감사인을 변경하였으며, 국내 종속기업 중 ㈜하만인터내셔널코리아는 삼일회계법인(PwC)에서 삼정회계법인(KPMG)으로 회계감사인을 변경하였습니다. 전기 중 설립된 SVIC 67호 신기술투자조합은 삼정회계법인(KPMG)을, Samsung Electronics Middle east and North Africa는 KPMG를 회계감사인으로 신규 선임하였습니다. 또한, 전전기 중 신규 인수한 eMagin Corporation은 삼정회계법인(KPMG)을 회계감사인으로 신규 선임하였고, 전전기 중 설립된 종속기업 Samsung Federal Inc.는 KPMG를 회계감사인으로 신규 선임하였습니다. 종속기업의 회계감사인 변경 및 신규 선임은 각 회사의 결정에 의한 것입니다. [제56기 종속기업의 회계감사인 변경 현황] 종속기업명 변경전 회계감사인 변경후 회계감사인 ㈜하만인터내셔널코리아 삼일회계법인(PwC) 삼정회계법인(KPMG) Harman International Industires, Inc. PwC KPMG Harman (China) Technologies Co., Ltd. PwC KPMG Harman (Suzhou) Audio and Infotainment Systems Co., Ltd. PwC KPMG Harman Automotive Electronic Systems (Suzhou) Co., Ltd. PwC KPMG Harman Commercial (Shanghai) Co., Ltd. PwC KPMG Harman Connected Services Solutions (Chengdu) Co., Ltd. PwC KPMG Harman Holding Limited PwC KPMG Harman International (China) Holdings Co., Ltd. PwC KPMG Harman Technology (Shenzhen) Co., Ltd. PwC KPMG Harman Becker Automotive Systems GmbH PwC KPMG Harman Becker Automotive Systems Manufacturing Kft PwC KPMG Harman Connected Services GmbH PwC KPMG Harman Consumer Nederland B.V. PwC KPMG Harman Deutschland GmbH PwC KPMG Harman Holding Gmbh & Co. KG PwC KPMG Harman Hungary Financing Ltd. PwC KPMG Harman Professional Kft PwC KPMG 당사는 제55기(전전기)부터 회계감사인을 안진회계법인(Deloitte)에서 삼정회계법인(KPMG)으로 변경하였습니다. 이는 지정감사인이었던 안진회계법인(Deloitte)과의 계약이 2022년말 기간 만료로 종료됨에 따라 「주식회사 등의 외부감사에 관한 법률」제10조 제1항 및 제3항, 제4항에 의거하여 감사위원회가 선정한 결과로, 삼정회계법인(KPMG)을 2023년부터 2025년까지 3개년의 회계감사인으로 신규 선임하였습니다. 제55기말(전전기말) 현재 당사의 종속기업은 232개이며, 전전기 중 국내 종속기업 가운데 삼성디스플레이㈜ 등 8개는 안진회계법인(Deloitte)에서 삼정회계법인(KPMG)으로, 에스유머티리얼스㈜는 한영회계법인(E&Y)에서 삼정회계법인(KPMG)으로 회계감사인을 변경하였습니다. 또한, 해외 종속기업 중 Samsung Electronics America, Inc. (SEA) 등 30개사는 Deloitte에서 KPMG로, Samsung Japan Corporation (SJC)등 65개사는 PwC에서 KPMG로, Samsung Electronics Iberia, S.A. (SESA) 등 6개사는 E&Y에서 KPMG로, Laos Samsung Electronics Sole Co.,Ltd (LSE)는 KPP Co., Ltd에서 KPMG로 회계감사인을 변경하였습니다. 한편, 전전기 중 설립된 종속기업 SVIC 62호 신기술투자조합은 삼정회계법인(KPMG)을 신규 선임하였고, 제54기 중 설립된 종속기업 ㈜희망별숲은 삼정회계법인(KPMG)을, Samsung Electronics Uzbekistan FC LLC (SEUZ), DOWOOINSYS VINA COMPANY LIMITED는 KPMG를 회계감사인으로 신규 선임하였습니다. 해당 종속기업들은 당사(지배회사)의 회계감사인 변경에 따라 연결감사 업무 효율화 등을 위해 회계감사인을 변경 및 신규 선임하였으며, 이는 각 회사의 결정에 의한 것입니다. [제55기 종속기업의 회계감사인 변경 현황] 종속기업명 변경전 회계감사인 변경후 회계감사인 삼성디스플레이㈜ 안진회계법인(Deloitte) 삼정회계법인(KPMG) 삼성전자서비스㈜ 안진회계법인(Deloitte) 삼정회계법인(KPMG) 삼성전자서비스씨에스㈜ 안진회계법인(Deloitte) 삼정회계법인(KPMG) 삼성전자판매㈜ 안진회계법인(Deloitte) 삼정회계법인(KPMG) 삼성전자로지텍㈜ 안진회계법인(Deloitte) 삼정회계법인(KPMG) ㈜도우인시스 안진회계법인(Deloitte) 삼정회계법인(KPMG) 지에프㈜ 안진회계법인(Deloitte) 삼정회계법인(KPMG) ㈜미래로시스템 안진회계법인(Deloitte) 삼정회계법인(KPMG) 에스유머티리얼스㈜ 한영회계법인(E&Y) 삼정회계법인(KPMG) Samsung Electronics America, Inc. (SEA) Deloitte KPMG Samsung Semiconductor, Inc. (SSI) Deloitte KPMG Samsung Mexicana S.A. de C.V (SAMEX) Deloitte KPMG Samsung International, Inc. (SII) Deloitte KPMG Samsung Austin Semiconductor LLC. (SAS) Deloitte KPMG Samsung Electronics Mexico S.A. De C.V. (SEM) Deloitte KPMG Samsung Electronics (UK) Ltd. (SEUK) Deloitte KPMG Samsung Electronics Holding GmbH (SEHG) Deloitte KPMG Samsung Semiconductor Europe GmbH (SSEG) Deloitte KPMG Samsung Electronics GmbH (SEG) Deloitte KPMG Samsung Semiconductor Europe Limited (SSEL) Deloitte KPMG Samsung Vina Electronics Co., Ltd. (SAVINA) Deloitte KPMG Samsung Electronics Singapore Pte. Ltd. (SESP) Deloitte KPMG Samsung Asia Pte. Ltd. (SAPL) Deloitte KPMG Samsung Electronics Australia Pty. Ltd. (SEAU) Deloitte KPMG Thai Samsung Electronics Co., Ltd. (TSE) Deloitte KPMG Samsung Display Vietnam Co., Ltd. (SDV) Deloitte KPMG Samsung R&D Institute BanglaDesh Limited (SRBD) Deloitte KPMG Samsung Electronics Vietnam Co., Ltd. (SEV) Deloitte KPMG Samsung Electronics Vietnam THAINGUYEN Co., Ltd. (SEVT) Deloitte KPMG Samsung Electronics HCMC CE Complex Co., Ltd. (SEHC) Deloitte KPMG Samsung (CHINA) Investment Co., Ltd. (SCIC) Deloitte KPMG Samsung Electronics Taiwan Co., Ltd. (SET) Deloitte KPMG Shanghai Samsung Semiconductor Co., Ltd. (SSS) Deloitte KPMG Samsung Gulf Electronics Co., Ltd. (SGE) Deloitte KPMG Samsung Electronics Saudi Arabia Ltd. (SESAR) Deloitte KPMG Samsung Electronics South Africa(Pty) Ltd. (SSA) Deloitte KPMG Samsung Electronics Turkiye (SETK) Deloitte KPMG Samsung Electronics Industry and Commerce Ltd. (SETK-P) Deloitte KPMG Samsung Eletronica da Amazonia Ltda. (SEDA) Deloitte KPMG Samsung Japan Corporation (SJC) PwC KPMG Samsung R&D Institute Japan Co. Ltd. (SRJ) PwC KPMG Samsung Electronics Japan Co., Ltd. (SEJ) PwC KPMG Samsung Oak Holdings, Inc. (SHI) PwC KPMG Samsung Electronics Canada, Inc. (SECA) PwC KPMG Samsung Research America, Inc (SRA) PwC KPMG SAMSUNG NEXT LLC (SNX) PwC KPMG SAMSUNG NEXT FUND LLC (SNXF) PwC KPMG Samsung Electronics Home Appliances America, LLC (SEHA) PwC KPMG Samsung Electronics Digital Appliance Mexico, SA de CV(SEDAM) PwC KPMG Samsung Electronics Latinoamerica Miami, Inc. (SEMI) PwC KPMG Samsung Electronics France S.A.S (SEF) PwC KPMG Samsung Electronics Hungarian Private Co. Ltd. (SEH) PwC KPMG Samsung Electronics Czech and Slovak s.r.o. (SECZ) PwC KPMG Samsung Electronics Italia S.P.A. (SEI) PwC KPMG Samsung Electronics Europe Logistics B.V. (SELS) PwC KPMG Samsung Electronics Romania LLC (SEROM) PwC KPMG Samsung Electronics Overseas B.V. (SEO) PwC KPMG Samsung Electronics Polska, SP.Zo.o (SEPOL) PwC KPMG Samsung Electronics Nordic Aktiebolag (SENA) PwC KPMG Samsung Electronics Austria GmbH (SEAG) PwC KPMG Samsung Electronics Switzerland GmbH (SESG) PwC KPMG SAMSUNG ELECTRONICS BALTICS SIA (SEB) PwC KPMG Samsung Electronics Europe Holding Cooperatief U.A. (SEEH) PwC KPMG Samsung Electronics Poland Manufacturing SP.Zo.o (SEPM) PwC KPMG Samsung Electronics Greece S.M.S.A (SEGR) PwC KPMG Samsung Nanoradio Design Center (SNDC) PwC KPMG Samsung Electronics Air Conditioner Europe B.V. (SEACE) PwC KPMG Samsung Denmark Research Center ApS (SDRC) PwC KPMG Samsung Cambridge Solution Centre Limited (SCSC) PwC KPMG Samsung R&D Institute India-Bangalore Private Limited(SRI-Bangalore) PwC KPMG Samsung Electronics New Zealand Limited (SENZ) PwC KPMG PT Samsung Electronics Indonesia (SEIN) PwC KPMG PT Samsung Telecommunications Indonesia (STIN) PwC KPMG Samsung Display Noida Private Limited (SDN) PwC KPMG Samsung Display Dongguan Co., Ltd. (SDD) PwC KPMG Samsung Display Tianjin Co., Ltd. (SDT) PwC KPMG Samsung Electronics Hong Kong Co., Ltd. (SEHK) PwC KPMG Suzhou Samsung Electronics Co., Ltd. (SSEC) PwC KPMG Samsung Suzhou Electronics Export Co., Ltd. (SSEC-E) PwC KPMG Samsung Mobile R&D Center China-Guangzhou(SRC-Guangzhou) PwC KPMG Samsung R&D Institute China-Shenzhen (SRC-Shenzhen) PwC KPMG Samsung Electronics Suzhou Semiconductor Co., Ltd. (SESS) PwC KPMG SEMES (XIAN) Co., Ltd. PwC KPMG Beijing Samsung Telecom R&D Center (SRC-Beijing) PwC KPMG Samsung Electronics Suzhou Computer Co., Ltd. (SESC) PwC KPMG Samsung Semiconductor (China) R&D Co., Ltd. (SSCR) PwC KPMG Samsung Electronics China R&D Center (SRC-Nanjing) PwC KPMG Samsung (China) Semiconductor Co., Ltd. (SCS) PwC KPMG Samsung SemiConductor Xian Co., Ltd. (SSCX) PwC KPMG Samsung Electronics West Africa Ltd. (SEWA) PwC KPMG Samsung Electronics East Africa Ltd. (SEEA) PwC KPMG Samsung Electronics Israel Ltd. (SEIL) PwC KPMG Samsung Electronics Tunisia S.A.R.L (SETN) PwC KPMG Samsung Electronics Pakistan(Private) Ltd. (SEPAK) PwC KPMG Samsung Electronics South Africa Production (pty) Ltd. (SSAP) PwC KPMG Samsung Semiconductor Israel R&D Center, Ltd. (SIRC) PwC KPMG Samsung Electronics Maghreb Arab (SEMAG) PwC KPMG Samsung Electronics Latinoamerica(Zona Libre), S. A. (SELA) PwC KPMG Samsung Electronica Colombia S.A. (SAMCOL) PwC KPMG Samsung Electronics Chile Limitada (SECH) PwC KPMG Samsung Electronics Peru S.A.C. (SEPR) PwC KPMG Samsung Electronics Ukraine Company LLC (SEUC) PwC KPMG Samsung R&D Institute Ukraine (SRUKR) PwC KPMG Samsung Electronics Central Eurasia LLP (SECE) PwC KPMG Samsung Electronics Iberia, S.A. (SESA) E&Y KPMG Samsung Electronics Benelux B.V. (SEBN) E&Y KPMG Samsung Electronics Portuguesa, Unipessoal, Lda. (SEP) E&Y KPMG Samsung Electronics Philippines Corporation (SEPCO) E&Y KPMG Samsung Electronics Levant Co.,Ltd. (SELV) E&Y KPMG Samsung Electronics Caucasus Co. Ltd (SECC) E&Y KPMG Laos Samsung Electronics Sole Co., Ltd (LSE) KPP Co., Ltd KPMG 2. 내부통제에 관한 사항 [경영진의 내부회계관리제도 효과성 평가 결과] 사업연도 구분 운영실태 보고서보고일자 평가 결론 중요한취약점 시정조치계획 등 제57기(당기) 내부회계관리제도 2026.01.28 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항없음 해당사항없음 연결내부회계관리제도 2026.01.28 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항없음 해당사항없음 제56기(전기) 내부회계관리제도 2025.01.24 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항없음 해당사항없음 연결내부회계관리제도 2025.01.24 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항없음 해당사항없음 제55기(전전기) 내부회계관리제도 2024.01.29 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항없음 해당사항없음 연결내부회계관리제도 2024.01.29 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항없음 해당사항없음 [감사위원회의 내부회계관리제도 효과성 평가 결과] 사업연도 구분 평가보고서보고일자 평가 결론 중요한취약점 시정조치계획 등 제57기(당기) 내부회계관리제도 2026.01.28 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항 없음 해당사항 없음 연결내부회계관리제도 2026.01.28 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항 없음 해당사항 없음 제56기(전기) 내부회계관리제도 2025.02.18 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항 없음 해당사항 없음 연결내부회계관리제도 2025.02.18 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항 없음 해당사항 없음 제55기(전전기) 내부회계관리제도 2024.01.31 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항 없음 해당사항 없음 연결내부회계관리제도 2024.01.31 중요성의 관점에서 효과적으로 설계되어 운영되고 있다고 판단 해당사항 없음 해당사항 없음 [회계감사인의 내부회계관리제도 감사의견]",
-  "fetched": "2026-09-09",
+  "business_excerpt": "",
+  "fetched": "2026-09-18",
   "disclosures": [
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918800754"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918000212"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918000191"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000097"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260914",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914000248"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등거래계획보고서",
       "date": "20260909",
@@ -162,31 +203,6 @@
       "title": "동일인등출자계열회사와의상품ㆍ용역거래변경",
       "date": "20260814",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003162"
-    },
-    {
-      "title": "동일인등출자계열회사와의상품ㆍ용역거래변경",
-      "date": "20260814",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003055"
-    },
-    {
-      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
-      "date": "20260814",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002809"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260811",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000285"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260811",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000011"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260810",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000353"
     }
   ]
 }

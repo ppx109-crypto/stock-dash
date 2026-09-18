@@ -1,0 +1,208 @@
+{
+  "code": "000270",
+  "name": "기아",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 573671.45,
+      "profit": 57733.54,
+      "receipt": "20250814003814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003814"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 625389.36,
+      "profit": 48336.5,
+      "receipt": "20260916000427",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000427"
+    }
+  ],
+  "company": {
+    "corp_name": "기아(주)",
+    "induty_code": "30121",
+    "hm_url": "www.kia.co.kr",
+    "est_dt": "19441210",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 998084.2,
+      "profit": 116078.73,
+      "receipt": "20240312000909",
+      "net_income": 87769.7,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240312000909"
+    },
+    {
+      "year": 2024,
+      "revenue": 1074487.52,
+      "profit": 126671.39,
+      "receipt": "20250313001390",
+      "net_income": 97729.57,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250313001390"
+    },
+    {
+      "year": 2025,
+      "revenue": 1141409.19,
+      "profit": 90781.48,
+      "receipt": "20260312001224",
+      "net_income": 75609.83,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260312001224"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-18",
+  "disclosures": [
+    {
+      "title": "[기재정정]반기보고서 (2026.06)",
+      "date": "20260916",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000427"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260914",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914800202"
+    },
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20260911",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000318"
+    },
+    {
+      "title": "중대재해발생              ",
+      "date": "20260910",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260910800713"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902800231"
+    },
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800418"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831800286"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001017"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800400"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800002"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260818",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260818800199"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003932"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000595"
+    },
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20260812",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260812000610"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810800225"
+    },
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803800582"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800156"
+    },
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729000316"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800674"
+    },
+    {
+      "title": "공정거래자율준수프로그램운영현황(안내공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800659"
+    },
+    {
+      "title": "약관에의한금융거래시계열금융회사의거래상대방의공시",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000450"
+    },
+    {
+      "title": "특수관계인에대한출자",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000442"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800340"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716800514"
+    },
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260709",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260709800425"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260709",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260709000467"
+    },
+    {
+      "title": "대표이사(대표집행임원)변경(안내공시)              ",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708800566"
+    },
+    {
+      "title": "임시주주총회결과              ",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708800542"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701800677"
+    },
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701800569"
+    }
+  ]
+}
