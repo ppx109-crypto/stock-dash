@@ -1,4 +1,5 @@
-streamlit>=1.41,<2
+streamlit>=1.49,<2
+altair>=5.4,<7
 pandas>=2.2,<3
 requests>=2.32,<3
 python-dotenv>=1,<2
