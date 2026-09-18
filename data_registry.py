@@ -103,11 +103,25 @@ def health(spec: ProviderSpec) -> dict:
                 timeout=(5, 12),
             )
             response.raise_for_status()
-            payload = response.json()
-            code = str(payload.get("response", {}).get("header", {}).get("resultCode", ""))
+            try:
+                payload = response.json()
+            except ValueError:
+                # 키가 등록되지 않으면 JSON 대신 XML 오류가 옵니다.
+                text = response.text
+                for mark, reason in (("SERVICE_KEY_IS_NOT_REGISTERED", "등록되지 않은 서비스키"),
+                                     ("LIMITED_NUMBER_OF_SERVICE_REQUESTS", "호출 한도 초과"),
+                                     ("SERVICE_ACCESS_DENIED", "활용 신청 승인 대기"),
+                                     ("DEADLINE_HAS_EXPIRED", "서비스키 사용 기간 만료")):
+                    if mark in text:
+                        return _result(spec.provider_id, "error", reason, started)
+                return _result(spec.provider_id, "error", "JSON이 아닌 오류 응답", started)
+            header = payload.get("response", {}).get("header", {})
+            code = str(header.get("resultCode", ""))
             if code in {"00", "0"}:
                 return _result(spec.provider_id, "ok", "연결·인증 정상", started)
-            return _result(spec.provider_id, "error", f"응답코드 {code or '확인 필요'}", started)
+            message = str(header.get("resultMsg", "")).strip()
+            return _result(spec.provider_id, "error",
+                           f"응답코드 {code or '확인 필요'}" + (f" · {message}" if message else ""), started)
 
         if spec.provider_id == "kiwoom_rest":
             # 토큰만 받아보고 끝냅니다. 시세·주문은 호출하지 않습니다.

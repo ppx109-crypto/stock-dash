@@ -51,13 +51,24 @@ class Kiwoom:
             response = requests.post(self.base + "/oauth2/token", timeout=(5, 20),
                 headers={"Content-Type": "application/json;charset=UTF-8"},
                 json={"grant_type": "client_credentials", "appkey": self.key, "secretkey": self.secret})
-            response.raise_for_status()
-            data = response.json()
+            data = response.json() if response.content else {}
         except (requests.RequestException, ValueError):
-            raise QuoteError("키움 인증에 실패했습니다. 키와 서비스 상태를 확인하세요.") from None
-        if not isinstance(data, dict) or not data.get("token"):
-            raise QuoteError("키움이 토큰을 돌려주지 않았습니다. 실전·모의 구분과 사용 신청 상태를 확인하세요.")
-        self.token = data["token"]
+            raise QuoteError("키움 인증 요청이 실패했습니다. 네트워크와 서비스 상태를 확인하세요.") from None
+        if not isinstance(data, dict):
+            raise QuoteError(f"키움 인증 응답 형식을 읽을 수 없습니다 · HTTP {response.status_code}")
+        token = data.get("token") or data.get("access_token")
+        if not token:
+            # 키움이 알려준 사유를 그대로 전달합니다.
+            reason = str(data.get("return_msg") or data.get("message") or "").strip()
+            code = data.get("return_code")
+            detail = f"HTTP {response.status_code}"
+            if code not in (None, ""):
+                detail += f" · 코드 {code}"
+            if reason:
+                detail += f" · {reason}"
+            raise QuoteError(f"키움이 토큰을 돌려주지 않았습니다 ({detail}). "
+                             f"현재 {'실전' if self.mode == 'real' else '모의'} 서버로 요청했습니다.")
+        self.token = token
         # 만료 시각 형식이 바뀌어도 동작하도록 짧게 잡고 갱신합니다.
         self.expires = time.time() + 1800
 
