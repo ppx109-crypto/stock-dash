@@ -68,6 +68,23 @@ _CSS = """
 .pxb-quote em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:800}
 .pxb-live-off{flex:1;display:flex;align-items:center;padding:14px 16px;border-radius:14px;border:1px dashed #E0D3B8;
   font-size:11.5px;color:#8A8271;background:rgba(255,255,255,.5)}
+.pxb-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.pxb-slot{position:relative;padding:18px 18px 16px;border-radius:18px;overflow:hidden;min-height:150px;
+  border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
+  box-shadow:0 10px 26px rgba(90,72,44,.06);animation:pxbRise .5s ease both}
+.pxb-slot.a{border-color:#BFD8C4;background:linear-gradient(170deg,#FBFEFB,#F1F7F0)}
+.pxb-slot.c{border-color:#E2D6BD;background:linear-gradient(170deg,#FFFDF6,#F8F3E6)}
+.pxb-slot.d{background:linear-gradient(170deg,#FEFCFA,#F7F2EE)}
+.pxb-slot-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.pxb-slot-h b{font-size:13px;font-weight:800;letter-spacing:.02em;color:#2E2822}
+.pxb-slot-h i{font-style:normal;font:600 22px "Playfair Display",Georgia,serif;color:#B08343}
+.pxb-slot small{display:block;margin-top:6px;font-size:11px;color:#8A8271;line-height:1.55}
+.pxb-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pxb-chip{padding:4px 10px;border-radius:999px;font-size:11px;background:#FFFFFFAA;border:1px solid #E7DCC7;color:#5F584B}
+.pxb-chip em{font-style:normal;color:#A39781;margin-left:4px;font-size:10px}
+.pxb-slot.a .pxb-chip{border-color:#CFE2D2}
+.pxb-empty{margin-top:12px;font-size:11px;color:#A39781}
+.pxb-note{font-size:11px;color:#8A8271;line-height:1.6}
 .pxb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
 .pxb-card{position:relative;overflow:hidden;padding:24px 24px 22px;border-radius:20px;min-height:208px;
   background:linear-gradient(170deg,#FFFDF8,#FBF6EC);border:1px solid #EDE3D2;
@@ -128,9 +145,9 @@ _CSS = """
   font-size:11px;font-weight:800;letter-spacing:.08em}
 .px-live-divider:before,.px-live-divider:after{content:"";height:1px;background:#d9cbb5;flex:1}
 
-@media(max-width:1080px){.pxb-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1080px){.pxb-grid,.pxb-board{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){
-  .pxb-grid{grid-template-columns:1fr;gap:14px}
+  .pxb-grid,.pxb-board{grid-template-columns:1fr;gap:14px}
   .pxb-title em{font-size:30px}
   .pxb-meta{text-align:left}
   .pxb-sub{max-width:100%}
@@ -268,7 +285,42 @@ def live_strip(live: dict | None) -> str:
     return f'<div class="pxb-live{" mock" if mock else ""}">{head}{cards}</div>'
 
 
-def render_decision_dashboard(details: dict, live: dict | None = None) -> None:
+GROUP_TITLES = {"A": ("A그룹 · 투자적기", "정배열 + 실적 양호", "a"),
+                "B": ("B그룹 · 투자보류", "한 축이 1~2개 미달", "b"),
+                "C": ("C그룹 · 대기", "이평선 수렴 · 방향 미정", "c"),
+                "D": ("D그룹 · 관망", "추세 붕괴 또는 실적 부진", "d")}
+
+
+def group_board(graded: list | None) -> str:
+    """A·B·C·D 그룹판. 판정에 쓸 자료가 없으면 이유를 적습니다."""
+    if not graded:
+        return ""
+    buckets = {key: [] for key in GROUP_TITLES}
+    pending = [row for row in graded if row.get("group") not in buckets]
+    for row in graded:
+        if row.get("group") in buckets:
+            buckets[row["group"]].append(row)
+    cards = ""
+    for key, (title, note, klass) in GROUP_TITLES.items():
+        rows = sorted(buckets[key], key=lambda r: (-r.get("met", 0), r["name"]))
+        chips = "".join(
+            f'<span class="pxb-chip">{_e(r["name"])}'
+            f'<em>{r["trend"]["grade"] or "-"}·{r["earnings"]["grade"]}</em></span>'
+            for r in rows[:8])
+        more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
+        body = f'<div class="pxb-chips">{chips}{more}</div>' if rows else '<div class="pxb-empty">해당 종목 없음</div>'
+        cards += (f'<div class="pxb-slot {klass}"><div class="pxb-slot-h"><b>{title}</b>'
+                  f'<i>{len(rows)}</i></div><small>{note}</small>{body}</div>')
+    board = f'<div class="pxb-board">{cards}</div>'
+    if pending:
+        names = ", ".join(_e(r["name"]) for r in pending[:6])
+        reason = _e(pending[0].get("note") or pending[0].get("reason") or "자료 부족")
+        board += (f'<div class="pxb-note" style="margin-top:10px">판정 보류 {len(pending)}종목 · '
+                  f'{names}{"…" if len(pending) > 6 else ""} · {reason}</div>')
+    return board
+
+
+def render_decision_dashboard(details: dict, live: dict | None = None, graded: list | None = None) -> None:
     """3열 카드 한 판으로 첫 화면을 그립니다."""
     st.markdown(_CSS, unsafe_allow_html=True)
     reports = sorted((details or {}).values(), key=lambda r: r.get("as_of", ""), reverse=True)
@@ -395,6 +447,7 @@ def render_decision_dashboard(details: dict, live: dict | None = None) -> None:
         "<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다.</span></div>"
         f'<div class="pxb-meta"><b>PLANX · STOCK INTELLIGENCE</b>{date.today():%Y년 %m월 %d일}</div></div>'
         + live_strip(live)
+        + group_board(graded)
         + f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
         f"{card_trend}{card_earnings}{card_value}"
         f"{card_watch}{card_todo}{card_learn}</div></div>",

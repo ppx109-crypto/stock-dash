@@ -36,6 +36,12 @@ def link_codes(store, state, known):
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
+def graded_stocks(codes, research_key):
+    """관심종목의 추세·실적 등급. 하루 한 번 갱신되는 자료라 한 시간 재사용합니다."""
+    return market.grade_all(codes, published())
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
 def market_top(top):
     """시가총액 상위 종목. 하루에 몇 번만 받아도 충분해 한 시간 동안 재사용합니다."""
     return market.top_by_market(top)
@@ -57,7 +63,9 @@ def render_research(store, state, sample_mode):
     known = {**research, **{r['code']: r for r in state.get('chat_research', [])}}
     if not sample_mode and link_codes(store, state, known):
         state = store.read()
-    render_decision_dashboard(research, live_quotes([s['code'] for s in state.get('stocks', [])]))
+    codes = [s['code'] for s in state.get('stocks', []) if not s['code'].startswith('pending-')]
+    render_decision_dashboard(research, live_quotes(codes),
+                              graded_stocks(codes, max(research, default='')) if codes else None)
     hero('내 투자의 현재를 한눈에', '관심 있는 기업을 담고, 판단에 필요한 변화만 확인하세요.', 'PLANX · STOCK RESEARCH')
     if sample_mode:
         st.info('둘러보기 중입니다. 개인 목록을 저장하려면 먼저 대시보드 비밀번호를 설정하세요.')
@@ -79,7 +87,7 @@ def render_research(store, state, sample_mode):
                             st.rerun()
                         except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
         with st.expander('＋ 시가총액 상위 종목 담기'):
-            count = st.select_slider('시장별 상위 몇 종목', [5, 10, 15, 20], value=10, key='rank_top')
+            count = st.select_slider('시장별 상위 몇 종목', [10, 20, 30, 40, 50], value=10, key='rank_top')
             ranked = market_top(count)
             if ranked['error']:
                 st.info(ranked['error'])

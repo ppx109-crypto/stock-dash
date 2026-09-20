@@ -51,6 +51,56 @@ def rank(market: str, target: str, key: str, top: int) -> list[dict]:
     return ordered
 
 
+def daily_closes(code: str, key: str, span_days: int = 260) -> list[tuple[str, float]]:
+    """한 종목의 일별 종가를 과거→최근 순으로 돌려줍니다.
+
+    이동평균 60일선에는 62거래일 이상이 필요해 달력 기준으로 넉넉히 받습니다.
+    수정주가가 아니므로 분할·병합 구간의 단절은 호출한 쪽에서 판단합니다.
+    """
+    today = date.today()
+    params = {"serviceKey": key, "resultType": "json", "numOfRows": 400,
+              "beginBasDt": (today - timedelta(days=span_days)).strftime("%Y%m%d"),
+              "endBasDt": today.strftime("%Y%m%d"), "likeSrtnCd": code}
+    payload = price_call("getStockPriceInfo", params)
+    items = (payload["response"].get("body", {}).get("items") or {}).get("item", [])
+    if isinstance(items, dict):
+        items = [items]
+    rows = {}
+    for item in items:
+        if str(item.get("srtnCd", "")).removeprefix("A").zfill(6) != str(code).zfill(6):
+            continue
+        close = _number(item.get("clpr"))
+        basis = str(item.get("basDt") or "")
+        if close and close > 0 and len(basis) == 8:
+            rows[basis] = close
+    return sorted(rows.items())
+
+
+def grade_all(codes, research: dict, span_days: int = 260) -> list[dict]:
+    """종목별로 추세·실적 축을 매기고 그룹을 붙입니다."""
+    from urllib.parse import unquote
+    import trend
+
+    key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
+    graded = []
+    for code in codes:
+        code = str(code).zfill(6)
+        report = research.get(code) or {}
+        money = report.get("financial")
+        closes = []
+        note = None
+        if key:
+            try:
+                closes = [close for _, close in daily_closes(code, key, span_days)]
+            except (DataError, KeyError, TypeError, ValueError) as error:
+                note = str(error)[:80]
+        else:
+            note = "공공데이터포털 인증키를 설정하세요."
+        result = trend.assess(closes, money)
+        graded.append({"code": code, "name": report.get("name") or code, "note": note, **result})
+    return graded
+
+
 def top_by_market(top: int = 10, markets=MARKETS) -> dict:
     """기준일을 최근 거래일로 잡고 시장별 상위 종목을 돌려줍니다."""
     from urllib.parse import unquote
