@@ -366,7 +366,7 @@ def group_board(graded: list | None) -> str:
                   f'<i>{len(rows)}</i></div><small>{note}</small>{body}</div>')
     days = sorted({row.get("as_of") for row in graded if row.get("as_of")})
     periods = sorted({row.get("money_period") for row in graded if row.get("money_period")})
-    basis = "종가 기준일 " + (_e(days[-1]) if days else "미확인") + " · 공공데이터포털"
+    basis = "종가 기준일 " + (_e(as_day(days[-1])) if days else "미확인") + " · 공공데이터포털"
     if periods:
         span = _e(periods[0]) if periods[0] == periods[-1] else f"{_e(periods[0])}~{_e(periods[-1])}"
         basis += f" · 실적 {span} 누적 · DART"
@@ -433,13 +433,20 @@ def settled(official: dict | None) -> dict:
             "basis": official.get("basis", "")}
 
 
+def as_day(value) -> str:
+    """20260917처럼 붙어 있는 날짜를 2026-09-17로 적습니다."""
+    text = str(value or "")
+    return f"{text[:4]}-{text[4:6]}-{text[6:8]}" if len(text) == 8 and text.isdigit() else text
+
+
 def price_now(grade: dict | None, official: dict | None) -> tuple[float | None, str]:
     """화면에 적을 주가 하나와 그 기준일. 종가이지 실시간 시세가 아닙니다."""
     closes = (grade or {}).get("closes") or []
     if closes:
-        return closes[-1], "최근 거래일 종가"
+        day = as_day((grade or {}).get("as_of"))
+        return closes[-1], (f"{day} 종가" if day else "최근 거래일 종가")
     price = (official or {}).get("price")
-    return (price, f'{official.get("price_date", "")} 종가') if price else (None, "")
+    return (price, f'{as_day(official.get("price_date"))} 종가') if price else (None, "")
 
 
 def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None) -> str:
@@ -472,6 +479,10 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         profit_text = growth(money["operating_profit"], money["prior_operating_profit"])
         revenue_text = growth(money["revenue"], money["prior_revenue"])
         period = f'{_e(money.get("prior_period", ""))} → {_e(money.get("period", ""))}'
+        basis = " · ".join(x for x in (money.get("basis"), money.get("currency"),
+                                       money.get("unit")) if x)
+        if basis:
+            period += f' · {_e(basis)} 누적'
         unit = _e(money.get("unit", ""))
         # 증감률만 적으면 흑자 전환처럼 %로 말할 수 없는 변화의 크기를 알 수 없습니다.
         profit_amount = (f'<p class="pxb-sub" style="margin-top:4px">'
@@ -501,7 +512,10 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
 
     if len(closes) >= 20:
         lines = axis.get("ema") or {}
-        note = f'{_e(name)} · 최근 {len(closes)}거래일 · 이평선 {axis.get("grade") or "판정 전"}'
+        span = " ~ ".join(x for x in (as_day((grade or {}).get("from_date")),
+                                      as_day((grade or {}).get("as_of"))) if x)
+        note = f'{_e(name)} · {_e(span) or f"최근 {len(closes)}거래일"}'
+        note += f' · {len(closes)}거래일 · 이평선 {axis.get("grade") or "판정 전"}'
         if lines:
             note += ('<br><span style="font-size:11px;color:#7E7463">'
                      + " · ".join(f"{k} {v:,.0f}" for k, v in lines.items()) + "</span>")
@@ -594,7 +608,10 @@ def _settled_cards(book: dict, price: float | None) -> str:
                             '<div class="pxb-value">자료 부족</div>'
                             '<p class="pxb-sub">확정 결산 매출과 영업이익이 필요합니다.</p>')
     else:
+        year = (book.get("last") or {}).get("year")
         step = "" if prior is None else f"{prior:.1f}% → {margin:.1f}%"
+        if step and year:
+            step += f" · {year}년 확정 결산"
         card_margin = _card(
             7, "영업이익률",
             f'<div class="pxb-value">{margin:.1f}<small>%</small></div>'

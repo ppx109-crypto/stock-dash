@@ -123,11 +123,14 @@ def grade_all(codes, research: dict, span_days: int = 260) -> list[dict]:
             closes = [close for _, close in rows]
         else:
             note = "공공데이터포털 인증키를 설정하세요."
+        # 화면에 적을 구간은 실제로 넘기는 종가와 같은 범위여야 합니다.
+        kept = days[-130:]
         result = trend.assess(closes, money)
         # 화면에서 가격선과 이동평균을 함께 그리도록 최근 구간을 같이 넘깁니다.
         # 마지막 거래일은 화면에 기준일로 적어야 하므로 함께 넘깁니다.
         graded.append({"code": code, "name": report.get("name") or code, "note": note,
                        "closes": closes[-130:], "as_of": days[-1] if days else None,
+                       "from_date": kept[0] if kept else None,
                        "money_period": (money or {}).get("period"),
                        # 실적이 비어 있는 이유를 화면이 구분해 적을 수 있도록 넘깁니다.
                        "gaps": report.get("data_gaps") or [], **result})
