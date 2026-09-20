@@ -97,7 +97,9 @@ def grade_all(codes, research: dict, span_days: int = 260) -> list[dict]:
         else:
             note = "공공데이터포털 인증키를 설정하세요."
         result = trend.assess(closes, money)
-        graded.append({"code": code, "name": report.get("name") or code, "note": note, **result})
+        # 화면에서 가격선과 이동평균을 함께 그리도록 최근 구간을 같이 넘깁니다.
+        graded.append({"code": code, "name": report.get("name") or code, "note": note,
+                       "closes": closes[-130:], **result})
     return graded
 
 

@@ -242,8 +242,9 @@ def _score_of(reports: list[dict]) -> tuple[int, list[tuple[str, int]], str]:
     money = [r["financial"] for r in reports if r.get("financial")]
     revenue = int(sum(grade(f["revenue"], f["prior_revenue"], 2.0) for f in money) / len(money)) if money else 50
     profit = int(sum(grade(f["operating_profit"], f["prior_operating_profit"], 1.0) for f in money) / len(money)) if money else 50
-    gaps = sum(len(r.get("data_gaps") or []) for r in reports)
-    quality = int(min(max(100 - gaps * 8, 0), 100))
+    # 종목이 늘수록 무조건 0이 되지 않도록 종목당 평균 확인필요 건수로 환산합니다.
+    gaps = sum(len(r.get("data_gaps") or []) for r in reports) / len(reports)
+    quality = int(min(max(100 - gaps * 12, 0), 100))
     peers = min(60 + sum(1 for r in reports if r.get("peers")) * 10, 100)
     rows = [("매출 성장", revenue), ("이익 성장", profit), ("경쟁 비교", peers), ("자료", quality)]
     verdict = "이익 성장 우위" if profit >= 70 else ("점검 필요" if profit < 45 else "중립 구간")
@@ -328,6 +329,9 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
     money = (focus or {}).get("financial") or {}
     score, rows, verdict = _score_of(reports)
     name = focus.get("name", "삼성전자") if focus else "삼성전자"
+    code = focus.get("code", "005930") if focus else "005930"
+    focus_grade = next((g for g in (graded or []) if g["code"] == code), None)
+    closes = (focus_grade or {}).get("closes") or []
 
     # 1행 ─ 점수 · 이익 · 매출
     meter = "".join(
@@ -358,22 +362,33 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
         f'<div class="pxb-value" style="color:{profit_color}">{_e(profit_text)}</div>'
         f'<p class="pxb-sub">{period}</p>'
         f'<span class="pxb-tag" style="color:{profit_color};background:{profit_color}16">{source}</span>'
-        + _spark([38, 41, 45, 44, 52, 58, 57, 66, 74], profit_color, "p", mini=True),
+        + (_spark([money["prior_operating_profit"], money["operating_profit"]], profit_color, "p", mini=True)
+           if money else ""),
     )
     card_revenue = _card(
         2, "매출 성장",
         f'<div class="pxb-value" style="color:{revenue_color}">{_e(revenue_text)}</div>'
         f'<p class="pxb-sub">{period}</p>'
         f'<span class="pxb-tag" style="color:{revenue_color};background:{revenue_color}16">{source}</span>'
-        + _spark([52, 53, 55, 54, 58, 60, 59, 63, 66], revenue_color, "r", mini=True),
+        + (_spark([money["prior_revenue"], money["revenue"]], revenue_color, "r", mini=True)
+           if money else ""),
     )
 
     # 2행 ─ 흐름 · 실적 · 적정가치
-    card_trend = _card(
-        3, "성장 흐름",
-        f'<p class="pxb-sub" style="margin-top:12px">{_e(name)} 지수화 추이 · {SAMPLE}</p>'
-        + _spark([100, 104, 103, 110, 116, 114, 123, 129, 126, 138, 144, 152], "#7FA98B", "t"),
-    )
+    if len(closes) >= 20:
+        lines = (focus_grade or {}).get("trend", {}).get("ema") or {}
+        order = "정배열" if (focus_grade or {}).get("trend", {}).get("grade") == "정배열" else \
+                (focus_grade or {}).get("trend", {}).get("grade") or "판정 전"
+        note = f'{_e(name)} · 최근 {len(closes)}거래일 · 이평선 {order}'
+        if lines:
+            note += (f'<br><span style="font-size:11px;color:#A39781">'
+                     + " · ".join(f'{k} {v:,.0f}' for k, v in lines.items()) + "</span>")
+        body = (f'<p class="pxb-sub" style="margin-top:12px">{note}</p>'
+                + _spark(closes, "#7FA98B", "t"))
+    else:
+        body = (f'<p class="pxb-sub" style="margin-top:12px">{_e(name)} 일별 종가를 모으는 중입니다. '
+                '이동평균 60일선에는 62거래일이 필요합니다.</p>')
+    card_trend = _card(3, "성장 흐름", body)
     if money:
         chart = _bars([money.get("prior_period", "이전"), money.get("period", "최근")],
                       [money["prior_revenue"], money["revenue"]],
@@ -390,12 +405,20 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
         mark = min(max((now - low) / max(high - low, 1), 0), 1) * 100
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, value["base"], high))
         value_note = _e(str(value.get("method", "")))[:40]
-        head = f"{now:,.0f}원"
+        head, value_title = f"{now:,.0f}원", "적정가치 범위"
+    elif len(closes) >= 20:
+        # 평가 근거가 없으면 값을 지어내지 않고, 실제 종가가 어디쯤인지만 보여줍니다.
+        low, high, now = min(closes), max(closes), closes[-1]
+        mark = (now - low) / (high - low) * 100 if high > low else 50
+        labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, (low + high) / 2, high))
+        value_note = f"최근 {len(closes)}거래일 종가 범위의 {mark:.0f}% 지점 · 적정주가가 아닙니다."
+        head, value_title = f"{now:,.0f}원", "가격 범위 속 위치"
     else:
-        mark, head, value_note = 51, "72,400원", f"{SAMPLE} · 목표주가 아님"
-        labels = "<span>52,000</span><span>68,000</span><span>86,000</span>"
+        mark, head, value_title = 50, "자료 대기", "가격 범위 속 위치"
+        value_note = "일별 종가가 모이면 최근 범위와 현재 위치를 표시합니다."
+        labels = "<span>-</span><span>-</span><span>-</span>"
     card_value = _card(
-        5, "적정가치 범위",
+        5, value_title,
         f'<div class="pxb-value" style="font-size:32px">{head}</div>'
         f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:24%;right:22%"></u>'
         f'<i style="left:{mark:.0f}%"></i></div>'
@@ -410,19 +433,19 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
              growth((r.get("financial") or {}).get("operating_profit", 0),
                     (r.get("financial") or {}).get("prior_operating_profit", 0))
              if r.get("financial") else "조사 필요")
-            for r in reports[:4]
+            for r in reports[:5]
         ]
-        pool = [("현대차", "005380", "+8.4%"), ("NAVER", "035420", "+12.1%")]
-        watch_rows += [row for row in pool if row[0] not in {w[0] for w in watch_rows}][: 4 - len(watch_rows)]
-        watch_note = "영업이익 성장 · 공식 자료 + 샘플"
+        watch_note = f"영업이익 성장 · 공식 자료 {len(reports)}종목"
     else:
         watch_rows = [("삼성전자", "005930", "+33.2%"), ("SK하이닉스", "000660", "+101.2%"),
                       ("현대차", "005380", "+8.4%"), ("NAVER", "035420", "+12.1%")]
         watch_note = f"영업이익 성장 · {SAMPLE}"
+    group_of = {g["code"]: g.get("group") for g in (graded or [])}
     watch = "".join(
-        f'<li><span>{_e(label)} <small style="color:#A39781">{_e(code)}</small></span>'
+        f'<li><span>{_e(label)} <small style="color:#A39781">'
+        + (f'{group_of[row_code]}그룹' if group_of.get(row_code) else _e(row_code)) + '</small></span>'
         f'<em style="color:{DOWN if text.startswith("-") or "적자" in text else UP}">{_e(text)}</em></li>'
-        for label, code, text in watch_rows
+        for label, row_code, text in watch_rows
     )
     card_watch = _card(6, "관심종목",
                        f'<p class="pxb-sub" style="margin-top:12px">{_e(watch_note)}</p>'
