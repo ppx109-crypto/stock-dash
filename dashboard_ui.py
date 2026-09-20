@@ -15,10 +15,18 @@ import streamlit as st
 
 from chat_research import growth
 
+# 색은 눈으로 고르지 않고 검증기로 확인했습니다.
+# validate_palette.js "#C2503F,#36699E,#178F63,#B8730A" --mode light
+#   명도대역 PASS · 채도 PASS · 정상시력 ΔE 17.0 PASS · 대비 3:1 전부 PASS
+#   색각 구분 ΔE 7.8은 6~8 구간이라 직접 라벨을 함께 답니다.
 UP = "#C2503F"     # 국내 관례: 상승 = 빨강
 DOWN = "#36699E"   # 하락 = 파랑
+LINE = "#178F63"   # 가격선
+AMBER = "#B8730A"  # 영업이익선
 INK = "#2E2822"
 GOLD = "#B08343"
+# 그룹은 색만으로 뜻을 전하지 않도록 이름·기호를 항상 함께 답니다.
+STATUS = {"A": "#0CA30C", "B": "#FAB219", "C": "#8A8271", "D": "#D03B3B"}
 SAMPLE = "샘플"
 
 # (꽃잎 수, 꽃잎 색, 꽃술 색)
@@ -43,8 +51,16 @@ _CSS = """
 .pxb{font-family:Pretendard,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;color:#2E2822;margin-bottom:8px}
 .pxb *{box-sizing:border-box}
 
+.pxb-frame{padding:26px 28px 24px;border-radius:24px;border:1px solid #E7DCC7;
+  background:linear-gradient(180deg,#FFFEFA,#FCF8F0);box-shadow:0 18px 44px rgba(90,72,44,.07)}
 .pxb-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
-  padding:6px 4px 20px;border-bottom:1px solid #E7DCC7}
+  padding:2px 2px 18px;border-bottom:2px solid #E7DCC7}
+.pxb-section{margin-top:26px}
+.pxb-section-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.pxb-section-h b{font-size:12px;font-weight:800;letter-spacing:.14em;color:#B08343;white-space:nowrap}
+.pxb-section-h span{font-size:11.5px;color:#A39781;white-space:nowrap}
+.pxb-section-h:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#E7DCC7,transparent)}
+.pxb-num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .pxb-title em{display:block;font:600 40px/1.15 "Playfair Display",Georgia,serif;font-style:normal;
   letter-spacing:-.6px;color:#2E2822}
 .pxb-title em i{font-style:normal;color:#B08343}
@@ -64,7 +80,8 @@ _CSS = """
   border:1px solid #EDE3D2;box-shadow:0 8px 20px rgba(90,72,44,.05)}
 .pxb-quote span{display:block;font-size:11px;color:#8A8271;white-space:nowrap}
 .pxb-live.mock .pxb-quote{background:linear-gradient(170deg,#FCFAF4,#F6F1E6);border-style:dashed}
-.pxb-quote b{display:block;margin-top:6px;font:600 20px/1 "Playfair Display",Georgia,serif;letter-spacing:-.4px}
+.pxb-quote b{display:block;margin-top:6px;font:600 20px/1 "Playfair Display",Georgia,serif;
+  letter-spacing:-.4px;font-variant-numeric:tabular-nums}
 .pxb-quote em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:800}
 .pxb-live-off{flex:1;display:flex;align-items:center;padding:14px 16px;border-radius:14px;border:1px dashed #E0D3B8;
   font-size:11.5px;color:#8A8271;background:rgba(255,255,255,.5)}
@@ -76,8 +93,10 @@ _CSS = """
 .pxb-slot.c{border-color:#E2D6BD;background:linear-gradient(170deg,#FFFDF6,#F8F3E6)}
 .pxb-slot.d{background:linear-gradient(170deg,#FEFCFA,#F7F2EE)}
 .pxb-slot-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
-.pxb-slot-h b{font-size:13px;font-weight:800;letter-spacing:.02em;color:#2E2822}
-.pxb-slot-h i{font-style:normal;font:600 22px "Playfair Display",Georgia,serif;color:#B08343}
+.pxb-slot-h b{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#2E2822}
+.pxb-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.7)}
+.pxb-slot-h i{font-style:normal;font:600 24px "Playfair Display",Georgia,serif;color:#2E2822;
+  font-variant-numeric:tabular-nums}
 .pxb-slot small{display:block;margin-top:6px;font-size:11px;color:#8A8271;line-height:1.55}
 .pxb-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .pxb-chip{padding:4px 10px;border-radius:999px;font-size:11px;background:#FFFFFFAA;border:1px solid #E7DCC7;color:#5F584B}
@@ -102,7 +121,8 @@ _CSS = """
 .pxb-petal{position:absolute;right:-34px;bottom:-34px;width:150px;height:150px;opacity:.09;pointer-events:none}
 
 .pxb-label{font-size:11px;font-weight:800;letter-spacing:.16em;color:#B08343}
-.pxb-value{margin:14px 0 0;font:600 42px/1 "Playfair Display",Georgia,serif;letter-spacing:-1px}
+.pxb-value{margin:14px 0 0;font:600 42px/1 "Playfair Display",Georgia,serif;letter-spacing:-1px;
+  font-variant-numeric:tabular-nums}
 .pxb-value small{font-size:16px;font-weight:600;margin-left:4px}
 .pxb-sub{margin:11px 0 0;font-size:12.5px;line-height:1.7;color:#7C7361;max-width:78%}
 .pxb-tag{display:inline-block;margin-top:14px;padding:4px 11px;border-radius:999px;font-size:10.5px;
@@ -115,6 +135,7 @@ _CSS = """
 .pxb-meter i u{display:block;height:100%;border-radius:5px;text-decoration:none;
   background:linear-gradient(90deg,#DCC08A,#B08343)}
 .pxb-meter b{text-align:right;color:#2E2822;font-variant-numeric:tabular-nums}
+.pxb-list em,.pxb-list b{font-variant-numeric:tabular-nums}
 
 .pxb-chart{display:block;width:100%;height:104px;margin-top:18px}
 .pxb-chart.mini{height:62px;margin-top:20px;opacity:.95}
@@ -213,12 +234,12 @@ def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
         dots.append((cx, base - ((profit[i] - low_p) / span_p * 0.5 + 0.3) * (base - 12)))
         labs += f'<text x="{cx:.1f}" y="{h - 4:.0f}" text-anchor="middle">{_e(name)}</text>'
     poly = " ".join(f"{x:.1f},{y:.1f}" for x, y in dots)
-    marks = "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="{GOLD}"/>' for x, y in dots)
+    marks = "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="{AMBER}"/>' for x, y in dots)
     return (
         f'<svg class="pxb-chart" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none">'
         '<defs><linearGradient id="pxbBar" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="#9FBCD8"/><stop offset="1" stop-color="#D8E4EE"/></linearGradient></defs>'
-        f'{bars}<polyline points="{poly}" fill="none" stroke="{GOLD}" stroke-width="2.2"/>{marks}{labs}</svg>'
+        '<stop offset="0" stop-color="#5B8FC0"/><stop offset="1" stop-color="#C6D8E8"/></linearGradient></defs>'
+        f'{bars}<polyline points="{poly}" fill="none" stroke="{AMBER}" stroke-width="2.2"/>{marks}{labs}</svg>'
     )
 
 
@@ -258,19 +279,27 @@ def _pct(current, prior) -> float | None:
         return None
 
 
+def section(label: str, note: str = "") -> str:
+    """구획 제목. 어디까지가 한 묶음인지 눈으로 보이게 합니다."""
+    return (f'<div class="pxb-section-h"><b>{_e(label)}</b>'
+            + (f"<span>{_e(note)}</span>" if note else "") + "</div>")
+
+
 def live_strip(live: dict | None) -> str:
     """관심종목 실시간 시세 줄. 연결 전에는 안내만 보여줍니다."""
     if not live:
         return ""
     mode = live.get("mode")
     mock = mode in ("mock", "public")
-    title = {"mock": "모의 시세", "public": "종가 시세"}.get(mode, "실시간 시세")
+    rows = live.get("rows") or []
+    # 구획 제목이 출처와 기준일을 이미 말하므로 여기서는 갱신 시각만 남깁니다.
     head = ('<div class="pxb-live-head"><b>'
             + ('' if mock else '<i class="pxb-live-dot"></i>')
-            + title + '</b>'
-            f'<span>{_e(live.get("state", ""))}'
-            + (f' · {_e(live["at"])}' if live.get("at") else "") + "</span></div>")
-    rows = live.get("rows") or []
+            + f'{len(rows)}종목</b>'
+            + (f'<span>{_e(live["at"])} 기준</span>' if live.get("at") else "")
+            + "</div>") if rows else (
+        '<div class="pxb-live-head"><b>시세 없음</b>'
+        f'<span>{_e(live.get("state", ""))[:28]}</span></div>')
     if not rows:
         return (f'<div class="pxb-live{" mock" if mock else ""}">{head}<div class="pxb-live-off">'
                 '관심종목 실시간 시세는 키움 앱키·시크릿키를 설정하면 여기에 표시됩니다.</div></div>')
@@ -310,7 +339,8 @@ def group_board(graded: list | None) -> str:
             for r in rows[:8])
         more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
         body = f'<div class="pxb-chips">{chips}{more}</div>' if rows else '<div class="pxb-empty">해당 종목 없음</div>'
-        cards += (f'<div class="pxb-slot {klass}"><div class="pxb-slot-h"><b>{title}</b>'
+        cards += (f'<div class="pxb-slot {klass}"><div class="pxb-slot-h">'
+                  f'<b><i class="pxb-dot" style="background:{STATUS[key]}"></i>{title}</b>'
                   f'<i>{len(rows)}</i></div><small>{note}</small>{body}</div>')
     board = f'<div class="pxb-board">{cards}</div>'
     if pending:
@@ -327,6 +357,7 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
     reports = sorted((details or {}).values(), key=lambda r: r.get("as_of", ""), reverse=True)
     focus = reports[0] if reports else None
     money = (focus or {}).get("financial") or {}
+    focus_period = f'{money.get("prior_period", "")} → {money.get("period", "")}'.strip(" →") or "기간 미확인"
     score, rows, verdict = _score_of(reports)
     name = focus.get("name", "삼성전자") if focus else "삼성전자"
     code = focus.get("code", "005930") if focus else "005930"
@@ -384,7 +415,7 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
             note += (f'<br><span style="font-size:11px;color:#A39781">'
                      + " · ".join(f'{k} {v:,.0f}' for k, v in lines.items()) + "</span>")
         body = (f'<p class="pxb-sub" style="margin-top:12px">{note}</p>'
-                + _spark(closes, "#7FA98B", "t"))
+                + _spark(closes, LINE, "t"))
     else:
         body = (f'<p class="pxb-sub" style="margin-top:12px">{_e(name)} 일별 종가를 모으는 중입니다. '
                 '이동평균 60일선에는 62거래일이 필요합니다.</p>')
@@ -465,15 +496,20 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
     )
 
     st.markdown(
-        '<div class="pxb"><div class="pxb-top">'
+        '<div class="pxb"><div class="pxb-frame"><div class="pxb-top">'
         '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
         "<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다.</span></div>"
         f'<div class="pxb-meta"><b>PLANX · STOCK INTELLIGENCE</b>{date.today():%Y년 %m월 %d일}</div></div>'
-        + live_strip(live)
-        + group_board(graded)
+        + ('<div class="pxb-section">' + section("시세", live.get("state", "")) + live_strip(live) + "</div>"
+           if live else "")
+        + ('<div class="pxb-section">'
+           + section("그룹 판정", "이동평균 5·20·40·60 + 영업이익 3조건")
+           + group_board(graded) + "</div>" if graded else "")
+        + '<div class="pxb-section">'
+        + section("핵심 지표", f"조사 {len(reports)}종목 · 기준 {focus_period}" if reports else "조사 자료 없음")
         + f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
         f"{card_trend}{card_earnings}{card_value}"
-        f"{card_watch}{card_todo}{card_learn}</div></div>",
+        f"{card_watch}{card_todo}{card_learn}</div></div></div></div>",
         unsafe_allow_html=True,
     )
     st.markdown('<div class="px-live-divider"><span>내 관심종목 실데이터 분석</span></div>', unsafe_allow_html=True)
