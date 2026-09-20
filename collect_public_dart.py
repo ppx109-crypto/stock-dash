@@ -81,4 +81,7 @@ if __name__=='__main__':
             print(code,'public-data collected')
         except Exception:
             failures+=1;print(code,'collection failed; existing file retained')
-    raise SystemExit(1 if failures else 0)
+    # 한 종목이 실패해도 나머지는 받아 둔 것이므로 저장까지 마칩니다. 우선주처럼
+    # 따로 공시하지 않는 종목이 목록에 섞여 있다고 전체를 버릴 이유가 없습니다.
+    print(f'{len(codes)-failures}/{len(codes)} collected')
+    raise SystemExit(1 if failures==len(codes) else 0)
