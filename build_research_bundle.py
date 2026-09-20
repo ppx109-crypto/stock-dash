@@ -15,6 +15,10 @@ from pathlib import Path
 from chat_research import parse_bundle
 
 BASIS = {"CFS": "연결", "OFS": "별도"}
+# 은행·보험·금융지주는 반기 재무제표에 매출·영업이익 계정이 같은 이름으로 없습니다.
+# 자료를 못 받은 것과 애초에 같은 잣대로 잴 수 없는 것은 다르므로 나눠서 적습니다.
+FINANCE_SECTORS = ("64", "65", "66")
+FINANCE_GAP = "금융업 · 반기 매출·영업이익 계정이 없어 같은 기준으로 비교할 수 없습니다"
 SUMMARY = ("{year}년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 "
            "비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.")
 DART = "https://dart.fss.or.kr/dsaf001/main.do?rcpNo="
@@ -36,9 +40,22 @@ def report_for(path):
     code = str(source.get("code", ""))
     if not re.fullmatch(r"[0-9]{6}", code):
         return None
+    company = source.get("company") or {}
+    finance = str(company.get("induty_code", ""))[:2] in FINANCE_SECTORS
     prior, now = pair(source.get("halves") or [])
     if not now or not prior:
-        return None
+        # 금융업이라 비교할 수 없는 경우는, 왜 비어 있는지를 남겨 둡니다.
+        if not finance:
+            return None
+        receipts = [d["url"] for d in source.get("disclosures") or [] if d.get("url")]
+        if not receipts:
+            return None
+        return {
+            "code": code, "name": source.get("name") or code,
+            "as_of": date.today().isoformat(),
+            "summary": {"text": FINANCE_GAP, "source": receipts[0]},
+            "data_gaps": [FINANCE_GAP],
+        }
     url = DART + str(now.get("receipt", ""))
     basis = BASIS.get(source.get("basis"), "연결")
     return {

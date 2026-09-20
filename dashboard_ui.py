@@ -349,8 +349,14 @@ def group_board(graded: list | None) -> str:
             money = (row.get("earnings") or {}).get("grade")
             # 바깥 반복문의 note(그룹 설명)를 가리지 않도록 이름을 따로 둡니다.
             chip_note = f'EMA {row.get("met", 0)}/{row.get("total", 4)}'
-            # 실적이 빠진 자리를 비워 두면 좋은 실적처럼 읽힙니다. 없다고 적습니다.
-            chip_note += f" · 실적 {money}" if money and money != "미확인" else " · 실적 미수집"
+            # 실적이 빠진 자리를 비워 두면 좋은 실적처럼 읽힙니다. 없다고 적되,
+            # 아직 못 받은 것과 애초에 같은 잣대로 잴 수 없는 것을 나눠 적습니다.
+            if money and money != "미확인":
+                chip_note += f" · 실적 {money}"
+            elif any("금융업" in str(gap) for gap in row.get("gaps") or []):
+                chip_note += " · 금융업 · 기준 다름"
+            else:
+                chip_note += " · 실적 미수집"
             chips += (f'<span class="pxb-chip">{_e(row["name"])}'
                       f'<em>{_e(chip_note)}</em></span>')
         more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
@@ -365,8 +371,13 @@ def group_board(graded: list | None) -> str:
         span = _e(periods[0]) if periods[0] == periods[-1] else f"{_e(periods[0])}~{_e(periods[-1])}"
         basis += f" · 실적 {span} 누적 · DART"
     counted = sum(1 for row in graded if (row.get("earnings") or {}).get("checks"))
-    if counted < len(graded):
-        basis += f" · 실적 미수집 {len(graded) - counted}종목"
+    finance = sum(1 for row in graded
+                  if not (row.get("earnings") or {}).get("checks")
+                  and any("금융업" in str(gap) for gap in row.get("gaps") or []))
+    if counted + finance < len(graded):
+        basis += f" · 실적 미수집 {len(graded) - counted - finance}종목"
+    if finance:
+        basis += f" · 금융업 {finance}종목은 비교 기준이 달라 제외"
     board = (f'<div class="pxb-board">{cards}</div>'
              f'<div class="pxb-note" style="margin-top:10px">{basis}</div>')
     if pending:

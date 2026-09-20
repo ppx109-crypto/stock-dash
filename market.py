@@ -103,7 +103,9 @@ def grade_all(codes, research: dict, span_days: int = 260) -> list[dict]:
         # 마지막 거래일은 화면에 기준일로 적어야 하므로 함께 넘깁니다.
         graded.append({"code": code, "name": report.get("name") or code, "note": note,
                        "closes": closes[-130:], "as_of": days[-1] if days else None,
-                       "money_period": (money or {}).get("period"), **result})
+                       "money_period": (money or {}).get("period"),
+                       # 실적이 비어 있는 이유를 화면이 구분해 적을 수 있도록 넘깁니다.
+                       "gaps": report.get("data_gaps") or [], **result})
     return graded
 
 
