@@ -7,6 +7,22 @@
       "revenue": 398710.93,
       "profit": 166533.55,
       "receipt": "20250814003049",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 78 기 반기",
+          "add": "39871093000000",
+          "amount": "22231952000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 78 기 반기",
+          "add": "16653355000000",
+          "amount": "9212851000000"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003049"
     },
     {
@@ -14,6 +30,22 @@
       "revenue": 1318950.33,
       "profit": 981528.91,
       "receipt": "20260814003509",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 79 기 반기",
+          "add": "131895033000000",
+          "amount": "79318746000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 79 기 반기",
+          "add": "98152891000000",
+          "amount": "60542608000000"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
     }
   ],
@@ -52,7 +84,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-18",
+  "fetched": "2026-09-20",
   "disclosures": [
     {
       "title": "조회공시요구(풍문또는보도)에대한답변(미확정)              ",
