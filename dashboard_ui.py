@@ -144,7 +144,7 @@ _CSS = """
 .pxb-range-line{position:relative;height:7px;border-radius:7px;background:#EFE7D8}
 .pxb-range-line u{position:absolute;top:0;bottom:0;border-radius:7px;text-decoration:none;
   background:linear-gradient(90deg,#CBD9C4,#7FA98B)}
-.pxb-range-line i{position:absolute;top:-5px;width:17px;height:17px;margin-left:-8px;border-radius:50%;
+.pxb-range-line i{position:absolute;top:-5px;width:17px;height:17px;margin-left:-8px;max-width:17px;border-radius:50%;
   background:linear-gradient(140deg,#F3DFA9,#B08343);border:3px solid #FFFDF8;
   box-shadow:0 3px 8px rgba(90,72,44,.25)}
 .pxb-range-lab{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#A39781}
@@ -214,33 +214,57 @@ def _spark(values: list[float], color: str, key: str, mini: bool = False) -> str
         f'<path d="{area}" fill="url(#pxb{key})"/>'
         f'<polyline points="{line}" fill="none" stroke="{color}" stroke-width="2.4"'
         f' stroke-linecap="round" stroke-linejoin="round"/>'
-        f'<circle cx="{tip_x:.1f}" cy="{tip_y:.1f}" r="4" fill="{color}"/></svg>'
+        f'<circle cx="{tip_x:.1f}" cy="{tip_y:.1f}" r="4" fill="{color}"/>'
+        f'<title>{low:,.0f} ~ {high:,.0f} · 마지막 {values[-1]:,.0f}</title></svg>'
     )
 
 
 def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
-    w, h, base = 300.0, 104.0, 82.0
+    """매출액과 영업이익을 같은 축의 묶음 막대로 그립니다.
+
+    두 값 모두 억원이라 축을 나눌 이유가 없습니다. 축을 둘로 두면 둘의 높이 관계가
+    임의로 정해져 없는 상관을 만들어 내므로, 한 축에 두고 값을 직접 적습니다.
+    """
+    w, h, base = 300.0, 104.0, 74.0
     slot = w / max(len(labels), 1)
-    width = min(30.0, slot * 0.34)
-    peak = max(revenue) or 1
-    low_p, high_p = min(profit), max(profit)
-    span_p = (high_p - low_p) or 1
-    bars, dots, labs = "", [], ""
-    for i, name in enumerate(labels):
-        cx = slot * (i + 0.5)
-        tall = revenue[i] / peak * (base - 12)
-        bars += (f'<rect x="{cx - width / 2:.1f}" y="{base - tall:.1f}" width="{width:.1f}"'
-                 f' height="{tall:.1f}" rx="5" fill="url(#pxbBar)"/>')
-        dots.append((cx, base - ((profit[i] - low_p) / span_p * 0.5 + 0.3) * (base - 12)))
-        labs += f'<text x="{cx:.1f}" y="{h - 4:.0f}" text-anchor="middle">{_e(name)}</text>'
-    poly = " ".join(f"{x:.1f},{y:.1f}" for x, y in dots)
-    marks = "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.4" fill="{AMBER}"/>' for x, y in dots)
+    width = min(15.0, slot * 0.2)
+    peak = max(max(revenue, default=0), max(profit, default=0), 1)
+    floor = min(min(profit, default=0), 0)
+    span = peak - floor or 1
+    zero = base - (0 - floor) / span * (base - 14)
+
+    def top(value):
+        return base - (value - floor) / span * (base - 14)
+
+    marks, labs = "", ""
+    for index, name in enumerate(labels):
+        center = slot * (index + 0.5)
+        for offset, value, fill, series in ((-width * 0.55, revenue[index], "url(#pxbRev)", "매출액"),
+                                            (width * 0.55, profit[index], "url(#pxbProfit)", "영업이익")):
+            y, height = min(top(value), zero), abs(zero - top(value))
+            marks += (f'<rect x="{center + offset - width / 2:.1f}" y="{y:.1f}" width="{width:.1f}"'
+                      f' height="{max(height, 1.5):.1f}" rx="3" fill="{fill}">'
+                      f'<title>{_e(name)} {series} {value:,.0f}</title></rect>')
+        labs += f'<text x="{center:.1f}" y="{h - 4:.0f}" text-anchor="middle">{_e(name)}</text>'
+    top_value = max(max(revenue, default=0), max(profit, default=0))
     return (
-        f'<svg class="pxb-chart" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none">'
-        '<defs><linearGradient id="pxbBar" x1="0" y1="0" x2="0" y2="1">'
-        '<stop offset="0" stop-color="#5B8FC0"/><stop offset="1" stop-color="#C6D8E8"/></linearGradient></defs>'
-        f'{bars}<polyline points="{poly}" fill="none" stroke="{AMBER}" stroke-width="2.2"/>{marks}{labs}</svg>'
+        f'<svg class="pxb-chart" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none" role="img">'
+        '<defs><linearGradient id="pxbRev" x1="0" y1="0" x2="0" y2="1">'
+        f'<stop offset="0" stop-color="{DOWN}"/><stop offset="1" stop-color="{DOWN}" stop-opacity=".45"/>'
+        '</linearGradient><linearGradient id="pxbProfit" x1="0" y1="0" x2="0" y2="1">'
+        f'<stop offset="0" stop-color="{AMBER}"/><stop offset="1" stop-color="{AMBER}" stop-opacity=".45"/>'
+        "</linearGradient></defs>"
+        f'<line x1="0" y1="{zero:.1f}" x2="{w:.0f}" y2="{zero:.1f}" stroke="#E7DCC7"/>'
+        f'<text x="2" y="12" fill="#A39781">{top_value:,.0f}</text>'
+        f"{marks}{labs}</svg>"
     )
+
+
+def legend_mark(color: str, label: str) -> str:
+    """색 옆에 이름을 붙여, 색만으로 계열을 구분하지 않게 합니다."""
+    return ('<span style="display:inline-flex;align-items:center;gap:5px">'
+            f'<i style="width:9px;height:9px;border-radius:2px;background:{color};'
+            'display:inline-block"></i>' + _e(label) + "</span>")
 
 
 def _card(index: int, label: str, body: str, wide_bloom: bool = False) -> str:
@@ -424,11 +448,13 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
         chart = _bars([money.get("prior_period", "이전"), money.get("period", "최근")],
                       [money["prior_revenue"], money["revenue"]],
                       [money["prior_operating_profit"], money["operating_profit"]])
-        note = f'매출액 막대 · 영업이익 선 · 단위 {_e(money.get("unit", ""))}'
+        note = f'단위 {_e(money.get("unit", ""))} · 같은 축'
     else:
         chart = _bars(["3Q24", "4Q24", "1Q25", "2Q25"], [67, 72, 79, 84], [42, 48, 60, 67])
-        note = f"매출액 막대 · 영업이익 선 · {SAMPLE}"
-    card_earnings = _card(4, "실적 추이", f'<p class="pxb-sub" style="margin-top:12px">{note}</p>{chart}')
+        note = f"같은 축 · {SAMPLE}"
+    swatches = legend_mark(DOWN, "매출액") + "&nbsp;&nbsp;" + legend_mark(AMBER, "영업이익")
+    card_earnings = _card(4, "실적 추이",
+                          f'<p class="pxb-sub" style="margin-top:12px">{swatches} · {note}</p>{chart}')
 
     value = (focus or {}).get("valuation") or {}
     if value:
@@ -440,7 +466,8 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
     elif len(closes) >= 20:
         # 평가 근거가 없으면 값을 지어내지 않고, 실제 종가가 어디쯤인지만 보여줍니다.
         low, high, now = min(closes), max(closes), closes[-1]
-        mark = (now - low) / (high - low) * 100 if high > low else 50
+        # 표식이 양 끝에서 잘리지 않도록 살짝 안쪽으로 둡니다.
+        mark = min(max((now - low) / (high - low) * 100, 2), 98) if high > low else 50
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, (low + high) / 2, high))
         value_note = f"최근 {len(closes)}거래일 종가 범위의 {mark:.0f}% 지점 · 적정주가가 아닙니다."
         head, value_title = f"{now:,.0f}원", "가격 범위 속 위치"
