@@ -115,6 +115,9 @@ def published():
 
 
 def growth(current, previous):
+    # 흑자에서 적자로 돌아선 변화를 퍼센트로 적으면 -113.9% 같은 수가 나옵니다.
+    # 크기를 재는 잣대가 부호를 넘는 순간 뜻을 잃으므로, 그때는 말로 적습니다.
+    if previous > 0 and current <= 0: return '적자 전환'
     if previous > 0: return f'{(current / previous - 1) * 100:+.1f}%'
     if previous <= 0 < current: return '흑자 전환'
     if previous < current <= 0: return '적자 축소'

@@ -37,3 +37,17 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(t['daily'],'상승 정렬');self.assertEqual(t['weekly'],'상승 정렬')
         t,_=trends({'rows':prices['rows'][:30]},'2025-09-01')
         self.assertEqual(t['daily'],'기간 부족')
+
+
+class GrowthWording(unittest.TestCase):
+    """부호가 바뀌는 변화는 퍼센트가 아니라 말로 적습니다."""
+
+    def test_profit_turning_negative_is_not_a_percentage(self):
+        self.assertEqual(growth(-56, 405), '적자 전환')
+        self.assertEqual(growth(0, 500), '적자 전환')
+
+    def test_ordinary_change_stays_a_percentage(self):
+        self.assertEqual(growth(600, 500), '+20.0%')
+
+    def test_loss_turning_positive_is_still_a_turnaround(self):
+        self.assertEqual(growth(1200, -300), '흑자 전환')

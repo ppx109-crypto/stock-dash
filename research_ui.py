@@ -128,10 +128,13 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
         buckets = _buckets(graded)
         titles = {PENDING: '판정 보류'}
         titles.update({key: GROUP_TITLES[key][0] for key in GROUP_TITLES})
+        # 비어 있는 그룹을 처음부터 보여 주면 "종목 없음"만 읽고 끝납니다.
+        # 종목이 들어 있는 첫 그룹을 기본으로 펼칩니다.
+        first = next((key for key, rows in buckets.items() if rows), next(iter(buckets)))
         st.pills('그룹을 고르면 그 그룹의 종목이 모두 나옵니다', list(buckets),
                  format_func=lambda k: f'{titles[k]} · {len(buckets[k])}종목',
-                 key='px_group', default=next(iter(buckets)))
-        picked = st.session_state.get('px_group') or next(iter(buckets))
+                 key='px_group', default=first)
+        picked = st.session_state.get('px_group') or first
         rows = buckets.get(picked) or []
         if rows:
             st.pills(f'{titles[picked]} · 영업이익이 좋은 순서 · 누르면 판단 카드가 열립니다',
