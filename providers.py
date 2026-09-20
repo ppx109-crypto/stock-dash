@@ -133,6 +133,18 @@ def number(value):
         return None
 
 
+def public_data_bases():
+    """수집본을 찾을 곳. 이 저장소에 모아 둔 자료를 먼저 보고, 없으면 원본을 봅니다.
+
+    PUBLIC_DATA_BASE로 직접 지정할 수 있습니다. 주소는 raw 파일 경로여야 하며
+    끝에 종목코드와 .json이 붙습니다.
+    """
+    override = os.getenv("PUBLIC_DATA_BASE", "").strip()
+    bases = [override.rstrip("/") + "/"] if override else []
+    return bases + ["https://raw.githubusercontent.com/ppx109-crypto/stock-dash/main/public-data/",
+                    "https://raw.githubusercontent.com/planxs-ai/stock-dash/main/public-data/"]
+
+
 class Official:
     def __init__(self):
         self.dart_key = os.getenv("DART_CRTFC_KEY", "").strip()
@@ -301,9 +313,17 @@ class Official:
     def cached_report(self, code):
         if not re.fullmatch(r"[0-9]{6}", code):
             raise DataError("종목코드를 확인하세요.")
-        response = requests.get("https://raw.githubusercontent.com/planxs-ai/stock-dash/main/public-data/"+code+".json",timeout=(5,15))
-        response.raise_for_status()
-        source=response.json()
+        source = None
+        for base in public_data_bases():
+            try:
+                response = requests.get(base + code + ".json", timeout=(5, 15))
+                response.raise_for_status()
+                source = response.json()
+                break
+            except (requests.RequestException, ValueError):
+                continue
+        if source is None:
+            raise DataError("수집 자료를 받지 못했습니다.")
         if source.get("code")!=code or not source.get("years") or len(source["years"])!=3:
             raise DataError("수집 자료의 종목·기간을 확인하세요.")
         today=date.today()

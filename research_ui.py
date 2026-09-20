@@ -9,8 +9,8 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (GROUP_TITLES, close_frame, compact_board, frame,
-                          group_board, header, price_now, section, stock_cards)
+from dashboard_ui import (GROUP_TITLES, RULE_TEXT, close_frame, frame, group_board,
+                          header, price_now, rank_rows, section, stock_cards)
 import market
 
 
@@ -68,8 +68,7 @@ def _buckets(graded):
     groups[PENDING] = []
     for row in graded:
         groups[row['group'] if row.get('group') in GROUP_TITLES else PENDING].append(row)
-    for rows in groups.values():
-        rows.sort(key=lambda r: (-r.get('met', 0), r['name']))
+    groups = {key: rank_rows(rows) for key, rows in groups.items()}
     # A·B·C는 비어 있어도 남겨 둡니다. 눌렀을 때 "없음"을 보는 편이,
     # 버튼이 사라져 어느 그룹을 봤는지 모르게 되는 것보다 낫습니다.
     if not groups[PENDING]:
@@ -77,39 +76,91 @@ def _buckets(graded):
     return groups
 
 
-def decision_screen(state, research, graded):
+def fill_reports(store, stocks, limit=20):
+    """확정 결산 자료가 없는 종목을 차례로 채웁니다.
+
+    한 종목씩 저장하므로 도중에 멈춰도 거기까지는 남습니다. 한 번에 다 받으면
+    DART 호출이 몰리고 화면이 오래 멈추므로 한 번에 limit개까지만 받습니다.
+    """
+    from datetime import datetime, timezone
+    from providers import Official, DataError
+    from automatic import brief
+
+    provider = Official()
+    targets = stocks[:limit]
+    bar = st.progress(0.0, text='시작하는 중')
+    done, failed = [], []
+    for index, stock in enumerate(targets):
+        bar.progress(index / len(targets), text=f'{stock["name"]} · {index + 1}/{len(targets)}')
+        try:
+            report = provider.automatic(stock['code'])
+            saved = {**stock, 'name': report['name'], 'report': report,
+                     'automatic_brief': brief(report), 'year': report['years'][-1]['year'],
+                     'analyzed_at': datetime.now(timezone.utc).isoformat(), 'analysis_error': None}
+            store.save_stock(saved)
+            done.append(report['name'])
+        except (DataError, KeyError, IndexError, TypeError, ValueError) as error:
+            failed.append((stock['name'], str(error)[:70]))
+        except Exception as error:
+            failed.append((stock['name'], str(error)[:70]))
+    bar.progress(1.0, text=f'{len(done)}종목 저장 · {len(failed)}종목 실패')
+    return done, failed
+
+
+def missing_reports(state):
+    """확정 결산 자료가 아직 없는 관심종목."""
+    return [s for s in state.get('stocks', [])
+            if not s.get('report') and not s['code'].startswith('pending-')]
+
+
+def decision_screen(state, research, graded, store=None, sample_mode=True):
     """오늘의 투자판단. 그룹판은 접힌 채로 시작하고, 종목을 누르면 여섯 칸이 열립니다."""
     stocks = [s for s in state.get('stocks', []) if not s['code'].startswith('pending-')]
     names = {s['code']: s['name'] for s in stocks}
     # 조사 전 종목은 판정 자료에 이름이 없어 코드로만 나오므로 목록의 이름을 입힙니다.
     graded = [{**g, 'name': names.get(g['code']) or g.get('name') or g['code']}
               for g in graded or []]
-    st.markdown(header() + section('그룹 판정', '일봉 종가와 EMA 5·20·40·60 비교')
-                + compact_board(graded) + close_frame(), unsafe_allow_html=True)
+    # 첫 화면에서 클릭 없이 그룹과 그 안의 종목이 보여야 합니다.
+    st.markdown(header() + section('그룹 판정', RULE_TEXT) + group_board(graded)
+                + close_frame(), unsafe_allow_html=True)
     named = {g['code']: g['name'] for g in graded}
     if graded:
-        with st.expander('그룹 판정 크게 보기 · 그룹을 누르면 그 안의 종목이 나옵니다'):
-            st.markdown(frame(group_board(graded)), unsafe_allow_html=True)
-            buckets = _buckets(graded)
-            titles = {PENDING: '판정 보류'}
-            titles.update({key: GROUP_TITLES[key][0] for key in GROUP_TITLES})
-            st.pills('그룹', list(buckets),
-                     format_func=lambda k: f'{titles[k]} · {len(buckets[k])}종목',
-                     key='px_group', default=next(iter(buckets)))
-            picked = st.session_state.get('px_group') or next(iter(buckets))
-            rows = buckets.get(picked) or []
-            if rows:
-                st.pills(f'{titles[picked]} 종목 · 누르면 아래에 판단 카드가 열립니다',
-                         [r['code'] for r in rows], format_func=lambda c: named.get(c, c),
-                         key='px_group_pick', on_change=_pick, args=('px_group_pick',))
-            else:
-                st.caption(f'{titles[picked]}에 해당하는 종목이 없습니다.')
+        buckets = _buckets(graded)
+        titles = {PENDING: '판정 보류'}
+        titles.update({key: GROUP_TITLES[key][0] for key in GROUP_TITLES})
+        st.pills('그룹을 고르면 그 그룹의 종목이 모두 나옵니다', list(buckets),
+                 format_func=lambda k: f'{titles[k]} · {len(buckets[k])}종목',
+                 key='px_group', default=next(iter(buckets)))
+        picked = st.session_state.get('px_group') or next(iter(buckets))
+        rows = buckets.get(picked) or []
+        if rows:
+            st.pills(f'{titles[picked]} · 영업이익이 좋은 순서 · 누르면 판단 카드가 열립니다',
+                     [r['code'] for r in rows], format_func=lambda c: named.get(c, c),
+                     key='px_group_pick', on_change=_pick, args=('px_group_pick',))
+        else:
+            st.caption(f'{titles[picked]}에 해당하는 종목이 없습니다.')
     if stocks:
         with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
             labels = {s['code']: s['name'] for s in stocks}
             st.pills('종목을 고르면 아래에 판단 카드 여섯 칸이 열립니다', list(labels),
                      format_func=lambda c: labels[c], key='px_watch',
                      on_change=_pick, args=('px_watch',))
+    gaps = missing_reports(state)
+    if gaps and not sample_mode and store is not None:
+        with st.expander(f'자료 없는 종목 채우기 · {len(gaps)}종목'):
+            st.caption('DART 확정 결산·공시와 공공데이터포털 시세를 종목마다 받아 저장합니다. '
+                       '한 번에 20종목씩 받고, 받은 종목은 그때그때 저장합니다.')
+            st.write(', '.join(s['name'] for s in gaps[:20])
+                     + (f' 외 {len(gaps) - 20}종목' if len(gaps) > 20 else ''))
+            if st.button(f'{min(len(gaps), 20)}종목 자료 받기', key='px_fill'):
+                done, failed = fill_reports(store, gaps)
+                if done:
+                    st.success(f'{len(done)}종목 저장 · ' + ', '.join(done[:10]))
+                for name, reason in failed:
+                    st.warning(f'{name} · {reason}')
+                if done:
+                    st.rerun()
+
     code = st.session_state.get('px_pick')
     if code:
         grade = next((g for g in graded if g['code'] == code), None)
@@ -136,7 +187,8 @@ def render_research(store, state, sample_mode):
         state = store.read()
     codes = [s['code'] for s in state.get('stocks', []) if not s['code'].startswith('pending-')]
     decision_screen(state, research,
-                    graded_stocks(codes, max(research, default='')) if codes else [])
+                    graded_stocks(codes, max(research, default='')) if codes else [],
+                    store=store, sample_mode=sample_mode)
     hero('내 투자의 현재를 한눈에', '관심 있는 기업을 담고, 판단에 필요한 변화만 확인하세요.', 'PLANX · STOCK RESEARCH')
     if sample_mode:
         st.info('둘러보기 중입니다. 개인 목록을 저장하려면 먼저 대시보드 비밀번호를 설정하세요.')

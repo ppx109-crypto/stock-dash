@@ -69,12 +69,6 @@ _CSS = """
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
 
 .pxb-board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
-.pxb-mini-board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
-.pxb-mini{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;
-  border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC)}
-.pxb-mini b{font-size:11.5px;font-weight:800;color:#2E2822;white-space:nowrap}
-.pxb-mini i{font-style:normal;margin-left:auto;font:650 17px Pretendard,sans-serif;letter-spacing:-.4px}
-.pxb-mini.a{border-color:#BFD8C4}.pxb-mini.c{border-color:#E2D6BD}
 .pxb-slot{position:relative;padding:18px 18px 16px;border-radius:18px;overflow:hidden;min-height:150px;
   border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
   box-shadow:0 10px 26px rgba(90,72,44,.06);animation:pxbRise .5s ease both}
@@ -154,6 +148,10 @@ _CSS = """
 @media(max-width:1080px){.pxb-grid,.pxb-board{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){
   .pxb-grid,.pxb-board{grid-template-columns:1fr;gap:14px}
+  /* 규칙 설명이 길어 좁은 창에서는 줄바꿈해야 화면 밖으로 나가지 않습니다. */
+  .pxb-section-h{flex-wrap:wrap;gap:4px 10px}
+  .pxb-section-h span{white-space:normal;flex:1 1 100%}
+  .pxb-section-h:after{display:none}
   .pxb-title em{font-size:30px}
   .pxb-meta{text-align:left}
   .pxb-sub{max-width:100%}
@@ -318,6 +316,22 @@ GROUP_TITLES = {"A": ("A그룹 · 투자적기", "종가가 EMA 5·20·40·60 �
                 "C": ("C그룹 · 아직보류", "중기선 아래 · 충족 2개 이하 포함", "c")}
 
 
+EARNINGS_ORDER = {"양호": 0, "보통": 1, "부진": 2, "미확인": 3}
+
+
+def rank_rows(rows: list) -> list:
+    """같은 그룹 안에서 먼저 볼 순서.
+
+    그룹은 이평선만으로 나누므로 한 그룹 안에서는 EMA 충족 수가 대개 같습니다.
+    그래서 그 다음 잣대로 영업이익을 봅니다. 실적이 좋은 쪽을 위로 올립니다.
+    """
+    def key(row):
+        money = row.get("earnings") or {}
+        return (-row.get("met", 0), EARNINGS_ORDER.get(money.get("grade"), 3),
+                -(money.get("met") or 0), row.get("name", ""))
+    return sorted(rows, key=key)
+
+
 def group_board(graded: list | None) -> str:
     """A·B·C·D 그룹판. 판정에 쓸 자료가 없으면 이유를 적습니다."""
     if not graded:
@@ -329,11 +343,16 @@ def group_board(graded: list | None) -> str:
             buckets[row["group"]].append(row)
     cards = ""
     for key, (title, note, klass) in GROUP_TITLES.items():
-        rows = sorted(buckets[key], key=lambda r: (-r.get("met", 0), r["name"]))
-        chips = "".join(
-            f'<span class="pxb-chip">{_e(r["name"])}'
-            f'<em>EMA {r.get("met", 0)}/{r.get("total", 4)}</em></span>'
-            for r in rows[:8])
+        rows = rank_rows(buckets[key])
+        chips = ""
+        for row in rows[:8]:
+            money = (row.get("earnings") or {}).get("grade")
+            # 바깥 반복문의 note(그룹 설명)를 가리지 않도록 이름을 따로 둡니다.
+            chip_note = f'EMA {row.get("met", 0)}/{row.get("total", 4)}'
+            if money and money != "미확인":
+                chip_note += f" · 실적 {money}"
+            chips += (f'<span class="pxb-chip">{_e(row["name"])}'
+                      f'<em>{_e(chip_note)}</em></span>')
         more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
         body = f'<div class="pxb-chips">{chips}{more}</div>' if rows else '<div class="pxb-empty">해당 종목 없음</div>'
         cards += (f'<div class="pxb-slot {klass}"><div class="pxb-slot-h">'
@@ -346,25 +365,6 @@ def group_board(graded: list | None) -> str:
         board += (f'<div class="pxb-note" style="margin-top:10px">판정 보류 {len(pending)}종목 · '
                   f'{names}{"…" if len(pending) > 6 else ""} · {reason}</div>')
     return board
-
-
-def compact_board(graded: list | None) -> str:
-    """접힌 상태의 그룹판. 개수만 보여주고 자세한 내용은 펼쳤을 때 나옵니다."""
-    if not graded:
-        return ""
-    counts = {key: 0 for key in GROUP_TITLES}
-    pending = 0
-    for row in graded:
-        if row.get("group") in counts:
-            counts[row["group"]] += 1
-        else:
-            pending += 1
-    tiles = "".join(
-        f'<div class="pxb-mini {klass}"><i class="pxb-dot" style="background:{STATUS[key]}"></i>'
-        f'<b>{title.split(" · ")[0]}</b><i style="color:{STATUS[key]}">{counts[key]}</i></div>'
-        for key, (title, _note, klass) in GROUP_TITLES.items())
-    tail = f'<div class="pxb-note" style="margin-top:8px">판정 보류 {pending}종목</div>' if pending else ""
-    return f'<div class="pxb-mini-board">{tiles}</div>{tail}'
 
 
 def stock_score(grade: dict | None) -> tuple[int, list[tuple[str, int]], str]:
@@ -599,6 +599,11 @@ def _settled_cards(book: dict, price: float | None) -> str:
             '<p class="pxb-sub" style="margin-top:12px">과거 시가총액/영업이익 배수를 최근 결산 '
             '이익에 적용한 참고 가격 · 매수·매도 신호가 아닙니다.</p>')
     return card_growth + card_margin + card_fair
+
+
+RULE_TEXT = ("일봉 종가가 EMA 5·20·40·60 각각의 위에 있는지 네 가지를 셉니다 · "
+             "넷 다 충족 A · 20·40·60만 충족 B · 그 밖 C · "
+             "같은 그룹 안에서는 영업이익이 좋은 순서 · 매수·매도 신호가 아닙니다")
 
 
 def close_frame() -> str:
