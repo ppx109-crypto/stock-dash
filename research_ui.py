@@ -41,9 +41,13 @@ def market_top(top):
     return market.top_by_market(top)
 
 
-@st.cache_data(ttl=10, show_spinner=False)
+@st.cache_data(ttl=600, show_spinner=False)
 def live_quotes(codes):
-    """관심종목 시세를 10초 동안 재사용합니다."""
+    """관심종목 시세를 10분 동안 재사용합니다.
+
+    공공데이터포털 시세는 하루 한 번 갱신되므로 자주 물을 이유가 없고,
+    일일 호출 한도를 아끼는 편이 낫습니다.
+    """
     return quotes.snapshot(codes)
 
 

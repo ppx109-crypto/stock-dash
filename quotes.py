@@ -98,51 +98,58 @@ class Kiwoom:
 def public_rows(codes) -> tuple[list, str]:
     """공공데이터포털 주식시세.
 
-    실시간이 아니고, 기준일 다음 영업일 오후에 갱신됩니다.
-    그래서 최근 10일을 거슬러 올라가며 값이 있는 마지막 거래일을 찾습니다.
+    실시간이 아니고 기준일 다음 영업일 오후에 갱신됩니다. 종목마다 따로 묻지 않고
+    기준일 시세를 통째로 받아 걸러내므로, 관심종목이 늘어도 호출 수는 그대로입니다.
     """
     from urllib.parse import unquote
-    from providers import price_call, DataError
+    from providers import DataError, price_call
     key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
     if not key:
         raise QuoteError("공공데이터포털 인증키를 설정하세요.")
-    rows, basis_date = [], ""
-    for code in codes:
-        row = None
-        for back in range(10):
-            target = (datetime.now(ZoneInfo("Asia/Seoul")).date() - timedelta(days=back)).strftime("%Y%m%d")
+    wanted = {str(code).zfill(6) for code in codes}
+    for back in range(10):
+        target = (datetime.now(ZoneInfo("Asia/Seoul")).date() - timedelta(days=back)).strftime("%Y%m%d")
+        found, page = {}, 1
+        while page <= 20:
             try:
                 payload = price_call("getStockPriceInfo", {
-                    "serviceKey": key, "resultType": "json", "numOfRows": 50,
-                    "basDt": target, "likeSrtnCd": code})
-                header = payload["response"]["header"]
+                    "serviceKey": key, "resultType": "json", "numOfRows": 1000,
+                    "pageNo": page, "basDt": target})
+                body = payload["response"]["body"]
             except DataError as error:
                 raise QuoteError(str(error)) from None
             except (ValueError, KeyError, TypeError):
                 raise QuoteError("공공데이터포털 시세 응답을 읽지 못했습니다.") from None
-            if str(header.get("resultCode")) not in ("00", "0"):
-                raise QuoteError("공공데이터포털: " + str(header.get("resultMsg") or "인증키와 활용 신청 상태를 확인하세요."))
-            items = (payload["response"].get("body", {}).get("items") or {}).get("item", [])
+            items = (body.get("items") or {}).get("item", [])
             if isinstance(items, dict):
                 items = [items]
             for item in items:
-                if str(item.get("srtnCd", "")).removeprefix("A").zfill(6) == str(code):
-                    row = item
-                    break
-            if row:
+                code = str(item.get("srtnCd", "")).removeprefix("A").zfill(6)
+                if code in wanted and code not in found:
+                    found[code] = item
+            total = int(body.get("totalCount") or 0)
+            if not items or len(found) >= len(wanted) or page * 1000 >= total:
                 break
-        if not row:
+            page += 1
+        if not found:
             continue
-        price = _number(row.get("clpr"))
-        if price is None or price <= 0:
-            continue
-        basis_date = str(row.get("basDt") or basis_date)
-        rows.append({"code": code, "name": (row.get("itmsNm") or "").strip(), "price": abs(price),
-                     "change": _number(row.get("vs")), "rate": _number(row.get("fltRt"))})
-    label = "최근 거래일 종가 · 공공데이터포털"
-    if basis_date and len(basis_date) == 8:
-        label += f" · {basis_date[:4]}-{basis_date[4:6]}-{basis_date[6:]} 기준"
-    return rows, label
+        rows, basis_date = [], ""
+        for code in codes:
+            item = found.get(str(code).zfill(6))
+            if not item:
+                continue
+            price = _number(item.get("clpr"))
+            if price is None or price <= 0:
+                continue
+            basis_date = str(item.get("basDt") or basis_date)
+            rows.append({"code": code, "name": (item.get("itmsNm") or "").strip(),
+                         "price": abs(price), "change": _number(item.get("vs")),
+                         "rate": _number(item.get("fltRt"))})
+        label = "최근 거래일 종가 · 공공데이터포털"
+        if basis_date and len(basis_date) == 8:
+            label += f" · {basis_date[:4]}-{basis_date[4:6]}-{basis_date[6:]} 기준"
+        return rows, label
+    return [], "최근 10일 안에 시세를 찾지 못했습니다."
 
 
 def snapshot(codes) -> dict:
@@ -150,7 +157,7 @@ def snapshot(codes) -> dict:
     codes = [c for c in codes if c and not str(c).startswith("pending-")]
     if not codes:
         return {"rows": [], "state": "종목 없음", "at": None}
-    codes = codes[:12]
+    codes = codes[:40]
     try:
         client = Kiwoom()
     except QuoteError as kiwoom_error:
