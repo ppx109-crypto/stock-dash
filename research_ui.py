@@ -148,6 +148,19 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
             st.pills('종목을 고르면 아래에 판단 카드 여섯 칸이 열립니다', list(labels),
                      format_func=lambda c: labels[c], key='px_watch',
                      on_change=_pick, args=('px_watch',))
+    # 마지막으로 받은 결과는 채우기 패널 바깥에서 보여 줍니다. 전부 받고 나면
+    # 채울 종목이 없어 패널 자체가 사라지고, 안에 있던 안내도 함께 사라집니다.
+    outcome = st.session_state.pop('px_fill_done', None)
+    if outcome:
+        done, failed = outcome
+        if done:
+            st.success(f'{len(done)}종목 저장 · ' + ', '.join(done[:10])
+                       + (f' 외 {len(done) - 10}종목' if len(done) > 10 else ''))
+        for name, reason in failed:
+            st.warning(f'{name} · {reason}')
+        if not done and not failed:
+            st.info('받을 종목이 없었습니다.')
+
     gaps = missing_reports(state)
     if gaps and not sample_mode and store is not None:
         with st.expander(f'자료 없는 종목 채우기 · {len(gaps)}종목'):
@@ -159,15 +172,14 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                                 horizontal=True, key='px_fill_count')
             st.caption('전부 받기는 종목 수만큼 시간이 걸립니다. 도중에 창을 닫아도 '
                        '그때까지 받은 종목은 저장돼 있습니다.')
+            # 결과는 화면을 다시 그린 뒤 위쪽에서 보여 줍니다. 저장 직후 st.rerun()을
+            # 부르면 방금 띄운 안내가 함께 지워져, 몇 분을 기다린 사람이 무엇이
+            # 저장됐는지 못 보고 끝납니다.
             if st.button('자료 받기', key='px_fill'):
                 done, failed = fill_reports(store, gaps,
                                             limit=len(gaps) if how_many.startswith('전부') else 20)
-                if done:
-                    st.success(f'{len(done)}종목 저장 · ' + ', '.join(done[:10]))
-                for name, reason in failed:
-                    st.warning(f'{name} · {reason}')
-                if done:
-                    st.rerun()
+                st.session_state['px_fill_done'] = (done, failed)
+                st.rerun()
 
     code = st.session_state.get('px_pick')
     if code:

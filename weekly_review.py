@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from dotenv import load_dotenv
 from analysis import score
 from calendar_sync import connect, event_body, upsert
-from providers import Official, demo
+from providers import Official
 from storage import Store
 
 
