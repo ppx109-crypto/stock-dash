@@ -26,7 +26,7 @@ AMBER = "#B8730A"  # 영업이익선
 INK = "#2E2822"
 GOLD = "#B08343"
 # 그룹은 색만으로 뜻을 전하지 않도록 이름·기호를 항상 함께 답니다.
-STATUS = {"A": "#0CA30C", "B": "#FAB219", "C": "#7B7465", "D": "#D03B3B"}
+STATUS = {"A": "#0CA30C", "B": "#FAB219", "C": "#7B7465"}
 SAMPLE = "샘플"
 
 # (꽃잎 수, 꽃잎 색, 꽃술 색)
@@ -68,30 +68,18 @@ _CSS = """
 .pxb-meta{text-align:right;font-size:12px;color:#7B7465;line-height:1.9}
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
 
-.pxb-live{display:flex;align-items:stretch;gap:10px;overflow-x:auto;margin-top:18px;padding-bottom:2px}
-.pxb-live-head{flex:none;display:flex;flex-direction:column;justify-content:center;padding-right:16px;
-  border-right:1px solid #EDE3D2}
-.pxb-live-head b{font-size:11px;font-weight:800;letter-spacing:.16em;color:#946E38;white-space:nowrap}
-.pxb-live-head span{margin-top:5px;font-size:10.5px;color:#7E7463;white-space:nowrap}
-.pxb-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#7FA98B;margin-right:6px;
-  animation:pxbPulse 1.8s ease-in-out infinite}
-@keyframes pxbPulse{0%,100%{opacity:1}50%{opacity:.25}}
-.pxb-quote{flex:none;min-width:132px;padding:12px 15px;border-radius:14px;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
-  border:1px solid #EDE3D2;box-shadow:0 8px 20px rgba(90,72,44,.05)}
-.pxb-quote span{display:block;font-size:11px;color:#7B7465;white-space:nowrap}
-.pxb-live.mock .pxb-quote{background:linear-gradient(170deg,#FCFAF4,#F6F1E6);border-color:#E3D7C0}
-.pxb-quote b{display:block;margin-top:6px;font:650 20px/1 Pretendard,"Noto Sans KR",sans-serif;
-  letter-spacing:-.5px}
-.pxb-quote em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:800}
-.pxb-live-off{flex:1;display:flex;align-items:center;padding:14px 16px;border-radius:14px;border:1px dashed #E0D3B8;
-  font-size:11.5px;color:#7B7465;background:rgba(255,255,255,.5)}
-.pxb-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+.pxb-board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.pxb-mini-board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.pxb-mini{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;
+  border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC)}
+.pxb-mini b{font-size:11.5px;font-weight:800;color:#2E2822;white-space:nowrap}
+.pxb-mini i{font-style:normal;margin-left:auto;font:650 17px Pretendard,sans-serif;letter-spacing:-.4px}
+.pxb-mini.a{border-color:#BFD8C4}.pxb-mini.c{border-color:#E2D6BD}
 .pxb-slot{position:relative;padding:18px 18px 16px;border-radius:18px;overflow:hidden;min-height:150px;
   border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
   box-shadow:0 10px 26px rgba(90,72,44,.06);animation:pxbRise .5s ease both}
 .pxb-slot.a{border-color:#BFD8C4;background:linear-gradient(170deg,#FBFEFB,#F1F7F0)}
 .pxb-slot.c{border-color:#E2D6BD;background:linear-gradient(170deg,#FFFDF6,#F8F3E6)}
-.pxb-slot.d{background:linear-gradient(170deg,#FEFCFA,#F7F2EE)}
 .pxb-slot-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .pxb-slot-h b{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#2E2822}
 .pxb-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.7)}
@@ -162,9 +150,6 @@ _CSS = """
 .pxb-pens i:nth-child(2){background:#6F9BC4}.pxb-pens i:nth-child(3){background:#7FA98B}
 .pxb-pens i:nth-child(4){background:#C9A24D}
 
-.px-live-divider{display:flex;align-items:center;gap:12px;margin:34px 0 8px;color:#80612f;
-  font-size:11px;font-weight:800;letter-spacing:.08em}
-.px-live-divider:before,.px-live-divider:after{content:"";height:1px;background:#d9cbb5;flex:1}
 
 @media(max-width:1080px){.pxb-grid,.pxb-board{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){
@@ -308,32 +293,6 @@ def _card(index: int, label: str, body: str, wide_bloom: bool = False) -> str:
     )
 
 
-def _score_of(reports: list[dict]) -> tuple[int, list[tuple[str, int]], str]:
-    if not reports:
-        return 78, [("매크로", 76), ("산업", 82), ("실적", 80), ("밸류", 70)], "관망 우위"
-
-    def grade(current, prior, weight) -> int:
-        if not prior or prior <= 0:
-            return 50
-        return int(min(max(50 + (current / prior - 1) * 100 * weight, 0), 100))
-
-    money = [r["financial"] for r in reports if r.get("financial")]
-    revenue = int(sum(grade(f["revenue"], f["prior_revenue"], 2.0) for f in money) / len(money)) if money else 50
-    profit = int(sum(grade(f["operating_profit"], f["prior_operating_profit"], 1.0) for f in money) / len(money)) if money else 50
-    # 종목이 늘수록 무조건 0이 되지 않도록 종목당 평균 확인필요 건수로 환산합니다.
-    gaps = sum(len(r.get("data_gaps") or []) for r in reports) / len(reports)
-    quality = int(min(max(100 - gaps * 12, 0), 100))
-    peers = min(60 + sum(1 for r in reports if r.get("peers")) * 10, 100)
-    rows = [("매출 성장", revenue), ("이익 성장", profit), ("경쟁 비교", peers), ("자료", quality)]
-    verdict = "이익 성장 우위" if profit >= 70 else ("점검 필요" if profit < 45 else "중립 구간")
-    return int(sum(v for _, v in rows) / len(rows)), rows, verdict
-
-
-def _pct(current, prior) -> float | None:
-    try:
-        return (current / prior - 1) * 100 if prior and prior > 0 else None
-    except TypeError:
-        return None
 
 
 def section(label: str, note: str = "") -> str:
@@ -342,40 +301,10 @@ def section(label: str, note: str = "") -> str:
             + (f"<span>{_e(note)}</span>" if note else "") + "</div>")
 
 
-def live_strip(live: dict | None) -> str:
-    """관심종목 실시간 시세 줄. 연결 전에는 안내만 보여줍니다."""
-    if not live:
-        return ""
-    mode = live.get("mode")
-    mock = mode in ("mock", "public")
-    rows = live.get("rows") or []
-    # 구획 제목이 출처와 기준일을 이미 말하므로 여기서는 갱신 시각만 남깁니다.
-    head = ('<div class="pxb-live-head"><b>'
-            + ('' if mock else '<i class="pxb-live-dot"></i>')
-            + f'{len(rows)}종목</b>'
-            + (f'<span>{_e(live["at"])} 기준</span>' if live.get("at") else "")
-            + "</div>") if rows else (
-        '<div class="pxb-live-head"><b>시세 없음</b>'
-        f'<span>{_e(live.get("state", ""))[:28]}</span></div>')
-    if not rows:
-        return (f'<div class="pxb-live{" mock" if mock else ""}">{head}<div class="pxb-live-off">'
-                '관심종목 실시간 시세는 키움 앱키·시크릿키를 설정하면 여기에 표시됩니다.</div></div>')
-    cards = ""
-    for row in rows:
-        rate = row.get("rate")
-        color = DOWN if (rate or 0) < 0 else UP
-        move = f'{rate:+.2f}%' if rate is not None else "—"
-        if row.get("change") is not None:
-            move += f' ({row["change"]:+,.0f})'
-        cards += (f'<div class="pxb-quote"><span>{_e(row.get("name") or row["code"])}</span>'
-                  f'<b>{row["price"]:,.0f}</b><em style="color:{color}">{_e(move)}</em></div>')
-    return f'<div class="pxb-live{" mock" if mock else ""}">{head}{cards}</div>'
 
-
-GROUP_TITLES = {"A": ("A그룹 · 투자적기", "정배열 + 실적 양호", "a"),
-                "B": ("B그룹 · 투자보류", "한 축이 1~2개 미달", "b"),
-                "C": ("C그룹 · 대기", "이평선 수렴 · 방향 미정", "c"),
-                "D": ("D그룹 · 관망", "추세 붕괴 또는 실적 부진", "d")}
+GROUP_TITLES = {"A": ("A그룹 · 투자적기", "종가가 EMA 5·20·40·60 모두 위", "a"),
+                "B": ("B그룹 · 투자보류", "EMA 20·40·60 위 · 단기선만 미달", "b"),
+                "C": ("C그룹 · 아직보류", "중기선 아래 · 충족 2개 이하 포함", "c")}
 
 
 def group_board(graded: list | None) -> str:
@@ -392,7 +321,7 @@ def group_board(graded: list | None) -> str:
         rows = sorted(buckets[key], key=lambda r: (-r.get("met", 0), r["name"]))
         chips = "".join(
             f'<span class="pxb-chip">{_e(r["name"])}'
-            f'<em>{r["trend"]["grade"] or "-"}·{r["earnings"]["grade"]}</em></span>'
+            f'<em>EMA {r.get("met", 0)}/{r.get("total", 4)}</em></span>'
             for r in rows[:8])
         more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
         body = f'<div class="pxb-chips">{chips}{more}</div>' if rows else '<div class="pxb-empty">해당 종목 없음</div>'
@@ -408,40 +337,81 @@ def group_board(graded: list | None) -> str:
     return board
 
 
-def render_decision_dashboard(details: dict, live: dict | None = None, graded: list | None = None) -> None:
-    """3열 카드 한 판으로 첫 화면을 그립니다."""
-    st.markdown(_CSS, unsafe_allow_html=True)
-    reports = sorted((details or {}).values(), key=lambda r: r.get("as_of", ""), reverse=True)
-    focus = reports[0] if reports else None
-    money = (focus or {}).get("financial") or {}
-    focus_period = f'{money.get("prior_period", "")} → {money.get("period", "")}'.strip(" →") or "기간 미확인"
-    score, rows, verdict = _score_of(reports)
-    name = focus.get("name", "삼성전자") if focus else "삼성전자"
-    code = focus.get("code", "005930") if focus else "005930"
-    focus_grade = next((g for g in (graded or []) if g["code"] == code), None)
-    closes = (focus_grade or {}).get("closes") or []
+def compact_board(graded: list | None) -> str:
+    """접힌 상태의 그룹판. 개수만 보여주고 자세한 내용은 펼쳤을 때 나옵니다."""
+    if not graded:
+        return ""
+    counts = {key: 0 for key in GROUP_TITLES}
+    pending = 0
+    for row in graded:
+        if row.get("group") in counts:
+            counts[row["group"]] += 1
+        else:
+            pending += 1
+    tiles = "".join(
+        f'<div class="pxb-mini {klass}"><i class="pxb-dot" style="background:{STATUS[key]}"></i>'
+        f'<b>{title.split(" · ")[0]}</b><i style="color:{STATUS[key]}">{counts[key]}</i></div>'
+        for key, (title, _note, klass) in GROUP_TITLES.items())
+    tail = f'<div class="pxb-note" style="margin-top:8px">판정 보류 {pending}종목</div>' if pending else ""
+    return f'<div class="pxb-mini-board">{tiles}</div>{tail}'
 
-    # 1행 ─ 점수 · 이익 · 매출
-    meter = "".join(
-        f'<div><span>{_e(k)}</span><i><u style="width:{v}%"></u></i><b>{v}</b></div>' for k, v in rows
+
+def stock_score(grade: dict | None) -> tuple[int, list[tuple[str, int]], str]:
+    """한 종목의 판단점수. 그룹과 같은 잣대인 EMA 충족 비율만 씁니다."""
+    if not grade or not grade.get("trend"):
+        return 0, [], "판정 자료 부족"
+    axis = grade["trend"]
+    total = axis.get("total") or 4
+    score = round(axis.get("met", 0) / total * 100)
+    return score, [("추세 EMA", score)], grade.get("reason", "")
+
+
+def frame(body: str) -> str:
+    """위젯 사이에 끼워 넣는 판 하나. 스타일은 header가 이미 실었습니다."""
+    return f'<div class="pxb"><div class="pxb-frame">{body}</div></div>'
+
+
+def header() -> str:
+    """화면 맨 위 제목 줄. 판을 열어 두므로 close_frame으로 닫습니다."""
+    return (
+        _CSS + '<div class="pxb"><div class="pxb-frame"><div class="pxb-top">'
+        '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
+        "<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다.</span></div>"
+        f'<div class="pxb-meta"><b>PLANX · STOCK INTELLIGENCE</b>{date.today():%Y년 %m월 %d일}</div>'
+        "</div>"
     )
+
+
+def stock_cards(report: dict | None, grade: dict | None) -> str:
+    """고른 종목 하나를 여섯 칸으로 보여줍니다."""
+    report = report or {}
+    money = report.get("financial") or {}
+    closes = (grade or {}).get("closes") or []
+    name = report.get("name") or (grade or {}).get("name") or "종목"
+    axis = (grade or {}).get("trend") or {}
+
+    score, _rows, verdict = stock_score(grade)
+    checks = axis.get("checks") or {}
+    check_list = ""
+    if checks:
+        check_list = '<ul class="pxb-list">' + "".join(
+            f'<li>{_e(name)}<em style="color:{LINE if ok else DOWN}">'
+            f'{"충족" if ok else "미충족"}</em></li>' for name, ok in checks.items()) + "</ul>"
+    group = (grade or {}).get("group")
+    badge = (f'<span class="pxb-tag" style="color:{STATUS[group]};background:{STATUS[group]}1f">'
+             f'{group}그룹</span>') if group else ""
     card_score = _card(
-        0, "종합 투자판단",
+        0, "판단점수",
         f'<div class="pxb-value">{score}<small>/100</small></div>'
-        f'<p class="pxb-sub">{_e(verdict)} · '
-        + (f"공식 자료 {len(reports)}건 기준" if reports else f"{SAMPLE} 점수")
-        + f'</p><div class="pxb-meter">{meter}</div>',
-        wide_bloom=True,
-    )
+        f'<p class="pxb-sub">{_e(verdict)}</p>{check_list}{badge}', wide_bloom=True)
 
     if money:
         profit_text = growth(money["operating_profit"], money["prior_operating_profit"])
         revenue_text = growth(money["revenue"], money["prior_revenue"])
         period = f'{_e(money.get("prior_period", ""))} → {_e(money.get("period", ""))}'
-        source = f'{_e(name)} · {_e(money.get("basis", "연결"))} 공식 자료'
     else:
-        profit_text, revenue_text = "+33.2%", "+10.9%"
-        period, source = "2024-12 → 2025-12", f"{name} · {SAMPLE}"
+        profit_text = revenue_text = "조사 필요"
+        period = "실적 미수집"
     profit_color = DOWN if profit_text.startswith("-") or "적자" in profit_text else UP
     revenue_color = DOWN if revenue_text.startswith("-") or "적자" in revenue_text else UP
 
@@ -449,134 +419,70 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
         1, "영업이익 성장",
         f'<div class="pxb-value" style="color:{profit_color}">{_e(profit_text)}</div>'
         f'<p class="pxb-sub">{period}</p>'
-        f'<span class="pxb-tag" style="color:{profit_color};background:{profit_color}16">{source}</span>'
         + (_pair(money["prior_operating_profit"], money["operating_profit"], profit_color,
-                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""),
-    )
+                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""))
     card_revenue = _card(
         2, "매출 성장",
         f'<div class="pxb-value" style="color:{revenue_color}">{_e(revenue_text)}</div>'
         f'<p class="pxb-sub">{period}</p>'
-        f'<span class="pxb-tag" style="color:{revenue_color};background:{revenue_color}16">{source}</span>'
         + (_pair(money["prior_revenue"], money["revenue"], revenue_color,
-                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""),
-    )
+                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""))
 
-    # 2행 ─ 흐름 · 실적 · 적정가치
     if len(closes) >= 20:
-        lines = (focus_grade or {}).get("trend", {}).get("ema") or {}
-        order = "정배열" if (focus_grade or {}).get("trend", {}).get("grade") == "정배열" else \
-                (focus_grade or {}).get("trend", {}).get("grade") or "판정 전"
-        note = f'{_e(name)} · 최근 {len(closes)}거래일 · 이평선 {order}'
+        lines = axis.get("ema") or {}
+        note = f'{_e(name)} · 최근 {len(closes)}거래일 · 이평선 {axis.get("grade") or "판정 전"}'
         if lines:
-            note += (f'<br><span style="font-size:11px;color:#7E7463">'
-                     + " · ".join(f'{k} {v:,.0f}' for k, v in lines.items()) + "</span>")
-        body = (f'<p class="pxb-sub" style="margin-top:12px">{note}</p>'
-                + _spark(closes, LINE, "t"))
+            note += ('<br><span style="font-size:11px;color:#7E7463">'
+                     + " · ".join(f"{k} {v:,.0f}" for k, v in lines.items()) + "</span>")
+        if axis.get("checks"):
+            below = [k.replace("종가 > ", "") for k, ok in axis["checks"].items() if not ok]
+            note += ('<br><span style="font-size:11px;color:#7E7463">'
+                     + ("종가가 네 이평선 모두 위" if not below
+                        else "종가가 아래에 둔 선 · " + ", ".join(below)) + "</span>")
+        flow = f'<p class="pxb-sub" style="margin-top:12px">{note}</p>' + _spark(closes, LINE, "t")
     else:
-        body = (f'<p class="pxb-sub" style="margin-top:12px">{_e(name)} 일별 종가를 모으는 중입니다. '
+        flow = ('<p class="pxb-sub" style="margin-top:12px">일별 종가를 모으는 중입니다. '
                 '이동평균 60일선에는 62거래일이 필요합니다.</p>')
-    card_trend = _card(3, "성장 흐름", body)
+    card_trend = _card(3, "성장 흐름", flow)
+
     if money:
         chart = _bars([money.get("prior_period", "이전"), money.get("period", "최근")],
                       [money["prior_revenue"], money["revenue"]],
                       [money["prior_operating_profit"], money["operating_profit"]])
         note = f'단위 {_e(money.get("unit", ""))} · 같은 축'
     else:
-        chart = _bars(["3Q24", "4Q24", "1Q25", "2Q25"], [67, 72, 79, 84], [42, 48, 60, 67])
-        note = f"같은 축 · {SAMPLE}"
+        chart, note = "", "실적이 모이면 표시합니다."
     swatches = legend_mark(DOWN, "매출액") + "&nbsp;&nbsp;" + legend_mark(AMBER, "영업이익")
     card_earnings = _card(4, "실적 추이",
                           f'<p class="pxb-sub" style="margin-top:12px">{swatches} · {note}</p>{chart}')
 
-    value = (focus or {}).get("valuation") or {}
+    value = report.get("valuation") or {}
     if value:
         low, high, now = value["low"], value["high"], value["current_price"]
         mark = min(max((now - low) / max(high - low, 1), 0), 1) * 100
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, value["base"], high))
         value_note = _e(str(value.get("method", "")))[:40]
-        head, value_title = f"{now:,.0f}원", "적정가치 범위"
+        head_text, value_title = f"{now:,.0f}원", "적정가치 범위"
     elif len(closes) >= 20:
-        # 평가 근거가 없으면 값을 지어내지 않고, 실제 종가가 어디쯤인지만 보여줍니다.
         low, high, now = min(closes), max(closes), closes[-1]
-        # 표식이 양 끝에서 잘리지 않도록 살짝 안쪽으로 둡니다.
         mark = min(max((now - low) / (high - low) * 100, 2), 98) if high > low else 50
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, (low + high) / 2, high))
         value_note = f"최근 {len(closes)}거래일 종가 범위의 {mark:.0f}% 지점 · 적정주가가 아닙니다."
-        head, value_title = f"{now:,.0f}원", "가격 범위 속 위치"
+        head_text, value_title = f"{now:,.0f}원", "가격 범위 속 위치"
     else:
-        mark, head, value_title = 50, "자료 대기", "가격 범위 속 위치"
-        value_note = "일별 종가가 모이면 최근 범위와 현재 위치를 표시합니다."
-        labels = "<span>-</span><span>-</span><span>-</span>"
+        mark, head_text, value_title = 50, "자료 대기", "가격 범위 속 위치"
+        value_note, labels = "일별 종가가 모이면 표시합니다.", "<span>-</span><span>-</span><span>-</span>"
     card_value = _card(
         5, value_title,
-        f'<div class="pxb-value" style="font-size:32px">{head}</div>'
-        f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:24%;right:22%"></u>'
-        f'<i style="left:{mark:.0f}%"></i></div>'
-        f'<div class="pxb-range-lab">{labels}</div></div>'
-        f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>',
-    )
+        f'<div class="pxb-value" style="font-size:32px">{head_text}</div>'
+        f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
+        f'<i style="left:{mark:.0f}%"></i></div><div class="pxb-range-lab">{labels}</div></div>'
+        f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>')
 
-    # 3행 ─ 관심종목 · 확인할 것 · 교육자료
-    if reports:
-        watch_rows = [
-            (r.get("name", ""), r.get("code", ""),
-             growth((r.get("financial") or {}).get("operating_profit", 0),
-                    (r.get("financial") or {}).get("prior_operating_profit", 0))
-             if r.get("financial") else "조사 필요")
-            for r in reports[:5]
-        ]
-        watch_note = f"영업이익 성장 · 공식 자료 {len(reports)}종목"
-    else:
-        watch_rows = [("삼성전자", "005930", "+33.2%"), ("SK하이닉스", "000660", "+101.2%"),
-                      ("현대차", "005380", "+8.4%"), ("NAVER", "035420", "+12.1%")]
-        watch_note = f"영업이익 성장 · {SAMPLE}"
-    group_of = {g["code"]: g.get("group") for g in (graded or [])}
-    watch = "".join(
-        f'<li><span>{_e(label)} <small style="color:#7E7463">'
-        + (f'{group_of[row_code]}그룹' if group_of.get(row_code) else _e(row_code)) + '</small></span>'
-        f'<em style="color:{DOWN if text.startswith("-") or "적자" in text else UP}">{_e(text)}</em></li>'
-        for label, row_code, text in watch_rows
-    )
-    card_watch = _card(6, "관심종목",
-                       f'<p class="pxb-sub" style="margin-top:12px">{_e(watch_note)}</p>'
-                       f'<ul class="pxb-list">{watch}</ul>')
+    return (f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
+            f"{card_trend}{card_earnings}{card_value}</div>")
 
-    # 한 종목이 목록을 채우지 않도록 종목을 돌아가며 한 건씩 뽑습니다.
-    queues = [[(r.get("name", ""), g) for g in (r.get("data_gaps") or [])] for r in reports]
-    gaps = []
-    for depth in range(max((len(q) for q in queues), default=0)):
-        for queue in queues:
-            if depth < len(queue) and len(gaps) < 4:
-                who, what = queue[depth]
-                gaps.append(f"{_e(who)} · {_e(what)}")
-    if not gaps:
-        gaps = ["분기 누적 실적 추가 조사", "수급·수정주가 시계열 수집", "적정주가 가정과 현 주가 대조"]
-    card_todo = _card(7, "다음에 확인할 것",
-                      '<ul class="pxb-notes">' + "".join(f"<li>{g}</li>" for g in gaps) + "</ul>")
 
-    card_learn = _card(
-        8, "교육자료",
-        '<p class="pxb-sub" style="margin-top:14px">차트 기초 · 기술적 분석 · 투자 전략을 순서대로 익히고, '
-        "차트에 직접 그려보며 확인하세요.</p>"
-        '<div class="pxb-pens"><i></i><i></i><i></i><i></i></div>',
-    )
-
-    st.markdown(
-        '<div class="pxb"><div class="pxb-frame"><div class="pxb-top">'
-        '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
-        "<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다.</span></div>"
-        f'<div class="pxb-meta"><b>PLANX · STOCK INTELLIGENCE</b>{date.today():%Y년 %m월 %d일}</div></div>'
-        + ('<div class="pxb-section">' + section("시세", live.get("state", "")) + live_strip(live) + "</div>"
-           if live else "")
-        + ('<div class="pxb-section">'
-           + section("그룹 판정", "이동평균 5·20·40·60 + 영업이익 3조건")
-           + group_board(graded) + "</div>" if graded else "")
-        + '<div class="pxb-section">'
-        + section("핵심 지표", f"조사 {len(reports)}종목 · 기준 {focus_period}" if reports else "조사 자료 없음")
-        + f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
-        f"{card_trend}{card_earnings}{card_value}"
-        f"{card_watch}{card_todo}{card_learn}</div></div></div></div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown('<div class="px-live-divider"><span>내 관심종목 실데이터 분석</span></div>', unsafe_allow_html=True)
+def close_frame() -> str:
+    """열어 둔 판을 닫습니다."""
+    return "</div></div>"

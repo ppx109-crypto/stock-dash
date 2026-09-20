@@ -9,8 +9,8 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import render_decision_dashboard
-import quotes
+from dashboard_ui import (GROUP_TITLES, close_frame, compact_board, frame,
+                          group_board, header, section, stock_cards)
 import market
 
 
@@ -47,14 +47,50 @@ def market_top(top):
     return market.top_by_market(top)
 
 
-@st.cache_data(ttl=600, show_spinner=False)
-def live_quotes(codes):
-    """관심종목 시세를 10분 동안 재사용합니다.
+def _pick(key):
+    """어느 목록에서 눌렀든 마지막으로 고른 종목 하나만 기억합니다."""
+    code = st.session_state.get(key)
+    if code:
+        st.session_state['px_pick'] = code
 
-    공공데이터포털 시세는 하루 한 번 갱신되므로 자주 물을 이유가 없고,
-    일일 호출 한도를 아끼는 편이 낫습니다.
-    """
-    return quotes.snapshot(codes)
+
+def decision_screen(state, research, graded):
+    """오늘의 투자판단. 그룹판은 접힌 채로 시작하고, 종목을 누르면 여섯 칸이 열립니다."""
+    stocks = [s for s in state.get('stocks', []) if not s['code'].startswith('pending-')]
+    names = {s['code']: s['name'] for s in stocks}
+    # 조사 전 종목은 판정 자료에 이름이 없어 코드로만 나오므로 목록의 이름을 입힙니다.
+    graded = [{**g, 'name': names.get(g['code']) or g.get('name') or g['code']}
+              for g in graded or []]
+    st.markdown(header() + section('그룹 판정', '일봉 종가와 EMA 5·20·40·60 비교')
+                + compact_board(graded) + close_frame(), unsafe_allow_html=True)
+    named = {g['code']: g['name'] for g in graded}
+    if graded:
+        with st.expander('그룹 판정 크게 보기 · 종목을 누르면 아래에 판단 카드가 열립니다'):
+            st.markdown(frame(group_board(graded)), unsafe_allow_html=True)
+            for key in GROUP_TITLES:
+                rows = sorted((g for g in graded if g.get('group') == key),
+                              key=lambda g: (-g.get('met', 0), g.get('name', '')))
+                if rows:
+                    st.pills(GROUP_TITLES[key][0], [g['code'] for g in rows],
+                             format_func=lambda c: named.get(c, c),
+                             key=f'px_group_{key}', on_change=_pick, args=(f'px_group_{key}',))
+    if stocks:
+        with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
+            labels = {s['code']: s['name'] for s in stocks}
+            st.pills('종목을 고르면 아래에 판단 카드 여섯 칸이 열립니다', list(labels),
+                     format_func=lambda c: labels[c], key='px_watch',
+                     on_change=_pick, args=('px_watch',))
+    code = st.session_state.get('px_pick')
+    if code:
+        grade = next((g for g in graded or [] if g['code'] == code), None)
+        report = research.get(code)
+        name = (report or {}).get('name') or named.get(code) or next(
+            (s['name'] for s in stocks if s['code'] == code), code)
+        st.markdown(frame(section(f'{name} · 투자판단', '종목코드 ' + code)
+                          + stock_cards(report, grade)), unsafe_allow_html=True)
+    elif stocks:
+        st.markdown(frame(section('투자판단', '위 목록에서 종목을 고르면 판단점수·실적·흐름이 열립니다')),
+                    unsafe_allow_html=True)
 
 
 def render_research(store, state, sample_mode):
@@ -64,8 +100,8 @@ def render_research(store, state, sample_mode):
     if not sample_mode and link_codes(store, state, known):
         state = store.read()
     codes = [s['code'] for s in state.get('stocks', []) if not s['code'].startswith('pending-')]
-    render_decision_dashboard(research, live_quotes(codes),
-                              graded_stocks(codes, max(research, default='')) if codes else None)
+    decision_screen(state, research,
+                    graded_stocks(codes, max(research, default='')) if codes else [])
     hero('내 투자의 현재를 한눈에', '관심 있는 기업을 담고, 판단에 필요한 변화만 확인하세요.', 'PLANX · STOCK RESEARCH')
     if sample_mode:
         st.info('둘러보기 중입니다. 개인 목록을 저장하려면 먼저 대시보드 비밀번호를 설정하세요.')
