@@ -76,26 +76,51 @@ def daily_closes(code: str, key: str, span_days: int = 260) -> list[tuple[str, f
     return sorted(rows.items())
 
 
+# 종목마다 시세를 한 번씩 물어야 해서, 순서대로 받으면 종목 수만큼 기다립니다.
+# 한 번에 여섯 종목씩만 겹쳐 받습니다. 호출 수는 그대로라 일일 한도에는 영향이
+# 없고, 첫 화면이 뜨기까지 기다리는 시간만 줄어듭니다.
+PRICE_WORKERS = 6
+
+
+def _closes_for(codes, key, span_days):
+    """여러 종목의 일별 종가를 겹쳐 받습니다. 실패는 종목별로 따로 남깁니다."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    def one(code):
+        try:
+            return daily_closes(code, key, span_days), None
+        except (DataError, KeyError, TypeError, ValueError) as error:
+            return [], str(error)[:80]
+
+    if not codes:
+        return {}
+    # 주소를 찾는 첫 호출만 혼자 보냅니다. 여럿이 동시에 찾을 이유가 없습니다.
+    first = {codes[0]: one(codes[0])}
+    if len(codes) == 1:
+        return first
+    with ThreadPoolExecutor(max_workers=PRICE_WORKERS) as pool:
+        rest = dict(zip(codes[1:], pool.map(one, codes[1:])))
+    return {**first, **rest}
+
+
 def grade_all(codes, research: dict, span_days: int = 260) -> list[dict]:
     """종목별로 추세·실적 축을 매기고 그룹을 붙입니다."""
     from urllib.parse import unquote
     import trend
 
     key = unquote(os.getenv("DATA_GO_KR_SERVICE_KEY", "").strip())
+    ordered = [str(code).zfill(6) for code in codes]
+    fetched = _closes_for(ordered, key, span_days) if key else {}
     graded = []
-    for code in codes:
-        code = str(code).zfill(6)
+    for code in ordered:
         report = research.get(code) or {}
         money = report.get("financial")
         closes, days = [], []
         note = None
         if key:
-            try:
-                rows = daily_closes(code, key, span_days)
-                days = [day for day, _ in rows]
-                closes = [close for _, close in rows]
-            except (DataError, KeyError, TypeError, ValueError) as error:
-                note = str(error)[:80]
+            rows, note = fetched.get(code, ([], "시세를 받지 못했습니다."))
+            days = [day for day, _ in rows]
+            closes = [close for _, close in rows]
         else:
             note = "공공데이터포털 인증키를 설정하세요."
         result = trend.assess(closes, money)

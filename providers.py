@@ -2,6 +2,7 @@ import io
 import os
 import re
 import html
+import threading
 import zipfile
 from datetime import date, timedelta
 from xml.etree import ElementTree
@@ -22,6 +23,8 @@ PRICE_BASES = (
 )
 PRICE_SUFFIXES = ("_V2", "", "V2")
 _price_base = None
+# 여러 종목을 동시에 받을 때 찾은 주소를 함께 쓰므로 자물쇠로 감쌉니다.
+_price_lock = threading.Lock()
 
 
 def price_call(operation, params):
@@ -31,8 +34,10 @@ def price_call(operation, params):
     있어, 확인된 조합을 찾을 때까지 후보를 차례로 시도합니다.
     """
     global _price_base
-    if _price_base:
-        candidates = [_price_base]
+    with _price_lock:
+        known = _price_base
+    if known:
+        candidates = [known]
     else:
         candidates = [f"{base}/{operation}{suffix}"
                       for base in PRICE_BASES
@@ -47,14 +52,18 @@ def price_call(operation, params):
             continue
         code = str(header.get("resultCode", ""))
         if code in ("00", "0"):
-            _price_base = url
+            with _price_lock:
+                _price_base = url
             return payload
         # 인증·한도 문제는 경로를 바꿔도 같으므로 그대로 돌려줍니다.
         if code not in ("", "04", "12", "20", "30", "31", "32", "99"):
             return payload
         last = DataError("공공데이터포털 시세: " + str(header.get("resultMsg") or code))
-    if _price_base:
-        _price_base = None
+    if known:
+        # 기억해 둔 주소가 더는 듣지 않으면 한 번만 다시 찾습니다.
+        with _price_lock:
+            if _price_base == known:
+                _price_base = None
         return price_call(operation, params)
     tried = " / ".join(u.split("/1160100/", 1)[-1] for u in candidates)
     raise DataError(f"{last or '응답 없음'} · 시도한 주소: {tried}")
