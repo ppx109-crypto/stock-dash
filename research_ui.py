@@ -116,13 +116,13 @@ def render_research(store, state, sample_mode):
                 picks = st.multiselect('조사 자료가 있는 종목', list(pool), format_func=lambda c: f'{pool[c]} · {c}', key='add_researched')
                 col_all, col_pick = st.columns(2)
                 with col_all:
-                    if st.button(f'전체 {len(pool)}개 담기', use_container_width=True):
+                    if st.button(f'전체 {len(pool)}개 담기', width='stretch'):
                         try:
                             store.add_stocks([{'code': c, 'name': n, 'kind': '관심'} for c, n in pool.items()])
                             st.rerun()
                         except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
                 with col_pick:
-                    if st.button('선택한 종목 담기', disabled=not picks, use_container_width=True):
+                    if st.button('선택한 종목 담기', disabled=not picks, width='stretch'):
                         try:
                             store.add_stocks([{'code': c, 'name': pool[c], 'kind': '관심'} for c in picks])
                             st.rerun()
@@ -186,7 +186,7 @@ def render_research(store, state, sample_mode):
         rows.append(row);details[key]=(stock, r, trend, frame)
     overview(details, st.session_state.get('account_snapshot'))
     with st.expander('전체 지표 비교'):
-        st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+        st.dataframe(pd.DataFrame(rows), hide_index=True, width='stretch')
     st.markdown('### 기업 하나를 깊게 보기')
     selected = st.selectbox('자세히 볼 종목', list(details), format_func=lambda k:stocks[k]['name'], key='research_selected')
     stock, r, trend, frame = details[selected]
@@ -197,7 +197,9 @@ def render_research(store, state, sample_mode):
         return
     st.subheader(stock['name'])
     st.caption('조사일 ' + r['as_of'] + ' · 각 표의 자료 기간은 아래에 별도 표시합니다. 실시간 분석이 아닙니다.')
-    detail(r)
+    grade = next((g for g in (graded_stocks([selected], max(research, default='')) or [])
+                  if g['code'] == selected), None)
+    detail(r, grade)
     summary = r.get('summary')
     if summary:
         with st.container(border=True):

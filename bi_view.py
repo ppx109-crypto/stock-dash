@@ -30,7 +30,7 @@ def theme():
 def draw(chart):
     st.altair_chart(chart.configure(background='#fffdf9').configure_view(stroke=None)
                     .configure_axis(labelColor=INK,titleColor=INK,gridColor='#eee8dd',labelFontSize=13,titleFontSize=13)
-                    .configure_legend(labelColor=INK,titleColor=INK,labelFontSize=13), use_container_width=True)
+                    .configure_legend(labelColor=INK,titleColor=INK,labelFontSize=13), width='stretch')
 
 
 def overview(details, snapshot):
@@ -91,7 +91,43 @@ def overview(details, snapshot):
             for text in special:st.caption(text)
 
 
-def detail(r):
+def trend_panel(grade):
+    """추세·실적 두 축과 이동평균을 한 칸에 보여줍니다."""
+    if not grade:
+        st.info('이동평균 판정에는 일별 종가가 필요합니다. 공공데이터포털 인증키를 확인하세요.')
+        return
+    axis=grade.get('trend') or {}
+    money=grade.get('earnings') or {}
+    if not grade.get('group'):
+        st.warning(grade.get('note') or axis.get('reason') or '판정에 필요한 거래일이 모자랍니다.')
+        return
+    left,right=st.columns([1,1.25])
+    with left:
+        st.metric(f"{grade['group']}그룹",grade.get('reason',''))
+        st.caption(f"추세 {axis.get('grade')} · 실적 {money.get('grade')}"
+                   f" · 조건 {grade.get('met')}/{grade.get('total')}")
+    with right:
+        lines=axis.get('ema') or {}
+        if lines:
+            frame=pd.DataFrame([{'선':k,'값':v} for k,v in lines.items()]+[{'선':'종가','값':axis.get('price')}])
+            draw(alt.Chart(frame).mark_bar(size=22,cornerRadiusTopLeft=3,cornerRadiusTopRight=3).encode(
+                y=alt.Y('선:N',title=None,sort=['종가','EMA5','EMA20','EMA40','EMA60']),
+                x=alt.X('값:Q',title='원',scale=alt.Scale(zero=False)),
+                color=alt.Color('선:N',scale=alt.Scale(range=['#9db9a4',GOLD,'#c8b184','#d8c8a7','#e6dcc6']),legend=None),
+                tooltip=['선',alt.Tooltip('값:Q',format=',.0f')]).properties(height=170))
+        st.caption(f"이평선 간격 {axis.get('spread')}% · 60일선 {'상승' if axis.get('slope_up') else '하락'}"
+                   f" · 거래일 {axis.get('days')}개")
+    missing=grade.get('missing') or []
+    if missing:
+        st.caption('미달 조건 · '+' / '.join(missing))
+    if axis.get('price_breaks'):
+        st.caption(f"가격이 하루 사이 크게 끊긴 지점 {axis['price_breaks']}곳 · "
+                   '공공데이터포털 종가는 수정주가가 아니라 분할·병합 구간에서 이동평균이 왜곡될 수 있습니다.')
+    if money.get('margin') is not None:
+        st.caption(f"영업이익률 {money.get('prior_margin')}% → {money.get('margin')}% · {money.get('period')}")
+
+
+def detail(r,grade=None):
     a,b,c=st.columns([1.15,1,1],gap='large')
     with a,st.container(border=True):
         st.subheader('주력사업과 기업 특징')
@@ -120,6 +156,9 @@ def detail(r):
         else:
             st.write('**평가 근거를 기다리고 있습니다.**')
             st.caption('현재 주가와 실적 전망, 적용 배수의 근거가 모이면 참고가 범위를 표시합니다.')
+    with st.container(border=True):
+        st.subheader('이동평균과 그룹 판정')
+        trend_panel(grade)
 
 
 def peers_chart(peers):

@@ -106,7 +106,7 @@ if password and not st.session_state.get("authorized"):
             st.subheader("개인 대시보드 열기")
             with st.form("login"):
                 entered = st.text_input("비밀번호", type="password", placeholder="설정한 비밀번호를 입력하세요")
-                if st.form_submit_button("대시보드 열기", type="primary", use_container_width=True):
+                if st.form_submit_button("대시보드 열기", type="primary", width='stretch'):
                     if hmac.compare_digest(entered.encode(), password.encode()):
                         st.session_state.authorized = True
                         st.rerun()
@@ -272,7 +272,7 @@ with st.sidebar:
     else:
         st.caption("클라우드 저장" if store.cloud else "실행 서버 저장")
 
-    if password and st.button("로그아웃", use_container_width=True):
+    if password and st.button("로그아웃", width='stretch'):
         st.session_state.clear()
         st.rerun()
 
@@ -293,7 +293,7 @@ def global_search():
                 label_visibility="collapsed",
             )
         with col_b:
-            submitted = st.form_submit_button("검색·분석", type="primary", use_container_width=True)
+            submitted = st.form_submit_button("검색·분석", type="primary", width='stretch')
     if submitted:
         try:
             provider = st.session_state.get("directory_provider") or Official()
@@ -355,7 +355,7 @@ def render_home():
                 notices = sorted(report.get("disclosures", []), key=lambda x: x.get("date", ""), reverse=True)
                 if notices:
                     for item in notices[:4]:
-                        st.link_button(item["date"] + " · " + item["title"], item["url"], use_container_width=True)
+                        st.link_button(item["date"] + " · " + item["title"], item["url"], width='stretch')
                 else:
                     st.caption("선택 종목의 최근 공시가 수집되지 않았습니다.")
             else:
@@ -424,7 +424,7 @@ def render_stock():
     if not is_demo:
         b1, b2 = st.columns([1, 5])
         with b1:
-            if st.button("최신 데이터", type="primary", use_container_width=True):
+            if st.button("최신 데이터", type="primary", width='stretch'):
                 run_analysis(stock["code"])
         with b2:
             if st.session_state.get("save_notice"):
@@ -487,7 +487,7 @@ def render_stock():
         )
         chart["연도"] = chart["연도"].astype(str)
         st.bar_chart(chart.set_index("연도"), color=["#2563EB", "#10B981"])
-        st.dataframe(chart, hide_index=True, use_container_width=True)
+        st.dataframe(chart, hide_index=True, width='stretch')
         st.caption("단위 억원 · 확정 결산 기준. 분기 실적이나 미래 전망을 대신하지 않습니다.")
 
         st.subheader("판단 근거")
@@ -536,7 +536,7 @@ def render_stock():
         notices = sorted(report.get("disclosures", []), key=lambda x: x.get("date", ""), reverse=True)
         if notices:
             for item in notices[:12]:
-                st.link_button(item["date"] + " · " + item["title"], item["url"], use_container_width=True)
+                st.link_button(item["date"] + " · " + item["title"], item["url"], width='stretch')
         else:
             empty_state("최근 공시 없음", "현재 수집본에 공시가 없으며, 공시가 없다는 확정 판단은 아닙니다.")
 
@@ -642,7 +642,7 @@ def render_watchlist():
                 }
             )
         if rows:
-            st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+            st.dataframe(pd.DataFrame(rows), hide_index=True, width='stretch')
         else:
             empty_state("관심종목 없음", "위 입력창에서 첫 종목을 추가하세요.")
     else:

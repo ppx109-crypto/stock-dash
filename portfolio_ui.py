@@ -83,7 +83,7 @@ def render_portfolio(store, sample_mode):
         rows.append({'종목': p['name'], '코드': p['code'], '수량': p['quantity'], '평균매입가': p['average_cost'],
                      '평가액': p['value'], '평가손익': p['pnl'], '비중 %': round(p['weight'], 1),
                      '성장': b.get('growth', '분석 미완료'), '가치': b.get('value', '평가 보류')})
-    st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+    st.dataframe(pd.DataFrame(rows), hide_index=True, width='stretch')
     largest = max(snapshot['positions'], key=lambda p: p['weight'])
     st.write(f"가장 큰 보유 비중은 {largest['name']} {largest['weight']:.1f}%입니다. 이 종목의 변화가 계좌에 미치는 영향을 먼저 확인하세요.")
     selected = st.selectbox('자세히 볼 보유종목', snapshot['positions'], format_func=lambda p: p['name'] + ' · ' + p['code'])
