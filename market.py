@@ -87,19 +87,23 @@ def grade_all(codes, research: dict, span_days: int = 260) -> list[dict]:
         code = str(code).zfill(6)
         report = research.get(code) or {}
         money = report.get("financial")
-        closes = []
+        closes, days = [], []
         note = None
         if key:
             try:
-                closes = [close for _, close in daily_closes(code, key, span_days)]
+                rows = daily_closes(code, key, span_days)
+                days = [day for day, _ in rows]
+                closes = [close for _, close in rows]
             except (DataError, KeyError, TypeError, ValueError) as error:
                 note = str(error)[:80]
         else:
             note = "공공데이터포털 인증키를 설정하세요."
         result = trend.assess(closes, money)
         # 화면에서 가격선과 이동평균을 함께 그리도록 최근 구간을 같이 넘깁니다.
+        # 마지막 거래일은 화면에 기준일로 적어야 하므로 함께 넘깁니다.
         graded.append({"code": code, "name": report.get("name") or code, "note": note,
-                       "closes": closes[-130:], **result})
+                       "closes": closes[-130:], "as_of": days[-1] if days else None,
+                       "money_period": (money or {}).get("period"), **result})
     return graded
 
 

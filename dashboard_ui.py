@@ -349,8 +349,8 @@ def group_board(graded: list | None) -> str:
             money = (row.get("earnings") or {}).get("grade")
             # 바깥 반복문의 note(그룹 설명)를 가리지 않도록 이름을 따로 둡니다.
             chip_note = f'EMA {row.get("met", 0)}/{row.get("total", 4)}'
-            if money and money != "미확인":
-                chip_note += f" · 실적 {money}"
+            # 실적이 빠진 자리를 비워 두면 좋은 실적처럼 읽힙니다. 없다고 적습니다.
+            chip_note += f" · 실적 {money}" if money and money != "미확인" else " · 실적 미수집"
             chips += (f'<span class="pxb-chip">{_e(row["name"])}'
                       f'<em>{_e(chip_note)}</em></span>')
         more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
@@ -358,7 +358,17 @@ def group_board(graded: list | None) -> str:
         cards += (f'<div class="pxb-slot {klass}"><div class="pxb-slot-h">'
                   f'<b><i class="pxb-dot" style="background:{STATUS[key]}"></i>{title}</b>'
                   f'<i>{len(rows)}</i></div><small>{note}</small>{body}</div>')
-    board = f'<div class="pxb-board">{cards}</div>'
+    days = sorted({row.get("as_of") for row in graded if row.get("as_of")})
+    periods = sorted({row.get("money_period") for row in graded if row.get("money_period")})
+    basis = "종가 기준일 " + (_e(days[-1]) if days else "미확인") + " · 공공데이터포털"
+    if periods:
+        span = _e(periods[0]) if periods[0] == periods[-1] else f"{_e(periods[0])}~{_e(periods[-1])}"
+        basis += f" · 실적 {span} 누적 · DART"
+    counted = sum(1 for row in graded if (row.get("earnings") or {}).get("checks"))
+    if counted < len(graded):
+        basis += f" · 실적 미수집 {len(graded) - counted}종목"
+    board = (f'<div class="pxb-board">{cards}</div>'
+             f'<div class="pxb-note" style="margin-top:10px">{basis}</div>')
     if pending:
         names = ", ".join(_e(r["name"]) for r in pending[:6])
         reason = _e(pending[0].get("note") or pending[0].get("reason") or "자료 부족")
