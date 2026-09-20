@@ -1,0 +1,175 @@
+{
+  "code": "196170",
+  "name": "알테오젠",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 1023.39078027,
+      "profit": 605.91275114,
+      "receipt": "20250813001141",
+      "matched": [
+        {
+          "account_nm": "수익(매출액)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 18 기 반기",
+          "add": "102339078027",
+          "amount": "18643000115"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 18 기 반기",
+          "add": "60591275114",
+          "amount": "-426290507"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813001141"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 1404.92885685,
+      "profit": 734.80904822,
+      "receipt": "20260814001294",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 19 기 반기",
+          "add": "140492885685",
+          "amount": "68894335061"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 19 기 반기",
+          "add": "73480904822",
+          "amount": "34180255324"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001294"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)알테오젠",
+    "induty_code": "70113",
+    "hm_url": "www.alteogen.com",
+    "est_dt": "20080513",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 965.22928887,
+      "profit": -97.36838487,
+      "receipt": "20240318000392",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240318000392"
+    },
+    {
+      "year": 2024,
+      "revenue": 1028.546208,
+      "profit": 254.03990856,
+      "receipt": "20250321000557",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250321000557"
+    },
+    {
+      "year": 2025,
+      "revenue": 2158.58918957,
+      "profit": 1069.00077097,
+      "receipt": "20260323001596",
+      "net_income": 1416.6602471,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260323001596"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "투자판단관련주요경영사항              (재조합 인간 히알루로니다제 제품 ALT-B4 독점적 옵션·라이선스 계약 체결)",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902900182"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (ALT-B4 라이선스 계약 파트너사 MSD로부터 판매 마일스톤 수령 예정)",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831900176"
+    },
+    {
+      "title": "[첨부추가]반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001294"
+    },
+    {
+      "title": "신규시설투자등              ",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821900238"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001773"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001753"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001720"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001689"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807000762"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807900145"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (재조합 인간 히알루로니다제 제품 ALTB4 독점적 라이선스 계약 체결)",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805900010"
+    },
+    {
+      "title": "권리락              (무상증자)",
+      "date": "20260804",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804900582"
+    },
+    {
+      "title": "[기재정정]주요사항보고서(무상증자결정)",
+      "date": "20260720",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720000129"
+    },
+    {
+      "title": "주주명부폐쇄기간또는기준일설정              ",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716900638"
+    },
+    {
+      "title": "기타주요경영사항              (유가증권시장 이전상장 추진 잠정 유보)",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716900549"
+    },
+    {
+      "title": "주권매매거래정지              (무상증자)",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716900562"
+    },
+    {
+      "title": "주요사항보고서(무상증자결정)",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000528"
+    }
+  ]
+}

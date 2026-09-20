@@ -1,0 +1,125 @@
+{
+  "code": "036930",
+  "name": "주성엔지니어링",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 1996.38687501,
+      "profit": 404.83097981,
+      "receipt": "20250813001599",
+      "matched": [
+        {
+          "account_nm": "수익(매출액)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 31 기 반기",
+          "add": "199638687501",
+          "amount": "78792213478"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 31 기 반기",
+          "add": "40483097981",
+          "amount": "6575447323"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813001599"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 1147.60909781,
+      "profit": -56.08001676,
+      "receipt": "20260814002613",
+      "matched": [
+        {
+          "account_nm": "수익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 32 기 반기",
+          "add": "114760909781",
+          "amount": "59881817078"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 32 기 반기",
+          "add": "-5608001676",
+          "amount": "1423232226"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002613"
+    }
+  ],
+  "company": {
+    "corp_name": "주성엔지니어링(주)",
+    "induty_code": "29229",
+    "hm_url": "jusung.com",
+    "est_dt": "19950413",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 2847.4524666,
+      "profit": 289.37462812,
+      "receipt": "20240328001336",
+      "net_income": 340.00802285,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240328001336"
+    },
+    {
+      "year": 2024,
+      "revenue": 4093.93371588,
+      "profit": 971.96211588,
+      "receipt": "20250317000470",
+      "net_income": 1068.14110967,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250317000470"
+    },
+    {
+      "year": 2025,
+      "revenue": 3106.92584812,
+      "profit": 312.57811742,
+      "receipt": "20260318000323",
+      "net_income": 356.93416702,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318000323"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "기업설명회(IR)개최              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824900629"
+    },
+    {
+      "title": "기업설명회(IR)개최              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824900622"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002613"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000357"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729900867"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707000374"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260706",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260706000306"
+    }
+  ]
+}

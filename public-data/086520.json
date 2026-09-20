@@ -1,0 +1,205 @@
+{
+  "code": "086520",
+  "name": "에코프로",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 17385.32235577,
+      "profit": 176.01373813,
+      "receipt": "20250814003405",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 28 기 반기",
+          "add": "1738532235577",
+          "amount": "931704760248"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 28 기 반기",
+          "add": "17601373813",
+          "amount": "16227581454"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003405"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 16397.65217785,
+      "profit": 899.68045155,
+      "receipt": "20260917000296",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 29 기 반기",
+          "add": "1639765217785",
+          "amount": "821509401406"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 29 기 반기",
+          "add": "89968045155",
+          "amount": "33581902240"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000296"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)에코프로",
+    "induty_code": "64992",
+    "hm_url": "www.ecopro.co.kr",
+    "est_dt": "19981022",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 72602.00345722,
+      "profit": 2981.72334242,
+      "receipt": "20240417000532",
+      "net_income": 510.16615538,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240417000532"
+    },
+    {
+      "year": 2024,
+      "revenue": 31278.53158129,
+      "profit": -2930.38698088,
+      "receipt": "20250318001116",
+      "net_income": -2059.50752375,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318001116"
+    },
+    {
+      "year": 2025,
+      "revenue": 34130.21590101,
+      "profit": 2137.63514884,
+      "receipt": "20260318001612",
+      "net_income": -1497.74483776,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001612"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "[기재정정]반기보고서 (2026.06)",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000296"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000124"
+    },
+    {
+      "title": "[기재정정]유상증자결정(종속회사의주요경영사항)              ",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902900264"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000064"
+    },
+    {
+      "title": "특수관계인에대한자금대여",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827000696"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(대표회사용)]",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827000643"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000243"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002690"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813000696"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813000460"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807000421"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260804",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804900253"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000681"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260721",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260721000087"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260713",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713000457"
+    },
+    {
+      "title": "기업설명회(IR)개최              ",
+      "date": "20260713",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713900450"
+    },
+    {
+      "title": "결산실적공시예고              ",
+      "date": "20260713",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713900445"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260703",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260703000308"
+    },
+    {
+      "title": "특수관계인에대한출자",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701000409"
+    },
+    {
+      "title": "타법인주식및출자증권취득결정              ",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630901037"
+    },
+    {
+      "title": "유상증자결정(종속회사의주요경영사항)              ",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630901022"
+    },
+    {
+      "title": "[기재정정]타법인주식및출자증권취득결정              ",
+      "date": "20260624",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624900694"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260624",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624000260"
+    }
+  ]
+}

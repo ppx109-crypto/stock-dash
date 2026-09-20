@@ -1,0 +1,130 @@
+{
+  "code": "108490",
+  "name": "로보티즈",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 181.00860783,
+      "profit": 10.66770055,
+      "receipt": "20250814002191",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 27 기 반기",
+          "add": "18100860783",
+          "amount": "7877483576"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 27 기 반기",
+          "add": "1066770055",
+          "amount": "240743602"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814002191"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 272.13463293,
+      "profit": -98.62234186,
+      "receipt": "20260814003380",
+      "matched": [
+        {
+          "account_nm": "수익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 28 기 반기",
+          "add": "27213463293",
+          "amount": "15372126276"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 28 기 반기",
+          "add": "-9862234186",
+          "amount": "1981067351"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003380"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)로보티즈",
+    "induty_code": "29299",
+    "hm_url": "www.robotis.com",
+    "est_dt": "19990325",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 291.27949488,
+      "profit": -52.98796747,
+      "receipt": "20240320001005",
+      "net_income": -13.51340121,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240320001005"
+    },
+    {
+      "year": 2024,
+      "revenue": 300.38231053,
+      "profit": -29.73503944,
+      "receipt": "20250317000802",
+      "net_income": -31.41985199,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250317000802"
+    },
+    {
+      "year": 2025,
+      "revenue": 389.42547006,
+      "profit": 33.46038655,
+      "receipt": "20260708000478",
+      "net_income": 50.73553148,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708000478"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000413"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000406"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003380"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000614"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등거래계획보고서",
+      "date": "20260806",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260806000454"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260714",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000227"
+    },
+    {
+      "title": "[기재정정]사업보고서 (2025.12)",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708000478"
+    },
+    {
+      "title": "타법인주식및출자증권취득결정              ",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708900261"
+    }
+  ]
+}

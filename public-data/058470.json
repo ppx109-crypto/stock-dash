@@ -1,0 +1,125 @@
+{
+  "code": "058470",
+  "name": "리노공업",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 1909.32307676,
+      "profit": 883.82117361,
+      "receipt": "20250813000235",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 30 기 반기",
+          "add": "190932307676",
+          "amount": "112522064123"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 30 기 반기",
+          "add": "88382117361",
+          "amount": "53444357551"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813000235"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 2429.58602798,
+      "profit": 1208.14329893,
+      "receipt": "20260814000445",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 31 기 반기",
+          "add": "242958602798",
+          "amount": "143187426964"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 31 기 반기",
+          "add": "120814329893",
+          "amount": "73513742404"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000445"
+    }
+  ],
+  "company": {
+    "corp_name": "리노공업(주)",
+    "induty_code": "2629",
+    "hm_url": "leeno.com/kr",
+    "est_dt": "19961220",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 2555.73034656,
+      "profit": 1143.78400291,
+      "receipt": "20240318000177",
+      "net_income": 1109.2301544,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240318000177"
+    },
+    {
+      "year": 2024,
+      "revenue": 2781.86189427,
+      "profit": 1242.01343872,
+      "receipt": "20250318000229",
+      "net_income": 1132.79046428,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000229"
+    },
+    {
+      "year": 2025,
+      "revenue": 3725.34084608,
+      "profit": 1769.97188289,
+      "receipt": "20260318000182",
+      "net_income": 1519.60670406,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318000182"
+    }
+  ],
+  "basis": "OFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "기업설명회(IR)개최              ",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821900135"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000445"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000359"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729000050"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260710",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260710000204"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708000391"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701000640"
+    }
+  ]
+}

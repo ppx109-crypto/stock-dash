@@ -1,0 +1,115 @@
+{
+  "code": "039030",
+  "name": "이오테크닉스",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 1790.74783605,
+      "profit": 403.07486055,
+      "receipt": "20250813001158",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 32 기 반기",
+          "add": "179074783605",
+          "amount": "94250015346"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 32 기 반기",
+          "add": "40307486055",
+          "amount": "25825067486"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813001158"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 2429.00793816,
+      "profit": 688.8602811,
+      "receipt": "20260814001118",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 33 기 반기",
+          "add": "242900793816",
+          "amount": "127798995472"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 33 기 반기",
+          "add": "68886028110",
+          "amount": "39088194572"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001118"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)이오테크닉스",
+    "induty_code": "29271",
+    "hm_url": "www.eotechnics.com",
+    "est_dt": "19931230",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 3163.84019477,
+      "profit": 283.34755251,
+      "receipt": "20240320001082",
+      "net_income": 366.24924912,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240320001082"
+    },
+    {
+      "year": 2024,
+      "revenue": 3209.45496298,
+      "profit": 312.01085341,
+      "receipt": "20250320001508",
+      "net_income": 428.43700338,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250320001508"
+    },
+    {
+      "year": 2025,
+      "revenue": 3808.90608578,
+      "profit": 807.53274993,
+      "receipt": "20260323001573",
+      "net_income": 572.13413722,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260323001573"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000188"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001118"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000358"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260706",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260706000295"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701000638"
+    }
+  ]
+}

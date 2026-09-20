@@ -1,0 +1,165 @@
+{
+  "code": "222800",
+  "name": "심텍",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 6443.64848818,
+      "profit": -107.79950338,
+      "receipt": "20250813001468",
+      "matched": [
+        {
+          "account_nm": "수익(매출액)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 11 기 반기",
+          "add": "644364848818",
+          "amount": "340767377716"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 11 기 반기",
+          "add": "-10779950338",
+          "amount": "5543628386"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813001468"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 9369.362041,
+      "profit": 766.00558645,
+      "receipt": "20260813001430",
+      "matched": [
+        {
+          "account_nm": "수익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 12 기 반기",
+          "add": "936936204100",
+          "amount": "514564784270"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 12 기 반기",
+          "add": "76600558645",
+          "amount": "62889541310"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001430"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)심텍",
+    "induty_code": "2622",
+    "hm_url": "www.simmtech.co.kr",
+    "est_dt": "20150701",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 10418.95724977,
+      "profit": -881.24119458,
+      "receipt": "20240321000928",
+      "net_income": -1148.60094595,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240321000928"
+    },
+    {
+      "year": 2024,
+      "revenue": 12314.2138107,
+      "profit": -469.6922082,
+      "receipt": "20250318000476",
+      "net_income": -303.43428477,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000476"
+    },
+    {
+      "year": 2025,
+      "revenue": 14105.59919451,
+      "profit": 118.68602919,
+      "receipt": "20260317000641",
+      "net_income": -1641.67233737,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260317000641"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "전환청구권행사              ",
+      "date": "20260904",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904900533"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000189"
+    },
+    {
+      "title": "신규시설투자등              ",
+      "date": "20260825",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825900407"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001430"
+    },
+    {
+      "title": "전환청구권행사              ",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811900654"
+    },
+    {
+      "title": "기업설명회(IR)개최              ",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805900548"
+    },
+    {
+      "title": "연결재무제표기준영업실적등에대한전망(공정공시)              ",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805900462"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805900457"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708000364"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707000377"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701000178"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260625",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625000504"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260625",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625000495"
+    },
+    {
+      "title": "자기주식취득결과보고서",
+      "date": "20260625",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625000476"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260625",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625000229"
+    }
+  ]
+}
