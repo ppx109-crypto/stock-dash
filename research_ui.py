@@ -152,8 +152,13 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                        '한 번에 20종목씩 받고, 받은 종목은 그때그때 저장합니다.')
             st.write(', '.join(s['name'] for s in gaps[:20])
                      + (f' 외 {len(gaps) - 20}종목' if len(gaps) > 20 else ''))
-            if st.button(f'{min(len(gaps), 20)}종목 자료 받기', key='px_fill'):
-                done, failed = fill_reports(store, gaps)
+            how_many = st.radio('한 번에 받을 개수', ['20종목씩', f'전부 {len(gaps)}종목'],
+                                horizontal=True, key='px_fill_count')
+            st.caption('전부 받기는 종목 수만큼 시간이 걸립니다. 도중에 창을 닫아도 '
+                       '그때까지 받은 종목은 저장돼 있습니다.')
+            if st.button('자료 받기', key='px_fill'):
+                done, failed = fill_reports(store, gaps,
+                                            limit=len(gaps) if how_many.startswith('전부') else 20)
                 if done:
                     st.success(f'{len(done)}종목 저장 · ' + ', '.join(done[:10]))
                 for name, reason in failed:
