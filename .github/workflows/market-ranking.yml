@@ -1,0 +1,38 @@
+name: Market cap ranking
+# 시가총액 상위 종목을 공식 시세 자료로 집계하고, 그대로 DART 수집 대상에 넘깁니다.
+on:
+  workflow_dispatch:
+    inputs:
+      top:
+        description: '시장별 상위 몇 종목'
+        default: '10'
+        required: true
+permissions:
+  contents: write
+concurrency:
+  group: market-ranking
+  cancel-in-progress: false
+jobs:
+  rank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python collect_market_ranking.py
+        env:
+          DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
+          RANK_TOP: ${{ inputs.top || '10' }}
+      - name: Save ranking
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public-data/market-ranking.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh market cap ranking'
+            git pull --rebase origin main
+            git push
+          fi
