@@ -1,0 +1,193 @@
+{
+  "code": "055550",
+  "name": "신한지주",
+  "halves": [],
+  "company": {
+    "corp_name": "(주)신한금융지주회사",
+    "induty_code": "64992",
+    "hm_url": "www.shinhangroup.com",
+    "est_dt": "20010901",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": null,
+      "profit": 61008.5,
+      "receipt": "20240502000081",
+      "net_income": 43680.35,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240502000081"
+    },
+    {
+      "year": 2024,
+      "revenue": null,
+      "profit": 64586.7,
+      "receipt": "20250318000993",
+      "net_income": 44501.77,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000993"
+    },
+    {
+      "year": 2025,
+      "revenue": null,
+      "profit": 70233.57,
+      "receipt": "20260318000826",
+      "net_income": 49715.61,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318000826"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "증권발행실적보고서",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918000325"
+    },
+    {
+      "title": "투자설명서(일괄신고)",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000214"
+    },
+    {
+      "title": "일괄신고추가서류",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000209"
+    },
+    {
+      "title": "증권발행실적보고서",
+      "date": "20260914",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914000344"
+    },
+    {
+      "title": "투자설명서",
+      "date": "20260914",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914000003"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260909",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909800210"
+    },
+    {
+      "title": "[발행조건확정]증권신고서(채무증권)",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000356"
+    },
+    {
+      "title": "[기재정정]증권신고서(채무증권)",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000346"
+    },
+    {
+      "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908000275"
+    },
+    {
+      "title": "증권신고서(채무증권)",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000117"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000035"
+    },
+    {
+      "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
+      "date": "20260902",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902000010"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800766"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800757"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800747"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800644"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800638"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800631"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800623"
+    },
+    {
+      "title": "[기재정정]일괄신고서",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003519"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003306"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000674"
+    },
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811800480"
+    },
+    {
+      "title": "증권발행실적보고서",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807000260"
+    },
+    {
+      "title": "투자설명서(일괄신고)",
+      "date": "20260806",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260806000516"
+    },
+    {
+      "title": "일괄신고추가서류",
+      "date": "20260806",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260806000510"
+    },
+    {
+      "title": "기타경영사항(자율공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800910"
+    },
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260728",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260728800829"
+    },
+    {
+      "title": "증권발행실적보고서",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000280"
+    },
+    {
+      "title": "투자설명서(일괄신고)",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723000465"
+    }
+  ]
+}

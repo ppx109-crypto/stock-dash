@@ -1,0 +1,190 @@
+{
+  "code": "051910",
+  "name": "LG화학",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 235388.63,
+      "profit": 9144.5,
+      "receipt": "20250814003066",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 25 기 반기",
+          "add": "23538863000000",
+          "amount": "11417711000000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "IS",
+          "thstrm_nm": "제 25 기 반기",
+          "add": "914450000000",
+          "amount": "476783000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003066"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 264226.9,
+      "profit": 5498.97,
+      "receipt": "20260814002655",
+      "matched": [
+        {
+          "account_nm": "매출",
+          "sj_div": "IS",
+          "thstrm_nm": "제 26 기 반기",
+          "add": "26422690000000",
+          "amount": "14175901000000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "IS",
+          "thstrm_nm": "제 26 기 반기",
+          "add": "549897000000",
+          "amount": "599588000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002655"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)LG화학",
+    "induty_code": "20111",
+    "hm_url": "www.lgchem.com",
+    "est_dt": "20010401",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 552497.85,
+      "profit": 25291.96,
+      "receipt": "20240315000957",
+      "net_income": 13378.12,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240315000957"
+    },
+    {
+      "year": 2024,
+      "revenue": 489161.04,
+      "profit": 9167.98,
+      "receipt": "20250731000339",
+      "net_income": -6908.54,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250731000339"
+    },
+    {
+      "year": 2025,
+      "revenue": 459321.67,
+      "profit": 11809.0,
+      "receipt": "20260313001195",
+      "net_income": -18194.49,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260313001195"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260904",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904800336"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831001306"
+    },
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800215"
+    },
+    {
+      "title": "조회공시요구(풍문또는보도)에대한답변(미확정)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800208"
+    },
+    {
+      "title": "기타안내사항(안내공시)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800207"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002655"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000208"
+    },
+    {
+      "title": "동일인등출자계열회사와의상품ㆍ용역거래변경",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000158"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813800423"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807000440"
+    },
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805800520"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805000322"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000431"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731801164"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731800447"
+    },
+    {
+      "title": "주식소각결정              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800487"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260709",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260709800094"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (제미다파엠서방정 국내 품목허가 신청)",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630801304"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630800603"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260626",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260626800328"
+    }
+  ]
+}

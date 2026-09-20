@@ -1,0 +1,210 @@
+{
+  "code": "012330",
+  "name": "현대모비스",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 306882.75,
+      "profit": 16466.83,
+      "receipt": "20250814004056",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 49 기 반기",
+          "add": "30688275000000",
+          "amount": "15936241000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 49 기 반기",
+          "add": "1646683000000",
+          "amount": "870000000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814004056"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 318852.09,
+      "profit": 17778.06,
+      "receipt": "20260814004065",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 50 기 반기",
+          "add": "31885209000000",
+          "amount": "16324696000000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "IS",
+          "thstrm_nm": "제 50 기 반기",
+          "add": "1777806000000",
+          "amount": "975158000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004065"
+    }
+  ],
+  "company": {
+    "corp_name": "현대모비스(주)",
+    "induty_code": "303",
+    "hm_url": "www.mobis.com",
+    "est_dt": "19770701",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 592543.61,
+      "profit": 22952.84,
+      "receipt": "20240319000626",
+      "net_income": 34226.16,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240319000626"
+    },
+    {
+      "year": 2024,
+      "revenue": 572369.95,
+      "profit": 30734.56,
+      "receipt": "20250311001180",
+      "net_income": 40556.42,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001180"
+    },
+    {
+      "year": 2025,
+      "revenue": 611181.27,
+      "profit": 33574.56,
+      "receipt": "20260309001878",
+      "net_income": 36557.9,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260309001878"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260909",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909800381"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260904",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904800311"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831800835"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828800372"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001033"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827800312"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800436"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004065"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000771"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807800638"
+    },
+    {
+      "title": "특수관계인에대한출자",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000454"
+    },
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000365"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800116"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800096"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800087"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800076"
+    },
+    {
+      "title": "약관에의한금융거래시계열금융회사의거래상대방의공시",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723000611"
+    },
+    {
+      "title": "공정거래자율준수프로그램운영현황(안내공시)              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800892"
+    },
+    {
+      "title": "[기재정정]주식소각결정              ",
+      "date": "20260721",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260721801166"
+    },
+    {
+      "title": "자기주식취득결과보고서",
+      "date": "20260721",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260721001104"
+    },
+    {
+      "title": "독립이사의선임ㆍ해임또는중도퇴임에관한신고",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000412"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707800489"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260626",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260626800643"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260622",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260622800616"
+    }
+  ]
+}

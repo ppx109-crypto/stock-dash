@@ -1,0 +1,193 @@
+{
+  "code": "086790",
+  "name": "하나금융지주",
+  "halves": [],
+  "company": {
+    "corp_name": "(주)하나금융지주",
+    "induty_code": "64992",
+    "hm_url": "www.hanafn.com",
+    "est_dt": "20051201",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": null,
+      "profit": 46934.07,
+      "receipt": "20240516001695",
+      "net_income": 34217.12,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240516001695"
+    },
+    {
+      "year": 2024,
+      "revenue": null,
+      "profit": 48551.82,
+      "receipt": "20250317000894",
+      "net_income": 37388.49,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250317000894"
+    },
+    {
+      "year": 2025,
+      "revenue": null,
+      "profit": 53508.98,
+      "receipt": "20260814004019",
+      "net_income": 40028.82,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004019"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917800269"
+    },
+    {
+      "title": "증권발행실적보고서",
+      "date": "20260911",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000352"
+    },
+    {
+      "title": "투자설명서(일괄신고)",
+      "date": "20260910",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260910000432"
+    },
+    {
+      "title": "일괄신고추가서류",
+      "date": "20260910",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260910000425"
+    },
+    {
+      "title": "[기재정정]주식소각결정              ",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800245"
+    },
+    {
+      "title": "[기재정정]주식소각결정              ",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800242"
+    },
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260825",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825800356"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260825",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000280"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800197"
+    },
+    {
+      "title": "[기재정정]사업보고서 (2025.12)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004019"
+    },
+    {
+      "title": "[기재정정]일괄신고서",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003925"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003800"
+    },
+    {
+      "title": "단기차입금증가결정(자회사의 주요경영사항)              ",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811800447"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807000587"
+    },
+    {
+      "title": "주요사항보고서(상각형조건부자본증권발행결정)",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000499"
+    },
+    {
+      "title": "타법인주식및출자증권취득결정(자율공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800443"
+    },
+    {
+      "title": "주식소각결정              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800414"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)(자회사의 주요경영사항)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800407"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800419"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)(자회사의 주요경영사항)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800403"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800401"
+    },
+    {
+      "title": "주요사항보고서(자기주식취득결정)",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000294"
+    },
+    {
+      "title": "기업가치제고계획(자율공시)              (2026년)",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800373"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800384"
+    },
+    {
+      "title": "증권발행실적보고서",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723000475"
+    },
+    {
+      "title": "현금ㆍ현물배당결정(자회사의 주요경영사항)              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800652"
+    },
+    {
+      "title": "현금ㆍ현물배당결정(자회사의 주요경영사항)              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800641"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정(자회사의 주요경영사항)              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800607"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정(자회사의 주요경영사항)              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800575"
+    },
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800564"
+    }
+  ]
+}

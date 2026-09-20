@@ -1,0 +1,240 @@
+{
+  "code": "068270",
+  "name": "셀트리온",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 18033.69024709,
+      "profit": 3918.87649948,
+      "receipt": "20250814003700",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 35 기 반기",
+          "add": "1803369024709",
+          "amount": "961457364491"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 35 기 반기",
+          "add": "391887649948",
+          "amount": "242466845608"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003700"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 25386.78712902,
+      "profit": 7736.61225753,
+      "receipt": "20260814003751",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 36 기 반기",
+          "add": "2538678712902",
+          "amount": "1393692794953"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 36 기 반기",
+          "add": "773661225753",
+          "amount": "451791591338"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003751"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)셀트리온",
+    "induty_code": "21100",
+    "hm_url": "www.celltrion.com",
+    "est_dt": "19910227",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 21764.3153138,
+      "profit": 6514.81422157,
+      "receipt": "20240318000913",
+      "net_income": 5356.47963959,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240318000913"
+    },
+    {
+      "year": 2024,
+      "revenue": 35573.03554371,
+      "profit": 4920.15534847,
+      "receipt": "20250317000929",
+      "net_income": 4226.91724154,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250317000929"
+    },
+    {
+      "year": 2025,
+      "revenue": 41624.95108881,
+      "profit": 11684.71345595,
+      "receipt": "20260316001415",
+      "net_income": 10296.13370428,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260316001415"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "주식소각결정              ",
+      "date": "20260916",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916800015"
+    },
+    {
+      "title": "자기주식취득결과보고서",
+      "date": "20260916",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000002"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP44(다잘렉스 바이오시밀러) 한국 임상 3상 시험계획 변경신청 승인)",
+      "date": "20260907",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260907800002"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP51(키트루다 바이오시밀러) 미국 임상 3상 시험계획 변경신청 승인)",
+      "date": "20260907",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260907800004"
+    },
+    {
+      "title": "주요사항보고서(자기주식취득결정)",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831000538"
+    },
+    {
+      "title": "수시공시의무관련사항(공정공시)              ",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831800153"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001911"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001319"
+    },
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260825",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825800463"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP51(키트루다 바이오시밀러) 한국 품목허가 신청)",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800001"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000493"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003751"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002259"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000450"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP44(다잘렉스 바이오시밀러) 한국 임상 3상 시험계획 변경신청)",
+      "date": "20260803",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803800514"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000527"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000526"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000525"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000524"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000521"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP55(코센틱스 바이오시밀러) 미국 품목허가 신청)",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800376"
+    },
+    {
+      "title": "[기재정정]연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260727",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727800078"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP13 SC(짐펜트라) 한국 임상 3상 시험계획 신청(류마티스 관절염 환자))",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800578"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP13 SC(짐펜트라) 미국 임상 3상 시험계획 신청 (류마티스 관절염 환자))",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800571"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000407"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP13 SC(짐펜트라) 유럽 임상 3상 시험계획 신청(Part1&2) (류마티스 관절염 환자))",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800560"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP55(코센틱스 바이오시밀러) 유럽 품목허가 신청)",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800206"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000781"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP51(키트루다 바이오시밀러) 유럽 임상 3상 조기종료 및 시험계획 자진취하)",
+      "date": "20260714",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714800540"
+    },
+    {
+      "title": "투자판단관련주요경영사항              (CTP44(다잘렉스 바이오시밀러) 유럽 임상 3상 시험계획 변경신청(Part1&2))",
+      "date": "20260714",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714800007"
+    }
+  ]
+}
