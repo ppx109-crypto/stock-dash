@@ -1,0 +1,1227 @@
+{
+ "schema_version": 1,
+ "reports": [
+  {
+   "code": "000100",
+   "name": "유한양행",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002038"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 11662.31575529,
+    "prior_revenue": 10705.51004703,
+    "operating_profit": 756.84328844,
+    "prior_operating_profit": 562.8068767,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002038",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "000270",
+   "name": "기아",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000427"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 625389.36,
+    "prior_revenue": 573671.45,
+    "operating_profit": 48336.5,
+    "prior_operating_profit": 57733.54,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260916000427",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "000660",
+   "name": "SK하이닉스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 1318950.33,
+    "prior_revenue": 398710.93,
+    "operating_profit": 981528.91,
+    "prior_operating_profit": 166533.55,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003509",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "003550",
+   "name": "LG",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002972"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 39402.45,
+    "prior_revenue": 37338.46,
+    "operating_profit": 9468.08,
+    "prior_operating_profit": 9149.31,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002972",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "005380",
+   "name": "현대자동차",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003521"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 951542.14,
+    "prior_revenue": 926944.38,
+    "operating_profit": 53655.74,
+    "prior_operating_profit": 72352.06,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003521",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "005490",
+   "name": "POSCO홀딩스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000957"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 371347.90631212,
+    "prior_revenue": 349923.63367898,
+    "operating_profit": 15258.45449199,
+    "prior_operating_profit": 11756.1315173,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000957",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "005930",
+   "name": "삼성전자",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 3053729.14,
+    "prior_revenue": 1537068.2,
+    "operating_profit": 1467252.09,
+    "prior_operating_profit": 113613.29,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003699",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "006400",
+   "name": "삼성SDI",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003578"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 73451.61306669,
+    "prior_revenue": 63562.23796915,
+    "operating_profit": 481.93813418,
+    "prior_operating_profit": -8319.05582042,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003578",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "009150",
+   "name": "삼성전기",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003805"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 66663.18232625,
+    "prior_revenue": 55232.78231955,
+    "operating_profit": 7209.41863834,
+    "prior_operating_profit": 4135.57994356,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003805",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "009540",
+   "name": "HD한국조선해양",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002569"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 170679.36229,
+    "prior_revenue": 142001.22931,
+    "operating_profit": 30011.16502,
+    "prior_operating_profit": 18127.9548,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002569",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "010130",
+   "name": "고려아연",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003958"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 124446.28513649,
+    "prior_revenue": 76581.65058958,
+    "operating_profit": 13331.68321617,
+    "prior_operating_profit": 5299.91066186,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003958",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "010950",
+   "name": "S-Oil",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000827"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 202861.77,
+    "prior_revenue": 170390.37,
+    "operating_profit": 21960.93,
+    "prior_operating_profit": -3655.12,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000827",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "011200",
+   "name": "HMM",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001042"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 61207.0,
+    "prior_revenue": 54774.29,
+    "operating_profit": 6232.12,
+    "prior_operating_profit": 8470.74,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001042",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "012330",
+   "name": "현대모비스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004065"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 318852.09,
+    "prior_revenue": 306882.75,
+    "operating_profit": 17778.06,
+    "prior_operating_profit": 16466.83,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004065",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "012450",
+   "name": "한화에어로스페이스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003198"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 150438.87093,
+    "prior_revenue": 117951.79682,
+    "operating_profit": 20043.76374,
+    "prior_operating_profit": 14252.6356,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003198",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "015760",
+   "name": "한국전력공사",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002198"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 463173.39,
+    "prior_revenue": 461741.22,
+    "operating_profit": 49127.21,
+    "prior_operating_profit": 58894.79,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002198",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "017670",
+   "name": "SK텔레콤",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001728"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 87513.69,
+    "prior_revenue": 87924.77,
+    "operating_profit": 11036.34,
+    "prior_operating_profit": 9056.44,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001728",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "018260",
+   "name": "삼성에스디에스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003604"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 70706.91706128,
+    "prior_revenue": 70017.48158775,
+    "operating_profit": 3101.46348715,
+    "prior_operating_profit": 4987.06325631,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003604",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "028260",
+   "name": "삼성물산",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002969"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 224608.7879727,
+    "prior_revenue": 197588.5687474,
+    "operating_profit": 17521.00294114,
+    "prior_operating_profit": 14770.35382315,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002969",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "030200",
+   "name": "케이티",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003463"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 134583.14,
+    "prior_revenue": 142724.54,
+    "operating_profit": 11310.16,
+    "prior_operating_profit": 17035.89,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003463",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "033780",
+   "name": "케이티앤지",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004174"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 34051.55,
+    "prior_revenue": 30390.11,
+    "operating_profit": 7789.88,
+    "prior_operating_profit": 6354.42,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004174",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "034730",
+   "name": "SK",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002185"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 789548.91,
+    "prior_revenue": 613718.96,
+    "operating_profit": 85143.66,
+    "prior_operating_profit": 5993.35,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002185",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "035420",
+   "name": "NAVER",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002266"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 66298.16183195,
+    "prior_revenue": 57018.6840812,
+    "operating_profit": 10620.66552592,
+    "prior_operating_profit": 10268.55081011,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002266",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "035720",
+   "name": "카카오",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 40405.33247476,
+    "prior_revenue": 38920.43657398,
+    "operating_profit": 4884.14000457,
+    "prior_operating_profit": 2913.26822837,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "036930",
+   "name": "주성엔지니어링",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002613"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 1147.60909781,
+    "prior_revenue": 1996.38687501,
+    "operating_profit": -56.08001676,
+    "prior_operating_profit": 404.83097981,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002613",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "039030",
+   "name": "이오테크닉스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001118"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 2429.00793816,
+    "prior_revenue": 1790.74783605,
+    "operating_profit": 688.8602811,
+    "prior_operating_profit": 403.07486055,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001118",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "042700",
+   "name": "한미반도체",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003665"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 3020.65115926,
+    "prior_revenue": 3274.39097571,
+    "operating_profit": 1388.03055438,
+    "prior_operating_profit": 1559.40316473,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003665",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "051900",
+   "name": "LG생활건강",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002412"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 32340.10726718,
+    "prior_revenue": 33027.49508067,
+    "operating_profit": 2106.13270644,
+    "prior_operating_profit": 1971.8340028,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002412",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "051910",
+   "name": "LG화학",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002655"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 264226.9,
+    "prior_revenue": 235388.63,
+    "operating_profit": 5498.97,
+    "prior_operating_profit": 9144.5,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002655",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "058470",
+   "name": "리노공업",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000445"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 2429.58602798,
+    "prior_revenue": 1909.32307676,
+    "operating_profit": 1208.14329893,
+    "prior_operating_profit": 883.82117361,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000445",
+    "basis": "별도",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "068270",
+   "name": "셀트리온",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003751"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 25386.78712902,
+    "prior_revenue": 18033.69024709,
+    "operating_profit": 7736.61225753,
+    "prior_operating_profit": 3918.87649948,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003751",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "086520",
+   "name": "에코프로",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000296"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 16397.65217785,
+    "prior_revenue": 17385.32235577,
+    "operating_profit": 899.68045155,
+    "prior_operating_profit": 176.01373813,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000296",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "096770",
+   "name": "SK이노베이션",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002500"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 534482.17711,
+    "prior_revenue": 404531.77892,
+    "operating_profit": 56494.61675,
+    "prior_operating_profit": -4622.0737,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002500",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "097950",
+   "name": "CJ제일제당",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001793"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 144732.33487,
+    "prior_revenue": 144456.46828,
+    "operating_profit": 4957.06931,
+    "prior_operating_profit": 6822.68955,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001793",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "108490",
+   "name": "로보티즈",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003380"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 272.13463293,
+    "prior_revenue": 181.00860783,
+    "operating_profit": -98.62234186,
+    "prior_operating_profit": 10.66770055,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003380",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "196170",
+   "name": "알테오젠",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001294"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 1404.92885685,
+    "prior_revenue": 1023.39078027,
+    "operating_profit": 734.80904822,
+    "prior_operating_profit": 605.91275114,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001294",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "207940",
+   "name": "삼성바이오로직스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003375"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 25780.30056694,
+    "prior_revenue": 25881.78371259,
+    "operating_profit": 11671.96422965,
+    "prior_operating_profit": 9622.88400562,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003375",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "222800",
+   "name": "심텍",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001430"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 9369.362041,
+    "prior_revenue": 6443.64848818,
+    "operating_profit": 766.00558645,
+    "prior_operating_profit": -107.79950338,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001430",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "240810",
+   "name": "원익IPS",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001845"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 3813.72590019,
+    "prior_revenue": 3663.66832775,
+    "operating_profit": 291.17870941,
+    "prior_operating_profit": 290.70204793,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001845",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "247540",
+   "name": "에코프로비엠",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002535"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 11820.73426919,
+    "prior_revenue": 14095.05209376,
+    "operating_profit": 389.53714565,
+    "prior_operating_profit": 512.70911971,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002535",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "259960",
+   "name": "크래프톤",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003894"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 26616.45610446,
+    "prior_revenue": 15362.32622991,
+    "operating_profit": 9724.84871433,
+    "prior_operating_profit": 7033.39456746,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003894",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "267250",
+   "name": "HD현대",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003420"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 420112.82575,
+    "prior_revenue": 342979.57897,
+    "operating_profit": 69593.82355,
+    "prior_operating_profit": 24252.83811,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003420",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "271560",
+   "name": "오리온",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260818000305"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 18239.41014134,
+    "prior_revenue": 15789.38774272,
+    "operating_profit": 2980.43273797,
+    "prior_operating_profit": 2528.26571824,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260818000305",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "277810",
+   "name": "레인보우로보틱스",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002901"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 213.76669481,
+    "prior_revenue": 104.08248211,
+    "operating_profit": -35.94773748,
+    "prior_operating_profit": -34.60483452,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002901",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "353200",
+   "name": "대덕전자",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001620"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 7472.89416199,
+    "prior_revenue": 4612.33491217,
+    "operating_profit": 1215.7451681,
+    "prior_operating_profit": -43.3540641,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001620",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "373220",
+   "name": "LG에너지솔루션",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813000255"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 141152.16,
+    "prior_revenue": 118304.03,
+    "operating_profit": -944.53,
+    "prior_operating_profit": 8668.32,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813000255",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  },
+  {
+   "code": "402340",
+   "name": "SK스퀘어",
+   "as_of": "2026-09-20",
+   "summary": {
+    "text": "2026년 반기 누적과 전년 같은 누적 기간을 DART 재무제표(누적 열)로 비교했습니다. 수급·수정주가 추세·적정주가는 이번 조사에서 확인하지 못했습니다.",
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003471"
+   },
+   "financial": {
+    "period": "2026-06",
+    "prior_period": "2025-06",
+    "revenue": 6288.98,
+    "prior_revenue": 8094.02,
+    "operating_profit": 275137.23,
+    "prior_operating_profit": 30534.27,
+    "source": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003471",
+    "basis": "연결",
+    "currency": "KRW",
+    "unit": "억원"
+   },
+   "data_gaps": [
+    "외국인·기관 순매수 미수집",
+    "수정주가 추세 미수집",
+    "적정주가 평가 미수집"
+   ]
+  }
+ ]
+}
