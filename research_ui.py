@@ -35,9 +35,14 @@ def link_codes(store, state, known):
     return True
 
 
+# 판정 규칙을 바꾸면 캐시에 남은 옛 등급이 그대로 보입니다. 규칙 이름을 캐시
+# 열쇠에 넣어, 규칙이 바뀌면 옛 값이 저절로 버려지게 합니다.
+RULES = 'ema-5-20-40-60-abc'
+
+
 @st.cache_data(ttl=3600, show_spinner=False)
-def graded_stocks(codes, research_key):
-    """관심종목의 추세·실적 등급. 하루 한 번 갱신되는 자료라 한 시간 재사용합니다."""
+def graded_stocks(codes, research_key, rules=RULES):
+    """관심종목의 EMA 등급. 하루 한 번 갱신되는 자료라 한 시간 재사용합니다."""
     return market.grade_all(codes, published())
 
 
@@ -47,11 +52,29 @@ def market_top(top):
     return market.top_by_market(top)
 
 
+PENDING = '보류'
+
+
 def _pick(key):
     """어느 목록에서 눌렀든 마지막으로 고른 종목 하나만 기억합니다."""
     code = st.session_state.get(key)
     if code:
         st.session_state['px_pick'] = code
+
+
+def _buckets(graded):
+    """그룹별 종목 묶음. 판정에 필요한 거래일이 모자란 종목은 따로 모읍니다."""
+    groups = {key: [] for key in GROUP_TITLES}
+    groups[PENDING] = []
+    for row in graded:
+        groups[row['group'] if row.get('group') in GROUP_TITLES else PENDING].append(row)
+    for rows in groups.values():
+        rows.sort(key=lambda r: (-r.get('met', 0), r['name']))
+    # A·B·C는 비어 있어도 남겨 둡니다. 눌렀을 때 "없음"을 보는 편이,
+    # 버튼이 사라져 어느 그룹을 봤는지 모르게 되는 것보다 낫습니다.
+    if not groups[PENDING]:
+        del groups[PENDING]
+    return groups
 
 
 def decision_screen(state, research, graded):
@@ -65,15 +88,22 @@ def decision_screen(state, research, graded):
                 + compact_board(graded) + close_frame(), unsafe_allow_html=True)
     named = {g['code']: g['name'] for g in graded}
     if graded:
-        with st.expander('그룹 판정 크게 보기 · 종목을 누르면 아래에 판단 카드가 열립니다'):
+        with st.expander('그룹 판정 크게 보기 · 그룹을 누르면 그 안의 종목이 나옵니다'):
             st.markdown(frame(group_board(graded)), unsafe_allow_html=True)
-            for key in GROUP_TITLES:
-                rows = sorted((g for g in graded if g.get('group') == key),
-                              key=lambda g: (-g.get('met', 0), g.get('name', '')))
-                if rows:
-                    st.pills(GROUP_TITLES[key][0], [g['code'] for g in rows],
-                             format_func=lambda c: named.get(c, c),
-                             key=f'px_group_{key}', on_change=_pick, args=(f'px_group_{key}',))
+            buckets = _buckets(graded)
+            titles = {PENDING: '판정 보류'}
+            titles.update({key: GROUP_TITLES[key][0] for key in GROUP_TITLES})
+            st.pills('그룹', list(buckets),
+                     format_func=lambda k: f'{titles[k]} · {len(buckets[k])}종목',
+                     key='px_group', default=next(iter(buckets)))
+            picked = st.session_state.get('px_group') or next(iter(buckets))
+            rows = buckets.get(picked) or []
+            if rows:
+                st.pills(f'{titles[picked]} 종목 · 누르면 아래에 판단 카드가 열립니다',
+                         [r['code'] for r in rows], format_func=lambda c: named.get(c, c),
+                         key='px_group_pick', on_change=_pick, args=('px_group_pick',))
+            else:
+                st.caption(f'{titles[picked]}에 해당하는 종목이 없습니다.')
     if stocks:
         with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
             labels = {s['code']: s['name'] for s in stocks}

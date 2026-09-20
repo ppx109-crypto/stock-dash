@@ -257,6 +257,14 @@ def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
     )
 
 
+def _bar_value(center: float, top: float, value: float, color: str) -> str:
+    """막대 값을 눈에 보이게 적습니다. 막대가 높으면 위가 좁아 안쪽에 흰 글씨로 둡니다."""
+    inside = top < 14
+    return (f'<text x="{center:.1f}" y="{(top + 12) if inside else (top - 4):.1f}"'
+            f' text-anchor="middle" fill="{"#FFFFFF" if inside else color}"'
+            f' font-size="10" font-weight="700">{value:,.0f}</text>')
+
+
 def _pair(prior: float, now: float, color: str, labels=("전년", "올해")) -> str:
     """값이 둘뿐인 비교. 선을 그으면 사이를 추세로 읽게 되므로 막대로 둡니다."""
     w, h, base = 300.0, 62.0, 46.0
@@ -272,8 +280,9 @@ def _pair(prior: float, now: float, color: str, labels=("전년", "올해")) -> 
         marks += (f'<rect x="{center - 26:.1f}" y="{y:.1f}" width="52" height="{max(height, 2):.1f}"'
                   f' rx="4" fill="{color}" opacity="{0.45 if index == 0 else 0.95}">'
                   f'<title>{label} {value:,.0f}</title></rect>'
-                  f'<text x="{center:.1f}" y="{h - 3:.0f}" text-anchor="middle" fill="#7E7463"'
-                  f' font-size="9">{label}</text>')
+                  + _bar_value(center, y, value, color)
+                  + f'<text x="{center:.1f}" y="{h - 3:.0f}" text-anchor="middle" fill="#7E7463"'
+                    f' font-size="9">{label}</text>')
     return (f'<svg class="pxb-chart mini" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none">'
             f'<line x1="0" y1="{zero:.1f}" x2="{w:.0f}" y2="{zero:.1f}" stroke="#EFE7D8"/>{marks}</svg>')
 
@@ -397,9 +406,11 @@ def stock_cards(report: dict | None, grade: dict | None) -> str:
         check_list = '<ul class="pxb-list">' + "".join(
             f'<li>{_e(name)}<em style="color:{LINE if ok else DOWN}">'
             f'{"충족" if ok else "미충족"}</em></li>' for name, ok in checks.items()) + "</ul>"
+    # 규칙이 바뀌어 사라진 그룹 이름이 남아 있어도 화면이 멈추지 않게 합니다.
     group = (grade or {}).get("group")
-    badge = (f'<span class="pxb-tag" style="color:{STATUS[group]};background:{STATUS[group]}1f">'
-             f'{group}그룹</span>') if group else ""
+    tone = STATUS.get(group)
+    badge = (f'<span class="pxb-tag" style="color:{tone};background:{tone}1f">'
+             f'{group}그룹</span>') if tone else ""
     card_score = _card(
         0, "판단점수",
         f'<div class="pxb-value">{score}<small>/100</small></div>'
@@ -409,22 +420,30 @@ def stock_cards(report: dict | None, grade: dict | None) -> str:
         profit_text = growth(money["operating_profit"], money["prior_operating_profit"])
         revenue_text = growth(money["revenue"], money["prior_revenue"])
         period = f'{_e(money.get("prior_period", ""))} → {_e(money.get("period", ""))}'
+        unit = _e(money.get("unit", ""))
+        # 증감률만 적으면 흑자 전환처럼 %로 말할 수 없는 변화의 크기를 알 수 없습니다.
+        profit_amount = (f'<p class="pxb-sub" style="margin-top:4px">'
+                         f'{money["prior_operating_profit"]:,.0f} → '
+                         f'{money["operating_profit"]:,.0f} {unit}</p>')
+        revenue_amount = (f'<p class="pxb-sub" style="margin-top:4px">'
+                          f'{money["prior_revenue"]:,.0f} → {money["revenue"]:,.0f} {unit}</p>')
     else:
         profit_text = revenue_text = "조사 필요"
         period = "실적 미수집"
+        profit_amount = revenue_amount = ""
     profit_color = DOWN if profit_text.startswith("-") or "적자" in profit_text else UP
     revenue_color = DOWN if revenue_text.startswith("-") or "적자" in revenue_text else UP
 
     card_profit = _card(
         1, "영업이익 성장",
         f'<div class="pxb-value" style="color:{profit_color}">{_e(profit_text)}</div>'
-        f'<p class="pxb-sub">{period}</p>'
+        f'<p class="pxb-sub">{period}</p>{profit_amount}'
         + (_pair(money["prior_operating_profit"], money["operating_profit"], profit_color,
                  (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""))
     card_revenue = _card(
         2, "매출 성장",
         f'<div class="pxb-value" style="color:{revenue_color}">{_e(revenue_text)}</div>'
-        f'<p class="pxb-sub">{period}</p>'
+        f'<p class="pxb-sub">{period}</p>{revenue_amount}'
         + (_pair(money["prior_revenue"], money["revenue"], revenue_color,
                  (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""))
 
