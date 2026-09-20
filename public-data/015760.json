@@ -1,0 +1,140 @@
+{
+  "code": "015760",
+  "name": "한국전력공사",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 461741.22,
+      "profit": 58894.79,
+      "receipt": "20250814002179",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 65 기 반기",
+          "add": "46174122000000",
+          "amount": "21950138000000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 65 기 반기",
+          "add": "5889479000000",
+          "amount": "2135872000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814002179"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 463173.39,
+      "profit": 49127.21,
+      "receipt": "20260814002198",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 66 기 반기",
+          "add": "46317339000000",
+          "amount": "21918852000000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 66 기 반기",
+          "add": "4912721000000",
+          "amount": "1128552000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002198"
+    }
+  ],
+  "company": {
+    "corp_name": "한국전력공사(주)",
+    "induty_code": "35120",
+    "hm_url": "www.kepco.co.kr",
+    "est_dt": "19610701",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 882194.61,
+      "profit": -45416.48,
+      "receipt": "20240329002856",
+      "net_income": -48225.49,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240329002856"
+    },
+    {
+      "year": 2024,
+      "revenue": 933988.96,
+      "profit": 83647.1,
+      "receipt": "20250318000747",
+      "net_income": 34916.98,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000747"
+    },
+    {
+      "year": 2025,
+      "revenue": 974293.46,
+      "profit": 134905.57,
+      "receipt": "20260317000686",
+      "net_income": 85449.18,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260317000686"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260903",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260903800582"
+    },
+    {
+      "title": "주주명부폐쇄기간또는기준일설정              ",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827800391"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002198"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260812",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260812800565"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807800306"
+    },
+    {
+      "title": "결산실적공시예고(안내공시)              ",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807800302"
+    },
+    {
+      "title": "독립이사의선임ㆍ해임또는중도퇴임에관한신고",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707000004"
+    },
+    {
+      "title": "기타경영사항(자율공시)(종속회사의주요경영사항)              ",
+      "date": "20260629",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260629801162"
+    },
+    {
+      "title": "중대재해발생(종속회사의주요경영사항)              ",
+      "date": "20260624",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624800446"
+    },
+    {
+      "title": "소송등의판결ㆍ결정(일정금액이상의청구)              ",
+      "date": "20260623",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260623800004"
+    }
+  ]
+}

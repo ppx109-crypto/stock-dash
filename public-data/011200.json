@@ -1,0 +1,135 @@
+{
+  "code": "011200",
+  "name": "HMM",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 54774.29,
+      "profit": 8470.74,
+      "receipt": "20250813000957",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 50 기 반기",
+          "add": "5477429000000",
+          "amount": "2622747000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 50 기 반기",
+          "add": "847074000000",
+          "amount": "233175000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813000957"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 61207.0,
+      "profit": 6232.12,
+      "receipt": "20260813001042",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 51 기 반기",
+          "add": "6120700000000",
+          "amount": "3401966000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 51 기 반기",
+          "add": "623212000000",
+          "amount": "354118000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001042"
+    }
+  ],
+  "company": {
+    "corp_name": "에이치엠엠(주) ",
+    "induty_code": "50112",
+    "hm_url": "www.hmm21.com",
+    "est_dt": "19760325",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 84009.69,
+      "profit": 5847.7,
+      "receipt": "20240328001188",
+      "net_income": 9685.6,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240328001188"
+    },
+    {
+      "year": 2024,
+      "revenue": 117002.24,
+      "profit": 35128.47,
+      "receipt": "20250318000828",
+      "net_income": 37821.69,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000828"
+    },
+    {
+      "year": 2025,
+      "revenue": 108914.43,
+      "profit": 14612.02,
+      "receipt": "20260318001444",
+      "net_income": 18784.36,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001444"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "단일판매ㆍ공급계약체결              ",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908800128"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(대표회사용)]",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000323"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001042"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000586"
+    },
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260807",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260807800131"
+    },
+    {
+      "title": "장래사업ㆍ경영계획(공정공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800137"
+    },
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260709",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260709800131"
+    },
+    {
+      "title": "단일판매ㆍ공급계약체결              ",
+      "date": "20260626",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260626800701"
+    },
+    {
+      "title": "신규시설투자등              ",
+      "date": "20260624",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624800682"
+    }
+  ]
+}

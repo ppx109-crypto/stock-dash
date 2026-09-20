@@ -1,0 +1,155 @@
+{
+  "code": "097950",
+  "name": "CJ제일제당",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 144456.46828,
+      "profit": 6822.68955,
+      "receipt": "20250814002788",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 19 기 반기",
+          "add": "14445646828000",
+          "amount": "7237175773000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 19 기 반기",
+          "add": "682268955000",
+          "amount": "353129964000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814002788"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 144732.33487,
+      "profit": 4957.06931,
+      "receipt": "20260814001793",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 20 기 반기",
+          "add": "14473233487000",
+          "amount": "7362113166000"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 20 기 반기",
+          "add": "495706931000",
+          "amount": "257574531000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001793"
+    }
+  ],
+  "company": {
+    "corp_name": "CJ제일제당(주)",
+    "induty_code": "108",
+    "hm_url": "www.cj.co.kr",
+    "est_dt": "20070904",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 290234.72909,
+      "profit": 12915.82413,
+      "receipt": "20240319000861",
+      "net_income": 3859.2726,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240319000861"
+    },
+    {
+      "year": 2024,
+      "revenue": 293590.81823,
+      "profit": 15530.17638,
+      "receipt": "20250321001604",
+      "net_income": 1481.81177,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250321001604"
+    },
+    {
+      "year": 2025,
+      "revenue": 273425.891,
+      "profit": 12336.04641,
+      "receipt": "20260316001116",
+      "net_income": -5714.55619874,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260316001116"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001809"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800581"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001793"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814001501"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811800053"
+    },
+    {
+      "title": "동일인등출자계열회사와의상품ㆍ용역거래",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000700"
+    },
+    {
+      "title": "동일인등출자계열회사와의상품ㆍ용역거래변경",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000693"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810800750"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810800673"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805800684"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260720",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800561"
+    },
+    {
+      "title": "결산실적공시예고(안내공시)              ",
+      "date": "20260720",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800553"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260623",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260623000341"
+    }
+  ]
+}

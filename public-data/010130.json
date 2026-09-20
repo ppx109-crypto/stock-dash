@@ -1,0 +1,240 @@
+{
+  "code": "010130",
+  "name": "고려아연",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 76581.65058958,
+      "profit": 5299.91066186,
+      "receipt": "20260813001718",
+      "matched": [
+        {
+          "account_nm": "Ⅰ.매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 52 기 반기",
+          "add": "7658165058958",
+          "amount": "3825380317089"
+        },
+        {
+          "account_nm": "Ⅴ.영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 52 기 반기",
+          "add": "529991066186",
+          "amount": "258885283093"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001718"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 124446.28513649,
+      "profit": 13331.68321617,
+      "receipt": "20260814003958",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 53 기 반기",
+          "add": "12444628513649",
+          "amount": "6372601096848"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 53 기 반기",
+          "add": "1333168321617",
+          "amount": "587113409059"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003958"
+    }
+  ],
+  "company": {
+    "corp_name": "고려아연(주)",
+    "induty_code": "24213",
+    "hm_url": "www.koreazinc.co.kr",
+    "est_dt": "19740801",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 97045.21343024,
+      "profit": 6599.35424598,
+      "receipt": "20260813001690",
+      "net_income": 4323.70753038,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001690"
+    },
+    {
+      "year": 2024,
+      "revenue": 120529.18410249,
+      "profit": 7234.72208523,
+      "receipt": "20260813001711",
+      "net_income": 3008.17351283,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001711"
+    },
+    {
+      "year": 2025,
+      "revenue": 165878.50779912,
+      "profit": 12319.26775791,
+      "receipt": "20260813001726",
+      "net_income": 7750.1894154,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001726"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917000266"
+    },
+    {
+      "title": "중대재해발생              ",
+      "date": "20260917",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260917800001"
+    },
+    {
+      "title": "독립이사의선임ㆍ해임또는중도퇴임에관한신고",
+      "date": "20260909",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909000450"
+    },
+    {
+      "title": "임시주주총회결과              ",
+      "date": "20260909",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909800563"
+    },
+    {
+      "title": "소송등의판결ㆍ결정              ",
+      "date": "20260907",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260907800121"
+    },
+    {
+      "title": "[기재정정]소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260904",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904800002"
+    },
+    {
+      "title": "소송등의판결ㆍ결정              ",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831800412"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831000988"
+    },
+    {
+      "title": "소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800491"
+    },
+    {
+      "title": "소송등의판결ㆍ결정              ",
+      "date": "20260825",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825800363"
+    },
+    {
+      "title": "[기재정정]소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260821",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800886"
+    },
+    {
+      "title": "[기재정정]소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260820",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820800167"
+    },
+    {
+      "title": "소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800536"
+    },
+    {
+      "title": "소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800401"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003958"
+    },
+    {
+      "title": "[기재정정]소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814801871"
+    },
+    {
+      "title": "[기재정정]소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814800137"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000087"
+    },
+    {
+      "title": "[기재정정]소송등의제기ㆍ신청(경영권분쟁소송)              ",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814800011"
+    },
+    {
+      "title": "[기재정정]분기보고서 (2026.03)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001749"
+    },
+    {
+      "title": "[기재정정]사업보고서 (2025.12)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001726"
+    },
+    {
+      "title": "[기재정정]분기보고서 (2025.09)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001721"
+    },
+    {
+      "title": "[기재정정]반기보고서 (2025.06)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001718"
+    },
+    {
+      "title": "[기재정정]분기보고서 (2025.03)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001715"
+    },
+    {
+      "title": "[기재정정]사업보고서 (2024.12)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001711"
+    },
+    {
+      "title": "[기재정정]분기보고서 (2024.09)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001704"
+    },
+    {
+      "title": "[기재정정]반기보고서 (2024.06)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001701"
+    },
+    {
+      "title": "[기재정정]분기보고서 (2024.03)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001696"
+    },
+    {
+      "title": "[기재정정]사업보고서 (2023.12)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001690"
+    },
+    {
+      "title": "[기재정정]분기보고서 (2023.09)",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001682"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "code": "033780",
+  "name": "케이티앤지",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 30390.11,
+      "profit": 6354.42,
+      "receipt": "20250814004354",
+      "matched": [
+        {
+          "account_nm": "매출",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 39 기 반기",
+          "add": "3039011000000",
+          "amount": "1547903000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 39 기 반기",
+          "add": "635442000000",
+          "amount": "349882000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814004354"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 34051.55,
+      "profit": 7789.88,
+      "receipt": "20260814004174",
+      "matched": [
+        {
+          "account_nm": "매출",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 40 기 반기",
+          "add": "3405155000000",
+          "amount": "1701557000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 40 기 반기",
+          "add": "778988000000",
+          "amount": "414452000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004174"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)케이티앤지",
+    "induty_code": "12000",
+    "hm_url": "www.ktng.com",
+    "est_dt": "19870401",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 58626.08,
+      "profit": 11673.36,
+      "receipt": "20240320001212",
+      "net_income": 9026.62,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240320001212"
+    },
+    {
+      "year": 2024,
+      "revenue": 59087.92,
+      "profit": 11888.14,
+      "receipt": "20250318001223",
+      "net_income": 11657.27,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318001223"
+    },
+    {
+      "year": 2025,
+      "revenue": 65797.07,
+      "profit": 13436.66,
+      "receipt": "20260318001422",
+      "net_income": 10900.72,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001422"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "소송등의판결ㆍ결정(자율공시:일정금액미만의청구)              ",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918800709"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260907",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260907000176"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(대표회사용)]",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827000996"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004174"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814004003"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20260806",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260806800319"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260806",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260806800305"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20260806",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260806800311"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805000499"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800962"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260703",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260703000113"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260629",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260629800954"
+    }
+  ]
+}

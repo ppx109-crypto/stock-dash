@@ -1,0 +1,175 @@
+{
+  "code": "051900",
+  "name": "LG생활건강",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 33027.49508067,
+      "profit": 1971.8340028,
+      "receipt": "20250814002650",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 25 기 반기",
+          "add": "3302749508067",
+          "amount": "1604872243862"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 25 기 반기",
+          "add": "197183400280",
+          "amount": "54814037403"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814002650"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 32340.10726718,
+      "profit": 2106.13270644,
+      "receipt": "20260814002412",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 26 기 반기",
+          "add": "3234010726718",
+          "amount": "1657417975831"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 26 기 반기",
+          "add": "210613270644",
+          "amount": "102782128736"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002412"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)LG생활건강",
+    "induty_code": "20422",
+    "hm_url": "www.lghnh.com",
+    "est_dt": "20010403",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 68048.39370129,
+      "profit": 4869.81224742,
+      "receipt": "20240318000511",
+      "net_income": 1427.55479356,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240318000511"
+    },
+    {
+      "year": 2024,
+      "revenue": 68119.18756741,
+      "profit": 4590.4591218,
+      "receipt": "20250317000790",
+      "net_income": 1891.34758428,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250317000790"
+    },
+    {
+      "year": 2025,
+      "revenue": 63554.89977342,
+      "profit": 1706.88596929,
+      "receipt": "20260316000985",
+      "net_income": -1000.95349667,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260316000985"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "[기재정정]유상증자결정(종속회사의주요경영사항)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800624"
+    },
+    {
+      "title": "[기재정정]타법인주식및출자증권취득결정(종속회사의주요경영사항)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800508"
+    },
+    {
+      "title": "[기재정정]타법인주식및출자증권처분결정(자율공시)(종속회사의주요경영사항)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800452"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001461"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800576"
+    },
+    {
+      "title": "유상증자결정(종속회사의주요경영사항)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800483"
+    },
+    {
+      "title": "타법인주식및출자증권취득결정(종속회사의주요경영사항)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800439"
+    },
+    {
+      "title": "타법인주식및출자증권처분결정(자율공시)(종속회사의주요경영사항)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800386"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819800319"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002573"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002412"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800757"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800735"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800683"
+    },
+    {
+      "title": "결산실적공시예고(안내공시)              ",
+      "date": "20260715",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260715800617"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260715",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260715800612"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630800815"
+    }
+  ]
+}

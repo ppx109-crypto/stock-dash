@@ -1,0 +1,240 @@
+{
+  "code": "018260",
+  "name": "삼성에스디에스",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 70017.48158775,
+      "profit": 4987.06325631,
+      "receipt": "20250814003738",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 41 기 반기",
+          "add": "7001748158775",
+          "amount": "3511984578644"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 41 기 반기",
+          "add": "498706325631",
+          "amount": "230161317475"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003738"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 70706.91706128,
+      "profit": 3101.46348715,
+      "receipt": "20260814003604",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 42 기 반기",
+          "add": "7070691706128",
+          "amount": "3717774123283"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 42 기 반기",
+          "add": "310146348715",
+          "amount": "231805459849"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003604"
+    }
+  ],
+  "company": {
+    "corp_name": "삼성에스디에스(주)",
+    "induty_code": "62021",
+    "hm_url": "www.samsungsds.com",
+    "est_dt": "19850501",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 132768.44204872,
+      "profit": 8082.30946594,
+      "receipt": "20240329003204",
+      "net_income": 6934.22011534,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240329003204"
+    },
+    {
+      "year": 2024,
+      "revenue": 138282.320338,
+      "profit": 9110.96907001,
+      "receipt": "20250311001129",
+      "net_income": 7569.96881809,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250311001129"
+    },
+    {
+      "year": 2025,
+      "revenue": 139298.68497711,
+      "profit": 9571.02744609,
+      "receipt": "20260310002989",
+      "net_income": 7595.3880595,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260310002989"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800449"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800443"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831000322"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260826",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000495"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003604"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000715"
+    },
+    {
+      "title": "동일인등출자계열회사와의상품ㆍ용역거래변경",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814000704"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800157"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800154"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800152"
+    },
+    {
+      "title": "[기재정정]특수관계인과의보험거래",
+      "date": "20260728",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260728000274"
+    },
+    {
+      "title": "[기재정정]특수관계인과의보험거래",
+      "date": "20260728",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260728000271"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000067"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723000135"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723000134"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260722",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260722000207"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260720",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720000122"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000815"
+    },
+    {
+      "title": "[기재정정]임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000320"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260716",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000303"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260715",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260715000455"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260715",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260715000321"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260713",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713000163"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260709",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260709000673"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260709",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260709000609"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708000363"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260708",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708000003"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707000387"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707000064"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260707",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260707000014"
+    }
+  ]
+}

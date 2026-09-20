@@ -1,0 +1,215 @@
+{
+  "code": "003550",
+  "name": "LG",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 37338.46,
+      "profit": 9149.31,
+      "receipt": "20250814003006",
+      "matched": [
+        {
+          "account_nm": "매출및지분법손익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 64 기 반기",
+          "add": "3733846000000",
+          "amount": "1797748000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 64 기 반기",
+          "add": "914931000000",
+          "amount": "276889000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003006"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 39402.45,
+      "profit": 9468.08,
+      "receipt": "20260814002972",
+      "matched": [
+        {
+          "account_nm": "매출및지분법손익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 65 기 반기",
+          "add": "3940245000000",
+          "amount": "2139622000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 65 기 반기",
+          "add": "946808000000",
+          "amount": "532978000000"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002972"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)LG",
+    "induty_code": "64992",
+    "hm_url": "www.lg.co.kr",
+    "est_dt": "19470105",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 74453.36,
+      "profit": 15890.13,
+      "receipt": "20240319000703",
+      "net_income": 12612.19,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240319000703"
+    },
+    {
+      "year": 2024,
+      "revenue": 71755.05,
+      "profit": 9668.42,
+      "receipt": "20250318001070",
+      "net_income": 5747.27,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318001070"
+    },
+    {
+      "year": 2025,
+      "revenue": 72525.47,
+      "profit": 9121.74,
+      "receipt": "20260318001025",
+      "net_income": 7372.48,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001025"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260914",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914800576"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260909",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909800306"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(대표회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001413"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827800295"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20260827",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260827800293"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002972"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813801235"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813800552"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811800517"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811800515"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260811",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811000462"
+    },
+    {
+      "title": "주식소각결정(자회사의 주요경영사항)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800507"
+    },
+    {
+      "title": "신규시설투자등(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729801014"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800977"
+    },
+    {
+      "title": "현금ㆍ현물배당결정(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800970"
+    },
+    {
+      "title": "주요사항보고서(자기주식취득신탁계약체결결정)(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800964"
+    },
+    {
+      "title": "주요사항보고서(자기주식취득신탁계약해지결정)(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800637"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800584"
+    },
+    {
+      "title": "현금ㆍ현물배당결정(자회사의 주요경영사항)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800573"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800743"
+    },
+    {
+      "title": "결산실적공시예고(안내공시)              ",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800729"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260703",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260703000591"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260701",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260701000325"
+    },
+    {
+      "title": "투자판단관련주요경영사항(자회사의 주요경영사항)              (제미다파엠서방정 국내 품목허가 신청)",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630801405"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260622",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260622800268"
+    }
+  ]
+}

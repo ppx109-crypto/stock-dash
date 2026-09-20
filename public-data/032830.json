@@ -1,0 +1,158 @@
+{
+  "code": "032830",
+  "name": "삼성생명",
+  "halves": [],
+  "company": {
+    "corp_name": "삼성생명보험(주)",
+    "induty_code": "65110",
+    "hm_url": "www.samsunglife.com",
+    "est_dt": "19570404",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": null,
+      "profit": 23983.77,
+      "receipt": "20240612000329",
+      "net_income": 18953.12,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240612000329"
+    },
+    {
+      "year": 2024,
+      "revenue": null,
+      "profit": 24997.51,
+      "receipt": "20250331004004",
+      "net_income": 21068.39,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250331004004"
+    },
+    {
+      "year": 2025,
+      "revenue": null,
+      "profit": 25804.69,
+      "receipt": "20260331004244",
+      "net_income": 23028.37,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260331004244"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260907",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260907000110"
+    },
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20260903",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260903800096"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831001168"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831000868"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003263"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813800256"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260727",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727800655"
+    },
+    {
+      "title": "특수관계인으로부터주식의취득",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000660"
+    },
+    {
+      "title": "특수관계인으로부터주식의취득",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000657"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000604"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000601"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000584"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000570"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260724",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000528"
+    },
+    {
+      "title": "계열금융회사의약관에의한금융거래-[유가증권-채권]",
+      "date": "20260714",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000146"
+    },
+    {
+      "title": "계열금융회사의약관에의한금융거래-[유가증권-수익증권]",
+      "date": "20260714",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000144"
+    },
+    {
+      "title": "계열금융회사의약관에의한금융거래-[보험]",
+      "date": "20260714",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000142"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630801374"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000280"
+    },
+    {
+      "title": "특수관계인에대한부동산임대",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000274"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000271"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000267"
+    },
+    {
+      "title": "특수관계인에대한증여",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000224"
+    }
+  ]
+}

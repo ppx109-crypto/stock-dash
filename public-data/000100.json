@@ -1,0 +1,175 @@
+{
+  "code": "000100",
+  "name": "유한양행",
+  "halves": [
+    {
+      "period": "2025-06",
+      "revenue": 10705.51004703,
+      "profit": 562.8068767,
+      "receipt": "20250814003301",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 103 기 반기",
+          "add": "1070551004703",
+          "amount": "578987017426"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 103 기 반기",
+          "add": "56280687670",
+          "amount": "49861015710"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003301"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 11662.31575529,
+      "profit": 756.84328844,
+      "receipt": "20260814002038",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 104 기 반기",
+          "add": "1166231575529",
+          "amount": "639451698310"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 104 기 반기",
+          "add": "75684328844",
+          "amount": "66869135267"
+        }
+      ],
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002038"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)유한양행",
+    "induty_code": "212",
+    "hm_url": "www.yuhan.co.kr",
+    "est_dt": "19260620",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": 18589.83759666,
+      "profit": 567.59795062,
+      "receipt": "20240307000960",
+      "net_income": 1360.89047106,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240307000960"
+    },
+    {
+      "year": 2024,
+      "revenue": 20677.91451854,
+      "profit": 548.80319609,
+      "receipt": "20250312001137",
+      "net_income": 706.87449399,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250312001137"
+    },
+    {
+      "year": 2025,
+      "revenue": 21866.37586358,
+      "profit": 1043.74493823,
+      "receipt": "20260312001236",
+      "net_income": 1940.79171666,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260312001236"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-20",
+  "disclosures": [
+    {
+      "title": "단일판매ㆍ공급계약체결              ",
+      "date": "20260915",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260915800321"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260909",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260909000122"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260908",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260908800264"
+    },
+    {
+      "title": "단일판매ㆍ공급계약체결              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800500"
+    },
+    {
+      "title": "중대재해발생(종속회사의주요경영사항)              ",
+      "date": "20260825",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825800612"
+    },
+    {
+      "title": "공정거래자율준수프로그램운영현황(안내공시)              ",
+      "date": "20260824",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800322"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260818",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260818800232"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002038"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260810",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000622"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260731",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260731000646"
+    },
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800381"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260729",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800556"
+    },
+    {
+      "title": "주식소각결정              ",
+      "date": "20260723",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723801023"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260702",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260702000551"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630800507"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260630",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000106"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260625",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625000160"
+    }
+  ]
+}
