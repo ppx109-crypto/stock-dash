@@ -260,6 +260,27 @@ def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
     )
 
 
+def _pair(prior: float, now: float, color: str, labels=("전년", "올해")) -> str:
+    """값이 둘뿐인 비교. 선을 그으면 사이를 추세로 읽게 되므로 막대로 둡니다."""
+    w, h, base = 300.0, 62.0, 46.0
+    peak = max(abs(prior), abs(now), 1)
+    floor = min(prior, now, 0)
+    span = peak - floor or 1
+    zero = base - (0 - floor) / span * (base - 8)
+    marks = ""
+    for index, (value, label) in enumerate(zip((prior, now), labels)):
+        center = w * (0.3 + index * 0.4)
+        top = base - (value - floor) / span * (base - 8)
+        y, height = min(top, zero), abs(zero - top)
+        marks += (f'<rect x="{center - 26:.1f}" y="{y:.1f}" width="52" height="{max(height, 2):.1f}"'
+                  f' rx="4" fill="{color}" opacity="{0.45 if index == 0 else 0.95}">'
+                  f'<title>{label} {value:,.0f}</title></rect>'
+                  f'<text x="{center:.1f}" y="{h - 3:.0f}" text-anchor="middle" fill="#A39781"'
+                  f' font-size="9">{label}</text>')
+    return (f'<svg class="pxb-chart mini" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none">'
+            f'<line x1="0" y1="{zero:.1f}" x2="{w:.0f}" y2="{zero:.1f}" stroke="#EFE7D8"/>{marks}</svg>')
+
+
 def legend_mark(color: str, label: str) -> str:
     """색 옆에 이름을 붙여, 색만으로 계열을 구분하지 않게 합니다."""
     return ('<span style="display:inline-flex;align-items:center;gap:5px">'
@@ -417,16 +438,16 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
         f'<div class="pxb-value" style="color:{profit_color}">{_e(profit_text)}</div>'
         f'<p class="pxb-sub">{period}</p>'
         f'<span class="pxb-tag" style="color:{profit_color};background:{profit_color}16">{source}</span>'
-        + (_spark([money["prior_operating_profit"], money["operating_profit"]], profit_color, "p", mini=True)
-           if money else ""),
+        + (_pair(money["prior_operating_profit"], money["operating_profit"], profit_color,
+                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""),
     )
     card_revenue = _card(
         2, "매출 성장",
         f'<div class="pxb-value" style="color:{revenue_color}">{_e(revenue_text)}</div>'
         f'<p class="pxb-sub">{period}</p>'
         f'<span class="pxb-tag" style="color:{revenue_color};background:{revenue_color}16">{source}</span>'
-        + (_spark([money["prior_revenue"], money["revenue"]], revenue_color, "r", mini=True)
-           if money else ""),
+        + (_pair(money["prior_revenue"], money["revenue"], revenue_color,
+                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""),
     )
 
     # 2행 ─ 흐름 · 실적 · 적정가치
@@ -509,7 +530,14 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
                        f'<p class="pxb-sub" style="margin-top:12px">{_e(watch_note)}</p>'
                        f'<ul class="pxb-list">{watch}</ul>')
 
-    gaps = [f'{_e(r.get("name", ""))} · {_e(g)}' for r in reports for g in (r.get("data_gaps") or [])][:4]
+    # 한 종목이 목록을 채우지 않도록 종목을 돌아가며 한 건씩 뽑습니다.
+    queues = [[(r.get("name", ""), g) for g in (r.get("data_gaps") or [])] for r in reports]
+    gaps = []
+    for depth in range(max((len(q) for q in queues), default=0)):
+        for queue in queues:
+            if depth < len(queue) and len(gaps) < 4:
+                who, what = queue[depth]
+                gaps.append(f"{_e(who)} · {_e(what)}")
     if not gaps:
         gaps = ["분기 누적 실적 추가 조사", "수급·수정주가 시계열 수집", "적정주가 가정과 현 주가 대조"]
     card_todo = _card(7, "다음에 확인할 것",
