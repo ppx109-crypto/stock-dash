@@ -25,7 +25,9 @@ st.set_page_config(
     page_title="StockDash · PlanX Investment OS",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded",
+    # 휴대폰 폭에서는 메뉴가 열린 채로 뜨면 내용을 가립니다. auto는 넓은 화면에서
+    # 열어 두고 좁은 화면에서만 접습니다.
+    initial_sidebar_state="auto",
 )
 
 try:
