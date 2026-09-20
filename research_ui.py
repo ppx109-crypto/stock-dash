@@ -11,6 +11,7 @@ from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import render_decision_dashboard
 import quotes
+import market
 
 
 def link_codes(store, state, known):
@@ -32,6 +33,12 @@ def link_codes(store, state, known):
     except Exception:
         return False
     return True
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def market_top(top):
+    """시가총액 상위 종목. 하루에 몇 번만 받아도 충분해 한 시간 동안 재사용합니다."""
+    return market.top_by_market(top)
 
 
 @st.cache_data(ttl=10, show_spinner=False)
@@ -67,6 +74,30 @@ def render_research(store, state, sample_mode):
                             store.save_stock({'code':identity, 'name':name.strip(), 'kind':known.get('kind','관심')})
                             st.rerun()
                         except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
+        with st.expander('＋ 시가총액 상위 종목 담기'):
+            count = st.select_slider('시장별 상위 몇 종목', [5, 10, 15, 20], value=10, key='rank_top')
+            ranked = market_top(count)
+            if ranked['error']:
+                st.info(ranked['error'])
+            else:
+                owned = {s['code'] for s in state.get('stocks', [])}
+                st.caption(f"{ranked['basis_date'][:4]}-{ranked['basis_date'][4:6]}-{ranked['basis_date'][6:]} 종가 시가총액 기준 · 공공데이터포털")
+                columns = st.columns(len(market.MARKETS))
+                for column, name in zip(columns, market.MARKETS):
+                    with column:
+                        rows = ranked['markets'][name]
+                        st.markdown(f'**{name} 상위 {len(rows)}**')
+                        st.dataframe(pd.DataFrame([
+                            {'순위': r['rank'], '종목': r['name'], '코드': r['code'],
+                             '시가총액(조원)': round(r['market_cap'] / 1_0000_0000_0000, 1)} for r in rows]),
+                            hide_index=True, width='stretch')
+                        fresh = [r for r in rows if r['code'] not in owned]
+                        if st.button(f'{name} {len(fresh)}개 담기', disabled=not fresh,
+                                     key=f'add_rank_{name}', width='stretch'):
+                            try:
+                                store.add_stocks([{'code': r['code'], 'name': r['name'], 'kind': '관심'} for r in fresh])
+                                st.rerun()
+                            except Exception: st.error('목록 저장에 실패했습니다. 저장 공간 설정을 확인하세요.')
         pool = {code: r['name'] for code, r in known.items() if code not in {s['code'] for s in state.get('stocks', [])}}
         if pool:
             with st.expander(f'＋ 조사된 종목 담기 · {len(pool)}개'):
