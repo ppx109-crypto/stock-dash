@@ -1,0 +1,144 @@
+{
+  "basis_date": "20260917",
+  "source": "공공데이터포털 금융위원회 주식시세정보 · 앱의 시가총액 순위 화면에서 확인",
+  "note": "시가총액 금액은 옮겨 적지 않았습니다. 상위 10위는 순위를 확인한 종목이고, kospi_other는 함께 조사한 유가증권시장 종목으로 순위는 확인하지 않았습니다.",
+  "markets": {
+    "KOSPI": [
+      {
+        "rank": 1,
+        "code": "005930",
+        "name": "삼성전자",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 2,
+        "code": "000660",
+        "name": "SK하이닉스",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 3,
+        "code": "005935",
+        "name": "삼성전자우",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 4,
+        "code": "402340",
+        "name": "SK스퀘어",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 5,
+        "code": "009150",
+        "name": "삼성전기",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 6,
+        "code": "373220",
+        "name": "LG에너지솔루션",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 7,
+        "code": "005380",
+        "name": "현대차",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 8,
+        "code": "207940",
+        "name": "삼성바이오로직스",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 9,
+        "code": "105560",
+        "name": "KB금융",
+        "market": "KOSPI"
+      },
+      {
+        "rank": 10,
+        "code": "028260",
+        "name": "삼성물산",
+        "market": "KOSPI"
+      }
+    ],
+    "KOSDAQ": [
+      {
+        "rank": 1,
+        "code": "196170",
+        "name": "알테오젠",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 2,
+        "code": "086520",
+        "name": "에코프로",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 3,
+        "code": "247540",
+        "name": "에코프로비엠",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 4,
+        "code": "036930",
+        "name": "주성엔지니어링",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 5,
+        "code": "277810",
+        "name": "레인보우로보틱스",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 6,
+        "code": "240810",
+        "name": "원익IPS",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 7,
+        "code": "039030",
+        "name": "이오테크닉스",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 8,
+        "code": "058470",
+        "name": "리노공업",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 9,
+        "code": "222800",
+        "name": "심텍",
+        "market": "KOSDAQ"
+      },
+      {
+        "rank": 10,
+        "code": "108490",
+        "name": "로보티즈",
+        "market": "KOSDAQ"
+      }
+    ]
+  },
+  "kospi_other": [
+    "005490",
+    "035420",
+    "012330",
+    "051910",
+    "006400",
+    "055550",
+    "086790",
+    "068270",
+    "035720",
+    "000270",
+    "353200"
+  ]
+}
