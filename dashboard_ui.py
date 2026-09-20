@@ -267,15 +267,17 @@ def _bar_value(center: float, top: float, value: float, color: str) -> str:
 
 def _pair(prior: float, now: float, color: str, labels=("전년", "올해")) -> str:
     """값이 둘뿐인 비교. 선을 그으면 사이를 추세로 읽게 되므로 막대로 둡니다."""
-    w, h, base = 300.0, 62.0, 46.0
+    # 값을 막대 위에 적으므로 위쪽에 글자 자리를 남겨 둡니다. 자리를 안 남기면
+    # 가장 높은 막대의 값이 막대 안으로 들어가 읽기 어려워집니다.
+    w, h, base, headroom = 300.0, 62.0, 46.0, 20.0
     peak = max(abs(prior), abs(now), 1)
     floor = min(prior, now, 0)
     span = peak - floor or 1
-    zero = base - (0 - floor) / span * (base - 8)
+    zero = base - (0 - floor) / span * (base - headroom)
     marks = ""
     for index, (value, label) in enumerate(zip((prior, now), labels)):
         center = w * (0.3 + index * 0.4)
-        top = base - (value - floor) / span * (base - 8)
+        top = base - (value - floor) / span * (base - headroom)
         y, height = min(top, zero), abs(zero - top)
         marks += (f'<rect x="{center - 26:.1f}" y="{y:.1f}" width="52" height="{max(height, 2):.1f}"'
                   f' rx="4" fill="{color}" opacity="{0.45 if index == 0 else 0.95}">'
@@ -391,9 +393,38 @@ def header() -> str:
     )
 
 
-def stock_cards(report: dict | None, grade: dict | None) -> str:
-    """고른 종목 하나를 여섯 칸으로 보여줍니다."""
+def settled(official: dict | None) -> dict:
+    """확정 결산 리포트에서 판단 근거를 꺼냅니다. 자료가 모자라면 빈 칸입니다."""
+    years = (official or {}).get("years") or []
+    if len(years) < 2:
+        return {}
+    try:
+        from automatic import brief
+        result = brief(official)
+    except (KeyError, TypeError, ValueError, ZeroDivisionError, IndexError):
+        return {}
+    last, prior = years[-1], years[-2]
+    prior_margin = (prior["profit"] / prior["revenue"] * 100
+                    if prior.get("revenue") and prior["revenue"] > 0
+                    and prior.get("profit") is not None else None)
+    return {**result, "years": years[-4:], "last": last, "prior_margin": prior_margin,
+            "price": official.get("price"), "price_date": official.get("price_date"),
+            "basis": official.get("basis", "")}
+
+
+def price_now(grade: dict | None, official: dict | None) -> tuple[float | None, str]:
+    """화면에 적을 주가 하나와 그 기준일. 종가이지 실시간 시세가 아닙니다."""
+    closes = (grade or {}).get("closes") or []
+    if closes:
+        return closes[-1], "최근 거래일 종가"
+    price = (official or {}).get("price")
+    return (price, f'{official.get("price_date", "")} 종가') if price else (None, "")
+
+
+def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None) -> str:
+    """고른 종목 하나를 판단 카드로 보여줍니다. 확정 결산이 있으면 근거 칸이 늘어납니다."""
     report = report or {}
+    book = settled(official)
     money = report.get("financial") or {}
     closes = (grade or {}).get("closes") or []
     name = report.get("name") or (grade or {}).get("name") or "종목"
@@ -464,7 +495,12 @@ def stock_cards(report: dict | None, grade: dict | None) -> str:
                 '이동평균 60일선에는 62거래일이 필요합니다.</p>')
     card_trend = _card(3, "성장 흐름", flow)
 
-    if money:
+    if book:
+        years = book["years"]
+        chart = _bars([str(y["year"]) for y in years],
+                      [y["revenue"] for y in years], [y["profit"] for y in years])
+        note = f'단위 억원 · 확정 결산 · {years[0]["year"]}~{years[-1]["year"]}'
+    elif money:
         chart = _bars([money.get("prior_period", "이전"), money.get("period", "최근")],
                       [money["prior_revenue"], money["revenue"]],
                       [money["prior_operating_profit"], money["operating_profit"]])
@@ -474,6 +510,11 @@ def stock_cards(report: dict | None, grade: dict | None) -> str:
     swatches = legend_mark(DOWN, "매출액") + "&nbsp;&nbsp;" + legend_mark(AMBER, "영업이익")
     card_earnings = _card(4, "실적 추이",
                           f'<p class="pxb-sub" style="margin-top:12px">{swatches} · {note}</p>{chart}')
+
+    price, price_note = price_now(grade, official)
+    extra = ""
+    if book:
+        extra = _settled_cards(book, price)
 
     value = report.get("valuation") or {}
     if value:
@@ -486,8 +527,15 @@ def stock_cards(report: dict | None, grade: dict | None) -> str:
         low, high, now = min(closes), max(closes), closes[-1]
         mark = min(max((now - low) / (high - low) * 100, 2), 98) if high > low else 50
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, (low + high) / 2, high))
-        value_note = f"최근 {len(closes)}거래일 종가 범위의 {mark:.0f}% 지점 · 적정주가가 아닙니다."
-        head_text, value_title = f"{now:,.0f}원", "가격 범위 속 위치"
+        move = ""
+        if len(closes) >= 2 and closes[-2]:
+            gap = now - closes[-2]
+            tone = DOWN if gap < 0 else UP
+            move = (f' <small style="font-size:14px;color:{tone}">{gap:+,.0f}'
+                    f' ({gap / closes[-2] * 100:+.2f}%)</small>')
+        value_note = (f"{_e(price_note)} · 최근 {len(closes)}거래일 범위의 {mark:.0f}% 지점 · "
+                      "적정주가가 아닙니다.")
+        head_text, value_title = f"{now:,.0f}원{move}", "주가 · 가격 범위 속 위치"
     else:
         mark, head_text, value_title = 50, "자료 대기", "가격 범위 속 위치"
         value_note, labels = "일별 종가가 모이면 표시합니다.", "<span>-</span><span>-</span><span>-</span>"
@@ -499,7 +547,58 @@ def stock_cards(report: dict | None, grade: dict | None) -> str:
         f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>')
 
     return (f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
-            f"{card_trend}{card_earnings}{card_value}</div>")
+            f"{card_trend}{card_earnings}{card_value}{extra}</div>")
+
+
+def _settled_cards(book: dict, price: float | None) -> str:
+    """확정 결산에서 나온 판단 근거 세 칸: 성장률·영업이익률·역사적 참고가."""
+    rows = ""
+    for label, value in (("매출 성장률", book.get("revenue_growth")),
+                         ("영업이익 성장률", book.get("profit_growth"))):
+        if value is None:
+            rows += f'<li>{label}<b>자료 부족</b></li>'
+        else:
+            rows += (f'<li>{label}<b style="color:{DOWN if value < 0 else UP}">'
+                     f'{value:+.1f}%</b></li>')
+    last = book.get("last") or {}
+    rows += (f'<li>{last.get("year", "")}년 매출<b>{last.get("revenue", 0):,.0f} 억원</b></li>'
+             f'<li>{last.get("year", "")}년 영업이익<b>{last.get("profit", 0):,.0f} 억원</b></li>')
+    card_growth = _card(6, "확정 결산 성장률",
+                        f'<p class="pxb-sub" style="margin-top:12px">'
+                        f'{_e(book.get("basis", ""))} · 단위 억원</p><ul class="pxb-list">{rows}</ul>')
+
+    margin, prior = book.get("margin"), book.get("prior_margin")
+    if margin is None:
+        card_margin = _card(7, "영업이익률",
+                            '<div class="pxb-value">자료 부족</div>'
+                            '<p class="pxb-sub">확정 결산 매출과 영업이익이 필요합니다.</p>')
+    else:
+        step = "" if prior is None else f"{prior:.1f}% → {margin:.1f}%"
+        card_margin = _card(
+            7, "영업이익률",
+            f'<div class="pxb-value">{margin:.1f}<small>%</small></div>'
+            f'<p class="pxb-sub">{_e(step) or "최근 확정 결산 기준"}</p>'
+            + (_pair(prior, margin, LINE, ("전년", "최근")) if prior is not None else ""))
+
+    fair = book.get("fair")
+    if not fair:
+        card_fair = _card(8, "역사적 참고가",
+                          '<div class="pxb-value" style="font-size:26px">산출 보류</div>'
+                          f'<p class="pxb-sub">{_e(book.get("fair_reason", ""))}</p>')
+    else:
+        low, base, high = fair["low"], fair["base"], fair["high"]
+        here = price or base
+        mark = min(max((here - low) / (high - low) * 100, 2), 98) if high > low else 50
+        labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, base, high))
+        card_fair = _card(
+            8, "역사적 참고가",
+            f'<div class="pxb-value" style="font-size:30px">{base:,.0f}<small>원</small></div>'
+            f'<p class="pxb-sub">중간 참고값 · 주가와 {fair["gap"]:+.1f}% 차이</p>'
+            f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
+            f'<i style="left:{mark:.0f}%"></i></div><div class="pxb-range-lab">{labels}</div></div>'
+            '<p class="pxb-sub" style="margin-top:12px">과거 시가총액/영업이익 배수를 최근 결산 '
+            '이익에 적용한 참고 가격 · 매수·매도 신호가 아닙니다.</p>')
+    return card_growth + card_margin + card_fair
 
 
 def close_frame() -> str:

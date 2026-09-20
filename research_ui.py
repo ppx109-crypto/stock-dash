@@ -10,7 +10,7 @@ from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import (GROUP_TITLES, close_frame, compact_board, frame,
-                          group_board, header, section, stock_cards)
+                          group_board, header, price_now, section, stock_cards)
 import market
 
 
@@ -112,12 +112,17 @@ def decision_screen(state, research, graded):
                      on_change=_pick, args=('px_watch',))
     code = st.session_state.get('px_pick')
     if code:
-        grade = next((g for g in graded or [] if g['code'] == code), None)
+        grade = next((g for g in graded if g['code'] == code), None)
         report = research.get(code)
-        name = (report or {}).get('name') or named.get(code) or next(
-            (s['name'] for s in stocks if s['code'] == code), code)
-        st.markdown(frame(section(f'{name} · 투자판단', '종목코드 ' + code)
-                          + stock_cards(report, grade)), unsafe_allow_html=True)
+        # 확정 결산 분석은 종목을 담을 때 저장해 둔 공식 리포트에서 가져옵니다.
+        official = next((s.get('report') for s in stocks if s['code'] == code), None)
+        name = names.get(code) or (report or {}).get('name') or code
+        price, price_note = price_now(grade, official)
+        note = '종목코드 ' + code
+        if price:
+            note += f' · 주가 {price:,.0f}원 · {price_note}'
+        st.markdown(frame(section(f'{name} · 투자판단', note)
+                          + stock_cards(report, grade, official)), unsafe_allow_html=True)
     elif stocks:
         st.markdown(frame(section('투자판단', '위 목록에서 종목을 고르면 판단점수·실적·흐름이 열립니다')),
                     unsafe_allow_html=True)
