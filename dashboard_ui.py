@@ -26,7 +26,7 @@ AMBER = "#B8730A"  # 영업이익선
 INK = "#2E2822"
 GOLD = "#B08343"
 # 그룹은 색만으로 뜻을 전하지 않도록 이름·기호를 항상 함께 답니다.
-STATUS = {"A": "#0CA30C", "B": "#FAB219", "C": "#8A8271", "D": "#D03B3B"}
+STATUS = {"A": "#0CA30C", "B": "#FAB219", "C": "#7B7465", "D": "#D03B3B"}
 SAMPLE = "샘플"
 
 # (꽃잎 수, 꽃잎 색, 꽃술 색)
@@ -57,34 +57,34 @@ _CSS = """
   padding:2px 2px 18px;border-bottom:2px solid #E7DCC7}
 .pxb-section{margin-top:26px}
 .pxb-section-h{display:flex;align-items:center;gap:12px;margin-bottom:12px}
-.pxb-section-h b{font-size:12px;font-weight:800;letter-spacing:.14em;color:#B08343;white-space:nowrap}
-.pxb-section-h span{font-size:11.5px;color:#A39781;white-space:nowrap}
+.pxb-section-h b{font-size:12px;font-weight:800;letter-spacing:.14em;color:#946E38;white-space:nowrap}
+.pxb-section-h span{font-size:11.5px;color:#7E7463;white-space:nowrap}
 .pxb-section-h:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#E7DCC7,transparent)}
 .pxb-num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 .pxb-title em{display:block;font:600 40px/1.15 "Playfair Display",Georgia,serif;font-style:normal;
   letter-spacing:-.6px;color:#2E2822}
-.pxb-title em i{font-style:normal;color:#B08343}
-.pxb-title span{display:block;margin-top:9px;font-size:13px;color:#8A8271}
-.pxb-meta{text-align:right;font-size:12px;color:#8A8271;line-height:1.9}
-.pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#B08343}
+.pxb-title em i{font-style:normal;color:#946E38}
+.pxb-title span{display:block;margin-top:9px;font-size:13px;color:#7B7465}
+.pxb-meta{text-align:right;font-size:12px;color:#7B7465;line-height:1.9}
+.pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
 
 .pxb-live{display:flex;align-items:stretch;gap:10px;overflow-x:auto;margin-top:18px;padding-bottom:2px}
 .pxb-live-head{flex:none;display:flex;flex-direction:column;justify-content:center;padding-right:16px;
   border-right:1px solid #EDE3D2}
-.pxb-live-head b{font-size:11px;font-weight:800;letter-spacing:.16em;color:#B08343;white-space:nowrap}
-.pxb-live-head span{margin-top:5px;font-size:10.5px;color:#A39781;white-space:nowrap}
+.pxb-live-head b{font-size:11px;font-weight:800;letter-spacing:.16em;color:#946E38;white-space:nowrap}
+.pxb-live-head span{margin-top:5px;font-size:10.5px;color:#7E7463;white-space:nowrap}
 .pxb-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#7FA98B;margin-right:6px;
   animation:pxbPulse 1.8s ease-in-out infinite}
 @keyframes pxbPulse{0%,100%{opacity:1}50%{opacity:.25}}
 .pxb-quote{flex:none;min-width:132px;padding:12px 15px;border-radius:14px;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
   border:1px solid #EDE3D2;box-shadow:0 8px 20px rgba(90,72,44,.05)}
-.pxb-quote span{display:block;font-size:11px;color:#8A8271;white-space:nowrap}
-.pxb-live.mock .pxb-quote{background:linear-gradient(170deg,#FCFAF4,#F6F1E6);border-style:dashed}
-.pxb-quote b{display:block;margin-top:6px;font:600 20px/1 "Playfair Display",Georgia,serif;
-  letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.pxb-quote span{display:block;font-size:11px;color:#7B7465;white-space:nowrap}
+.pxb-live.mock .pxb-quote{background:linear-gradient(170deg,#FCFAF4,#F6F1E6);border-color:#E3D7C0}
+.pxb-quote b{display:block;margin-top:6px;font:650 20px/1 Pretendard,"Noto Sans KR",sans-serif;
+  letter-spacing:-.5px}
 .pxb-quote em{display:block;margin-top:5px;font-style:normal;font-size:11px;font-weight:800}
 .pxb-live-off{flex:1;display:flex;align-items:center;padding:14px 16px;border-radius:14px;border:1px dashed #E0D3B8;
-  font-size:11.5px;color:#8A8271;background:rgba(255,255,255,.5)}
+  font-size:11.5px;color:#7B7465;background:rgba(255,255,255,.5)}
 .pxb-board{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
 .pxb-slot{position:relative;padding:18px 18px 16px;border-radius:18px;overflow:hidden;min-height:150px;
   border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
@@ -95,15 +95,15 @@ _CSS = """
 .pxb-slot-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .pxb-slot-h b{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#2E2822}
 .pxb-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.7)}
-.pxb-slot-h i{font-style:normal;font:600 24px "Playfair Display",Georgia,serif;color:#2E2822;
-  font-variant-numeric:tabular-nums}
-.pxb-slot small{display:block;margin-top:6px;font-size:11px;color:#8A8271;line-height:1.55}
+.pxb-slot-h i{font-style:normal;font:650 24px Pretendard,"Noto Sans KR",sans-serif;color:#2E2822;
+  letter-spacing:-.5px}
+.pxb-slot small{display:block;margin-top:6px;font-size:11px;color:#7B7465;line-height:1.55}
 .pxb-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .pxb-chip{padding:4px 10px;border-radius:999px;font-size:11px;background:#FFFFFFAA;border:1px solid #E7DCC7;color:#5F584B}
-.pxb-chip em{font-style:normal;color:#A39781;margin-left:4px;font-size:10px}
+.pxb-chip em{font-style:normal;color:#7E7463;margin-left:4px;font-size:10px}
 .pxb-slot.a .pxb-chip{border-color:#CFE2D2}
-.pxb-empty{margin-top:12px;font-size:11px;color:#A39781}
-.pxb-note{font-size:11px;color:#8A8271;line-height:1.6}
+.pxb-empty{margin-top:12px;font-size:11px;color:#7E7463}
+.pxb-note{font-size:11px;color:#7B7465;line-height:1.6}
 .pxb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
 .pxb-card{position:relative;overflow:hidden;padding:24px 24px 22px;border-radius:20px;min-height:208px;
   background:linear-gradient(170deg,#FFFDF8,#FBF6EC);border:1px solid #EDE3D2;
@@ -120,9 +120,8 @@ _CSS = """
 .pxb-card:nth-child(even) .pxb-bloom{animation-duration:9s}
 .pxb-petal{position:absolute;right:-34px;bottom:-34px;width:150px;height:150px;opacity:.09;pointer-events:none}
 
-.pxb-label{font-size:11px;font-weight:800;letter-spacing:.16em;color:#B08343}
-.pxb-value{margin:14px 0 0;font:600 42px/1 "Playfair Display",Georgia,serif;letter-spacing:-1px;
-  font-variant-numeric:tabular-nums}
+.pxb-label{font-size:11px;font-weight:800;letter-spacing:.16em;color:#946E38}
+.pxb-value{margin:14px 0 0;font:650 42px/1 Pretendard,"Noto Sans KR",sans-serif;letter-spacing:-1.4px}
 .pxb-value small{font-size:16px;font-weight:600;margin-left:4px}
 .pxb-sub{margin:11px 0 0;font-size:12.5px;line-height:1.7;color:#7C7361;max-width:78%}
 .pxb-tag{display:inline-block;margin-top:14px;padding:4px 11px;border-radius:999px;font-size:10.5px;
@@ -130,7 +129,7 @@ _CSS = """
 
 .pxb-meter{margin-top:16px;display:flex;flex-direction:column;gap:9px}
 .pxb-meter div{display:grid;grid-template-columns:60px 1fr 28px;align-items:center;gap:10px;
-  font-size:11px;color:#8A8271}
+  font-size:11px;color:#7B7465}
 .pxb-meter i{display:block;height:5px;border-radius:5px;background:#EFE7D8;overflow:hidden;font-style:normal}
 .pxb-meter i u{display:block;height:100%;border-radius:5px;text-decoration:none;
   background:linear-gradient(90deg,#DCC08A,#B08343)}
@@ -139,7 +138,7 @@ _CSS = """
 
 .pxb-chart{display:block;width:100%;height:104px;margin-top:18px}
 .pxb-chart.mini{height:62px;margin-top:20px;opacity:.95}
-.pxb-chart text{fill:#A39781;font-size:9.5px}
+.pxb-chart text{fill:#7E7463;font-size:9.5px}
 .pxb-range{margin-top:26px}
 .pxb-range-line{position:relative;height:7px;border-radius:7px;background:#EFE7D8}
 .pxb-range-line u{position:absolute;top:0;bottom:0;border-radius:7px;text-decoration:none;
@@ -147,13 +146,14 @@ _CSS = """
 .pxb-range-line i{position:absolute;top:-5px;width:17px;height:17px;margin-left:-8px;max-width:17px;border-radius:50%;
   background:linear-gradient(140deg,#F3DFA9,#B08343);border:3px solid #FFFDF8;
   box-shadow:0 3px 8px rgba(90,72,44,.25)}
-.pxb-range-lab{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#A39781}
+.pxb-range-lab{display:flex;justify-content:space-between;margin-top:10px;font-size:10px;color:#7E7463}
 
 .pxb-list{margin:16px 0 0;padding:0;list-style:none}
 .pxb-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;
   border-bottom:1px solid #F0E8D9;font-size:12px;color:#5F584B}
 .pxb-list li:last-child{border-bottom:0}
-.pxb-list b{font:600 13px Georgia,serif;color:#2E2822}
+.pxb-list b{font:600 13px Pretendard,"Noto Sans KR",sans-serif;color:#2E2822;
+  font-variant-numeric:tabular-nums}
 .pxb-list em{font-style:normal;font-weight:800;font-size:11.5px}
 .pxb-notes{margin:16px 0 0;padding-left:16px}
 .pxb-notes li{font-size:12px;line-height:1.85;color:#6B6353;margin-bottom:6px}
@@ -198,7 +198,8 @@ def _bloom(index: int, size: int = 46, klass: str = "pxb-bloom") -> str:
 
 
 def _spark(values: list[float], color: str, key: str, mini: bool = False) -> str:
-    w, h, pad = 300.0, (62.0 if mini else 104.0), (8.0 if mini else 14.0)
+    """한 계열의 흐름. 값은 마우스오버로만 읽게 두지 않고 끝값과 범위를 적습니다."""
+    w, h, pad = 300.0, (62.0 if mini else 104.0), (8.0 if mini else 16.0)
     low, high = min(values), max(values)
     span = (high - low) or 1
     step = w / max(len(values) - 1, 1)
@@ -206,15 +207,26 @@ def _spark(values: list[float], color: str, key: str, mini: bool = False) -> str
     line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
     area = f"M0,{h} L" + " L".join(f"{x:.1f},{y:.1f}" for x, y in pts) + f" L{w},{h} Z"
     tip_x, tip_y = pts[-1]
+    labels = ""
+    if not mini:
+        last = values[-1]
+        labels = (f'<text x="{w - 2:.0f}" y="{max(tip_y - 7, 11):.0f}" text-anchor="end"'
+                  f' fill="{color}" font-size="10" font-weight="700">{last:,.0f}</text>')
+        # 끝값이 최고·최저와 같으면 같은 숫자를 두 번 적지 않습니다.
+        if high != last:
+            labels += f'<text x="2" y="11" fill="#7E7463" font-size="9">{high:,.0f}</text>'
+        if low != last:
+            labels += f'<text x="2" y="{h - 3:.0f}" fill="#7E7463" font-size="9">{low:,.0f}</text>' 
     return (
-        f'<svg class="pxb-chart{" mini" if mini else ""}" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none">'
+        f'<svg class="pxb-chart{" mini" if mini else ""}" viewBox="0 0 {w:.0f} {h:.0f}"'
+        ' preserveAspectRatio="none" role="img">'
         f'<defs><linearGradient id="pxb{key}" x1="0" y1="0" x2="0" y2="1">'
         f'<stop offset="0" stop-color="{color}" stop-opacity=".3"/>'
         f'<stop offset="1" stop-color="{color}" stop-opacity="0"/></linearGradient></defs>'
         f'<path d="{area}" fill="url(#pxb{key})"/>'
         f'<polyline points="{line}" fill="none" stroke="{color}" stroke-width="2.4"'
         f' stroke-linecap="round" stroke-linejoin="round"/>'
-        f'<circle cx="{tip_x:.1f}" cy="{tip_y:.1f}" r="4" fill="{color}"/>'
+        f'<circle cx="{tip_x:.1f}" cy="{tip_y:.1f}" r="4" fill="{color}"/>{labels}'
         f'<title>{low:,.0f} ~ {high:,.0f} · 마지막 {values[-1]:,.0f}</title></svg>'
     )
 
@@ -255,7 +267,7 @@ def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
         f'<stop offset="0" stop-color="{AMBER}"/><stop offset="1" stop-color="{AMBER}" stop-opacity=".45"/>'
         "</linearGradient></defs>"
         f'<line x1="0" y1="{zero:.1f}" x2="{w:.0f}" y2="{zero:.1f}" stroke="#E7DCC7"/>'
-        f'<text x="2" y="12" fill="#A39781">{top_value:,.0f}</text>'
+        f'<text x="2" y="12" fill="#7E7463">{top_value:,.0f}</text>'
         f"{marks}{labs}</svg>"
     )
 
@@ -275,7 +287,7 @@ def _pair(prior: float, now: float, color: str, labels=("전년", "올해")) -> 
         marks += (f'<rect x="{center - 26:.1f}" y="{y:.1f}" width="52" height="{max(height, 2):.1f}"'
                   f' rx="4" fill="{color}" opacity="{0.45 if index == 0 else 0.95}">'
                   f'<title>{label} {value:,.0f}</title></rect>'
-                  f'<text x="{center:.1f}" y="{h - 3:.0f}" text-anchor="middle" fill="#A39781"'
+                  f'<text x="{center:.1f}" y="{h - 3:.0f}" text-anchor="middle" fill="#7E7463"'
                   f' font-size="9">{label}</text>')
     return (f'<svg class="pxb-chart mini" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none">'
             f'<line x1="0" y1="{zero:.1f}" x2="{w:.0f}" y2="{zero:.1f}" stroke="#EFE7D8"/>{marks}</svg>')
@@ -457,7 +469,7 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
                 (focus_grade or {}).get("trend", {}).get("grade") or "판정 전"
         note = f'{_e(name)} · 최근 {len(closes)}거래일 · 이평선 {order}'
         if lines:
-            note += (f'<br><span style="font-size:11px;color:#A39781">'
+            note += (f'<br><span style="font-size:11px;color:#7E7463">'
                      + " · ".join(f'{k} {v:,.0f}' for k, v in lines.items()) + "</span>")
         body = (f'<p class="pxb-sub" style="margin-top:12px">{note}</p>'
                 + _spark(closes, LINE, "t"))
@@ -521,7 +533,7 @@ def render_decision_dashboard(details: dict, live: dict | None = None, graded: l
         watch_note = f"영업이익 성장 · {SAMPLE}"
     group_of = {g["code"]: g.get("group") for g in (graded or [])}
     watch = "".join(
-        f'<li><span>{_e(label)} <small style="color:#A39781">'
+        f'<li><span>{_e(label)} <small style="color:#7E7463">'
         + (f'{group_of[row_code]}그룹' if group_of.get(row_code) else _e(row_code)) + '</small></span>'
         f'<em style="color:{DOWN if text.startswith("-") or "적자" in text else UP}">{_e(text)}</em></li>'
         for label, row_code, text in watch_rows
