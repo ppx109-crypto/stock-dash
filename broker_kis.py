@@ -202,13 +202,17 @@ class KIS:
         return found
 
     def history(self, code, days=1200, pause=0.2):
-        """여러 해치 일봉을 이어 붙입니다. 오래된 날이 먼저 옵니다."""
+        """있는 만큼 거슬러 올라가며 일봉을 이어 붙입니다. 오래된 날이 먼저입니다.
+
+        days는 거슬러 갈 한계일 뿐이고, 상장 이전에 닿으면 거기서 멈춥니다.
+        그래서 넉넉히 주면 그 종목이 가진 만큼을 다 받습니다.
+        """
         from datetime import date as _date
         last = datetime.now(ZoneInfo('Asia/Seoul')).date()
         first = last - timedelta(days=max(days, 1))
         collected = {}
         cursor = last
-        for _ in range(60):
+        for _ in range(400):
             begin = max(first, cursor - timedelta(days=140))
             rows = self.daily(code, begin.strftime('%Y%m%d'), cursor.strftime('%Y%m%d'))
             if not rows:

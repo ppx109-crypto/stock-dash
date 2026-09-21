@@ -18,7 +18,8 @@ from zoneinfo import ZoneInfo
 import broker_kis
 
 OUT = Path("price-data")
-YEARS = int(os.getenv("PRICE_YEARS", "5"))
+# 한계일 뿐입니다. 상장 이전에 닿으면 거기서 멈춥니다.
+YEARS = int(os.getenv("PRICE_YEARS", "30"))
 
 
 def codes_to_collect():
