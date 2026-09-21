@@ -86,14 +86,22 @@ def main():
     # 실적이 실제로 붙은 관측이 얼마나 되는지. 공시 전 구간은 그룹만 봅니다.
     with_money = sum(1 for r in a_rows if "매출성장" in r)
 
-    # 어떤 조합이 돈이 되는가. 그룹별로 조건을 모두 훑어, 비용을 뺀 기대수익이
-    # 큰 순으로 세웁니다. 견줄 자리는 그 기간 전체 관측입니다.
+    # 어떤 조합이 돈이 되는가.
+    #
+    # 실적 조건은 공시가 나온 뒤 구간에만 붙습니다. 그 구간의 성적을 삼십 년
+    # 전체와 견주면, 조건이 좋아서인지 그 시기가 좋아서인지 갈리지 않습니다.
+    # 그래서 견줄 자리를 같은 시기로 맞춥니다. 실적이 붙은 가장 이른 날부터의
+    # 모든 관측이 기준선입니다.
+    known = [r for r in rows if "매출성장" in r or "영업이익률" in r]
+    since = min((r["date"] for r in known), default=None)
+    window = [r for r in rows if since and r["date"] >= since]
     best = {}
     for group, picked in (("A", a_rows), ("B", [r for r in rows if r["group"] == "B"]),
                           ("C", [r for r in rows if r["group"] == "C"])):
         for span in study.HORIZONS:
-            base = study.tally(rows, span)
-            found = study.search(picked, span, baseline=base)
+            base = study.tally(window, span)
+            same_time = [r for r in picked if since and r["date"] >= since]
+            found = study.search(same_time, span, baseline=base)
             if found:
                 best[f"{group}·{span}일"] = found[:8]
 
@@ -102,7 +110,8 @@ def main():
             "stocks": len(prices), "observations": len(rows), "period": span_days,
             "horizons": list(study.HORIZONS), "groups": groups, "lifts": lifts[:24], "combos": combos[:30],
             "downside": downside, "with_money": with_money, "a_total": len(a_rows),
-            "best": best, "cost": study.COST,
+            "best": best, "cost": study.COST, "since": since,
+            "window": len(window),
             "today": today}
     OUT.mkdir(exist_ok=True)
     (OUT / "result.json").write_text(json.dumps(body, ensure_ascii=False, indent=1),
@@ -115,14 +124,15 @@ def main():
                 print(f"  {group}그룹 {span:>2}일 · {tal['건수']:>6,}건 · "
                       f"상승 {tal['상승확률']:.1f}% · 평균 {tal['평균수익률']:+.2f}%")
     print(f"\nA그룹 관측 {len(a_rows):,}건 중 실적이 이미 공시돼 있던 것 {with_money:,}건")
-    print(f"\n돈이 되는 조합 (왕복 비용 {study.COST}% 차감, 순기대수익 큰 순서)")
+    print(f"\n돈이 되는 조합 · 견줄 자리도 같은 시기({since}~)로 맞춤 "
+          f"· 그 구간 관측 {len(window):,}건 · 왕복 비용 {study.COST}% 차감")
     for key, found in best.items():
         top = found[0]
         print(f"  [{key}] {top['조건']}")
         print(f"      순기대수익 {top['순기대수익']:+.2f}% · 상승 {top['상승확률']:.1f}% · "
               f"중앙 {top['중앙수익률']:+.2f}% · 하위10% {top['하위10%']:+.1f}% · "
-              f"{top['건수']:,}건" + (f" · 전체대비 {top['초과']:+.2f}%p"
-                                     if top.get('초과') is not None else ""))
+              f"{top['건수']:,}건/{top.get('종목수', 0)}종목"
+              + (f" · 전체대비 {top['초과']:+.2f}%p" if top.get('초과') is not None else ""))
 
     print("\n조건을 겹쳤을 때 (A그룹 기준)")
     for row in combos[:12]:

@@ -85,7 +85,9 @@ def money_timeline(code, folder="public-data"):
         if prior and day and now.get("measure") == prior.get("measure"):
             found.append((day, _axis(now.get("revenue"), prior.get("revenue"),
                                      now.get("profit"), prior.get("profit"))))
-    found.sort()
+    # 같은 날 연간과 반기가 함께 들어오면 날짜만 보고 줄을 세웁니다. 통째로
+    # 견주면 뒤에 붙은 실적끼리 비교하려다 멈춥니다.
+    found.sort(key=lambda row: row[0])
     return [(day, axis) for day, axis in found if axis]
 
 
@@ -265,9 +267,12 @@ def search(rows, horizon, floor=60, cost=COST, baseline=None):
                 if not block or block["건수"] < floor:
                     continue
                 worst = worst_case(picked, horizon) or {}
+                # 몇 종목에서 나온 숫자인지 함께 셉니다. 천 건이라도 두세
+                # 종목에서 나왔다면 그 종목들의 사정일 뿐입니다.
+                names = {r.get("code") for r in picked if horizon in r.get("ahead", {})}
                 found.append({
                     "조건": " + ".join(f"{k} ≥ {e:g}" for k, e in rules) or "조건 없음",
-                    "기간": horizon, "건수": block["건수"],
+                    "기간": horizon, "건수": block["건수"], "종목수": len(names),
                     "상승확률": round(block["상승확률"], 1),
                     "평균수익률": round(block["평균수익률"], 2),
                     "중앙수익률": round(block["중앙수익률"], 2),

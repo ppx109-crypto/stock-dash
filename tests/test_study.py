@@ -98,6 +98,21 @@ class PointInTime(unittest.TestCase):
     def test_a_later_day_uses_the_newest_filing(self):
         self.assertEqual(study.known_by(self.timeline(), "20260901")["영업이익률"], 48.0)
 
+    def test_two_filings_on_the_same_day_do_not_stop_the_run(self):
+        # 연간과 반기가 같은 날 들어오는 종목이 있습니다.
+        import json, tempfile, pathlib
+        folder = tempfile.mkdtemp()
+        (pathlib.Path(folder) / "005930.json").write_text(json.dumps({
+            "years": [{"year": 2024, "revenue": 100, "profit": 10, "receipt": "20250311000001"},
+                      {"year": 2025, "revenue": 110, "profit": 11, "receipt": "20260310000001"}],
+            "halves": [{"period": "2025-06", "revenue": 50, "profit": 5,
+                        "receipt": "20260310000002", "measure": "cumulative"},
+                       {"period": "2026-06", "revenue": 60, "profit": 6,
+                        "receipt": "20260310000003", "measure": "cumulative"}]}),
+            encoding="utf-8")
+        found = study.money_timeline("005930", folder=folder)
+        self.assertEqual([day for day, _ in found], ["20260310", "20260310"])
+
     def test_a_growth_rate_needs_a_profitable_year_to_compare_with(self):
         self.assertNotIn("영업이익성장", study._axis(110, 100, 5, -10))
         self.assertIn("영업이익성장", study._axis(110, 100, 11, 10))
