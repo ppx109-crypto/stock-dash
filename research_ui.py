@@ -9,8 +9,9 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (RULE_TEXT, close_frame, frame, group_board, header,
-                          price_now, section, stock_cards)
+from dashboard_ui import (GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP, board_basis,
+                          chip_label, close_frame, frame, group_buckets, header,
+                          price_now, section, slot_head, stock_cards)
 import market
 
 
@@ -90,6 +91,44 @@ def _pick(key):
         st.session_state['px_pick'] = code
 
 
+def _choose(code):
+    """그룹판에서 종목을 골랐을 때."""
+    st.session_state['px_pick'] = code
+
+
+def group_board_ui(graded):
+    """A·B·C 그룹 칸을 그리고, 종목마다 누를 수 있는 단추를 답니다.
+
+    칩을 링크로 두면 눌렀을 때 화면을 새로 열게 되고, 그러면 Streamlit 세션이
+    새로 시작돼 로그인이 풀립니다. 그래서 단추로 둡니다. 단추는 같은 화면 안에서
+    처리되어 로그인도, 펼쳐 둔 칸도 그대로 남습니다.
+    """
+    buckets, pending = group_buckets(graded)
+    columns = st.columns(len(GROUP_TITLES))
+    for column, key in zip(columns, GROUP_TITLES):
+        klass = GROUP_TITLES[key][2]
+        rows = buckets[key]
+        with column, st.container(border=True, key=f'pxgrp-{klass}'):
+            st.markdown(slot_head(key, len(rows)), unsafe_allow_html=True)
+            if not rows:
+                st.caption('해당 종목 없음')
+            for row in rows[:SHOWN_PER_GROUP]:
+                st.button(chip_label(row), key=f'pxpick-{key}-{row["code"]}',
+                          on_click=_choose, args=(row['code'],), width='stretch')
+            rest = rows[SHOWN_PER_GROUP:]
+            if rest:
+                with st.expander(f'더 보기 · {len(rest)}종목'):
+                    for row in rest:
+                        st.button(chip_label(row), key=f'pxpick-{key}-{row["code"]}',
+                                  on_click=_choose, args=(row['code'],), width='stretch')
+    st.markdown(board_basis(graded, pending), unsafe_allow_html=True)
+    if pending:
+        with st.expander(f'판정 보류 {len(pending)}종목'):
+            for row in pending:
+                st.button(chip_label(row), key=f'pxpick-wait-{row["code"]}',
+                          on_click=_choose, args=(row['code'],), width='stretch')
+
+
 def fill_reports(store, stocks, limit=20):
     """확정 결산 자료가 없는 종목을 차례로 채웁니다.
 
@@ -138,7 +177,7 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
     # 담은 종목이 없으면 그룹판이 통째로 비어 화면이 끊겨 보이므로, 그 자리에
     # 왜 비었고 무엇을 누르면 되는지 적습니다.
     if graded:
-        board = group_board(graded)
+        board = None          # 그룹 칸은 아래에서 단추로 그립니다.
     elif stocks:
         board = ('<p class="pxb-sub" style="max-width:100%">담은 종목의 시세를 아직 받지 '
                  '못했습니다. 공공데이터포털 인증키와 종목코드를 확인하세요.</p>')
@@ -147,8 +186,10 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '없습니다. 아래 <b>＋ 조사된 종목 담기</b>로 자료가 준비된 종목을 한 번에 '
                  '담거나, <b>＋ 시가총액 상위 종목 담기</b>로 코스피·코스닥 상위 종목을 '
                  '담으면 여기에 그룹이 나옵니다.</p>')
-    st.markdown(header() + section('그룹 판정', RULE_TEXT) + board
-                + close_frame(), unsafe_allow_html=True)
+    st.markdown(header() + section('그룹 판정', RULE_TEXT)
+                + (board or '') + close_frame(), unsafe_allow_html=True)
+    if board is None:
+        group_board_ui(graded)
     named = {g['code']: g['name'] for g in graded}
     if stocks:
         with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
@@ -168,13 +209,6 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
             st.warning(f'{name} · {reason}')
         if not done and not failed:
             st.info('받을 종목이 없었습니다.')
-
-    # 그룹판의 종목을 누르면 주소에 종목코드가 실려 옵니다. 주소를 지우면 화면을
-    # 다시 그리게 되어 맴돌므로, 한 번 반영한 값을 기억해 두고 넘어갑니다.
-    from_url = st.query_params.get('stock')
-    if from_url and from_url != st.session_state.get('px_from_url'):
-        st.session_state['px_from_url'] = from_url
-        st.session_state['px_pick'] = from_url
 
     gaps = missing_reports(state)
     if gaps and not sample_mode and store is not None:
