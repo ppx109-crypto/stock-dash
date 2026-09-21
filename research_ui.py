@@ -11,7 +11,8 @@ from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import (GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP, board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
-                          live_note, price_now, section, slot_head, stock_cards)
+                          live_note, period_label, price_now, section, slot_head,
+                          stock_cards)
 import market
 import broker_kis
 
@@ -453,7 +454,8 @@ def render_research(store, state, sample_mode):
     with tabs[1]:
         f = r.get('financial')
         if f:
-            st.caption(f"누적 {f['period']} / 전년 {f['prior_period']} · {f['basis']} · {f['currency']} {f['unit']}")
+            st.caption(f"{period_label(f['period'])} / 전년 {period_label(f['prior_period'])}"
+                       f" · {f['basis']} · {f['currency']} {f['unit']}")
             st.dataframe([{'항목':'매출','이번 누적':f['revenue'],'전년 누적':f['prior_revenue'],'변화':growth(f['revenue'],f['prior_revenue'])},
                           {'항목':'영업이익','이번 누적':f['operating_profit'],'전년 누적':f['prior_operating_profit'],'변화':growth(f['operating_profit'],f['prior_operating_profit'])}], hide_index=True)
             st.link_button('실적 근거', f['source'])

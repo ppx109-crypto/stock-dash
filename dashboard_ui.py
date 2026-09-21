@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import html
+import re
 
 import streamlit as st
 
@@ -497,6 +498,24 @@ def settled(official: dict | None) -> dict:
             "anchors_fresh": bool(official.get("anchors_from"))}
 
 
+SPAN_NAMES = {"03": ("1분기", "1~3월"), "06": ("상반기", "1~6월"),
+              "09": ("3분기 누적", "1~9월"), "12": ("연간", "1~12월")}
+
+
+def period_label(value, short: bool = False) -> str:
+    """2026-06을 '2026년 상반기(1~6월)'로 적습니다.
+
+    '2026-06'은 유월 한 달로 읽힙니다. 실제로는 그 해 1월부터의 누적이라,
+    한 달치를 견준 것으로 오해하게 됩니다. 몇 월부터 몇 월까지인지 적습니다.
+    """
+    text = str(value or "")
+    if not re.fullmatch(r"\d{4}-(03|06|09|12)", text):
+        return text
+    year, month = text.split("-")
+    name, span = SPAN_NAMES[month]
+    return f"{year} {name}" if short else f"{year}년 {name}({span})"
+
+
 def as_day(value) -> str:
     """20260917처럼 붙어 있는 날짜를 2026-09-17로 적습니다."""
     text = str(value or "")
@@ -590,11 +609,12 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     if money:
         profit_text = growth(money["operating_profit"], money["prior_operating_profit"])
         revenue_text = growth(money["revenue"], money["prior_revenue"])
-        period = f'{_e(money.get("prior_period", ""))} → {_e(money.get("period", ""))}'
+        period = (f'{_e(period_label(money.get("prior_period")))} → '
+                  f'{_e(period_label(money.get("period")))}')
         basis = " · ".join(x for x in (money.get("basis"), money.get("currency"),
                                        money.get("unit")) if x)
         if basis:
-            period += f' · {_e(basis)} 누적'
+            period += f' · {_e(basis)}'
         unit = _e(money.get("unit", ""))
         # 증감률만 적으면 흑자 전환처럼 %로 말할 수 없는 변화의 크기를 알 수 없습니다.
         profit_amount = (f'<p class="pxb-sub" style="margin-top:4px">'
@@ -614,13 +634,15 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         f'<div class="pxb-value" style="color:{profit_color}">{_e(profit_text)}</div>'
         f'<p class="pxb-sub">{period}</p>{profit_amount}'
         + (_pair(money["prior_operating_profit"], money["operating_profit"], profit_color,
-                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""))
+                 (period_label(money.get("prior_period"), short=True) or "전년",
+                  period_label(money.get("period"), short=True) or "올해")) if money else ""))
     card_revenue = _card(
         2, "매출 성장",
         f'<div class="pxb-value" style="color:{revenue_color}">{_e(revenue_text)}</div>'
         f'<p class="pxb-sub">{period}</p>{revenue_amount}'
         + (_pair(money["prior_revenue"], money["revenue"], revenue_color,
-                 (money.get("prior_period", "전년"), money.get("period", "올해"))) if money else ""))
+                 (period_label(money.get("prior_period"), short=True) or "전년",
+                  period_label(money.get("period"), short=True) or "올해")) if money else ""))
 
     if len(closes) >= 20:
         lines = axis.get("ema") or {}
@@ -648,7 +670,8 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
                       [y["revenue"] for y in years], [y["profit"] for y in years])
         note = f'단위 억원 · 확정 결산 · {years[0]["year"]}~{years[-1]["year"]}'
     elif money:
-        chart = _bars([money.get("prior_period", "이전"), money.get("period", "최근")],
+        chart = _bars([period_label(money.get("prior_period"), short=True) or "이전",
+                       period_label(money.get("period"), short=True) or "최근"],
                       [money["prior_revenue"], money["revenue"]],
                       [money["prior_operating_profit"], money["operating_profit"]])
         note = f'단위 {_e(money.get("unit", ""))} · 같은 축'

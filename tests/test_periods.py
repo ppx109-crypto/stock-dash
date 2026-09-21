@@ -69,3 +69,23 @@ class Pairing(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Labels(unittest.TestCase):
+    """'2026-06'은 유월 한 달로 읽힙니다. 화면에는 몇 월부터인지 적습니다."""
+
+    def test_a_half_year_says_which_months(self):
+        from dashboard_ui import period_label
+        self.assertEqual(period_label("2026-06"), "2026년 상반기(1~6월)")
+        self.assertEqual(period_label("2025-06", short=True), "2025 상반기")
+
+    def test_the_other_cumulative_periods_are_named_too(self):
+        from dashboard_ui import period_label
+        self.assertEqual(period_label("2026-03"), "2026년 1분기(1~3월)")
+        self.assertEqual(period_label("2026-09"), "2026년 3분기 누적(1~9월)")
+        self.assertEqual(period_label("2026-12"), "2026년 연간(1~12월)")
+
+    def test_anything_unexpected_is_left_alone(self):
+        from dashboard_ui import period_label
+        self.assertEqual(period_label("2026-07"), "2026-07")
+        self.assertEqual(period_label(None), "")
