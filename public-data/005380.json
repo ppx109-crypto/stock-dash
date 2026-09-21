@@ -7,6 +7,22 @@
       "revenue": 926944.38,
       "profit": 72352.06,
       "receipt": "20250814003906",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 58 기 반기",
+          "add": "92694438000000",
+          "amount": "48286677000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 58 기 반기",
+          "add": "7235206000000",
+          "amount": "3601597000000"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003906"
     },
     {
@@ -14,6 +30,22 @@
       "revenue": 951542.14,
       "profit": 53655.74,
       "receipt": "20260814003521",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "IS",
+          "thstrm_nm": "제 59 기 반기",
+          "add": "95154214000000",
+          "amount": "49215328000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 59 기 반기",
+          "add": "5365574000000",
+          "amount": "2850888000000"
+        }
+      ],
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003521"
     }
   ],
@@ -52,8 +84,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-18",
+  "fetched": "2026-09-21",
   "disclosures": [
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20260921",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260921000336"
+    },
     {
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20260918",
@@ -198,11 +235,6 @@
       "title": "공정거래자율준수프로그램운영현황(안내공시)              ",
       "date": "20260723",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723800961"
-    },
-    {
-      "title": "주요사항보고서(자기주식처분결정)",
-      "date": "20260723",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260723000599"
     }
   ]
 }

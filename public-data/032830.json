@@ -37,8 +37,23 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-20",
+  "fetched": "2026-09-21",
   "disclosures": [
+    {
+      "title": "특수관계인과의보험거래",
+      "date": "20260921",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260921000365"
+    },
+    {
+      "title": "특수관계인에대한출자",
+      "date": "20260921",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260921000359"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260921",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260921000351"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260907",
