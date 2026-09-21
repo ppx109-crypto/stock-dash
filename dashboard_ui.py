@@ -513,7 +513,32 @@ def price_now(grade: dict | None, official: dict | None) -> tuple[float | None, 
     return (price, f'{as_day(official.get("price_date"))} 종가') if price else (None, "")
 
 
-def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None) -> str:
+def consensus(opinions: list | None) -> dict:
+    """증권사 목표가를 하나로 모읍니다. 가장 최근 쪽에 무게를 두지 않고 평균을 냅니다.
+
+    같은 증권사가 여러 번 냈으면 그 증권사의 가장 최근 것만 셉니다. 한 곳이
+    여러 번 낸 의견이 여러 곳의 합의처럼 보이지 않게 하기 위해서입니다.
+    """
+    latest = {}
+    for row in opinions or []:
+        member = row.get("member") or row.get("date", "")
+        if member not in latest or row.get("date", "") > latest[member].get("date", ""):
+            latest[member] = row
+    picked = [r for r in latest.values() if (r.get("target") or 0) > 0]
+    if not picked:
+        return {}
+    targets = sorted(r["target"] for r in picked)
+    newest = max(picked, key=lambda r: r.get("date", ""))
+    middle = len(targets) // 2
+    base = (targets[middle] if len(targets) % 2
+            else (targets[middle - 1] + targets[middle]) / 2)
+    return {"base": base, "low": targets[0], "high": targets[-1], "count": len(picked),
+            "opinion": newest.get("opinion", ""), "date": newest.get("date", ""),
+            "member": newest.get("member", "")}
+
+
+def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None,
+                opinions: list | None = None, live: dict | None = None) -> str:
     """고른 종목 하나를 판단 카드로 보여줍니다. 확정 결산이 있으면 근거 칸이 늘어납니다."""
     report = report or {}
     book = settled(official)
@@ -624,15 +649,27 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         head_text, value_title = f"{now:,.0f}원", "적정가치 범위"
     elif len(closes) >= 20:
         low, high, now = min(closes), max(closes), closes[-1]
+        source = f"{price_note}"
+        if live and live.get("price"):
+            # 증권사 시세가 있으면 그것을 보여 줍니다. 장중에는 실시간, 마감 뒤에는
+            # 그날 종가입니다. 공공데이터포털 종가는 하루 늦게 들어옵니다.
+            now = live["price"]
+            low, high = min(low, now), max(high, now)
+            source = f'{live.get("at", "")} 기준 · 한국투자증권 시세'
         mark = min(max((now - low) / (high - low) * 100, 2), 98) if high > low else 50
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, (low + high) / 2, high))
         move = ""
-        if len(closes) >= 2 and closes[-2]:
+        if live and live.get("price"):
+            gap, rate = live.get("change") or 0, live.get("rate")
+            tone = DOWN if gap < 0 else UP
+            move = (f' <small style="font-size:14px;color:{tone}">{gap:+,.0f}'
+                    + (f" ({rate:+.2f}%)" if rate is not None else "") + "</small>")
+        elif len(closes) >= 2 and closes[-2]:
             gap = now - closes[-2]
             tone = DOWN if gap < 0 else UP
             move = (f' <small style="font-size:14px;color:{tone}">{gap:+,.0f}'
                     f' ({gap / closes[-2] * 100:+.2f}%)</small>')
-        value_note = (f"{_e(price_note)} · 최근 {len(closes)}거래일 범위의 {mark:.0f}% 지점 · "
+        value_note = (f"{_e(source)} · 최근 {len(closes)}거래일 범위의 {mark:.0f}% 지점 · "
                       "적정주가가 아닙니다.")
         head_text, value_title = f"{now:,.0f}원{move}", "주가 · 가격 범위 속 위치"
     else:
@@ -641,21 +678,36 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     # 목표주가를 함께 적습니다. 조사 자료의 평가가 있으면 그것을, 없으면 과거
     # 시가총액/영업이익 배수로 낸 중간 참고가를 씁니다. 둘 다 없으면 왜 없는지 적습니다.
     fair = book.get("fair") if book else None
-    if value:
+    view = consensus(opinions)
+    if view:
+        # 증권사가 낸 목표가가 있으면 그것을 먼저 씁니다. 과거 배수로 되짚은 값보다
+        # 근거가 분명합니다.
+        target = view["base"]
+        target_from = f'증권사 {view["count"]}곳 목표가의 중앙값'
+        if view.get("opinion"):
+            target_from += f' · 최근 의견 {view["opinion"]}'
+            if view.get("member"):
+                target_from += f'({view["member"]})'
+            if view.get("date"):
+                target_from += f' {as_day(view["date"])}'
+    elif value:
         target, target_from = value.get("base"), "조사 자료의 평가"
     elif fair:
         target, target_from = fair["base"], f'과거 배수 {fair["multiple"]:.1f}배'
     else:
         target, target_from = None, (book.get("fair_reason") if book
                                      else "확정 결산 자료가 모이면 계산합니다")
-    here = price if price else (closes[-1] if closes else None)
+    here = (live or {}).get("price") or price or (closes[-1] if closes else None)
     if target and here:
         step = (target / here - 1) * 100
         tone = UP if step >= 0 else DOWN
         target_line = (
             f'<ul class="pxb-list" style="margin-top:14px">'
             f'<li>목표주가<b style="color:{tone}">{target:,.0f}원</b></li>'
-            f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li></ul>'
+            f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li>'
+            + (f'<li>증권사 목표가 범위<b>{view["low"]:,.0f} ~ {view["high"]:,.0f}원</b></li>'
+               if view and view["high"] > view["low"] else "")
+            + '</ul>'
             f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
             '매수·매도 신호가 아닙니다.</p>')
     elif here:
@@ -674,8 +726,11 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     card_value = _card(
         5, value_title,
         f'<div class="pxb-value" style="font-size:32px">{head_text}</div>'
-        f'<p class="pxb-what"><b>현재 주가</b> · {_e(price_note) or "최근 거래일 종가"}</p>'
-        f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
+        f'<p class="pxb-what"><b>현재 주가</b> · '
+        + (f'{_e(live.get("at", ""))} 한국투자증권 실시간'
+           if live and live.get("price") else (_e(price_note) or "최근 거래일 종가"))
+        + "</p>"
+        + f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
         f'<i style="left:{mark:.0f}%"></i></div><div class="pxb-range-lab">{labels}</div></div>'
         f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>{target_line}')
 

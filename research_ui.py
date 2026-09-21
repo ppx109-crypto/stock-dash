@@ -13,6 +13,28 @@ from dashboard_ui import (GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP, board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           price_now, section, slot_head, stock_cards)
 import market
+import broker_kis
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def live_quote(code):
+    """현재가 한 건. 장중에는 1분마다 새로 받아 실시간에 가깝게 따라갑니다.
+
+    키가 없거나 조회가 막히면 None을 돌려주고, 화면은 그대로 종가를 씁니다.
+    """
+    try:
+        return broker_kis.market().quote(code)
+    except broker_kis.BrokerError:
+        return None
+
+
+@st.cache_data(ttl=6 * 3600, show_spinner=False)
+def broker_targets(code):
+    """증권사 목표주가. 하루에 몇 건 나오지 않으므로 6시간 두고 씁니다."""
+    try:
+        return broker_kis.market().opinions(code)
+    except broker_kis.BrokerError:
+        return None
 
 
 def link_codes(store, state, known):
@@ -209,11 +231,16 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
         official = next((s.get('report') for s in stocks if s['code'] == code), None)
         name = names.get(code) or (report or {}).get('name') or code
         price, price_note = price_now(grade, official)
+        # 증권사 목표주가와 현재가는 키가 있을 때만 붙습니다. 없으면 종가로 갑니다.
+        live, opinions = live_quote(code), broker_targets(code)
         note = '종목코드 ' + code
-        if price:
+        if live and live.get('price'):
+            note += f' · 현재가 {live["price"]:,.0f}원 · {live.get("at", "")} 한국투자증권'
+        elif price:
             note += f' · 주가 {price:,.0f}원 · {price_note}'
         st.markdown(frame(section(f'{name} · 투자판단', note)
-                          + stock_cards(report, grade, official)), unsafe_allow_html=True)
+                          + stock_cards(report, grade, official, opinions, live)),
+                    unsafe_allow_html=True)
     elif stocks:
         st.markdown(frame(section('투자판단', '위 목록에서 종목을 고르면 판단점수·실적·흐름이 열립니다')),
                     unsafe_allow_html=True)

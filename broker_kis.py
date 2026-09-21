@@ -2,7 +2,7 @@
 import os
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import requests
@@ -23,14 +23,17 @@ def amount(value):
 
 
 class KIS:
-    def __init__(self):
+    def __init__(self, account=True):
+        # 시세와 투자의견은 계좌번호 없이 읽습니다. 잔고만 계좌를 요구합니다.
         self.key = os.getenv('KIS_APP_KEY', '').strip()
         self.secret = os.getenv('KIS_APP_SECRET', '').strip()
         self.cano = os.getenv('KIS_CANO', '').strip()
         self.product = os.getenv('KIS_ACNT_PRDT_CD', '').strip()
         self.mode = os.getenv('KIS_ENV', 'demo').strip()
-        if not self.key or not self.secret or not re.fullmatch(r'[0-9]{8}', self.cano) or not re.fullmatch(r'[0-9]{2}', self.product):
-            raise BrokerError('한국투자증권 App Key·App Secret·계좌 앞 8자리·뒤 2자리를 설정하세요.')
+        if not self.key or not self.secret:
+            raise BrokerError('한국투자증권 App Key·App Secret을 설정하세요.')
+        if account and (not re.fullmatch(r'[0-9]{8}', self.cano) or not re.fullmatch(r'[0-9]{2}', self.product)):
+            raise BrokerError('한국투자증권 계좌 앞 8자리·뒤 2자리를 설정하세요.')
         if self.mode not in ('real', 'demo'):
             raise BrokerError('KIS_ENV는 real 또는 demo로 입력하세요.')
         self.base = 'https://openapi.koreainvestment.com:9443' if self.mode == 'real' else 'https://openapivts.koreainvestment.com:29443'
@@ -56,6 +59,86 @@ class KIS:
             raise BrokerError('증권사 인증에 실패했습니다. 실전·모의 키가 선택 환경과 같은지 확인하세요.')
         self.token = data['access_token']
         self.expires = time.time() + max(0, amount(data.get('expires_in', 0)) - 120)
+
+    def opinions(self, code, days=180):
+        """한 종목의 증권사 투자의견과 목표가를 기간으로 받아옵니다.
+
+        국내주식 종목투자의견(국내주식-188) API입니다. 조회 전용이며 주문과
+        무관합니다. 응답의 hts_goal_prc가 목표가, invt_opnn이 의견입니다.
+        """
+        if not re.fullmatch(r'[0-9]{6}', str(code)):
+            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
+        self.authorize()
+        today = datetime.now(ZoneInfo('Asia/Seoul')).date()
+        begin = today - timedelta(days=max(days, 1))
+        _, data = self.request(
+            'GET', '/uapi/domestic-stock/v1/quotations/invest-opinion',
+            headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+                     'appsecret': self.secret, 'tr_id': 'FHKST663300C0', 'custtype': 'P'},
+            params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_COND_SCR_DIV_CODE': '16633',
+                    'FID_INPUT_ISCD': str(code), 'FID_INPUT_DATE_1': begin.strftime('%Y%m%d'),
+                    'FID_INPUT_DATE_2': today.strftime('%Y%m%d')})
+        if str(data.get('rt_cd')) != '0':
+            raise BrokerError('투자의견 조회가 승인되지 않았습니다. API 신청 상태와 실전·모의 환경을 확인하세요. '
+                              + str(data.get('msg1', ''))[:40])
+        rows = data.get('output')
+        if rows is None:
+            rows = []
+        if isinstance(rows, dict):
+            rows = [rows]
+        if not isinstance(rows, list):
+            raise BrokerError('투자의견 응답 형식이 달라 읽지 않았습니다.')
+        found = []
+        for row in rows:
+            try:
+                target = amount(row.get('hts_goal_prc'))
+            except BrokerError:
+                continue
+            if target <= 0:
+                continue
+            day = str(row.get('stck_bsop_date', ''))
+            found.append({'date': day, 'target': target,
+                          'opinion': str(row.get('invt_opnn', '')).strip(),
+                          'prior_opinion': str(row.get('rgbf_invt_opnn', '')).strip(),
+                          'member': str(row.get('mbcr_name', '')).strip()})
+        found.sort(key=lambda r: r['date'], reverse=True)
+        return found
+
+    def quote(self, code):
+        """한 종목의 현재가. 장중에는 실시간, 장 마감 뒤에는 그날 종가입니다."""
+        if not re.fullmatch(r'[0-9]{6}', str(code)):
+            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
+        self.authorize()
+        _, data = self.request(
+            'GET', '/uapi/domestic-stock/v1/quotations/inquire-price',
+            headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+                     'appsecret': self.secret, 'tr_id': 'FHKST01010100', 'custtype': 'P'},
+            params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code)})
+        if str(data.get('rt_cd')) != '0':
+            raise BrokerError('현재가 조회가 승인되지 않았습니다. API 신청 상태를 확인하세요. '
+                              + str(data.get('msg1', ''))[:40])
+        row = data.get('output')
+        if not isinstance(row, dict) or not row.get('stck_prpr'):
+            raise BrokerError('현재가 응답 형식이 달라 읽지 않았습니다.')
+        price = amount(row.get('stck_prpr'))
+        if price <= 0:
+            raise BrokerError('현재가가 0으로 와서 사용하지 않았습니다.')
+        change = 0.0
+        try:
+            change = amount(row.get('prdy_vrss'))
+        except BrokerError:
+            change = 0.0
+        # 부호는 따로 옵니다. 1·2는 상승, 4·5는 하락입니다.
+        if str(row.get('prdy_vrss_sign', '')) in ('4', '5'):
+            change = -abs(change)
+        rate = None
+        try:
+            rate = amount(row.get('prdy_ctrt'))
+        except BrokerError:
+            rate = None
+        return {'price': price, 'change': change, 'rate': rate,
+                'name': str(row.get('hts_kor_isnm', '')).strip(),
+                'at': datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
 
     def balance(self):
         self.authorize()
@@ -105,3 +188,15 @@ class KIS:
         return {'positions': positions, 'value': total, 'pnl': sum(p['pnl'] for p in positions),
                 'cash': amount(summary['dnca_tot_amt']) if summary.get('dnca_tot_amt') not in (None, '') else None,
                 'mode': self.mode, 'fetched': datetime.now(ZoneInfo('Asia/Seoul')).isoformat()}
+
+
+_market = None
+
+
+def market():
+    """시세·투자의견 전용 연결. 계좌번호 없이 쓰고 토큰을 재사용합니다."""
+    global _market
+    key = os.getenv('KIS_APP_KEY', '').strip()
+    if _market is None or _market.key != key or _market.mode != os.getenv('KIS_ENV', 'demo').strip():
+        _market = KIS(account=False)
+    return _market

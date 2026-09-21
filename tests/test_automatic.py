@@ -37,8 +37,13 @@ class AutomaticTests(unittest.TestCase):
     def test_no_fabricated_value(self):
         r=self.report();r['anchors']=[]
         self.assertIsNone(brief(r)['fair'])
+        # 금융업 코드만으로는 막지 않습니다. 지주회사가 함께 걸리기 때문입니다.
+        # 매출을 한 해도 읽지 못한 금융회사만 산출을 보류합니다.
         r=self.report();r['company']['induty_code']='64121'
+        for year in r['years']: year['revenue']=None
         self.assertIsNone(brief(r)['fair'])
+        r=self.report();r['company']['induty_code']='64121'
+        self.assertIsNotNone(brief(r)['fair'])
         r=self.report();r['years'][-1]['profit']=-1
         self.assertIsNone(brief(r)['fair'])
         self.assertEqual(brief(r)['growth'],'적자 · 회복 확인')

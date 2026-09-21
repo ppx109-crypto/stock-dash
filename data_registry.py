@@ -42,6 +42,12 @@ PROVIDERS = (
         ("stock.live_quote",),
         ("KIWOOM_APP_KEY", "KIWOOM_APP_SECRET"),
     ),
+    ProviderSpec(
+        "kis_domestic",
+        "한국투자증권 · 증권사 목표주가·실시간 시세",
+        ("stock.opinion", "stock.live_quote"),
+        ("KIS_APP_KEY", "KIS_APP_SECRET"),
+    ),
 )
 
 
@@ -138,6 +144,30 @@ def health(spec: ProviderSpec) -> dict:
             return _result(spec.provider_id, "error",
                            f"이 키는 {quotes.LABEL[other]} 서버에서 인증됩니다. "
                            f'KIWOOM_ENV를 "{other}"로 바꾸세요.', started)
+
+        if spec.provider_id == "kis_domestic":
+            # 토큰을 받고, 삼성전자 현재가·투자의견을 한 번씩 읽어 승인 상태까지 봅니다.
+            import broker_kis
+            mode = os.getenv("KIS_ENV", "demo").strip() or "demo"
+            label = {"real": "실전", "demo": "모의"}.get(mode, mode)
+            try:
+                client = broker_kis.KIS(account=False)
+                client.authorize()
+            except broker_kis.BrokerError as error:
+                return _result(spec.provider_id, "error", f"{label} 서버 인증 실패 · {error}"[:120], started)
+            notes = []
+            try:
+                client.quote("005930")
+                notes.append("실시간 시세 정상")
+            except broker_kis.BrokerError as error:
+                notes.append(f"실시간 시세 미승인 ({error})"[:70])
+            try:
+                found = client.opinions("005930", days=180)
+                notes.append(f"투자의견 {len(found)}건")
+            except broker_kis.BrokerError as error:
+                notes.append(f"투자의견 미승인 ({error})"[:70])
+            status = "ok" if all("미승인" not in note for note in notes) else "error"
+            return _result(spec.provider_id, status, f"{label} 서버 · " + " · ".join(notes), started)
 
         return _result(spec.provider_id, "unknown", "진단 미구현", started)
     except requests.Timeout:
