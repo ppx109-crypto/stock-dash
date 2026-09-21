@@ -81,7 +81,19 @@ _CSS = """
   letter-spacing:-.5px}
 .pxb-slot small{display:block;margin-top:6px;font-size:11px;color:#7B7465;line-height:1.55}
 .pxb-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.pxb-chip{padding:4px 10px;border-radius:999px;font-size:11px;background:#FFFFFFAA;border:1px solid #E7DCC7;color:#5F584B}
+.pxb-chip{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;
+  background:#FFFFFFAA;border:1px solid #E7DCC7;color:#5F584B;text-decoration:none;
+  cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+a.pxb-chip:hover{border-color:#B08343;background:#FFFFFF;transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(90,72,44,.12)}
+a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
+.pxb-more{margin-top:8px}
+.pxb-more>summary{list-style:none;cursor:pointer;display:inline-block;padding:4px 12px;
+  border-radius:999px;font-size:11px;font-weight:700;color:#946E38;
+  background:#FFFFFFAA;border:1px dashed #DCC9A5}
+.pxb-more>summary::-webkit-details-marker{display:none}
+.pxb-more>summary:hover{border-style:solid;border-color:#B08343;background:#FFFFFF}
+.pxb-more[open]>summary{margin-bottom:4px}
 .pxb-chip em{font-style:normal;color:#7E7463;margin-left:4px;font-size:10px}
 .pxb-slot.a .pxb-chip{border-color:#CFE2D2}
 .pxb-empty{margin-top:12px;font-size:11px;color:#7E7463}
@@ -332,6 +344,29 @@ def rank_rows(rows: list) -> list:
     return sorted(rows, key=key)
 
 
+SHOWN_PER_GROUP = 8      # 칸 안에 바로 보일 종목 수. 나머지는 '더 보기'로 접습니다.
+
+
+def chip(row: dict) -> str:
+    """그룹판의 종목 하나. 누르면 그 종목의 판단 카드가 열리도록 링크로 둡니다.
+
+    화면이 HTML이라 단추를 쓸 수 없어, 주소에 종목코드를 달아 보냅니다.
+    target="_self"가 있어야 새 창이 아니라 이 화면이 다시 그려집니다.
+    """
+    money = (row.get("earnings") or {}).get("grade")
+    note = f'EMA {row.get("met", 0)}/{row.get("total", 4)}'
+    # 실적이 빠진 자리를 비워 두면 좋은 실적처럼 읽힙니다. 없다고 적되, 아직 못
+    # 받은 것과 애초에 같은 잣대로 잴 수 없는 것을 나눠 적습니다.
+    if money and money != "미확인":
+        note += f" · 실적 {money}"
+    elif any("금융업" in str(gap) for gap in row.get("gaps") or []):
+        note += " · 금융업 · 기준 다름"
+    else:
+        note += " · 실적 미수집"
+    return (f'<a class="pxb-chip" href="?stock={_e(row["code"])}" target="_self">'
+            f'{_e(row["name"])}<em>{_e(note)}</em></a>')
+
+
 def group_board(graded: list | None) -> str:
     """A·B·C·D 그룹판. 판정에 쓸 자료가 없으면 이유를 적습니다."""
     if not graded:
@@ -344,23 +379,14 @@ def group_board(graded: list | None) -> str:
     cards = ""
     for key, (title, note, klass) in GROUP_TITLES.items():
         rows = rank_rows(buckets[key])
-        chips = ""
-        for row in rows[:8]:
-            money = (row.get("earnings") or {}).get("grade")
-            # 바깥 반복문의 note(그룹 설명)를 가리지 않도록 이름을 따로 둡니다.
-            chip_note = f'EMA {row.get("met", 0)}/{row.get("total", 4)}'
-            # 실적이 빠진 자리를 비워 두면 좋은 실적처럼 읽힙니다. 없다고 적되,
-            # 아직 못 받은 것과 애초에 같은 잣대로 잴 수 없는 것을 나눠 적습니다.
-            if money and money != "미확인":
-                chip_note += f" · 실적 {money}"
-            elif any("금융업" in str(gap) for gap in row.get("gaps") or []):
-                chip_note += " · 금융업 · 기준 다름"
-            else:
-                chip_note += " · 실적 미수집"
-            chips += (f'<span class="pxb-chip">{_e(row["name"])}'
-                      f'<em>{_e(chip_note)}</em></span>')
-        more = f'<span class="pxb-chip">외 {len(rows) - 8}</span>' if len(rows) > 8 else ""
-        body = f'<div class="pxb-chips">{chips}{more}</div>' if rows else '<div class="pxb-empty">해당 종목 없음</div>'
+        shown = "".join(chip(row) for row in rows[:SHOWN_PER_GROUP])
+        rest = rows[SHOWN_PER_GROUP:]
+        body = f'<div class="pxb-chips">{shown}</div>' if rows else '<div class="pxb-empty">해당 종목 없음</div>'
+        if rest:
+            # 칸을 넘는 종목은 접어 둡니다. details는 순수 HTML이라 화면을 다시
+            # 그리지 않고 그 자리에서 펼쳐집니다.
+            body += (f'<details class="pxb-more"><summary>더 보기 · {len(rest)}종목</summary>'
+                     f'<div class="pxb-chips">{"".join(chip(row) for row in rest)}</div></details>')
         cards += (f'<div class="pxb-slot {klass}"><div class="pxb-slot-h">'
                   f'<b><i class="pxb-dot" style="background:{STATUS[key]}"></i>{title}</b>'
                   f'<i>{len(rows)}</i></div><small>{note}</small>{body}</div>')
@@ -381,10 +407,10 @@ def group_board(graded: list | None) -> str:
     board = (f'<div class="pxb-board">{cards}</div>'
              f'<div class="pxb-note" style="margin-top:10px">{basis}</div>')
     if pending:
-        names = ", ".join(_e(r["name"]) for r in pending[:6])
         reason = _e(pending[0].get("note") or pending[0].get("reason") or "자료 부족")
         board += (f'<div class="pxb-note" style="margin-top:10px">판정 보류 {len(pending)}종목 · '
-                  f'{names}{"…" if len(pending) > 6 else ""} · {reason}</div>')
+                  f'{reason}</div><div class="pxb-chips" style="margin-top:6px">'
+                  + "".join(chip(row) for row in pending) + "</div>")
     return board
 
 

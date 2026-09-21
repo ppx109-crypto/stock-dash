@@ -9,8 +9,8 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (GROUP_TITLES, RULE_TEXT, close_frame, frame, group_board,
-                          header, price_now, rank_rows, section, stock_cards)
+from dashboard_ui import (RULE_TEXT, close_frame, frame, group_board, header,
+                          price_now, section, stock_cards)
 import market
 
 
@@ -52,9 +52,6 @@ def market_top(top):
     return market.top_by_market(top)
 
 
-PENDING = '보류'
-
-
 def seed_watchlist(store, state, research):
     """저장소가 비어 있으면 조사 자료가 있는 종목을 기본으로 담아 둡니다.
 
@@ -83,25 +80,14 @@ def seed_watchlist(store, state, research):
     return True
 
 
+
+
+
 def _pick(key):
     """어느 목록에서 눌렀든 마지막으로 고른 종목 하나만 기억합니다."""
     code = st.session_state.get(key)
     if code:
         st.session_state['px_pick'] = code
-
-
-def _buckets(graded):
-    """그룹별 종목 묶음. 판정에 필요한 거래일이 모자란 종목은 따로 모읍니다."""
-    groups = {key: [] for key in GROUP_TITLES}
-    groups[PENDING] = []
-    for row in graded:
-        groups[row['group'] if row.get('group') in GROUP_TITLES else PENDING].append(row)
-    groups = {key: rank_rows(rows) for key, rows in groups.items()}
-    # A·B·C는 비어 있어도 남겨 둡니다. 눌렀을 때 "없음"을 보는 편이,
-    # 버튼이 사라져 어느 그룹을 봤는지 모르게 되는 것보다 낫습니다.
-    if not groups[PENDING]:
-        del groups[PENDING]
-    return groups
 
 
 def fill_reports(store, stocks, limit=20):
@@ -164,24 +150,6 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
     st.markdown(header() + section('그룹 판정', RULE_TEXT) + board
                 + close_frame(), unsafe_allow_html=True)
     named = {g['code']: g['name'] for g in graded}
-    if graded:
-        buckets = _buckets(graded)
-        titles = {PENDING: '판정 보류'}
-        titles.update({key: GROUP_TITLES[key][0] for key in GROUP_TITLES})
-        # 비어 있는 그룹을 처음부터 보여 주면 "종목 없음"만 읽고 끝납니다.
-        # 종목이 들어 있는 첫 그룹을 기본으로 펼칩니다.
-        first = next((key for key, rows in buckets.items() if rows), next(iter(buckets)))
-        st.pills('그룹을 고르면 그 그룹의 종목이 모두 나옵니다', list(buckets),
-                 format_func=lambda k: f'{titles[k]} · {len(buckets[k])}종목',
-                 key='px_group', default=first)
-        picked = st.session_state.get('px_group') or first
-        rows = buckets.get(picked) or []
-        if rows:
-            st.pills(f'{titles[picked]} · 영업이익이 좋은 순서 · 누르면 판단 카드가 열립니다',
-                     [r['code'] for r in rows], format_func=lambda c: named.get(c, c),
-                     key='px_group_pick', on_change=_pick, args=('px_group_pick',))
-        else:
-            st.caption(f'{titles[picked]}에 해당하는 종목이 없습니다.')
     if stocks:
         with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
             labels = {s['code']: s['name'] for s in stocks}
@@ -200,6 +168,13 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
             st.warning(f'{name} · {reason}')
         if not done and not failed:
             st.info('받을 종목이 없었습니다.')
+
+    # 그룹판의 종목을 누르면 주소에 종목코드가 실려 옵니다. 주소를 지우면 화면을
+    # 다시 그리게 되어 맴돌므로, 한 번 반영한 값을 기억해 두고 넘어갑니다.
+    from_url = st.query_params.get('stock')
+    if from_url and from_url != st.session_state.get('px_from_url'):
+        st.session_state['px_from_url'] = from_url
+        st.session_state['px_pick'] = from_url
 
     gaps = missing_reports(state)
     if gaps and not sample_mode and store is not None:

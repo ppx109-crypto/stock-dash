@@ -1,0 +1,46 @@
+name: Daily DART refresh
+# 장 마감 뒤 하루 한 번, 모아 둔 종목의 DART 자료를 다시 받습니다.
+# 바뀐 자료가 있을 때만 커밋합니다. 커밋하면 Streamlit이 다시 시작되고, 다시
+# 시작하면 실행 서버에 저장된 관심종목과 투자일지가 지워지기 때문입니다.
+on:
+  schedule:
+    # 한국 시간 평일 18:00 (UTC 09:00). 장 마감(15:30)과 공시 반영 뒤입니다.
+    - cron: '0 9 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (쉼표 구분, 비우면 public-data에 있는 전체)'
+        required: false
+        default: ''
+permissions:
+  contents: write
+concurrency:
+  group: public-dart-data
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python collect_daily.py
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          PUBLIC_CODES: ${{ inputs.codes || '' }}
+      - name: Save only when something actually changed
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public-data/ research/
+          if git diff --cached --quiet; then
+            echo '바뀐 자료가 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Refresh DART data after the close'
+            git pull --rebase origin main
+            git push
+          fi
