@@ -130,5 +130,37 @@ class Downside(unittest.TestCase):
         self.assertIsNone(study.worst_case([{"ahead": {20: 1.0}}] * 5, 20))
 
 
+class Search(unittest.TestCase):
+    """돈이 되는 조합을 찾는 부분. 순서가 기대수익이어야 합니다."""
+
+    def rows(self, items):
+        return [{"group": "A", "ahead": {20: move}, "매출성장": a, "영업이익률": b}
+                for move, a, b in items]
+
+    def test_costs_come_off_the_expected_return(self):
+        block = {"평균수익률": 1.0}
+        self.assertAlmostEqual(study.net(block, cost=0.25), 0.75)
+
+    def test_a_high_win_rate_with_small_wins_loses_to_a_bigger_one(self):
+        # 자주 이기지만 조금 버는 쪽보다, 덜 이겨도 크게 버는 쪽이 위여야 합니다.
+        often = self.rows([(0.4, 20.0, 12.0)] * 90 + [(-0.5, 20.0, 12.0)] * 10)
+        rarely = self.rows([(9.0, -5.0, 1.0)] * 55 + [(-5.0, -5.0, 1.0)] * 45)
+        found = study.search(often + rarely, 20, floor=60)
+        top = found[0]
+        self.assertIn("조건 없음", top["조건"])
+        better = [r for r in found if "매출성장 ≥ 0" in r["조건"]][0]
+        self.assertLess(better["순기대수익"], top["순기대수익"])
+
+    def test_a_thin_combination_is_dropped(self):
+        found = study.search(self.rows([(5.0, 20.0, 12.0)] * 10), 20, floor=60)
+        self.assertEqual(found, [])
+
+    def test_the_excess_is_measured_against_the_baseline(self):
+        rows = self.rows([(5.0, 20.0, 12.0)] * 100)
+        base = study.tally(self.rows([(1.0, 0.0, 0.0)] * 100), 20)
+        found = study.search(rows, 20, floor=60, baseline=base)
+        self.assertAlmostEqual(found[0]["초과"], 4.0)
+
+
 if __name__ == "__main__":
     unittest.main()

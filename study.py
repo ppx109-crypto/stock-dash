@@ -225,3 +225,56 @@ def worst_case(rows, horizon=20, share=10):
     cut = max(1, len(moves) * share // 100)
     return {"하위 %d%% 평균" % share: statistics.fmean(moves[:cut]),
             "하위 %d%% 경계" % share: moves[cut - 1]}
+
+
+# 왕복 비용. 매수·매도 수수료와 매도 시 거래세를 합친 어림값입니다. 정확한
+# 값은 증권사와 시장에 따라 다르므로 환경변수로 바꿀 수 있게 둡니다. 비용을
+# 빼지 않으면 '이기는 횟수는 많은데 계좌는 줄어드는' 규칙을 좋게 봅니다.
+import os
+COST = float(os.getenv("ROUND_TRIP_COST", "0.25"))
+
+GRID = (("매출성장", (None, 0.0, 10.0, 20.0)),
+        ("영업이익성장", (None, 0.0, 20.0, 50.0)),
+        ("영업이익률", (None, 5.0, 10.0, 15.0)))
+
+
+def net(block, cost=COST):
+    """비용을 뺀 기대수익. 한 번 사고 파는 데 드는 값을 뺍니다."""
+    return block["평균수익률"] - cost
+
+
+def search(rows, horizon, floor=60, cost=COST, baseline=None):
+    """조건 조합을 모두 훑어, 비용을 뺀 기대수익이 큰 순으로 돌려줍니다.
+
+    상승확률이 높아도 이기는 폭이 작고 지는 폭이 크면 돈이 되지 않습니다.
+    그래서 순서는 기대수익으로 매기고, 상승확률은 함께 보여만 줍니다.
+    조합이 좁아질수록 해당하는 날이 줄어드니 floor 미만은 버립니다.
+    """
+    found = []
+    for a in GRID[0][1]:
+        for b in GRID[1][1]:
+            for c in GRID[2][1]:
+                rules = tuple((k, v) for k, v in
+                              (("매출성장", a), ("영업이익성장", b), ("영업이익률", c))
+                              if v is not None)
+                picked = rows
+                for key, edge in rules:
+                    picked = [r for r in picked
+                              if isinstance(r.get(key), (int, float)) and r[key] >= edge]
+                block = tally(picked, horizon)
+                if not block or block["건수"] < floor:
+                    continue
+                worst = worst_case(picked, horizon) or {}
+                found.append({
+                    "조건": " + ".join(f"{k} ≥ {e:g}" for k, e in rules) or "조건 없음",
+                    "기간": horizon, "건수": block["건수"],
+                    "상승확률": round(block["상승확률"], 1),
+                    "평균수익률": round(block["평균수익률"], 2),
+                    "중앙수익률": round(block["중앙수익률"], 2),
+                    "순기대수익": round(net(block, cost), 2),
+                    "최악": round(block["최악"], 1),
+                    "하위10%": round(worst.get("하위 10% 평균", 0.0), 2),
+                    "초과": (round(net(block, cost) - net(baseline, cost), 2)
+                             if baseline else None)})
+    found.sort(key=lambda r: r["순기대수익"], reverse=True)
+    return found

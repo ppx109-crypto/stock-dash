@@ -70,6 +70,29 @@ def render_study():
     else:
         st.info("아직 조건을 나눠 볼 만큼 자료가 모이지 않았습니다.")
 
+    best = found.get("best") or {}
+    if best:
+        st.subheader("어떤 조합이 돈이 되었는가")
+        st.caption(f'왕복 비용 {found.get("cost", 0.25)}%를 뺀 기대수익이 큰 순서입니다. '
+                   "이기는 횟수가 많아도 이기는 폭이 작고 지는 폭이 크면 계좌는 줄어듭니다. "
+                   "그래서 상승확률이 아니라 기대수익으로 줄을 세웠습니다. "
+                   "'전체대비'는 같은 기간 모든 관측과 견준 차이입니다. 이 값이 0에 가까우면 "
+                   "그 조합이 따로 보탠 것이 없다는 뜻입니다.")
+        picked = st.selectbox("그룹과 보유 기간", list(best), key="px_best_pick")
+        st.dataframe([{"조건": r["조건"], "건수": r["건수"],
+                       "순기대수익": f'{r["순기대수익"]:+.2f}%',
+                       "전체대비": (f'{r["초과"]:+.2f}%p' if r.get("초과") is not None else "—"),
+                       "상승확률": f'{r["상승확률"]:.1f}%',
+                       "중앙수익률": f'{r["중앙수익률"]:+.2f}%',
+                       "하위10%": f'{r["하위10%"]:+.1f}%',
+                       "최악": f'{r["최악"]:+.1f}%'} for r in best[picked]],
+                     hide_index=True, width="stretch", height=_fits(len(best[picked])))
+
+    money = found.get("with_money")
+    if money is not None and found.get("a_total"):
+        st.caption(f'A그룹 관측 {found["a_total"]:,}건 가운데 실적이 이미 공시돼 있던 것은 '
+                   f'{money:,}건입니다. 나머지 구간은 그룹 판정만 보고 센 것입니다.')
+
     st.subheader("오늘 기준 종목")
     today = found.get("today") or []
     st.dataframe([{"종목": r["name"], "그룹": r.get("group") or "판정 보류",
