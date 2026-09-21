@@ -393,7 +393,7 @@ class Official:
         # Fail early on a host that cannot reach DART, before a large ZIP fetch.
         try:
             probe = requests.get("https://opendart.fss.or.kr/api/company.json",
-                params={"crtfc_key":self.dart_key,"corp_code":"00126380"},timeout=(5,8))
+                params={"crtfc_key":self.dart_key,"corp_code":"00126380"},timeout=(10,15))
             if probe.status_code != 200:
                 raise DataError(f"DART 접속 확인 · HTTP {probe.status_code}. 재무 분석을 중단했습니다.")
             status = probe.json().get("status")

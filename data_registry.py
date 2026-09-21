@@ -81,13 +81,25 @@ def health(spec: ProviderSpec) -> dict:
     try:
         if spec.provider_id == "opendart":
             key = os.getenv("DART_CRTFC_KEY", "").strip()
-            response = requests.get(
-                "https://opendart.fss.or.kr/api/company.json",
-                params={"crtfc_key": key, "corp_code": "00126380"},
-                timeout=(5, 12),
-            )
-            response.raise_for_status()
-            payload = response.json()
+            # 자료를 실제로 받을 때와 같은 여유를 줍니다. 진단만 빡빡하면 멀쩡한
+            # 키가 '확인 필요'로 보입니다. 한 번 늦으면 한 번 더 불러 봅니다.
+            payload = None
+            for attempt in (1, 2):
+                try:
+                    response = requests.get(
+                        "https://opendart.fss.or.kr/api/company.json",
+                        params={"crtfc_key": key, "corp_code": "00126380"},
+                        timeout=(10, 30),
+                    )
+                    response.raise_for_status()
+                    payload = response.json()
+                    break
+                except (requests.Timeout, requests.ConnectionError):
+                    if attempt == 2:
+                        return _result(spec.provider_id, "error",
+                                       "두 번 불러도 응답이 없습니다. 키가 아니라 DART 쪽 "
+                                       "지연일 수 있으니 잠시 뒤 다시 눌러 보세요.", started)
+                    time.sleep(1.5)
             code = str(payload.get("status", ""))
             if code == "000":
                 return _result(spec.provider_id, "ok", "연결·인증 정상", started)
