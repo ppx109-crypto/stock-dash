@@ -73,6 +73,27 @@ def _result(provider_id: str, status: str, detail: str, started: float):
     }
 
 
+def _dart_fallback(started: float) -> dict:
+    """DART로 나가는 길이 막힌 서버에서 도는 경우를 가려냅니다.
+
+    클라우드 서버에서는 DART 연결 자체가 열리지 않는 일이 있습니다. 그때도 앱은
+    GitHub에 모아 둔 수집본으로 자료를 받으므로, 키가 잘못된 것처럼 적으면 안
+    됩니다. 수집본이 실제로 닿는지 확인하고 사실대로 적습니다.
+    """
+    from providers import public_data_bases
+    for base in public_data_bases():
+        try:
+            probe = requests.get(base + "005930.json", timeout=(5, 10))
+            if probe.status_code == 200 and probe.json().get("code"):
+                return _result("opendart", "fallback",
+                               "이 서버에서 DART로 직접 나가는 연결이 열리지 않습니다. "
+                               "키 문제가 아니며, 자료는 GitHub 수집본에서 받고 있습니다.", started)
+        except (requests.RequestException, ValueError):
+            continue
+    return _result("opendart", "error",
+                   "DART에 닿지 않고 수집본도 받지 못했습니다. 잠시 뒤 다시 눌러 보세요.", started)
+
+
 def health(spec: ProviderSpec) -> dict:
     started = time.perf_counter()
     if not configured(spec):
@@ -96,9 +117,7 @@ def health(spec: ProviderSpec) -> dict:
                     break
                 except (requests.Timeout, requests.ConnectionError):
                     if attempt == 2:
-                        return _result(spec.provider_id, "error",
-                                       "두 번 불러도 응답이 없습니다. 키가 아니라 DART 쪽 "
-                                       "지연일 수 있으니 잠시 뒤 다시 눌러 보세요.", started)
+                        return _dart_fallback(started)
                     time.sleep(1.5)
             code = str(payload.get("status", ""))
             if code == "000":

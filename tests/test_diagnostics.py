@@ -13,8 +13,9 @@ def spec(provider_id):
 
 
 class Reply:
-    def __init__(self, payload):
+    def __init__(self, payload, status_code=200):
         self.payload = payload
+        self.status_code = status_code
 
     def raise_for_status(self):
         pass
@@ -39,12 +40,24 @@ class Dart(unittest.TestCase):
             found = data_registry.health(spec("opendart"))
         self.assertEqual(found["status"], "ok")
 
-    def test_two_timeouts_are_reported_as_a_delay_not_a_bad_key(self):
-        with patch.object(data_registry.requests, "get", side_effect=requests.Timeout()), \
+    def test_a_blocked_server_with_a_bundle_is_not_a_bad_key(self):
+        # DART로 나가는 길이 막힌 곳에서도 수집본으로 돌아갑니다. 키 탓으로
+        # 적으면 멀쩡한 키를 다시 발급하게 만듭니다.
+        def answer(url, **kwargs):
+            if "opendart" in url:
+                raise requests.ConnectionError()
+            return Reply({"code": "005930"})
+        with patch.object(data_registry.requests, "get", side_effect=answer), \
+             patch.object(data_registry.time, "sleep"):
+            found = data_registry.health(spec("opendart"))
+        self.assertEqual(found["status"], "fallback")
+        self.assertIn("수집본", found["detail"])
+
+    def test_no_dart_and_no_bundle_is_a_real_failure(self):
+        with patch.object(data_registry.requests, "get", side_effect=requests.ConnectionError()), \
              patch.object(data_registry.time, "sleep"):
             found = data_registry.health(spec("opendart"))
         self.assertEqual(found["status"], "error")
-        self.assertIn("지연", found["detail"])
 
     def test_a_rejected_key_still_says_so(self):
         with patch.object(data_registry.requests, "get", return_value=Reply({"status": "010"})):

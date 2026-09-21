@@ -752,6 +752,8 @@ def render_sources():
                     source_badge("정상", "ok")
                 elif check["status"] == "not_configured":
                     source_badge("인증정보 필요", "wait")
+                elif check["status"] == "fallback":
+                    source_badge("수집본 사용", "wait")
                 else:
                     source_badge("확인 필요", "bad")
             with right:

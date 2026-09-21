@@ -1,6 +1,7 @@
 import io
 import os
 import re
+import time
 import html
 import threading
 import zipfile
@@ -165,6 +166,9 @@ def public_data_bases():
                     "https://raw.githubusercontent.com/planxs-ai/stock-dash/main/public-data/"]
 
 
+_dart_blocked_until = 0.0   # DART 접속이 막힌 것을 확인한 시각 이후 10분
+
+
 class Official:
     def __init__(self):
         self.dart_key = os.getenv("DART_CRTFC_KEY", "").strip()
@@ -322,9 +326,20 @@ class Official:
             return ""
 
     def automatic(self, code):
+        # DART가 닿지 않는 곳에서 돌아가는 일이 있습니다. 그때 종목마다 연결이
+        # 끊기기를 기다리면 채우기가 몇 분씩 늘어지므로, 한 번 막히면 10분 동안은
+        # 곧장 수집본으로 갑니다. 그 사이 DART가 살아나면 다시 직접 받습니다.
+        global _dart_blocked_until
+        if time.time() < _dart_blocked_until:
+            try:
+                return self.cached_report(code)
+            except (DataError,requests.RequestException,ValueError,KeyError,TypeError):
+                _dart_blocked_until = 0.0   # 수집본도 없으면 DART를 다시 시도합니다.
         try:
             return self._automatic_direct(code)
         except DataError as original:
+            if "DART 접속 확인" in str(original):
+                _dart_blocked_until = time.time() + 600
             try:
                 return self.cached_report(code)
             except (DataError,requests.RequestException,ValueError,KeyError,TypeError):
