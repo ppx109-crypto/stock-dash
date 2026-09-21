@@ -42,7 +42,8 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add price-data/
+          mkdir -p price-data
+          git add -A price-data
           if git diff --cached --quiet; then
             echo '바뀐 일봉이 없어 커밋하지 않습니다.'
           else

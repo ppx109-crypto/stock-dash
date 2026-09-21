@@ -69,7 +69,15 @@ def main():
         print("모을 종목이 없습니다.")
         return 1
     label = names()
-    client = broker_kis.market()
+    try:
+        client = broker_kis.market()
+    except broker_kis.BrokerError as error:
+        # 무엇이 없어서 못 도는지 바로 보이게 적습니다.
+        print("증권사 연결을 만들지 못했습니다 ·", error)
+        print("저장소 시크릿 KIS_APP_KEY / KIS_APP_SECRET 가 비어 있는지 확인하세요.")
+        print("  KIS_APP_KEY 길이:", len(os.getenv("KIS_APP_KEY", "")))
+        print("  KIS_APP_SECRET 길이:", len(os.getenv("KIS_APP_SECRET", "")))
+        return 1
     saved, skipped, failed = 0, 0, []
     for index, code in enumerate(codes, 1):
         name = label.get(code, code)
