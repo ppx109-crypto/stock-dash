@@ -201,6 +201,23 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
     if board is None:
         group_board_ui(graded)
     named = {g['code']: g['name'] for g in graded}
+    code = st.session_state.get('px_pick')
+    if code:
+        grade = next((g for g in graded if g['code'] == code), None)
+        report = research.get(code)
+        # 확정 결산 분석은 종목을 담을 때 저장해 둔 공식 리포트에서 가져옵니다.
+        official = next((s.get('report') for s in stocks if s['code'] == code), None)
+        name = names.get(code) or (report or {}).get('name') or code
+        price, price_note = price_now(grade, official)
+        note = '종목코드 ' + code
+        if price:
+            note += f' · 주가 {price:,.0f}원 · {price_note}'
+        st.markdown(frame(section(f'{name} · 투자판단', note)
+                          + stock_cards(report, grade, official)), unsafe_allow_html=True)
+    elif stocks:
+        st.markdown(frame(section('투자판단', '위 목록에서 종목을 고르면 판단점수·실적·흐름이 열립니다')),
+                    unsafe_allow_html=True)
+
     if stocks:
         with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
             labels = {s['code']: s['name'] for s in stocks}
@@ -241,23 +258,6 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                                             limit=len(gaps) if how_many.startswith('전부') else 20)
                 st.session_state['px_fill_done'] = (done, failed)
                 st.rerun()
-
-    code = st.session_state.get('px_pick')
-    if code:
-        grade = next((g for g in graded if g['code'] == code), None)
-        report = research.get(code)
-        # 확정 결산 분석은 종목을 담을 때 저장해 둔 공식 리포트에서 가져옵니다.
-        official = next((s.get('report') for s in stocks if s['code'] == code), None)
-        name = names.get(code) or (report or {}).get('name') or code
-        price, price_note = price_now(grade, official)
-        note = '종목코드 ' + code
-        if price:
-            note += f' · 주가 {price:,.0f}원 · {price_note}'
-        st.markdown(frame(section(f'{name} · 투자판단', note)
-                          + stock_cards(report, grade, official)), unsafe_allow_html=True)
-    elif stocks:
-        st.markdown(frame(section('투자판단', '위 목록에서 종목을 고르면 판단점수·실적·흐름이 열립니다')),
-                    unsafe_allow_html=True)
 
 
 def render_research(store, state, sample_mode):

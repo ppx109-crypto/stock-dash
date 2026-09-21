@@ -142,6 +142,17 @@ def number(value):
         return None
 
 
+def share_count(row, price):
+    """상장주식수. 응답에 없으면 시가총액 ÷ 주가로 되돌려 구합니다."""
+    listed = number(row.get("lstgStCnt"))
+    if listed and listed > 0:
+        return listed
+    cap = number(row.get("mrktTotAmt"))
+    if cap and price and price > 0:
+        return round(cap / price)
+    return None
+
+
 def public_data_bases():
     """수집본을 찾을 곳. 이 저장소에 모아 둔 자료를 먼저 보고, 없으면 원본을 봅니다.
 
@@ -374,7 +385,7 @@ class Official:
             warnings.append("흑자 결산이 둘 이상이어야 과거 배수를 쓸 수 있어 "
                             "적정주가 참고 범위는 보류합니다.")
         return {**source,"name":name,"price":price,"price_date":day,"sample":False,
-                "market_cap":number(row.get("mrktTotAmt")),"shares":number(row.get("lstgStCnt")),
+                "market_cap":number(row.get("mrktTotAmt")),"shares":share_count(row, price),
                 "anchors":anchors,"anchors_from":"price-service",
                 "data_route":"GitHub 공식 공시 수집본","warnings":warnings}
 
@@ -407,7 +418,7 @@ class Official:
             raise DataError("최근 결산 보고서를 찾지 못했습니다.")
         report = self.report(code, latest, asof)
         row = self.price_rows.get((code, asof.isoformat()), {})
-        report["shares"] = number(row.get("lstgStCnt"))
+        report["shares"] = share_count(row, report.get("price"))
         report["market_cap"] = number(row.get("mrktTotAmt"))
         report["warnings"] = []
         try:

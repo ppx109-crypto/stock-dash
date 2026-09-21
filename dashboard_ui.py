@@ -492,7 +492,9 @@ def settled(official: dict | None) -> dict:
                     and prior.get("profit") is not None else None)
     return {**result, "years": years[-4:], "last": last, "prior_margin": prior_margin,
             "price": official.get("price"), "price_date": official.get("price_date"),
-            "basis": official.get("basis", "")}
+            "basis": official.get("basis", ""),
+            "anchor_count": len(official.get("anchors") or []),
+            "anchors_fresh": bool(official.get("anchors_from"))}
 
 
 def as_day(value) -> str:
@@ -657,9 +659,14 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
             f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
             '매수·매도 신호가 아닙니다.</p>')
     elif here:
+        why = _e(str(target_from))[:80]
+        if book and not book.get("anchors_fresh"):
+            why += " · 아래 자료 받기로 과거 배수를 받으면 채워집니다"
+        elif book and "2개" in str(target_from):
+            why += f' · 지금 모인 배수 {book.get("anchor_count", 0)}개'
         target_line = (f'<ul class="pxb-list" style="margin-top:14px">'
                        f'<li>목표주가<b>산출 보류</b></li></ul>'
-                       f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))[:80]}</p>')
+                       f'<p class="pxb-sub" style="margin-top:8px">{why}</p>')
     else:
         target_line = ""
     # 큰 숫자가 무엇인지 바로 밑에 적습니다. 아래 목록에 같은 값을 한 번 더 적으면

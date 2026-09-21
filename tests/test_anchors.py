@@ -87,3 +87,26 @@ class Anchors(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FinancialSector(unittest.TestCase):
+    """업종코드가 같아도, 매출을 공시하면 배수를 쓸 수 있어야 합니다."""
+
+    BANK = [{"year": 2023, "revenue": None, "profit": 30000, "receipt": "20240315000001"},
+            {"year": 2024, "revenue": None, "profit": 32000, "receipt": "20250315000001"},
+            {"year": 2025, "revenue": None, "profit": 34000, "receipt": "20260315000001"}]
+
+    def report(self, years, anchors):
+        return {"years": years, "price": 50000, "shares": 100_000_000,
+                "company": {"induty_code": "64992"}, "anchors": anchors}
+
+    def test_a_holding_company_filing_revenue_gets_a_range(self):
+        anchors = FakePrices().anchors("003550", YEARS, date(2026, 9, 21))
+        result = brief(self.report(YEARS, anchors))
+        self.assertIsNotNone(result["fair"])
+
+    def test_a_bank_with_no_revenue_line_still_needs_another_model(self):
+        anchors = [{"year": 2023, "multiple": 9.0}, {"year": 2024, "multiple": 11.0}]
+        result = brief(self.report(self.BANK, anchors))
+        self.assertIsNone(result["fair"])
+        self.assertIn("금융업", result["fair_reason"])

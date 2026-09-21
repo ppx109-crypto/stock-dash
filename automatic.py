@@ -31,7 +31,11 @@ def brief(report):
     anchors = report.get("anchors", [])
     positive = [a["multiple"] for a in anchors if 0 < a["multiple"] < float('inf')]
     shares = report.get("shares")
-    financial = str(report.get("company", {}).get("induty_code", ""))[:2] in {"64", "65", "66"}
+    # 업종코드만 보면 지주회사(64992)가 은행·보험과 같은 칸에 들어갑니다. 지주회사는
+    # 매출과 영업이익을 보통 기업처럼 공시하므로 배수를 쓸 수 있습니다. 갈라내는 것은
+    # 코드가 아니라 공시 자체입니다. 매출 계정이 아예 없는 곳만 다른 모형이 필요합니다.
+    sector = str(report.get("company", {}).get("induty_code", ""))[:2] in {"64", "65", "66"}
+    financial = sector and all(y.get("revenue") is None for y in report["years"])
     fair = None
     reason = "비교 가능한 과거 흑자 결산·시가총액 자료가 2개 필요합니다."
     if financial:
