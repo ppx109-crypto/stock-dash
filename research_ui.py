@@ -55,6 +55,34 @@ def market_top(top):
 PENDING = '보류'
 
 
+def seed_watchlist(store, state, research):
+    """저장소가 비어 있으면 조사 자료가 있는 종목을 기본으로 담아 둡니다.
+
+    Supabase를 연결하지 않으면 종목 목록은 실행 서버의 파일에 저장되는데, 앱이
+    다시 시작되면 그 파일이 지워집니다(코드를 고쳐 배포하거나, 오래 쉬었다 깨어날
+    때). 그때마다 목록을 손으로 다시 담게 두지 않고, 저장소에 모아 둔 조사 자료의
+    종목으로 스스로 채웁니다. 저장소는 다시 시작해도 그대로이므로 목록도 돌아옵니다.
+
+    한 번 채운 뒤에는 표시를 남겨, 직접 종목을 빼도 곧바로 되살아나지 않게 합니다.
+    """
+    if state.get('stocks') or state.get('journal') or state.get('seeded'):
+        return False
+    fresh = [{'code': code, 'name': report['name'], 'kind': '관심'}
+             for code, report in sorted(research.items())]
+    if not fresh:
+        return False
+
+    def apply(data):
+        data['stocks'] = fresh
+        data['seeded'] = True
+
+    try:
+        store.change(apply)
+    except Exception:
+        return False
+    return True
+
+
 def _pick(key):
     """어느 목록에서 눌렀든 마지막으로 고른 종목 하나만 기억합니다."""
     code = st.session_state.get(key)
@@ -214,6 +242,10 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
 def render_research(store, state, sample_mode):
     theme()
     research = published()
+    if not sample_mode and seed_watchlist(store, state, research):
+        state = store.read()
+        st.info(f'저장된 목록이 비어 있어 조사 자료가 있는 {len(research)}종목을 담았습니다. '
+                '필요 없는 종목은 아래 －  종목 빼기에서 빼시면 됩니다.')
     known = {**research, **{r['code']: r for r in state.get('chat_research', [])}}
     if not sample_mode and link_codes(store, state, known):
         state = store.read()
