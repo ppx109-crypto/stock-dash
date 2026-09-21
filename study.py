@@ -40,17 +40,17 @@ def load_prices(folder=PRICES):
     return found
 
 
-def load_reports(folder=REPORTS):
-    """종목코드 → 조사 자료. 실적 축을 붙일 때 씁니다."""
-    found = {}
-    for path in sorted(Path(folder).glob("*.json")):
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
-            continue
-        if data.get("code"):
-            found[str(data["code"])] = data
-    return found
+def load_reports():
+    """종목코드 → 조사 자료. 앱이 읽는 것과 같은 묶음을 그대로 씁니다.
+
+    research 폴더에는 종목별 파일이 아니라 여러 종목을 담은 묶음이 있습니다.
+    앱과 같은 경로로 읽어야 화면의 숫자와 여기 숫자가 어긋나지 않습니다.
+    """
+    try:
+        from chat_research import published
+        return {str(code): report for code, report in (published() or {}).items()}
+    except Exception:
+        return {}
 
 
 def money_axis(report):

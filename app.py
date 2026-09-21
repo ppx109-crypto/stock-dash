@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 
 from research_ui import render_research
 from education import render_education
+from study_ui import render_study
 from automatic import brief
 from data_registry import PROVIDERS, capabilities as active_capabilities, health_all
 from providers import DataError, Official, demo
@@ -299,7 +300,7 @@ if latest:
 if st.session_state.get("force_nav"):
     st.session_state.nav_choice = st.session_state.pop("force_nav")
 
-NAV_ITEMS = ["오늘의 투자판단", "계좌 연결", "교육자료", "설정"]
+NAV_ITEMS = ["오늘의 투자판단", "확률 검증", "계좌 연결", "교육자료", "설정"]
 legacy = {"내 종목":"오늘의 투자판단", "통합 분석":"오늘의 투자판단", "홈":"오늘의 투자판단", "AI 인사이트":"오늘의 투자판단", "관심 종목":"오늘의 투자판단", "포트폴리오":"계좌 연결"}
 current = st.session_state.get("nav_choice", "오늘의 투자판단")
 if current not in NAV_ITEMS:
@@ -787,6 +788,8 @@ def render_placeholder(title, subtitle, required):
 
 if nav == "오늘의 투자판단":
     render_research(store, state, sample_mode)
+elif nav == "확률 검증":
+    render_study()
 elif nav == "계좌 연결":
     render_portfolio(store, sample_mode)
 elif nav == "교육자료":
