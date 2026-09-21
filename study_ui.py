@@ -54,7 +54,8 @@ def render_study():
                          "평균수익률": f'{tal["평균수익률"]:+.2f}%',
                          "중앙수익률": f'{tal["중앙수익률"]:+.2f}%',
                          "최악": f'{tal["최악"]:+.1f}%', "최고": f'{tal["최고"]:+.1f}%'})
-    st.dataframe(rows, hide_index=True, width="stretch")
+    # 줄 수만큼 높이를 줍니다. 기본 높이로 두면 아래 몇 줄이 잘려 보입니다.
+    st.dataframe(rows, hide_index=True, width="stretch", height=_fits(len(rows)))
 
     st.subheader("A그룹에 조건을 하나 더 얹으면")
     st.caption("A그룹만 놓고, 그 조건까지 맞을 때 상승확률이 몇 %포인트 달라지는지입니다. "
@@ -65,7 +66,7 @@ def render_study():
                        "A그룹만": f'{r["기준 상승확률"]:.1f}%',
                        "조건까지": f'{r["더한 뒤"]:.1f}%',
                        "차이": f'{r["차이"]:+.1f}%p', "건수": r["건수"]} for r in lifts],
-                     hide_index=True, width="stretch")
+                     hide_index=True, width="stretch", height=_fits(len(lifts)))
     else:
         st.info("아직 조건을 나눠 볼 만큼 자료가 모이지 않았습니다.")
 
@@ -77,9 +78,14 @@ def render_study():
                    "영업이익성장": _pct(r.get("영업이익성장")),
                    "영업이익률": _pct(r.get("영업이익률")),
                    "기준일": r.get("as_of", "")} for r in today],
-                 hide_index=True, width="stretch")
+                 hide_index=True, width="stretch", height=_fits(len(today), cap=24))
 
     st.markdown(frame(section("이 숫자를 읽는 법", CAVEAT)), unsafe_allow_html=True)
+
+
+def _fits(lines, cap=40):
+    """표가 잘리지 않을 만큼 높이를 줍니다. 너무 길면 그때만 스크롤합니다."""
+    return min(max(lines, 1), cap) * 35 + 42
 
 
 def _pct(value):
