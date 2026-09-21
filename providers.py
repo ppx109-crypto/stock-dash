@@ -319,6 +319,36 @@ class Official:
             except (DataError,requests.RequestException,ValueError,KeyError,TypeError):
                 raise original from None
 
+    def anchors(self, code, years, asof=None):
+        """과거 결산 발표 직후의 시가총액 ÷ 그 해 영업이익 = 배수를 모읍니다.
+
+        적정가치 참고 범위는 이 배수에서 나옵니다. 배수가 둘 이상 모여야 중앙값을
+        쓸 수 있어, 흑자 결산이 둘 이상 있어야 합니다.
+        """
+        asof = asof or date.today()
+        found = []
+        for yr in (years or [])[:-1]:
+            if not yr.get("receipt") or not yr.get("profit") or yr["profit"] <= 0:
+                continue
+            try:
+                published = date.fromisoformat(
+                    f'{yr["receipt"][:4]}-{yr["receipt"][4:6]}-{yr["receipt"][6:8]}')
+                reference = published + timedelta(days=7)
+                if reference > asof:
+                    continue
+                price, day, _ = self.price(code, reference)
+                if day < published.strftime("%Y%m%d"):
+                    continue
+                hist = self.price_rows.get((code, reference.isoformat()), {})
+                cap = number(hist.get("mrktTotAmt"))
+                if cap and cap > 0:
+                    found.append({"year": yr["year"], "price_date": day, "price": price,
+                                  "profit": yr["profit"], "market_cap": cap,
+                                  "multiple": cap / (yr["profit"] * 1e8)})
+            except (DataError, ValueError):
+                pass
+        return found
+
     def cached_report(self, code):
         if not re.fullmatch(r"[0-9]{6}", code):
             raise DataError("종목코드를 확인하세요.")
@@ -338,11 +368,14 @@ class Official:
         today=date.today()
         price, day, name=self.price(code,today)
         row=self.price_rows.get((code,today.isoformat()),{})
+        anchors = self.anchors(code, source.get("years") or [], today)
+        warnings = ["재무·사업·공시는 표시된 수집일 기준입니다. 현재 시세와 날짜가 다를 수 있습니다."]
+        if len(anchors) < 2:
+            warnings.append("흑자 결산이 둘 이상이어야 과거 배수를 쓸 수 있어 "
+                            "적정주가 참고 범위는 보류합니다.")
         return {**source,"name":name,"price":price,"price_date":day,"sample":False,
                 "market_cap":number(row.get("mrktTotAmt")),"shares":number(row.get("lstgStCnt")),
-                "anchors":[],"data_route":"GitHub 공식 공시 수집본",
-                "warnings":["재무·사업·공시는 표시된 수집일 기준입니다. 현재 시세와 날짜가 다를 수 있습니다.",
-                            "과거 시가총액 배수 미수집: 적정주가 참고 범위는 보류합니다."]}
+                "anchors":anchors,"data_route":"GitHub 공식 공시 수집본","warnings":warnings}
 
     def _automatic_direct(self, code):
         # Fail early on a host that cannot reach DART, before a large ZIP fetch.
@@ -382,25 +415,7 @@ class Official:
         except DataError:
             report["company"] = {}
             report["warnings"].append("기업개황 조회 실패")
-        report["anchors"] = []
-        for yr in report["years"][:-1]:
-            if not yr.get("receipt") or not yr.get("profit") or yr["profit"] <= 0:
-                continue
-            try:
-                published = date.fromisoformat(f'{yr["receipt"][:4]}-{yr["receipt"][4:6]}-{yr["receipt"][6:8]}')
-                reference = published + timedelta(days=7)
-                if reference > asof:
-                    continue
-                p, day, _ = self.price(code, reference)
-                if day < published.strftime("%Y%m%d"):
-                    continue
-                hist = self.price_rows.get((code, reference.isoformat()), {})
-                cap = number(hist.get("mrktTotAmt"))
-                if cap and cap > 0:
-                    report["anchors"].append({"year": yr["year"], "price_date": day, "price": p,
-                        "profit": yr["profit"], "market_cap": cap, "multiple": cap / (yr["profit"]*1e8)})
-            except (DataError, ValueError):
-                pass
+        report["anchors"] = self.anchors(code, report["years"], asof)
         try:
             report["business_excerpt"] = self.business_excerpt(report["years"][-1].get("receipt"))
         except DataError:

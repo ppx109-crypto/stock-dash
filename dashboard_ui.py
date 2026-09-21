@@ -92,8 +92,14 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
    로그인 상태가 풀리므로, 같은 화면 안에서 처리되는 단추를 씁니다. */
 [class*="st-key-pxgrp-"] [data-testid="stButton"] button{
   width:100%;justify-content:flex-start;text-align:left;padding:5px 11px;min-height:0;
-  border-radius:999px;font-size:11.5px;font-weight:500;color:#5F584B;
-  background:#FFFFFFAA;border:1px solid #E7DCC7;white-space:normal;line-height:1.45}
+  border-radius:999px;font-size:11px;font-weight:400;color:#5F584B;
+  background:#FFFFFFAA;border:1px solid #E7DCC7;white-space:normal;line-height:1.5}
+/* 단추 안쪽 문단이 제 크기를 따로 들고 있어, 글자 크기는 거기에 맞춰야
+   예전 칩과 같은 11px가 됩니다. */
+[class*="st-key-pxgrp-"] [data-testid="stButton"] button p,
+[class*="st-key-pxgrp-"] [data-testid="stButton"] button div,
+[class*="st-key-pxgrp-"] [data-testid="stButton"] button span{
+  font-size:11px;font-weight:400;line-height:1.5}
 [class*="st-key-pxgrp-"] [data-testid="stButton"] button:hover{
   border-color:#B08343;background:#FFFFFF;color:#2E2822}
 [class*="st-key-pxgrp-"] [data-testid="stButton"]{margin-bottom:-6px}
@@ -144,8 +150,8 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
 .pxb-meter b{text-align:right;color:#2E2822;font-variant-numeric:tabular-nums}
 .pxb-list em,.pxb-list b{font-variant-numeric:tabular-nums}
 
-.pxb-chart{display:block;width:100%;height:104px;margin-top:18px}
-.pxb-chart.mini{height:62px;margin-top:20px;opacity:.95}
+.pxb-chart{display:block;width:100%;height:150px;margin-top:18px}
+.pxb-chart.mini{height:132px;margin-top:18px;opacity:.95}
 .pxb-chart text{fill:#7E7463;font-size:9.5px}
 .pxb-range{margin-top:26px}
 .pxb-range-line{position:relative;height:7px;border-radius:7px;background:#EFE7D8}
@@ -246,28 +252,35 @@ def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
     두 값 모두 억원이라 축을 나눌 이유가 없습니다. 축을 둘로 두면 둘의 높이 관계가
     임의로 정해져 없는 상관을 만들어 내므로, 한 축에 두고 값을 직접 적습니다.
     """
-    w, h, base = 300.0, 104.0, 74.0
+    w, h, base = 300.0, 150.0, 126.0
     slot = w / max(len(labels), 1)
-    width = min(15.0, slot * 0.2)
-    peak = max(max(revenue, default=0), max(profit, default=0), 1)
-    floor = min(min(profit, default=0), 0)
+    width = min(22.0, slot * 0.28)
+    # 은행·보험처럼 매출 계정을 공시하지 않는 기업은 값이 비어 옵니다. 빈 값은
+    # 0으로 바꾸지 않습니다. 0으로 두면 매출이 없는 것처럼 읽히기 때문입니다.
+    figures = [v for v in list(revenue) + list(profit) if v is not None]
+    peak = max(max(figures, default=0), 1)
+    floor = min(min(figures, default=0), 0)
     span = peak - floor or 1
-    zero = base - (0 - floor) / span * (base - 14)
+    zero = base - (0 - floor) / span * (base - 18)
 
     def top(value):
-        return base - (value - floor) / span * (base - 14)
+        return base - (value - floor) / span * (base - 18)
 
     marks, labs = "", ""
     for index, name in enumerate(labels):
         center = slot * (index + 0.5)
         for offset, value, fill, series in ((-width * 0.55, revenue[index], "url(#pxbRev)", "매출액"),
                                             (width * 0.55, profit[index], "url(#pxbProfit)", "영업이익")):
+            if value is None:
+                continue
             y, height = min(top(value), zero), abs(zero - top(value))
+            tone = DOWN if series == "매출액" else AMBER
             marks += (f'<rect x="{center + offset - width / 2:.1f}" y="{y:.1f}" width="{width:.1f}"'
                       f' height="{max(height, 1.5):.1f}" rx="3" fill="{fill}">'
-                      f'<title>{_e(name)} {series} {value:,.0f}</title></rect>')
+                      f'<title>{_e(name)} {series} {value:,.0f}</title></rect>'
+                      f'<text x="{center + offset:.1f}" y="{max(y - 4, 9):.1f}" text-anchor="middle"'
+                      f' fill="{tone}" font-size="9" font-weight="700">{_short(value)}</text>')
         labs += f'<text x="{center:.1f}" y="{h - 4:.0f}" text-anchor="middle">{_e(name)}</text>'
-    top_value = max(max(revenue, default=0), max(profit, default=0))
     return (
         f'<svg class="pxb-chart" viewBox="0 0 {w:.0f} {h:.0f}" preserveAspectRatio="none" role="img">'
         '<defs><linearGradient id="pxbRev" x1="0" y1="0" x2="0" y2="1">'
@@ -276,9 +289,18 @@ def _bars(labels: list[str], revenue: list[float], profit: list[float]) -> str:
         f'<stop offset="0" stop-color="{AMBER}"/><stop offset="1" stop-color="{AMBER}" stop-opacity=".45"/>'
         "</linearGradient></defs>"
         f'<line x1="0" y1="{zero:.1f}" x2="{w:.0f}" y2="{zero:.1f}" stroke="#E7DCC7"/>'
-        f'<text x="2" y="12" fill="#7E7463">{top_value:,.0f}</text>'
         f"{marks}{labs}</svg>"
     )
+
+
+def _short(value: float) -> str:
+    """억원 단위 숫자를 짧게 적습니다. 1만 억원(=1조)을 넘으면 조로 줄입니다.
+
+    막대 위에 적는 자리는 좁아, 3,053,729처럼 긴 숫자는 옆 막대의 숫자와 겹칩니다.
+    """
+    if abs(value) >= 10000:
+        return f"{value / 10000:,.1f}조"
+    return f"{value:,.0f}"
 
 
 def _bar_value(center: float, top: float, value: float, color: str) -> str:
@@ -291,9 +313,9 @@ def _bar_value(center: float, top: float, value: float, color: str) -> str:
 
 def _pair(prior: float, now: float, color: str, labels=("전년", "올해")) -> str:
     """값이 둘뿐인 비교. 선을 그으면 사이를 추세로 읽게 되므로 막대로 둡니다."""
-    # 값을 막대 위에 적으므로 위쪽에 글자 자리를 남겨 둡니다. 자리를 안 남기면
-    # 가장 높은 막대의 값이 막대 안으로 들어가 읽기 어려워집니다.
-    w, h, base, headroom = 300.0, 62.0, 46.0, 20.0
+    # 바닥선을 그림의 아래쪽에 두어야 막대가 길게 올라와 눈에 들어옵니다.
+    # 위쪽 headroom은 막대 위에 적는 값의 자리, base 아래는 기간 이름의 자리입니다.
+    w, h, base, headroom = 300.0, 132.0, 110.0, 18.0
     peak = max(abs(prior), abs(now), 1)
     floor = min(prior, now, 0)
     span = peak - floor or 1
@@ -373,6 +395,8 @@ def chip_label(row: dict) -> str:
         note += " · 금융업 · 기준 다름"
     else:
         note += " · 실적 미수집"
+    # 단추 라벨에서는 :small[] 같은 지시자가 무시되므로 그냥 한 줄로 적습니다.
+    # 글자 크기는 예전 칩과 같은 11px로 CSS에서 맞춰 둡니다.
     return f'{row["name"]}  ·  {note}'
 
 
@@ -609,12 +633,40 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     else:
         mark, head_text, value_title = 50, "자료 대기", "가격 범위 속 위치"
         value_note, labels = "일별 종가가 모이면 표시합니다.", "<span>-</span><span>-</span><span>-</span>"
+    # 목표주가를 함께 적습니다. 조사 자료의 평가가 있으면 그것을, 없으면 과거
+    # 시가총액/영업이익 배수로 낸 중간 참고가를 씁니다. 둘 다 없으면 왜 없는지 적습니다.
+    fair = book.get("fair") if book else None
+    if value:
+        target, target_from = value.get("base"), "조사 자료의 평가"
+    elif fair:
+        target, target_from = fair["base"], f'과거 배수 {fair["multiple"]:.1f}배'
+    else:
+        target, target_from = None, (book.get("fair_reason") if book
+                                     else "확정 결산 자료가 모이면 계산합니다")
+    here = price if price else (closes[-1] if closes else None)
+    if target and here:
+        step = (target / here - 1) * 100
+        tone = UP if step >= 0 else DOWN
+        target_line = (
+            f'<ul class="pxb-list" style="margin-top:14px">'
+            f'<li>현재 주가<b>{here:,.0f}원</b></li>'
+            f'<li>목표주가<b style="color:{tone}">{target:,.0f}원</b></li>'
+            f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li></ul>'
+            f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
+            '매수·매도 신호가 아닙니다.</p>')
+    elif here:
+        target_line = (f'<ul class="pxb-list" style="margin-top:14px">'
+                       f'<li>현재 주가<b>{here:,.0f}원</b></li>'
+                       f'<li>목표주가<b>산출 보류</b></li></ul>'
+                       f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))[:80]}</p>')
+    else:
+        target_line = ""
     card_value = _card(
         5, value_title,
         f'<div class="pxb-value" style="font-size:32px">{head_text}</div>'
         f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
         f'<i style="left:{mark:.0f}%"></i></div><div class="pxb-range-lab">{labels}</div></div>'
-        f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>')
+        f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>{target_line}')
 
     return (f'<div class="pxb-grid">{card_score}{card_profit}{card_revenue}'
             f"{card_trend}{card_earnings}{card_value}{extra}</div>")
@@ -631,8 +683,12 @@ def _settled_cards(book: dict, price: float | None) -> str:
             rows += (f'<li>{label}<b style="color:{DOWN if value < 0 else UP}">'
                      f'{value:+.1f}%</b></li>')
     last = book.get("last") or {}
-    rows += (f'<li>{last.get("year", "")}년 매출<b>{last.get("revenue", 0):,.0f} 억원</b></li>'
-             f'<li>{last.get("year", "")}년 영업이익<b>{last.get("profit", 0):,.0f} 억원</b></li>')
+
+    def amount(value):
+        return f"{value:,.0f} 억원" if isinstance(value, (int, float)) else "미공시"
+
+    rows += (f'<li>{last.get("year", "")}년 매출<b>{amount(last.get("revenue"))}</b></li>'
+             f'<li>{last.get("year", "")}년 영업이익<b>{amount(last.get("profit"))}</b></li>')
     card_growth = _card(6, "확정 결산 성장률",
                         f'<p class="pxb-sub" style="margin-top:12px">'
                         f'{_e(book.get("basis", ""))} · 단위 억원</p><ul class="pxb-list">{rows}</ul>')
