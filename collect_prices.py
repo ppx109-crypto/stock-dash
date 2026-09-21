@@ -26,6 +26,14 @@ def codes_to_collect():
     picked = [c.strip() for c in os.getenv("PRICE_CODES", "").split(",") if c.strip()]
     if picked:
         return [c for c in picked if re.fullmatch(r"[0-9]{6}", c)]
+    # 대상 목록이 있으면 그것을 씁니다. 없으면 이미 모아 둔 종목만 받습니다.
+    try:
+        chosen = json.loads(Path("universe.json").read_text(encoding="utf-8"))
+        found = [c for c in chosen.get("codes", []) if re.fullmatch(r"[0-9]{6}", str(c))]
+        if found:
+            return found
+    except (OSError, ValueError):
+        pass
     found = []
     for path in sorted(Path("public-data").glob("*.json")):
         if path.name == "market-ranking.json":

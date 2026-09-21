@@ -1,0 +1,44 @@
+name: Pick the study universe
+# 시가총액 순으로 조사 대상을 고릅니다. DART 상장사 목록 + 증권사 시세입니다.
+on:
+  workflow_dispatch:
+    inputs:
+      size:
+        description: '고를 종목 수'
+        required: false
+        default: '200'
+permissions:
+  contents: write
+concurrency:
+  group: study-universe
+  cancel-in-progress: false
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python pick_universe.py
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          UNIVERSE_SIZE: ${{ inputs.size || '200' }}
+      - name: Save the list when it changed
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A universe.json || true
+          if git diff --cached --quiet; then
+            echo '바뀐 대상 목록이 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Pick the study universe by market cap'
+            git pull --rebase origin main
+            git push
+          fi

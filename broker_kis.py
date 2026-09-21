@@ -156,7 +156,13 @@ class KIS:
             rate = amount(row.get('prdy_ctrt'))
         except BrokerError:
             rate = None
-        return {'price': price, 'change': change, 'rate': rate,
+        cap = None
+        try:
+            # hts_avls는 억원 단위 시가총액입니다. 대상 종목을 고를 때 씁니다.
+            cap = amount(row.get('hts_avls'))
+        except BrokerError:
+            cap = None
+        return {'price': price, 'change': change, 'rate': rate, 'market_cap': cap,
                 'name': str(row.get('hts_kor_isnm', '')).strip(),
                 'at': datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
 

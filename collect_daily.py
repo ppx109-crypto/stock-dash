@@ -19,6 +19,15 @@ FOLDER = Path("public-data")
 
 
 def stored_codes():
+    """받을 종목. 대상 목록이 있으면 그것을 먼저 봅니다."""
+    try:
+        chosen = json.loads(Path("universe.json").read_text(encoding="utf-8"))
+        picked = [str(c) for c in chosen.get("codes", [])
+                  if re.fullmatch(r"[0-9]{6}", str(c))]
+        if picked:
+            return picked
+    except (OSError, ValueError):
+        pass
     return sorted(p.stem for p in FOLDER.glob("*.json")
                   if re.fullmatch(r"[0-9]{6}", p.stem))
 
