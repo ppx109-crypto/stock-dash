@@ -121,7 +121,19 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
     graded = [{**g, 'name': names.get(g['code']) or g.get('name') or g['code']}
               for g in graded or []]
     # 첫 화면에서 클릭 없이 그룹과 그 안의 종목이 보여야 합니다.
-    st.markdown(header() + section('그룹 판정', RULE_TEXT) + group_board(graded)
+    # 담은 종목이 없으면 그룹판이 통째로 비어 화면이 끊겨 보이므로, 그 자리에
+    # 왜 비었고 무엇을 누르면 되는지 적습니다.
+    if graded:
+        board = group_board(graded)
+    elif stocks:
+        board = ('<p class="pxb-sub" style="max-width:100%">담은 종목의 시세를 아직 받지 '
+                 '못했습니다. 공공데이터포털 인증키와 종목코드를 확인하세요.</p>')
+    else:
+        board = ('<p class="pxb-sub" style="max-width:100%">담은 종목이 없어 판정할 것이 '
+                 '없습니다. 아래 <b>＋ 조사된 종목 담기</b>로 자료가 준비된 종목을 한 번에 '
+                 '담거나, <b>＋ 시가총액 상위 종목 담기</b>로 코스피·코스닥 상위 종목을 '
+                 '담으면 여기에 그룹이 나옵니다.</p>')
+    st.markdown(header() + section('그룹 판정', RULE_TEXT) + board
                 + close_frame(), unsafe_allow_html=True)
     named = {g['code']: g['name'] for g in graded}
     if graded:
