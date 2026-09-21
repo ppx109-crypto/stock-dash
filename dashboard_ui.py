@@ -574,9 +574,17 @@ def consensus(opinions: list | None) -> dict:
             else (targets[middle - 1] + targets[middle]) / 2)
     # 스무 곳이 넘으면 최저~최고 폭이 너무 벌어져 읽을 것이 없습니다. 최근에 낸
     # 곳 몇 군데를 그대로 보여 주는 편이 판단에 쓰입니다.
+    recent = by_date[:3]
+    # 오래된 높은 목표가가 중앙값을 끌어올려, 최근에 내려온 목표가를 가릴 수
+    # 있습니다. 최근 몇 곳이 어디에 있는지 따로 재서 알려 줍니다.
+    fresh = sorted(r["target"] for r in recent)
+    mid = len(fresh) // 2
+    recent_base = (fresh[mid] if len(fresh) % 2 else (fresh[mid - 1] + fresh[mid]) / 2) if fresh else None
     return {"base": base, "low": targets[0], "high": targets[-1], "count": len(picked),
             "opinion": newest.get("opinion", ""), "date": newest.get("date", ""),
-            "member": newest.get("member", ""), "recent": by_date[:3]}
+            "member": newest.get("member", ""), "recent": recent,
+            "recent_base": recent_base,
+            "drift": (recent_base / base - 1) if recent_base and base else None}
 
 
 def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None,
@@ -611,10 +619,9 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         revenue_text = growth(money["revenue"], money["prior_revenue"])
         period = (f'{_e(period_label(money.get("prior_period")))} → '
                   f'{_e(period_label(money.get("period")))}')
-        basis = " · ".join(x for x in (money.get("basis"), money.get("currency"),
-                                       money.get("unit")) if x)
-        if basis:
-            period += f' · {_e(basis)}'
+        # 단위는 바로 아래 금액 옆에 적히므로 여기서는 빼고, 연결·별도만 남깁니다.
+        if money.get("basis"):
+            period += f' · {_e(money["basis"])}'
         unit = _e(money.get("unit", ""))
         # 증감률만 적으면 흑자 전환처럼 %로 말할 수 없는 변화의 크기를 알 수 없습니다.
         profit_amount = (f'<p class="pxb-sub" style="margin-top:4px">'
@@ -754,6 +761,11 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
             f'<ul class="pxb-list" style="margin-top:14px">'
             f'<li>목표주가<b style="color:{tone}">{target:,.0f}원</b></li>'
             f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li>'
+            + (f'<li>최근 {len(view.get("recent") or [])}곳 중앙값'
+               f'<b style="color:{DOWN if view["drift"] < 0 else UP}">'
+               f'{view["recent_base"]:,.0f}원 '
+               f'({"하향" if view["drift"] < 0 else "상향"} {abs(view["drift"]) * 100:.0f}%)</b></li>'
+               if view and view.get("drift") is not None and abs(view["drift"]) >= 0.05 else "")
             + "".join(
                 f'<li>{_e(row.get("member") or "증권사")} '
                 f'{_e(as_day(row.get("date", "")))}<b>{row["target"]:,.0f}원</b></li>'

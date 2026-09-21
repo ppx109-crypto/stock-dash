@@ -190,3 +190,37 @@ class Refusals(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Drift(unittest.TestCase):
+    """오래된 높은 목표가가 중앙값을 끌어올려 최근 하향을 가리지 않게 합니다."""
+
+    def rows(self, recent, old):
+        found = [{"date": d, "target": t, "member": m, "opinion": "BUY"}
+                 for d, t, m in recent]
+        found += [{"date": "20260401", "target": t, "member": f"옛{i}증권", "opinion": "BUY"}
+                  for i, t in enumerate(old)]
+        return found
+
+    def test_a_recent_cut_is_measured_against_the_median(self):
+        from dashboard_ui import consensus
+        view = consensus(self.rows(
+            [("20260907", 2300000, "가증권"), ("20260907", 3100000, "나증권"),
+             ("20260831", 2400000, "다증권")],
+            [3400000, 3500000, 3600000, 3700000]))
+        self.assertEqual(view["recent_base"], 2400000)
+        self.assertLess(view["drift"], -0.1)
+
+    def test_targets_that_agree_report_no_drift_worth_showing(self):
+        from dashboard_ui import consensus
+        view = consensus(self.rows(
+            [("20260907", 3000000, "가증권"), ("20260906", 3000000, "나증권"),
+             ("20260905", 3000000, "다증권")],
+            [3000000, 3000000]))
+        self.assertEqual(view["drift"], 0.0)
+
+    def test_one_broker_alone_still_gives_a_recent_figure(self):
+        from dashboard_ui import consensus
+        view = consensus([{"date": "20260907", "target": 500000, "member": "가증권"}])
+        self.assertEqual(view["recent_base"], 500000)
+        self.assertEqual(view["drift"], 0.0)
