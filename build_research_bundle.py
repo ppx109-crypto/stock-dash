@@ -25,12 +25,16 @@ DART = "https://dart.fss.or.kr/dsaf001/main.do?rcpNo="
 
 
 def pair(halves):
-    """가장 최근 반기와, 한 해 전 같은 달의 반기를 짝지읍니다."""
+    """가장 최근 반기와, 한 해 전 같은 달의 반기를 짝지읍니다.
+
+    같은 달이어도 한쪽이 누적이고 다른 쪽이 석 달이면 견줄 수 없습니다. 그런
+    짝은 건너뛰고 다음 후보를 봅니다.
+    """
     by_period = {h["period"]: h for h in halves if h.get("period")}
     for period in sorted(by_period, reverse=True):
         year, month = period.split("-")
         prior = by_period.get(f"{int(year) - 1}-{month}")
-        if prior:
+        if prior and prior.get("measure") == by_period[period].get("measure"):
             return prior, by_period[period]
     return None, None
 

@@ -11,7 +11,7 @@ from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import (GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP, board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
-                          price_now, section, slot_head, stock_cards)
+                          live_note, price_now, section, slot_head, stock_cards)
 import market
 import broker_kis
 
@@ -235,7 +235,8 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
         live, opinions = live_quote(code), broker_targets(code)
         note = '종목코드 ' + code
         if live and live.get('price'):
-            note += f' · 현재가 {live["price"]:,.0f}원 · {live.get("at", "")} 한국투자증권'
+            note += (f' · 현재가 {live["price"]:,.0f}원 · {live.get("at", "")} '
+                     + live_note(live.get('at')))
         elif price:
             note += f' · 주가 {price:,.0f}원 · {price_note}'
         st.markdown(frame(section(f'{name} · 투자판단', note)

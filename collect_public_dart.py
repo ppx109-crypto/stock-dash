@@ -7,8 +7,10 @@ from pathlib import Path
 from providers import Official, number
 
 
-# Half-year statements report the cumulative figure in thstrm_add_amount; the
-# plain thstrm_amount holds the quarter alone, so the two are never mixed.
+# 반기보고서는 1~6월 누적을 thstrm_add_amount에, 4~6월 석 달만을
+# thstrm_amount에 적습니다. 둘을 섞으면 작년 누적과 올해 석 달을 견주게 되어
+# 성장·적자 판정이 통째로 뒤집힙니다. 어느 칸을 썼는지 남겨 두고, 매출과
+# 영업이익이 서로 다른 칸에서 나왔으면 그 반기는 쓰지 않습니다.
 def half(p, corp, year, basis):
     result = p.dart('fnlttSinglAcntAll.json', corp_code=corp, bsns_year=str(year), reprt_code='11012', fs_div=basis)
     if not result:
@@ -20,20 +22,23 @@ def half(p, corp, year, basis):
             if row.get('sj_div') not in ('IS', 'CIS'):
                 continue
             if row.get('account_id') in ids or row.get('account_nm') in names:
-                raw = number(row.get('thstrm_add_amount')) or number(row.get('thstrm_amount'))
+                # 0도 값입니다. 빈 칸일 때만 석 달 칸으로 내려갑니다.
+                added = number(row.get('thstrm_add_amount'))
+                plain = number(row.get('thstrm_amount'))
+                raw, used = (added, 'cumulative') if added is not None else (plain, 'quarter')
                 seen.append({'account_nm': row.get('account_nm'), 'sj_div': row.get('sj_div'),
-                             'thstrm_nm': row.get('thstrm_nm'),
+                             'thstrm_nm': row.get('thstrm_nm'), 'used': used,
                              'add': row.get('thstrm_add_amount'), 'amount': row.get('thstrm_amount')})
                 if raw is not None:
-                    return raw / 100_000_000
-        return None
+                    return raw / 100_000_000, used
+        return None, None
     receipt = next((r.get('rcept_no') for r in rows if r.get('rcept_no')), '')
-    revenue = account(['ifrs-full_Revenue'], ['매출액', '수익(매출액)'])
-    profit = account(['dart_OperatingIncomeLoss'], ['영업이익', '영업이익(손실)'])
-    if revenue is None or profit is None:
+    revenue, revenue_from = account(['ifrs-full_Revenue'], ['매출액', '수익(매출액)'])
+    profit, profit_from = account(['dart_OperatingIncomeLoss'], ['영업이익', '영업이익(손실)'])
+    if revenue is None or profit is None or revenue_from != profit_from:
         return None
     return {'period': f'{year}-06', 'revenue': revenue, 'profit': profit, 'receipt': receipt,
-            'matched': seen[:4],
+            'matched': seen[:4], 'measure': revenue_from,
             'url': 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + receipt}
 
 

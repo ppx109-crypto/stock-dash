@@ -8,7 +8,7 @@ research/ 폴더에 조사 결과가 있으면 숫자와 문장은 실제 조사
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 import html
 
 import streamlit as st
@@ -503,6 +503,26 @@ def as_day(value) -> str:
     return f"{text[:4]}-{text[4:6]}-{text[6:8]}" if len(text) == 8 and text.isdigit() else text
 
 
+def live_note(at) -> str:
+    """증권사 시세가 언제 것인지 적습니다.
+
+    새벽 다섯 시에 '실시간'이라고 적으면 거짓말입니다. 그 값은 직전 거래일
+    종가입니다. 장이 열려 있는 동안만 실시간이라고 말합니다.
+    """
+    try:
+        when = datetime.strptime(str(at), "%Y-%m-%d %H:%M")
+    except (TypeError, ValueError):
+        return "한국투자증권 시세"
+    minute = when.hour * 60 + when.minute
+    if when.weekday() >= 5:
+        return "한국투자증권 · 휴장일 · 직전 거래일 종가"
+    if minute < 9 * 60:
+        return "한국투자증권 · 장 시작 전 · 직전 거래일 종가"
+    if minute > 15 * 60 + 30:
+        return "한국투자증권 · 장 마감 · 오늘 종가"
+    return "한국투자증권 실시간"
+
+
 def price_now(grade: dict | None, official: dict | None) -> tuple[float | None, str]:
     """화면에 적을 주가 하나와 그 기준일. 종가이지 실시간 시세가 아닙니다."""
     closes = (grade or {}).get("closes") or []
@@ -528,13 +548,16 @@ def consensus(opinions: list | None) -> dict:
     if not picked:
         return {}
     targets = sorted(r["target"] for r in picked)
-    newest = max(picked, key=lambda r: r.get("date", ""))
+    by_date = sorted(picked, key=lambda r: r.get("date", ""), reverse=True)
+    newest = by_date[0]
     middle = len(targets) // 2
     base = (targets[middle] if len(targets) % 2
             else (targets[middle - 1] + targets[middle]) / 2)
+    # 스무 곳이 넘으면 최저~최고 폭이 너무 벌어져 읽을 것이 없습니다. 최근에 낸
+    # 곳 몇 군데를 그대로 보여 주는 편이 판단에 쓰입니다.
     return {"base": base, "low": targets[0], "high": targets[-1], "count": len(picked),
             "opinion": newest.get("opinion", ""), "date": newest.get("date", ""),
-            "member": newest.get("member", "")}
+            "member": newest.get("member", ""), "recent": by_date[:3]}
 
 
 def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None,
@@ -655,15 +678,18 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
             # 그날 종가입니다. 공공데이터포털 종가는 하루 늦게 들어옵니다.
             now = live["price"]
             low, high = min(low, now), max(high, now)
-            source = f'{live.get("at", "")} 기준 · 한국투자증권 시세'
+            source = f'{live.get("at", "")} 기준 · {live_note(live.get("at"))}'
         mark = min(max((now - low) / (high - low) * 100, 2), 98) if high > low else 50
         labels = "".join(f"<span>{v:,.0f}</span>" for v in (low, (low + high) / 2, high))
         move = ""
         if live and live.get("price"):
             gap, rate = live.get("change") or 0, live.get("rate")
-            tone = DOWN if gap < 0 else UP
-            move = (f' <small style="font-size:14px;color:{tone}">{gap:+,.0f}'
-                    + (f" ({rate:+.2f}%)" if rate is not None else "") + "</small>")
+            # 장 시작 전에는 등락이 0으로 옵니다. +0이라고 적으면 오늘 안 움직인
+            # 것처럼 보이므로, 움직인 것이 있을 때만 적습니다.
+            if gap or rate:
+                tone = DOWN if gap < 0 else UP
+                move = (f' <small style="font-size:14px;color:{tone}">{gap:+,.0f}'
+                        + (f" ({rate:+.2f}%)" if rate is not None else "") + "</small>")
         elif len(closes) >= 2 and closes[-2]:
             gap = now - closes[-2]
             tone = DOWN if gap < 0 else UP
@@ -705,8 +731,10 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
             f'<ul class="pxb-list" style="margin-top:14px">'
             f'<li>목표주가<b style="color:{tone}">{target:,.0f}원</b></li>'
             f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li>'
-            + (f'<li>증권사 목표가 범위<b>{view["low"]:,.0f} ~ {view["high"]:,.0f}원</b></li>'
-               if view and view["high"] > view["low"] else "")
+            + "".join(
+                f'<li>{_e(row.get("member") or "증권사")} '
+                f'{_e(as_day(row.get("date", "")))}<b>{row["target"]:,.0f}원</b></li>'
+                for row in (view.get("recent") or [])[:3] if view)
             + '</ul>'
             f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
             '매수·매도 신호가 아닙니다.</p>')
@@ -727,7 +755,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         5, value_title,
         f'<div class="pxb-value" style="font-size:32px">{head_text}</div>'
         f'<p class="pxb-what"><b>현재 주가</b> · '
-        + (f'{_e(live.get("at", ""))} 한국투자증권 실시간'
+        + (f'{_e(live.get("at", ""))} {_e(live_note(live.get("at")))}'
            if live and live.get("price") else (_e(price_note) or "최근 거래일 종가"))
         + "</p>"
         + f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
