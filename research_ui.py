@@ -161,9 +161,19 @@ def fill_reports(store, stocks, limit=20):
 
 
 def missing_reports(state):
-    """확정 결산 자료가 아직 없는 관심종목."""
-    return [s for s in state.get('stocks', [])
-            if not s.get('report') and not s['code'].startswith('pending-')]
+    """자료를 받아야 하는 관심종목.
+
+    아직 받지 않은 종목과, 예전 방식으로 받아 과거 시가총액 배수가 빠진 종목을
+    함께 돌려줍니다. 배수가 없으면 적정주가 참고 범위가 계속 '산출 보류'로 남습니다.
+    """
+    picked = []
+    for stock in state.get('stocks', []):
+        if stock['code'].startswith('pending-'):
+            continue
+        report = stock.get('report')
+        if not report or not report.get('anchors_from'):
+            picked.append(stock)
+    return picked
 
 
 def decision_screen(state, research, graded, store=None, sample_mode=True):
@@ -212,9 +222,11 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
 
     gaps = missing_reports(state)
     if gaps and not sample_mode and store is not None:
-        with st.expander(f'자료 없는 종목 채우기 · {len(gaps)}종목'):
+        with st.expander(f'자료 받기 · {len(gaps)}종목'):
             st.caption('DART 확정 결산·공시와 공공데이터포털 시세를 종목마다 받아 저장합니다. '
-                       '한 번에 20종목씩 받고, 받은 종목은 그때그때 저장합니다.')
+                       '아직 받지 않은 종목과, 과거 시가총액 배수가 빠져 적정주가 참고 범위가 '
+                       '보류된 종목을 함께 받습니다. 한 번에 20종목씩 받고, 받은 종목은 '
+                       '그때그때 저장합니다.')
             st.write(', '.join(s['name'] for s in gaps[:20])
                      + (f' 외 {len(gaps) - 20}종목' if len(gaps) > 20 else ''))
             how_many = st.radio('한 번에 받을 개수', ['20종목씩', f'전부 {len(gaps)}종목'],

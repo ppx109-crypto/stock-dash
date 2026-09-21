@@ -375,7 +375,8 @@ class Official:
                             "적정주가 참고 범위는 보류합니다.")
         return {**source,"name":name,"price":price,"price_date":day,"sample":False,
                 "market_cap":number(row.get("mrktTotAmt")),"shares":number(row.get("lstgStCnt")),
-                "anchors":anchors,"data_route":"GitHub 공식 공시 수집본","warnings":warnings}
+                "anchors":anchors,"anchors_from":"price-service",
+                "data_route":"GitHub 공식 공시 수집본","warnings":warnings}
 
     def _automatic_direct(self, code):
         # Fail early on a host that cannot reach DART, before a large ZIP fetch.
@@ -416,6 +417,7 @@ class Official:
             report["company"] = {}
             report["warnings"].append("기업개황 조회 실패")
         report["anchors"] = self.anchors(code, report["years"], asof)
+        report["anchors_from"] = "price-service"
         try:
             report["business_excerpt"] = self.business_excerpt(report["years"][-1].get("receipt"))
         except DataError:

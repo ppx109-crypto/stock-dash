@@ -137,6 +137,9 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
 .pxb-label{font-size:11px;font-weight:800;letter-spacing:.16em;color:#946E38}
 .pxb-value{margin:14px 0 0;font:650 42px/1 Pretendard,"Noto Sans KR",sans-serif;letter-spacing:-1.4px}
 .pxb-value small{font-size:16px;font-weight:600;margin-left:4px}
+/* 큰 숫자 바로 밑에 붙는 설명. 숫자 크기의 절반으로 적습니다. */
+.pxb-what{margin:6px 0 0;font-size:16px;line-height:1.4;color:#7C7361;max-width:100%}
+.pxb-what b{color:#2E2822;font-weight:700}
 .pxb-sub{margin:11px 0 0;font-size:12.5px;line-height:1.7;color:#7C7361;max-width:78%}
 .pxb-tag{display:inline-block;margin-top:14px;padding:4px 11px;border-radius:999px;font-size:10.5px;
   font-weight:800;letter-spacing:.04em}
@@ -649,21 +652,22 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         tone = UP if step >= 0 else DOWN
         target_line = (
             f'<ul class="pxb-list" style="margin-top:14px">'
-            f'<li>현재 주가<b>{here:,.0f}원</b></li>'
             f'<li>목표주가<b style="color:{tone}">{target:,.0f}원</b></li>'
             f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li></ul>'
             f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
             '매수·매도 신호가 아닙니다.</p>')
     elif here:
         target_line = (f'<ul class="pxb-list" style="margin-top:14px">'
-                       f'<li>현재 주가<b>{here:,.0f}원</b></li>'
                        f'<li>목표주가<b>산출 보류</b></li></ul>'
                        f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))[:80]}</p>')
     else:
         target_line = ""
+    # 큰 숫자가 무엇인지 바로 밑에 적습니다. 아래 목록에 같은 값을 한 번 더 적으면
+    # 어느 쪽이 현재가인지 헷갈리므로, 목록에서는 목표주가만 다룹니다.
     card_value = _card(
         5, value_title,
         f'<div class="pxb-value" style="font-size:32px">{head_text}</div>'
+        f'<p class="pxb-what"><b>현재 주가</b> · {_e(price_note) or "최근 거래일 종가"}</p>'
         f'<div class="pxb-range"><div class="pxb-range-line"><u style="left:0;right:0"></u>'
         f'<i style="left:{mark:.0f}%"></i></div><div class="pxb-range-lab">{labels}</div></div>'
         f'<p class="pxb-sub" style="margin-top:14px">{value_note}</p>{target_line}')
