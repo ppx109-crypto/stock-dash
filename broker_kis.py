@@ -160,6 +160,71 @@ class KIS:
                 'name': str(row.get('hts_kor_isnm', '')).strip(),
                 'at': datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
 
+    def daily(self, code, start, end):
+        """하루치 종가를 기간으로 받아옵니다. 한 번에 100거래일까지 옵니다.
+
+        국내주식기간별시세(일/주/월/년) API입니다. 조회 전용입니다.
+        FID_ORG_ADJ_PRC=0은 수정주가입니다. 액면분할·무상증자 자리에서 주가가
+        뚝 끊기면 수익률 계산이 통째로 틀어지므로 수정주가를 씁니다.
+        """
+        if not re.fullmatch(r'[0-9]{6}', str(code)):
+            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
+        self.authorize()
+        _, data = self.request(
+            'GET', '/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice',
+            headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+                     'appsecret': self.secret, 'tr_id': 'FHKST03010100', 'custtype': 'P'},
+            params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code),
+                    'FID_INPUT_DATE_1': str(start), 'FID_INPUT_DATE_2': str(end),
+                    'FID_PERIOD_DIV_CODE': 'D', 'FID_ORG_ADJ_PRC': '0'})
+        if str(data.get('rt_cd')) != '0':
+            raise BrokerError('기간별 시세 조회가 승인되지 않았습니다. API 신청 상태를 확인하세요.')
+        rows = data.get('output2')
+        if rows is None:
+            rows = []
+        if isinstance(rows, dict):
+            rows = [rows]
+        if not isinstance(rows, list):
+            raise BrokerError('기간별 시세 응답 형식이 달라 읽지 않았습니다.')
+        found = []
+        for row in rows:
+            day = str(row.get('stck_bsop_date', '')).strip()
+            if not re.fullmatch(r'[0-9]{8}', day):
+                continue
+            try:
+                close = amount(row.get('stck_clpr'))
+            except BrokerError:
+                continue
+            if close <= 0:
+                continue
+            found.append((day, close))
+        found.sort()
+        return found
+
+    def history(self, code, days=1200, pause=0.2):
+        """여러 해치 일봉을 이어 붙입니다. 오래된 날이 먼저 옵니다."""
+        from datetime import date as _date
+        last = datetime.now(ZoneInfo('Asia/Seoul')).date()
+        first = last - timedelta(days=max(days, 1))
+        collected = {}
+        cursor = last
+        for _ in range(60):
+            begin = max(first, cursor - timedelta(days=140))
+            rows = self.daily(code, begin.strftime('%Y%m%d'), cursor.strftime('%Y%m%d'))
+            if not rows:
+                break
+            before = len(collected)
+            collected.update(dict(rows))
+            oldest = _date(int(rows[0][0][:4]), int(rows[0][0][4:6]), int(rows[0][0][6:8]))
+            # 더 거슬러 올라가지 못하면 상장 이전입니다. 거기서 멈춥니다.
+            if oldest <= first or len(collected) == before:
+                break
+            cursor = oldest - timedelta(days=1)
+            if cursor < first:
+                break
+            time.sleep(pause)
+        return sorted(collected.items())
+
     def balance(self):
         self.authorize()
         rows, seen = [], set()

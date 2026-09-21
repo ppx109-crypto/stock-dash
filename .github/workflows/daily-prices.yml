@@ -1,0 +1,52 @@
+name: Daily price history
+# 일봉을 증권사에서 받아 저장소에 모읍니다. 조회 전용입니다.
+# 앱이 도는 서버에서는 이 호출이 막힐 수 있어 여기서 돌립니다.
+on:
+  schedule:
+    # 한국 시간 평일 18:20 (UTC 09:20). DART 수집(18:00) 뒤입니다.
+    - cron: '20 9 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (쉼표 구분, 비우면 public-data에 있는 전체)'
+        required: false
+        default: ''
+      years:
+        description: '몇 해치를 받을지'
+        required: false
+        default: '5'
+permissions:
+  contents: write
+concurrency:
+  group: price-history
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python collect_prices.py
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          PRICE_CODES: ${{ inputs.codes || '' }}
+          PRICE_YEARS: ${{ inputs.years || '5' }}
+      - name: Save only when something actually changed
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add price-data/
+          if git diff --cached --quiet; then
+            echo '바뀐 일봉이 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Refresh daily price history'
+            git pull --rebase origin main
+            git push
+          fi
