@@ -8,7 +8,7 @@ research/ 폴더에 조사 결과가 있으면 숫자와 문장은 실제 조사
 """
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import html
 import re
 
@@ -552,18 +552,30 @@ def price_now(grade: dict | None, official: dict | None) -> tuple[float | None, 
     return (price, f'{as_day(official.get("price_date"))} 종가') if price else (None, "")
 
 
-def consensus(opinions: list | None) -> dict:
-    """증권사 목표가를 하나로 모읍니다. 가장 최근 쪽에 무게를 두지 않고 평균을 냅니다.
+def consensus(opinions: list | None, months: int = 3) -> dict:
+    """최근 몇 달 안에 나온 증권사 목표가만 모읍니다.
 
-    같은 증권사가 여러 번 냈으면 그 증권사의 가장 최근 것만 셉니다. 한 곳이
-    여러 번 낸 의견이 여러 곳의 합의처럼 보이지 않게 하기 위해서입니다.
+    반년 전 목표가까지 함께 세면, 그 뒤 내려온 목표가가 옛 숫자에 가려집니다.
+    기본은 최근 석 달이고, 그 안에 한 곳뿐이면 그 한 곳을 그대로 씁니다.
+    석 달 안에 아무것도 없으면 한 해까지 넓혀 보되 몇 달치인지 밝힙니다.
+    같은 증권사가 여러 번 냈으면 그 증권사의 가장 최근 것만 셉니다.
     """
-    latest = {}
-    for row in opinions or []:
-        member = row.get("member") or row.get("date", "")
-        if member not in latest or row.get("date", "") > latest[member].get("date", ""):
-            latest[member] = row
-    picked = [r for r in latest.values() if (r.get("target") or 0) > 0]
+    rows = [r for r in opinions or [] if (r.get("target") or 0) > 0]
+    if not rows:
+        return {}
+    picked, span = [], months
+    for window in (months, 12):
+        cutoff = (date.today() - timedelta(days=int(window * 30.5))).strftime("%Y%m%d")
+        latest = {}
+        for row in rows:
+            if row.get("date", "") < cutoff:
+                continue
+            member = row.get("member") or row.get("date", "")
+            if member not in latest or row.get("date", "") > latest[member].get("date", ""):
+                latest[member] = row
+        if latest:
+            picked, span = list(latest.values()), window
+            break
     if not picked:
         return {}
     targets = sorted(r["target"] for r in picked)
@@ -572,19 +584,10 @@ def consensus(opinions: list | None) -> dict:
     middle = len(targets) // 2
     base = (targets[middle] if len(targets) % 2
             else (targets[middle - 1] + targets[middle]) / 2)
-    # 스무 곳이 넘으면 최저~최고 폭이 너무 벌어져 읽을 것이 없습니다. 최근에 낸
-    # 곳 몇 군데를 그대로 보여 주는 편이 판단에 쓰입니다.
-    recent = by_date[:3]
-    # 오래된 높은 목표가가 중앙값을 끌어올려, 최근에 내려온 목표가를 가릴 수
-    # 있습니다. 최근 몇 곳이 어디에 있는지 따로 재서 알려 줍니다.
-    fresh = sorted(r["target"] for r in recent)
-    mid = len(fresh) // 2
-    recent_base = (fresh[mid] if len(fresh) % 2 else (fresh[mid - 1] + fresh[mid]) / 2) if fresh else None
     return {"base": base, "low": targets[0], "high": targets[-1], "count": len(picked),
-            "opinion": newest.get("opinion", ""), "date": newest.get("date", ""),
-            "member": newest.get("member", ""), "recent": recent,
-            "recent_base": recent_base,
-            "drift": (recent_base / base - 1) if recent_base and base else None}
+            "months": span, "opinion": newest.get("opinion", ""),
+            "date": newest.get("date", ""), "member": newest.get("member", ""),
+            "recent": by_date[:3]}
 
 
 def stock_cards(report: dict | None, grade: dict | None, official: dict | None = None,
@@ -619,9 +622,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         revenue_text = growth(money["revenue"], money["prior_revenue"])
         period = (f'{_e(period_label(money.get("prior_period")))} → '
                   f'{_e(period_label(money.get("period")))}')
-        # 단위는 바로 아래 금액 옆에 적히므로 여기서는 빼고, 연결·별도만 남깁니다.
-        if money.get("basis"):
-            period += f' · {_e(money["basis"])}'
+        # 기간만 적습니다. 단위는 아래 금액 옆에 있고, 연결·별도는 빼기로 했습니다.
         unit = _e(money.get("unit", ""))
         # 증감률만 적으면 흑자 전환처럼 %로 말할 수 없는 변화의 크기를 알 수 없습니다.
         profit_amount = (f'<p class="pxb-sub" style="margin-top:4px">'
@@ -689,9 +690,13 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
                           f'<p class="pxb-sub" style="margin-top:12px">{swatches} · {note}</p>{chart}')
 
     price, price_note = price_now(grade, official)
-    extra = ""
+    # 영업이익률과 실적 추이의 자리를 맞바꿉니다. 확정 결산이 없어 영업이익률
+    # 칸이 없을 때는 실적 추이가 원래 자리에 그대로 있습니다.
+    extra, card_margin = "", ""
     if book:
-        extra = _settled_cards(book, price)
+        card_growth, card_margin, card_fair = _settled_cards(book, price)
+        extra = card_growth + card_earnings + card_fair
+        card_earnings = card_margin
 
     value = report.get("valuation") or {}
     if value:
@@ -739,10 +744,13 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
         # 증권사가 낸 목표가가 있으면 그것을 먼저 씁니다. 과거 배수로 되짚은 값보다
         # 근거가 분명합니다.
         target = view["base"]
-        target_from = f'증권사 {view["count"]}곳 목표가의 중앙값'
+        if view["count"] == 1:
+            target_from = f'{view.get("member") or "증권사"} 목표가 1건'
+        else:
+            target_from = f'최근 {view["months"]}개월 증권사 {view["count"]}곳 목표가의 중앙값'
         if view.get("opinion"):
             target_from += f' · 최근 의견 {view["opinion"]}'
-            if view.get("member"):
+            if view.get("member") and view["count"] > 1:
                 target_from += f'({view["member"]})'
             if view.get("date"):
                 target_from += f' {as_day(view["date"])}'
@@ -761,15 +769,11 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
             f'<ul class="pxb-list" style="margin-top:14px">'
             f'<li>목표주가<b style="color:{tone}">{target:,.0f}원</b></li>'
             f'<li>현재가 대비<b style="color:{tone}">{step:+.1f}%</b></li>'
-            + (f'<li>최근 {len(view.get("recent") or [])}곳 중앙값'
-               f'<b style="color:{DOWN if view["drift"] < 0 else UP}">'
-               f'{view["recent_base"]:,.0f}원 '
-               f'({"하향" if view["drift"] < 0 else "상향"} {abs(view["drift"]) * 100:.0f}%)</b></li>'
-               if view and view.get("drift") is not None and abs(view["drift"]) >= 0.05 else "")
+            # 한 곳뿐이면 위의 목표주가가 곧 그 한 곳이라 다시 적지 않습니다.
             + "".join(
                 f'<li>{_e(row.get("member") or "증권사")} '
                 f'{_e(as_day(row.get("date", "")))}<b>{row["target"]:,.0f}원</b></li>'
-                for row in (view.get("recent") or [])[:3] if view)
+                for row in (view.get("recent") or [])[:3] if view and view["count"] > 1)
             + '</ul>'
             f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
             '매수·매도 신호가 아닙니다.</p>')
@@ -856,7 +860,7 @@ def _settled_cards(book: dict, price: float | None) -> str:
             f'<i style="left:{mark:.0f}%"></i></div><div class="pxb-range-lab">{labels}</div></div>'
             '<p class="pxb-sub" style="margin-top:12px">과거 시가총액/영업이익 배수를 최근 결산 '
             '이익에 적용한 참고 가격 · 매수·매도 신호가 아닙니다.</p>')
-    return card_growth + card_margin + card_fair
+    return card_growth, card_margin, card_fair
 
 
 RULE_TEXT = ("일봉 종가가 EMA 5·20·40·60 각각의 위에 있는지 네 가지를 셉니다 · "

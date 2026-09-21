@@ -188,39 +188,54 @@ class Refusals(unittest.TestCase):
         self.assertEqual(asked.call_count, 1)
 
 
-if __name__ == "__main__":
-    unittest.main()
+class Window(unittest.TestCase):
+    """최근 석 달 것만 씁니다. 반년 전 목표가가 최근 하향을 가리지 않게 합니다."""
 
+    def day(self, ago):
+        from datetime import date, timedelta
+        return (date.today() - timedelta(days=ago)).strftime("%Y%m%d")
 
-class Drift(unittest.TestCase):
-    """오래된 높은 목표가가 중앙값을 끌어올려 최근 하향을 가리지 않게 합니다."""
-
-    def rows(self, recent, old):
-        found = [{"date": d, "target": t, "member": m, "opinion": "BUY"}
-                 for d, t, m in recent]
-        found += [{"date": "20260401", "target": t, "member": f"옛{i}증권", "opinion": "BUY"}
-                  for i, t in enumerate(old)]
+    def rows(self, fresh, stale):
+        found = [{"date": self.day(ago), "target": t, "member": m, "opinion": "BUY"}
+                 for ago, t, m in fresh]
+        found += [{"date": self.day(ago), "target": t, "member": f"옛{i}증권", "opinion": "BUY"}
+                  for i, (ago, t) in enumerate(stale)]
         return found
 
-    def test_a_recent_cut_is_measured_against_the_median(self):
+    def test_old_targets_are_left_out(self):
         from dashboard_ui import consensus
         view = consensus(self.rows(
-            [("20260907", 2300000, "가증권"), ("20260907", 3100000, "나증권"),
-             ("20260831", 2400000, "다증권")],
-            [3400000, 3500000, 3600000, 3700000]))
-        self.assertEqual(view["recent_base"], 2400000)
-        self.assertLess(view["drift"], -0.1)
+            [(14, 2300000, "가증권"), (14, 3100000, "나증권"), (21, 2400000, "다증권")],
+            [(150, 3400000), (160, 3500000), (170, 3600000), (175, 3700000)]))
+        self.assertEqual(view["count"], 3)
+        self.assertEqual(view["base"], 2400000)
+        self.assertEqual(view["months"], 3)
 
-    def test_targets_that_agree_report_no_drift_worth_showing(self):
+    def test_a_single_recent_target_is_quoted_as_it_is(self):
         from dashboard_ui import consensus
-        view = consensus(self.rows(
-            [("20260907", 3000000, "가증권"), ("20260906", 3000000, "나증권"),
-             ("20260905", 3000000, "다증권")],
-            [3000000, 3000000]))
-        self.assertEqual(view["drift"], 0.0)
+        view = consensus(self.rows([(10, 2300000, "가증권")], [(150, 3400000), (160, 3500000)]))
+        self.assertEqual(view["count"], 1)
+        self.assertEqual(view["base"], 2300000)
+        self.assertEqual(view["member"], "가증권")
 
-    def test_one_broker_alone_still_gives_a_recent_figure(self):
+    def test_nothing_recent_widens_to_a_year_and_says_so(self):
         from dashboard_ui import consensus
-        view = consensus([{"date": "20260907", "target": 500000, "member": "가증권"}])
-        self.assertEqual(view["recent_base"], 500000)
-        self.assertEqual(view["drift"], 0.0)
+        view = consensus(self.rows([], [(150, 3400000), (200, 3500000)]))
+        self.assertEqual(view["months"], 12)
+        self.assertEqual(view["count"], 2)
+
+    def test_one_broker_counted_once_however_often_it_speaks(self):
+        from dashboard_ui import consensus
+        view = consensus([{"date": self.day(5), "target": 900000, "member": "가증권"},
+                          {"date": self.day(30), "target": 800000, "member": "가증권"}])
+        self.assertEqual(view["count"], 1)
+        self.assertEqual(view["base"], 900000)
+
+    def test_nothing_at_all_is_empty(self):
+        from dashboard_ui import consensus
+        self.assertEqual(consensus([]), {})
+        self.assertEqual(consensus(None), {})
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -33,7 +33,9 @@ def live_quote(code):
 def broker_targets(code):
     """증권사 목표주가. 하루에 몇 건 나오지 않으므로 6시간 두고 씁니다."""
     try:
-        return broker_kis.market().opinions(code)
+        # 화면은 최근 석 달만 씁니다. 그 안에 아무것도 없는 종목을 위해 한 해치를
+        # 받아 두고, 넓혀 쓸 때는 몇 달치인지 화면에 밝힙니다.
+        return broker_kis.market().opinions(code, days=365)
     except broker_kis.BrokerError:
         return None
 
