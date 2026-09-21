@@ -42,16 +42,33 @@ def half(p, corp, year, basis):
             'url': 'https://dart.fss.or.kr/dsaf001/main.do?rcpNo=' + receipt}
 
 
+# DART의 전체 재무제표 API는 2015 사업연도부터 답합니다. 그 앞은 물어도
+# 빈손이라 여기서 멈춥니다.
+FIRST_YEAR = int(os.getenv('PUBLIC_FIRST_YEAR', '2015'))
+
+
 def collect(code,p=None):
     p=p or Official();corp=p.corp(code);today=date.today()
-    years=None
-    for year in range(today.year-1,today.year-4,-1):
-        for basis in ('CFS','OFS'):
-            series=[p.annual(corp,y,basis) for y in range(year-2,year+1)]
+    # 먼저 어느 기준(연결·별도)으로 읽히는지 최근 세 해로 정합니다. 그런 다음
+    # 그 기준 그대로 옛 해까지 거슬러 갑니다. 해마다 기준이 바뀌면 성장률이
+    # 기준 차이 때문에 튀므로, 한 종목은 한 기준으로만 읽습니다.
+    years=None;basis=None
+    for anchor in range(today.year-1,today.year-4,-1):
+        for option in ('CFS','OFS'):
+            series=[p.annual(corp,y,option) for y in range(anchor-2,anchor+1)]
             if all(series):
-                years=series;break
+                years=series;basis=option;break
         if years:break
     if not years:raise ValueError('Missing annuals')
+    # 옛 해를 앞에 붙입니다. 실적 조건을 오래전 날짜에도 붙이려면 그때 이미
+    # 공시돼 있던 결산이 있어야 합니다.
+    older=[]
+    for y in range(years[0]['year']-1, FIRST_YEAR-1, -1):
+        found=p.annual(corp,y,basis)
+        if not found or found.get('revenue') is None:
+            break
+        older.append(found)
+    years=list(reversed(older))+years
     info=p.dart('company.json',corp_code=corp) or {}
     recent=p.dart('list.json',corp_code=corp,bgn_de=(today-timedelta(days=90)).strftime('%Y%m%d'),end_de=today.strftime('%Y%m%d'),page_count=30,sort='date',sort_mth='desc') or {}
     # 사업보고서 원문은 종목당 수십 MB라 여러 종목을 모을 때는 건너뜁니다.
@@ -60,7 +77,7 @@ def collect(code,p=None):
         try:excerpt=p.business_excerpt(years[-1].get('receipt'))
         except Exception:excerpt=''
     halves=[]
-    for y in (today.year-1,today.year):
+    for y in range(FIRST_YEAR, today.year+1):
         try:
             found=half(p,corp,y,basis)
         except Exception:
