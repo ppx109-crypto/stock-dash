@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 from dotenv import load_dotenv
 
 from research_ui import render_research
@@ -107,6 +108,57 @@ def extract_business_sentences(report):
 # 내 관심종목과 일지를 보게 되므로, 공개 주소로 쓸 때는 비밀번호를 두는 편이
 # 안전합니다.
 password = os.getenv("APP_PASSWORD", "")
+
+# 로그인한 사실은 브라우저에도 남깁니다. Streamlit 세션은 연결이 끊기거나 화면을
+# 새로 열면 사라지는데, 그때마다 비밀번호를 다시 묻지 않기 위해서입니다. 쿠키에는
+# 비밀번호가 아니라 비밀번호에서 만든 확인값만 담습니다.
+AUTH_COOKIE = "planx_auth"
+
+
+def auth_token(secret):
+    return hashlib.sha256(("planx-auth:" + secret).encode()).hexdigest()[:32]
+
+
+def remember_login(token):
+    """브라우저에 로그인 표시를 남깁니다. 30일 뒤에 저절로 사라집니다."""
+    components.html(
+        "<script>try{(window.parent||window).document.cookie="
+        f"'{AUTH_COOKIE}={token}; path=/; max-age=2592000; SameSite=Lax'"
+        "}catch(e){document.cookie="
+        f"'{AUTH_COOKIE}={token}; path=/; max-age=2592000; SameSite=Lax'" "}</script>",
+        height=0,
+    )
+
+
+def forget_login():
+    components.html(
+        "<script>try{(window.parent||window).document.cookie="
+        f"'{AUTH_COOKIE}=; path=/; max-age=0; SameSite=Lax'"
+        "}catch(e){document.cookie="
+        f"'{AUTH_COOKIE}=; path=/; max-age=0; SameSite=Lax'" "}</script>",
+        height=0,
+    )
+
+
+# 로그아웃을 누르면 세션을 비우고 여기로 돌아옵니다. 쿠키를 지우는 일은 화면을
+# 다시 그린 뒤에 해야 합니다. 누르자마자 지우면 브라우저가 그 지시를 받기도 전에
+# 화면이 새로 그려져 쿠키가 남습니다.
+if st.session_state.pop("px_logout_pending", False):
+    forget_login()
+    st.session_state["px_cookie_off"] = True
+
+if password and not st.session_state.get("authorized") \
+        and not st.session_state.get("px_cookie_off"):
+    # 이 브라우저가 전에 로그인했다면 다시 묻지 않습니다.
+    try:
+        if st.context.cookies.get(AUTH_COOKIE) == auth_token(password):
+            st.session_state.authorized = True
+    except Exception:
+        pass
+
+if password and st.session_state.get("authorized"):
+    remember_login(auth_token(password))
+
 if password and not st.session_state.get("authorized"):
     hero("StockDash", "공식 데이터를 연결해 시장과 기업의 변화를 한 흐름으로 읽습니다.", "SECURE ACCESS")
     left, center, right = st.columns([1, 1.15, 1])
@@ -118,6 +170,7 @@ if password and not st.session_state.get("authorized"):
                 if st.form_submit_button("대시보드 열기", type="primary", width='stretch'):
                     if hmac.compare_digest(entered.encode(), password.encode()):
                         st.session_state.authorized = True
+                        remember_login(auth_token(password))
                         st.rerun()
                     st.error("비밀번호를 확인하세요.")
     st.stop()
@@ -281,8 +334,11 @@ with st.sidebar:
     else:
         st.caption("클라우드 저장" if store.cloud else "실행 서버 저장")
 
-    if password and st.button("로그아웃", width='stretch'):
+    # 열쇠를 붙여 둡니다. 열쇠가 없으면 화면의 단추가 늘고 줄 때 Streamlit이
+    # 다른 단추의 누름으로 잘못 읽을 수 있습니다.
+    if password and st.button("로그아웃", key="px_logout", width='stretch'):
         st.session_state.clear()
+        st.session_state["px_logout_pending"] = True
         st.rerun()
 
 report = stock.get("report")
