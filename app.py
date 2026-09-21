@@ -72,12 +72,16 @@ class SessionStore:
 
 
 def load_store(password):
-    sample = not password
-    if sample or st.session_state.get("practice_mode"):
-        current_store = SessionStore()
-    else:
-        current_store = Store()
-    return sample, current_store, current_store.read()
+    """저장소를 엽니다. 비밀번호를 두지 않아도 내 목록은 그대로 씁니다.
+
+    비밀번호가 없으면 예전에는 둘러보기(가상 예시)로 열렸습니다. 그러면 종목을
+    담아도 저장되지 않아, 잠금만 풀려는 사람이 자기 목록을 잃습니다. 이제는
+    잠금과 저장을 따로 둡니다. 저장할 곳을 열지 못할 때만 둘러보기가 됩니다.
+    """
+    if st.session_state.get("practice_mode"):
+        return True, SessionStore(), SessionStore().read()
+    current_store = Store()
+    return False, current_store, current_store.read()
 
 
 def stock_label(item):
@@ -99,6 +103,9 @@ def extract_business_sentences(report):
     return sentences[:3]
 
 
+# 비밀번호를 비워 두면 잠금 화면 없이 바로 열립니다. 주소를 아는 사람은 누구나
+# 내 관심종목과 일지를 보게 되므로, 공개 주소로 쓸 때는 비밀번호를 두는 편이
+# 안전합니다.
 password = os.getenv("APP_PASSWORD", "")
 if password and not st.session_state.get("authorized"):
     hero("StockDash", "공식 데이터를 연결해 시장과 기업의 변화를 한 흐름으로 읽습니다.", "SECURE ACCESS")
@@ -119,7 +126,7 @@ try:
     sample_mode, store, state = load_store(password)
 except Exception:
     hero("저장 공간 연결 확인", "기존 자료는 덮어쓰지 않습니다. 저장소 설정만 확인합니다.", "STORAGE")
-    st.error("비밀번호 확인은 통과했지만 종목 저장 공간을 열지 못했습니다.")
+    st.error("종목 저장 공간을 열지 못했습니다.")
     url_set = bool(os.getenv("SUPABASE_URL", "").strip())
     key_set = bool(os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip())
     if url_set != key_set:
@@ -268,7 +275,7 @@ with st.sidebar:
         stock = {"code": "SAMPLE", "name": "가상 반도체", "report": demo()}
 
     if sample_mode:
-        st.caption("가상 예시 모드")
+        st.caption("임시 실습 모드 · 저장되지 않습니다")
     elif st.session_state.get("practice_mode"):
         st.caption("임시 저장 모드")
     else:
@@ -284,7 +291,7 @@ is_demo = stock.get("code") == "SAMPLE"
 
 def global_search():
     if sample_mode:
-        st.info("현재는 가상 예시 모드입니다. APP_PASSWORD와 공식 API 키가 설정되면 실데이터 검색이 열립니다.")
+        st.info("임시 실습 모드입니다. 저장 공간을 연결하면 실데이터 검색이 열립니다.")
         return
     with st.form("global_search"):
         col_q, col_b = st.columns([6, 1])

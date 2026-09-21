@@ -211,7 +211,8 @@ def render_research(store, state, sample_mode):
                     store=store, sample_mode=sample_mode)
     hero('내 투자의 현재를 한눈에', '관심 있는 기업을 담고, 판단에 필요한 변화만 확인하세요.', 'PLANX · STOCK RESEARCH')
     if sample_mode:
-        st.info('둘러보기 중입니다. 개인 목록을 저장하려면 먼저 대시보드 비밀번호를 설정하세요.')
+        st.info('임시 실습 모드입니다. 담은 종목은 이 접속에서만 남습니다. '
+                '저장 공간(Supabase 또는 실행 서버 파일) 설정을 확인하세요.')
     else:
         with st.expander('＋ 종목 추가', expanded=not state.get('stocks')):
             with st.form('research_manual'):
