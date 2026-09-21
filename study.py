@@ -53,6 +53,65 @@ def load_reports():
         return {}
 
 
+def money_timeline(code, folder="public-data"):
+    """그날 이미 공시된 실적만 쓰도록, 발표일이 붙은 목록을 만듭니다.
+
+    오늘의 실적으로 몇 해 전의 날을 판정하면, 그때는 알 수 없던 정보를 쓰는
+    것이 됩니다. 그러면 어떤 규칙이든 좋아 보입니다. 그래서 각 결산의 접수
+    일자를 함께 들고 다니며, 그날까지 나온 것 중 가장 최근 것만 씁니다.
+    """
+    try:
+        source = json.loads((Path(folder) / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    found = []
+
+    def announced(row):
+        stamp = str(row.get("receipt") or "")[:8]
+        return stamp if len(stamp) == 8 and stamp.isdigit() else None
+
+    years = source.get("years") or []
+    for prior, now in zip(years, years[1:]):
+        day = announced(now)
+        if day:
+            found.append((day, _axis(now.get("revenue"), prior.get("revenue"),
+                                     now.get("profit"), prior.get("profit"))))
+    halves = {h.get("period"): h for h in (source.get("halves") or []) if h.get("period")}
+    for period, now in halves.items():
+        year, month = period.split("-")
+        prior = halves.get(f"{int(year) - 1}-{month}")
+        day = announced(now)
+        # 기준이 다른 반기끼리는 견주지 않습니다. 누적과 석 달을 섞으면 뒤집힙니다.
+        if prior and day and now.get("measure") == prior.get("measure"):
+            found.append((day, _axis(now.get("revenue"), prior.get("revenue"),
+                                     now.get("profit"), prior.get("profit"))))
+    found.sort()
+    return [(day, axis) for day, axis in found if axis]
+
+
+def _axis(revenue, prior_revenue, profit, prior_profit):
+    axis = {}
+    if revenue and prior_revenue and prior_revenue > 0:
+        axis["매출성장"] = (revenue / prior_revenue - 1) * 100
+    if profit is not None and prior_profit is not None and prior_profit > 0:
+        axis["영업이익성장"] = (profit / prior_profit - 1) * 100
+    if revenue and profit is not None and revenue > 0:
+        axis["영업이익률"] = profit / revenue * 100
+    if profit is not None:
+        axis["흑자"] = profit > 0
+    return axis
+
+
+def known_by(timeline, day):
+    """그날까지 나온 것 중 가장 최근 실적. 없으면 빈 칸입니다."""
+    found = {}
+    for announced, axis in timeline:
+        if announced > day:
+            break
+        found = axis
+    return found
+
+
 def money_axis(report):
     """실적에서 판단에 쓸 세 가지를 꺼냅니다. 없으면 None입니다."""
     money = (report or {}).get("financial") or {}
@@ -77,7 +136,7 @@ def observations(prices, reports, horizons=HORIZONS, warmup=60):
     found = []
     for code, block in prices.items():
         rows = block["rows"]
-        axis = money_axis(reports.get(code))
+        timeline = money_timeline(code)
         closes = [c for _, c in rows]
         for i in range(warmup, len(rows) - min(horizons)):
             verdict = trend.assess(closes[: i + 1], None)
@@ -91,7 +150,7 @@ def observations(prices, reports, horizons=HORIZONS, warmup=60):
                 continue
             found.append({"code": code, "name": block["name"], "date": rows[i][0],
                           "group": verdict["group"], "met": verdict.get("met"),
-                          "ahead": ahead, **axis})
+                          "ahead": ahead, **known_by(timeline, rows[i][0])})
     return found
 
 
@@ -134,3 +193,35 @@ def lift(rows, key, edge, horizon=20):
     return {"잣대": f"{key} ≥ {edge}", "기준 상승확률": base["상승확률"],
             "더한 뒤": high["상승확률"], "차이": high["상승확률"] - base["상승확률"],
             "건수": high["건수"]}
+
+
+def combo(rows, rules, horizon=20, floor=30):
+    """여러 조건을 한꺼번에 걸었을 때를 봅니다.
+
+    실제 투자는 조건을 하나만 보고 하지 않습니다. 'A그룹이면서 매출도 늘고
+    영업이익률도 일정 수준 위'처럼 겹쳐 봅니다. 다만 겹칠수록 해당하는 날이
+    줄어드므로, 건수가 floor 미만이면 숫자를 내지 않습니다. 적은 표본에서
+    나온 높은 확률은 우연과 구분되지 않기 때문입니다.
+    """
+    picked = rows
+    for key, edge in rules:
+        picked = [r for r in picked
+                  if isinstance(r.get(key), (int, float)) and r[key] >= edge]
+    found = tally(picked, horizon)
+    if not found or found["건수"] < floor:
+        return None
+    return {"조건": " + ".join(f"{k} ≥ {e:g}" for k, e in rules), **found}
+
+
+def worst_case(rows, horizon=20, share=10):
+    """가장 나빴던 쪽 몇 퍼센트가 얼마나 잃었는지.
+
+    상승확률만 보면 지는 쪽에서 얼마나 잃는지가 보이지 않습니다. 확률이 높아도
+    지는 날의 손실이 크면 전체로는 손해입니다.
+    """
+    moves = sorted(r["ahead"][horizon] for r in rows if horizon in r["ahead"])
+    if len(moves) < 20:
+        return None
+    cut = max(1, len(moves) * share // 100)
+    return {"하위 %d%% 평균" % share: statistics.fmean(moves[:cut]),
+            "하위 %d%% 경계" % share: moves[cut - 1]}

@@ -78,5 +78,57 @@ class Lift(unittest.TestCase):
         self.assertIsNone(study.lift(rows, "매출성장", 99.0, 20))
 
 
+class PointInTime(unittest.TestCase):
+    """그날 이미 공시된 실적만 써야 합니다. 안 그러면 어떤 규칙이든 좋아 보입니다."""
+
+    def timeline(self):
+        return [("20250311", {"매출성장": 16.2, "영업이익률": 10.9}),
+                ("20260310", {"매출성장": 10.9, "영업이익률": 13.1}),
+                ("20260814", {"매출성장": 98.7, "영업이익률": 48.0})]
+
+    def test_before_the_first_filing_nothing_is_known(self):
+        self.assertEqual(study.known_by(self.timeline(), "20240101"), {})
+
+    def test_the_day_of_the_filing_counts_as_known(self):
+        self.assertEqual(study.known_by(self.timeline(), "20250311")["매출성장"], 16.2)
+
+    def test_the_day_before_a_filing_still_uses_the_older_one(self):
+        self.assertEqual(study.known_by(self.timeline(), "20260813")["매출성장"], 10.9)
+
+    def test_a_later_day_uses_the_newest_filing(self):
+        self.assertEqual(study.known_by(self.timeline(), "20260901")["영업이익률"], 48.0)
+
+    def test_a_growth_rate_needs_a_profitable_year_to_compare_with(self):
+        self.assertNotIn("영업이익성장", study._axis(110, 100, 5, -10))
+        self.assertIn("영업이익성장", study._axis(110, 100, 11, 10))
+
+
+class Combo(unittest.TestCase):
+    def rows(self, items):
+        return [{"group": "A", "ahead": {20: move}, "매출성장": a, "영업이익률": b}
+                for move, a, b in items]
+
+    def test_a_thin_result_is_withheld(self):
+        # 표본이 적으면 높은 확률도 우연과 구분되지 않습니다.
+        rows = self.rows([(5.0, 20.0, 12.0)] * 10)
+        self.assertIsNone(study.combo(rows, (("매출성장", 0.0),), 20, floor=30))
+
+    def test_both_conditions_must_hold(self):
+        rows = self.rows([(5.0, 20.0, 12.0)] * 20 + [(-5.0, 20.0, 1.0)] * 20)
+        found = study.combo(rows, (("매출성장", 0.0), ("영업이익률", 10.0)), 20, floor=10)
+        self.assertEqual(found["건수"], 20)
+        self.assertEqual(found["상승확률"], 100.0)
+
+
+class Downside(unittest.TestCase):
+    def test_the_worst_tenth_is_measured(self):
+        rows = [{"ahead": {20: float(i)}} for i in range(-50, 50)]
+        found = study.worst_case(rows, 20, share=10)
+        self.assertEqual(found["하위 10% 경계"], -41.0)
+
+    def test_too_few_days_gives_nothing(self):
+        self.assertIsNone(study.worst_case([{"ahead": {20: 1.0}}] * 5, 20))
+
+
 if __name__ == "__main__":
     unittest.main()
