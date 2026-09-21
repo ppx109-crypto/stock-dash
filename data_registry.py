@@ -182,7 +182,9 @@ def health(spec: ProviderSpec) -> dict:
             mode = os.getenv("KIS_ENV", "demo").strip() or "demo"
             label = {"real": "실전", "demo": "모의"}.get(mode, mode)
             try:
-                client = broker_kis.KIS(account=False)
+                # 토큰을 아껴 씁니다. 누를 때마다 새로 발급받으면 증권사가 발급을
+                # 제한해, 멀쩡한 키가 인증 실패로 보입니다.
+                client = broker_kis.market()
                 client.authorize()
             except broker_kis.BrokerError as error:
                 return _result(spec.provider_id, "error", f"{label} 서버 인증 실패 · {error}"[:120], started)

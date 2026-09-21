@@ -40,16 +40,36 @@ class KIS:
         self.token = None
         self.expires = 0
 
+    # 증권사가 거절할 때 주는 코드 중, 사람이 할 일이 정해져 있는 것들입니다.
+    REFUSALS = {
+        'EGW00133': '접근토큰 발급이 잠시 제한되었습니다. 1분쯤 뒤에 다시 눌러 주세요.',
+        'EGW00123': '앱키 또는 앱시크릿이 맞지 않습니다.',
+        'EGW00201': '초당 호출 한도를 넘었습니다. 잠시 뒤 다시 눌러 주세요.',
+    }
+
     def request(self, method, path, **kwargs):
         try:
             response = requests.request(method, self.base + path, timeout=(5, 20), **kwargs)
-            response.raise_for_status()
+        except requests.RequestException:
+            raise BrokerError('증권사에 연결하지 못했습니다. 네트워크와 서비스 상태를 '
+                              '확인한 뒤 다시 조회하세요.') from None
+        try:
             data = response.json()
             if not isinstance(data, dict):
                 raise ValueError()
-            return response, data
-        except (requests.RequestException, ValueError):
-            raise BrokerError('증권사 연결에 실패했습니다. 환경·키·서비스 상태를 확인한 뒤 다시 조회하세요.') from None
+        except ValueError:
+            raise BrokerError(f'증권사 응답을 읽지 못했습니다. HTTP {response.status_code}.') from None
+        if response.status_code >= 400:
+            # 응답 본문에는 계좌번호가 들어 있을 수 있어 그대로 옮기지 않습니다.
+            # 정해진 형태의 코드만 꺼내 씁니다.
+            code = str(data.get('msg_cd') or data.get('error_code') or '').strip()
+            code = code if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', code) else ''
+            if code in self.REFUSALS:
+                raise BrokerError(self.REFUSALS[code])
+            raise BrokerError(f'증권사가 요청을 거절했습니다. HTTP {response.status_code}'
+                              + (f' · {code}' if code else '')
+                              + ' · 환경·키·서비스 상태를 확인하세요.')
+        return response, data
 
     def authorize(self):
         if self.token and time.time() < self.expires:

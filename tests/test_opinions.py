@@ -1,6 +1,7 @@
 """증권사 투자의견·목표가 읽기. 실제 서버 대신 정해 둔 응답으로 확인합니다."""
 import os
 import unittest
+from unittest.mock import patch
 
 import broker_kis
 from broker_kis import KIS, BrokerError
@@ -128,6 +129,63 @@ class WithoutAnAccount(unittest.TestCase):
         os.environ.update({"KIS_APP_KEY": "k", "KIS_APP_SECRET": "s", "KIS_ENV": "real"})
         with self.assertRaises(BrokerError):
             KIS()
+
+
+class Refusals(unittest.TestCase):
+    """증권사가 거절했을 때 무엇을 하면 되는지 화면에 적히는지 봅니다."""
+
+    def setUp(self):
+        os.environ.update({"KIS_APP_KEY": "k", "KIS_APP_SECRET": "top-secret",
+                           "KIS_CANO": "12345678", "KIS_ACNT_PRDT_CD": "01",
+                           "KIS_ENV": "real"})
+
+    def tearDown(self):
+        for key in ("KIS_APP_KEY", "KIS_APP_SECRET", "KIS_CANO", "KIS_ACNT_PRDT_CD", "KIS_ENV"):
+            os.environ.pop(key, None)
+
+    def answer(self, status, payload):
+        class Sent:
+            status_code = status
+            headers = {}
+            def json(self):
+                return payload
+        return Sent()
+
+    def test_a_token_limit_says_to_wait_a_minute(self):
+        # 이 거절은 키가 틀린 것이 아니라 잠시 뒤 다시 누르면 되는 것입니다.
+        sent = self.answer(403, {"msg_cd": "EGW00133", "msg1": "일시적으로 제한"})
+        with patch.object(broker_kis.requests, "request", return_value=sent):
+            with self.assertRaises(BrokerError) as caught:
+                KIS(account=False).authorize()
+        self.assertIn("1분", str(caught.exception))
+
+    def test_a_refusal_never_echoes_the_response(self):
+        sent = self.answer(403, {"msg_cd": "ZZ99", "msg1": "top-secret 12345678"})
+        with patch.object(broker_kis.requests, "request", return_value=sent):
+            with self.assertRaises(BrokerError) as caught:
+                KIS(account=False).authorize()
+        self.assertNotIn("top-secret", str(caught.exception))
+        self.assertNotIn("12345678", str(caught.exception))
+
+    def test_an_unreadable_answer_says_the_http_code(self):
+        class Broken:
+            status_code = 502
+            headers = {}
+            def json(self):
+                raise ValueError()
+        with patch.object(broker_kis.requests, "request", return_value=Broken()):
+            with self.assertRaises(BrokerError) as caught:
+                KIS(account=False).authorize()
+        self.assertIn("502", str(caught.exception))
+
+    def test_one_token_is_reused_instead_of_asked_for_again(self):
+        # 진단을 누를 때마다 새 토큰을 받으면 증권사가 발급을 제한합니다.
+        sent = self.answer(200, {"access_token": "t", "expires_in": 86400})
+        with patch.object(broker_kis.requests, "request", return_value=sent) as asked:
+            client = KIS(account=False)
+            client.authorize()
+            client.authorize()
+        self.assertEqual(asked.call_count, 1)
 
 
 if __name__ == "__main__":
