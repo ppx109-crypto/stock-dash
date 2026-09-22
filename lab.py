@@ -14,6 +14,7 @@ import json
 import math
 import random
 import statistics
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import study
@@ -303,7 +304,7 @@ def both(rows, holds, edge=SPLIT, horizon=HORIZON):
 
 
 def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
-              cost=COST, rank=None, since=None, per_day=None):
+              cost=COST, rank=None, since=None, per_day=None, apart=None):
     """자금을 나눠 담고 실제로 굴려 봅니다. 앱 화면이 읽는 수치입니다.
 
     한 종목씩 따로 재면 '같은 날 후보가 쉰 개면 쉰 개를 다 산다'는 셈이
@@ -315,7 +316,8 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
     부르고 이름만 옛 화면에 맞춰 돌려줍니다.
     """
     got = run(rows, prices, holds, exit_fixed(take, stop, limit), slots=slots,
-              rank=rank, since=since, cost=cost, per_day=per_day)
+              rank=rank, since=since, cost=cost, per_day=per_day,
+              apart=apart)
     if not got:
         return None
     years = max(len({row["date"][:4] for row in rows
@@ -428,7 +430,8 @@ def streak(gains):
 
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
-        greedy=False, per_day=None, delay=0, busy_cap=None):
+        greedy=False, per_day=None, delay=0, busy_cap=None,
+        per_window=None, apart=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -441,6 +444,11 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     size는 한 종목에 자리를 몇 개 쓸지 돌려주는 함수입니다. 기본은 하나씩
     입니다. 둘을 쓰면 그만큼 자리가 줄고, 손익도 두 몫으로 셉니다. 승률과
     매매당 수익은 자리 수와 상관없는 값이므로 그대로 한 번씩 셉니다.
+
+    per_window=(수, 날)을 두면 최근 그 날수 안에 그만큼까지만 새로 담습니다
+    (하루 제한을 며칠로 늘린 것입니다). apart는 (후보, 지금 들고 있는 줄들)을
+    받아 함께 담아도 되는지 돌려주는 함수입니다. 같이 물릴 만한 것을 한꺼번에
+    담지 않으려는 것입니다.
 
     per_day를 두면 하루에 그만큼만 새로 담습니다. busy_cap을 두면 자리가
     남아 있어도 그만큼까지만 채우고 나머지는 현금으로 둡니다. 둘 다 그날의
@@ -460,6 +468,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     size = size or (lambda r: 1)
     open_slots, trades, missed, held_days = {}, [], 0, []
     rest = {}                # 종목별로 '이 자리 뒤에야 다시 산다'는 자리입니다.
+    opened_on = []           # 새로 담은 날들. per_window가 이것을 셉니다.
     ledger = []              # detail=True일 때만. 매매 하나하나를 적어 둡니다.
     busy, seen, year_gains = 0, 0, {}
     weighted = []            # 자리 수를 곱한 손익. 연수익은 이것으로 냅니다.
@@ -502,12 +511,22 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         # 빈 자리 수만큼만 위에서부터 봅니다. 그중 이미 들고 있는 종목이 있으면
         # 그 자리는 그날 비워 둡니다. greedy=True면 다음 후보로 마저 채웁니다.
         bought = 0
+        if per_window:
+            span, back = per_window
+            edge = (datetime.strptime(day, "%Y%m%d")
+                    - timedelta(days=back)).strftime("%Y%m%d")
+            lately = [when for when in opened_on if when >= edge]
         for row in (ready if greedy else ready[:max(room, 0)]):
             allowed = (per_day(row) if callable(per_day) else per_day) \
                 if per_day is not None else None
             if used >= top or (allowed is not None and bought >= allowed):
                 break
+            if per_window and len(lately) + bought >= per_window[0]:
+                break
             if row["code"] in open_slots:
+                continue
+            if apart is not None and not apart(
+                    row, [spot["row"] for spot in open_slots.values()]):
                 continue
             spot = row["i"] + delay
             closes = lane[row["code"]]["closes"]
@@ -520,6 +539,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                                        "row": row, "자리": want}
             used += want
             bought += 1
+            opened_on.append(day)
         missed += max(0, len(ready) - max(room, 0))
     if len(trades) < 60:
         return None
@@ -674,3 +694,44 @@ def paired(rows, prices, ways, cap=60, floor=60):
             "하위10%": round(sum(gains[:cut]) / cut, 1),
             "보유": days, "하루당": round(mean / days, 3)}
     return found
+
+
+def moves(prices):
+    """종목마다 하루 수익률을 미리 만들어 둡니다. 닮은 정도를 잴 때 씁니다."""
+    found = {}
+    for code, block in prices.items():
+        closes = [c for _, c in block["rows"]]
+        found[code] = [0.0] + [(closes[k] / closes[k - 1] - 1) if closes[k - 1]
+                               else 0.0 for k in range(1, len(closes))]
+    return found
+
+
+def kinship(steps, row, other, back=60):
+    """두 종목이 최근 back일 동안 얼마나 같이 움직였는지(-1~1).
+
+    그날까지의 수익률만 봅니다(…, i-1, i). 뒷날은 쓰지 않습니다. 자리 다툼과
+    상관없이, 같이 물릴 만한 것을 한꺼번에 담지 않으려고 잽니다.
+    """
+    one = steps.get(row["code"])
+    two = steps.get(other["code"])
+    if one is None or two is None:
+        return 0.0
+    i, j = row["i"], other["i"]
+    if i < back or j < back:
+        return 0.0
+    left, right = one[i - back + 1:i + 1], two[j - back + 1:j + 1]
+    n = len(left)
+    if n < back:
+        return 0.0
+    ma, mb = sum(left) / n, sum(right) / n
+    top = sum((x - ma) * (y - mb) for x, y in zip(left, right))
+    wide = (sum((x - ma) ** 2 for x in left) ** 0.5
+            * sum((y - mb) ** 2 for y in right) ** 0.5)
+    return top / wide if wide else 0.0
+
+
+def unlike(steps, edge=0.6, back=60):
+    """이미 들고 있는 것과 너무 같이 움직이는 종목은 담지 않습니다."""
+    def ok(row, held):
+        return all(kinship(steps, row, one, back) < edge for one in held)
+    return ok

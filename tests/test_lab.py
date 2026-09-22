@@ -357,5 +357,44 @@ class Paired(unittest.TestCase):
         self.assertEqual(got["바로"]["보유"], 1.0)
 
 
+class Kinship(unittest.TestCase):
+    """닮은 정도. 그날까지의 수익률만 보고 재야 합니다."""
+
+    def setUp(self):
+        self.prices = board()
+        self.steps = lab.moves(self.prices)
+
+    def test_a_stock_is_its_own_twin(self):
+        row = {"code": "000001", "i": 300}
+        self.assertAlmostEqual(lab.kinship(self.steps, row, row), 1.0, places=6)
+
+    def test_it_never_reads_past_the_day(self):
+        """그날 뒤의 수익률을 엉뚱하게 바꿔도 값이 같아야 합니다."""
+        row = {"code": "000001", "i": 300}
+        other = {"code": "000002", "i": 300}
+        before = lab.kinship(self.steps, row, other)
+        dirty = {code: list(vals) for code, vals in self.steps.items()}
+        for code in dirty:
+            for k in range(301, len(dirty[code])):
+                dirty[code][k] = -7.0 if k % 2 else 3.0
+        self.assertAlmostEqual(lab.kinship(dirty, row, other), before, places=9)
+
+    def test_too_early_to_tell_counts_as_not_alike(self):
+        row = {"code": "000001", "i": 5}
+        other = {"code": "000002", "i": 5}
+        self.assertEqual(lab.kinship(self.steps, row, other), 0.0)
+
+    def test_an_unknown_stock_is_not_alike(self):
+        self.assertEqual(lab.kinship(self.steps, {"code": "없음", "i": 300},
+                                     {"code": "000001", "i": 300}), 0.0)
+
+    def test_nothing_held_means_anything_may_be_bought(self):
+        self.assertTrue(lab.unlike(self.steps)({"code": "000001", "i": 300}, []))
+
+    def test_a_twin_is_turned_away(self):
+        row = {"code": "000001", "i": 300}
+        self.assertFalse(lab.unlike(self.steps, edge=0.6)(row, [row]))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -94,6 +94,12 @@ class Spacing(unittest.TestCase):
     def test_the_why_says_so(self):
         """화면에 나가는 설명이 규칙과 어긋나면 안 됩니다."""
         self.assertIn("하루에 새로 담는 것은 둘까지", rule.WHY)
+        self.assertIn("같이 움직이던", rule.WHY)
+
+    def test_the_kinship_bar_is_mid_range(self):
+        """0.5~0.7이 모두 같은 방향이라 가운데를 씁니다. 가장자리는 위험합니다."""
+        self.assertGreaterEqual(rule.KIN, 0.5)
+        self.assertLessEqual(rule.KIN, 0.7)
 
 
 class Risk(unittest.TestCase):
@@ -101,7 +107,7 @@ class Risk(unittest.TestCase):
 
     def test_the_caveat_says_the_drawdown(self):
         """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
-        for must in ("−48.6%", "스물넉 달", "열다섯 번"):
+        for must in ("−39.9%", "여덟 달", "열세 번", "2008년"):
             self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
 
     def test_an_empty_run_gives_an_empty_report(self):
