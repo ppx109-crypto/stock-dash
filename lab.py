@@ -243,3 +243,103 @@ def load(path=CACHE):
     for row in rows:
         row["ahead"] = {int(k): v for k, v in row["ahead"].items()}
     return rows
+
+
+# 규칙을 찾을 때 쓰는 구간과, 찾은 뒤 확인할 구간을 갈라 둡니다.
+# 같은 자료로 찾고 같은 자료로 확인하면 어떤 규칙이든 좋아 보입니다.
+SPLIT = "20160101"
+
+
+def split(rows, edge=SPLIT):
+    """앞은 찾는 데, 뒤는 확인하는 데 씁니다."""
+    return ([r for r in rows if r["date"] < edge],
+            [r for r in rows if r["date"] >= edge])
+
+
+def both(rows, holds, edge=SPLIT, horizon=HORIZON):
+    """앞뒤 두 구간의 성적을 함께 냅니다.
+
+    앞에서만 좋고 뒤에서 무너지면 과거에 맞춘 규칙입니다. 그런 규칙은
+    숫자가 아무리 좋아도 버려야 합니다.
+    """
+    early, late = split(rows, edge)
+    found = {}
+    for name, part in (("탐색", early), ("확인", late)):
+        base = score(part, horizon)
+        kept = score([r for r in part if holds(r)], horizon)
+        if not base or not kept:
+            found[name] = None
+            continue
+        found[name] = {**kept, "중앙덧셈": round(kept["중앙"] - base["중앙"], 2),
+                       "5%↑덧셈": round(kept[f"{RISE:g}%↑"] - base[f"{RISE:g}%↑"], 1)}
+    return found
+
+
+def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
+              cost=COST, rank=None, since=None):
+    """자금을 나눠 담고 실제로 굴려 봅니다.
+
+    한 종목씩 따로 재면 '같은 날 후보가 쉰 개면 쉰 개를 다 산다'는 셈이
+    됩니다. 실제로는 자리가 정해져 있고, 자리가 차면 다음 후보는 놓칩니다.
+    놓친 기회까지 세어야 실제에 가까운 수치가 나옵니다.
+
+    자리 하나에 자금의 1/slots을 넣고, 먼저 닿는 쪽(익절·손절·기한)에서
+    끝냅니다. 같은 종목을 겹쳐 담지 않습니다.
+    """
+    series = {code: [c for _, c in block["rows"]] for code, block in prices.items()}
+    picks = {}
+    for row in rows:
+        if holds(row) and (since is None or row["date"] >= since):
+            picks.setdefault(row["date"], []).append(row)
+    days = sorted(picks)
+    if not days:
+        return None
+    rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
+
+    open_slots, trades, missed = {}, [], 0
+    for day in days:
+        # 먼저 정리할 자리를 정리합니다.
+        for code in list(open_slots):
+            spot = open_slots[code]
+            closes = series[code]
+            step = spot["step"] + 1
+            index = spot["i"] + step
+            if index >= len(closes):
+                del open_slots[code]
+                continue
+            move = (closes[index] / spot["price"] - 1) * 100
+            done = None
+            if move >= take:
+                done = take
+            elif move <= -stop:
+                done = -stop
+            elif step >= limit:
+                done = move
+            if done is None:
+                spot["step"] = step
+                continue
+            trades.append(done - cost)
+            del open_slots[code]
+        room = slots - len(open_slots)
+        today = sorted(picks[day], key=rank)
+        for row in today[:max(room, 0)]:
+            if row["code"] in open_slots:
+                continue
+            open_slots[row["code"]] = {"i": row["i"], "price": row["price"], "step": 0}
+        missed += max(0, len(today) - max(room, 0))
+    if len(trades) < 60:
+        return None
+    ordered = sorted(trades)
+    cut = max(1, len(ordered) // 10)
+    wins = sum(1 for t in trades if t > 0)
+    # 자리가 slots개이므로 한 번의 매매에는 자금의 1/slots이 들어갑니다.
+    # 자리가 비어 있는 동안 그 몫은 놀고 있으므로, 거기까지 넣어 잽니다.
+    years = (int(days[-1][:4]) - int(days[0][:4])) + 1
+    yearly = sum(trades) / slots / max(years, 1)
+    return {"자리": slots, "매매": len(trades), "놓침": missed,
+            "연수익": round(yearly, 2), "연매매": round(len(trades) / max(years, 1), 1),
+            "승률": round(wins / len(trades) * 100, 1),
+            "평균": round(sum(trades) / len(trades), 2),
+            "중앙": round(sorted(trades)[len(trades) // 2], 2),
+            "하위10%": round(sum(ordered[:cut]) / cut, 1),
+            "최악": round(ordered[0], 1)}
