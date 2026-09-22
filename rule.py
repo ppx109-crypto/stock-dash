@@ -87,6 +87,33 @@ def today(rows):
     return found
 
 
+def tier_stats(rows, since=lab.SPLIT):
+    """층마다 재료가 얼마나 다른지. 화면에 그대로 보여 줍니다.
+
+    네 층을 한 덩어리로 보면 '이 규칙은 40% 남짓 맞는다'로 보입니다. 실제로는
+    1층이 2주 중앙 +14%이고 4층은 기준선과 거의 같습니다. 4층은 좋아서가
+    아니라 자리를 비워 두는 것보다 나아서 담습니다. 그 차이를 감추지 않습니다.
+    """
+    found = []
+    for rank in range(len(TIERS)):
+        group = [r for r in rows
+                 if r["date"] >= since and tier_of(r) == rank
+                 and r.get("ahead", {}).get(lab.HORIZON) is not None]
+        if len(group) < 60:        # 60건 미만이면 숫자를 내지 않습니다.
+            continue
+        gains = sorted(r["ahead"][lab.HORIZON] - lab.COST for r in group)
+        cut = max(1, len(gains) // 10)
+        found.append({
+            "층": rank + 1, "이격": TIERS[rank][0], "밴드": TIERS[rank][1],
+            "건수": len(gains), "종목": len({r["code"] for r in group}),
+            "날": len({r["date"] for r in group}),
+            "5%↑": round(sum(1 for g in gains if g >= lab.RISE) / len(gains) * 100, 1),
+            "평균": round(sum(gains) / len(gains), 2),
+            "중앙": round(gains[len(gains) // 2], 2),
+            "하위10%": round(sum(gains[:cut]) / cut, 1)})
+    return found
+
+
 def report(rows, prices):
     picked = [r for r in rows if holds(r)]
     body = {
@@ -97,6 +124,7 @@ def report(rows, prices):
         "기준": lab.score(rows), "규칙": lab.score(picked),
         "굴림": lab.portfolio(rows, prices, holds, slots=SLOTS, take=TAKE,
                             stop=STOP, limit=LIMIT, since="20160101", rank=order),
+        "층별": tier_stats(rows),
         "오늘": today(rows),
     }
     OUT.parent.mkdir(exist_ok=True)

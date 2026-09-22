@@ -457,8 +457,12 @@ def exit_trailing_vol(give_mult, arm_mult, limit):
 
 
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
-        cap=90):
-    """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다."""
+        cap=90, detail=False, cooldown=0, cooldown_after="모두"):
+    """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
+
+    cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
+    않습니다. cooldown_after가 "손실"이면 잃고 나온 경우에만 막습니다.
+    """
     lane = lanes(prices)
     picks = {}
     for row in rows:
@@ -469,6 +473,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         return None
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
     open_slots, trades, missed, held_days = {}, [], 0, []
+    rest = {}                # 종목별로 '이 자리 뒤에야 다시 산다'는 자리입니다.
+    ledger = []              # detail=True일 때만. 매매 하나하나를 적어 둡니다.
     busy, seen, year_gains = 0, 0, {}
     for day in days:
         for code in list(open_slots):
@@ -486,18 +492,26 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 trades.append(gain)
                 year_gains.setdefault(day[:4], []).append(gain)
                 held_days.append(step)
+                if cooldown and (cooldown_after != "손실" or gain <= 0):
+                    rest[code] = index + cooldown
+                if detail:
+                    ledger.append({"code": code, "산 날": spot["row"]["date"],
+                                   "판 날": day, "들고": step,
+                                   "손익": round(gain, 2), "행": spot["row"]})
                 del open_slots[code]
             else:
                 spot["step"] = step
         seen += 1
         busy += len(open_slots)
         room = slots - len(open_slots)
-        for row in sorted(picks[day], key=rank)[:max(room, 0)]:
+        ready = [row for row in sorted(picks[day], key=rank)
+                 if row["i"] >= rest.get(row["code"], 0)]
+        for row in ready[:max(room, 0)]:
             if row["code"] not in open_slots:
                 open_slots[row["code"]] = {"i": row["i"], "price": row["price"],
                                            "step": 0, "peak": row["price"],
                                            "row": row}
-        missed += max(0, len(picks[day]) - max(room, 0))
+        missed += max(0, len(ready) - max(room, 0))
     if len(trades) < 60:
         return None
     ordered = sorted(trades)
@@ -511,7 +525,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             "보유중앙": sorted(held_days)[len(held_days) // 2],
             "가동률": round(busy / (seen * slots) * 100, 1),
             "연수익": round(sum(trades) / slots / max(years, 1), 2),
-            "해마다": {y: round(sum(v) / slots, 1) for y, v in sorted(year_gains.items())}}
+            "해마다": {y: round(sum(v) / slots, 1) for y, v in sorted(year_gains.items())},
+            **({"매매목록": ledger} if detail else {})}
 
 
 def exit_mixed(take, stop, give_back, arm, limit):
