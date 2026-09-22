@@ -297,6 +297,7 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
 
     open_slots, trades, missed = {}, [], 0
+    held, days_seen, year_gains, held_days = {}, set(), {}, []
     for day in days:
         # 먼저 정리할 자리를 정리합니다.
         for code in list(open_slots):
@@ -319,7 +320,11 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
                 spot["step"] = step
                 continue
             trades.append(done - cost)
+            year_gains.setdefault(day[:4], []).append(done - cost)
+            held_days.append(step)
             del open_slots[code]
+        days_seen.add(day)
+        held[day] = len(open_slots)
         room = slots - len(open_slots)
         today = sorted(picks[day], key=rank)
         for row in today[:max(room, 0)]:
@@ -332,12 +337,22 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
     ordered = sorted(trades)
     cut = max(1, len(ordered) // 10)
     wins = sum(1 for t in trades if t > 0)
+    # 자리가 실제로 얼마나 차 있었는지. 비어 있는 동안 그 몫은 놀았습니다.
+    # 이것을 모르면 '연 8%'가 어디서 왔는지 알 수 없습니다.
+    filled = sum(held.values())
+    span = len(days_seen)
+    busy = filled / (span * slots) * 100 if span else 0
+    by_year = {}
+    for year, gains in year_gains.items():
+        by_year[year] = round(sum(gains) / slots, 2)
     # 자리가 slots개이므로 한 번의 매매에는 자금의 1/slots이 들어갑니다.
     # 자리가 비어 있는 동안 그 몫은 놀고 있으므로, 거기까지 넣어 잽니다.
     years = (int(days[-1][:4]) - int(days[0][:4])) + 1
     yearly = sum(trades) / slots / max(years, 1)
     return {"자리": slots, "매매": len(trades), "놓침": missed,
             "연수익": round(yearly, 2), "연매매": round(len(trades) / max(years, 1), 1),
+            "가동률": round(busy, 1), "해마다": dict(sorted(by_year.items())),
+            "보유일중앙": sorted(held_days)[len(held_days) // 2] if held_days else 0,
             "승률": round(wins / len(trades) * 100, 1),
             "평균": round(sum(trades) / len(trades), 2),
             "중앙": round(sorted(trades)[len(trades) // 2], 2),
