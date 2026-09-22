@@ -43,7 +43,7 @@ KEYS = {"code", "date", "i"}
 # 없으므로 1·2번 검사에서 빼고, 대신 check_cross_section이 따로 맡습니다.
 # 여기에 이름을 올리면 1·2번을 면제받는 것이므로, verify가 이 이름들이
 # 정말 4번 검사를 지났는지 되짚습니다.
-CROSS = {"시장 이격", "상대 이격"}
+CROSS = {"시장 이격", "상대 이격", "시장 출렁임"}
 # 공시에서 온 값입니다. 가로줄과 같은 까닭으로 1·2번이 닿지 않습니다(한 종목의
 # 일봉만으로는 다시 만들 수 없습니다). check_filings가 따로 맡고, verify가
 # 정말 그 검사를 지났는지 되짚습니다.
@@ -178,6 +178,7 @@ def check_cross_section(rows, samples=3, seed=17):
             if gap is not None:
                 copy["중기 이격"] = gap * -13.0 - 500.0
             dirty.append(copy)
+        # 뒷날 줄을 통째로 바꾼 것입니다. 그날 값이 꿈쩍하면 뒷날을 본 것입니다.
         lab.market_relative(dirty)
         # 뒷날 줄을 아예 없앱니다. 없어도 같은 값이 나와야 합니다.
         cut = [dict(row) for row in rows if row["date"] <= day]

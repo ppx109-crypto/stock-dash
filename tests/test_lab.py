@@ -357,6 +357,36 @@ class Paired(unittest.TestCase):
         self.assertEqual(got["바로"]["보유"], 1.0)
 
 
+class Locked(unittest.TestCase):
+    """상한가·하한가에 붙은 날. 실제로는 할 수 없는 매매입니다."""
+
+    def test_the_limit_widened_in_2015(self):
+        self.assertEqual(lab.limit_of("20150612"), 0.15)
+        self.assertEqual(lab.limit_of("20150615"), 0.30)
+
+    def test_a_jump_to_the_ceiling_counts(self):
+        closes = [100.0, 130.0]
+        self.assertTrue(lab.locked(closes, ["20200102", "20200103"], 1, 1))
+        self.assertFalse(lab.locked(closes, ["20200102", "20200103"], 1, -1))
+
+    def test_a_drop_to_the_floor_counts(self):
+        closes = [100.0, 70.0]
+        self.assertTrue(lab.locked(closes, ["20200102", "20200103"], 1, -1))
+        self.assertFalse(lab.locked(closes, ["20200102", "20200103"], 1, 1))
+
+    def test_an_ordinary_day_does_not(self):
+        closes = [100.0, 105.0]
+        self.assertFalse(lab.locked(closes, ["20200102", "20200103"], 1, 1))
+
+    def test_the_older_narrower_limit_is_used_before_2015(self):
+        closes = [100.0, 118.0]
+        self.assertTrue(lab.locked(closes, ["20100102", "20100103"], 1, 1))
+        self.assertFalse(lab.locked(closes, ["20200102", "20200103"], 1, 1))
+
+    def test_the_first_day_has_nothing_to_compare(self):
+        self.assertFalse(lab.locked([100.0], ["20200102"], 0, 1))
+
+
 class Kinship(unittest.TestCase):
     """닮은 정도. 그날까지의 수익률만 보고 재야 합니다."""
 

@@ -247,12 +247,24 @@ def market_relative(rows):
     for day, gaps in by_day.items():
         gaps.sort()
         middle[day] = gaps[len(gaps) // 2]
+    # 시장이 요즘 얼마나 출렁였는지. 그날까지의 시장 이격 스무 날만 봅니다.
+    order = sorted(middle)
+    spot = {day: k for k, day in enumerate(order)}
+    swing = {}
+    for k, day in enumerate(order):
+        window = [middle[one] for one in order[max(0, k - 19):k + 1]]
+        if len(window) < 10:
+            continue
+        mean = sum(window) / len(window)
+        swing[day] = (sum((x - mean) ** 2 for x in window) / len(window)) ** 0.5
     for row in rows:
         gap = row.get("중기 이격")
         if gap is None:
             continue
         row["시장 이격"] = round(middle[row["date"]], 3)
         row["상대 이격"] = round(gap - middle[row["date"]], 3)
+        if row["date"] in swing:
+            row["시장 출렁임"] = round(swing[row["date"]], 3)
     return rows
 
 
@@ -304,7 +316,8 @@ def both(rows, holds, edge=SPLIT, horizon=HORIZON):
 
 
 def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
-              cost=COST, rank=None, since=None, per_day=None, apart=None):
+              cost=COST, rank=None, since=None, per_day=None, apart=None,
+              realistic=False):
     """자금을 나눠 담고 실제로 굴려 봅니다. 앱 화면이 읽는 수치입니다.
 
     한 종목씩 따로 재면 '같은 날 후보가 쉰 개면 쉰 개를 다 산다'는 셈이
@@ -317,7 +330,7 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
     """
     got = run(rows, prices, holds, exit_fixed(take, stop, limit), slots=slots,
               rank=rank, since=since, cost=cost, per_day=per_day,
-              apart=apart)
+              apart=apart, realistic=realistic)
     if not got:
         return None
     years = max(len({row["date"][:4] for row in rows
@@ -332,6 +345,7 @@ def lanes(prices):
     for code, block in prices.items():
         closes = [c for _, c in block["rows"]]
         found[code] = {"closes": closes,
+                       "날": [d for d, _ in block["rows"]],
                        "중기선": ema_series(closes, AXES["중기"]),
                        "변동성": rolling_std(closes)}
     return found
@@ -431,7 +445,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None):
+        per_window=None, apart=None, realistic=False, brake=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -444,6 +458,15 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     size는 한 종목에 자리를 몇 개 쓸지 돌려주는 함수입니다. 기본은 하나씩
     입니다. 둘을 쓰면 그만큼 자리가 줄고, 손익도 두 몫으로 셉니다. 승률과
     매매당 수익은 자리 수와 상관없는 값이므로 그대로 한 번씩 셉니다.
+
+    brake=(깊이, 남길 몫)을 두면 지갑이 꼭대기에서 그만큼 파인 동안 자리를
+    그 몫만큼만 씁니다. 끝난 매매만으로 지갑을 세므로 뒷날을 보지 않습니다.
+    파인 뒤에 줄이는 것이라 회복 구간의 수익도 함께 깎입니다. 그 값을 치르고
+    골을 줄이려는 것입니다.
+
+    realistic=True면 실제로 할 수 없는 매매를 뺍니다. 상한가에 붙은 날은
+    사려는 사람만 있어 종가에 살 수 없고, 하한가에 붙은 날은 팔 수 없습니다.
+    사는 쪽은 그날을 건너뛰고, 파는 쪽은 팔 수 있는 날까지 미룹니다.
 
     per_window=(수, 날)을 두면 최근 그 날수 안에 그만큼까지만 새로 담습니다
     (하루 제한을 며칠로 늘린 것입니다). apart는 (후보, 지금 들고 있는 줄들)을
@@ -472,6 +495,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     ledger = []              # detail=True일 때만. 매매 하나하나를 적어 둡니다.
     busy, seen, year_gains = 0, 0, {}
     weighted = []            # 자리 수를 곱한 손익. 연수익은 이것으로 냅니다.
+    purse = crest = 1.0      # 끝난 매매만으로 센 지갑. brake가 이것을 봅니다.
     for day in days:
         for code in list(open_slots):
             spot = open_slots[code]
@@ -482,11 +506,18 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 del open_slots[code]
                 continue
             spot["peak"] = max(spot["peak"], closes[index])
-            if exit_at(lane[code], spot["i"], spot["price"], step, spot["peak"],
+            one = lane[code]
+            if realistic and locked(closes, one["날"], index, -1):
+                # 하한가에 붙은 날은 팔 수 없습니다. 팔 수 있는 날까지 갑니다.
+                spot["step"] = step
+                continue
+            if exit_at(one, spot["i"], spot["price"], step, spot["peak"],
                        spot["row"]):
                 gain = (closes[index] / spot["price"] - 1) * 100 - cost
                 trades.append(gain)
                 weighted.append(gain * spot["자리"])
+                purse *= 1 + gain * spot["자리"] / 100 / slots
+                crest = max(crest, purse)
                 year_gains.setdefault(day[:4], []).append(gain * spot["자리"])
                 held_days.append(step)
                 if cooldown and (cooldown_after != "손실" or gain <= 0):
@@ -502,9 +533,13 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         used = sum(spot["자리"] for spot in open_slots.values())
         busy += used
         top = slots
+        if brake:
+            deep, share = brake
+            if purse / crest - 1 <= -deep / 100:
+                top = max(1, int(slots * share))
         if busy_cap is not None:
             want = busy_cap(picks[day][0]) if callable(busy_cap) else busy_cap
-            top = min(slots, max(int(want), 0))
+            top = min(top, max(int(want), 0))
         room = top - used
         ready = [row for row in sorted(picks[day], key=rank)
                  if row["i"] >= rest.get(row["code"], 0)]
@@ -529,13 +564,15 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                     row, [spot["row"] for spot in open_slots.values()]):
                 continue
             spot = row["i"] + delay
-            closes = lane[row["code"]]["closes"]
-            if spot >= len(closes):
+            one = lane[row["code"]]
+            if spot >= len(one["closes"]):
                 continue
+            if realistic and locked(one["closes"], one["날"], spot, 1):
+                continue        # 상한가에 붙은 날은 종가에 살 수 없습니다.
             # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
             want = min(max(int(size(row)), 1), top - used)
-            open_slots[row["code"]] = {"i": spot, "price": closes[spot],
-                                       "step": 0, "peak": closes[spot],
+            open_slots[row["code"]] = {"i": spot, "price": one["closes"][spot],
+                                       "step": 0, "peak": one["closes"][spot],
                                        "row": row, "자리": want}
             used += want
             bought += 1
@@ -735,3 +772,32 @@ def unlike(steps, edge=0.6, back=60):
     def ok(row, held):
         return all(kinship(steps, row, one, back) < edge for one in held)
     return ok
+
+
+# 가격제한폭. 2015년 6월 15일부터 ±30%, 그 전에는 ±15%입니다. 더 옛날에는
+# 더 좁았지만(±12%, ±8%…) 여기서는 두 마디로만 나눕니다. 정확히 문턱에
+# 닿았는지 세는 것이 아니라 '문턱에 붙어 거래가 막혔을 만한 날'을 거르는
+# 것이 목적이라, 문턱보다 조금 안쪽(0.95배)에서 잡습니다.
+WIDENED = "20150615"
+
+
+def limit_of(day):
+    return 0.30 if day >= WIDENED else 0.15
+
+
+def locked(closes, days, i, side):
+    """그날이 상한가(위) 또는 하한가(아래)에 붙어 있었는지.
+
+    상한가에 붙은 날은 사려는 사람만 있고 파는 사람이 없어 종가에 살 수
+    없습니다. 하한가에 붙은 날은 그 반대로 팔 수 없습니다. 지나간 자료로
+    시늉만 하는 시뮬레이션에서 이런 날을 그냥 사고파는 것으로 세면, 실제로는
+    할 수 없는 매매가 성적에 섞입니다.
+
+    시가·고가·저가가 없어 종가 변동폭으로만 가립니다. 어림이며, 문턱 가까이
+    올랐다가 풀린 날까지 함께 걸립니다. 덜 세는 쪽보다 더 세는 쪽이 안전합니다.
+    """
+    if i <= 0 or i >= len(closes) or not closes[i - 1]:
+        return False
+    move = closes[i] / closes[i - 1] - 1
+    edge = limit_of(days[i]) * 0.95
+    return move >= edge if side > 0 else move <= -edge

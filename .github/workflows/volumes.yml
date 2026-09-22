@@ -1,0 +1,55 @@
+name: Daily volume history
+# 거래량·거래대금을 받아 모읍니다. 조회 전용입니다.
+# 종가만으로는 '실제로 살 수 있었나'를 가릴 수 없어 따로 받습니다.
+# 일봉 수집과 같은 작업에 붙이면 서른 해치를 두 번 훑느라 시간이 모자랍니다.
+on:
+  workflow_run:
+    workflows: ["Daily price history"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (쉼표 구분, 비우면 price-data에 있는 전체)'
+        required: false
+        default: ''
+      years:
+        description: '몇 해치를 받을지'
+        required: false
+        default: '30'
+permissions:
+  contents: write
+concurrency:
+  group: volume-history
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python collect_volumes.py
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          VOLUME_CODES: ${{ inputs.codes || '' }}
+          VOLUME_YEARS: ${{ inputs.years || '30' }}
+      - name: Save only when something actually changed
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p volume-data
+          git add -A volume-data
+          if git diff --cached --quiet; then
+            echo '바뀐 거래량이 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Refresh daily volume history'
+            git pull --rebase origin main
+            git push
+          fi

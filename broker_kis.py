@@ -207,10 +207,13 @@ class KIS:
                 'name': str(row.get('hts_kor_isnm', '')).strip(),
                 'at': datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
 
-    def daily(self, code, start, end):
+    def daily(self, code, start, end, detail=False):
         """하루치 종가를 기간으로 받아옵니다. 한 번에 100거래일까지 옵니다.
 
         국내주식기간별시세(일/주/월/년) API입니다. 조회 전용입니다.
+        detail=True면 종가 대신 시가·고가·저가·거래량까지 담은 묶음을
+        돌려줍니다. 기본은 예전처럼 (날짜, 종가)입니다.
+
         FID_ORG_ADJ_PRC=0은 수정주가입니다. 액면분할·무상증자 자리에서 주가가
         뚝 끊기면 수익률 계산이 통째로 틀어지므로 수정주가를 씁니다.
         """
@@ -244,11 +247,30 @@ class KIS:
                 continue
             if close <= 0:
                 continue
-            found.append((day, close))
-        found.sort()
+            if not detail:
+                found.append((day, close))
+                continue
+            # 거래량과 거래대금까지 함께 둡니다. 실제로 살 수 있었는지를
+            # 가리려면 종가만으로는 모자랍니다.
+            got = {'종가': close}
+            for name, key in (('시가', 'stck_oprc'), ('고가', 'stck_hgpr'),
+                              ('저가', 'stck_lwpr')):
+                try:
+                    price = amount(row.get(key))
+                except BrokerError:
+                    continue
+                if price > 0:
+                    got[name] = price
+            for name, key in (('거래량', 'acml_vol'), ('거래대금', 'acml_tr_pbmn')):
+                try:
+                    got[name] = amount(row.get(key))
+                except BrokerError:
+                    pass
+            found.append((day, got))
+        found.sort(key=lambda one: one[0])
         return found
 
-    def history(self, code, days=1200, pause=0.2):
+    def history(self, code, days=1200, pause=0.2, detail=False):
         """있는 만큼 거슬러 올라가며 일봉을 이어 붙입니다. 오래된 날이 먼저입니다.
 
         days는 거슬러 갈 한계일 뿐이고, 상장 이전에 닿으면 거기서 멈춥니다.
@@ -261,7 +283,8 @@ class KIS:
         cursor = last
         for _ in range(400):
             begin = max(first, cursor - timedelta(days=140))
-            rows = self.daily(code, begin.strftime('%Y%m%d'), cursor.strftime('%Y%m%d'))
+            rows = self.daily(code, begin.strftime('%Y%m%d'),
+                              cursor.strftime('%Y%m%d'), detail=detail)
             if not rows:
                 break
             before = len(collected)

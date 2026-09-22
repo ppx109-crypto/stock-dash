@@ -4,6 +4,11 @@
 절반이 쉬는 것이고, 그만큼 한 해 수익이 깎입니다. 그래서 강도를 층으로 두고
 센 것부터 자리를 채웁니다. 센 후보가 없는 날은 그다음 층으로 채웁니다.
 
+실제로 할 수 없는 매매는 세지 않습니다. 상한가에 붙은 날은 사려는 사람만
+있어 종가에 살 수 없고, 하한가에 붙은 날은 팔 수 없습니다. 그런 날은 사는
+쪽을 건너뛰고 파는 쪽을 미룹니다. 서른 해 일봉의 0.26%가 상한가, 0.09%가
+하한가에 붙은 날입니다.
+
 같이 물릴 것을 함께 담지 않습니다. 이미 든 종목과 지난 예순 날 동안 0.6
 넘게 같이 움직인 종목은 그날 담지 않습니다. 21회차에 재어 보니 연패가
 열다섯에서 열셋으로 줄고, 2020년·2011년·2000년의 골이 서너 %p씩 얕아졌으며,
@@ -168,7 +173,7 @@ def exit_stats(rows, prices, since=lab.SPLIT):
     """
     out = lab.run(rows, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
                   slots=SLOTS, rank=order, since=since, detail=True,
-                  per_day=PER_DAY, apart=apart(prices))
+                  per_day=PER_DAY, apart=apart(prices), realistic=True)
     if not out:
         return {}
     bought = [got["행"] for got in out["매매목록"]]
@@ -194,7 +199,7 @@ def risk_stats(rows, prices, since=lab.SPLIT):
     """
     out = lab.run(rows, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
                   slots=SLOTS, rank=order, since=since, detail=True,
-                  per_day=PER_DAY, apart=apart(prices))
+                  per_day=PER_DAY, apart=apart(prices), realistic=True)
     if not out:
         return {}
     led = sorted(out["매매목록"], key=lambda got: got["판 날"])
@@ -232,7 +237,7 @@ def report(rows, prices):
         "기준": lab.score(rows), "규칙": lab.score(picked),
         "굴림": lab.portfolio(rows, prices, holds, slots=SLOTS, take=TAKE,
                             stop=STOP, limit=LIMIT, since="20160101", rank=order,
-                            per_day=PER_DAY, apart=apart(prices)),
+                            per_day=PER_DAY, apart=apart(prices), realistic=True),
         "층별": tier_stats(rows),
         "청산 견주기": exit_stats(rows, prices),
         "골": risk_stats(rows, prices),
