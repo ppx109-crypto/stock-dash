@@ -1,8 +1,14 @@
 """지금 쓰는 규칙 하나와, 오늘 그 규칙에 걸리는 종목.
 
 조사에서 나온 것 가운데 가장 단단했던 조합을 여기 한 군데에 적어 둡니다.
-조건을 늘릴수록 좋아질 것 같지만 그렇지 않았습니다. 매출과 영업이익률을
-더 얹으면 표본만 줄고 성적은 그대로이거나 나빠졌습니다. 그래서 둘만 둡니다.
+
+한때 실적 조건을 넣었다가 뺐습니다. 실적이 붙은 관측은 2017년 이후뿐인데,
+그 구간이 원래 좋은 구간이었습니다. 같은 구간 안에서 견주니 영업이익 조건은
+중앙값을 오히려 0.42%p 깎았습니다. 좋아 보였던 것은 실적의 힘이 아니라
+시기의 힘이었습니다.
+
+지금 쓰는 것은 이십일 이동평균선에서 얼마나 아래로 벌어졌는지 하나입니다.
+1997·2000·2008·2020·2026 다섯 번의 위기에서 모두 나타났습니다.
 """
 from __future__ import annotations
 
@@ -13,28 +19,27 @@ from zoneinfo import ZoneInfo
 
 import lab
 
-NAME = "급락 뒤 이익 늘어난 종목"
-DROP = -30.0        # 60거래일 전보다 이만큼 아래
-PROFIT = 50.0       # 직전 공시의 영업이익 성장률이 이만큼 위
+NAME = "이십일선에서 크게 벌어진 종목"
+GAP = -15.0         # 20일 이동평균선보다 이만큼 아래
 TAKE, STOP = 10.0, 7.0   # 익절·손절
 LIMIT = 60          # 이 거래일이 지나면 그냥 정리
 OUT = Path("study") / "rule.json"
 
 WHY = (
-    "예순 거래일 전보다 30% 아래로 빠진 날 가운데, 그날까지 공시된 영업이익이 "
-    "전년 같은 기간보다 50% 넘게 늘어난 종목입니다. 크게 빠졌지만 벌이는 늘고 "
-    "있는 자리입니다. 조건을 더 얹으면 표본만 줄고 나아지지 않았습니다."
+    "종가가 스무 거래일 이동평균선보다 15% 넘게 아래로 벌어진 날입니다. "
+    "짧은 사이에 크게 밀린 자리이고, 그 뒤 스무 거래일 중앙값이 +6.12%였습니다. "
+    "아무 날이나 고른 경우는 −0.01%입니다. 실적·목표가·정배열을 더해 보았지만 "
+    "표본만 줄고 나아지지 않아 조건은 이 하나만 둡니다."
 )
 CAVEAT = (
-    "지나간 자료로 확인한 것이며 앞날을 약속하지 않습니다. 열 번 중 너덧 번은 "
-    "집니다. 한 종목에 몰지 말고 손절을 반드시 함께 두십시오. 매수·매도 "
-    "신호가 아닙니다."
+    "크게 밀린 종목을 사는 규칙이라 더 밀릴 수 있습니다. 가장 나빴던 열에 "
+    "하나는 −29.9%였습니다. 손절 없이 쓰면 안 됩니다. 지나간 자료로 확인한 "
+    "것이며 앞날을 약속하지 않습니다. 매수·매도 신호가 아닙니다."
 )
 
 
 def holds(row):
-    return ((row.get("60일 전 대비") or 99) <= DROP
-            and (row.get("영업이익성장") or -99) >= PROFIT)
+    return (row.get("EMA20 이격") or 99) <= GAP
 
 
 def today(rows):
@@ -48,11 +53,12 @@ def today(rows):
     for code, row in latest.items():
         found.append({"code": code, "name": row.get("name") or code,
                       "date": row["date"], "해당": holds(row),
+                      "EMA20 이격": row.get("EMA20 이격"),
                       "60일 전 대비": row.get("60일 전 대비"),
                       "영업이익성장": row.get("영업이익성장"),
                       "매출성장": row.get("매출성장"),
                       "목표가괴리": row.get("목표가괴리")})
-    found.sort(key=lambda r: (not r["해당"], r.get("60일 전 대비") or 0))
+    found.sort(key=lambda r: (not r["해당"], r.get("EMA20 이격") or 0))
     return found
 
 
@@ -60,7 +66,7 @@ def report(rows, prices):
     picked = [r for r in rows if holds(r)]
     body = {
         "name": NAME, "why": WHY, "caveat": CAVEAT,
-        "drop": DROP, "profit": PROFIT, "take": TAKE, "stop": STOP, "limit": LIMIT,
+        "gap": GAP, "take": TAKE, "stop": STOP, "limit": LIMIT,
         "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
         "기준": lab.score(rows), "규칙": lab.score(picked),
         "매매": lab.trade(picked, prices, TAKE, STOP, limit=LIMIT),

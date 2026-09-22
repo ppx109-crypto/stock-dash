@@ -73,6 +73,7 @@ def render_rule():
                 f'({(book.get("오늘") or [{}])[0].get("date", "")} 기준)')
     if hit:
         st.dataframe([{"종목": r["name"], "60일 전 대비": f'{r["60일 전 대비"]:+.1f}%',
+                       "EMA20 이격": f'{r["EMA20 이격"]:+.1f}%',
                        "영업이익성장": (f'{r["영업이익성장"]:+.0f}%'
                                    if r.get("영업이익성장") is not None else "—"),
                        "매출성장": (f'{r["매출성장"]:+.1f}%'
