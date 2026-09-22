@@ -150,9 +150,13 @@ def observations(prices, reports, horizons=HORIZONS, warmup=60):
                     ahead[span] = (closes[i + span] / closes[i] - 1) * 100
             if not ahead:
                 continue
+            checks = (verdict.get("trend") or {}).get("checks") or {}
             found.append({"code": code, "name": block["name"], "date": rows[i][0],
                           "group": verdict["group"], "met": verdict.get("met"),
-                          "ahead": ahead, **known_by(timeline, rows[i][0])})
+                          "ahead": ahead,
+                          **{f"위 EMA{span}": bool(checks.get(f"종가 > EMA{span}"))
+                             for span in (5, 20, 40, 60)},
+                          **known_by(timeline, rows[i][0])})
     return found
 
 
@@ -252,6 +256,8 @@ def search(rows, horizon, floor=60, cost=COST, baseline=None):
     그래서 순서는 기대수익으로 매기고, 상승확률은 함께 보여만 줍니다.
     조합이 좁아질수록 해당하는 날이 줄어드니 floor 미만은 버립니다.
     """
+    # 이 그룹에서 조건을 걸지 않았을 때가 견줄 자리입니다.
+    inside = tally(rows, horizon)
     found = []
     for a in GRID[0][1]:
         for b in GRID[1][1]:
@@ -279,7 +285,68 @@ def search(rows, horizon, floor=60, cost=COST, baseline=None):
                     "순기대수익": round(net(block, cost), 2),
                     "최악": round(block["최악"], 1),
                     "하위10%": round(worst.get("하위 10% 평균", 0.0), 2),
-                    "초과": (round(net(block, cost) - net(baseline, cost), 2)
-                             if baseline else None)})
+                    # 그룹대비가 실적 조건이 따로 보탠 몫입니다. 전체대비에는
+                    # 그룹을 고른 효과가 섞여 있어, 그것만 보면 실적의 공으로
+                    # 잘못 돌리게 됩니다.
+                    "그룹대비": (round(net(block, cost) - net(inside, cost), 2)
+                               if inside and rules else None),
+                    "전체대비": (round(net(block, cost) - net(baseline, cost), 2)
+                               if baseline else None)})
     found.sort(key=lambda r: r["순기대수익"], reverse=True)
+    return found
+
+
+# 미리 알 수 있었는지 볼 신호들. 왼쪽이 화면에 적을 이름, 오른쪽이 판정입니다.
+SIGNALS = (
+    ("정배열(A그룹)", lambda r: r.get("group") == "A"),
+    ("EMA 3개 이상 위", lambda r: (r.get("met") or 0) >= 3),
+    ("단기선 위(EMA5)", lambda r: r.get("위 EMA5") is True),
+    ("장기선 위(EMA60)", lambda r: r.get("위 EMA60") is True),
+    ("매출 성장 > 0", lambda r: _at_least(r, "매출성장", 0)),
+    ("매출 성장 ≥ 10%", lambda r: _at_least(r, "매출성장", 10)),
+    ("매출 성장 ≥ 20%", lambda r: _at_least(r, "매출성장", 20)),
+    ("영업이익 성장 > 0", lambda r: _at_least(r, "영업이익성장", 0)),
+    ("영업이익 성장 ≥ 50%", lambda r: _at_least(r, "영업이익성장", 50)),
+    ("영업이익률 ≥ 10%", lambda r: _at_least(r, "영업이익률", 10)),
+    ("영업이익률 ≥ 15%", lambda r: _at_least(r, "영업이익률", 15)),
+    ("증권사 목표가 30% 이상 위", lambda r: _at_least(r, "목표가괴리", 30)),
+)
+
+
+def _at_least(row, key, edge):
+    value = row.get(key)
+    return isinstance(value, (int, float)) and value >= edge
+
+
+def precursors(rows, horizon=20, rise=5.0, signals=SIGNALS, floor=100):
+    """오른 것들에는 무엇이 미리 있었는지 셉니다.
+
+    두 가지를 함께 봐야 합니다. 신호가 있을 때 오른 비율(적중률)과, 오른 것
+    가운데 그 신호가 있던 비율(포착률)입니다. 오른 것의 구할에 있던 신호라도
+    오르지 않은 것의 구할에도 있었다면 미리 알려 준 것이 없습니다. 그래서
+    신호가 없을 때의 비율을 함께 적고, 그 차이로 판단합니다.
+    """
+    usable = [r for r in rows if horizon in r.get("ahead", {})]
+    if len(usable) < floor:
+        return []
+    rose = [r for r in usable if r["ahead"][horizon] >= rise]
+    base = len(rose) / len(usable) * 100
+    found = []
+    for name, holds in signals:
+        marked = [r for r in usable if holds(r)]
+        if len(marked) < floor:
+            continue
+        hit = [r for r in marked if r["ahead"][horizon] >= rise]
+        quiet = [r for r in usable if not holds(r)]
+        quiet_hit = [r for r in quiet if r["ahead"][horizon] >= rise]
+        found.append({
+            "신호": name, "해당": len(marked), "종목수": len({r.get("code") for r in marked}),
+            "적중률": round(len(hit) / len(marked) * 100, 1),
+            "신호없을때": round(len(quiet_hit) / len(quiet) * 100, 1) if quiet else None,
+            "포착률": round(len(hit) / len(rose) * 100, 1) if rose else None,
+            "기준": round(base, 1)})
+    for row in found:
+        row["차이"] = (round(row["적중률"] - row["신호없을때"], 1)
+                      if row["신호없을때"] is not None else None)
+    found.sort(key=lambda r: (r["차이"] is None, -(r["차이"] or 0)))
     return found

@@ -174,7 +174,17 @@ class Search(unittest.TestCase):
         rows = self.rows([(5.0, 20.0, 12.0)] * 100)
         base = study.tally(self.rows([(1.0, 0.0, 0.0)] * 100), 20)
         found = study.search(rows, 20, floor=60, baseline=base)
-        self.assertAlmostEqual(found[0]["초과"], 4.0)
+        self.assertAlmostEqual(found[0]["전체대비"], 4.0)
+
+    def test_the_group_effect_is_kept_apart_from_the_condition(self):
+        # 조건이 걸러 내는 것이 없으면 그룹대비는 0이어야 합니다. 그래야
+        # 전체대비에 섞인 그룹의 몫을 조건의 공으로 돌리지 않습니다.
+        rows = self.rows([(5.0, 20.0, 12.0)] * 100)
+        base = study.tally(self.rows([(1.0, 0.0, 0.0)] * 100), 20)
+        found = study.search(rows, 20, floor=60, baseline=base)
+        picked = [r for r in found if "매출성장 ≥ 0" in r["조건"]][0]
+        self.assertAlmostEqual(picked["그룹대비"], 0.0)
+        self.assertAlmostEqual(picked["전체대비"], 4.0)
 
 
 if __name__ == "__main__":

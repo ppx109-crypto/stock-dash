@@ -105,12 +105,21 @@ def main():
             if found:
                 best[f"{group}·{span}일"] = found[:8]
 
+    # 오른 것들에는 무엇이 미리 있었는가. 물음의 방향이 반대라 따로 셉니다.
+    ahead_of = {}
+    for span in study.HORIZONS:
+        for rise in (5.0, 10.0):
+            found = study.precursors(window or rows, span, rise)
+            if found:
+                ahead_of[f"{span}일 · {rise:g}% 이상"] = found
+
     span_days = (min(r["date"] for r in rows), max(r["date"] for r in rows))
     body = {"made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
             "stocks": len(prices), "observations": len(rows), "period": span_days,
             "horizons": list(study.HORIZONS), "groups": groups, "lifts": lifts[:24], "combos": combos[:30],
             "downside": downside, "with_money": with_money, "a_total": len(a_rows),
             "best": best, "cost": study.COST, "since": since,
+            "ahead_of": ahead_of,
             "window": len(window),
             "today": today}
     OUT.mkdir(exist_ok=True)
@@ -131,8 +140,21 @@ def main():
         print(f"  [{key}] {top['조건']}")
         print(f"      순기대수익 {top['순기대수익']:+.2f}% · 상승 {top['상승확률']:.1f}% · "
               f"중앙 {top['중앙수익률']:+.2f}% · 하위10% {top['하위10%']:+.1f}% · "
-              f"{top['건수']:,}건/{top.get('종목수', 0)}종목"
-              + (f" · 전체대비 {top['초과']:+.2f}%p" if top.get('초과') is not None else ""))
+              f"{top['건수']:,}건/{top.get('종목수', 0)}종목")
+        print(f"      그룹대비 {top['그룹대비']:+.2f}%p"
+              if top.get('그룹대비') is not None else "      그룹대비 —",
+              f"· 전체대비 {top['전체대비']:+.2f}%p"
+              if top.get('전체대비') is not None else "")
+
+    key = f"20일 · 5% 이상"
+    if key in ahead_of:
+        print(f"\n5% 이상 오르기 전에 무엇이 있었는가 (20거래일 기준)")
+        print(f"  {'신호':<22}{'적중률':>8}{'신호없을때':>10}{'차이':>8}{'포착률':>8}  해당")
+        for row in ahead_of[key]:
+            print(f"  {row['신호']:<22}{row['적중률']:>7.1f}%{row['신호없을때']:>9.1f}%"
+                  f"{row['차이']:>+7.1f}%p{row['포착률']:>7.1f}%  {row['해당']:,}건/"
+                  f"{row['종목수']}종목")
+        print(f"  (아무 날이나 골랐을 때 {ahead_of[key][0]['기준']:.1f}%)")
 
     print("\n조건을 겹쳤을 때 (A그룹 기준)")
     for row in combos[:12]:
