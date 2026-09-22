@@ -1,5 +1,6 @@
 """조사 엔진. 만들어 둔 가격으로 셈이 맞는지 봅니다."""
 import unittest
+import unittest.mock
 
 import study
 
@@ -189,3 +190,28 @@ class Search(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AroundFilings(unittest.TestCase):
+    """공시 앞뒤를 가르는 부분. 앞이 크면 이미 들어가 있었다는 뜻입니다."""
+
+    def prices(self, before, after):
+        rows = [(f"2025{(i // 28) + 1:02d}{(i % 28) + 1:02d}", 100.0) for i in range(61)]
+        rows += [(f"2026{(i // 28) + 1:02d}{(i % 28) + 1:02d}", 100.0 * before)]
+        rows += [(f"2027{(i // 28) + 1:02d}{(i % 28) + 1:02d}", 100.0 * before * after)
+                 for i in range(61)]
+        return {"005930": {"name": "테스트", "rows": rows}}
+
+    def timeline(self, margin):
+        return [(f"2026{1:02d}{1:02d}", {"영업이익률": margin, "흑자": True})]
+
+    def test_a_run_up_before_the_filing_is_visible(self):
+        prices = self.prices(1.5, 1.05)
+        with unittest.mock.patch.object(study, "money_timeline",
+                                        return_value=self.timeline(20.0)):
+            found = study.around_filings(prices, span=60)
+        self.assertNotIn("좋음", found)   # 공시가 하나뿐이라 열 건에 못 미칩니다.
+
+    def test_too_few_filings_report_nothing(self):
+        with unittest.mock.patch.object(study, "money_timeline", return_value=[]):
+            self.assertEqual(study.around_filings(self.prices(1.2, 1.1)), {})

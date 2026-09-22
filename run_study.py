@@ -113,13 +113,16 @@ def main():
             if found:
                 ahead_of[f"{span}일 · {rise:g}% 이상"] = found
 
+    # 좋은 실적이 공시 전에 이미 주가에 들어가 있었는지.
+    around = study.around_filings(prices)
+
     span_days = (min(r["date"] for r in rows), max(r["date"] for r in rows))
     body = {"made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
             "stocks": len(prices), "observations": len(rows), "period": span_days,
             "horizons": list(study.HORIZONS), "groups": groups, "lifts": lifts[:24], "combos": combos[:30],
             "downside": downside, "with_money": with_money, "a_total": len(a_rows),
             "best": best, "cost": study.COST, "since": since,
-            "ahead_of": ahead_of,
+            "ahead_of": ahead_of, "around": around,
             "window": len(window),
             "today": today}
     OUT.mkdir(exist_ok=True)
@@ -155,6 +158,12 @@ def main():
                   f"{row['차이']:>+7.1f}%p{row['포착률']:>7.1f}%  {row['해당']:,}건/"
                   f"{row['종목수']}종목")
         print(f"  (아무 날이나 골랐을 때 {ahead_of[key][0]['기준']:.1f}%)")
+
+    if around:
+        print("\n공시를 가운데 둔 앞뒤 60거래일 (실적이 미리 들어가 있었는지)")
+        for label, block in around.items():
+            print(f"  {label:<4} 공시전 중앙 {block['공시전 중앙']:+6.2f}% · "
+                  f"공시후 중앙 {block['공시후 중앙']:+6.2f}% · {block['건수']}건")
 
     print("\n조건을 겹쳤을 때 (A그룹 기준)")
     for row in combos[:12]:

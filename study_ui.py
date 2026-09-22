@@ -101,6 +101,36 @@ def render_study():
         st.caption(f'A그룹 관측 {found["a_total"]:,}건 가운데 실적이 이미 공시돼 있던 것은 '
                    f'{money:,}건입니다. 나머지 구간은 그룹 판정만 보고 센 것입니다.')
 
+    around = found.get("around") or {}
+    if around:
+        st.subheader("좋은 실적은 공시 전에 이미 올라 있었는가")
+        st.caption("공시일을 가운데 두고 앞뒤 60거래일 수익률입니다. 공시 전이 뒤보다 크면, "
+                   "그 실적은 공시 때 이미 주가에 들어가 있었다고 볼 수 있습니다. "
+                   "그러면 공시를 보고 사는 것은 늦은 것이 됩니다.")
+        st.dataframe([{"실적": label, "건수": b["건수"],
+                       "공시전 중앙": f'{b["공시전 중앙"]:+.2f}%',
+                       "공시후 중앙": f'{b["공시후 중앙"]:+.2f}%',
+                       "공시전 평균": f'{b["공시전 평균"]:+.2f}%',
+                       "공시후 평균": f'{b["공시후 평균"]:+.2f}%'}
+                      for label, b in around.items()],
+                     hide_index=True, width="stretch", height=_fits(len(around)))
+
+    ahead = found.get("ahead_of") or {}
+    if ahead:
+        st.subheader("오르기 전에 무엇이 있었는가")
+        st.caption("결과를 먼저 정해 두고 거슬러 셉니다. '적중률'은 그 신호가 있을 때 오른 "
+                   "비율, '포착률'은 오른 것 가운데 그 신호가 있던 몫입니다. 오른 것의 "
+                   "구 할에 있던 신호라도 오르지 않은 것의 구 할에도 있었다면 미리 알려 준 "
+                   "것이 없습니다. 그래서 '차이'로 보십시오.")
+        which = st.selectbox("기간과 오름폭", list(ahead), key="px_ahead_pick")
+        st.dataframe([{"신호": r["신호"], "적중률": f'{r["적중률"]:.1f}%',
+                       "신호 없을 때": (f'{r["신호없을때"]:.1f}%'
+                                    if r["신호없을때"] is not None else "—"),
+                       "차이": (f'{r["차이"]:+.1f}%p' if r["차이"] is not None else "—"),
+                       "포착률": (f'{r["포착률"]:.1f}%' if r["포착률"] is not None else "—"),
+                       "해당": r["해당"], "종목수": r["종목수"]} for r in ahead[which]],
+                     hide_index=True, width="stretch", height=_fits(len(ahead[which])))
+
     st.subheader("오늘 기준 종목")
     today = found.get("today") or []
     st.dataframe([{"종목": r["name"], "그룹": r.get("group") or "판정 보류",

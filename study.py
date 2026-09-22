@@ -350,3 +350,43 @@ def precursors(rows, horizon=20, rise=5.0, signals=SIGNALS, floor=100):
                       if row["신호없을때"] is not None else None)
     found.sort(key=lambda r: (r["차이"] is None, -(r["차이"] or 0)))
     return found
+
+
+def around_filings(prices, span=60, margin_edge=15.0):
+    """공시를 가운데 두고 앞뒤 수익률을 견줍니다.
+
+    좋은 실적이 이미 주가에 들어가 있었다면, 오름은 공시 앞쪽에 있어야 합니다.
+    공시 뒤에만 보면 '실적이 소용없다'로 읽히지만, 실은 그 전에 다 오른
+    것일 수 있습니다. 두 쪽을 함께 놓아야 어느 쪽인지 갈립니다.
+    """
+    buckets = {"좋음": {"before": [], "after": []},
+               "보통": {"before": [], "after": []},
+               "적자": {"before": [], "after": []}}
+    for code, block in prices.items():
+        rows = block["rows"]
+        days = [d for d, _ in rows]
+        closes = [c for _, c in rows]
+        for announced, axis in money_timeline(code):
+            i = next((k for k, d in enumerate(days) if d >= announced), None)
+            if i is None or i < span or i + span >= len(days):
+                continue
+            rate = axis.get("영업이익률")
+            if axis.get("흑자") is False:
+                label = "적자"
+            elif isinstance(rate, (int, float)) and rate >= margin_edge:
+                label = "좋음"
+            else:
+                label = "보통"
+            buckets[label]["before"].append((closes[i] / closes[i - span] - 1) * 100)
+            buckets[label]["after"].append((closes[i + span] / closes[i] - 1) * 100)
+    found = {}
+    for label, sides in buckets.items():
+        if len(sides["before"]) < 10:
+            continue
+        found[label] = {
+            "건수": len(sides["before"]),
+            "공시전 평균": round(statistics.fmean(sides["before"]), 2),
+            "공시전 중앙": round(statistics.median(sides["before"]), 2),
+            "공시후 평균": round(statistics.fmean(sides["after"]), 2),
+            "공시후 중앙": round(statistics.median(sides["after"]), 2)}
+    return found
