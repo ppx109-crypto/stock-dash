@@ -17,7 +17,13 @@ from pathlib import Path
 
 import study
 
-SPANS = (5, 10, 20, 40, 60, 120)
+# 단기·중기·중장기·장기 네 축입니다. 같은 이동평균이라도 길이에 따라
+# 말하는 것이 다릅니다. 짧은 것은 며칠의 흔들림을, 긴 것은 몇 달의 흐름을
+# 봅니다. 네 축을 함께 두면 '무엇이 어긋났는지'가 읽힙니다.
+AXES = {"단기": 5, "중기": 20, "중장기": 60, "장기": 120}
+SPANS = tuple(sorted(set(AXES.values()) | {10, 40}))
+SLOPE_STEP = 5      # 기울기를 잴 간격. 한 주입니다.
+BAND_WINDOW = 120   # 이격이 이례적인지 볼 때 견줄 지난 구간.
 HORIZON = 20            # 기본으로 보는 앞날. 스무 거래일입니다.
 RISE = 5.0              # 무엇을 '성공'으로 볼지. 오 퍼센트입니다.
 COST = 0.25             # 왕복 비용 어림값(%).
@@ -35,6 +41,44 @@ def ema_series(closes, span):
     for close in closes[span:]:
         value = close * alpha + value * (1 - alpha)
         out.append(value)
+    return out
+
+
+def slope_series(line, step=SLOPE_STEP):
+    """이동평균선 자체가 오르고 있는지. 며칠 전 같은 선과 견줍니다."""
+    out = [None] * len(line)
+    for i in range(step, len(line)):
+        now, before = line[i], line[i - step]
+        if now is not None and before:
+            out[i] = (now / before - 1) * 100
+    return out
+
+
+def speed_series(slopes, step=SLOPE_STEP):
+    """기울기가 더 가팔라지는지 눕는지. 기울기의 변화입니다."""
+    out = [None] * len(slopes)
+    for i in range(step, len(slopes)):
+        now, before = slopes[i], slopes[i - step]
+        if now is not None and before is not None:
+            out[i] = now - before
+    return out
+
+
+def band_series(gaps, window=BAND_WINDOW):
+    """이격이 그 종목치고 이례적인지. 지난 구간의 이격과 견줍니다.
+
+    같은 -15%라도 늘 출렁이는 종목에는 흔한 일이고, 조용한 종목에는 큰
+    일입니다. 고정된 값으로 자르면 출렁이는 종목만 잔뜩 걸립니다.
+    """
+    out = [None] * len(gaps)
+    for i in range(window, len(gaps)):
+        chunk = [g for g in gaps[i - window:i] if g is not None]
+        if len(chunk) < window // 2 or gaps[i] is None:
+            continue
+        mean = sum(chunk) / len(chunk)
+        var = sum((g - mean) ** 2 for g in chunk) / (len(chunk) - 1)
+        if var > 0:
+            out[i] = (gaps[i] - mean) / math.sqrt(var)
     return out
 
 
@@ -63,6 +107,15 @@ def build(prices=None, horizons=(5, 20, 60), warmup=120):
             continue
         emas = {span: ema_series(closes, span) for span in SPANS}
         vol = rolling_std(closes)
+        # 축마다 이격도·기울기·가속도·이격밴드를 미리 만들어 둡니다.
+        gaps, slopes, speeds, bands = {}, {}, {}, {}
+        for name, span in AXES.items():
+            line = emas[span]
+            gaps[name] = [(closes[k] / line[k] - 1) * 100 if line[k] else None
+                          for k in range(len(closes))]
+            slopes[name] = slope_series(line)
+            speeds[name] = speed_series(slopes[name])
+            bands[name] = band_series(gaps[name])
         money = study.money_timeline(code)
         targets = study.target_timeline(code)
         money_at, target_at = {}, {}
@@ -92,6 +145,16 @@ def build(prices=None, horizons=(5, 20, 60), warmup=120):
                 "정배열폭": ((now[20] / now[60] - 1) * 100
                           if now[20] and now[60] else None),
                 "변동성": vol[i],
+                # 네 축을 한꺼번에. 이름이 길어도 무엇인지 바로 읽힙니다.
+                **{f"{name} 이격": gaps[name][i] for name in AXES},
+                **{f"{name} 기울기": slopes[name][i] for name in AXES},
+                **{f"{name} 가속도": speeds[name][i] for name in AXES},
+                **{f"{name} 이격밴드": bands[name][i] for name in AXES},
+                # 짧은 선이 긴 선 위에 차례로 놓였는지. 넷이 줄을 서면 4입니다.
+                "배열": sum(1 for a, b in (("단기", "중기"), ("중기", "중장기"),
+                                          ("중장기", "장기"))
+                          if emas[AXES[a]][i] and emas[AXES[b]][i]
+                          and emas[AXES[a]][i] > emas[AXES[b]][i]),
                 "20일 전 대비": ((price / closes[i - 20] - 1) * 100
                              if i >= 20 and closes[i - 20] else None),
                 "60일 전 대비": ((price / closes[i - 60] - 1) * 100
