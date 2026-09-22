@@ -38,11 +38,35 @@ def same_apart_from_fetched(old, new):
            {k: v for k, v in new.items() if k != "fetched"}
 
 
+def already_done(code, first_year, on_day):
+    """오늘 이미 그 깊이까지 받아 둔 종목인지 봅니다.
+
+    시간이 모자라 도중에 끊긴 뒤 다시 돌릴 때, 끝난 종목을 또 받으면 남은
+    시간이 그대로 사라집니다. 받아 둔 깊이와 날짜가 맞을 때만 건너뜁니다.
+    """
+    try:
+        kept = json.loads((FOLDER / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return kept.get("since") == first_year and kept.get("fetched") == on_day
+
+
 def run(codes=None):
     codes = codes or stored_codes()
     if not codes:
         print("받을 종목이 없습니다.")
         return 0, 0, 0
+    if os.getenv("PUBLIC_SKIP_DONE", "1").strip() not in ("0", "false", "False"):
+        from collect_public_dart import FIRST_YEAR
+        from datetime import date
+        today = date.today().isoformat()
+        before = len(codes)
+        codes = [c for c in codes if not already_done(c, FIRST_YEAR, today)]
+        if before != len(codes):
+            print(f"오늘 이미 받아 둔 {before - len(codes)}종목은 건너뜁니다.")
+        if not codes:
+            print("모두 받아 두었습니다.")
+            return 0, before, 0
     FOLDER.mkdir(exist_ok=True)
     shared = Official()
     changed, same, failed = 0, 0, 0

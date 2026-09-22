@@ -83,7 +83,10 @@ def collect(code,p=None):
         except Exception:
             found=None
         if found:halves.append(found)
-    return {'code':code,'name':info.get('stock_name') or info.get('corp_name'),'halves':halves,
+    # 어느 해까지 거슬러 받은 자료인지 남깁니다. 다시 받을 때 이미 끝난
+    # 종목을 건너뛰는 표시로 씁니다.
+    return {'code':code,'since':FIRST_YEAR,
+            'name':info.get('stock_name') or info.get('corp_name'),'halves':halves,
             'company':{k:info.get(k,'') for k in ['corp_name','induty_code','hm_url','est_dt','acc_mt']},
             'years':years,'basis':basis,'business_excerpt':excerpt,'fetched':today.isoformat(),
             'disclosures':[{'title':r['report_nm'],'date':r['rcept_dt'],'url':'https://dart.fss.or.kr/dsaf001/main.do?rcpNo='+r['rcept_no']} for r in recent.get('list',[])]}

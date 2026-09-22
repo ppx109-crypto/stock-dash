@@ -72,11 +72,29 @@ def save(code, name, rows):
     return True
 
 
+def done_today(code, on_day):
+    """오늘 이미 받아 둔 종목인지 봅니다. 이어받을 때 시간을 아낍니다."""
+    try:
+        kept = json.loads((OUT / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return kept.get("fetched") == on_day and len(kept.get("closes") or []) >= 120
+
+
 def main():
     codes = codes_to_collect()
     if not codes:
         print("모을 종목이 없습니다.")
         return 1
+    if os.getenv("PRICE_SKIP_DONE", "1").strip() not in ("0", "false", "False"):
+        today = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d")
+        before = len(codes)
+        codes = [c for c in codes if not done_today(c, today)]
+        if before != len(codes):
+            print(f"오늘 이미 받아 둔 {before - len(codes)}종목은 건너뜁니다.")
+        if not codes:
+            print("모두 받아 두었습니다.")
+            return 0
     label = names()
     try:
         client = broker_kis.market()
