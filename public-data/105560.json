@@ -1,5 +1,6 @@
 {
   "code": "105560",
+  "since": 2015,
   "name": "KB금융",
   "halves": [],
   "company": {
@@ -37,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-18",
+  "fetched": "2026-09-22",
   "disclosures": [
     {
       "title": "기업설명회(IR)개최(안내공시)              ",

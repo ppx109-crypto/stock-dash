@@ -1,5 +1,6 @@
 {
   "code": "024110",
+  "since": 2015,
   "name": "기업은행",
   "halves": [],
   "company": {
@@ -37,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-21",
+  "fetched": "2026-09-22",
   "disclosures": [
     {
       "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",

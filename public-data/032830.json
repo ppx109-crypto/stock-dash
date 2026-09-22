@@ -1,5 +1,6 @@
 {
   "code": "032830",
+  "since": 2015,
   "name": "삼성생명",
   "halves": [],
   "company": {
@@ -37,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-21",
+  "fetched": "2026-09-22",
   "disclosures": [
     {
       "title": "특수관계인과의보험거래",
