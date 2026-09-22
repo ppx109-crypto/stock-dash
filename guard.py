@@ -5,7 +5,7 @@
 숫자만 봐서는 알아챌 수 없습니다. 실제로 이 저장소에서도 한 번 있었습니다.
 오늘의 실적으로 몇 해 전의 날을 판정하고 있었습니다.
 
-그래서 다섯 겹으로 막습니다.
+그래서 여섯 겹으로 막습니다.
 
 1. **더럽히기** — 그날 뒤의 값을 엉뚱한 수로 바꿔 다시 계산합니다. 특징이
    조금이라도 달라지면 그 값은 뒷날을 본 것입니다. '안 쓴 척'이 아니라
@@ -14,7 +14,7 @@
    같은 값이 나와야 합니다.
 3. **날짜 확인** — 실적과 목표가는 발표일이 그날보다 뒤면 쓰지 않았는지
    하나씩 짚습니다.
-4. **공시 검사** — 신호에 붙인 공시가 하나라도 그날보다 뒤에 접수된 것이면
+4. **공시·시가총액 검사** — 신호에 붙인 공시가 하나라도 그날보다 뒤에 접수된 것이면
    멈춥니다. 공시는 접수일에 공개되므로, 그 뒤의 것을 쓰면 그대로
    미래참조입니다. 붙이는 쪽(events.py)에서 한 번 거르고 여기서 다시
    짚습니다.
@@ -24,13 +24,14 @@
    그대로인지 봅니다. 이 검사가 닿지 않은 가로줄 값이 하나라도 있으면
    그대로 멈춥니다. 빼먹어도 지나가는 일이 없도록 열어 두지 않습니다.
 
-다섯 겹 모두 통과해야 조사를 돌립니다. 하나라도 어긋나면 멈추고 어느 값이
+여섯 겹 모두 통과해야 조사를 돌립니다. 하나라도 어긋나면 멈추고 어느 값이
 어긋났는지 말합니다.
 """
 from __future__ import annotations
 
 import random
 
+import caps
 import events
 import lab
 import study
@@ -44,6 +45,9 @@ KEYS = {"code", "date", "i"}
 # 여기에 이름을 올리면 1·2번을 면제받는 것이므로, verify가 이 이름들이
 # 정말 4번 검사를 지났는지 되짚습니다.
 CROSS = {"시장 이격", "상대 이격", "시장 출렁임"}
+# 시가총액과 그날 순위. 주식수(접수일)와 가로줄이 함께 들어간 값이라 1·2번이
+# 닿지 않습니다. check_caps가 둘 다 맡습니다.
+CAPPED = {caps.RANK, caps.SIZE}
 # 공시에서 온 값입니다. 가로줄과 같은 까닭으로 1·2번이 닿지 않습니다(한 종목의
 # 일봉만으로는 다시 만들 수 없습니다). check_filings가 따로 맡고, verify가
 # 정말 그 검사를 지났는지 되짚습니다.
@@ -98,7 +102,7 @@ def check_corruption(prices, rows, samples=40, seed=7, warmup=120):
         found = _pick(again, code, day)
         if found is None:
             continue
-        _compare(row, found, code, day, "뒷날 값을 바꾼", skip=CROSS | FILED)
+        _compare(row, found, code, day, "뒷날 값을 바꾼", skip=CROSS | FILED | CAPPED)
         done += 1
     return done
 
@@ -120,7 +124,7 @@ def check_truncation(prices, rows, samples=40, seed=11, warmup=120):
         found = _pick(again, code, day)
         if found is None:
             continue
-        _compare(row, found, code, day, "뒷날을 잘라 낸", skip=CROSS | FILED)
+        _compare(row, found, code, day, "뒷날을 잘라 낸", skip=CROSS | FILED | CAPPED)
         done += 1
     return done
 
@@ -238,6 +242,53 @@ def check_filings(rows, samples=600, seed=19):
     return looked
 
 
+def check_caps(rows, samples=500, seed=23, days=12):
+    """시가총액과 그날 순위를 짚습니다.
+
+    주식수는 보고서 접수일에 공개됩니다. 그 뒤에 나온 수로 그날의 시가총액을
+    만들면 미래참조입니다. 액면분할·유상증자 자리에서 특히 위험합니다.
+    순위는 그날 줄들끼리 세운 것이므로, 그날 줄만 다시 세워 같은지 봅니다.
+    이름마다 몇 번 짚었는지 세어 돌려주어, verify가 빠진 이름을 되짚습니다.
+    """
+    seen = {name: 0 for name in CAPPED}
+    have = [row for row in rows if caps.SIZE in row]
+    if not have:
+        return seen
+    picker = random.Random(seed)
+    for row in picker.sample(have, min(samples, len(have))):
+        day, code = row["date"], row["code"]
+        count = caps.known_by(code, day)
+        if count is None:
+            raise LookaheadError(
+                f"{code} {day} · 그날까지 접수된 주식수가 없는데 시가총액이 "
+                "붙어 있습니다.")
+        want = count * row["price"]
+        if abs(want - row[caps.SIZE]) > 1:
+            later = [n for when, n in caps.timeline(code) if when > day]
+            hint = (" (뒷날 주식수를 쓴 것으로 보입니다)"
+                    if any(abs(n * row["price"] - row[caps.SIZE]) <= 1 for n in later)
+                    else "")
+            raise LookaheadError(
+                f"{code} {day} · 시가총액이 그날 주식수로 만든 값과 다릅니다"
+                f"{hint}.")
+        seen[caps.SIZE] += 1
+    # 순위는 그날 줄들끼리 다시 세워 봅니다. 그날 자료만 쓰는지 보는 것입니다.
+    ranked = {}
+    for row in rows:
+        if caps.RANK in row and caps.SIZE in row:
+            ranked.setdefault(row["date"], []).append(row)
+    if ranked:
+        for day in picker.sample(sorted(ranked), min(days, len(ranked))):
+            here = sorted(ranked[day], key=lambda one: -one[caps.SIZE])
+            for place, one in enumerate(here, 1):
+                if one[caps.RANK] != place:
+                    raise LookaheadError(
+                        f"{one['code']} {day} · 그날 줄만으로 다시 세운 순위는 "
+                        f"{place}등인데 {one[caps.RANK]}등이 붙어 있습니다.")
+                seen[caps.RANK] += 1
+    return seen
+
+
 def verify(prices, rows, samples=40, loud=True):
     """네 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다."""
     one = check_corruption(prices, rows, samples=samples)
@@ -245,19 +296,25 @@ def verify(prices, rows, samples=40, loud=True):
     three = check_dates(rows)
     four = check_filings(rows)
     five = check_cross_section(rows)
+    six = check_caps(rows)
     # 1·2번을 면제받은 이름이 제 검사도 지나지 않았다면 아무도 보지 않은 것입니다.
     present = {name for row in rows for name in CROSS if name in row}
     missed = sorted(name for name in present if not five.get(name))
     if {name for row in rows for name in FILED if name in row} and not four:
         missed.append("공시")
+    for name in sorted(CAPPED):
+        if any(name in row for row in rows) and not six.get(name):
+            missed.append(name)
     if missed:
         raise LookaheadError(
             "면제받은 값이 어느 검사도 지나지 않았습니다 → " + " / ".join(missed))
     if loud:
         print(f"미래참조 검사 통과 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
-              f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건")
+              f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건 "
+              f"· 시가총액 {sum(six.values())}건")
     return {"corruption": one, "truncation": two, "dates": three,
-            "filings": four, "cross": sum(five.values())}
+            "filings": four, "cross": sum(five.values()),
+            "caps": sum(six.values())}
 
 
 def build_verified(prices=None, samples=25, **kwargs):

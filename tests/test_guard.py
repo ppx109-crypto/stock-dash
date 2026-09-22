@@ -224,5 +224,59 @@ class FilingGuard(unittest.TestCase):
         self.assertIn("공시", str(caught.exception))
 
 
+
+
+class CapGuard(unittest.TestCase):
+    """시가총액은 그날까지 접수된 주식수로만 만들어야 합니다."""
+
+    def setUp(self):
+        patcher = patch.object(guard.caps, "timeline",
+                               return_value=(("20200110", 1000), ("20200710", 2000)))
+        patcher.start(); self.addCleanup(patcher.stop)
+
+    def row(self, day, size, place=1):
+        return {"code": "005930", "date": day, "price": 100.0,
+                guard.caps.SIZE: size, guard.caps.RANK: place}
+
+    def test_the_count_known_that_day_is_fine(self):
+        got = guard.check_caps([self.row("20200315", 100000.0)])
+        self.assertGreater(got[guard.caps.SIZE], 0)
+
+    def test_a_later_split_is_caught(self):
+        """7월에 늘어난 주식수로 3월의 시가총액을 만들면 잡아야 합니다."""
+        with self.assertRaises(guard.LookaheadError) as caught:
+            guard.check_caps([self.row("20200315", 200000.0)])
+        self.assertIn("뒷날 주식수", str(caught.exception))
+
+    def test_a_day_before_any_filing_is_caught(self):
+        with self.assertRaises(guard.LookaheadError):
+            guard.check_caps([self.row("20200105", 100000.0)])
+
+    def test_a_wrong_rank_is_caught(self):
+        """그날 줄만으로 다시 세운 순위와 다르면 잡아야 합니다."""
+        # 둘 다 주식수 1,000주. 값이 큰 쪽이 1등이어야 하는데 뒤집어 붙였습니다.
+        rows = [self.row("20200315", 100000.0, place=1),
+                {"code": "000660", "date": "20200315", "price": 900.0,
+                 guard.caps.SIZE: 900000.0, guard.caps.RANK: 2}]
+        with patch.object(guard.caps, "known_by", return_value=1000):
+            with self.assertRaises(guard.LookaheadError) as caught:
+                guard.check_caps(rows)
+        self.assertIn("등이 붙어 있습니다", str(caught.exception))
+
+    def test_an_unchecked_cap_column_stops_verify(self):
+        rows = [{"code": "005930", "date": "20200315", "i": 200, "price": 100.0,
+                 guard.caps.SIZE: 100000.0, guard.caps.RANK: 1}]
+        with patch.object(guard, "check_caps",
+                          return_value={n: 0 for n in guard.CAPPED}), \
+             patch.object(guard, "check_corruption", return_value=0), \
+             patch.object(guard, "check_truncation", return_value=0), \
+             patch.object(guard, "check_dates", return_value=0), \
+             patch.object(guard, "check_filings", return_value=0), \
+             patch.object(guard, "check_cross_section", return_value={}):
+            with self.assertRaises(guard.LookaheadError) as caught:
+                guard.verify({}, rows, samples=1, loud=False)
+        self.assertIn(guard.caps.SIZE, str(caught.exception))
+
+
 if __name__ == "__main__":
     unittest.main()
