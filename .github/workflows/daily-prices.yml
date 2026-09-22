@@ -2,9 +2,11 @@ name: Daily price history
 # 일봉을 증권사에서 받아 저장소에 모읍니다. 조회 전용입니다.
 # 앱이 도는 서버에서는 이 호출이 막힐 수 있어 여기서 돌립니다.
 on:
-  schedule:
-    # 한국 시간 평일 18:20 (UTC 09:20). DART 수집(18:00) 뒤입니다.
-    - cron: '20 9 * * 1-5'
+  # DART 수집이 끝나면 이어서 돕니다. 따로 시각을 잡아 두면 DART가 늦어진 날
+  # 옛 재무로 조사하게 되고, 증권사 토큰도 하루 두 번 받게 됩니다.
+  workflow_run:
+    workflows: ["Daily DART refresh"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       codes:
