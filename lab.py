@@ -189,10 +189,8 @@ def trade(rows, prices, take, stop, limit=60, cost=COST):
             if spot >= len(closes):
                 break
             move = (closes[spot] / start - 1) * 100
-            if move >= take:
-                done = (take, step); break
-            if move <= -stop:
-                done = (-stop, step); break
+            if move >= take or move <= -stop:
+                done = (move, step); break
         if done is None:
             spot = min(begin + limit, len(closes) - 1)
             if spot <= begin:
@@ -309,12 +307,11 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
                 del open_slots[code]
                 continue
             move = (closes[index] / spot["price"] - 1) * 100
+            # 그날 종가로 나갑니다. 문턱 값에 정확히 나간다고 세면 안 됩니다.
+            # 하루 사이 15% 빠진 날 '손절 4%'로 적으면, 실제로 잃는 11%가
+            # 장부에서 사라집니다. 손절을 좁게 잡을수록 이 차이가 커집니다.
             done = None
-            if move >= take:
-                done = take
-            elif move <= -stop:
-                done = -stop
-            elif step >= limit:
+            if move >= take or move <= -stop or step >= limit:
                 done = move
             if done is None:
                 spot["step"] = step

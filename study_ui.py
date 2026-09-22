@@ -54,7 +54,7 @@ def render_rule():
     st.subheader(book["name"])
     st.caption(book["why"])
     kept, base = book.get("규칙") or {}, book.get("기준") or {}
-    trade = book.get("매매") or {}
+    trade = book.get("굴림") or {}
     left, mid, right = st.columns(3)
     left.metric("20일 안 5%↑", f'{kept.get("5%↑", 0):.1f}%',
                 f'{kept.get("5%↑", 0) - base.get("5%↑", 0):+.1f}%p')
@@ -63,16 +63,18 @@ def render_rule():
     right.metric("하위 10%", f'{kept.get("하위10%", 0):+.1f}%',
                  f'{kept.get("하위10%", 0) - base.get("하위10%", 0):+.1f}%p')
     if trade:
-        st.caption(f'익절 {book["take"]:g}% · 손절 {book["stop"]:g}% · 최대 {book["limit"]}거래일로 '
-                   f'실제 빠져나온 자리를 세면 승률 {trade["승률"]:.1f}% · '
-                   f'평균 {trade["평균"]:+.2f}% · 평균 {trade["평균보유일"]:.1f}거래일 보유 '
-                   f'({trade["건수"]:,}건). 연환산 수치는 판 돈을 곧바로 다시 굴린다는 '
-                   "가정이라 실제보다 높습니다.")
+        st.caption(f'익절 {book["take"]:g}% · 손절 {book["stop"]:g}% · 최대 {book["limit"]}거래일 · '
+                   f'자리 {book["slots"]}개로 실제로 굴리면 매매 {trade["매매"]:,}회 · '
+                   f'승률 {trade["승률"]:.1f}% · 매매당 {trade["평균"]:+.2f}% · '
+                   f'보유 중앙 {trade["보유일중앙"]}거래일 · 자리 가동률 {trade["가동률"]:.1f}% · '
+                   f'연수익 {trade["연수익"]:+.2f}%. 자리가 차면 그날 나온 다음 후보는 '
+                   f'놓칩니다({trade["놓침"]:,}회). 그것까지 세어 낸 수치입니다.')
     hit = [r for r in (book.get("오늘") or []) if r.get("해당")]
     st.markdown(f'**오늘 이 규칙에 걸리는 종목 · {len(hit)}개** '
                 f'({(book.get("오늘") or [{}])[0].get("date", "")} 기준)')
     if hit:
         st.dataframe([{"종목": r["name"], "60일 전 대비": f'{r["60일 전 대비"]:+.1f}%',
+                       "층": f'{r["층"]}층' if r.get("층") else "—",
                        "중기선 이격": f'{r["중기 이격"]:+.1f}%',
                        "이례도": (f'{r["중기 이격밴드"]:+.1f}σ'
                                if r.get("중기 이격밴드") is not None else "—"),
