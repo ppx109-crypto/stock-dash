@@ -8,3 +8,6 @@ credentials*.json
 token*.json
 service-account*.json
 .pytest_cache/
+
+# 18초면 다시 만드는 계산 캐시입니다. 저장소에 넣지 않습니다.
+study/features.json
