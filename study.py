@@ -53,6 +53,46 @@ def load_reports():
         return {}
 
 
+def target_timeline(code, folder="opinion-data", months=3):
+    """증권사 목표가를 날짜와 함께 시간 순으로 돌려줍니다.
+
+    각 날짜에는 그날까지 나온 목표가만 씁니다. 같은 증권사가 여러 번 냈으면
+    가장 최근 것만 세고, 최근 몇 달 안에 나온 것만 씁니다. 반년 전 목표가는
+    그 사이 내려온 목표가를 가립니다.
+    """
+    try:
+        source = json.loads((Path(folder) / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    rows = sorted((r for r in source.get("rows") or []
+                   if str(r.get("date", "")).isdigit() and (r.get("target") or 0) > 0),
+                  key=lambda r: r["date"])
+    if not rows:
+        return []
+    found, seen = [], {}
+    for row in rows:
+        seen[row.get("member") or row["date"]] = row
+        edge = _months_before(row["date"], months)
+        live = [r for r in seen.values() if r["date"] >= edge]
+        if not live:
+            continue
+        prices = sorted(r["target"] for r in live)
+        middle = len(prices) // 2
+        base = (prices[middle] if len(prices) % 2
+                else (prices[middle - 1] + prices[middle]) / 2)
+        found.append((row["date"], {"목표가": base, "목표가곳수": len(live)}))
+    return found
+
+
+def _months_before(day, months):
+    year, month = int(day[:4]), int(day[4:6])
+    month -= months
+    while month <= 0:
+        month += 12
+        year -= 1
+    return f"{year:04d}{month:02d}{day[6:8]}"
+
+
 def money_timeline(code, folder="public-data"):
     """그날 이미 공시된 실적만 쓰도록, 발표일이 붙은 목록을 만듭니다.
 
@@ -139,6 +179,7 @@ def observations(prices, reports, horizons=HORIZONS, warmup=60):
     for code, block in prices.items():
         rows = block["rows"]
         timeline = money_timeline(code)
+        targets = target_timeline(code)
         closes = [c for _, c in rows]
         for i in range(warmup, len(rows) - min(horizons)):
             verdict = trend.assess(closes[: i + 1], None)
@@ -156,7 +197,8 @@ def observations(prices, reports, horizons=HORIZONS, warmup=60):
                           "ahead": ahead,
                           **{f"위 EMA{span}": bool(checks.get(f"종가 > EMA{span}"))
                              for span in (5, 20, 40, 60)},
-                          **known_by(timeline, rows[i][0])})
+                          **known_by(timeline, rows[i][0]),
+                          **_gap_to_target(known_by(targets, rows[i][0]), closes[i])})
     return found
 
 
@@ -241,7 +283,8 @@ COST = float(os.getenv("ROUND_TRIP_COST", "0.25"))
 
 GRID = (("매출성장", (None, 0.0, 10.0, 20.0)),
         ("영업이익성장", (None, 0.0, 20.0, 50.0)),
-        ("영업이익률", (None, 5.0, 10.0, 15.0)))
+        ("영업이익률", (None, 5.0, 10.0, 15.0)),
+        ("목표가괴리", (None, 0.0, 20.0, 40.0)))
 
 
 def net(block, cost=COST):
@@ -309,8 +352,19 @@ SIGNALS = (
     ("영업이익 성장 ≥ 50%", lambda r: _at_least(r, "영업이익성장", 50)),
     ("영업이익률 ≥ 10%", lambda r: _at_least(r, "영업이익률", 10)),
     ("영업이익률 ≥ 15%", lambda r: _at_least(r, "영업이익률", 15)),
-    ("증권사 목표가 30% 이상 위", lambda r: _at_least(r, "목표가괴리", 30)),
+    ("증권사 목표가 20% 이상 위", lambda r: _at_least(r, "목표가괴리", 20)),
+    ("증권사 목표가 40% 이상 위", lambda r: _at_least(r, "목표가괴리", 40)),
+    ("증권사 3곳 이상이 목표가 제시", lambda r: _at_least(r, "목표가곳수", 3)),
 )
+
+
+def _gap_to_target(block, price):
+    """목표가가 그날 종가보다 몇 퍼센트 위인지. 없으면 빈 칸입니다."""
+    base = (block or {}).get("목표가")
+    if not base or not price:
+        return {}
+    return {"목표가괴리": (base / price - 1) * 100,
+            "목표가곳수": block.get("목표가곳수")}
 
 
 def _at_least(row, key, edge):
