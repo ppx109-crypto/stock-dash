@@ -19,7 +19,17 @@ def rounded(block):
 
 
 def main():
+    # 미래참조 검사를 먼저 지납니다. 어긋나면 여기서 멈춥니다. 잘못된 숫자를
+    # 내놓는 것보다 아무것도 내놓지 않는 편이 낫습니다.
+    import guard
+    import lab
     prices = study.load_prices()
+    if prices:
+        try:
+            guard.verify(prices, lab.build(prices), samples=20)
+        except guard.LookaheadError as error:
+            print("미래참조가 발견되어 조사를 멈춥니다 ·", error)
+            return 1
     if not prices:
         print("price-data에 일봉이 없습니다. 먼저 수집기를 돌리세요.")
         return 1
