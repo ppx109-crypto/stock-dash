@@ -276,6 +276,49 @@ class KIS:
             time.sleep(pause)
         return sorted(collected.items())
 
+    def flows(self, code):
+        """누가 사고 누가 팔았는지. 개인·외국인·기관을 날짜별로 받습니다.
+
+        국내주식 투자자 API입니다. 조회 전용입니다. 이 API는 기간을 받지 않고
+        최근 며칠만 돌려줍니다. 그래서 과거를 한꺼번에 받을 수는 없고, 매일
+        받아 쌓아야 기간이 길어집니다.
+        """
+        if not re.fullmatch(r'[0-9]{6}', str(code)):
+            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
+        self.authorize()
+        _, data = self.request(
+            'GET', '/uapi/domestic-stock/v1/quotations/inquire-investor',
+            headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+                     'appsecret': self.secret, 'tr_id': 'FHKST01010900', 'custtype': 'P'},
+            params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code)})
+        if str(data.get('rt_cd')) != '0':
+            raise BrokerError('투자자 매매동향 조회가 승인되지 않았습니다. '
+                              'API 신청 상태를 확인하세요.')
+        rows = data.get('output')
+        if rows is None:
+            rows = []
+        if isinstance(rows, dict):
+            rows = [rows]
+        if not isinstance(rows, list):
+            raise BrokerError('투자자 매매동향 응답 형식이 달라 읽지 않았습니다.')
+        found = []
+        for row in rows:
+            day = str(row.get('stck_bsop_date', '')).strip()
+            if not re.fullmatch(r'[0-9]{8}', day):
+                continue
+            def number(key):
+                try:
+                    return amount(row.get(key))
+                except BrokerError:
+                    return None
+            found.append({'date': day,
+                          '개인': number('prsn_ntby_qty'),
+                          '외국인': number('frgn_ntby_qty'),
+                          '기관': number('orgn_ntby_qty'),
+                          '종가': number('stck_clpr')})
+        found.sort(key=lambda r: r['date'])
+        return found
+
     def balance(self):
         self.authorize()
         rows, seen = [], set()

@@ -22,8 +22,9 @@ import lab
 NAME = "중기선에서 이례적으로 벌어진 종목"
 GAP = -15.0         # 20일(중기) 이동평균선보다 이만큼 아래
 BAND = -2.0         # 그 종목의 지난 이격과 견줘 이만큼 밖으로
-TAKE, STOP = 10.0, 7.0   # 익절·손절
-LIMIT = 60          # 이 거래일이 지나면 그냥 정리
+TAKE, STOP = 10.0, 5.0   # 익절·손절
+LIMIT = 10          # 두 주. 이 거래일이 지나면 그냥 정리
+SLOTS = 5           # 자리. 자금을 다섯으로 나눕니다.
 OUT = Path("study") / "rule.json"
 
 WHY = (
@@ -72,9 +73,12 @@ def report(rows, prices):
     body = {
         "name": NAME, "why": WHY, "caveat": CAVEAT,
         "gap": GAP, "band": BAND, "take": TAKE, "stop": STOP, "limit": LIMIT,
+        "slots": SLOTS,
         "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
         "기준": lab.score(rows), "규칙": lab.score(picked),
         "매매": lab.trade(picked, prices, TAKE, STOP, limit=LIMIT),
+        "굴림": lab.portfolio(rows, prices, holds, slots=SLOTS, take=TAKE,
+                            stop=STOP, limit=LIMIT, since="20160101"),
         "오늘": today(rows),
     }
     OUT.parent.mkdir(exist_ok=True)

@@ -24,7 +24,7 @@ AXES = {"단기": 5, "중기": 20, "중장기": 60, "장기": 120}
 SPANS = tuple(sorted(set(AXES.values()) | {10, 40}))
 SLOPE_STEP = 5      # 기울기를 잴 간격. 한 주입니다.
 BAND_WINDOW = 120   # 이격이 이례적인지 볼 때 견줄 지난 구간.
-HORIZON = 20            # 기본으로 보는 앞날. 스무 거래일입니다.
+HORIZON = 10            # 기본으로 보는 앞날. 두 주, 열 거래일입니다.
 RISE = 5.0              # 무엇을 '성공'으로 볼지. 오 퍼센트입니다.
 COST = 0.25             # 왕복 비용 어림값(%).
 CACHE = Path("study") / "features.json"
@@ -96,7 +96,7 @@ def rolling_std(closes, window=20):
     return out
 
 
-def build(prices=None, horizons=(5, 20, 60), warmup=120):
+def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
     """종목마다 하루치 특징을 만들어 한 표로 모읍니다."""
     prices = prices if prices is not None else study.load_prices()
     rows = []

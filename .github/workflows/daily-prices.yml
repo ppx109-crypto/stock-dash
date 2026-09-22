@@ -50,13 +50,21 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
         continue-on-error: true
 
+      - run: python collect_flows.py
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+        continue-on-error: true
+
       - name: Save only when something actually changed
         if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p price-data
-          git add -A price-data opinion-data
+          git add -A price-data opinion-data flow-data
           if git diff --cached --quiet; then
             echo '바뀐 일봉이 없어 커밋하지 않습니다.'
           else
