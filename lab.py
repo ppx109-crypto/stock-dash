@@ -321,6 +321,7 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
     if not days:
         return None
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
+    size = size or (lambda r: 1)
 
     open_slots, trades, missed = {}, [], 0
     held, days_seen, year_gains, held_days = {}, set(), {}, []
@@ -457,11 +458,20 @@ def exit_trailing_vol(give_mult, arm_mult, limit):
 
 
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
-        cap=90, detail=False, cooldown=0, cooldown_after="모두"):
+        cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
+        greedy=False):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
     않습니다. cooldown_after가 "손실"이면 잃고 나온 경우에만 막습니다.
+
+    greedy=True면 빈 자리를 그날 후보로 끝까지 채웁니다. 기본은 아닙니다.
+    자리 수만큼만 위에서부터 보고, 그중 이미 들고 있는 종목이 있으면 그
+    자리는 비워 둡니다. 지난 회차들이 모두 이 셈으로 나온 수치입니다.
+
+    size는 한 종목에 자리를 몇 개 쓸지 돌려주는 함수입니다. 기본은 하나씩
+    입니다. 둘을 쓰면 그만큼 자리가 줄고, 손익도 두 몫으로 셉니다. 승률과
+    매매당 수익은 자리 수와 상관없는 값이므로 그대로 한 번씩 셉니다.
     """
     lane = lanes(prices)
     picks = {}
@@ -472,10 +482,12 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     if not days:
         return None
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
+    size = size or (lambda r: 1)
     open_slots, trades, missed, held_days = {}, [], 0, []
     rest = {}                # 종목별로 '이 자리 뒤에야 다시 산다'는 자리입니다.
     ledger = []              # detail=True일 때만. 매매 하나하나를 적어 둡니다.
     busy, seen, year_gains = 0, 0, {}
+    weighted = []            # 자리 수를 곱한 손익. 연수익은 이것으로 냅니다.
     for day in days:
         for code in list(open_slots):
             spot = open_slots[code]
@@ -490,27 +502,37 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                        spot["row"]):
                 gain = (closes[index] / spot["price"] - 1) * 100 - cost
                 trades.append(gain)
-                year_gains.setdefault(day[:4], []).append(gain)
+                weighted.append(gain * spot["자리"])
+                year_gains.setdefault(day[:4], []).append(gain * spot["자리"])
                 held_days.append(step)
                 if cooldown and (cooldown_after != "손실" or gain <= 0):
                     rest[code] = index + cooldown
                 if detail:
                     ledger.append({"code": code, "산 날": spot["row"]["date"],
-                                   "판 날": day, "들고": step,
+                                   "판 날": day, "들고": step, "자리": spot["자리"],
                                    "손익": round(gain, 2), "행": spot["row"]})
                 del open_slots[code]
             else:
                 spot["step"] = step
         seen += 1
-        busy += len(open_slots)
-        room = slots - len(open_slots)
+        used = sum(spot["자리"] for spot in open_slots.values())
+        busy += used
+        room = slots - used
         ready = [row for row in sorted(picks[day], key=rank)
                  if row["i"] >= rest.get(row["code"], 0)]
-        for row in ready[:max(room, 0)]:
-            if row["code"] not in open_slots:
-                open_slots[row["code"]] = {"i": row["i"], "price": row["price"],
-                                           "step": 0, "peak": row["price"],
-                                           "row": row}
+        # 빈 자리 수만큼만 위에서부터 봅니다. 그중 이미 들고 있는 종목이 있으면
+        # 그 자리는 그날 비워 둡니다. greedy=True면 다음 후보로 마저 채웁니다.
+        for row in (ready if greedy else ready[:max(room, 0)]):
+            if used >= slots:
+                break
+            if row["code"] in open_slots:
+                continue
+            # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
+            want = min(max(int(size(row)), 1), slots - used)
+            open_slots[row["code"]] = {"i": row["i"], "price": row["price"],
+                                       "step": 0, "peak": row["price"],
+                                       "row": row, "자리": want}
+            used += want
         missed += max(0, len(ready) - max(room, 0))
     if len(trades) < 60:
         return None
@@ -524,7 +546,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             "하위10%": round(sum(ordered[:cut]) / cut, 1), "최악": round(ordered[0], 1),
             "보유중앙": sorted(held_days)[len(held_days) // 2],
             "가동률": round(busy / (seen * slots) * 100, 1),
-            "연수익": round(sum(trades) / slots / max(years, 1), 2),
+            "연수익": round(sum(weighted) / slots / max(years, 1), 2),
             "해마다": {y: round(sum(v) / slots, 1) for y, v in sorted(year_gains.items())},
             **({"매매목록": ledger} if detail else {})}
 
