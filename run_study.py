@@ -220,7 +220,27 @@ def main():
         print(f"  {row['잣대']:<22} {row['기간']:>2}일 · "
               f"{row['기준 상승확률']:.1f}% → {row['더한 뒤']:.1f}% "
               f"({row['차이']:+.1f}%p, {row['건수']:,}건)")
+    refresh_rule()
     return 0
+
+
+def refresh_rule():
+    """가장 단단했던 규칙 하나와 오늘 걸리는 종목을 따로 남깁니다."""
+    import lab
+    import rule
+    prices = study.load_prices()
+    rows = lab.build(prices)
+    import guard
+    guard.verify(prices, rows, samples=20)
+    names = {code: block["name"] for code, block in prices.items()}
+    for row in rows:
+        row["name"] = names.get(row["code"], row["code"])
+    found = rule.report(rows, prices)
+    kept = found.get("규칙") or {}
+    print(f'규칙 · {found["name"]} · 5%↑ {kept.get("5%↑", 0):.1f}% · '
+          f'중앙 {kept.get("중앙", 0):+.2f}% · '
+          f'오늘 걸리는 종목 {sum(1 for r in found["오늘"] if r["해당"])}개')
+    return found
 
 
 if __name__ == "__main__":

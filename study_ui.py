@@ -28,7 +28,67 @@ def stamp():
         return None
 
 
+RULE = Path("study") / "rule.json"
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def load_rule(stamp=None):
+    try:
+        return json.loads(RULE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def rule_stamp():
+    try:
+        return RULE.stat().st_mtime
+    except OSError:
+        return None
+
+
+def render_rule():
+    """조사에서 가장 단단했던 규칙 하나와, 오늘 그 규칙에 걸리는 종목."""
+    book = load_rule(rule_stamp())
+    if not book:
+        return
+    st.subheader(book["name"])
+    st.caption(book["why"])
+    kept, base = book.get("규칙") or {}, book.get("기준") or {}
+    trade = book.get("매매") or {}
+    left, mid, right = st.columns(3)
+    left.metric("20일 안 5%↑", f'{kept.get("5%↑", 0):.1f}%',
+                f'{kept.get("5%↑", 0) - base.get("5%↑", 0):+.1f}%p')
+    mid.metric("중앙 수익률", f'{kept.get("중앙", 0):+.2f}%',
+               f'{kept.get("중앙", 0) - base.get("중앙", 0):+.2f}%p')
+    right.metric("하위 10%", f'{kept.get("하위10%", 0):+.1f}%',
+                 f'{kept.get("하위10%", 0) - base.get("하위10%", 0):+.1f}%p')
+    if trade:
+        st.caption(f'익절 {book["take"]:g}% · 손절 {book["stop"]:g}% · 최대 {book["limit"]}거래일로 '
+                   f'실제 빠져나온 자리를 세면 승률 {trade["승률"]:.1f}% · '
+                   f'평균 {trade["평균"]:+.2f}% · 평균 {trade["평균보유일"]:.1f}거래일 보유 '
+                   f'({trade["건수"]:,}건). 연환산 수치는 판 돈을 곧바로 다시 굴린다는 '
+                   "가정이라 실제보다 높습니다.")
+    hit = [r for r in (book.get("오늘") or []) if r.get("해당")]
+    st.markdown(f'**오늘 이 규칙에 걸리는 종목 · {len(hit)}개** '
+                f'({(book.get("오늘") or [{}])[0].get("date", "")} 기준)')
+    if hit:
+        st.dataframe([{"종목": r["name"], "60일 전 대비": f'{r["60일 전 대비"]:+.1f}%',
+                       "영업이익성장": (f'{r["영업이익성장"]:+.0f}%'
+                                   if r.get("영업이익성장") is not None else "—"),
+                       "매출성장": (f'{r["매출성장"]:+.1f}%'
+                                if r.get("매출성장") is not None else "—"),
+                       "목표가 괴리": (f'{r["목표가괴리"]:+.1f}%'
+                                  if r.get("목표가괴리") is not None else "—")}
+                      for r in hit], hide_index=True, width="stretch",
+                     height=_fits(len(hit), cap=20))
+    else:
+        st.info("오늘은 걸리는 종목이 없습니다. 조건을 낮추지 말고 기다리는 자리입니다.")
+    st.warning(book["caveat"])
+    st.divider()
+
+
 def render_study():
+    render_rule()
     found = load(stamp())
     st.markdown(header() + section("그룹이 실제로 맞았는가",
                 "과거 일봉으로 그날그날 그룹을 판정하고, 그 뒤 5·20·60거래일 수익률을 센 결과입니다")
