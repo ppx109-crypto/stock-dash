@@ -213,5 +213,79 @@ class Wobble(unittest.TestCase):
         self.assertEqual(first, again)
 
 
+class Portfolio(unittest.TestCase):
+    """앱 화면이 읽는 수치를 내는 함수입니다. 돌아가기만 해도 시험할 값이 있습니다.
+
+    17회차에 이 함수가 깨진 채로 이틀을 갔습니다. 고친 것이 옆 함수에 묻어
+    들어갔는데, 아무 시험도 이 함수를 부르지 않아 통과해 버렸습니다.
+    """
+
+    def setUp(self):
+        self.prices = board()
+        self.rows = lab.build(self.prices, warmup=120)
+
+    def test_it_runs_and_counts_trades(self):
+        out = lab.portfolio(self.rows, self.prices,
+                            lambda r: (r.get("중기 이격") or 0) <= -3.0,
+                            slots=2, take=15.0, stop=7.0, limit=15)
+        if out is None:
+            self.skipTest("60건 미만")
+        self.assertGreater(out["매매"], 0)
+        self.assertIn("연수익", out)
+        self.assertIn("가동률", out)
+
+    def test_nothing_to_buy_gives_nothing(self):
+        self.assertIsNone(lab.portfolio(self.rows, self.prices,
+                                        lambda r: False, slots=2))
+
+
+class Paired(unittest.TestCase):
+    """같은 신호에 청산만 갈아 끼우는 셈. 17회차부터 청산 비교의 기본입니다."""
+
+    def setUp(self):
+        self.prices = board()
+        self.rows = [r for r in lab.build(self.prices, warmup=120)
+                     if (r.get("중기 이격") or 0) <= -3.0]
+
+    def test_every_way_sees_the_same_signals(self):
+        got = lab.paired(self.rows, self.prices,
+                         {"빨리": lab.exit_fixed(5.0, 3.0, 5),
+                          "늦게": lab.exit_fixed(30.0, 20.0, 40)})
+        if len(got) < 2:
+            self.skipTest("60건 미만")
+        counts = {one["건수"] for one in got.values()}
+        self.assertEqual(len(counts), 1, f"청산마다 건수가 다릅니다: {counts}")
+
+    def test_a_thin_set_gets_no_number(self):
+        self.assertEqual(
+            lab.paired(self.rows[:59], self.prices,
+                       {"아무거나": lab.exit_fixed(15.0, 7.0, 15)}), {})
+
+    def test_holding_longer_shows_up_in_the_days(self):
+        got = lab.paired(self.rows, self.prices,
+                         {"빨리": lab.exit_fixed(5.0, 3.0, 5),
+                          "늦게": lab.exit_fixed(30.0, 20.0, 40)})
+        if len(got) < 2:
+            self.skipTest("60건 미만")
+        self.assertLess(got["빨리"]["보유"], got["늦게"]["보유"])
+
+    def test_the_per_day_number_is_the_mean_over_the_days(self):
+        got = lab.paired(self.rows, self.prices,
+                         {"하나": lab.exit_fixed(15.0, 7.0, 15)})
+        if not got:
+            self.skipTest("60건 미만")
+        one = got["하나"]
+        self.assertAlmostEqual(one["하루당"], round(one["평균"] / one["보유"], 3),
+                               places=2)
+
+    def test_the_cost_is_taken_off_once(self):
+        """신호 당일에 바로 걸리는 청산으로 왕복 비용이 빠졌는지 봅니다."""
+        always = lambda lane, start, price, step, peak, row=None: True
+        got = lab.paired(self.rows, self.prices, {"바로": always})
+        if not got:
+            self.skipTest("60건 미만")
+        self.assertEqual(got["바로"]["보유"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()

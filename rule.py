@@ -114,6 +114,30 @@ def tier_stats(rows, since=lab.SPLIT):
     return found
 
 
+# 자리를 꽉 채워 굴릴 때와, 한 번에 한 종목만 들 때는 답이 다릅니다.
+# 앞은 하루라도 자리를 비우면 손해라 빨리 끊는 편이 낫고, 뒤는 자리 다툼이
+# 없으니 벌어진 것이 메워질 때까지 들고 가는 편이 낫습니다. 둘 다 보여 줍니다.
+EXITS = {
+    "고정 익절·손절 (자리를 꽉 채워 굴릴 때)": lambda: lab.exit_fixed(TAKE, STOP, LIMIT),
+    "중기선으로 돌아오면 (한 종목만 들 때)": lambda: lab.exit_back_to_line(40),
+}
+
+
+def exit_stats(rows, prices, since=lab.SPLIT):
+    """실제로 사는 신호만 놓고 두 청산을 나란히 견줍니다.
+
+    걸린 것 전부가 아니라 '자리가 있어 실제로 산 것'으로 재야 합니다.
+    모집단이 다르면 답도 다릅니다.
+    """
+    out = lab.run(rows, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
+                  slots=SLOTS, rank=order, since=since, detail=True)
+    if not out:
+        return {}
+    bought = [got["행"] for got in out["매매목록"]]
+    return lab.paired(bought, prices,
+                      {tag: make() for tag, make in EXITS.items()})
+
+
 def report(rows, prices):
     picked = [r for r in rows if holds(r)]
     body = {
@@ -125,6 +149,7 @@ def report(rows, prices):
         "굴림": lab.portfolio(rows, prices, holds, slots=SLOTS, take=TAKE,
                             stop=STOP, limit=LIMIT, since="20160101", rank=order),
         "층별": tier_stats(rows),
+        "청산 견주기": exit_stats(rows, prices),
         "오늘": today(rows),
     }
     OUT.parent.mkdir(exist_ok=True)

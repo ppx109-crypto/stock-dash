@@ -322,7 +322,6 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
     if not days:
         return None
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
-    size = size or (lambda r: 1)
 
     open_slots, trades, missed = {}, [], 0
     held, days_seen, year_gains, held_days = {}, set(), {}, []
@@ -633,3 +632,62 @@ def wobble(rows, prices, holds, exit_at, tries=6, size=0.05, rank=None, **kw):
             "그대로": base["연수익"] if base else None,
             "가장 낮음": gains[0], "가장 높음": gains[-1],
             "폭": round(gains[-1] - gains[0], 2), "돌린 수": len(gains)}
+
+
+def walk(lane_one, row, exit_at, cap=60):
+    """신호 하나를 이 청산으로 끝까지 끌고 갑니다. 자리 다툼은 없습니다.
+
+    자리를 나눠 굴리면 청산을 바꾸는 순간 들고 있는 날이 바뀌고, 그러면 그
+    뒤의 자리를 누가 차지하는지가 통째로 바뀝니다. 그때 재는 것은 '청산의
+    값'이 아니라 '다른 후보 묶음의 값'입니다. 그래서 청산끼리 견줄 때는
+    같은 신호를 놓고 청산만 갈아 끼웁니다.
+    """
+    closes = lane_one["closes"]
+    start = row["i"]
+    if start + 1 >= len(closes):
+        return None
+    price = peak = closes[start]
+    for step in range(1, cap + 1):
+        spot = start + step
+        if spot >= len(closes):
+            return None
+        peak = max(peak, closes[spot])
+        if exit_at(lane_one, start, price, step, peak, row):
+            return ((closes[spot] / price - 1) * 100 - COST, step)
+    return None
+
+
+def paired(rows, prices, ways, cap=60, floor=60):
+    """같은 신호를 여러 청산으로 끌고 가 나란히 견줍니다.
+
+    하루당은 평균을 들고 있던 날로 나눈 값입니다. 자리가 정해져 있으면
+    '한 번에 얼마를 버느냐'보다 '하루에 얼마를 버느냐'가 중요합니다.
+    """
+    lane = lanes(prices)
+    # 끝자락의 신호는 느린 청산이 끝을 못 봅니다. 그런 신호는 통째로 뺍니다.
+    # 하나라도 값이 없는 신호를 남겨 두면 청산마다 모집단이 달라집니다.
+    walked = {}
+    for row in rows:
+        if row["code"] not in lane:
+            continue
+        got = {tag: walk(lane[row["code"]], row, exit_at, cap)
+               for tag, exit_at in ways.items()}
+        if all(one is not None for one in got.values()):
+            walked[(row["code"], row["date"])] = (row, got)
+    if len(walked) < floor:         # 표본이 모자라면 숫자를 내지 않습니다.
+        return {}
+    codes = len({code for code, _ in walked})
+    found = {}
+    for tag in ways:
+        gains = sorted(got[tag][0] for _, got in walked.values())
+        hold = sum(got[tag][1] for _, got in walked.values()) / len(walked)
+        cut = max(1, len(gains) // 10)
+        mean = round(sum(gains) / len(gains), 2)
+        days = round(hold, 1) or 1.0
+        found[tag] = {
+            "건수": len(gains), "종목": codes,
+            "승률": round(sum(1 for g in gains if g > 0) / len(gains) * 100, 1),
+            "평균": mean, "중앙": round(gains[len(gains) // 2], 2),
+            "하위10%": round(sum(gains[:cut]) / cut, 1),
+            "보유": days, "하루당": round(mean / days, 3)}
+    return found
