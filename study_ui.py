@@ -101,6 +101,23 @@ def render_study():
         st.caption(f'A그룹 관측 {found["a_total"]:,}건 가운데 실적이 이미 공시돼 있던 것은 '
                    f'{money:,}건입니다. 나머지 구간은 그룹 판정만 보고 센 것입니다.')
 
+    targets = found.get("target_best") or {}
+    if targets:
+        st.subheader("증권사 목표가가 붙은 구간만")
+        st.caption(f'{found.get("target_since", "")}부터의 {found.get("target_rows", 0):,}건입니다. '
+                   "목표가는 증권사 API가 한 해치만 주므로, 실적과 같은 자리에 놓고 비교하면 "
+                   "겹치는 날이 모자라 늘 탈락합니다. 그래서 목표가가 붙은 구간만 따로 떼어 "
+                   "그 안에서 견줍니다. 다른 표보다 기간이 훨씬 짧으니 그만큼 덜 믿으십시오.")
+        pick = st.selectbox("그룹과 보유 기간", list(targets), key="px_target_pick")
+        st.dataframe([{"조건": r["조건"], "건수": r["건수"], "종목수": r.get("종목수", 0),
+                       "순기대수익": f'{r["순기대수익"]:+.2f}%',
+                       "그룹대비": (f'{r["그룹대비"]:+.2f}%p' if r.get("그룹대비") is not None else "—"),
+                       "전체대비": (f'{r["전체대비"]:+.2f}%p' if r.get("전체대비") is not None else "—"),
+                       "상승확률": f'{r["상승확률"]:.1f}%',
+                       "중앙수익률": f'{r["중앙수익률"]:+.2f}%',
+                       "하위10%": f'{r["하위10%"]:+.1f}%'} for r in targets[pick]],
+                     hide_index=True, width="stretch", height=_fits(len(targets[pick])))
+
     around = found.get("around") or {}
     if around:
         st.subheader("좋은 실적은 공시 전에 이미 올라 있었는가")

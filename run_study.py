@@ -105,6 +105,23 @@ def main():
             if found:
                 best[f"{group}·{span}일"] = found[:8]
 
+    # 목표가는 한 해치뿐이라, 실적과 같은 격자에 넣으면 겹치는 날이 모자라
+    # 늘 탈락합니다. 그래서 목표가가 붙은 구간만 따로 떼어 그 안에서 다시
+    # 훑습니다. 견줄 자리도 그 구간의 모든 관측으로 맞춥니다.
+    with_target = [r for r in rows if "목표가괴리" in r]
+    target_best = {}
+    target_since = min((r["date"] for r in with_target), default=None)
+    if target_since:
+        span_rows = [r for r in rows if r["date"] >= target_since]
+        for group, picked in (("전체", with_target),
+                              ("A", [r for r in with_target if r["group"] == "A"]),
+                              ("C", [r for r in with_target if r["group"] == "C"])):
+            for span in study.HORIZONS:
+                base = study.tally(span_rows, span)
+                found = study.search(picked, span, floor=60, baseline=base)
+                if found:
+                    target_best[f"{group}·{span}일"] = found[:8]
+
     # 오른 것들에는 무엇이 미리 있었는가. 물음의 방향이 반대라 따로 셉니다.
     ahead_of = {}
     for span in study.HORIZONS:
@@ -122,6 +139,8 @@ def main():
             "horizons": list(study.HORIZONS), "groups": groups, "lifts": lifts[:24], "combos": combos[:30],
             "downside": downside, "with_money": with_money, "a_total": len(a_rows),
             "best": best, "cost": study.COST, "since": since,
+            "target_best": target_best, "target_since": target_since,
+            "target_rows": len(with_target),
             "ahead_of": ahead_of, "around": around,
             "window": len(window),
             "today": today}
@@ -164,6 +183,20 @@ def main():
         for label, block in around.items():
             print(f"  {label:<4} 공시전 중앙 {block['공시전 중앙']:+6.2f}% · "
                   f"공시후 중앙 {block['공시후 중앙']:+6.2f}% · {block['건수']}건")
+
+    if target_best:
+        print(f"\n증권사 목표가가 붙은 구간만 ({target_since}~, {len(with_target):,}건)")
+        for key, found in target_best.items():
+            top = found[0]
+            extra = ""
+            if top.get("그룹대비") is not None:
+                extra += f" · 그룹대비 {top['그룹대비']:+.2f}%p"
+            if top.get("전체대비") is not None:
+                extra += f" · 전체대비 {top['전체대비']:+.2f}%p"
+            print(f"  [{key}] {top['조건']}")
+            print(f"      순기대 {top['순기대수익']:+.2f}% · 상승 {top['상승확률']:.1f}% · "
+                  f"중앙 {top['중앙수익률']:+.2f}% · 하위10% {top['하위10%']:+.1f}% · "
+                  f"{top['건수']:,}건/{top.get('종목수', 0)}종목{extra}")
 
     print("\n조건을 겹쳤을 때 (A그룹 기준)")
     for row in combos[:12]:
