@@ -3,6 +3,32 @@
   "name": "카카오",
   "halves": [
     {
+      "period": "2024-06",
+      "revenue": 39932.48316538,
+      "profit": 2542.5831665,
+      "receipt": "20240926000448",
+      "matched": [
+        {
+          "account_nm": "영업수익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 30 기 반기",
+          "used": "cumulative",
+          "add": "3993248316538",
+          "amount": "2004898184520"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 30 기 반기",
+          "used": "cumulative",
+          "add": "254258316650",
+          "amount": "133964231639"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240926000448"
+    },
+    {
       "period": "2025-06",
       "revenue": 38920.43657398,
       "profit": 2913.26822837,
@@ -12,6 +38,7 @@
           "account_nm": "영업수익",
           "sj_div": "CIS",
           "thstrm_nm": "제 31 기 반기",
+          "used": "cumulative",
           "add": "3892043657398",
           "amount": "2028312877031"
         },
@@ -19,10 +46,12 @@
           "account_nm": "영업이익(손실)",
           "sj_div": "CIS",
           "thstrm_nm": "제 31 기 반기",
+          "used": "cumulative",
           "add": "291326822837",
           "amount": "185925958096"
         }
       ],
+      "measure": "cumulative",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003953"
     },
     {
@@ -35,6 +64,7 @@
           "account_nm": "영업수익",
           "sj_div": "CIS",
           "thstrm_nm": "제 32 기 반기",
+          "used": "cumulative",
           "add": "4040533247476",
           "amount": "2098456124429"
         },
@@ -42,10 +72,12 @@
           "account_nm": "영업이익",
           "sj_div": "CIS",
           "thstrm_nm": "제 32 기 반기",
+          "used": "cumulative",
           "add": "488414000457",
           "amount": "277016338871"
         }
       ],
+      "measure": "cumulative",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000055"
     }
   ],
@@ -84,7 +116,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-20",
+  "fetched": "2026-09-22",
   "disclosures": [
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",

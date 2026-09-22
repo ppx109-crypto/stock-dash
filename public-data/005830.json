@@ -1,0 +1,123 @@
+{
+  "code": "005830",
+  "name": "DB손해보험",
+  "halves": [],
+  "company": {
+    "corp_name": "DB손해보험(주)",
+    "induty_code": "65121",
+    "hm_url": "www.idbins.com",
+    "est_dt": "19681101",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2023,
+      "revenue": null,
+      "profit": 22349.97557489,
+      "receipt": "20240430000990",
+      "net_income": 17385.68940483,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240430000990"
+    },
+    {
+      "year": 2024,
+      "revenue": null,
+      "profit": 24249.25603957,
+      "receipt": "20250814003767",
+      "net_income": 18515.93897644,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003767"
+    },
+    {
+      "year": 2025,
+      "revenue": null,
+      "profit": 23839.5,
+      "receipt": "20260331003904",
+      "net_income": 17880.26,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260331003904"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-09-22",
+  "disclosures": [
+    {
+      "title": "동일인등출자계열회사와의상품ㆍ용역거래",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000228"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000225"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000221"
+    },
+    {
+      "title": "특수관계인에대한자금대여",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901000217"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260831",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831001296"
+    },
+    {
+      "title": "기업가치제고계획(자율공시)              ",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828800352"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003682"
+    },
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20260813",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813800490"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260812",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260812000846"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260805",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805800322"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260804",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804000427"
+    },
+    {
+      "title": "지속가능경영보고서등관련사항(자율공시)              ",
+      "date": "20260730",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730800578"
+    },
+    {
+      "title": "계열금융회사의약관에의한금융거래-[유가증권-수익증권]",
+      "date": "20260713",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713000454"
+    },
+    {
+      "title": "[기재정정]주요사항보고서(자본으로인정되는채무증권발행결정)",
+      "date": "20260629",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260629000009"
+    },
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260624",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624800900"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260624",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624000441"
+    }
+  ]
+}

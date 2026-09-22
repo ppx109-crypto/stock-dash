@@ -3,6 +3,136 @@
   "name": "케이티",
   "halves": [
     {
+      "period": "2020-06",
+      "revenue": 117082.19,
+      "profit": 7249.41,
+      "receipt": "20200814002766",
+      "matched": [
+        {
+          "account_nm": "영업수익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 39 기 반기",
+          "used": "cumulative",
+          "add": "11708219000000",
+          "amount": "5876503000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 39 기 반기",
+          "used": "cumulative",
+          "add": "724941000000",
+          "amount": "341863000000"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20200814002766"
+    },
+    {
+      "period": "2021-06",
+      "revenue": 120570.38,
+      "profit": 9200.35,
+      "receipt": "20210817002327",
+      "matched": [
+        {
+          "account_nm": "영업수익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 40 기 반기",
+          "used": "cumulative",
+          "add": "12057038000000",
+          "amount": "6027612000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 40 기 반기",
+          "used": "cumulative",
+          "add": "920035000000",
+          "amount": "475880000000"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210817002327"
+    },
+    {
+      "period": "2022-06",
+      "revenue": 125898.52,
+      "profit": 10857.9,
+      "receipt": "20220816001848",
+      "matched": [
+        {
+          "account_nm": "영업수익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 41 기 반기",
+          "used": "cumulative",
+          "add": "12589852000000",
+          "amount": "6312152000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 41 기 반기",
+          "used": "cumulative",
+          "add": "1085790000000",
+          "amount": "459171000000"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20220816001848"
+    },
+    {
+      "period": "2023-06",
+      "revenue": 129911.97,
+      "profit": 10622.13,
+      "receipt": "20230814002427",
+      "matched": [
+        {
+          "account_nm": "영업수익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 42 기 반기",
+          "used": "cumulative",
+          "add": "12991197000000",
+          "amount": "6547521000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 42 기 반기",
+          "used": "cumulative",
+          "add": "1062213000000",
+          "amount": "576108000000"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230814002427"
+    },
+    {
+      "period": "2024-06",
+      "revenue": 132009.73,
+      "profit": 10004.86,
+      "receipt": "20240814004236",
+      "matched": [
+        {
+          "account_nm": "영업수익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 43 기 반기",
+          "used": "cumulative",
+          "add": "13200973000000",
+          "amount": "6546399000000"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "IS",
+          "thstrm_nm": "제 43 기 반기",
+          "used": "cumulative",
+          "add": "1000486000000",
+          "amount": "493986000000"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240814004236"
+    },
+    {
       "period": "2025-06",
       "revenue": 142724.54,
       "profit": 17035.89,
@@ -12,6 +142,7 @@
           "account_nm": "영업수익",
           "sj_div": "IS",
           "thstrm_nm": "제 44 기 반기",
+          "used": "cumulative",
           "add": "14272454000000",
           "amount": "7427337000000"
         },
@@ -19,10 +150,12 @@
           "account_nm": "영업이익(손실)",
           "sj_div": "IS",
           "thstrm_nm": "제 44 기 반기",
+          "used": "cumulative",
           "add": "1703589000000",
           "amount": "1014818000000"
         }
       ],
+      "measure": "cumulative",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814003695"
     },
     {
@@ -35,6 +168,7 @@
           "account_nm": "영업수익",
           "sj_div": "IS",
           "thstrm_nm": "제 45 기 반기",
+          "used": "cumulative",
           "add": "13458314000000",
           "amount": "6679866000000"
         },
@@ -42,10 +176,12 @@
           "account_nm": "영업이익",
           "sj_div": "IS",
           "thstrm_nm": "제 45 기 반기",
+          "used": "cumulative",
           "add": "1131016000000",
           "amount": "648315000000"
         }
       ],
+      "measure": "cumulative",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003463"
     }
   ],
@@ -57,6 +193,38 @@
     "acc_mt": "12"
   },
   "years": [
+    {
+      "year": 2019,
+      "revenue": 243420.64,
+      "profit": 11510.65,
+      "receipt": "20200330004658",
+      "net_income": 6191.82,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20200330004658"
+    },
+    {
+      "year": 2020,
+      "revenue": 239166.67,
+      "profit": 11841.07,
+      "receipt": "20210319001235",
+      "net_income": 6580.25,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210319001235"
+    },
+    {
+      "year": 2021,
+      "revenue": 248980.05,
+      "profit": 16718.24,
+      "receipt": "20221006000582",
+      "net_income": 13568.78,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20221006000582"
+    },
+    {
+      "year": 2022,
+      "revenue": 256500.11,
+      "profit": 16900.88,
+      "receipt": "20230323001449",
+      "net_income": 12624.98,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230323001449"
+    },
     {
       "year": 2023,
       "revenue": 263762.73,
@@ -84,7 +252,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-20",
+  "fetched": "2026-09-22",
   "disclosures": [
     {
       "title": "자기주식취득결과보고서",
