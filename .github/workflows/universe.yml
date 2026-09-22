@@ -28,6 +28,9 @@ jobs:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           KIS_ENV: real
+          # 한 번 받은 토큰을 이 작업 안에서 함께 씁니다. 증권사가
+          # 잦은 재발급을 제한하기 때문입니다. 작업이 끝나면 사라집니다.
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           UNIVERSE_SIZE: ${{ inputs.size || '200' }}
       - name: Save the list when it changed
         if: always()

@@ -1,4 +1,5 @@
 """Personal domestic-stock balance reader. No order endpoints."""
+import json
 import os
 import re
 import time
@@ -71,14 +72,54 @@ class KIS:
                               + ' · 환경·키·서비스 상태를 확인하세요.')
         return response, data
 
+    def _saved(self):
+        """받아 둔 토큰을 다시 씁니다.
+
+        증권사는 접근토큰을 하루 한 번 발급하는 것을 원칙으로 하고, 짧은
+        사이에 여러 번 받으면 이용을 제한합니다. 한 작업 안에서 여러 단계가
+        차례로 돌 때마다 새로 받으면 금세 그 한도에 닿습니다. 그래서
+        KIS_TOKEN_FILE이 주어지면 그 파일에 두고 함께 씁니다. 저장소에는
+        넣지 않습니다. 한 번 돌고 사라지는 자리에만 둡니다.
+        """
+        path = os.getenv('KIS_TOKEN_FILE', '').strip()
+        if not path:
+            return None
+        try:
+            with open(path, encoding='utf-8') as handle:
+                kept = json.load(handle)
+        except (OSError, ValueError):
+            return None
+        if kept.get('key') != self.key or kept.get('mode') != self.mode:
+            return None
+        if not kept.get('token') or time.time() >= float(kept.get('expires', 0)):
+            return None
+        return kept
+
+    def _keep(self):
+        path = os.getenv('KIS_TOKEN_FILE', '').strip()
+        if not path:
+            return
+        try:
+            with open(path, 'w', encoding='utf-8') as handle:
+                json.dump({'key': self.key, 'mode': self.mode, 'token': self.token,
+                           'expires': self.expires}, handle)
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
+
     def authorize(self):
         if self.token and time.time() < self.expires:
+            return
+        kept = self._saved()
+        if kept:
+            self.token, self.expires = kept['token'], float(kept['expires'])
             return
         _, data = self.request('POST', '/oauth2/tokenP', json={'grant_type': 'client_credentials', 'appkey': self.key, 'appsecret': self.secret})
         if not data.get('access_token'):
             raise BrokerError('증권사 인증에 실패했습니다. 실전·모의 키가 선택 환경과 같은지 확인하세요.')
         self.token = data['access_token']
         self.expires = time.time() + max(0, amount(data.get('expires_in', 0)) - 120)
+        self._keep()
 
     def opinions(self, code, days=180):
         """한 종목의 증권사 투자의견과 목표가를 기간으로 받아옵니다.
