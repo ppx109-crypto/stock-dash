@@ -85,12 +85,23 @@ class Filings(unittest.TestCase):
         self.assertEqual(got[0]["며칠 전"], 5)
 
 
+class Spacing(unittest.TestCase):
+    """하루에 담는 수. 셋을 한날에 몰아 담으면 폭락 때 셋이 함께 물립니다."""
+
+    def test_the_rule_spaces_its_buying(self):
+        self.assertLess(rule.PER_DAY, rule.SLOTS)
+
+    def test_the_why_says_so(self):
+        """화면에 나가는 설명이 규칙과 어긋나면 안 됩니다."""
+        self.assertIn("하루에 새로 담는 것은 둘까지", rule.WHY)
+
+
 class Risk(unittest.TestCase):
     """골 수치는 화면에서 가장 무거운 숫자입니다. 셈이 맞아야 합니다."""
 
     def test_the_caveat_says_the_drawdown(self):
         """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
-        for must in ("−52.1%", "스물넉 달", "열여섯 번"):
+        for must in ("−48.6%", "스물넉 달", "열다섯 번"):
             self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
 
     def test_an_empty_run_gives_an_empty_report(self):

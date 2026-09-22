@@ -303,87 +303,25 @@ def both(rows, holds, edge=SPLIT, horizon=HORIZON):
 
 
 def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
-              cost=COST, rank=None, since=None):
-    """자금을 나눠 담고 실제로 굴려 봅니다.
+              cost=COST, rank=None, since=None, per_day=None):
+    """자금을 나눠 담고 실제로 굴려 봅니다. 앱 화면이 읽는 수치입니다.
 
     한 종목씩 따로 재면 '같은 날 후보가 쉰 개면 쉰 개를 다 산다'는 셈이
     됩니다. 실제로는 자리가 정해져 있고, 자리가 차면 다음 후보는 놓칩니다.
     놓친 기회까지 세어야 실제에 가까운 수치가 나옵니다.
 
-    자리 하나에 자금의 1/slots을 넣고, 먼저 닿는 쪽(익절·손절·기한)에서
-    끝냅니다. 같은 종목을 겹쳐 담지 않습니다.
+    한때 이 함수가 run과 따로 같은 일을 하고 있었습니다. 두 벌이 있으면
+    한쪽만 고쳐지고, 실제로 17회차에 그 일이 났습니다. 지금은 run 하나를
+    부르고 이름만 옛 화면에 맞춰 돌려줍니다.
     """
-    series = {code: [c for _, c in block["rows"]] for code, block in prices.items()}
-    picks = {}
-    for row in rows:
-        if holds(row) and (since is None or row["date"] >= since):
-            picks.setdefault(row["date"], []).append(row)
-    days = sorted(picks)
-    if not days:
+    got = run(rows, prices, holds, exit_fixed(take, stop, limit), slots=slots,
+              rank=rank, since=since, cost=cost, per_day=per_day)
+    if not got:
         return None
-    rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
-
-    open_slots, trades, missed = {}, [], 0
-    held, days_seen, year_gains, held_days = {}, set(), {}, []
-    for day in days:
-        # 먼저 정리할 자리를 정리합니다.
-        for code in list(open_slots):
-            spot = open_slots[code]
-            closes = series[code]
-            step = spot["step"] + 1
-            index = spot["i"] + step
-            if index >= len(closes):
-                del open_slots[code]
-                continue
-            move = (closes[index] / spot["price"] - 1) * 100
-            # 그날 종가로 나갑니다. 문턱 값에 정확히 나간다고 세면 안 됩니다.
-            # 하루 사이 15% 빠진 날 '손절 4%'로 적으면, 실제로 잃는 11%가
-            # 장부에서 사라집니다. 손절을 좁게 잡을수록 이 차이가 커집니다.
-            done = None
-            if move >= take or move <= -stop or step >= limit:
-                done = move
-            if done is None:
-                spot["step"] = step
-                continue
-            trades.append(done - cost)
-            year_gains.setdefault(day[:4], []).append(done - cost)
-            held_days.append(step)
-            del open_slots[code]
-        days_seen.add(day)
-        held[day] = len(open_slots)
-        room = slots - len(open_slots)
-        today = sorted(picks[day], key=rank)
-        for row in today[:max(room, 0)]:
-            if row["code"] in open_slots:
-                continue
-            open_slots[row["code"]] = {"i": row["i"], "price": row["price"], "step": 0}
-        missed += max(0, len(today) - max(room, 0))
-    if len(trades) < 60:
-        return None
-    ordered = sorted(trades)
-    cut = max(1, len(ordered) // 10)
-    wins = sum(1 for t in trades if t > 0)
-    # 자리가 실제로 얼마나 차 있었는지. 비어 있는 동안 그 몫은 놀았습니다.
-    # 이것을 모르면 '연 8%'가 어디서 왔는지 알 수 없습니다.
-    filled = sum(held.values())
-    span = len(days_seen)
-    busy = filled / (span * slots) * 100 if span else 0
-    by_year = {}
-    for year, gains in year_gains.items():
-        by_year[year] = round(sum(gains) / slots, 2)
-    # 자리가 slots개이므로 한 번의 매매에는 자금의 1/slots이 들어갑니다.
-    # 자리가 비어 있는 동안 그 몫은 놀고 있으므로, 거기까지 넣어 잽니다.
-    years = (int(days[-1][:4]) - int(days[0][:4])) + 1
-    yearly = sum(trades) / slots / max(years, 1)
-    return {"자리": slots, "매매": len(trades), "놓침": missed,
-            "연수익": round(yearly, 2), "연매매": round(len(trades) / max(years, 1), 1),
-            "가동률": round(busy, 1), "해마다": dict(sorted(by_year.items())),
-            "보유일중앙": sorted(held_days)[len(held_days) // 2] if held_days else 0,
-            "승률": round(wins / len(trades) * 100, 1),
-            "평균": round(sum(trades) / len(trades), 2),
-            "중앙": round(sorted(trades)[len(trades) // 2], 2),
-            "하위10%": round(sum(ordered[:cut]) / cut, 1),
-            "최악": round(ordered[0], 1)}
+    years = max(len({row["date"][:4] for row in rows
+                     if holds(row) and (since is None or row["date"] >= since)}), 1)
+    return {**got, "자리": slots, "보유일중앙": got["보유중앙"],
+            "연매매": round(got["매매"] / years, 1)}
 
 
 def lanes(prices):
@@ -490,7 +428,7 @@ def streak(gains):
 
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
-        greedy=False, per_day=None, delay=0):
+        greedy=False, per_day=None, delay=0, busy_cap=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -504,7 +442,9 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     입니다. 둘을 쓰면 그만큼 자리가 줄고, 손익도 두 몫으로 셉니다. 승률과
     매매당 수익은 자리 수와 상관없는 값이므로 그대로 한 번씩 셉니다.
 
-    per_day를 두면 하루에 그만큼만 새로 담습니다. delay를 두면 걸린 날
+    per_day를 두면 하루에 그만큼만 새로 담습니다. busy_cap을 두면 자리가
+    남아 있어도 그만큼까지만 채우고 나머지는 현금으로 둡니다. 둘 다 그날의
+    한 줄을 받아 수를 돌려주는 함수여도 됩니다(그날 형편에 따라 달리 할 때). delay를 두면 걸린 날
     바로 사지 않고 그 종목 기준 며칠 뒤 종가에 삽니다. 판단은 걸린 날에
     끝나 있으므로 뒷날을 보는 것이 아닙니다.
     """
@@ -552,14 +492,20 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         seen += 1
         used = sum(spot["자리"] for spot in open_slots.values())
         busy += used
-        room = slots - used
+        top = slots
+        if busy_cap is not None:
+            want = busy_cap(picks[day][0]) if callable(busy_cap) else busy_cap
+            top = min(slots, max(int(want), 0))
+        room = top - used
         ready = [row for row in sorted(picks[day], key=rank)
                  if row["i"] >= rest.get(row["code"], 0)]
         # 빈 자리 수만큼만 위에서부터 봅니다. 그중 이미 들고 있는 종목이 있으면
         # 그 자리는 그날 비워 둡니다. greedy=True면 다음 후보로 마저 채웁니다.
         bought = 0
         for row in (ready if greedy else ready[:max(room, 0)]):
-            if used >= slots or (per_day is not None and bought >= per_day):
+            allowed = (per_day(row) if callable(per_day) else per_day) \
+                if per_day is not None else None
+            if used >= top or (allowed is not None and bought >= allowed):
                 break
             if row["code"] in open_slots:
                 continue
@@ -568,7 +514,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             if spot >= len(closes):
                 continue
             # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
-            want = min(max(int(size(row)), 1), slots - used)
+            want = min(max(int(size(row)), 1), top - used)
             open_slots[row["code"]] = {"i": spot, "price": closes[spot],
                                        "step": 0, "peak": closes[spot],
                                        "row": row, "자리": want}
@@ -660,11 +606,15 @@ def wobble(rows, prices, holds, exit_at, tries=6, size=0.05, rank=None, **kw):
     if not got:
         return None
     gains = sorted(one["연수익"] for one in got)
+    dips = sorted(one["최대낙폭"] for one in got)
     base = found[0]
     return {**(base or got[0]), "연수익": gains[len(gains) // 2],
             "그대로": base["연수익"] if base else None,
             "가장 낮음": gains[0], "가장 높음": gains[-1],
-            "폭": round(gains[-1] - gains[0], 2), "돌린 수": len(gains)}
+            "폭": round(gains[-1] - gains[0], 2),
+            # 골에도 자를 대야 합니다. 골의 폭보다 작은 차이는 차이가 아닙니다.
+            "최대낙폭": dips[len(dips) // 2],
+            "골 폭": round(dips[-1] - dips[0], 2), "돌린 수": len(gains)}
 
 
 def walk(lane_one, row, exit_at, cap=60):

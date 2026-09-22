@@ -4,6 +4,11 @@
 절반이 쉬는 것이고, 그만큼 한 해 수익이 깎입니다. 그래서 강도를 층으로 두고
 센 것부터 자리를 채웁니다. 센 후보가 없는 날은 그다음 층으로 채웁니다.
 
+자리가 셋이어도 하루에 담는 것은 둘까지입니다. 셋을 한날에 몰아 담으면
+그날 시장이 밀린 날일 때 셋이 함께 물립니다. 20회차에 재어 보니 그것만
+막아도 가장 깊은 골이 −50.8%에서 −47.2%로(전체 구간 −52.1% → −49.9%)
+얕아지고, 연수익은 그대로였습니다.
+
 한때 실적 조건을 넣었다가 뺐습니다. 실적이 붙은 관측은 2017년 이후뿐인데
 그 구간이 원래 좋은 구간이었습니다. 같은 구간에서 견주니 오히려 깎였습니다.
 정배열도 네 번 재어 보았지만 매번 덧셈이 0이었습니다.
@@ -25,6 +30,7 @@ TIERS = ((-20.0, -2.5), (-15.0, -2.0), (-12.0, -2.0), (-10.0, -2.0))
 TAKE, STOP = 15.0, 7.0   # 익절·손절
 LIMIT = 15               # 세 주. 이 거래일이 지나면 그냥 정리
 SLOTS = 3                # 자리. 자금을 셋으로 나눕니다.
+PER_DAY = 2              # 하루에 새로 담는 수. 셋을 한날에 몰아 담지 않습니다.
 OUT = Path("study") / "rule.json"
 
 WHY = (
@@ -32,7 +38,9 @@ WHY = (
     "그 종목의 지난 120거래일 이격과 견줘도 이례적인 날입니다. 같은 −15%라도 "
     "늘 출렁이는 종목에는 흔한 일이고 조용한 종목에는 큰 일이라, 종목마다 제 "
     "잣대로 잽니다. 벌어진 정도에 따라 네 층으로 나누고, 센 층부터 자리를 "
-    "채웁니다. 센 후보가 없는 날은 다음 층으로 채워 자금이 놀지 않게 합니다."
+    "채웁니다. 센 후보가 없는 날은 다음 층으로 채워 자금이 놀지 않게 합니다. "
+    "다만 하루에 새로 담는 것은 둘까지입니다. 셋을 한날에 몰아 담으면 그날이 "
+    "시장이 밀린 날일 때 셋이 함께 물립니다."
 )
 CAVEAT = (
     "크게 밀린 종목을 사는 규칙이라 더 밀릴 수 있습니다. 손절을 7%로 두어도 "
@@ -40,9 +48,9 @@ CAVEAT = (
     "−30.2%였고, 가장 나빴던 열에 하나는 −14.7%였습니다. 열 번 중 다섯 번은 "
     "집니다. "
     "무엇보다, 한 번의 손실보다 이어지는 손실이 큽니다. 자리 셋으로 굴렸다면 "
-    "지갑이 가장 깊게 파였을 때 −52.1%였고(2019년 2월 꼭대기 → 2020년 3월 "
+    "지갑이 가장 깊게 파였을 때 −48.6%였고(2019년 2월 꼭대기 → 2020년 3월 "
     "바닥), 본전으로 돌아오는 데 그 꼭대기에서 스물넉 달이 걸렸습니다. "
-    "열여섯 번을 내리 졌던 적도 있습니다. 해마다 한 번씩은 −6%에서 −49% "
+    "열다섯 번을 내리 졌던 적도 있습니다. 해마다 한 번씩은 −8%에서 −46% "
     "사이로 파였습니다. 한 해도 예외가 없었습니다. "
     "지나간 자료로 확인한 것이며 앞날을 약속하지 않습니다. "
     "매수·매도 신호가 아닙니다."
@@ -144,7 +152,8 @@ def exit_stats(rows, prices, since=lab.SPLIT):
     모집단이 다르면 답도 다릅니다.
     """
     out = lab.run(rows, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
-                  slots=SLOTS, rank=order, since=since, detail=True)
+                  slots=SLOTS, rank=order, since=since, detail=True,
+                  per_day=PER_DAY)
     if not out:
         return {}
     bought = [got["행"] for got in out["매매목록"]]
@@ -169,7 +178,8 @@ def risk_stats(rows, prices, since=lab.SPLIT):
     반으로 줄고 이 년 걸려 돌아오는 일입니다. 그것을 적어 둡니다.
     """
     out = lab.run(rows, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
-                  slots=SLOTS, rank=order, since=since, detail=True)
+                  slots=SLOTS, rank=order, since=since, detail=True,
+                  per_day=PER_DAY)
     if not out:
         return {}
     led = sorted(out["매매목록"], key=lambda got: got["판 날"])
@@ -206,7 +216,8 @@ def report(rows, prices):
         "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
         "기준": lab.score(rows), "규칙": lab.score(picked),
         "굴림": lab.portfolio(rows, prices, holds, slots=SLOTS, take=TAKE,
-                            stop=STOP, limit=LIMIT, since="20160101", rank=order),
+                            stop=STOP, limit=LIMIT, since="20160101", rank=order,
+                            per_day=PER_DAY),
         "층별": tier_stats(rows),
         "청산 견주기": exit_stats(rows, prices),
         "골": risk_stats(rows, prices),
