@@ -5,7 +5,7 @@
 숫자만 봐서는 알아챌 수 없습니다. 실제로 이 저장소에서도 한 번 있었습니다.
 오늘의 실적으로 몇 해 전의 날을 판정하고 있었습니다.
 
-그래서 네 겹으로 막습니다.
+그래서 다섯 겹으로 막습니다.
 
 1. **더럽히기** — 그날 뒤의 값을 엉뚱한 수로 바꿔 다시 계산합니다. 특징이
    조금이라도 달라지면 그 값은 뒷날을 본 것입니다. '안 쓴 척'이 아니라
@@ -14,19 +14,24 @@
    같은 값이 나와야 합니다.
 3. **날짜 확인** — 실적과 목표가는 발표일이 그날보다 뒤면 쓰지 않았는지
    하나씩 짚습니다.
-4. **가로줄 검사** — 그날 온 종목을 가로로 견주어 만든 값(시장 이격 같은
+4. **공시 검사** — 신호에 붙인 공시가 하나라도 그날보다 뒤에 접수된 것이면
+   멈춥니다. 공시는 접수일에 공개되므로, 그 뒤의 것을 쓰면 그대로
+   미래참조입니다. 붙이는 쪽(events.py)에서 한 번 거르고 여기서 다시
+   짚습니다.
+5. **가로줄 검사** — 그날 온 종목을 가로로 견주어 만든 값(시장 이격 같은
    것)은 한 종목만 떼어 다시 만들 수가 없어 1·2번이 닿지 않습니다. 대신
    그날 뒤의 줄을 통째로 더럽히거나 잘라 낸 뒤 다시 만들어, 그날 값이
    그대로인지 봅니다. 이 검사가 닿지 않은 가로줄 값이 하나라도 있으면
    그대로 멈춥니다. 빼먹어도 지나가는 일이 없도록 열어 두지 않습니다.
 
-네 겹 모두 통과해야 조사를 돌립니다. 하나라도 어긋나면 멈추고 어느 값이
+다섯 겹 모두 통과해야 조사를 돌립니다. 하나라도 어긋나면 멈추고 어느 값이
 어긋났는지 말합니다.
 """
 from __future__ import annotations
 
 import random
 
+import events
 import lab
 import study
 
@@ -39,6 +44,10 @@ KEYS = {"code", "date", "i"}
 # 여기에 이름을 올리면 1·2번을 면제받는 것이므로, verify가 이 이름들이
 # 정말 4번 검사를 지났는지 되짚습니다.
 CROSS = {"시장 이격", "상대 이격"}
+# 공시에서 온 값입니다. 가로줄과 같은 까닭으로 1·2번이 닿지 않습니다(한 종목의
+# 일봉만으로는 다시 만들 수 없습니다). check_filings가 따로 맡고, verify가
+# 정말 그 검사를 지났는지 되짚습니다.
+FILED = {events.MARK, events.AGE}
 
 
 class LookaheadError(AssertionError):
@@ -89,7 +98,7 @@ def check_corruption(prices, rows, samples=40, seed=7, warmup=120):
         found = _pick(again, code, day)
         if found is None:
             continue
-        _compare(row, found, code, day, "뒷날 값을 바꾼", skip=CROSS)
+        _compare(row, found, code, day, "뒷날 값을 바꾼", skip=CROSS | FILED)
         done += 1
     return done
 
@@ -111,7 +120,7 @@ def check_truncation(prices, rows, samples=40, seed=11, warmup=120):
         found = _pick(again, code, day)
         if found is None:
             continue
-        _compare(row, found, code, day, "뒷날을 잘라 낸", skip=CROSS)
+        _compare(row, found, code, day, "뒷날을 잘라 낸", skip=CROSS | FILED)
         done += 1
     return done
 
@@ -190,23 +199,64 @@ def check_cross_section(rows, samples=3, seed=17):
     return seen
 
 
+def check_filings(rows, samples=600, seed=19):
+    """붙인 공시가 그날 이전에 접수된 것인지 하나씩 짚습니다.
+
+    갈래만 보고 넘어가면 안 됩니다. 그 갈래의 공시가 그날 이전 window일
+    안에 **실제로** 있었는지를 원장(timeline)에서 다시 찾습니다. 없으면
+    어디선가 뒷날 것이 흘러든 것입니다.
+    """
+    picker = random.Random(seed)
+    have = [row for row in rows if events.MARK in row]
+    if not have:
+        return 0
+    looked = 0
+    for row in picker.sample(have, min(samples, len(have))):
+        day, code = row["date"], row["code"]
+        stamps = [when for when, _ in events.timeline(code) if when <= day]
+        for kind in row[events.MARK]:
+            found = [when for when, name in events.timeline(code)
+                     if name == kind and when <= day
+                     and when >= events._back(day, events.WINDOW)]
+            if not found:
+                raise LookaheadError(
+                    f"{code} {day} · '{kind}' 공시를 붙여 놓았는데 그날까지 "
+                    "접수된 그 갈래의 공시가 없습니다. 뒷날 것을 본 것입니다.")
+            looked += 1
+        age = row.get(events.AGE)
+        if age is not None:
+            if age < 0:
+                raise LookaheadError(
+                    f"{code} {day} · 공시 나이가 {age}일입니다. 아직 나지 않은 "
+                    "공시를 보고 있습니다.")
+            if not stamps:
+                raise LookaheadError(
+                    f"{code} {day} · 그날까지 접수된 공시가 없는데 나이가 "
+                    f"{age}일로 붙어 있습니다.")
+            looked += 1
+    return looked
+
+
 def verify(prices, rows, samples=40, loud=True):
     """네 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다."""
     one = check_corruption(prices, rows, samples=samples)
     two = check_truncation(prices, rows, samples=samples)
     three = check_dates(rows)
-    four = check_cross_section(rows)
-    # 1·2번을 면제받은 이름이 4번도 지나지 않았다면 아무도 보지 않은 것입니다.
+    four = check_filings(rows)
+    five = check_cross_section(rows)
+    # 1·2번을 면제받은 이름이 제 검사도 지나지 않았다면 아무도 보지 않은 것입니다.
     present = {name for row in rows for name in CROSS if name in row}
-    missed = sorted(name for name in present if not four.get(name))
+    missed = sorted(name for name in present if not five.get(name))
+    if {name for row in rows for name in FILED if name in row} and not four:
+        missed.append("공시")
     if missed:
         raise LookaheadError(
-            "가로줄 값이 어느 검사도 지나지 않았습니다 → " + " / ".join(missed))
+            "면제받은 값이 어느 검사도 지나지 않았습니다 → " + " / ".join(missed))
     if loud:
         print(f"미래참조 검사 통과 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
-              f"날짜 확인 {three}건 · 가로줄 {sum(four.values())}건")
+              f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건")
     return {"corruption": one, "truncation": two, "dates": three,
-            "cross": sum(four.values())}
+            "filings": four, "cross": sum(five.values())}
 
 
 def build_verified(prices=None, samples=25, **kwargs):

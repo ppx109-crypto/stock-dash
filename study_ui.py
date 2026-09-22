@@ -83,11 +83,20 @@ def render_rule():
                        "매출성장": (f'{r["매출성장"]:+.1f}%'
                                 if r.get("매출성장") is not None else "—"),
                        "목표가 괴리": (f'{r["목표가괴리"]:+.1f}%'
-                                  if r.get("목표가괴리") is not None else "—")}
+                                  if r.get("목표가괴리") is not None else "—"),
+                       "최근 공시": (", ".join(f'{g["갈래"]}({g["며칠 전"]}일 전)'
+                                           for g in r["최근 공시"])
+                                 if r.get("최근 공시") else
+                                 ("없음" if r.get("최근 공시") == [] else "—"))}
                       for r in hit], hide_index=True, width="stretch",
                      height=_fits(len(hit), cap=20))
     else:
         st.info("오늘은 걸리는 종목이 없습니다. 조건을 낮추지 말고 기다리는 자리입니다.")
+    if any(r.get("최근 공시") for r in hit):
+        st.caption("'최근 공시'는 그 종목에 최근 20일 안에 난 공시입니다. "
+                   "조건으로는 쓰지 않습니다 — 공시로 후보를 걸러 보았더니 "
+                   "앞뒤 구간 모두에서 오히려 나빠졌습니다. 읽고 판단하시라고 "
+                   "적어 둘 뿐입니다.")
     top = [r for r in hit if r.get("층") == 1]
     if top:
         st.success("오늘 1층이 " + ", ".join(r["name"] for r in top) +

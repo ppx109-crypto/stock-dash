@@ -176,5 +176,53 @@ class CrossSectionGuard(unittest.TestCase):
         self.assertIn("어느 검사도 지나지 않았습니다", str(caught.exception))
 
 
+class FilingGuard(unittest.TestCase):
+    """공시는 접수일에 공개됩니다. 그 뒤의 것을 붙이면 멈춰야 합니다."""
+
+    def setUp(self):
+        patcher = patch.object(guard.events, "timeline",
+                               return_value=(("20200110", "자사주취득"),
+                                             ("20200320", "유상증자")))
+        patcher.start(); self.addCleanup(patcher.stop)
+
+    def test_a_filing_from_before_the_day_is_fine(self):
+        rows = [{"code": "005930", "date": "20200115",
+                 guard.events.MARK: ["자사주취득"], guard.events.AGE: 5}]
+        self.assertGreater(guard.check_filings(rows), 0)
+
+    def test_a_filing_from_after_the_day_is_caught(self):
+        """3월 공시를 1월의 신호에 붙여 놓으면 잡아야 합니다."""
+        rows = [{"code": "005930", "date": "20200115",
+                 guard.events.MARK: ["유상증자"], guard.events.AGE: 5}]
+        with self.assertRaises(guard.LookaheadError) as caught:
+            guard.check_filings(rows)
+        self.assertIn("유상증자", str(caught.exception))
+
+    def test_a_filing_too_far_back_is_caught(self):
+        """창 밖의 공시를 '최근'이라고 붙여도 잡아야 합니다."""
+        rows = [{"code": "005930", "date": "20200601",
+                 guard.events.MARK: ["자사주취득"], guard.events.AGE: 3}]
+        with self.assertRaises(guard.LookaheadError):
+            guard.check_filings(rows)
+
+    def test_a_negative_age_is_caught(self):
+        rows = [{"code": "005930", "date": "20200115",
+                 guard.events.MARK: [], guard.events.AGE: -2}]
+        with self.assertRaises(guard.LookaheadError):
+            guard.check_filings(rows)
+
+    def test_an_unchecked_filing_column_stops_verify(self):
+        rows = [{"code": "005930", "date": "20200115", "i": 200,
+                 guard.events.MARK: ["자사주취득"], guard.events.AGE: 5}]
+        with patch.object(guard, "check_filings", return_value=0), \
+             patch.object(guard, "check_corruption", return_value=0), \
+             patch.object(guard, "check_truncation", return_value=0), \
+             patch.object(guard, "check_dates", return_value=0), \
+             patch.object(guard, "check_cross_section", return_value={}):
+            with self.assertRaises(guard.LookaheadError) as caught:
+                guard.verify({}, rows, samples=1, loud=False)
+        self.assertIn("공시", str(caught.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

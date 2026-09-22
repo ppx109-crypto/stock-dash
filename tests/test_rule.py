@@ -5,6 +5,9 @@
 """
 import unittest
 
+from unittest.mock import patch
+
+import events
 import lab
 import rule
 
@@ -49,6 +52,37 @@ class TierStats(unittest.TestCase):
         for row in mixed[:30]:
             row["ahead"] = {}
         self.assertEqual(rule.tier_stats(mixed), [])
+
+
+class Filings(unittest.TestCase):
+    """오늘 후보 옆에 붙는 공시. 그날까지 난 것만이어야 합니다."""
+
+    def setUp(self):
+        patcher = patch.object(events, "timeline",
+                               return_value=(("20200110", "자사주취득"),
+                                             ("20200320", "유상증자")))
+        patcher.start(); self.addCleanup(patcher.stop)
+
+    def test_only_filings_up_to_that_day(self):
+        got = rule._filings("005930", "20200115")
+        self.assertEqual([one["갈래"] for one in got], ["자사주취득"])
+
+    def test_a_later_filing_never_appears(self):
+        """3월 공시는 1월의 줄에 나오면 안 됩니다."""
+        got = rule._filings("005930", "20200115")
+        self.assertNotIn("유상증자", [one["갈래"] for one in got])
+
+    def test_an_old_filing_falls_out_of_the_window(self):
+        self.assertEqual(rule._filings("005930", "20200601"), [])
+
+    def test_a_stock_with_no_data_says_so(self):
+        """자료가 없는 종목은 '공시 없음'이 아니라 '모름'입니다."""
+        with patch.object(events, "covered", return_value=False):
+            self.assertIsNone(rule._filings("000000", "20200115"))
+
+    def test_the_age_is_counted_back_from_the_day(self):
+        got = rule._filings("005930", "20200115")
+        self.assertEqual(got[0]["며칠 전"], 5)
 
 
 if __name__ == "__main__":

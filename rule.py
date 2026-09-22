@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import events
 import lab
 
 NAME = "중기선에서 이례적으로 벌어진 종목"
@@ -64,7 +65,13 @@ def order(row):
 
 
 def today(rows):
-    """종목마다 가장 마지막 날을 보고, 오늘 걸리는지 봅니다."""
+    """종목마다 가장 마지막 날을 보고, 오늘 걸리는지 봅니다.
+
+    최근 공시도 함께 붙입니다. 18회차에 재어 보니 공시로 후보를 거르면
+    오히려 나빠졌습니다(순서가 이미 뽑고 있고, 거르면 자리가 놉니다).
+    그래서 조건으로는 쓰지 않고, 사람이 읽을 것으로만 둡니다. 같은 −20%라도
+    유상증자가 사흘 전이었는지 아닌지는 알고 보는 편이 낫습니다.
+    """
     latest = {}
     for row in rows:
         code = row["code"]
@@ -81,7 +88,8 @@ def today(rows):
                       "60일 전 대비": row.get("60일 전 대비"),
                       "영업이익성장": row.get("영업이익성장"),
                       "매출성장": row.get("매출성장"),
-                      "목표가괴리": row.get("목표가괴리")})
+                      "목표가괴리": row.get("목표가괴리"),
+                      "최근 공시": _filings(code, row["date"])})
     found.sort(key=lambda r: (not r["해당"], r.get("층") or 9,
                               r.get("중기 이격밴드") or 0))
     return found
@@ -136,6 +144,16 @@ def exit_stats(rows, prices, since=lab.SPLIT):
     bought = [got["행"] for got in out["매매목록"]]
     return lab.paired(bought, prices,
                       {tag: make() for tag, make in EXITS.items()})
+
+
+def _filings(code, day):
+    """그날까지 접수된 공시만 봅니다. 뒷날 것은 애초에 오지 않습니다."""
+    if not events.covered(code):
+        return None
+    kinds, age = events.recent(code, day, events.WINDOW)
+    if not kinds:
+        return []
+    return [{"갈래": kind, "며칠 전": age} for kind in sorted(kinds)]
 
 
 def report(rows, prices):
