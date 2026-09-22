@@ -352,7 +352,7 @@ def precursors(rows, horizon=20, rise=5.0, signals=SIGNALS, floor=100):
     return found
 
 
-def around_filings(prices, span=60, margin_edge=15.0):
+def around_filings(prices, span=60, margin_edge=15.0, floor=10):
     """공시를 가운데 두고 앞뒤 수익률을 견줍니다.
 
     좋은 실적이 이미 주가에 들어가 있었다면, 오름은 공시 앞쪽에 있어야 합니다.
@@ -381,7 +381,7 @@ def around_filings(prices, span=60, margin_edge=15.0):
             buckets[label]["after"].append((closes[i + span] / closes[i] - 1) * 100)
     found = {}
     for label, sides in buckets.items():
-        if len(sides["before"]) < 10:
+        if len(sides["before"]) < floor:
             continue
         found[label] = {
             "건수": len(sides["before"]),

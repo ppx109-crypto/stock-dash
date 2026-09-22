@@ -195,23 +195,42 @@ if __name__ == "__main__":
 class AroundFilings(unittest.TestCase):
     """공시 앞뒤를 가르는 부분. 앞이 크면 이미 들어가 있었다는 뜻입니다."""
 
-    def prices(self, before, after):
-        rows = [(f"2025{(i // 28) + 1:02d}{(i % 28) + 1:02d}", 100.0) for i in range(61)]
-        rows += [(f"2026{(i // 28) + 1:02d}{(i % 28) + 1:02d}", 100.0 * before)]
-        rows += [(f"2027{(i // 28) + 1:02d}{(i % 28) + 1:02d}", 100.0 * before * after)
-                 for i in range(61)]
+    def prices(self, before, after, span=5):
+        """공시 전 span일에 before배, 공시 후 span일에 after배가 되는 값입니다."""
+        rows, price = [], 100.0
+        for i in range(span):
+            rows.append((f"2025{i + 1:02d}01", price))
+        price *= before
+        rows.append(("20260101", price))          # 공시 뒤 첫 거래일
+        for i in range(span):
+            rows.append((f"2027{i + 1:02d}01", price * after))
         return {"005930": {"name": "테스트", "rows": rows}}
 
     def timeline(self, margin):
-        return [(f"2026{1:02d}{1:02d}", {"영업이익률": margin, "흑자": True})]
+        return [("20260101", {"영업이익률": margin, "흑자": True})]
 
     def test_a_run_up_before_the_filing_is_visible(self):
         prices = self.prices(1.5, 1.05)
         with unittest.mock.patch.object(study, "money_timeline",
                                         return_value=self.timeline(20.0)):
-            found = study.around_filings(prices, span=60)
-        self.assertNotIn("좋음", found)   # 공시가 하나뿐이라 열 건에 못 미칩니다.
+            found = study.around_filings(prices, span=5, floor=1)
+        self.assertAlmostEqual(found["좋음"]["공시전 중앙"], 50.0)
+        self.assertAlmostEqual(found["좋음"]["공시후 중앙"], 5.0)
+
+    def test_a_thin_margin_lands_in_the_ordinary_bucket(self):
+        with unittest.mock.patch.object(study, "money_timeline",
+                                        return_value=self.timeline(3.0)):
+            found = study.around_filings(self.prices(1.2, 1.1), span=5, floor=1)
+        self.assertIn("보통", found)
+        self.assertNotIn("좋음", found)
+
+    def test_a_loss_is_kept_apart(self):
+        with unittest.mock.patch.object(
+                study, "money_timeline",
+                return_value=[("20260101", {"영업이익률": -2.0, "흑자": False})]):
+            found = study.around_filings(self.prices(1.1, 1.1), span=5, floor=1)
+        self.assertIn("적자", found)
 
     def test_too_few_filings_report_nothing(self):
         with unittest.mock.patch.object(study, "money_timeline", return_value=[]):
-            self.assertEqual(study.around_filings(self.prices(1.2, 1.1)), {})
+            self.assertEqual(study.around_filings(self.prices(1.2, 1.1), span=5), {})
