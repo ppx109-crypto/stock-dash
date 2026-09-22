@@ -226,6 +226,34 @@ def score(rows, horizon=HORIZON, rise=RISE, cost=COST):
             "하위10%": round(statistics.fmean(ordered[:cut]), 1)}
 
 
+def market_relative(rows):
+    """그날 시장이 함께 밀린 것인지, 그 종목만 밀린 것인지 가릅니다.
+
+    시장이 통째로 5% 빠진 날에는 거의 모든 종목이 이동평균 아래로 벌어집니다.
+    그때의 -15%와, 시장은 멀쩡한데 혼자 -15%인 것은 전혀 다른 일입니다.
+    앞은 시장을 사는 것이고 뒤는 그 회사에 무슨 일이 난 것입니다.
+
+    그날 모든 종목의 이격 중앙값을 시장 몫으로 보고, 거기서 뺀 나머지를
+    그 종목 몫으로 둡니다. 그날 자료만 쓰므로 뒷날을 보지 않습니다.
+    """
+    by_day = {}
+    for row in rows:
+        gap = row.get("중기 이격")
+        if gap is not None:
+            by_day.setdefault(row["date"], []).append(gap)
+    middle = {}
+    for day, gaps in by_day.items():
+        gaps.sort()
+        middle[day] = gaps[len(gaps) // 2]
+    for row in rows:
+        gap = row.get("중기 이격")
+        if gap is None:
+            continue
+        row["시장 이격"] = round(middle[row["date"]], 3)
+        row["상대 이격"] = round(gap - middle[row["date"]], 3)
+    return rows
+
+
 def save(rows, path=CACHE):
     path.parent.mkdir(exist_ok=True)
     slim = [{k: v for k, v in r.items() if k != "i"} | {"i": r["i"]} for r in rows]
@@ -368,11 +396,12 @@ def lanes(prices):
     return found
 
 
-# 청산 방법들. 모두 (길, 진입자리, 진입가, 지난 거래일, 그동안 최고가)를 받고
-# 나갈지 말지를 돌려줍니다. 나가는 값은 늘 그날 종가입니다.
+# 청산 방법들. 모두 (길, 진입자리, 진입가, 지난 거래일, 그동안 최고가, 산 날의
+# 한 줄)을 받고 나갈지 말지를 돌려줍니다. 나가는 값은 늘 그날 종가입니다.
+# 마지막 것은 층마다 다르게 나가고 싶을 때만 씁니다.
 def exit_fixed(take, stop, limit):
     """고정 익절·손절. 견줄 자리로 둡니다."""
-    def go(lane, start, price, step, peak):
+    def go(lane, start, price, step, peak, row=None):
         move = (lane["closes"][start + step] / price - 1) * 100
         return move >= take or move <= -stop or step >= limit
     return go
@@ -380,7 +409,7 @@ def exit_fixed(take, stop, limit):
 
 def exit_back_to_line(limit, cushion=0.0):
     """중기선으로 돌아오면 나갑니다. 벌어진 것이 메워지면 할 일이 끝납니다."""
-    def go(lane, start, price, step, peak):
+    def go(lane, start, price, step, peak, row=None):
         spot = start + step
         line = lane["중기선"][spot]
         if line and lane["closes"][spot] >= line * (1 + cushion / 100):
@@ -395,7 +424,7 @@ def exit_volatility(take_mult, stop_mult, limit):
     하루에 1%씩 움직이는 종목과 5%씩 움직이는 종목에 같은 7%를 걸면, 앞의
     종목은 거의 걸리지 않고 뒤의 종목은 하루 만에 걸립니다.
     """
-    def go(lane, start, price, step, peak):
+    def go(lane, start, price, step, peak, row=None):
         sigma = lane["변동성"][start] or 2.0
         move = (lane["closes"][start + step] / price - 1) * 100
         return move >= sigma * take_mult or move <= -sigma * stop_mult or step >= limit
@@ -404,7 +433,7 @@ def exit_volatility(take_mult, stop_mult, limit):
 
 def exit_trailing(give_back, arm, limit):
     """오른 뒤 되돌리면 나갑니다. 먼저 arm%만큼 올라야 작동합니다."""
-    def go(lane, start, price, step, peak):
+    def go(lane, start, price, step, peak, row=None):
         spot = start + step
         move = (lane["closes"][spot] / price - 1) * 100
         top = (peak / price - 1) * 100
@@ -416,7 +445,7 @@ def exit_trailing(give_back, arm, limit):
 
 def exit_trailing_vol(give_mult, arm_mult, limit):
     """되돌림 폭을 그 종목의 변동성으로 잽니다."""
-    def go(lane, start, price, step, peak):
+    def go(lane, start, price, step, peak, row=None):
         spot = start + step
         sigma = lane["변동성"][start] or 2.0
         move = (lane["closes"][spot] / price - 1) * 100
@@ -451,7 +480,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 del open_slots[code]
                 continue
             spot["peak"] = max(spot["peak"], closes[index])
-            if exit_at(lane[code], spot["i"], spot["price"], step, spot["peak"]):
+            if exit_at(lane[code], spot["i"], spot["price"], step, spot["peak"],
+                       spot["row"]):
                 gain = (closes[index] / spot["price"] - 1) * 100 - cost
                 trades.append(gain)
                 year_gains.setdefault(day[:4], []).append(gain)
@@ -465,7 +495,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         for row in sorted(picks[day], key=rank)[:max(room, 0)]:
             if row["code"] not in open_slots:
                 open_slots[row["code"]] = {"i": row["i"], "price": row["price"],
-                                           "step": 0, "peak": row["price"]}
+                                           "step": 0, "peak": row["price"],
+                                           "row": row}
         missed += max(0, len(picks[day]) - max(room, 0))
     if len(trades) < 60:
         return None
@@ -489,11 +520,25 @@ def exit_mixed(take, stop, give_back, arm, limit):
     고정 익절은 큰 상승을 끝까지 받아 내고, 되돌림은 오르다 꺾인 것을
     이익이 남아 있을 때 내보냅니다. 손절은 그대로 두어 바닥을 막습니다.
     """
-    def go(lane, start, price, step, peak):
+    def go(lane, start, price, step, peak, row=None):
         spot = start + step
         move = (lane["closes"][spot] / price - 1) * 100
         if move >= take or move <= -stop or step >= limit:
             return True
         top = (peak / price - 1) * 100
         return top >= arm and move <= top - give_back
+    return go
+
+
+def exit_per_tier(tier_of, exits, fallback=None):
+    """층마다 다른 청산을 씁니다.
+
+    깊이 벌어져 산 것과 얕게 벌어져 산 것은 되돌아오는 속도가 다릅니다.
+    센 층은 길게 들고 큰 폭을 노리고, 약한 층은 짧게 끊는 식으로 나눠
+    보기 위한 껍데기입니다. 층을 알 수 없으면 fallback으로 보냅니다.
+    """
+    def go(lane, start, price, step, peak, row=None):
+        tier = tier_of(row) if row is not None else None
+        pick = exits.get(tier, fallback or exits[min(exits)])
+        return pick(lane, start, price, step, peak, row)
     return go
