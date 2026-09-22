@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import math
+import random
 import statistics
 from pathlib import Path
 
@@ -459,7 +460,7 @@ def exit_trailing_vol(give_mult, arm_mult, limit):
 
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
-        greedy=False):
+        greedy=False, per_day=None, delay=0):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -472,6 +473,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     size는 한 종목에 자리를 몇 개 쓸지 돌려주는 함수입니다. 기본은 하나씩
     입니다. 둘을 쓰면 그만큼 자리가 줄고, 손익도 두 몫으로 셉니다. 승률과
     매매당 수익은 자리 수와 상관없는 값이므로 그대로 한 번씩 셉니다.
+
+    per_day를 두면 하루에 그만큼만 새로 담습니다. delay를 두면 걸린 날
+    바로 사지 않고 그 종목 기준 며칠 뒤 종가에 삽니다. 판단은 걸린 날에
+    끝나 있으므로 뒷날을 보는 것이 아닙니다.
     """
     lane = lanes(prices)
     picks = {}
@@ -522,17 +527,23 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                  if row["i"] >= rest.get(row["code"], 0)]
         # 빈 자리 수만큼만 위에서부터 봅니다. 그중 이미 들고 있는 종목이 있으면
         # 그 자리는 그날 비워 둡니다. greedy=True면 다음 후보로 마저 채웁니다.
+        bought = 0
         for row in (ready if greedy else ready[:max(room, 0)]):
-            if used >= slots:
+            if used >= slots or (per_day is not None and bought >= per_day):
                 break
             if row["code"] in open_slots:
                 continue
+            spot = row["i"] + delay
+            closes = lane[row["code"]]["closes"]
+            if spot >= len(closes):
+                continue
             # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
             want = min(max(int(size(row)), 1), slots - used)
-            open_slots[row["code"]] = {"i": row["i"], "price": row["price"],
-                                       "step": 0, "peak": row["price"],
+            open_slots[row["code"]] = {"i": spot, "price": closes[spot],
+                                       "step": 0, "peak": closes[spot],
                                        "row": row, "자리": want}
             used += want
+            bought += 1
         missed += max(0, len(ready) - max(room, 0))
     if len(trades) < 60:
         return None
@@ -579,3 +590,46 @@ def exit_per_tier(tier_of, exits, fallback=None):
         pick = exits.get(tier, fallback or exits[min(exits)])
         return pick(lane, start, price, step, peak, row)
     return go
+
+
+def jitter(rank, size=0.05, seed=0):
+    """거의 같은 후보들의 차례만 아주 조금 흔듭니다.
+
+    같은 층 안에서 이격밴드가 0.01σ 차이로 갈린 둘 중 누구를 먼저 담는지는
+    실력이 아닙니다. 그런 것을 흔들어 보면 결과가 얼마나 흔들리는지 알 수
+    있고, 그것이 두 방법을 견줄 때 쓸 자가 됩니다.
+    """
+    picker = random.Random(seed)
+    noise = {}
+
+    def key(row):
+        spot = (row["code"], row["date"])
+        if spot not in noise:
+            noise[spot] = picker.uniform(-size, size)
+        got = rank(row)
+        if isinstance(got, tuple):
+            return got[:-1] + (got[-1] + noise[spot],)
+        return got + noise[spot]
+    return key
+
+
+def wobble(rows, prices, holds, exit_at, tries=6, size=0.05, rank=None, **kw):
+    """같은 방법을 여러 번, 차례만 조금씩 달리해 돌려 봅니다.
+
+    한 번 돌려 나온 수치 하나로는 두 방법을 견줄 수 없습니다. 15회차에서
+    재어 보니 건드리면 안 되는 것을 건드려도 연수익이 4%p 안팎 흔들렸습니다.
+    그래서 가운데 값과 폭을 함께 냅니다. 폭보다 작은 차이는 차이가 아닙니다.
+    """
+    rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
+    found = [run(rows, prices, holds, exit_at, rank=rank, **kw)]
+    found += [run(rows, prices, holds, exit_at, rank=jitter(rank, size, seed), **kw)
+              for seed in range(1, tries)]
+    got = [one for one in found if one]
+    if not got:
+        return None
+    gains = sorted(one["연수익"] for one in got)
+    base = found[0]
+    return {**(base or got[0]), "연수익": gains[len(gains) // 2],
+            "그대로": base["연수익"] if base else None,
+            "가장 낮음": gains[0], "가장 높음": gains[-1],
+            "폭": round(gains[-1] - gains[0], 2), "돌린 수": len(gains)}

@@ -161,5 +161,57 @@ class Slots(unittest.TestCase):
         self.assertTrue(all(g["자리"] <= 2 for g in out["매매목록"]))
 
 
+class Wobble(unittest.TestCase):
+    """오차 막대. 이 자가 헐거우면 앞으로의 모든 비교가 헐거워집니다."""
+
+    def setUp(self):
+        self.prices = board()
+        self.rows = lab.build(self.prices, warmup=120)
+        self.holds = lambda r: (r.get("중기 이격") or 0) <= -3.0
+        self.exit = lab.exit_fixed(15.0, 7.0, 15)
+
+    def test_the_first_run_is_the_untouched_one(self):
+        """흔들지 않은 값도 함께 남깁니다. 그것이 지난 회차와 견줄 수치입니다."""
+        plain = lab.run(self.rows, self.prices, self.holds, self.exit, slots=2)
+        got = lab.wobble(self.rows, self.prices, self.holds, self.exit,
+                         tries=3, slots=2)
+        if plain is None or got is None:
+            self.skipTest("60건 미만")
+        self.assertEqual(got["그대로"], plain["연수익"])
+
+    def test_it_reports_a_spread(self):
+        got = lab.wobble(self.rows, self.prices, self.holds, self.exit,
+                         tries=4, slots=2)
+        if got is None:
+            self.skipTest("60건 미만")
+        self.assertEqual(got["돌린 수"], 4)
+        self.assertLessEqual(got["가장 낮음"], got["연수익"])
+        self.assertLessEqual(got["연수익"], got["가장 높음"])
+        self.assertAlmostEqual(got["폭"], round(got["가장 높음"] - got["가장 낮음"], 2))
+
+    def test_nudging_by_nothing_changes_nothing(self):
+        """흔드는 폭이 0이면 여섯 번 모두 같은 값이어야 합니다."""
+        got = lab.wobble(self.rows, self.prices, self.holds, self.exit,
+                         tries=4, size=0.0, slots=2)
+        if got is None:
+            self.skipTest("60건 미만")
+        self.assertEqual(got["폭"], 0.0)
+
+    def test_the_nudge_keeps_the_tier_in_front(self):
+        """앞자리(층)는 건드리지 않고 마지막 자리만 흔듭니다."""
+        rank = lambda r: (2, 0.0)
+        nudged = lab.jitter(rank, size=0.5, seed=1)
+        got = nudged({"code": "000001", "date": "20200101"})
+        self.assertEqual(got[0], 2)
+        self.assertNotEqual(got[1], 0.0)
+        self.assertLessEqual(abs(got[1]), 0.5)
+
+    def test_the_same_seed_nudges_the_same_way(self):
+        row = {"code": "000001", "date": "20200101"}
+        first = lab.jitter(lambda r: 0.0, size=0.5, seed=7)(row)
+        again = lab.jitter(lambda r: 0.0, size=0.5, seed=7)(row)
+        self.assertEqual(first, again)
+
+
 if __name__ == "__main__":
     unittest.main()
