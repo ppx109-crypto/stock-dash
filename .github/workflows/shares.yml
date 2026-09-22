@@ -1,0 +1,51 @@
+name: Share counts
+# 해마다의 발행주식수를 모읍니다. 과거 시가총액을 만들기 위해서입니다.
+# '살 때 코스피 100등 안'을 오늘의 순위로 가리면 미래참조입니다.
+on:
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (쉼표 구분, 비우면 price-data에 있는 전체)'
+        required: false
+        default: ''
+      first:
+        description: '몇 해부터'
+        required: false
+        default: '2015'
+  schedule:
+    # 분기 보고서가 들어오고 나서 한 번씩만 돌면 됩니다.
+    - cron: '20 19 5 2,5,8,11 *'
+permissions:
+  contents: write
+concurrency:
+  group: share-counts
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python collect_shares.py
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          SHARE_CODES: ${{ inputs.codes || '' }}
+          SHARE_FIRST: ${{ inputs.first || '2015' }}
+      - name: Save only when something actually changed
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p share-data
+          git add -A share-data
+          if git diff --cached --quiet; then
+            echo '바뀐 주식수가 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Refresh share counts'
+            git pull --rebase origin main
+            git push
+          fi
