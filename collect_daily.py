@@ -48,7 +48,12 @@ def already_done(code, first_year, on_day):
         kept = json.loads((FOLDER / f"{code}.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False
-    return kept.get("since") == first_year and kept.get("fetched") == on_day
+    if kept.get("fetched") != on_day:
+        return False
+    # 표시가 있으면 그 깊이로 판단합니다. 표시를 남기기 전에 받아 둔 파일도
+    # 오늘 받은 것이라면 이미 같은 깊이로 물어본 것이므로 건너뜁니다. 그
+    # 종목에 결산이 세 해치뿐이어서 세 개만 온 경우도 여기에 들어갑니다.
+    return kept.get("since") in (first_year, None)
 
 
 def run(codes=None):

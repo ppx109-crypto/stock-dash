@@ -28,8 +28,17 @@ class DartResume(unittest.TestCase):
         self.assertTrue(collect_daily.already_done("005930", 2015, self.today))
 
     def test_a_shallower_collection_is_done_again(self):
-        # 예전에 세 해만 받아 둔 파일은 다시 받아야 합니다.
+        # 다른 깊이로 받아 둔 파일은 다시 받아야 합니다.
         self.write("005930", since=2023, fetched=self.today)
+        self.assertFalse(collect_daily.already_done("005930", 2015, self.today))
+
+    def test_a_file_from_today_without_the_mark_counts_as_done(self):
+        # 표시를 남기기 전에 받은 파일입니다. 오늘 같은 깊이로 이미 물었습니다.
+        self.write("005930", years=[1] * 11, fetched=self.today)
+        self.assertTrue(collect_daily.already_done("005930", 2015, self.today))
+
+    def test_an_unmarked_file_from_another_day_is_done_again(self):
+        self.write("005930", years=[1] * 11, fetched="2020-01-01")
         self.assertFalse(collect_daily.already_done("005930", 2015, self.today))
 
     def test_yesterdays_collection_is_done_again(self):
