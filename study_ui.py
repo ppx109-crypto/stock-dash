@@ -69,6 +69,25 @@ def render_rule():
                    f'보유 중앙 {trade["보유일중앙"]}거래일 · 자리 가동률 {trade["가동률"]:.1f}% · '
                    f'연수익 {trade["연수익"]:+.2f}%. 자리가 차면 그날 나온 다음 후보는 '
                    f'놓칩니다({trade["놓침"]:,}회). 그것까지 세어 낸 수치입니다.')
+    dip = book.get("골") or {}
+    if dip.get("최대낙폭"):
+        st.markdown("**얼마나 깊이, 얼마나 오래 파였나** (2016년 이후 · 자리 3)")
+        one, two, three = st.columns(3)
+        one.metric("가장 깊었던 골", f'{dip["최대낙폭"]:+.1f}%',
+                   f'{dip.get("꼭대기", "")} → {dip.get("바닥", "")}',
+                   delta_color="off")
+        two.metric("본전 회복", dip.get("회복") or "아직",
+                   "꼭대기에서부터", delta_color="off")
+        three.metric("가장 긴 연패", f'{dip.get("연패", 0)}번',
+                     f'전체 {dip.get("매매", 0)}번 중', delta_color="off")
+        years = dip.get("해마다 골") or {}
+        if years:
+            st.dataframe([{y: f'{v:+.1f}%' for y, v in years.items()}],
+                         hide_index=True, width="stretch")
+            st.caption("해마다 그 해 안에서 가장 깊었던 골입니다. **한 해도 "
+                       "예외가 없습니다.** 연수익만 보면 순해 보이지만 실제로 "
+                       "겪는 것은 이쪽입니다. 자리 몫으로 나눈 뒤 지갑에 견준 "
+                       "비율이며, 매매가 끝난 날로 셉니다.")
     hit = [r for r in (book.get("오늘") or []) if r.get("해당")]
     st.markdown(f'**오늘 이 규칙에 걸리는 종목 · {len(hit)}개** '
                 f'({(book.get("오늘") or [{}])[0].get("date", "")} 기준)')

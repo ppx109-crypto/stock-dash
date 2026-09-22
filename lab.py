@@ -457,6 +457,37 @@ def exit_trailing_vol(give_mult, arm_mult, limit):
     return go
 
 
+def deepest(gains, slots):
+    """나간 차례대로 쌓아 가장 깊은 골을 잽니다.
+
+    한 번에 얼마를 잃느냐보다, 잃는 것이 이어질 때 얼마나 파이느냐가 사람을
+    그만두게 만듭니다.
+
+    여기서는 **지갑에 견준 비율**로 잽니다. 자리 하나에 그때 지갑의 1/slots을
+    넣는 셈이므로, 매매마다 지갑이 (1 + 손익/100/slots)배가 됩니다. 더해 가는
+    셈으로 재면 골이 실제보다 깊게 나옵니다. 원금이 불어난 뒤의 −7%와 처음의
+    −7%를 같은 크기로 세기 때문입니다.
+
+    한 번도 꼭대기 아래로 내려가지 않았으면 0입니다.
+    """
+    purse = top = 1.0
+    dip = 0.0
+    for gain in gains:
+        purse *= 1 + gain / 100 / slots
+        top = max(top, purse)
+        dip = min(dip, purse / top - 1)
+    return dip * 100
+
+
+def streak(gains):
+    """가장 길게 이어진 연패. 사람이 그만두는 것은 이 숫자 때문입니다."""
+    run = most = 0
+    for gain in gains:
+        run = run + 1 if gain <= 0 else 0
+        most = max(most, run)
+    return most
+
+
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0):
@@ -549,6 +580,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     ordered = sorted(trades)
     cut = max(1, len(ordered) // 10)
     years = int(days[-1][:4]) - int(days[0][:4]) + 1
+    dip = deepest(weighted, slots)
     return {"매매": len(trades), "놓침": missed,
             "승률": round(sum(1 for t in trades if t > 0) / len(trades) * 100, 1),
             "평균": round(sum(trades) / len(trades), 2),
@@ -556,6 +588,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             "하위10%": round(sum(ordered[:cut]) / cut, 1), "최악": round(ordered[0], 1),
             "보유중앙": sorted(held_days)[len(held_days) // 2],
             "가동률": round(busy / (seen * slots) * 100, 1),
+            "최대낙폭": round(dip, 1), "연패": streak(trades),
             "연수익": round(sum(weighted) / slots / max(years, 1), 2),
             "해마다": {y: round(sum(v) / slots, 1) for y, v in sorted(year_gains.items())},
             **({"매매목록": ledger} if detail else {})}

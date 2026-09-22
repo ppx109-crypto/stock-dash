@@ -239,6 +239,76 @@ class Portfolio(unittest.TestCase):
                                         lambda r: False, slots=2))
 
 
+class Drawdown(unittest.TestCase):
+    """가장 깊은 골. 한 번의 손실보다 이어지는 손실이 사람을 그만두게 합니다."""
+
+    def setUp(self):
+        self.prices = board()
+        self.rows = lab.build(self.prices, warmup=120)
+        self.holds = lambda r: (r.get("중기 이격") or 0) <= -3.0
+
+    def test_it_is_never_positive(self):
+        out = lab.run(self.rows, self.prices, self.holds,
+                      lab.exit_fixed(15.0, 7.0, 15), slots=2)
+        if out is None:
+            self.skipTest("60건 미만")
+        self.assertLessEqual(out["최대낙폭"], 0.0)
+
+    def test_it_is_at_least_as_deep_as_the_worst_single_trade(self):
+        """한 번의 최악보다 얕을 수는 없습니다. 자리 몫으로 나눈 값입니다."""
+        out = lab.run(self.rows, self.prices, self.holds,
+                      lab.exit_fixed(15.0, 7.0, 15), slots=2)
+        if out is None:
+            self.skipTest("60건 미만")
+        self.assertLessEqual(out["최대낙폭"], round(out["최악"] / 2, 1) + 0.1)
+
+    def test_winners_only_never_dip(self):
+        self.assertEqual(lab.deepest([3.0, 1.0, 5.0], slots=1), 0.0)
+
+    def test_it_measures_from_the_peak_not_from_zero(self):
+        """올랐다가 파인 것을 재야 합니다. 처음보다 높아도 골은 골입니다."""
+        # 1.10 → 1.056 → 1.02432. 꼭대기 1.10에서 -6.88%입니다.
+        self.assertAlmostEqual(lab.deepest([10.0, -4.0, -3.0, 20.0], slots=1),
+                               -6.88, places=2)
+
+    def test_a_run_of_losses_is_deeper_than_any_one_of_them(self):
+        one = min(lab.deepest([g], slots=1) for g in (-5.0, -6.0, -4.0))
+        many = lab.deepest([-5.0, -6.0, -4.0], slots=1)
+        self.assertLess(many, one)
+        # 0.95 × 0.94 × 0.96 = 0.85728
+        self.assertAlmostEqual(many, -14.27, places=2)
+
+    def test_the_slots_divide_it(self):
+        """자리를 셋으로 나눴으면 한 매매의 −9%는 지갑의 −3%입니다."""
+        self.assertAlmostEqual(lab.deepest([-9.0], slots=3), -3.0)
+
+    def test_the_same_loss_hurts_less_after_a_gain(self):
+        """더해 가는 셈이면 같게 나오지만, 지갑에 견주면 뒤의 −10%가 덜 아픕니다."""
+        early = lab.deepest([-10.0, 50.0], slots=1)
+        late = lab.deepest([50.0, -10.0], slots=1)
+        self.assertAlmostEqual(early, -10.0, places=2)
+        self.assertAlmostEqual(late, -10.0, places=2)
+        self.assertAlmostEqual(lab.deepest([100.0, -10.0], slots=2), -5.0, places=2)
+
+    def test_it_can_never_pass_minus_one_hundred(self):
+        """아무리 잃어도 지갑이 0보다 아래로 가지는 않습니다."""
+        self.assertGreaterEqual(lab.deepest([-99.0] * 20, slots=1), -100.0)
+
+    def test_order_matters(self):
+        """같은 매매라도 진 것이 몰려 오면 더 깊이 파입니다."""
+        spread = lab.deepest([-5.0, 6.0, -5.0, 6.0], slots=1)
+        bunched = lab.deepest([-5.0, -5.0, 6.0, 6.0], slots=1)
+        self.assertLess(bunched, spread)
+
+    def test_the_run_reports_it(self):
+        out = lab.run(self.rows, self.prices, self.holds,
+                      lab.exit_fixed(15.0, 7.0, 15), slots=2)
+        if out is None:
+            self.skipTest("60건 미만")
+        self.assertLessEqual(out["최대낙폭"], 0.0)
+        self.assertLessEqual(out["최대낙폭"], round(out["최악"] / 2, 1) + 0.1)
+
+
 class Paired(unittest.TestCase):
     """같은 신호에 청산만 갈아 끼우는 셈. 17회차부터 청산 비교의 기본입니다."""
 

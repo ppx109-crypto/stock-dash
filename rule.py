@@ -38,7 +38,13 @@ CAVEAT = (
     "크게 밀린 종목을 사는 규칙이라 더 밀릴 수 있습니다. 손절을 7%로 두어도 "
     "하루 사이에 그보다 더 빠지면 그대로 잃습니다. 가장 나빴던 한 번은 "
     "−30.2%였고, 가장 나빴던 열에 하나는 −14.7%였습니다. 열 번 중 다섯 번은 "
-    "집니다. 지나간 자료로 확인한 것이며 앞날을 약속하지 않습니다. "
+    "집니다. "
+    "무엇보다, 한 번의 손실보다 이어지는 손실이 큽니다. 자리 셋으로 굴렸다면 "
+    "지갑이 가장 깊게 파였을 때 −52.1%였고(2019년 2월 꼭대기 → 2020년 3월 "
+    "바닥), 본전으로 돌아오는 데 그 꼭대기에서 스물넉 달이 걸렸습니다. "
+    "열여섯 번을 내리 졌던 적도 있습니다. 해마다 한 번씩은 −6%에서 −49% "
+    "사이로 파였습니다. 한 해도 예외가 없었습니다. "
+    "지나간 자료로 확인한 것이며 앞날을 약속하지 않습니다. "
     "매수·매도 신호가 아닙니다."
 )
 
@@ -156,6 +162,41 @@ def _filings(code, day):
     return [{"갈래": kind, "며칠 전": age} for kind in sorted(kinds)]
 
 
+def risk_stats(rows, prices, since=lab.SPLIT):
+    """얼마나 깊이, 얼마나 오래 파였는지.
+
+    연수익과 승률만 보면 이 규칙은 순해 보입니다. 실제로 겪는 것은 지갑이
+    반으로 줄고 이 년 걸려 돌아오는 일입니다. 그것을 적어 둡니다.
+    """
+    out = lab.run(rows, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
+                  slots=SLOTS, rank=order, since=since, detail=True)
+    if not out:
+        return {}
+    led = sorted(out["매매목록"], key=lambda got: got["판 날"])
+    purse = top = 1.0
+    when_top = led[0]["판 날"]
+    worst, peak_day, low_day = 0.0, None, None
+    path = []
+    for got in led:
+        purse *= 1 + got["손익"] / 100 / SLOTS
+        if purse > top:
+            top, when_top = purse, got["판 날"]
+        dip = purse / top - 1
+        path.append((got["판 날"], dip))
+        if dip < worst:
+            worst, peak_day, low_day = dip, when_top, got["판 날"]
+    back = next((day for day, dip in path if low_day and day > low_day
+                 and dip >= -0.001), None)
+    yearly = {}
+    for year in sorted({got["판 날"][:4] for got in led}):
+        gains = [got["손익"] for got in led if got["판 날"][:4] == year]
+        if len(gains) >= 5:
+            yearly[year] = round(lab.deepest(gains, SLOTS), 1)
+    return {"최대낙폭": round(worst * 100, 1), "꼭대기": peak_day, "바닥": low_day,
+            "회복": back, "연패": out["연패"], "매매": out["매매"],
+            "해마다 골": yearly}
+
+
 def report(rows, prices):
     picked = [r for r in rows if holds(r)]
     body = {
@@ -168,6 +209,7 @@ def report(rows, prices):
                             stop=STOP, limit=LIMIT, since="20160101", rank=order),
         "층별": tier_stats(rows),
         "청산 견주기": exit_stats(rows, prices),
+        "골": risk_stats(rows, prices),
         "오늘": today(rows),
     }
     OUT.parent.mkdir(exist_ok=True)

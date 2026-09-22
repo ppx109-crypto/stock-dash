@@ -85,5 +85,18 @@ class Filings(unittest.TestCase):
         self.assertEqual(got[0]["며칠 전"], 5)
 
 
+class Risk(unittest.TestCase):
+    """골 수치는 화면에서 가장 무거운 숫자입니다. 셈이 맞아야 합니다."""
+
+    def test_the_caveat_says_the_drawdown(self):
+        """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
+        for must in ("−52.1%", "스물넉 달", "열여섯 번"):
+            self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
+
+    def test_an_empty_run_gives_an_empty_report(self):
+        with patch.object(lab, "run", return_value=None):
+            self.assertEqual(rule.risk_stats([], {}), {})
+
+
 if __name__ == "__main__":
     unittest.main()
