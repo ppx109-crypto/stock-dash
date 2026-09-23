@@ -430,8 +430,21 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
             "연매매": round(got["매매"] / years, 1)}
 
 
+_lanes_for = None
+
+
 def lanes(prices):
-    """종목마다 종가·중기선·변동성을 한 번만 만들어 둡니다. 청산 판정에 씁니다."""
+    """종목마다 종가·중기선·변동성을 한 번만 만들어 둡니다. 청산 판정에 씁니다.
+
+    500종목 서른 해면 한 번 만드는 데 9초이고, `run`이 부를 때마다 처음부터
+    다시 만들었습니다. 문턱을 훑느라 수백 번 굴리면 그것만으로 한 시간이
+    넘고 메모리도 그만큼 들락거립니다(51회차에 그 때문에 죽었습니다).
+    그래서 **같은 prices 객체면** 만들어 둔 것을 그대로 돌려줍니다.
+    안에 든 것을 고쳐 쓰면 낡은 값을 받게 되므로 고치지 마십시오.
+    """
+    global _lanes_for
+    if _lanes_for is not None and _lanes_for[0] is prices:
+        return _lanes_for[1]
     found = {}
     for code, block in prices.items():
         closes = [c for _, c in block["rows"]]
@@ -439,6 +452,7 @@ def lanes(prices):
                        "날": [d for d, _ in block["rows"]],
                        "중기선": ema_series(closes, AXES["중기"]),
                        "변동성": rolling_std(closes)}
+    _lanes_for = (prices, found)
     return found
 
 

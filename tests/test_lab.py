@@ -556,3 +556,24 @@ class IntradayStop(unittest.TestCase):
         go, at = lab.exit_intraday(10.0, 5.0, 10)
         self.assertTrue(go(lane, 0, 100.0, 1, 100.0))   # 종가 −20%
         self.assertIsNone(at(lane, 0, 100.0, 1, 100.0))  # 팔 값은 종가 그대로
+
+
+class LaneCache(unittest.TestCase):
+    """길은 한 번만 만듭니다. 문턱을 훑으면 `run`이 수백 번 부릅니다."""
+
+    def setUp(self):
+        lab._lanes_for = None
+
+    def tearDown(self):
+        lab._lanes_for = None
+
+    def test_the_same_board_gives_back_the_same_lanes(self):
+        prices = board(2)
+        first = lab.lanes(prices)
+        self.assertIs(lab.lanes(prices), first)
+
+    def test_another_board_is_built_afresh(self):
+        first = lab.lanes(board(2))
+        second = lab.lanes(board(2))
+        self.assertIsNot(second, first)
+        self.assertEqual(sorted(second), sorted(first))
