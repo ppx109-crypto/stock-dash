@@ -20,7 +20,7 @@ def rows(count, tier_gap, tier_band, gain, date="20200101", code="005930"):
 
 
 class Conditions(unittest.TestCase):
-    """다섯 조건. 하나라도 빠지면 사면 안 됩니다."""
+    """네 조건. 하나라도 빠지면 사면 안 됩니다."""
 
     def setUp(self):
         rule._calm = 2.0
@@ -28,7 +28,7 @@ class Conditions(unittest.TestCase):
 
     def row(self, **kw):
         got = {"code": "005930", "date": "20200101", "변동성": 1.5,
-               "추세 기울기": 2.0, "정배열폭": 8.0, "60일 전 대비": 30.0,
+               "추세 기울기": 2.0, "60일 전 대비": 30.0,
                caps.RANK: 10}
         got.update(kw)
         return got
@@ -53,7 +53,7 @@ class Conditions(unittest.TestCase):
 
     def test_a_missing_number_is_not(self):
         got = self.row()
-        del got["정배열폭"]
+        del got["추세 기울기"]
         self.assertFalse(rule.holds(got))
 
     def test_without_the_calm_edge_nothing_is_bought(self):
@@ -133,7 +133,7 @@ class Risk(unittest.TestCase):
 
     def test_the_caveat_says_the_drawdown(self):
         """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
-        for must in ("−11.5%", "−11.2%", "임시", "살아남은"):
+        for must in ("−11.0%", "−10.8%", "임시", "살아남은"):
             self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
 
     def test_an_empty_run_gives_an_empty_report(self):

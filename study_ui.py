@@ -103,7 +103,7 @@ def render_rule():
                        "하위 10%": f'{one["하위10%"]:+.1f}%'}
                       for one in parts], hide_index=True, width="stretch",
                      height=_fits(len(parts), cap=8))
-        st.caption("다섯 조건을 한 덩어리로 보면 '이 규칙은 이렇다'로만 "
+        st.caption("네 조건을 한 덩어리로 보면 '이 규칙은 이렇다'로만 "
                    "읽힙니다. 하나씩 빼 보면 어느 것이 실제로 거르고 있고 "
                    "어느 것이 장식인지 드러납니다.")
     hit = [r for r in (book.get("오늘") or []) if r.get("해당")]
