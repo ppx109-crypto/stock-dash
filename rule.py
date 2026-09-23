@@ -45,7 +45,7 @@ MID = "20210101"         # 앞뒤로 나눠 보는 자리
 
 TOP = 100                # 살 때 그날 시가총액 순위가 이 안이어야 합니다
 CALM = 0.4               # 변동성이 아래 40% 안. 절벽 위라 늦추면 안 됩니다
-SLOPE = 1.7              # 장기선(120일)이 하루 이만큼씩 오르고 있을 것
+SLOPE = 1.46             # 추세선(180일)이 닷새 사이 이만큼 올라 있을 것
 WIDTH = 6.18             # 정배열폭
 SIXTY = 24.8             # 60일 전보다 이만큼 올라 있을 것
 TAKE, STOP = 10.0, 5.0   # 익절·손절
@@ -57,8 +57,8 @@ OUT = Path("study") / "rule.json"
 
 WHY = (
     "그날 시가총액이 100등 안이고, 그 종목이 평소 조용한 편이며(변동성 아래 "
-    "40%), 120일선이 하루 1.7%씩 오르고 있고, 단기선이 장기선 위로 6% 넘게 "
-    "벌어져 있으며, 60일 전보다 25% 넘게 올라 있는 날입니다. "
+    "40%), 180일 추세선이 닷새 사이 1.46% 올라 있고, 단기선이 장기선 위로 6% "
+    "넘게 벌어져 있으며, 60일 전보다 25% 넘게 올라 있는 날입니다. "
     "한마디로 큰 회사가 조용히, 그러나 오래 오르고 있는 자리입니다. "
     "순위는 그날까지 접수된 주식수로 그날 매긴 것이라, 오늘의 순위로 과거를 "
     "고르지 않습니다. "
@@ -105,14 +105,14 @@ def holds(row):
         return False
     if _calm is None or (row.get("변동성") or 99) > _calm:
         return False
-    return ((row.get("장기 기울기") or -99) >= SLOPE
+    return ((row.get("추세 기울기") or -99) >= SLOPE
             and (row.get("정배열폭") or -99) >= WIDTH
             and (row.get("60일 전 대비") or -99) >= SIXTY)
 
 
 def order(row):
     """더 가파르게 오르고 있는 것부터 담습니다."""
-    return -(row.get("장기 기울기") or 0)
+    return -(row.get("추세 기울기") or 0)
 
 
 def today(rows):
@@ -133,14 +133,14 @@ def today(rows):
         found.append({"code": code, "name": row.get("name") or code,
                       "date": row["date"], "해당": holds(row),
                       "시총순위": row.get(caps.RANK),
-                      "장기 기울기": row.get("장기 기울기"),
+                      "추세 기울기": row.get("추세 기울기"),
                       "정배열폭": row.get("정배열폭"),
                       "60일 전 대비": row.get("60일 전 대비"),
                       "변동성": row.get("변동성"),
                       "영업이익성장": row.get("영업이익성장"),
                       "매출성장": row.get("매출성장"),
                       "최근 공시": _filings(code, row["date"])})
-    found.sort(key=lambda r: (not r["해당"], -(r.get("장기 기울기") or -99)))
+    found.sort(key=lambda r: (not r["해당"], -(r.get("추세 기울기") or -99)))
     return found
 
 
@@ -189,7 +189,7 @@ def holds_without(row, skip):
         return False
     if skip != "calm" and (_calm is None or (row.get("변동성") or 99) > _calm):
         return False
-    if skip != "slope" and (row.get("장기 기울기") or -99) < SLOPE:
+    if skip != "slope" and (row.get("추세 기울기") or -99) < SLOPE:
         return False
     if skip != "width" and (row.get("정배열폭") or -99) < WIDTH:
         return False
@@ -299,7 +299,7 @@ def report(rows, prices):
         "name": NAME, "why": WHY, "caveat": CAVEAT, "임시": True,
         "조건": {"등수": TOP, "조용함": f"변동성 아래 {CALM*100:.0f}%",
                "조용함 문턱": round(_calm, 2) if _calm else None,
-               "장기 기울기": SLOPE, "정배열폭": WIDTH, "60일 전 대비": SIXTY},
+               "추세 기울기": SLOPE, "정배열폭": WIDTH, "60일 전 대비": SIXTY},
         "take": TAKE, "stop": STOP, "limit": LIMIT, "slots": SLOTS,
         "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
         "기준": lab.score(rows), "규칙": lab.score(picked),

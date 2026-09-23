@@ -113,8 +113,8 @@ def render_rule():
         st.dataframe([{"종목": r["name"],
                        "시총 순위": (f'{r["시총순위"]}등'
                                  if r.get("시총순위") else "—"),
-                       "장기선 기울기": (f'{r["장기 기울기"]:+.2f}'
-                                   if r.get("장기 기울기") is not None else "—"),
+                       "추세선 기울기": (f'{r["추세 기울기"]:+.2f}'
+                                   if r.get("추세 기울기") is not None else "—"),
                        "정배열폭": (f'{r["정배열폭"]:+.1f}%'
                                 if r.get("정배열폭") is not None else "—"),
                        "60일 전 대비": (f'{r["60일 전 대비"]:+.1f}%'

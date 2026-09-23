@@ -28,7 +28,7 @@ class Conditions(unittest.TestCase):
 
     def row(self, **kw):
         got = {"code": "005930", "date": "20200101", "변동성": 1.5,
-               "장기 기울기": 2.0, "정배열폭": 8.0, "60일 전 대비": 30.0,
+               "추세 기울기": 2.0, "정배열폭": 8.0, "60일 전 대비": 30.0,
                caps.RANK: 10}
         got.update(kw)
         return got
@@ -49,7 +49,7 @@ class Conditions(unittest.TestCase):
         self.assertFalse(rule.holds(self.row(변동성=2.5)))
 
     def test_too_flat_a_slope_is_not(self):
-        self.assertFalse(rule.holds(self.row(**{"장기 기울기": 1.0})))
+        self.assertFalse(rule.holds(self.row(**{"추세 기울기": 1.0})))
 
     def test_a_missing_number_is_not(self):
         got = self.row()
@@ -62,12 +62,12 @@ class Conditions(unittest.TestCase):
         self.assertFalse(rule.holds(self.row()))
 
     def test_the_steeper_one_comes_first(self):
-        steep = self.row(**{"장기 기울기": 3.0})
-        gentle = self.row(**{"장기 기울기": 1.8})
+        steep = self.row(**{"추세 기울기": 3.0})
+        gentle = self.row(**{"추세 기울기": 1.8})
         self.assertLess(rule.order(steep), rule.order(gentle))
 
     def test_dropping_one_condition_lets_more_through(self):
-        turned = self.row(**{"장기 기울기": 1.0})
+        turned = self.row(**{"추세 기울기": 1.0})
         self.assertFalse(rule.holds(turned))
         self.assertTrue(rule.holds_without(turned, "slope"))
 
