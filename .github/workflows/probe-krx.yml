@@ -1,0 +1,20 @@
+name: Probe KRX flows
+# 거래소에서 과거 수급을 받아올 수 있는지 한 번 찔러 보고 응답을 찍습니다.
+# 아무것도 저장하지 않습니다. 조회 전용입니다.
+on:
+  workflow_dispatch:
+    inputs:
+      code:
+        description: '찔러 볼 종목코드'
+        required: false
+        default: '005930'
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python probe_krx.py "${{ inputs.code || '005930' }}"
