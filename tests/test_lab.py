@@ -348,6 +348,25 @@ class Paired(unittest.TestCase):
         self.assertAlmostEqual(one["하루당"], round(one["평균"] / one["보유"], 3),
                                places=2)
 
+    def test_the_hole_is_reported_and_never_positive(self):
+        got = lab.paired(self.rows, self.prices,
+                         {"빨리": lab.exit_fixed(5.0, 3.0, 5),
+                          "늦게": lab.exit_fixed(30.0, 20.0, 40)})
+        if len(got) < 2:
+            self.skipTest("60건 미만")
+        for one in got.values():
+            self.assertLessEqual(one["골"], 0.0)
+            self.assertGreaterEqual(one["연패"], 0)
+
+    def test_the_hole_uses_the_same_signals_for_every_way(self):
+        """청산마다 다른 묶음으로 골을 재면 견줄 수가 없습니다."""
+        got = lab.paired(self.rows, self.prices,
+                         {"빨리": lab.exit_fixed(5.0, 3.0, 5),
+                          "늦게": lab.exit_fixed(30.0, 20.0, 40)})
+        if len(got) < 2:
+            self.skipTest("60건 미만")
+        self.assertEqual(got["빨리"]["건수"], got["늦게"]["건수"])
+
     def test_the_cost_is_taken_off_once(self):
         """신호 당일에 바로 걸리는 청산으로 왕복 비용이 빠졌는지 봅니다."""
         always = lambda lane, start, price, step, peak, row=None: True

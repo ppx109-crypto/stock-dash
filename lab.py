@@ -697,11 +697,16 @@ def walk(lane_one, row, exit_at, cap=60):
     return None
 
 
-def paired(rows, prices, ways, cap=60, floor=60):
+def paired(rows, prices, ways, cap=60, floor=60, slots=3):
     """같은 신호를 여러 청산으로 끌고 가 나란히 견줍니다.
 
     하루당은 평균을 들고 있던 날로 나눈 값입니다. 자리가 정해져 있으면
     '한 번에 얼마를 버느냐'보다 '하루에 얼마를 버느냐'가 중요합니다.
+
+    골은 같은 신호를 같은 무게(1/slots)로 잡고 나간 차례대로 쌓아 잰 것입니다.
+    자리 셈으로 재면 청산을 바꿀 때 누가 어느 자리를 차지하는지가 통째로
+    바뀌어(17회차), 재는 것이 '청산의 골'이 아니라 '다른 후보 묶음의 골'이
+    됩니다. 여기서는 모집단이 같으므로 청산끼리 곧바로 견줄 수 있습니다.
     """
     lane = lanes(prices)
     # 끝자락의 신호는 느린 청산이 끝을 못 봅니다. 그런 신호는 통째로 뺍니다.
@@ -724,11 +729,17 @@ def paired(rows, prices, ways, cap=60, floor=60):
         cut = max(1, len(gains) // 10)
         mean = round(sum(gains) / len(gains), 2)
         days = round(hold, 1) or 1.0
+        # 같은 신호를 같은 무게로 잡고, 나간 차례대로 쌓아 골을 잽니다.
+        # 자리 다툼이 없으므로 청산끼리의 골을 곧바로 견줄 수 있습니다.
+        order = sorted(((row["i"] + got[tag][1], got[tag][0])
+                        for row, got in walked.values()))
         found[tag] = {
             "건수": len(gains), "종목": codes,
             "승률": round(sum(1 for g in gains if g > 0) / len(gains) * 100, 1),
             "평균": mean, "중앙": round(gains[len(gains) // 2], 2),
             "하위10%": round(sum(gains[:cut]) / cut, 1),
+            "골": round(deepest([gain for _, gain in order], slots), 1),
+            "연패": streak([gain for _, gain in order]),
             "보유": days, "하루당": round(mean / days, 3)}
     return found
 
