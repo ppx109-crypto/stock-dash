@@ -17,6 +17,10 @@ on:
         description: '몇 해치를 받을지'
         required: false
         default: '30'
+      batch:
+        description: '한 묶음에 몇 종목씩 받고 커밋할지'
+        required: false
+        default: '60'
 permissions:
   contents: write
 concurrency:
@@ -32,7 +36,43 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests
-      - run: python collect_prices.py
+      # 나눠 받고 묶음마다 커밋합니다. 예전에는 끝에 한 번만 커밋해서,
+      # 작업이 제한 시간에 걸리면 받아 둔 서른 해치가 통째로 날아갔습니다.
+      - name: Collect prices in batches, saving each batch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python - <<'PY' > /tmp/batches.txt
+          import json, os, re
+          from pathlib import Path
+          picked = [c.strip() for c in os.getenv("PRICE_CODES", "").split(",") if c.strip()]
+          if not picked:
+              try:
+                  picked = [str(c) for c in json.loads(
+                      Path("universe.json").read_text(encoding="utf-8")).get("codes", [])]
+              except (OSError, ValueError):
+                  picked = []
+          if not picked:
+              picked = sorted(p.stem for p in Path("public-data").glob("*.json")
+                              if re.fullmatch(r"[0-9]{6}", p.stem))
+          # 이미 받아 둔 것을 뒤로 돌려, 아직 없는 종목부터 받습니다.
+          have = {p.stem for p in Path("price-data").glob("*.json")}
+          picked = [c for c in picked if c not in have] + [c for c in picked if c in have]
+          size = int(os.getenv("PRICE_BATCH", "60"))
+          for k in range(0, len(picked), size):
+              print(",".join(picked[k:k + size]))
+          PY
+          while read -r batch; do
+            [ -z "$batch" ] && continue
+            PRICE_CODES="$batch" python collect_prices.py || true
+            git add -A price-data
+            if git diff --cached --quiet; then
+              echo '이 묶음에서 바뀐 일봉이 없습니다.'
+            else
+              git commit -m 'Refresh daily price history'
+              git pull --rebase origin main && git push
+            fi
+          done < /tmp/batches.txt
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
@@ -42,6 +82,7 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           PRICE_CODES: ${{ inputs.codes || '' }}
           PRICE_YEARS: ${{ inputs.years || '30' }}
+          PRICE_BATCH: ${{ inputs.batch || '60' }}
       - run: python collect_opinions.py
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
@@ -66,9 +107,9 @@ jobs:
           mkdir -p price-data
           git add -A price-data opinion-data flow-data
           if git diff --cached --quiet; then
-            echo '바뀐 일봉이 없어 커밋하지 않습니다.'
+            echo '바뀐 것이 없어 커밋하지 않습니다.'
           else
-            git commit -m 'Refresh daily price history'
+            git commit -m 'Refresh opinions and flows'
             git pull --rebase origin main
             git push
           fi
