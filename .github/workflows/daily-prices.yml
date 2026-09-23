@@ -24,7 +24,9 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: price-history
+  # 거래량 수집과 같은 줄입니다. 증권사 토큰이 하루 한 번이라 겹치면
+  # 나중에 시작한 쪽이 인증에서 막힙니다.
+  group: kis-collect
   cancel-in-progress: false
 jobs:
   collect:

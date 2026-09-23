@@ -19,7 +19,10 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: volume-history
+  # 일봉 수집과 같은 줄에 세웁니다. 증권사 토큰은 하루 한 번만 나오므로,
+  # 두 작업이 겹치면 나중에 시작한 쪽이 인증에서 바로 막힙니다.
+  # 일봉이 203종목에서 멈춰 있던 것이 이것입니다.
+  group: kis-collect
   cancel-in-progress: false
 jobs:
   collect:
