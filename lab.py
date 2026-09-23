@@ -98,6 +98,54 @@ def rolling_std(closes, window=20):
     return out
 
 
+def squeeze_series(emas, closes, spans, window=BAND_WINDOW):
+    """네 선이 얼마나 좁게 모여 있는지, 그리고 그것이 이례적인지.
+
+    선들이 좁게 모이면 시장이 방향을 못 정하고 있는 것이고, 벌어지기 시작하면
+    한쪽으로 움직이기 시작한 것입니다. 폭 자체는 종목마다 다르므로, 그 종목의
+    지난 window일 폭과 견준 자리(z)로도 함께 냅니다.
+    """
+    wide = []
+    for k in range(len(closes)):
+        line = [emas[s][k] for s in spans if emas[s][k]]
+        if len(line) < len(spans) or not closes[k]:
+            wide.append(None)
+            continue
+        wide.append((max(line) - min(line)) / closes[k] * 100)
+    return wide, band_series(wide, window)
+
+
+def run_length(flags):
+    """참이 며칠째 이어지고 있는지. 거짓이면 0입니다."""
+    found, count = [], 0
+    for one in flags:
+        count = count + 1 if one else 0
+        found.append(count)
+    return found
+
+
+def since_cross(fast, slow):
+    """빠른 선이 느린 선을 위로 뚫은 지 며칠 됐는지. 아래에 있으면 None입니다.
+
+    '위에 있다'와 '방금 뚫었다'는 다른 일입니다. 지금까지는 앞엣것만 보고
+    있었습니다.
+    """
+    found, count = [], None
+    for k in range(len(fast)):
+        if fast[k] is None or slow[k] is None:
+            found.append(None)
+            continue
+        above = fast[k] > slow[k]
+        if not above:
+            count = None
+        elif count is None:
+            count = 0          # 오늘 뚫었습니다
+        else:
+            count += 1
+        found.append(count)
+    return found
+
+
 def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
     """종목마다 하루치 특징을 만들어 한 표로 모읍니다."""
     prices = prices if prices is not None else study.load_prices()
@@ -118,6 +166,20 @@ def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
             slopes[name] = slope_series(line)
             speeds[name] = speed_series(slopes[name])
             bands[name] = band_series(gaps[name])
+        # 아직 안 재 본 갈래들입니다(34회차). 네 선이 모였는지, 언제 뚫었는지,
+        # 그 자리가 며칠째인지.
+        order = list(AXES.values())
+        wide, wide_band = squeeze_series(emas, closes, order)
+        crossed = {f"{a}×{b}": since_cross(emas[AXES[a]], emas[AXES[b]])
+                   for a, b in (("단기", "중기"), ("중기", "중장기"),
+                                ("중장기", "장기"), ("단기", "장기"))}
+        lined = run_length([
+            all(emas[order[k]][i] and emas[order[k + 1]][i]
+                and emas[order[k]][i] > emas[order[k + 1]][i]
+                for k in range(len(order) - 1))
+            for i in range(len(closes))])
+        rising = run_length([(slopes["장기"][i] or -99) > 0
+                             for i in range(len(closes))])
         money = study.money_timeline(code)
         targets = study.target_timeline(code)
         money_at, target_at = {}, {}
@@ -161,6 +223,12 @@ def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
                              if i >= 20 and closes[i - 20] else None),
                 "60일 전 대비": ((price / closes[i - 60] - 1) * 100
                              if i >= 60 and closes[i - 60] else None),
+                # 34회차에 새로 넣은 것들
+                "모임폭": wide[i],
+                "모임폭밴드": wide_band[i],
+                "정배열일수": lined[i],
+                "장기상승일수": rising[i],
+                **{f"{tag} 뚫은지": crossed[tag][i] for tag in crossed},
             }
             row.update(study.known_by(money, day))
             block_t = study.known_by(targets, day)
