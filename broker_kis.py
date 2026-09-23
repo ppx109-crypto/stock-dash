@@ -52,7 +52,42 @@ class KIS:
         'EGW00201': '초당 호출 한도를 넘었습니다. 잠시 뒤 다시 눌러 주세요.',
     }
 
+    # 증권사는 초당 호출 수를 제한합니다(EGW00201). 서른 해치를 받으려면 한
+    # 종목에 예순 번 넘게 물어야 해서, 문 앞에서 줄을 세우지 않으면 금세
+    # 한도에 닿습니다. 실제로 한 묶음 마흔 종목 중 서른여섯이 이 까닭으로
+    # 실패하고 있었습니다. 갈래를 늘리면 더 빨리 닿습니다.
+    #
+    # 그래서 호출 사이 간격을 저장소 전체가 하나로 지킵니다. 갈래가 몇이든
+    # 초당 호출 수는 같습니다. 그러고도 거절당하면 한 번에 두 배씩 쉬면서
+    # 몇 번 다시 물어봅니다.
+    _pace = threading.Lock()
+    _next = 0.0
+
+    @classmethod
+    def _wait_turn(cls):
+        gap = float(os.getenv('KIS_CALL_GAP', '0.35'))
+        with cls._pace:
+            now = time.monotonic()
+            when = max(now, cls._next)
+            cls._next = when + gap
+        if when > now:
+            time.sleep(when - now)
+
     def request(self, method, path, **kwargs):
+        self._wait_turn()
+        tries = max(1, int(os.getenv('KIS_RETRIES', '4')))
+        rest = 1.0
+        for turn in range(tries):
+            try:
+                return self._once(method, path, **kwargs)
+            except BrokerError as error:
+                if self.REFUSALS['EGW00201'] not in str(error) or turn == tries - 1:
+                    raise
+                time.sleep(rest)
+                rest *= 2
+                self._wait_turn()
+
+    def _once(self, method, path, **kwargs):
         try:
             response = requests.request(method, self.base + path, timeout=(5, 20), **kwargs)
         except requests.RequestException:
@@ -278,11 +313,13 @@ class KIS:
         found.sort(key=lambda one: one[0])
         return found
 
-    def history(self, code, days=1200, pause=0.2, detail=False):
+    def history(self, code, days=1200, pause=0.0, detail=False):
         """있는 만큼 거슬러 올라가며 일봉을 이어 붙입니다. 오래된 날이 먼저입니다.
 
         days는 거슬러 갈 한계일 뿐이고, 상장 이전에 닿으면 거기서 멈춥니다.
         그래서 넉넉히 주면 그 종목이 가진 만큼을 다 받습니다.
+
+        쉬는 것은 request가 저장소 전체로 지키므로 여기서 또 쉬지 않습니다.
         """
         from datetime import date as _date
         last = datetime.now(ZoneInfo('Asia/Seoul')).date()

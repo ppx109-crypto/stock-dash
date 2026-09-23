@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 import broker_kis
-from broker_kis import KIS
+from broker_kis import KIS, BrokerError
 
 
 class Reply:
@@ -105,3 +105,77 @@ class OneTokenForEveryLane(unittest.TestCase):
                 lane.join()
         self.assertEqual(asked, ["/oauth2/tokenP"])
         self.assertEqual(client.token, "t")
+
+
+class CallPacing(unittest.TestCase):
+    """증권사는 초당 호출 수를 제한합니다. 한 묶음 마흔 종목 중 서른여섯이
+    이 까닭으로 실패하고 있었습니다."""
+
+    def setUp(self):
+        env = patch.dict(os.environ, {"KIS_APP_KEY": "k", "KIS_APP_SECRET": "s",
+                                      "KIS_ENV": "demo", "KIS_CALL_GAP": "0.05"})
+        env.start()
+        self.addCleanup(env.stop)
+        KIS._next = 0.0
+        self.client = KIS(account=False)
+
+    def test_calls_are_spaced_even_across_lanes(self):
+        when = []
+
+        def note(method, path, **kwargs):
+            when.append(time.monotonic())
+            return Mock(headers={}), {"rt_cd": "0"}
+
+        with patch.object(self.client, "_once", side_effect=note):
+            lanes = [threading.Thread(target=self.client.request, args=("GET", "/x"))
+                     for _ in range(6)]
+            for lane in lanes:
+                lane.start()
+            for lane in lanes:
+                lane.join()
+        when.sort()
+        gaps = [b - a for a, b in zip(when, when[1:])]
+        self.assertEqual(len(when), 6)
+        self.assertTrue(all(g >= 0.04 for g in gaps), gaps)
+
+    def test_a_rate_limit_refusal_is_tried_again(self):
+        tries = []
+
+        def sometimes(method, path, **kwargs):
+            tries.append(1)
+            if len(tries) < 3:
+                raise BrokerError(KIS.REFUSALS["EGW00201"])
+            return Mock(headers={}), {"rt_cd": "0"}
+
+        with patch.object(self.client, "_once", side_effect=sometimes), \
+             patch("broker_kis.time.sleep"):
+            _, data = self.client.request("GET", "/x")
+        self.assertEqual(len(tries), 3)
+        self.assertEqual(data["rt_cd"], "0")
+
+    def test_other_refusals_are_not_tried_again(self):
+        tries = []
+
+        def always(method, path, **kwargs):
+            tries.append(1)
+            raise BrokerError(KIS.REFUSALS["EGW00123"])
+
+        with patch.object(self.client, "_once", side_effect=always), \
+             patch("broker_kis.time.sleep"):
+            with self.assertRaises(BrokerError):
+                self.client.request("GET", "/x")
+        self.assertEqual(len(tries), 1)
+
+    def test_it_gives_up_after_enough_tries(self):
+        tries = []
+
+        def always(method, path, **kwargs):
+            tries.append(1)
+            raise BrokerError(KIS.REFUSALS["EGW00201"])
+
+        with patch.dict(os.environ, {"KIS_RETRIES": "3"}), \
+             patch.object(self.client, "_once", side_effect=always), \
+             patch("broker_kis.time.sleep"):
+            with self.assertRaises(BrokerError):
+                self.client.request("GET", "/x")
+        self.assertEqual(len(tries), 3)
