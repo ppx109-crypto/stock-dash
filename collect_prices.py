@@ -11,7 +11,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -72,6 +72,56 @@ def save(code, name, rows):
     return True
 
 
+def kept_rows(code):
+    """이미 받아 둔 일봉. 없으면 빈 목록입니다."""
+    try:
+        kept = json.loads((OUT / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    rows = kept.get("closes") or []
+    return [(str(d), c) for d, c in rows
+            if re.fullmatch(r"[0-9]{8}", str(d)) and c is not None]
+
+
+def catch_up(client, code, have, back=25):
+    """이미 받아 둔 종목은 빠진 날만 받습니다.
+
+    서른 해를 140일씩 거슬러 오르면 종목 하나에 일흔여덟 번을 묻습니다.
+    이미 받아 둔 종목까지 날마다 그렇게 하면 새 종목을 받을 시간이 남지
+    않습니다. 그래서 겹치는 구간을 먼저 받아 예전 값과 맞춰 봅니다.
+    같으면 이어 붙이고, 다르면 처음부터 다시 받습니다 — 액면분할이나
+    무상증자가 있으면 지난 수정주가가 통째로 바뀌기 때문입니다.
+
+    (일봉, 어떻게 받았는지)를 돌려줍니다. 이어받을 수 없으면 (None, 까닭)
+    입니다. 그때는 부르는 쪽이 처음부터 받습니다.
+    """
+    if len(have) < 120:
+        return None, "받아 둔 것이 모자람"
+    last = have[-1][0]
+    today = datetime.now(ZoneInfo("Asia/Seoul")).date()
+    edge = datetime.strptime(last, "%Y%m%d").date() - timedelta(days=back)
+    # 한 번에 100거래일까지 옵니다. 그보다 오래 비었으면 이어받기로는
+    # 메울 수 없습니다.
+    if (today - edge).days > 130:
+        return None, "너무 오래 비었음"
+    fresh = client.daily(code, edge.strftime("%Y%m%d"), today.strftime("%Y%m%d"))
+    if not fresh:
+        return have, "새로 나온 날 없음"
+    was = dict(have)
+    shared = [(day, close) for day, close in fresh if day in was]
+    if not shared:
+        return None, "겹치는 날이 없음"
+    for day, close in shared:
+        before = was[day]
+        if not before or abs(close - before) > max(abs(before), abs(close)) * 0.001:
+            # 지난 값이 바뀌었습니다. 수정주가가 다시 매겨진 것이라
+            # 이어 붙이면 어긋납니다.
+            return None, "지난 값이 바뀜"
+    merged = dict(have)
+    merged.update(dict(fresh))
+    return sorted(merged.items()), f"이어받음 · 새 {len(fresh) - len(shared)}일"
+
+
 def done_today(code, on_day):
     """오늘 이미 받아 둔 종목인지 봅니다. 이어받을 때 시간을 아낍니다."""
     try:
@@ -105,11 +155,16 @@ def main():
         print("  KIS_APP_KEY 길이:", len(os.getenv("KIS_APP_KEY", "")))
         print("  KIS_APP_SECRET 길이:", len(os.getenv("KIS_APP_SECRET", "")))
         return 1
-    saved, skipped, failed = 0, 0, []
+    saved, skipped, failed, caught = 0, 0, [], 0
     for index, code in enumerate(codes, 1):
         name = label.get(code, code)
         try:
-            rows = client.history(code, days=YEARS * 365)
+            # 이미 받아 둔 종목은 빠진 날만 받습니다. 안 되면 처음부터.
+            rows, how = catch_up(client, code, kept_rows(code))
+            if rows is None:
+                rows = client.history(code, days=YEARS * 365)
+            else:
+                caught += 1
         except broker_kis.BrokerError as error:
             failed.append((name, str(error)[:60]))
             print(f"[{index}/{len(codes)}] {name} 실패 · {error}")
@@ -124,7 +179,8 @@ def main():
         else:
             skipped += 1
             print(f"[{index}/{len(codes)}] {name} · 변화 없음")
-    print(f"\n저장 {saved} · 변화 없음 {skipped} · 실패 {len(failed)}")
+    print(f"\n저장 {saved} · 변화 없음 {skipped} · 실패 {len(failed)}"
+          f" · 이어받은 종목 {caught}")
     for name, why in failed:
         print("  실패:", name, "·", why)
     # 전부 실패했을 때만 실패로 끝냅니다. 한둘이 빠져도 나머지는 남겨야 합니다.
