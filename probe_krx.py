@@ -14,6 +14,7 @@
 """
 from __future__ import annotations
 
+import http.cookiejar
 import json
 import sys
 import urllib.error
@@ -32,12 +33,29 @@ HEADERS = {
 }
 
 
+# 거래소 통계 화면은 세션이 있어야 답합니다. 없으면 본문에 LOGOUT만
+# 돌려줍니다(종목 찾기는 세션 없이도 됩니다). 그래서 화면을 먼저 한 번 열어
+# 쿠키를 받아 두고, 그 쿠키로 묻습니다.
+JAR = urllib.request.build_opener(
+    urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+
+
+def sign_in(seconds=30):
+    try:
+        JAR.open(urllib.request.Request(
+            FROM, headers={"User-Agent": HEADERS["User-Agent"]}), timeout=seconds).read()
+        return True
+    except Exception as trouble:
+        print("화면을 열지 못했습니다:", type(trouble).__name__, str(trouble)[:120])
+        return False
+
+
 def ask(body, seconds=30):
     """거절당해도 본문을 읽습니다. 거래소는 까닭을 본문에 적어 줍니다."""
     data = urllib.parse.urlencode(body, encoding="utf-8").encode()
     call = urllib.request.Request(WHERE, data=data, headers=HEADERS)
     try:
-        with urllib.request.urlopen(call, timeout=seconds) as answer:
+        with JAR.open(call, timeout=seconds) as answer:
             return answer.read().decode("utf-8", "replace")
     except urllib.error.HTTPError as refused:
         body = refused.read().decode("utf-8", "replace")
@@ -62,6 +80,7 @@ def show(tag, body, cut=1200):
 
 def main():
     code = sys.argv[1] if len(sys.argv) > 1 else "005930"
+    print("화면을 먼저 엽니다:", sign_in())
 
     # 1) 종목코드로 표준코드(ISIN)를 찾습니다. 거래소 조회는 이것을 씁니다.
     found = show("종목 찾기", {
