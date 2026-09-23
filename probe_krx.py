@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import json
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -32,10 +33,15 @@ HEADERS = {
 
 
 def ask(body, seconds=30):
+    """거절당해도 본문을 읽습니다. 거래소는 까닭을 본문에 적어 줍니다."""
     data = urllib.parse.urlencode(body, encoding="utf-8").encode()
     call = urllib.request.Request(WHERE, data=data, headers=HEADERS)
-    with urllib.request.urlopen(call, timeout=seconds) as answer:
-        return answer.read().decode("utf-8", "replace")
+    try:
+        with urllib.request.urlopen(call, timeout=seconds) as answer:
+            return answer.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as refused:
+        body = refused.read().decode("utf-8", "replace")
+        return f"[HTTP {refused.code}] {body}"
 
 
 def show(tag, body, cut=1200):
@@ -73,17 +79,21 @@ def main():
             isin = (rows[0] or {}).get("full_code")
     print("\n찾은 표준코드:", isin)
 
-    # 2) 개별 종목의 일별 투자자별 거래실적.
-    for bld in ("dbms/MDC/STAT/standard/MDCSTAT02303",
-                "dbms/MDC/STAT/standard/MDCSTAT02403"):
-        show(f"투자자별 거래실적 · {bld.rsplit('/', 1)[-1]}", {
-            "bld": bld, "locale": "ko_KR",
-            "isuCd": isin or "", "isuCd2": isin or "", "tboxisuCd_finder_stkisu0_0": code,
+    # 2) 개별 종목의 일별 투자자별 거래실적. 어느 화면 번호인지 모르므로
+    #    후보를 차례로 물어보고, 거절당하면 그 까닭을 읽습니다.
+    common = {"locale": "ko_KR", "isuCd": isin or "", "isuCd2": isin or "",
+              "strtDd": "20240102", "endDd": "20240131",
+              "share": "1", "money": "1", "csvxls_isNo": "false"}
+    for number in ("02203", "02301", "02303", "02403", "02103"):
+        bld = f"dbms/MDC/STAT/standard/MDCSTAT{number}"
+        show(f"후보 {number} · 단출하게", {"bld": bld, **common}, cut=600)
+        show(f"후보 {number} · 갈래를 채워서", {
+            "bld": bld, **common,
+            "inqTpCd": "2", "trdVolVal": "2", "askTrdClssCd": "1",
+            "detailView": "1", "mktId": "ALL", "invstTpCd": "9999",
+            "tboxisuCd_finder_stkisu0_0": code,
             "codeNmisuCd_finder_stkisu0_0": "", "param1isuCd_finder_stkisu0_0": "ALL",
-            "strtDd": "20240102", "endDd": "20240131",
-            "askTrdClssCd": "", "inqTpCd": "2", "trdVolVal": "2", "detailView": "1",
-            "money": "1", "csvxls_isNo": "false",
-        })
+        }, cut=600)
     return 0
 
 
