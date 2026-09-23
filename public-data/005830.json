@@ -1,5 +1,6 @@
 {
   "code": "005830",
+  "since": 2015,
   "name": "DB손해보험",
   "halves": [],
   "company": {
@@ -37,8 +38,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-22",
+  "fetched": "2026-09-23",
   "disclosures": [
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20260922",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260922800597"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260922",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260922000500"
+    },
     {
       "title": "동일인등출자계열회사와의상품ㆍ용역거래",
       "date": "20260901",
@@ -108,16 +119,6 @@
       "title": "[기재정정]주요사항보고서(자본으로인정되는채무증권발행결정)",
       "date": "20260629",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260629000009"
-    },
-    {
-      "title": "최대주주등소유주식변동신고서              ",
-      "date": "20260624",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624800900"
-    },
-    {
-      "title": "주식등의대량보유상황보고서(일반)",
-      "date": "20260624",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260624000441"
     }
   ]
 }

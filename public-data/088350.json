@@ -1,5 +1,6 @@
 {
   "code": "088350",
+  "since": 2015,
   "name": "한화생명",
   "halves": [],
   "company": {
@@ -37,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-22",
+  "fetched": "2026-09-23",
   "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260923",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260923000540"
+    },
     {
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20260910",

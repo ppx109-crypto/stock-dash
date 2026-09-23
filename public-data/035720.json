@@ -1,5 +1,6 @@
 {
   "code": "035720",
+  "since": 2015,
   "name": "카카오",
   "halves": [
     {
@@ -116,8 +117,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-22",
+  "fetched": "2026-09-23",
   "disclosures": [
+    {
+      "title": "조회공시요구(풍문또는보도)에대한답변(미확정)              ",
+      "date": "20260922",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260922800610"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260918",
@@ -262,11 +268,6 @@
       "title": "결산실적공시예고(안내공시)              ",
       "date": "20260716",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716800211"
-    },
-    {
-      "title": "특수관계인과의내부거래",
-      "date": "20260714",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000349"
     }
   ]
 }
