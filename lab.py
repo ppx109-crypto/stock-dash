@@ -345,9 +345,23 @@ def market_relative(rows):
 
 
 def save(rows, path=CACHE):
+    """한 줄씩 흘려 씁니다. 통째로 만들면 메모리가 견디지 못합니다.
+
+    예전에는 표 전체를 문자열 하나로 만들어 한 번에 썼습니다. 235종목에서
+    이미 1.3GB였고, 굽는 쪽이 8.9GB를 쓰고 있는 터라 저장에서 무너졌습니다.
+    종목이 500이 되면 그 두 배입니다. 그래서 줄 단위로 흘려 쓰고, 다 쓴
+    뒤에 제자리로 옮깁니다. 쓰다 죽어도 멀쩡한 옛 표가 남습니다.
+    """
     path.parent.mkdir(exist_ok=True)
-    slim = [{k: v for k, v in r.items() if k != "i"} | {"i": r["i"]} for r in rows]
-    path.write_text(json.dumps(slim, ensure_ascii=False), encoding="utf-8")
+    half = path.with_suffix(".part")
+    with half.open("w", encoding="utf-8") as out:
+        out.write("[")
+        for spot, row in enumerate(rows):
+            if spot:
+                out.write(",")
+            out.write(json.dumps(row, ensure_ascii=False))
+        out.write("]")
+    half.replace(path)
     return len(rows)
 
 

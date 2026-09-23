@@ -3,7 +3,11 @@
 재진입 금지와 매매 장부는 이번 회차에 붙인 것입니다. 장부가 실제 매매와
 어긋나면 뒤의 모든 분석이 어긋나므로, 둘이 같은 것을 세는지 확인합니다.
 """
+import shutil
+import tempfile
 import unittest
+from pathlib import Path
+from unittest import mock
 
 import lab
 
@@ -447,3 +451,36 @@ class Kinship(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Saving(unittest.TestCase):
+    """표를 굽는 쪽이 메모리를 거의 다 쓰고 있어, 저장이 통째로 만들면 무너집니다."""
+
+    def setUp(self):
+        self.folder = tempfile.mkdtemp()
+        self.path = Path(self.folder) / "features.json"
+
+    def tearDown(self):
+        shutil.rmtree(self.folder, ignore_errors=True)
+
+    def test_what_went_in_comes_back(self):
+        rows = [{"code": "005930", "date": "20240102", "ahead": {10: 1.5}, "i": 7},
+                {"code": "000660", "date": "20240102", "ahead": {10: -2.0}, "i": 9}]
+        lab.save(rows, self.path)
+        back = lab.load(self.path)
+        self.assertEqual([r["code"] for r in back], ["005930", "000660"])
+        self.assertEqual(back[0]["ahead"][10], 1.5)
+        self.assertEqual(back[1]["i"], 9)
+
+    def test_a_dying_write_leaves_the_old_table_alone(self):
+        lab.save([{"code": "005930", "date": "20240102", "ahead": {10: 1.0}, "i": 1}],
+                 self.path)
+
+        def blow_up(row, **kw):
+            raise MemoryError("메모리가 모자랍니다")
+
+        with mock.patch.object(lab.json, "dumps", side_effect=blow_up):
+            with self.assertRaises(MemoryError):
+                lab.save([{"code": "000660", "date": "20240103",
+                           "ahead": {10: 2.0}, "i": 2}], self.path)
+        self.assertEqual([r["code"] for r in lab.load(self.path)], ["005930"])
