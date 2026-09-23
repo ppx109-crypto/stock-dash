@@ -38,6 +38,7 @@ HORIZON = 10            # 기본으로 보는 앞날. 두 주, 열 거래일입�
 RISE = 5.0              # 무엇을 '성공'으로 볼지. 오 퍼센트입니다.
 COST = 0.25             # 왕복 비용 어림값(%).
 CACHE = Path("study") / "features.json"
+RANGE_DIR = Path("volume-data")   # 고가·저가가 여기 함께 실려 있습니다.
 
 
 def ema_series(closes, span):
@@ -434,11 +435,49 @@ def lanes(prices):
     found = {}
     for code, block in prices.items():
         closes = [c for _, c in block["rows"]]
-        found[code] = {"closes": closes,
+        found[code] = {"code": code, "closes": closes,
                        "날": [d for d, _ in block["rows"]],
                        "중기선": ema_series(closes, AXES["중기"]),
                        "변동성": rolling_std(closes)}
     return found
+
+
+_ranges = {}
+
+
+def day_range(lane):
+    """그 종목의 날짜별 (고가, 저가). 일봉의 자리에 맞춰 늘어놓습니다.
+
+    거래량 수집기가 고가·저가까지 이미 받아 두었는데(volume-data) 쓰고
+    있지 않았습니다. 48회차에 터짐 규칙의 골 −27.9% 가운데 8.7%p가
+    "종가로만 손절을 판정해서" 생긴 것임을 확인하고 끌어왔습니다.
+
+    자리는 **날짜로 맞춥니다.** 두 파일의 날 수가 다를 수 있으므로 번호로
+    맞추면 47회차의 하루 어긋남이 그대로 되풀이됩니다. 종가가 고가와 저가
+    사이에 없으면 그 종목은 통째로 버립니다 — 수정주가가 서로 다른 것이라
+    섞어 쓰면 안 됩니다.
+    """
+    code = lane.get("code")
+    if code in _ranges:
+        return _ranges[code]
+    seen = {}
+    try:
+        body = json.loads((RANGE_DIR / f"{code}.json").read_text(encoding="utf-8"))
+        names = body.get("칸") or []
+        hi, lo = names.index("고가"), names.index("저가")
+        for row in body.get("날") or []:
+            if row and row[hi] and row[lo]:
+                seen[str(row[0])] = (row[hi], row[lo])
+    except (OSError, ValueError):
+        seen = {}
+    line = [seen.get(day) for day in lane["날"]]
+    off = sum(1 for k, got in enumerate(line)
+              if got and not got[1] - 1e-6 <= lane["closes"][k] <= got[0] + 1e-6)
+    if off > max(3, len(line) * 0.001):
+        # 종가가 고가·저가 밖에 있는 날이 이만큼이면 수정주가가 다릅니다.
+        line = [None] * len(line)
+    _ranges[code] = line
+    return line
 
 
 # 청산 방법들. 모두 (길, 진입자리, 진입가, 지난 거래일, 그동안 최고가, 산 날의
@@ -535,7 +574,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None, realistic=False, brake=None):
+        per_window=None, apart=None, realistic=False, brake=None, fill=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -562,6 +601,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     (하루 제한을 며칠로 늘린 것입니다). apart는 (후보, 지금 들고 있는 줄들)을
     받아 함께 담아도 되는지 돌려주는 함수입니다. 같이 물릴 만한 것을 한꺼번에
     담지 않으려는 것입니다.
+
+    fill을 두면 파는 값을 그날 종가 대신 그 함수가 정합니다. 청산 함수와
+    같은 것을 받고 값을 돌려주며, None이면 종가입니다. 장중에 손절선이
+    걸린 날 그 자리에서 팔린 것으로 세려고 낸 자리입니다(48·49회차).
 
     per_day를 두면 하루에 그만큼만 새로 담습니다. busy_cap을 두면 자리가
     남아 있어도 그만큼까지만 채우고 나머지는 현금으로 둡니다. 둘 다 그날의
@@ -603,7 +646,13 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 continue
             if exit_at(one, spot["i"], spot["price"], step, spot["peak"],
                        spot["row"]):
-                gain = (closes[index] / spot["price"] - 1) * 100 - cost
+                sold = closes[index]
+                if fill is not None:
+                    asked = fill(one, spot["i"], spot["price"], step,
+                                 spot["peak"], spot["row"])
+                    if asked:
+                        sold = asked
+                gain = (sold / spot["price"] - 1) * 100 - cost
                 trades.append(gain)
                 weighted.append(gain * spot["자리"])
                 purse *= 1 + gain * spot["자리"] / 100 / slots
@@ -685,6 +734,43 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             "연수익": round(sum(weighted) / slots / max(years, 1), 2),
             "해마다": {y: round(sum(v) / slots, 1) for y, v in sorted(year_gains.items())},
             **({"매매목록": ledger} if detail else {})}
+
+
+def exit_intraday(take, stop, limit):
+    """장중 고가·저가로 익절·손절을 재고, 그 선에서 팝니다.
+
+    지금까지는 종가로만 판정했습니다. 그러면 −5% 손절이 걸린 날 하루에
+    −24%까지 내려간 것을 −24%에 판 것으로 셉니다. 48회차에 터짐 규칙의
+    골 −27.9% 가운데 8.7%p가 그렇게 생긴 것임을 확인했습니다.
+
+    (나갈지, 파는 값) 두 함수를 돌려줍니다. lab.run에 exit_at과 fill로
+    함께 넣으십시오.
+
+    한 날에 고가가 익절선 위이고 저가가 손절선 아래이면 **손절로 셉니다.**
+    어느 쪽이 먼저였는지 일봉으로는 알 수 없으니 나쁜 쪽을 고릅니다.
+    고가·저가가 없는 날은 예전처럼 종가로 판정합니다.
+    """
+    def _hit(lane, start, price, step):
+        got = day_range(lane)[start + step]
+        if not got:
+            return None
+        high, low = got
+        if low <= price * (1 - stop / 100):
+            return price * (1 - stop / 100)
+        if high >= price * (1 + take / 100):
+            return price * (1 + take / 100)
+        return None
+
+    def go(lane, start, price, step, peak, row=None):
+        if _hit(lane, start, price, step):
+            return True
+        move = (lane["closes"][start + step] / price - 1) * 100
+        return move >= take or move <= -stop or step >= limit
+
+    def at(lane, start, price, step, peak, row=None):
+        return _hit(lane, start, price, step)
+
+    return go, at
 
 
 def exit_mixed(take, stop, give_back, arm, limit):

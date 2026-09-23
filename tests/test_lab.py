@@ -3,6 +3,7 @@
 재진입 금지와 매매 장부는 이번 회차에 붙인 것입니다. 장부가 실제 매매와
 어긋나면 뒤의 모든 분석이 어긋나므로, 둘이 같은 것을 세는지 확인합니다.
 """
+import json
 import shutil
 import tempfile
 import unittest
@@ -484,3 +485,74 @@ class Saving(unittest.TestCase):
                 lab.save([{"code": "000660", "date": "20240103",
                            "ahead": {10: 2.0}, "i": 2}], self.path)
         self.assertEqual([r["code"] for r in lab.load(self.path)], ["005930"])
+
+
+class IntradayStop(unittest.TestCase):
+    """장중 손절. 종가로만 판정하면 손절선을 뚫고 내려간 값에 팝니다.
+
+    48회차에 터짐 규칙의 골 −27.9% 가운데 8.7%p가 그렇게 생긴 것임을
+    확인했습니다. 여기서는 고가·저가를 제대로 읽고 제대로 파는지 봅니다.
+    """
+
+    def setUp(self):
+        self.folder = Path(tempfile.mkdtemp())
+        lab._ranges.clear()
+        self.spot = mock.patch.object(lab, "RANGE_DIR", self.folder)
+        self.spot.start()
+
+    def tearDown(self):
+        self.spot.stop()
+        lab._ranges.clear()
+        shutil.rmtree(self.folder, ignore_errors=True)
+
+    def write(self, code, days):
+        """days는 (날짜, 고가, 저가)입니다."""
+        (self.folder / f"{code}.json").write_text(json.dumps(
+            {"code": code, "칸": ["날짜", "거래량", "거래대금", "고가", "저가"],
+             "날": [[day, 1000, 1000.0, high, low] for day, high, low in days]},
+            ensure_ascii=False), encoding="utf-8")
+
+    def lane(self, code, rows):
+        """rows는 (날짜, 종가)입니다."""
+        return {"code": code, "closes": [c for _, c in rows],
+                "날": [d for d, _ in rows]}
+
+    def test_the_days_line_up_by_date_not_by_number(self):
+        # 거래량 파일에 일봉에 없는 날이 하나 더 들어 있어도 밀리면 안 됩니다.
+        self.write("000001", [("20240102", 111, 99), ("20240103", 112, 98),
+                              ("20240104", 113, 97)])
+        lane = self.lane("000001", [("20240103", 100.0), ("20240104", 100.0)])
+        self.assertEqual(lab.day_range(lane), [(112, 98), (113, 97)])
+
+    def test_a_different_adjustment_throws_the_whole_code_out(self):
+        # 종가가 고가·저가 밖에 있으면 수정주가가 서로 다른 것입니다.
+        self.write("000002", [(f"2024010{k}", 10, 9) for k in range(1, 6)])
+        lane = self.lane("000002", [(f"2024010{k}", 100.0) for k in range(1, 6)])
+        self.assertEqual(lab.day_range(lane), [None] * 5)
+
+    def test_the_stop_sells_at_the_line_not_at_the_close(self):
+        self.write("000003", [("20240102", 101, 100), ("20240103", 100, 76)])
+        lane = self.lane("000003", [("20240102", 100.0), ("20240103", 80.0)])
+        go, at = lab.exit_intraday(10.0, 5.0, 10)
+        self.assertTrue(go(lane, 0, 100.0, 1, 100.0))
+        self.assertAlmostEqual(at(lane, 0, 100.0, 1, 100.0), 95.0)
+
+    def test_a_day_that_hits_both_lines_counts_as_the_stop(self):
+        self.write("000004", [("20240102", 101, 100), ("20240103", 120, 90)])
+        lane = self.lane("000004", [("20240102", 100.0), ("20240103", 115.0)])
+        go, at = lab.exit_intraday(10.0, 5.0, 10)
+        self.assertTrue(go(lane, 0, 100.0, 1, 115.0))
+        self.assertAlmostEqual(at(lane, 0, 100.0, 1, 115.0), 95.0)
+
+    def test_a_quiet_day_is_left_alone(self):
+        self.write("000005", [("20240102", 101, 100), ("20240103", 103, 99)])
+        lane = self.lane("000005", [("20240102", 100.0), ("20240103", 102.0)])
+        go, at = lab.exit_intraday(10.0, 5.0, 10)
+        self.assertFalse(go(lane, 0, 100.0, 1, 102.0))
+        self.assertIsNone(at(lane, 0, 100.0, 1, 102.0))
+
+    def test_without_high_and_low_it_falls_back_to_the_close(self):
+        lane = self.lane("000006", [("20240102", 100.0), ("20240103", 80.0)])
+        go, at = lab.exit_intraday(10.0, 5.0, 10)
+        self.assertTrue(go(lane, 0, 100.0, 1, 100.0))   # 종가 −20%
+        self.assertIsNone(at(lane, 0, 100.0, 1, 100.0))  # 팔 값은 종가 그대로
