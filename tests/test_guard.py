@@ -280,3 +280,39 @@ class CapGuard(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Anchor(unittest.TestCase):
+    """표에 적힌 자리가 지금 일봉에서 정말 그날인지.
+
+    표를 굽고 나서 일봉을 다시 받으면 종목에 따라 앞쪽 날이 하나씩 떨어져
+    나갑니다. 그러면 자리가 밀리는데, 매매 시뮬은 그 자리로 종가를 찾습니다.
+    값 차이가 1e-8뿐이라 눈으로는 안 보입니다.
+    """
+
+    def prices(self, days):
+        return {"005930": {"name": "삼성전자",
+                           "rows": [(d, 100.0 + k) for k, d in enumerate(days)]}}
+
+    def test_a_row_that_still_points_at_its_day_passes(self):
+        days = ["2024010%d" % k for k in range(1, 6)]
+        rows = [{"code": "005930", "date": days[2], "i": 2}]
+        self.assertEqual(guard.check_anchor(self.prices(days), rows), 1)
+
+    def test_a_day_dropped_from_the_front_is_caught(self):
+        days = ["2024010%d" % k for k in range(1, 6)]
+        rows = [{"code": "005930", "date": days[2], "i": 3}]   # 하루 밀렸다
+        with self.assertRaises(guard.LookaheadError) as caught:
+            guard.check_anchor(self.prices(days), rows)
+        self.assertIn("자리", str(caught.exception))
+
+    def test_a_row_past_the_end_is_caught(self):
+        days = ["2024010%d" % k for k in range(1, 6)]
+        rows = [{"code": "005930", "date": days[4], "i": 99}]
+        with self.assertRaises(guard.LookaheadError):
+            guard.check_anchor(self.prices(days), rows)
+
+    def test_a_stock_with_no_prices_is_skipped(self):
+        days = ["2024010%d" % k for k in range(1, 6)]
+        rows = [{"code": "000660", "date": days[1], "i": 1}]
+        self.assertEqual(guard.check_anchor(self.prices(days), rows), 1)

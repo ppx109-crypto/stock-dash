@@ -324,8 +324,46 @@ def check_money(rows, samples=400, seed=29):
     return seen
 
 
+def check_anchor(prices, rows):
+    """줄마다 적힌 자리(i)가 지금 일봉에서 정말 그날인지 봅니다.
+
+    표를 한 번 구워 두고 일봉을 다시 받으면, 종목에 따라 앞쪽 날이 하나씩
+    떨어져 나갑니다 — 수집기가 '오늘부터 서른 해 전'을 기준으로 잡기 때문에
+    하루가 지나면 가장 오래된 날이 창 밖으로 밀립니다. 그러면 자리가 하나씩
+    밀리는데, 매매 시뮬은 그 자리로 종가를 찾습니다. **하루 어긋난 값으로
+    사고판 셈**이 됩니다.
+
+    값이 1e-8쯤만 달라지므로 눈으로는 안 보이고, 더럽히기 검사에 우연히
+    걸려야 드러납니다(47회차에 500종목 중 68종목이 그랬습니다). 그래서 자리와
+    날짜가 맞는지 직접 봅니다. 종목마다 첫 줄과 끝 줄을 봅니다.
+    """
+    first, last = {}, {}
+    for row in rows:
+        code = row["code"]
+        first.setdefault(code, row)
+        last[code] = row
+    off = []
+    for code in first:
+        block = prices.get(code)
+        if not block:
+            continue
+        days = [d for d, _ in block["rows"]]
+        for row in (first[code], last[code]):
+            spot = row["i"]
+            if not (0 <= spot < len(days)) or days[spot] != row["date"]:
+                off.append(f'{code} {row["date"]}(자리 {spot})')
+                break
+    if off:
+        raise LookaheadError(
+            f"줄에 적힌 자리가 지금 일봉과 어긋납니다 — {len(off)}종목. "
+            "표를 다시 구워야 합니다 → " + " / ".join(sorted(off)[:5])
+            + (" …" if len(off) > 5 else ""))
+    return len(first)
+
+
 def verify(prices, rows, samples=40, loud=True):
     """네 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다."""
+    zero = check_anchor(prices, rows)
     one = check_corruption(prices, rows, samples=samples)
     two = check_truncation(prices, rows, samples=samples)
     three = check_dates(rows)
@@ -348,10 +386,10 @@ def verify(prices, rows, samples=40, loud=True):
         raise LookaheadError(
             "면제받은 값이 어느 검사도 지나지 않았습니다 → " + " / ".join(missed))
     if loud:
-        print(f"미래참조 검사 통과 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
+        print(f"미래참조 검사 통과 · 자리 확인 {zero}종목 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
               f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건 "
               f"· 시가총액 {sum(six.values())}건 · 거래대금 {sum(seven.values())}건")
-    return {"corruption": one, "truncation": two, "dates": three,
+    return {"anchor": zero, "corruption": one, "truncation": two, "dates": three,
             "filings": four, "cross": sum(five.values()),
             "caps": sum(six.values()), "money": sum(seven.values())}
 

@@ -21,6 +21,11 @@ import broker_kis
 OUT = Path("price-data")
 # 한계일 뿐입니다. 상장 이전에 닿으면 거기서 멈춥니다.
 YEARS = int(os.getenv("PRICE_YEARS", "30"))
+# 시작을 고정합니다. "오늘부터 서른 해 전"으로 두면 하루가 지날 때마다 가장
+# 오래된 날이 창 밖으로 밀려, 다시 받은 종목만 앞쪽이 하루씩 깎입니다.
+# 그러면 특징표에 적어 둔 자리(i)가 밀리고, 매매 시뮬이 **하루 어긋난 종가**로
+# 사고팝니다. 47회차에 500종목 중 68종목이 그 상태였습니다.
+SINCE = os.getenv("PRICE_SINCE", "19900101").strip()
 
 
 def codes_to_collect():
@@ -71,6 +76,16 @@ def save(code, name, rows):
             pass
     path.write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
     return True
+
+
+def _reach():
+    """고정 시작일까지 거슬러 갈 날수. 날이 갈수록 늘어나기만 합니다."""
+    try:
+        begin = datetime.strptime(SINCE, "%Y%m%d").date()
+    except ValueError:
+        return YEARS * 365
+    today = datetime.now(ZoneInfo("Asia/Seoul")).date()
+    return max((today - begin).days, 365)
 
 
 def kept_rows(code):
@@ -165,7 +180,7 @@ def main():
     def fetch(code):
         rows, how = catch_up(client, code, kept_rows(code))
         if rows is None:
-            return client.history(code, days=YEARS * 365), how
+            return client.history(code, days=_reach()), how
         return rows, how
 
     saved, skipped, failed, caught = 0, 0, [], 0
