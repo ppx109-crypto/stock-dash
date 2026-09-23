@@ -577,3 +577,54 @@ class LaneCache(unittest.TestCase):
         second = lab.lanes(board(2))
         self.assertIsNot(second, first)
         self.assertEqual(sorted(second), sorted(first))
+
+
+class VolumeRatio(unittest.TestCase):
+    """거래량비. 51회차에 규칙의 조건이 되었으므로 표에 함께 굽습니다."""
+
+    def setUp(self):
+        self.folder = Path(tempfile.mkdtemp())
+        self.spot = mock.patch.object(lab, "RANGE_DIR", self.folder)
+        self.spot.start()
+
+    def tearDown(self):
+        self.spot.stop()
+        shutil.rmtree(self.folder, ignore_errors=True)
+
+    def write(self, code, days):
+        (self.folder / f"{code}.json").write_text(json.dumps(
+            {"code": code, "칸": ["날짜", "거래량", "거래대금", "고가", "저가"],
+             "날": [[day, vol, 1.0, 1.0, 1.0] for day, vol in days]},
+            ensure_ascii=False), encoding="utf-8")
+
+    def days(self, count):
+        return [f"2024{k // 28 + 1:02d}{k % 28 + 1:02d}" for k in range(count)]
+
+    def test_a_quiet_stretch_sits_at_one(self):
+        days = self.days(30)
+        self.write("000001", [(d, 1000) for d in days])
+        line = lab.volume_line("000001", days)
+        self.assertAlmostEqual(line[-1], 1.0)
+
+    def test_a_burst_is_the_multiple_of_the_month_before(self):
+        days = self.days(30)
+        vols = [(d, 1000) for d in days[:-1]] + [(days[-1], 7000)]
+        self.write("000002", vols)
+        self.assertAlmostEqual(lab.volume_line("000002", days)[-1], 7.0)
+
+    def test_the_first_days_have_nothing_to_compare_against(self):
+        days = self.days(30)
+        self.write("000003", [(d, 1000) for d in days])
+        self.assertIsNone(lab.volume_line("000003", days)[5])
+
+    def test_the_days_line_up_by_date(self):
+        # 거래량 파일에 일봉에 없는 날이 섞여 있어도 밀리면 안 됩니다.
+        days = self.days(30)
+        extra = [("20231201", 9_000_000)] + [(d, 1000) for d in days[:-1]] \
+            + [(days[-1], 4000)]
+        self.write("000004", extra)
+        self.assertAlmostEqual(lab.volume_line("000004", days)[-1], 4.0)
+
+    def test_a_missing_file_gives_nothing_rather_than_breaking(self):
+        days = self.days(30)
+        self.assertEqual(lab.volume_line("000009", days), [None] * 30)

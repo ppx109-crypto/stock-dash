@@ -155,6 +155,43 @@ def since_cross(fast, slow):
     return found
 
 
+VOLUME_BACK = 20        # 거래량비를 견줄 지난 구간. 한 달입니다.
+
+
+def volume_line(code, days):
+    """그 종목의 날짜별 거래량비 — 그날 거래량 ÷ 지난 20거래일 가운데값.
+
+    44회차부터 회차 스크립트마다 따로 계산해 왔습니다. 51회차에 이 값이
+    규칙의 조건이 되었으므로 표에 함께 굽습니다. 스크립트와 앱이 서로 다른
+    값을 보는 일을 막으려는 것입니다.
+
+    자리는 **날짜로** 맞춥니다. 번호로 맞추면 47회차의 하루 어긋남이 그대로
+    되풀이됩니다. 그날 것은 그날 장이 끝나면 알 수 있고, 견주는 것은 그
+    앞의 스무 날뿐이라 뒷날을 보지 않습니다.
+    """
+    seen = {}
+    try:
+        body = json.loads((RANGE_DIR / f"{code}.json").read_text(encoding="utf-8"))
+        names = body.get("칸") or []
+        spot = names.index("거래량")
+        for row in body.get("날") or []:
+            if row and row[spot]:
+                seen[str(row[0])] = row[spot]
+    except (OSError, ValueError):
+        return [None] * len(days)
+    line = [seen.get(day) for day in days]
+    out = [None] * len(days)
+    for k in range(len(days)):
+        if not line[k]:
+            continue
+        back = [v for v in line[max(0, k - VOLUME_BACK):k] if v]
+        if len(back) >= VOLUME_BACK // 2:
+            middle = statistics.median(back)
+            if middle:
+                out[k] = line[k] / middle
+    return out
+
+
 def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
     """종목마다 하루치 특징을 만들어 한 표로 모읍니다."""
     prices = prices if prices is not None else study.load_prices()
@@ -189,6 +226,7 @@ def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
             for i in range(len(closes))])
         rising = run_length([(slopes["장기"][i] or -99) > 0
                              for i in range(len(closes))])
+        bursts = volume_line(code, days)
         money = study.money_timeline(code)
         targets = study.target_timeline(code)
         money_at, target_at = {}, {}
@@ -233,6 +271,8 @@ def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
                 "60일 전 대비": ((price / closes[i - 60] - 1) * 100
                              if i >= 60 and closes[i - 60] else None),
                 # 34회차에 새로 넣은 것들
+                # 그날 거래량이 지난 한 달 가운데값의 몇 배인지(51회차).
+                "거래량비": bursts[i],
                 "모임폭": wide[i],
                 "모임폭밴드": wide_band[i],
                 "정배열일수": lined[i],
