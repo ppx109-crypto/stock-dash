@@ -7,6 +7,7 @@ import unittest
 
 from unittest.mock import patch
 
+import caps
 import events
 import lab
 import rule
@@ -18,40 +19,63 @@ def rows(count, tier_gap, tier_band, gain, date="20200101", code="005930"):
              "ahead": {lab.HORIZON: gain}} for k in range(count)]
 
 
-class TierStats(unittest.TestCase):
+class Conditions(unittest.TestCase):
+    """다섯 조건. 하나라도 빠지면 사면 안 됩니다."""
 
-    def test_a_thin_tier_gets_no_number(self):
-        """59건이면 한 줄도 내지 않습니다."""
-        self.assertEqual(rule.tier_stats(rows(59, -25.0, -3.0, 10.0)), [])
+    def setUp(self):
+        rule._calm = 2.0
+        self.addCleanup(setattr, rule, "_calm", None)
 
-    def test_sixty_is_enough(self):
-        found = rule.tier_stats(rows(60, -25.0, -3.0, 10.0))
-        self.assertEqual(len(found), 1)
-        self.assertEqual(found[0]["층"], 1)
-        self.assertEqual(found[0]["건수"], 60)
+    def row(self, **kw):
+        got = {"code": "005930", "date": "20200101", "변동성": 1.5,
+               "장기 기울기": 2.0, "정배열폭": 8.0, "60일 전 대비": 30.0,
+               caps.RANK: 10}
+        got.update(kw)
+        return got
 
-    def test_the_cost_is_taken_off(self):
-        """10% 올랐어도 왕복 비용을 뺀 값을 적습니다."""
-        found = rule.tier_stats(rows(60, -25.0, -3.0, 10.0))
-        self.assertAlmostEqual(found[0]["평균"], round(10.0 - lab.COST, 2))
-        self.assertAlmostEqual(found[0]["중앙"], round(10.0 - lab.COST, 2))
+    def test_all_five_met_is_a_buy(self):
+        self.assertTrue(rule.holds(self.row()))
 
-    def test_days_are_counted_apart_from_rows(self):
-        """같은 날 여러 종목이 걸린 것을 기회 여러 번으로 세면 안 됩니다."""
-        found = rule.tier_stats(rows(60, -25.0, -3.0, 10.0))
-        self.assertEqual(found[0]["날"], 1)
-        self.assertLess(found[0]["종목"], found[0]["건수"])
+    def test_outside_the_top_hundred_is_not(self):
+        self.assertFalse(rule.holds(self.row(**{caps.RANK: 101})))
 
-    def test_rows_before_the_confirm_period_are_left_out(self):
-        early = rows(60, -25.0, -3.0, 10.0, date="20100101")
-        self.assertEqual(rule.tier_stats(early), [])
-        self.assertEqual(len(rule.tier_stats(early, since="20090101")), 1)
+    def test_an_unknown_rank_is_not(self):
+        """순위를 모르면 '바깥'이 아니라 '모름'이고, 사지 않습니다."""
+        got = self.row()
+        del got[caps.RANK]
+        self.assertFalse(rule.holds(got))
 
-    def test_a_row_without_a_forward_return_is_not_counted(self):
-        mixed = rows(60, -25.0, -3.0, 10.0)
-        for row in mixed[:30]:
-            row["ahead"] = {}
-        self.assertEqual(rule.tier_stats(mixed), [])
+    def test_too_lively_is_not(self):
+        self.assertFalse(rule.holds(self.row(변동성=2.5)))
+
+    def test_too_flat_a_slope_is_not(self):
+        self.assertFalse(rule.holds(self.row(**{"장기 기울기": 1.0})))
+
+    def test_a_missing_number_is_not(self):
+        got = self.row()
+        del got["정배열폭"]
+        self.assertFalse(rule.holds(got))
+
+    def test_without_the_calm_edge_nothing_is_bought(self):
+        """문턱을 아직 못 구했으면 사지 않습니다. 빈 값을 통과로 세면 안 됩니다."""
+        rule._calm = None
+        self.assertFalse(rule.holds(self.row()))
+
+    def test_the_steeper_one_comes_first(self):
+        steep = self.row(**{"장기 기울기": 3.0})
+        gentle = self.row(**{"장기 기울기": 1.8})
+        self.assertLess(rule.order(steep), rule.order(gentle))
+
+    def test_dropping_one_condition_lets_more_through(self):
+        turned = self.row(**{"장기 기울기": 1.0})
+        self.assertFalse(rule.holds(turned))
+        self.assertTrue(rule.holds_without(turned, "slope"))
+
+    def test_the_calm_edge_is_a_quantile_not_a_fixed_number(self):
+        """시장이 통째로 조용해져도 '상대적으로 조용한 쪽'을 가리켜야 합니다."""
+        rule._calm = None
+        rows = [{"변동성": v} for v in range(1, 101)]
+        self.assertAlmostEqual(rule.calm_edge(rows), 41.0)
 
 
 class Filings(unittest.TestCase):
@@ -95,6 +119,8 @@ class Spacing(unittest.TestCase):
         """화면에 나가는 설명이 규칙과 어긋나면 안 됩니다."""
         self.assertIn("하루에 새로 담는 것은 둘까지", rule.WHY)
         self.assertIn("같이 움직이던", rule.WHY)
+        self.assertIn("100등", rule.WHY)
+        self.assertIn(f"{rule.SLOPE:g}", rule.WHY)
 
     def test_the_kinship_bar_is_mid_range(self):
         """0.5~0.7이 모두 같은 방향이라 가운데를 씁니다. 가장자리는 위험합니다."""
@@ -107,7 +133,7 @@ class Risk(unittest.TestCase):
 
     def test_the_caveat_says_the_drawdown(self):
         """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
-        for must in ("−39.9%", "여덟 달", "열세 번", "2008년"):
+        for must in ("−14.5%", "−14.7%", "임시", "살아남은"):
             self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
 
     def test_an_empty_run_gives_an_empty_report(self):

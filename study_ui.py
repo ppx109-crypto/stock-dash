@@ -52,26 +52,32 @@ def render_rule():
     if not book:
         return
     st.subheader(book["name"])
+    if book.get("임시"):
+        st.warning("**아직 임시 수치입니다.** 조사 대상이 200종목이고 그날 "
+                   "순위를 매길 자료가 2015년 6월부터라, 한쪽 구간의 매매가 "
+                   "아흔 번씩뿐입니다. 500종목 자료가 채워지면 전부 다시 "
+                   "잽니다. 방향은 믿되 자릿수는 믿지 마십시오.")
     st.caption(book["why"])
-    kept, base = book.get("규칙") or {}, book.get("기준") or {}
-    trade = book.get("굴림") or {}
-    left, mid, right = st.columns(3)
-    left.metric("20일 안 5%↑", f'{kept.get("5%↑", 0):.1f}%',
-                f'{kept.get("5%↑", 0) - base.get("5%↑", 0):+.1f}%p')
-    mid.metric("중앙 수익률", f'{kept.get("중앙", 0):+.2f}%',
-               f'{kept.get("중앙", 0) - base.get("중앙", 0):+.2f}%p')
-    right.metric("하위 10%", f'{kept.get("하위10%", 0):+.1f}%',
-                 f'{kept.get("하위10%", 0) - base.get("하위10%", 0):+.1f}%p')
-    if trade:
-        st.caption(f'익절 {book["take"]:g}% · 손절 {book["stop"]:g}% · 최대 {book["limit"]}거래일 · '
-                   f'자리 {book["slots"]}개로 실제로 굴리면 매매 {trade["매매"]:,}회 · '
-                   f'승률 {trade["승률"]:.1f}% · 매매당 {trade["평균"]:+.2f}% · '
-                   f'보유 중앙 {trade["보유일중앙"]}거래일 · 자리 가동률 {trade["가동률"]:.1f}% · '
-                   f'연수익 {trade["연수익"]:+.2f}%. 자리가 차면 그날 나온 다음 후보는 '
-                   f'놓칩니다({trade["놓침"]:,}회). 그것까지 세어 낸 수치입니다.')
+    halves = book.get("앞뒤") or {}
+    if halves:
+        st.markdown("**앞뒤로 나눠 따로 잰 성적** (자리 3 · 하루 2종목 · 비용 뺀 값)")
+        st.dataframe([{"구간": tag, "매매": f'{one["매매"]:,}회',
+                       "승률": f'{one["승률"]:.1f}%',
+                       "매매당": f'{one["평균"]:+.2f}%',
+                       "하위 10%": f'{one["하위10%"]:+.1f}%',
+                       "가장 깊은 골": f'{one["최대낙폭"]:+.1f}%',
+                       "가장 긴 연패": f'{one["연패"]}번',
+                       "자리 가동률": f'{one["가동률"]:.1f}%',
+                       "연수익": f'{one["연수익"]:+.2f}%'}
+                      for tag, one in halves.items()], hide_index=True,
+                     width="stretch", height=_fits(len(halves), cap=4))
+        st.caption("한쪽에서만 좋은 것은 그 시기의 성질이지 규칙의 힘이 "
+                   "아닙니다. 그래서 두 구간을 따로 잽니다. 이 규칙은 골이 "
+                   "양쪽에서 거의 같습니다(−14.5%와 −14.7%) — 그것이 이 "
+                   "설정을 고른 까닭입니다.")
     dip = book.get("골") or {}
     if dip.get("최대낙폭"):
-        st.markdown("**얼마나 깊이, 얼마나 오래 파였나** (2016년 이후 · 자리 3)")
+        st.markdown("**얼마나 깊이, 얼마나 오래 파였나**")
         one, two, three = st.columns(3)
         one.metric("가장 깊었던 골", f'{dip["최대낙폭"]:+.1f}%',
                    f'{dip.get("꼭대기", "")} → {dip.get("바닥", "")}',
@@ -84,60 +90,53 @@ def render_rule():
         if years:
             st.dataframe([{y: f'{v:+.1f}%' for y, v in years.items()}],
                          hide_index=True, width="stretch")
-            st.caption("해마다 그 해 안에서 가장 깊었던 골입니다. **한 해도 "
-                       "예외가 없습니다.** 연수익만 보면 순해 보이지만 실제로 "
-                       "겪는 것은 이쪽입니다. 자리 몫으로 나눈 뒤 지갑에 견준 "
-                       "비율이며, 매매가 끝난 날로 셉니다.")
+            st.caption("해마다 그 해 안에서 가장 깊었던 골입니다. 자리 몫으로 "
+                       "나눈 뒤 지갑에 견준 비율이며, 매매가 끝난 날로 셉니다. "
+                       "연수익만 보면 순해 보이지만 실제로 겪는 것은 이쪽입니다.")
+    parts = book.get("조건마다") or []
+    if parts:
+        st.markdown("**조건을 하나씩 빼 보면** (열 거래일 뒤 · 비용 뺀 값)")
+        st.dataframe([{"무엇": one["무엇"], "건수": f'{one["건수"]:,}건',
+                       "날": f'{one["날"]:,}일', "종목": f'{one["종목"]}개',
+                       "평균": f'{one["평균"]:+.2f}%',
+                       "중앙": f'{one["중앙"]:+.2f}%',
+                       "하위 10%": f'{one["하위10%"]:+.1f}%'}
+                      for one in parts], hide_index=True, width="stretch",
+                     height=_fits(len(parts), cap=8))
+        st.caption("다섯 조건을 한 덩어리로 보면 '이 규칙은 이렇다'로만 "
+                   "읽힙니다. 하나씩 빼 보면 어느 것이 실제로 거르고 있고 "
+                   "어느 것이 장식인지 드러납니다.")
     hit = [r for r in (book.get("오늘") or []) if r.get("해당")]
     st.markdown(f'**오늘 이 규칙에 걸리는 종목 · {len(hit)}개** '
                 f'({(book.get("오늘") or [{}])[0].get("date", "")} 기준)')
     if hit:
-        st.dataframe([{"종목": r["name"], "60일 전 대비": f'{r["60일 전 대비"]:+.1f}%',
-                       "층": f'{r["층"]}층' if r.get("층") else "—",
-                       "중기선 이격": f'{r["중기 이격"]:+.1f}%',
-                       "이례도": (f'{r["중기 이격밴드"]:+.1f}σ'
-                               if r.get("중기 이격밴드") is not None else "—"),
+        st.dataframe([{"종목": r["name"],
+                       "시총 순위": (f'{r["시총순위"]}등'
+                                 if r.get("시총순위") else "—"),
+                       "장기선 기울기": (f'{r["장기 기울기"]:+.2f}'
+                                   if r.get("장기 기울기") is not None else "—"),
+                       "정배열폭": (f'{r["정배열폭"]:+.1f}%'
+                                if r.get("정배열폭") is not None else "—"),
+                       "60일 전 대비": (f'{r["60일 전 대비"]:+.1f}%'
+                                    if r.get("60일 전 대비") is not None else "—"),
+                       "변동성": (f'{r["변동성"]:.2f}%'
+                               if r.get("변동성") is not None else "—"),
                        "영업이익성장": (f'{r["영업이익성장"]:+.0f}%'
                                    if r.get("영업이익성장") is not None else "—"),
-                       "매출성장": (f'{r["매출성장"]:+.1f}%'
-                                if r.get("매출성장") is not None else "—"),
-                       "목표가 괴리": (f'{r["목표가괴리"]:+.1f}%'
-                                  if r.get("목표가괴리") is not None else "—"),
                        "최근 공시": (", ".join(f'{g["갈래"]}({g["며칠 전"]}일 전)'
                                            for g in r["최근 공시"])
                                  if r.get("최근 공시") else
                                  ("없음" if r.get("최근 공시") == [] else "—"))}
                       for r in hit], hide_index=True, width="stretch",
                      height=_fits(len(hit), cap=20))
+        if any(r.get("최근 공시") for r in hit):
+            st.caption("'최근 공시'는 최근 20일 안에 난 공시입니다. 조건으로는 "
+                       "쓰지 않습니다 — 공시로 후보를 걸러 보았더니 앞뒤 구간 "
+                       "모두에서 오히려 나빠졌습니다. 읽고 판단하시라고 적어 "
+                       "둘 뿐입니다.")
     else:
-        st.info("오늘은 걸리는 종목이 없습니다. 조건을 낮추지 말고 기다리는 자리입니다.")
-    if any(r.get("최근 공시") for r in hit):
-        st.caption("'최근 공시'는 그 종목에 최근 20일 안에 난 공시입니다. "
-                   "조건으로는 쓰지 않습니다 — 공시로 후보를 걸러 보았더니 "
-                   "앞뒤 구간 모두에서 오히려 나빠졌습니다. 읽고 판단하시라고 "
-                   "적어 둘 뿐입니다.")
-    top = [r for r in hit if r.get("층") == 1]
-    if top:
-        st.success("오늘 1층이 " + ", ".join(r["name"] for r in top) +
-                   " 있습니다. 1층은 2주 안에 5% 오른 적이 열에 일곱이고 "
-                   "중앙 수익률도 가장 높습니다. 다만 열흘에 한 번꼴로만 나옵니다.")
-    tiers = book.get("층별") or []
-    if tiers:
-        st.markdown("**층마다 재료가 다릅니다** (2016년 이후 · 2주 뒤 · 비용 뺀 값)")
-        st.dataframe([{"층": f'{t["층"]}층',
-                       "조건": f'이격 {t["이격"]:g}% 아래 · 밴드 {t["밴드"]:g}σ 아래',
-                       "2주 5%↑": f'{t["5%↑"]:.1f}%',
-                       "평균": f'{t["평균"]:+.2f}%', "중앙": f'{t["중앙"]:+.2f}%',
-                       "하위 10%": f'{t["하위10%"]:+.1f}%',
-                       "건수": f'{t["건수"]:,}건 · {t["날"]:,}일'}
-                      for t in tiers], hide_index=True, width="stretch",
-                     height=_fits(len(tiers), cap=6))
-        st.caption("같은 −15%라도 1층과 4층은 전혀 다른 재료입니다. 4층은 좋아서 "
-                   "담는 것이 아니라 자리를 비워 두는 것보다 나아서 담습니다. "
-                   "1층만 노리면 재료는 가장 좋지만 열 해에 백 번밖에 오지 않아 "
-                   "자금이 놉니다. 건수 옆의 날짜 수도 함께 보십시오. 폭락은 하루에 "
-                   "여러 종목이 한꺼번에 걸리므로, 건수보다 날 수가 실제 기회 수에 "
-                   "가깝습니다.")
+        st.info("오늘은 걸리는 종목이 없습니다. 신호는 주당 서너 종목쯤 "
+                "나옵니다. 조건을 낮추지 말고 기다리는 자리입니다.")
     ways = book.get("청산 견주기") or {}
     if len(ways) >= 2:
         st.markdown("**언제 파느냐가 승률을 바꿉니다** "

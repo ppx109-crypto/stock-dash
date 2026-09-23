@@ -1,29 +1,32 @@
 """지금 쓰는 규칙과, 오늘 그 규칙에 걸리는 종목.
 
-한 가지 문턱만 두면 강한 신호가 없는 날에는 자금이 놉니다. 가동률이 56%면
-절반이 쉬는 것이고, 그만큼 한 해 수익이 깎입니다. 그래서 강도를 층으로 두고
-센 것부터 자리를 채웁니다. 센 후보가 없는 날은 그다음 층으로 채웁니다.
+**살 때 코스피 100등 안**의 기업만 봅니다. 그날의 시가총액으로 가립니다 —
+오늘의 순위로 과거를 고르면 '앞으로 커질 회사만 골라 산' 셈이 되어, 어떤
+규칙이든 좋아 보입니다(25회차).
 
-실제로 할 수 없는 매매는 세지 않습니다. 상한가에 붙은 날은 사려는 사람만
-있어 종가에 살 수 없고, 하한가에 붙은 날은 팔 수 없습니다. 그런 날은 사는
-쪽을 건너뛰고 파는 쪽을 미룹니다. 서른 해 일봉의 0.26%가 상한가, 0.09%가
-하한가에 붙은 날입니다.
+그 안에서 **조용한데 길게 오르고 있는 종목**을 삽니다. 23회차에서 변동성으로
+그룹을 가르니 정반대의 규칙이 필요했습니다. 출렁이는 종목은 떨어진 것이
+되돌아오고(평균회귀), 조용한 종목은 오르던 것이 더 오릅니다(추세). 100등
+안은 조용한 쪽입니다. 그래서 여기서는 추세를 삽니다.
 
-같이 물릴 것을 함께 담지 않습니다. 이미 든 종목과 지난 예순 날 동안 0.6
-넘게 같이 움직인 종목은 그날 담지 않습니다. 21회차에 재어 보니 연패가
-열다섯에서 열셋으로 줄고, 2020년·2011년·2000년의 골이 서너 %p씩 얕아졌으며,
-연수익은 그대로였습니다. 문턱은 0.5부터 0.7까지 모두 같은 방향이라 가운데인
-0.6을 씁니다. 다만 2008년은 꿈쩍도 하지 않았습니다. 그때는 **닮지 않은
-종목이 없었습니다.**
+스물네 회차 동안 다듬었던 평균회귀 규칙은 **여기서 돈을 잃습니다**
+(2015~2020 −6.59%). 그 규칙은 작고 출렁이고 거래가 적은 종목 위에 서
+있었습니다 — 유동성 문턱을 얹자 수익의 절반이 사라졌습니다(27회차).
+아쉽지만 조건이 바뀌면 규칙도 바뀝니다.
 
-자리가 셋이어도 하루에 담는 것은 둘까지입니다. 셋을 한날에 몰아 담으면
-그날 시장이 밀린 날일 때 셋이 함께 물립니다. 20회차에 재어 보니 그것만
-막아도 가장 깊은 골이 −50.8%에서 −47.2%로(전체 구간 −52.1% → −49.9%)
-얕아지고, 연수익은 그대로였습니다.
+고르는 잣대는 **골**입니다. 연수익이 아닙니다. 28회차에서 장기 기울기 문턱을
+훑으니 골이 −34%에서 −9%까지 한 방향으로 얕아지는데 연수익은 거의 따라
+내려가지 않았습니다. 꼭짓점이 아니라 비탈이라 믿을 만하고, 앞뒤 구간의 골이
+가장 잘 맞는 한가운데(1.7)를 씁니다.
 
-한때 실적 조건을 넣었다가 뺐습니다. 실적이 붙은 관측은 2017년 이후뿐인데
-그 구간이 원래 좋은 구간이었습니다. 같은 구간에서 견주니 오히려 깎였습니다.
-정배열도 네 번 재어 보았지만 매번 덧셈이 0이었습니다.
+자리가 셋이어도 하루에 담는 것은 둘까지이고, 이미 든 종목과 요즘 같이
+움직이던 종목은 담지 않습니다. 셋이 한꺼번에 물리는 것을 줄이려는 것입니다
+(20·21회차). 상한가에 붙은 날은 사지 않고 하한가에 붙은 날은 팔지 않습니다 —
+실제로 할 수 없는 매매입니다(22회차).
+
+**아직 임시입니다.** 조사 대상이 200종목이고 주식수가 2015년부터라, 매매가
+한쪽 구간에 아흔 번씩뿐입니다. 500종목 자료가 채워지면 전부 다시 잽니다.
+방향은 믿되 자릿수는 믿지 마십시오.
 """
 from __future__ import annotations
 
@@ -32,65 +35,84 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import caps
 import events
 import lab
 
-NAME = "중기선에서 이례적으로 벌어진 종목"
+NAME = "코스피 100등 안에서 조용히 길게 오르는 종목"
+SINCE = "20150629"       # 주식수 자료가 덮는 첫날. 그 앞은 순위를 모릅니다.
+MID = "20210101"         # 앞뒤로 나눠 보는 자리
 
-# 센 것부터 약한 것 순서입니다. 앞자리가 (이격 %, 이격밴드 σ)입니다.
-TIERS = ((-20.0, -2.5), (-15.0, -2.0), (-12.0, -2.0), (-10.0, -2.0))
-TAKE, STOP = 15.0, 7.0   # 익절·손절
-LIMIT = 15               # 세 주. 이 거래일이 지나면 그냥 정리
+TOP = 100                # 살 때 그날 시가총액 순위가 이 안이어야 합니다
+CALM = 0.4               # 변동성이 아래 40% 안. 절벽 위라 늦추면 안 됩니다
+SLOPE = 1.7              # 장기선(120일)이 하루 이만큼씩 오르고 있을 것
+WIDTH = 6.18             # 정배열폭
+SIXTY = 24.8             # 60일 전보다 이만큼 올라 있을 것
+TAKE, STOP = 10.0, 5.0   # 익절·손절
+LIMIT = 10               # 열 거래일. 이 날이 지나면 그냥 정리
 SLOTS = 3                # 자리. 자금을 셋으로 나눕니다.
 PER_DAY = 2              # 하루에 새로 담는 수. 셋을 한날에 몰아 담지 않습니다.
 KIN = 0.6                # 이미 든 것과 이만큼 넘게 같이 움직이면 담지 않습니다.
 OUT = Path("study") / "rule.json"
 
 WHY = (
-    "종가가 중기선(20거래일 이동평균)에서 아래로 크게 벌어지고, 그 벌어짐이 "
-    "그 종목의 지난 120거래일 이격과 견줘도 이례적인 날입니다. 같은 −15%라도 "
-    "늘 출렁이는 종목에는 흔한 일이고 조용한 종목에는 큰 일이라, 종목마다 제 "
-    "잣대로 잽니다. 벌어진 정도에 따라 네 층으로 나누고, 센 층부터 자리를 "
-    "채웁니다. 센 후보가 없는 날은 다음 층으로 채워 자금이 놀지 않게 합니다. "
-    "다만 하루에 새로 담는 것은 둘까지이고, 이미 든 종목과 요즘 같이 움직이던 "
+    "그날 시가총액이 100등 안이고, 그 종목이 평소 조용한 편이며(변동성 아래 "
+    "40%), 120일선이 하루 1.7%씩 오르고 있고, 단기선이 장기선 위로 6% 넘게 "
+    "벌어져 있으며, 60일 전보다 25% 넘게 올라 있는 날입니다. "
+    "한마디로 큰 회사가 조용히, 그러나 오래 오르고 있는 자리입니다. "
+    "순위는 그날까지 접수된 주식수로 그날 매긴 것이라, 오늘의 순위로 과거를 "
+    "고르지 않습니다. "
+    "하루에 새로 담는 것은 둘까지이고, 이미 든 종목과 요즘 같이 움직이던 "
     "종목은 담지 않습니다. 셋이 함께 물리는 것을 줄이려는 것입니다."
 )
 CAVEAT = (
-    "크게 밀린 종목을 사는 규칙이라 더 밀릴 수 있습니다. 손절을 7%로 두어도 "
-    "하루 사이에 그보다 더 빠지면 그대로 잃습니다. 가장 나빴던 한 번은 "
-    "−30.2%였고, 가장 나빴던 열에 하나는 −14.7%였습니다. 열 번 중 다섯 번은 "
-    "집니다. "
-    "무엇보다, 한 번의 손실보다 이어지는 손실이 큽니다. 자리 셋으로 굴렸다면 "
-    "지갑이 가장 깊게 파였을 때 −39.9%였고(2020년 2월 꼭대기 → 3월 바닥), "
-    "본전으로 돌아오는 데 그 꼭대기에서 여덟 달이 걸렸습니다. "
-    "열세 번을 내리 졌던 적도 있습니다. 해마다 한 번씩은 −8%에서 −40% "
-    "사이로 파였습니다. 한 해도 예외가 없었습니다. "
-    "더 옛날까지 넣어 세면 2008년에 −44%, 1997년에 −43%가 나옵니다. 그때는 "
-    "닮지 않은 종목이 없어, 함께 담지 않는 잣대가 아무 일도 하지 못했습니다. "
+    "**이 수치는 임시입니다.** 조사 대상이 200종목이고 그날 순위를 매길 수 "
+    "있는 자료가 2015년 6월부터라, 한쪽 구간의 매매가 아흔 번씩뿐입니다. "
+    "한 해 스무 번입니다. 27회차에 종목을 3분의 1 덜어 내 보았더니 뒤쪽 "
+    "수익이 반토막 났습니다. 그 정도로 흔들리는 표본입니다. "
+    "게다가 200종목은 **오늘의** 시가총액으로 고른 것이라, 2016년에 100등 "
+    "안이었다가 지금 작아진 회사는 아예 들어 있지 않습니다. 살아남은 것만 "
+    "보는 쪽이라 성적이 실제보다 좋게 나옵니다. "
+    "골은 앞쪽(2015~2020) −14.5%, 뒤쪽(2021~) −14.7%였습니다. 연수익은 "
+    "+6.51%와 +9.72%입니다. 열 번에 다섯 번은 집니다. "
+    "오르고 있는 종목을 사는 규칙이라, 오르던 것이 멈추는 자리에서 삽니다. "
+    "손절을 5%로 두어도 하루 사이에 그보다 더 빠지면 그대로 잃습니다. "
     "지나간 자료로 확인한 것이며 앞날을 약속하지 않습니다. "
     "매수·매도 신호가 아닙니다."
 )
 
 
-def tier_of(row):
-    """몇 층인지. 센 층일수록 작은 수입니다. 걸리지 않으면 None입니다."""
-    gap, band = row.get("중기 이격"), row.get("중기 이격밴드")
-    if gap is None or band is None:
-        return None
-    for rank, (edge, sigma) in enumerate(TIERS):
-        if gap <= edge and band <= sigma:
-            return rank
-    return None
+_calm = None
+
+
+def calm_edge(rows):
+    """'조용하다'의 문턱. 전체 종목의 변동성 아래 CALM 자리입니다.
+
+    절댓값(예: 2.13%)을 박아 두지 않는 것은, 시장 전체가 조용해지거나
+    출렁여도 '상대적으로 조용한 쪽'을 가리키게 하려는 것입니다.
+    """
+    global _calm
+    if _calm is None:
+        vals = sorted(row["변동성"] for row in rows
+                      if row.get("변동성") is not None)
+        _calm = vals[int(len(vals) * CALM)] if vals else 0.0
+    return _calm
 
 
 def holds(row):
-    return tier_of(row) is not None
+    """살 자리인지. 다섯 조건을 모두 넘어야 합니다."""
+    if not caps.inside(row, TOP):
+        return False
+    if _calm is None or (row.get("변동성") or 99) > _calm:
+        return False
+    return ((row.get("장기 기울기") or -99) >= SLOPE
+            and (row.get("정배열폭") or -99) >= WIDTH
+            and (row.get("60일 전 대비") or -99) >= SIXTY)
 
 
 def order(row):
-    """센 층부터, 같은 층에서는 더 이례적인 것부터 담습니다."""
-    return (tier_of(row) if tier_of(row) is not None else 9,
-            row.get("중기 이격밴드") or 0)
+    """더 가파르게 오르고 있는 것부터 담습니다."""
+    return -(row.get("장기 기울기") or 0)
 
 
 def today(rows):
@@ -108,47 +130,72 @@ def today(rows):
             latest[code] = row
     found = []
     for code, row in latest.items():
-        rank = tier_of(row)
         found.append({"code": code, "name": row.get("name") or code,
-                      "date": row["date"], "해당": rank is not None,
-                      "층": (rank + 1) if rank is not None else None,
-                      "중기 이격": row.get("중기 이격"),
-                      "중기 이격밴드": row.get("중기 이격밴드"),
+                      "date": row["date"], "해당": holds(row),
+                      "시총순위": row.get(caps.RANK),
+                      "장기 기울기": row.get("장기 기울기"),
+                      "정배열폭": row.get("정배열폭"),
                       "60일 전 대비": row.get("60일 전 대비"),
+                      "변동성": row.get("변동성"),
                       "영업이익성장": row.get("영업이익성장"),
                       "매출성장": row.get("매출성장"),
-                      "목표가괴리": row.get("목표가괴리"),
                       "최근 공시": _filings(code, row["date"])})
-    found.sort(key=lambda r: (not r["해당"], r.get("층") or 9,
-                              r.get("중기 이격밴드") or 0))
+    found.sort(key=lambda r: (not r["해당"], -(r.get("장기 기울기") or -99)))
     return found
 
 
-def tier_stats(rows, since=lab.SPLIT):
-    """층마다 재료가 얼마나 다른지. 화면에 그대로 보여 줍니다.
+def each_condition(rows, since=SINCE):
+    """조건을 하나씩 빼 보면 무엇이 일을 하고 있는지 보입니다.
 
-    네 층을 한 덩어리로 보면 '이 규칙은 40% 남짓 맞는다'로 보입니다. 실제로는
-    1층이 2주 중앙 +14%이고 4층은 기준선과 거의 같습니다. 4층은 좋아서가
-    아니라 자리를 비워 두는 것보다 나아서 담습니다. 그 차이를 감추지 않습니다.
+    다섯 조건을 한 덩어리로 보면 '이 규칙은 이렇다'로만 읽힙니다. 하나씩
+    빼 보면 어느 것이 실제로 거르고 있고 어느 것이 장식인지 드러납니다.
     """
+    calm_edge(rows)
+    picks = [row for row in rows if row["date"] >= since]
+
+    def count(test):
+        got = [row for row in picks if test(row)]
+        vals = sorted(row["ahead"][lab.HORIZON] - lab.COST for row in got
+                      if row.get("ahead", {}).get(lab.HORIZON) is not None)
+        if len(vals) < 60:
+            return None
+        cut = max(1, len(vals) // 10)
+        return {"건수": len(vals), "날": len({row["date"] for row in got}),
+                "종목": len({row["code"] for row in got}),
+                "평균": round(sum(vals) / len(vals), 2),
+                "중앙": round(vals[len(vals) // 2], 2),
+                "하위10%": round(sum(vals[:cut]) / cut, 1)}
+
+    parts = {
+        "다섯 조건 모두": holds,
+        "100등 조건만 뺌": lambda r: holds_without(r, "top"),
+        "조용함 조건만 뺌": lambda r: holds_without(r, "calm"),
+        "기울기 조건만 뺌": lambda r: holds_without(r, "slope"),
+        "정배열폭 조건만 뺌": lambda r: holds_without(r, "width"),
+        "60일 조건만 뺌": lambda r: holds_without(r, "sixty"),
+        "아무 조건 없음": lambda r: True,
+    }
     found = []
-    for rank in range(len(TIERS)):
-        group = [r for r in rows
-                 if r["date"] >= since and tier_of(r) == rank
-                 and r.get("ahead", {}).get(lab.HORIZON) is not None]
-        if len(group) < 60:        # 60건 미만이면 숫자를 내지 않습니다.
-            continue
-        gains = sorted(r["ahead"][lab.HORIZON] - lab.COST for r in group)
-        cut = max(1, len(gains) // 10)
-        found.append({
-            "층": rank + 1, "이격": TIERS[rank][0], "밴드": TIERS[rank][1],
-            "건수": len(gains), "종목": len({r["code"] for r in group}),
-            "날": len({r["date"] for r in group}),
-            "5%↑": round(sum(1 for g in gains if g >= lab.RISE) / len(gains) * 100, 1),
-            "평균": round(sum(gains) / len(gains), 2),
-            "중앙": round(gains[len(gains) // 2], 2),
-            "하위10%": round(sum(gains[:cut]) / cut, 1)})
+    for tag, test in parts.items():
+        got = count(test)
+        if got:
+            found.append({"무엇": tag, **got})
     return found
+
+
+def holds_without(row, skip):
+    """조건 하나를 빼고 봅니다. 어느 것이 일하는지 재는 데 씁니다."""
+    if skip != "top" and not caps.inside(row, TOP):
+        return False
+    if skip != "calm" and (_calm is None or (row.get("변동성") or 99) > _calm):
+        return False
+    if skip != "slope" and (row.get("장기 기울기") or -99) < SLOPE:
+        return False
+    if skip != "width" and (row.get("정배열폭") or -99) < WIDTH:
+        return False
+    if skip != "sixty" and (row.get("60일 전 대비") or -99) < SIXTY:
+        return False
+    return True
 
 
 # 자리를 꽉 채워 굴릴 때와, 한 번에 한 종목만 들 때는 답이 다릅니다.
@@ -156,7 +203,7 @@ def tier_stats(rows, since=lab.SPLIT):
 # 없으니 벌어진 것이 메워질 때까지 들고 가는 편이 낫습니다. 둘 다 보여 줍니다.
 EXITS = {
     "고정 익절·손절 (자리를 꽉 채워 굴릴 때)": lambda: lab.exit_fixed(TAKE, STOP, LIMIT),
-    "중기선으로 돌아오면 (한 종목만 들 때)": lambda: lab.exit_back_to_line(40),
+    "익절10 손절5 되돌림3 발동2": lambda: lab.exit_mixed(TAKE, STOP, 3.0, 2.0, LIMIT),
 }
 
 
@@ -165,7 +212,7 @@ def apart(prices):
     return lab.unlike(lab.moves(prices), edge=KIN)
 
 
-def exit_stats(rows, prices, since=lab.SPLIT):
+def exit_stats(rows, prices, since=SINCE):
     """실제로 사는 신호만 놓고 두 청산을 나란히 견줍니다.
 
     걸린 것 전부가 아니라 '자리가 있어 실제로 산 것'으로 재야 합니다.
@@ -191,7 +238,7 @@ def _filings(code, day):
     return [{"갈래": kind, "며칠 전": age} for kind in sorted(kinds)]
 
 
-def risk_stats(rows, prices, since=lab.SPLIT):
+def risk_stats(rows, prices, since=SINCE):
     """얼마나 깊이, 얼마나 오래 파였는지.
 
     연수익과 승률만 보면 이 규칙은 순해 보입니다. 실제로 겪는 것은 지갑이
@@ -227,18 +274,40 @@ def risk_stats(rows, prices, since=lab.SPLIT):
             "해마다 골": yearly}
 
 
+def halves(rows, prices):
+    """앞뒤로 나눠 나란히 냅니다. 한쪽에서만 좋은 것은 믿지 않으려는 것입니다."""
+    kin = apart(prices)
+    found = {}
+    for tag, use, since in (("앞쪽 2015~2020",
+                             [r for r in rows if r["date"] < MID], SINCE),
+                            ("뒤쪽 2021~", rows, MID)):
+        got = lab.run(use, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
+                      slots=SLOTS, rank=order, since=since, per_day=PER_DAY,
+                      apart=kin, realistic=True)
+        if got:
+            found[tag] = {k: got[k] for k in
+                          ("매매", "승률", "평균", "중앙", "하위10%",
+                           "최대낙폭", "연패", "가동률", "연수익")}
+    return found
+
+
 def report(rows, prices):
+    caps.tag(rows, TOP)
+    calm_edge(rows)
     picked = [r for r in rows if holds(r)]
     body = {
-        "name": NAME, "why": WHY, "caveat": CAVEAT,
-        "tiers": [list(t) for t in TIERS],
+        "name": NAME, "why": WHY, "caveat": CAVEAT, "임시": True,
+        "조건": {"등수": TOP, "조용함": f"변동성 아래 {CALM*100:.0f}%",
+               "조용함 문턱": round(_calm, 2) if _calm else None,
+               "장기 기울기": SLOPE, "정배열폭": WIDTH, "60일 전 대비": SIXTY},
         "take": TAKE, "stop": STOP, "limit": LIMIT, "slots": SLOTS,
         "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
         "기준": lab.score(rows), "규칙": lab.score(picked),
         "굴림": lab.portfolio(rows, prices, holds, slots=SLOTS, take=TAKE,
-                            stop=STOP, limit=LIMIT, since="20160101", rank=order,
+                            stop=STOP, limit=LIMIT, since=SINCE, rank=order,
                             per_day=PER_DAY, apart=apart(prices), realistic=True),
-        "층별": tier_stats(rows),
+        "앞뒤": halves(rows, prices),
+        "조건마다": each_condition(rows),
         "청산 견주기": exit_stats(rows, prices),
         "골": risk_stats(rows, prices),
         "오늘": today(rows),
