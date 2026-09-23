@@ -11,7 +11,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -48,6 +48,54 @@ def save(code, rows):
     return True
 
 
+def kept_rows(code):
+    """이미 받아 둔 거래량. (날짜, 묶음) 꼴로 돌려줍니다."""
+    try:
+        kept = json.loads((OUT / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    names = kept.get("칸") or ["날짜", *KEEP]
+    found = []
+    for row in kept.get("날") or []:
+        if not row or not re.fullmatch(r"[0-9]{8}", str(row[0])):
+            continue
+        found.append((str(row[0]), dict(zip(names[1:], row[1:]))))
+    return found
+
+
+def catch_up(client, code, have, back=25):
+    """빠진 날만 받습니다. 일봉 수집기와 같은 셈입니다.
+
+    서른 해를 140일씩 거슬러 오르면 종목 하나에 일흔여덟 번을 묻습니다.
+    이미 받아 둔 종목까지 날마다 그렇게 하면 두 수집기가 하루를 다 씁니다.
+    겹치는 구간의 거래량이 예전과 같으면 이어 붙이고, 다르면 처음부터
+    받습니다.
+    """
+    if len(have) < 120:
+        return None, "받아 둔 것이 모자람"
+    last = have[-1][0]
+    today = datetime.now(ZoneInfo("Asia/Seoul")).date()
+    edge = datetime.strptime(last, "%Y%m%d").date() - timedelta(days=back)
+    if (today - edge).days > 130:
+        return None, "너무 오래 비었음"
+    fresh = client.daily(code, edge.strftime("%Y%m%d"), today.strftime("%Y%m%d"),
+                         detail=True)
+    if not fresh:
+        return have, "새로 나온 날 없음"
+    was = dict(have)
+    shared = [(day, got) for day, got in fresh if day in was]
+    if not shared:
+        return None, "겹치는 날이 없음"
+    for day, got in shared:
+        before = was[day].get("거래량")
+        now = got.get("거래량")
+        if before != now:
+            return None, "지난 거래량이 바뀜"
+    merged = dict(have)
+    merged.update(dict(fresh))
+    return sorted(merged.items()), f"이어받음 · 새 {len(fresh) - len(shared)}일"
+
+
 def done_today(code, on_day):
     try:
         kept = json.loads((OUT / f"{code}.json").read_text(encoding="utf-8"))
@@ -76,10 +124,14 @@ def main():
         print("증권사 연결을 만들지 못했습니다 ·", error)
         print("저장소 시크릿 KIS_APP_KEY / KIS_APP_SECRET 를 확인하세요.")
         return 1
-    saved, skipped, failed = 0, 0, []
+    saved, skipped, failed, caught = 0, 0, [], 0
     for index, code in enumerate(codes, 1):
         try:
-            rows = client.history(code, days=YEARS * 365, detail=True)
+            rows, _how = catch_up(client, code, kept_rows(code))
+            if rows is None:
+                rows = client.history(code, days=YEARS * 365, detail=True)
+            else:
+                caught += 1
         except broker_kis.BrokerError as error:
             failed.append((code, str(error)[:60]))
             print(f"[{index}/{len(codes)}] {code} 실패 · {error}")
@@ -94,7 +146,8 @@ def main():
         else:
             skipped += 1
             print(f"[{index}/{len(codes)}] {code} 그대로")
-    print(f"\n저장 {saved} · 그대로 {skipped} · 실패 {len(failed)}")
+    print(f"\n저장 {saved} · 그대로 {skipped} · 실패 {len(failed)}"
+          f" · 이어받은 종목 {caught}")
     for code, why in failed[:20]:
         print(f"  {code} · {why}")
     return 0

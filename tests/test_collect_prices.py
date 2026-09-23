@@ -15,6 +15,7 @@ from unittest.mock import Mock
 from zoneinfo import ZoneInfo
 
 import collect_prices
+import collect_volumes
 
 
 def day(back):
@@ -101,6 +102,52 @@ class CatchUp(unittest.TestCase):
 
     def test_a_missing_file_reads_as_nothing(self):
         self.assertEqual(collect_prices.kept_rows("999999"), [])
+
+
+
+class VolumeCatchUp(unittest.TestCase):
+    """거래량 수집기도 같은 셈입니다. 둘 다 같은 줄에 서 있어, 한쪽이 하루를
+    다 쓰면 다른 쪽이 못 돕니다."""
+
+    def setUp(self):
+        self.folder = Path(tempfile.mkdtemp())
+        self.was = collect_volumes.OUT
+        collect_volumes.OUT = self.folder
+        self.addCleanup(setattr, collect_volumes, "OUT", self.was)
+        self.addCleanup(shutil.rmtree, self.folder, True)
+
+    def bars(self, count=200, first=205):
+        return [(day(first - k), {"거래량": 1000 + k, "거래대금": 2000 + k,
+                                 "고가": 110.0, "저가": 90.0}) for k in range(count)]
+
+    def test_it_appends_the_new_days(self):
+        have = self.bars()
+        fresh = have[-5:] + [(day(2), {"거래량": 7, "거래대금": 8,
+                                       "고가": 1.0, "저가": 1.0})]
+        client = Mock()
+        client.daily.return_value = fresh
+        rows, how = collect_volumes.catch_up(client, "005930", have)
+        self.assertEqual(client.daily.call_count, 1)
+        self.assertTrue(client.daily.call_args.kwargs["detail"])
+        client.history.assert_not_called()
+        self.assertIn("이어받음", how)
+        self.assertEqual(rows[-1][1]["거래량"], 7)
+
+    def test_a_changed_past_volume_means_start_over(self):
+        have = self.bars()
+        bent = [(d, {**got, "거래량": got["거래량"] * 2}) for d, got in have[-5:]]
+        client = Mock()
+        client.daily.return_value = bent
+        rows, why = collect_volumes.catch_up(client, "005930", have)
+        self.assertIsNone(rows)
+        self.assertEqual(why, "지난 거래량이 바뀜")
+
+    def test_it_reads_back_what_was_written(self):
+        have = self.bars(count=130, first=140)
+        collect_volumes.save("005930", have)
+        back = collect_volumes.kept_rows("005930")
+        self.assertEqual([d for d, _ in back], [d for d, _ in have])
+        self.assertEqual(back[0][1]["거래량"], have[0][1]["거래량"])
 
 
 if __name__ == "__main__":
