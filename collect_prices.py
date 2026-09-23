@@ -7,6 +7,7 @@ DART는 공시·재무만 주고 날짜별 주가는 주지 않습니다. 공공
 앱이 도는 서버에서는 이 호출이 막힐 수 있어 GitHub Actions에서 돌립니다.
 바뀐 것이 있을 때만 저장하고, 실패한 종목은 이름을 남깁니다.
 """
+import concurrent.futures
 import json
 import os
 import re
@@ -155,30 +156,45 @@ def main():
         print("  KIS_APP_KEY 길이:", len(os.getenv("KIS_APP_KEY", "")))
         print("  KIS_APP_SECRET 길이:", len(os.getenv("KIS_APP_SECRET", "")))
         return 1
+    # 한 종목에 서른 해를 받으려면 140일씩 예순 번 넘게 물어야 하고, 한 번에
+    # 일 초가 넘게 걸립니다. 순서대로 물으면 종목 하나에 두 분입니다. 증권사가
+    # 허락하는 초당 호출은 그보다 훨씬 넉넉하므로 몇 갈래로 나눠 묻습니다.
+    # 받는 일만 나누고, 세는 일과 적는 일은 한 갈래에서 합니다.
+    lanes = max(1, int(os.getenv("PRICE_WORKERS", "4")))
+
+    def fetch(code):
+        rows, how = catch_up(client, code, kept_rows(code))
+        if rows is None:
+            return client.history(code, days=YEARS * 365), how
+        return rows, how
+
     saved, skipped, failed, caught = 0, 0, [], 0
-    for index, code in enumerate(codes, 1):
-        name = label.get(code, code)
-        try:
-            # 이미 받아 둔 종목은 빠진 날만 받습니다. 안 되면 처음부터.
-            rows, how = catch_up(client, code, kept_rows(code))
-            if rows is None:
-                rows = client.history(code, days=YEARS * 365)
-            else:
+    done = 0
+    with concurrent.futures.ThreadPoolExecutor(max_workers=lanes) as pool:
+        waiting = {pool.submit(fetch, code): code for code in codes}
+        for task in concurrent.futures.as_completed(waiting):
+            code = waiting[task]
+            name = label.get(code, code)
+            done += 1
+            try:
+                rows, how = task.result()
+            except broker_kis.BrokerError as error:
+                failed.append((name, str(error)[:60]))
+                print(f"[{done}/{len(codes)}] {name} 실패 · {error}", flush=True)
+                continue
+            if how and how.startswith("이어받음"):
                 caught += 1
-        except broker_kis.BrokerError as error:
-            failed.append((name, str(error)[:60]))
-            print(f"[{index}/{len(codes)}] {name} 실패 · {error}")
-            continue
-        if len(rows) < 120:
-            failed.append((name, f"거래일 {len(rows)}일"))
-            print(f"[{index}/{len(codes)}] {name} 자료 부족 · {len(rows)}일")
-            continue
-        if save(code, name, rows):
-            saved += 1
-            print(f"[{index}/{len(codes)}] {name} · {len(rows)}일 · {rows[0][0]}~{rows[-1][0]}")
-        else:
-            skipped += 1
-            print(f"[{index}/{len(codes)}] {name} · 변화 없음")
+            if len(rows) < 120:
+                failed.append((name, f"거래일 {len(rows)}일"))
+                print(f"[{done}/{len(codes)}] {name} 자료 부족 · {len(rows)}일", flush=True)
+                continue
+            if save(code, name, rows):
+                saved += 1
+                print(f"[{done}/{len(codes)}] {name} · {len(rows)}일 · "
+                      f"{rows[0][0]}~{rows[-1][0]}", flush=True)
+            else:
+                skipped += 1
+                print(f"[{done}/{len(codes)}] {name} · 변화 없음", flush=True)
     print(f"\n저장 {saved} · 변화 없음 {skipped} · 실패 {len(failed)}"
           f" · 이어받은 종목 {caught}")
     for name, why in failed:

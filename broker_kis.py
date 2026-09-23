@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import threading
 import time
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -40,6 +41,9 @@ class KIS:
         self.base = 'https://openapi.koreainvestment.com:9443' if self.mode == 'real' else 'https://openapivts.koreainvestment.com:29443'
         self.token = None
         self.expires = 0
+        # 여러 갈래로 한꺼번에 받을 때, 토큰을 두 번 받으러 가지 않게 합니다.
+        # 증권사가 잦은 재발급을 막아 두어, 겹치면 둘 다 거절당합니다.
+        self._gate = threading.Lock()
 
     # 증권사가 거절할 때 주는 코드 중, 사람이 할 일이 정해져 있는 것들입니다.
     REFUSALS = {
@@ -110,16 +114,20 @@ class KIS:
     def authorize(self):
         if self.token and time.time() < self.expires:
             return
-        kept = self._saved()
-        if kept:
-            self.token, self.expires = kept['token'], float(kept['expires'])
-            return
-        _, data = self.request('POST', '/oauth2/tokenP', json={'grant_type': 'client_credentials', 'appkey': self.key, 'appsecret': self.secret})
-        if not data.get('access_token'):
-            raise BrokerError('증권사 인증에 실패했습니다. 실전·모의 키가 선택 환경과 같은지 확인하세요.')
-        self.token = data['access_token']
-        self.expires = time.time() + max(0, amount(data.get('expires_in', 0)) - 120)
-        self._keep()
+        with self._gate:
+            # 기다리는 사이에 다른 갈래가 받아 두었을 수 있습니다.
+            if self.token and time.time() < self.expires:
+                return
+            kept = self._saved()
+            if kept:
+                self.token, self.expires = kept['token'], float(kept['expires'])
+                return
+            _, data = self.request('POST', '/oauth2/tokenP', json={'grant_type': 'client_credentials', 'appkey': self.key, 'appsecret': self.secret})
+            if not data.get('access_token'):
+                raise BrokerError('증권사 인증에 실패했습니다. 실전·모의 키가 선택 환경과 같은지 확인하세요.')
+            self.token = data['access_token']
+            self.expires = time.time() + max(0, amount(data.get('expires_in', 0)) - 120)
+            self._keep()
 
     def opinions(self, code, days=180):
         """한 종목의 증권사 투자의견과 목표가를 기간으로 받아옵니다.
