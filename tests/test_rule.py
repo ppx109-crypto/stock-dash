@@ -133,7 +133,7 @@ class Risk(unittest.TestCase):
 
     def test_the_caveat_says_the_drawdown(self):
         """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
-        for must in ("−14.5%", "−14.7%", "임시", "살아남은"):
+        for must in ("−11.5%", "−11.2%", "임시", "살아남은"):
             self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
 
     def test_an_empty_run_gives_an_empty_report(self):
