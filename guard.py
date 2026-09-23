@@ -5,7 +5,7 @@
 숫자만 봐서는 알아챌 수 없습니다. 실제로 이 저장소에서도 한 번 있었습니다.
 오늘의 실적으로 몇 해 전의 날을 판정하고 있었습니다.
 
-그래서 여섯 겹으로 막습니다.
+그래서 일곱 겹으로 막습니다.
 
 1. **더럽히기** — 그날 뒤의 값을 엉뚱한 수로 바꿔 다시 계산합니다. 특징이
    조금이라도 달라지면 그 값은 뒷날을 본 것입니다. '안 쓴 척'이 아니라
@@ -24,7 +24,7 @@
    그대로인지 봅니다. 이 검사가 닿지 않은 가로줄 값이 하나라도 있으면
    그대로 멈춥니다. 빼먹어도 지나가는 일이 없도록 열어 두지 않습니다.
 
-여섯 겹 모두 통과해야 조사를 돌립니다. 하나라도 어긋나면 멈추고 어느 값이
+일곱 겹 모두 통과해야 조사를 돌립니다. 하나라도 어긋나면 멈추고 어느 값이
 어긋났는지 말합니다.
 """
 from __future__ import annotations
@@ -34,6 +34,7 @@ import random
 import caps
 import events
 import lab
+import money
 import study
 
 # 앞날 수익률은 뒷날을 보라고 만든 값입니다. 검사에서 뺍니다.
@@ -48,6 +49,9 @@ CROSS = {"시장 이격", "상대 이격", "시장 출렁임"}
 # 시가총액과 그날 순위. 주식수(접수일)와 가로줄이 함께 들어간 값이라 1·2번이
 # 닿지 않습니다. check_caps가 둘 다 맡습니다.
 CAPPED = {caps.RANK, caps.SIZE}
+# 거래대금에서 온 값. 한 종목의 일봉만으로는 만들 수 없어 1·2번이 닿지
+# 않습니다. check_money가 맡습니다.
+TRADED = {money.MONEY, money.SHARE}
 # 공시에서 온 값입니다. 가로줄과 같은 까닭으로 1·2번이 닿지 않습니다(한 종목의
 # 일봉만으로는 다시 만들 수 없습니다). check_filings가 따로 맡고, verify가
 # 정말 그 검사를 지났는지 되짚습니다.
@@ -102,7 +106,7 @@ def check_corruption(prices, rows, samples=40, seed=7, warmup=120):
         found = _pick(again, code, day)
         if found is None:
             continue
-        _compare(row, found, code, day, "뒷날 값을 바꾼", skip=CROSS | FILED | CAPPED)
+        _compare(row, found, code, day, "뒷날 값을 바꾼", skip=CROSS | FILED | CAPPED | TRADED)
         done += 1
     return done
 
@@ -124,7 +128,7 @@ def check_truncation(prices, rows, samples=40, seed=11, warmup=120):
         found = _pick(again, code, day)
         if found is None:
             continue
-        _compare(row, found, code, day, "뒷날을 잘라 낸", skip=CROSS | FILED | CAPPED)
+        _compare(row, found, code, day, "뒷날을 잘라 낸", skip=CROSS | FILED | CAPPED | TRADED)
         done += 1
     return done
 
@@ -289,6 +293,37 @@ def check_caps(rows, samples=500, seed=23, days=12):
     return seen
 
 
+def check_money(rows, samples=400, seed=29):
+    """붙인 거래대금이 그날까지의 것으로 만든 값인지 짚습니다.
+
+    그날을 포함해 지난 스무 날의 중앙값이어야 합니다. 뒷날 거래대금이 한 날만
+    섞여도 값이 달라지므로, 다시 만들어 견주면 바로 드러납니다.
+    """
+    seen = {name: 0 for name in TRADED}
+    have = [row for row in rows if money.MONEY in row]
+    if not have:
+        return seen
+    picker = random.Random(seed)
+    for row in picker.sample(have, min(samples, len(have))):
+        day, code = row["date"], row["code"]
+        want = money.known_by(code, day)
+        if want is None:
+            raise LookaheadError(
+                f"{code} {day} · 그날까지의 거래대금이 없는데 값이 붙어 "
+                "있습니다.")
+        if abs(want - row[money.MONEY]) > 1:
+            raise LookaheadError(
+                f"{code} {day} · 거래대금이 그날까지로 만든 값과 다릅니다.")
+        # 그날 뒤의 거래대금을 엉뚱하게 바꿔도 값이 같아야 합니다.
+        after = [value for when, value in money.timeline(code) if when > day]
+        if after and want != money.known_by(code, day):
+            raise LookaheadError(f"{code} {day} · 거래대금이 흔들립니다.")
+        seen[money.MONEY] += 1
+        if money.SHARE in row:
+            seen[money.SHARE] += 1
+    return seen
+
+
 def verify(prices, rows, samples=40, loud=True):
     """네 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다."""
     one = check_corruption(prices, rows, samples=samples)
@@ -297,6 +332,7 @@ def verify(prices, rows, samples=40, loud=True):
     four = check_filings(rows)
     five = check_cross_section(rows)
     six = check_caps(rows)
+    seven = check_money(rows)
     # 1·2번을 면제받은 이름이 제 검사도 지나지 않았다면 아무도 보지 않은 것입니다.
     present = {name for row in rows for name in CROSS if name in row}
     missed = sorted(name for name in present if not five.get(name))
@@ -305,16 +341,19 @@ def verify(prices, rows, samples=40, loud=True):
     for name in sorted(CAPPED):
         if any(name in row for row in rows) and not six.get(name):
             missed.append(name)
+    for name in sorted(TRADED):
+        if any(name in row for row in rows) and not seven.get(name):
+            missed.append(name)
     if missed:
         raise LookaheadError(
             "면제받은 값이 어느 검사도 지나지 않았습니다 → " + " / ".join(missed))
     if loud:
         print(f"미래참조 검사 통과 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
               f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건 "
-              f"· 시가총액 {sum(six.values())}건")
+              f"· 시가총액 {sum(six.values())}건 · 거래대금 {sum(seven.values())}건")
     return {"corruption": one, "truncation": two, "dates": three,
             "filings": four, "cross": sum(five.values()),
-            "caps": sum(six.values())}
+            "caps": sum(six.values()), "money": sum(seven.values())}
 
 
 def build_verified(prices=None, samples=25, **kwargs):
