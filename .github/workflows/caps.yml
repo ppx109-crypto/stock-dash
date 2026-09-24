@@ -1,0 +1,52 @@
+name: Daily market caps
+# 날마다의 시가총액을 공공데이터포털에서 통째로 받습니다. 그날의 100등 자름을
+# 만들기 위해서입니다. DART 주식총수는 2016사업연도부터라 앞이 비어 있습니다.
+on:
+  workflow_dispatch:
+    inputs:
+      first:
+        description: '언제부터 (YYYYMMDD)'
+        required: false
+        default: '20150101'
+      last:
+        description: '언제까지 (YYYYMMDD)'
+        required: false
+        default: '20261231'
+      limit:
+        description: '이번 판에 물어볼 날 수'
+        required: false
+        default: '400'
+permissions:
+  contents: write
+concurrency:
+  group: daily-caps
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python collect_caps.py
+        env:
+          DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
+          CAPS_FIRST: ${{ inputs.first || '20150101' }}
+          CAPS_LAST: ${{ inputs.last || '20261231' }}
+          CAPS_LIMIT: ${{ inputs.limit || '400' }}
+      - name: Save what came in
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A cap-data || true
+          if git diff --cached --quiet; then
+            echo '새로 받은 날이 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Collect daily market caps for the point-in-time top 100'
+            git pull --rebase origin main
+            git push
+          fi
