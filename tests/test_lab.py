@@ -197,10 +197,21 @@ class Wobble(unittest.TestCase):
     def test_nudging_by_nothing_changes_nothing(self):
         """흔드는 폭이 0이면 여섯 번 모두 같은 값이어야 합니다."""
         got = lab.wobble(self.rows, self.prices, self.holds, self.exit,
-                         tries=4, size=0.0, slots=2)
+                         tries=4, nudge=0.0, slots=2)
         if got is None:
             self.skipTest("60건 미만")
         self.assertEqual(got["폭"], 0.0)
+
+    def test_the_position_size_is_not_swallowed_by_the_nudge(self):
+        """`size`는 자리 수, `nudge`는 흔드는 폭입니다. 53회차에 이 둘의
+
+        이름이 같아서 자리 수 함수가 흔드는 폭 자리로 들어갔습니다.
+        """
+        got = lab.wobble(self.rows, self.prices, self.holds, self.exit,
+                         tries=2, slots=4, size=lambda r: 2)
+        if got is None:
+            self.skipTest("60건 미만")
+        self.assertGreater(got["매매"], 0)
 
     def test_the_nudge_keeps_the_tier_in_front(self):
         """앞자리(층)는 건드리지 않고 마지막 자리만 흔듭니다."""

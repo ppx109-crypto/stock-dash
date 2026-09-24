@@ -878,16 +878,20 @@ def jitter(rank, size=0.05, seed=0):
     return key
 
 
-def wobble(rows, prices, holds, exit_at, tries=6, size=0.05, rank=None, **kw):
+def wobble(rows, prices, holds, exit_at, tries=6, nudge=0.05, rank=None, **kw):
     """같은 방법을 여러 번, 차례만 조금씩 달리해 돌려 봅니다.
 
     한 번 돌려 나온 수치 하나로는 두 방법을 견줄 수 없습니다. 15회차에서
     재어 보니 건드리면 안 되는 것을 건드려도 연수익이 4%p 안팎 흔들렸습니다.
     그래서 가운데 값과 폭을 함께 냅니다. 폭보다 작은 차이는 차이가 아닙니다.
+
+    흔드는 폭의 이름이 nudge인 것은, `run`의 `size`(한 종목에 자리를 몇 개
+    쓸지)와 이름이 겹쳐 서로를 삼켜 버렸기 때문입니다(53회차). 두 값은 뜻도
+    타입도 다른데 이름이 같으면 조용히 잘못된 수치가 나옵니다.
     """
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
     found = [run(rows, prices, holds, exit_at, rank=rank, **kw)]
-    found += [run(rows, prices, holds, exit_at, rank=jitter(rank, size, seed), **kw)
+    found += [run(rows, prices, holds, exit_at, rank=jitter(rank, nudge, seed), **kw)
               for seed in range(1, tries)]
     got = [one for one in found if one]
     if not got:
