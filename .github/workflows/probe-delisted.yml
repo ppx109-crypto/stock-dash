@@ -1,0 +1,32 @@
+name: Probe delisted stocks
+# 지금은 없는 회사의 일봉을 받을 수 있는지 세어만 봅니다. 저장하지 않습니다.
+on:
+  workflow_dispatch:
+    inputs:
+      sample:
+        description: '물어볼 종목 수'
+        required: false
+        default: '60'
+permissions:
+  contents: read
+concurrency:
+  group: probe-delisted
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python probe_delisted.py
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          PROBE_SAMPLE: ${{ inputs.sample || '60' }}
