@@ -133,7 +133,7 @@ class Risk(unittest.TestCase):
 
     def test_the_caveat_says_the_drawdown(self):
         """주의 문구가 한 번의 손실만 말하고 이어지는 손실을 빼먹으면 안 됩니다."""
-        for must in ("−24.1%", "−23.1%", "임시", "살아남은", "연패"):
+        for must in ("−14.4%", "−10.5%", "임시", "살아남은", "연패"):
             self.assertIn(must, rule.CAVEAT, f"주의 문구에 '{must}'이 없습니다")
 
     def test_an_empty_run_gives_an_empty_report(self):
@@ -145,8 +145,13 @@ if __name__ == "__main__":
     unittest.main()
 
 
-class TwoDoors(unittest.TestCase):
-    """규칙에 문이 둘이 되었습니다(52회차). 하나만 지나면 삽니다."""
+class OneDoor(unittest.TestCase):
+    """52회차에 문을 둘로 늘렸다가 57회차에 되돌렸습니다.
+
+    터짐 문은 주식수 자료가 절반뿐이라 순위가 헐겁던 때만 좋아 보였습니다.
+    제대로 줄을 세우니 앞에서 지고 뒤에서 비기며 골만 네 배였습니다.
+    `burst_leg`는 남아 있지만 `holds`는 더 이상 부르지 않습니다.
+    """
 
     def setUp(self):
         rule._calm = 2.0
@@ -163,12 +168,13 @@ class TwoDoors(unittest.TestCase):
     def test_the_trend_door_alone_is_enough(self):
         self.assertTrue(rule.holds(self.row()))
 
-    def test_the_burst_door_alone_is_enough(self):
-        # 시끄럽고 추세도 없지만 정배열에 거래량이 터졌습니다.
-        quiet = self.row(변동성=9.0, 배열=3, 거래량비=7.0)
-        quiet["추세 기울기"] = 0.0
-        quiet["60일 전 대비"] = 0.0
-        self.assertTrue(rule.holds(quiet))
+    def test_the_burst_door_no_longer_buys_anything(self):
+        # 정배열에 거래량이 터졌어도, 시끄럽고 추세가 없으면 안 삽니다.
+        loud = self.row(변동성=9.0, 배열=3, 거래량비=7.0)
+        loud["추세 기울기"] = 0.0
+        loud["60일 전 대비"] = 0.0
+        self.assertTrue(rule.burst_leg(loud))
+        self.assertFalse(rule.holds(loud))
 
     def test_neither_door_means_no(self):
         self.assertFalse(rule.holds(self.row(배열=3, 거래량비=2.0, 변동성=9.0)))
@@ -181,7 +187,9 @@ class TwoDoors(unittest.TestCase):
         out[caps.RANK] = 500
         self.assertFalse(rule.holds(out))
 
-    def test_dropping_the_volume_threshold_opens_the_burst_door_wider(self):
-        lined = self.row(변동성=9.0, 배열=3, 거래량비=1.0)
-        self.assertFalse(rule.holds(lined))
-        self.assertTrue(rule.holds_without(lined, "burst"))
+    def test_the_trend_door_is_the_only_way_in(self):
+        """네 조건 가운데 하나만 빠져도 안 삽니다 — 거래량은 이제 상관없습니다."""
+        for missing in ("변동성", "추세 기울기", "60일 전 대비"):
+            row = self.row(배열=3, 거래량비=99.0)
+            row[missing] = 9.0 if missing == "변동성" else -99.0
+            self.assertFalse(rule.holds(row), missing)
