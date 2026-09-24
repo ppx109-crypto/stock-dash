@@ -143,3 +143,45 @@ class Risk(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TwoDoors(unittest.TestCase):
+    """규칙에 문이 둘이 되었습니다(52회차). 하나만 지나면 삽니다."""
+
+    def setUp(self):
+        rule._calm = 2.0
+
+    def tearDown(self):
+        rule._calm = None
+
+    def row(self, **kw):
+        got = {caps.RANK: 50, "변동성": 1.0, "추세 기울기": 2.0,
+               "60일 전 대비": 30.0, "배열": 0, "거래량비": 1.0}
+        got.update(kw)
+        return got
+
+    def test_the_trend_door_alone_is_enough(self):
+        self.assertTrue(rule.holds(self.row()))
+
+    def test_the_burst_door_alone_is_enough(self):
+        # 시끄럽고 추세도 없지만 정배열에 거래량이 터졌습니다.
+        quiet = self.row(변동성=9.0, 배열=3, 거래량비=7.0)
+        quiet["추세 기울기"] = 0.0
+        quiet["60일 전 대비"] = 0.0
+        self.assertTrue(rule.holds(quiet))
+
+    def test_neither_door_means_no(self):
+        self.assertFalse(rule.holds(self.row(배열=3, 거래량비=2.0, 변동성=9.0)))
+
+    def test_the_burst_door_needs_the_four_lines_in_order(self):
+        self.assertFalse(rule.holds(self.row(변동성=9.0, 배열=2, 거래량비=9.0)))
+
+    def test_the_rank_gate_covers_both_doors(self):
+        out = self.row(배열=3, 거래량비=9.0)
+        out[caps.RANK] = 500
+        self.assertFalse(rule.holds(out))
+
+    def test_dropping_the_volume_threshold_opens_the_burst_door_wider(self):
+        lined = self.row(변동성=9.0, 배열=3, 거래량비=1.0)
+        self.assertFalse(rule.holds(lined))
+        self.assertTrue(rule.holds_without(lined, "burst"))

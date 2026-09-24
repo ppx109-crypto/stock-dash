@@ -68,7 +68,7 @@ import caps
 import events
 import lab
 
-NAME = "코스피 100등 안에서 조용히 길게 오르는 종목"
+NAME = "코스피 100등 안 · 조용히 오르거나, 거래량이 터지거나"
 SINCE = "20150629"       # 주식수 자료가 덮는 첫날. 그 앞은 순위를 모릅니다.
 MID = "20210101"         # 앞뒤로 나눠 보는 자리
 
@@ -76,6 +76,7 @@ TOP = 100                # 살 때 그날 시가총액 순위가 이 안이어�
 CALM = 0.4               # 변동성이 아래 40% 안. 절벽 위라 늦추면 안 됩니다
 SLOPE = 1.46             # 추세선(180일)이 닷새 사이 이만큼 올라 있을 것
 SIXTY = 20.0             # 60일 전보다 이만큼 올라 있을 것
+BURST = 5.0              # 둘째 문. 그날 거래량이 지난 한 달 가운데값의 이 배수
 TAKE, STOP = 10.0, 5.0   # 익절·손절
 LIMIT = 10               # 열 거래일. 이 날이 지나면 그냥 정리
 SLOTS = 3                # 자리. 자금을 셋으로 나눕니다.
@@ -84,10 +85,15 @@ KIN = 0.6                # 이미 든 것과 이만큼 넘게 같이 움직이�
 OUT = Path("study") / "rule.json"
 
 WHY = (
-    "그날 시가총액이 100등 안이고, 그 종목이 평소 조용한 편이며(변동성 아래 "
-    "40%), 180일 추세선이 닷새 사이 1.46% 올라 있고, 60일 전보다 20% 넘게 "
-    "올라 있는 날입니다. "
-    "한마디로 큰 회사가 조용히, 그러나 오래 오르고 있는 자리입니다. "
+    "그날 시가총액이 100등 안인 종목만 봅니다. 그 안에서 **문이 둘**이고, "
+    "하나만 지나면 삽니다. "
+    "**추세 문** — 평소 조용한 편이며(변동성 아래 40%), 180일 추세선이 "
+    "닷새 사이 1.46% 올라 있고, 60일 전보다 20% 넘게 올라 있는 날. 큰 "
+    "회사가 조용히, 그러나 오래 오르고 있는 자리입니다. "
+    "**터짐 문** — 네 이동평균선이 정배열인데 그날 거래량이 지난 한 달 "
+    "가운데값의 5배를 넘는 날. 이쪽은 조용함을 보지 않습니다. "
+    "두 문이 겹치는 자리가 거의 없어(51회차 후보 2,686줄 중 추세 1,325 · "
+    "터짐 1,363), 함께 걸면 자리가 노는 날이 줄어듭니다. "
     "순위는 그날까지 접수된 주식수로 그날 매긴 것이라, 오늘의 순위로 과거를 "
     "고르지 않습니다. "
     "하루에 새로 담는 것은 둘까지이고, 이미 든 종목과 요즘 같이 움직이던 "
@@ -129,14 +135,28 @@ def calm_edge(rows):
     return _calm
 
 
-def holds(row):
-    """살 자리인지. 네 조건을 모두 넘어야 합니다."""
-    if not caps.inside(row, TOP):
-        return False
+def trend_leg(row):
+    """첫째 문 — 조용한데 길게 오르고 있는 자리. 34회차까지의 규칙입니다."""
     if _calm is None or (row.get("변동성") or 99) > _calm:
         return False
     return ((row.get("추세 기울기") or -99) >= SLOPE
             and (row.get("60일 전 대비") or -99) >= SIXTY)
+
+
+def burst_leg(row):
+    """둘째 문 — 네 선이 정배열인데 거래량이 터진 자리(51회차).
+
+    조용함을 보지 않습니다. 오히려 시끄러운 날을 삽니다. 첫째 문과 겹치는
+    자리가 거의 없어, 둘을 함께 걸면 자리가 노는 날이 줄어듭니다.
+    """
+    return row.get("배열") == 3 and (row.get("거래량비") or 0) >= BURST
+
+
+def holds(row):
+    """살 자리인지. 100등 안에서 **두 문 가운데 하나**를 지나면 됩니다."""
+    if not caps.inside(row, TOP):
+        return False
+    return trend_leg(row) or burst_leg(row)
 
 
 def order(row):
@@ -165,6 +185,9 @@ def today(rows):
                       "추세 기울기": row.get("추세 기울기"),
                       "정배열폭": row.get("정배열폭"),
                       "60일 전 대비": row.get("60일 전 대비"),
+                      "어느 문": ("추세" if trend_leg(row) else
+                                "터짐" if burst_leg(row) else None),
+                      "거래량비": row.get("거래량비"),
                       "변동성": row.get("변동성"),
                       "영업이익성장": row.get("영업이익성장"),
                       "매출성장": row.get("매출성장"),
@@ -196,11 +219,14 @@ def each_condition(rows, since=SINCE):
                 "하위10%": round(sum(vals[:cut]) / cut, 1)}
 
     parts = {
-        "네 조건 모두": holds,
+        "두 문 다": holds,
+        "추세 문만": lambda r: caps.inside(r, TOP) and trend_leg(r),
+        "터짐 문만": lambda r: caps.inside(r, TOP) and burst_leg(r),
         "100등 조건만 뺌": lambda r: holds_without(r, "top"),
         "조용함 조건만 뺌": lambda r: holds_without(r, "calm"),
         "기울기 조건만 뺌": lambda r: holds_without(r, "slope"),
         "60일 조건만 뺌": lambda r: holds_without(r, "sixty"),
+        "거래량 조건만 뺌": lambda r: holds_without(r, "burst"),
         "아무 조건 없음": lambda r: True,
     }
     found = []
@@ -212,16 +238,20 @@ def each_condition(rows, since=SINCE):
 
 
 def holds_without(row, skip):
-    """조건 하나를 빼고 봅니다. 어느 것이 일하는지 재는 데 씁니다."""
+    """조건 하나를 빼고 봅니다. 어느 것이 일하는지 재는 데 씁니다.
+
+    두 문 가운데 어느 쪽 조건을 뺐는지에 따라 그 문만 느슨해집니다.
+    "burst"를 빼면 둘째 문이 '정배열이기만 하면'이 됩니다.
+    """
     if skip != "top" and not caps.inside(row, TOP):
         return False
-    if skip != "calm" and (_calm is None or (row.get("변동성") or 99) > _calm):
-        return False
-    if skip != "slope" and (row.get("추세 기울기") or -99) < SLOPE:
-        return False
-    if skip != "sixty" and (row.get("60일 전 대비") or -99) < SIXTY:
-        return False
-    return True
+    calm = skip == "calm" or (_calm is not None
+                              and (row.get("변동성") or 99) <= _calm)
+    slope = skip == "slope" or (row.get("추세 기울기") or -99) >= SLOPE
+    sixty = skip == "sixty" or (row.get("60일 전 대비") or -99) >= SIXTY
+    burst = row.get("배열") == 3 and (skip == "burst"
+                                    or (row.get("거래량비") or 0) >= BURST)
+    return (calm and slope and sixty) or burst
 
 
 # 자리를 꽉 채워 굴릴 때와, 한 번에 한 종목만 들 때는 답이 다릅니다.
@@ -323,9 +353,11 @@ def report(rows, prices):
     picked = [r for r in rows if holds(r)]
     body = {
         "name": NAME, "why": WHY, "caveat": CAVEAT, "임시": True,
-        "조건": {"등수": TOP, "조용함": f"변동성 아래 {CALM*100:.0f}%",
-               "조용함 문턱": round(_calm, 2) if _calm else None,
-               "추세 기울기": SLOPE, "60일 전 대비": SIXTY},
+        "조건": {"등수": TOP,
+               "추세 문": {"조용함": f"변동성 아래 {CALM*100:.0f}%",
+                        "조용함 문턱": round(_calm, 2) if _calm else None,
+                        "추세 기울기": SLOPE, "60일 전 대비": SIXTY},
+               "터짐 문": {"배열": "네 선 정배열", "거래량비": BURST}},
         "take": TAKE, "stop": STOP, "limit": LIMIT, "slots": SLOTS,
         "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
         "기준": lab.score(rows), "규칙": lab.score(picked),
