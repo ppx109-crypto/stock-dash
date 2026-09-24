@@ -372,8 +372,63 @@ def check_anchor(prices, rows):
     return len(first)
 
 
+def check_gate(rows, top=100, slack=0.1, samples=40, seed=7):
+    """문턱 안에 들었을 종목이 순위를 못 받고 있는지 봅니다.
+
+    `check_pool`(55회차)은 "값이 있는 종목 중 몇 %가 순위를 받았나"를
+    물었습니다. 그것은 아래쪽이 잘려도 울립니다. 물어야 할 것은 **위쪽**
+    입니다 — 순위를 못 받은 종목 가운데 문턱 안에 들었을 것이 있나.
+
+    그날의 크기를 모르는 종목의 크기를 어떻게 어림하나: **바로 다음에 그
+    종목이 순위를 받은 날의 등수**를 씁니다. 같은 종목의 순위는 하루아침에
+    수백 등씩 움직이지 않으므로, 그 등수가 문턱 안이면 그날도 안이었을
+    공산이 큽니다. 뒷날 값을 쓰지만 **매매 판단이 아니라 자료가 찼는지를
+    보는 데만** 씁니다 — 표에 넣지 않고, 여기서 세고 버립니다.
+
+    문턱 자리 가운데 이렇게 비어 있는 몫이 slack을 넘으면 멈춥니다.
+    """
+    seen = {}
+    for row in rows:
+        place = row.get(caps.RANK)
+        if place is not None:
+            seen.setdefault(row["code"], []).append((row["date"], place))
+    for code in seen:
+        seen[code].sort()
+    by_day = {}
+    for row in rows:
+        by_day.setdefault(row["date"], []).append(row)
+    live = sorted(day for day, here in by_day.items()
+                  if any(r.get(caps.RANK) is not None for r in here))
+    if not live:
+        return 0, 0.0
+    picker = random.Random(seed)
+    missing = ranked = 0
+    for day in picker.sample(live, min(samples, len(live))):
+        for row in by_day[day]:
+            if row.get(caps.RANK) is not None:
+                ranked += 1 if row[caps.RANK] <= top else 0
+                continue
+            later = seen.get(row["code"])
+            if not later:
+                continue
+            place = next((p for when, p in later if when > day), None)
+            if place is not None and place <= top:
+                missing += 1
+    share = missing / max(ranked + missing, 1)
+    if share > slack:
+        raise ShallowPoolError(
+            f"문턱({top}등) 안에 들었을 종목의 {share * 100:.0f}%가 그날 "
+            f"순위를 못 받고 있습니다(견딜 몫 {slack * 100:.0f}%). "
+            "share-data를 마저 모으십시오.")
+    return missing, round(share, 3)
+
+
 def check_pool(rows, floor=POOL_FLOOR, samples=40, seed=7):
-    """'100등 안'이 정말 100등 안인지 — 줄을 몇 종목으로 세웠는지 봅니다.
+    """줄을 몇 종목으로 세웠는지 셉니다. 견주어 볼 값으로만 남깁니다.
+
+    56·57회차에 이 수치 하나로 두 번 잘못 읽었습니다. 몫이 낮다고 문턱이
+    느슨한 것도 아니고(아래쪽이 잘린 것일 수 있음), 높다고 맞는 것도
+    아닙니다. 판단은 `check_gate`가 합니다.
 
     `caps.tag`는 그날 주식수가 접수된 종목끼리만 줄을 세웁니다. 주식수 자료가
     일부 종목에만 있으면 '코스피 100등 안'은 조용히 **'자료가 있는 N종목 중
@@ -430,7 +485,7 @@ def verify(prices, rows, samples=40, loud=True, pool=True):
     seven = check_money(rows)
     # 순위를 매긴 종목이 줄어 있으면 문턱이 느슨해진 것입니다. 표를 아직 다
     # 못 모은 동안에는 pool=False로 끌 수 있게 두되, 기본은 멈춥니다.
-    eight = check_pool(rows) if pool else (0, None)
+    eight = check_gate(rows) if pool else (0, None)
     # 1·2번을 면제받은 이름이 제 검사도 지나지 않았다면 아무도 보지 않은 것입니다.
     present = {name for row in rows for name in CROSS if name in row}
     missed = sorted(name for name in present if not five.get(name))
@@ -449,12 +504,12 @@ def verify(prices, rows, samples=40, loud=True, pool=True):
         print(f"미래참조 검사 통과 · 자리 확인 {zero}종목 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
               f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건 "
               f"· 시가총액 {sum(six.values())}건 · 거래대금 {sum(seven.values())}건"
-              + (f" · 줄 세운 종목 {eight[0]}({eight[1] * 100:.0f}%)"
-                 if eight[1] is not None else " · 줄 세운 종목 안 봄"))
+              + (f" · 문턱 밖 새는 자리 {eight[0]}({eight[1] * 100:.1f}%)"
+                 if eight[1] is not None else " · 문턱 안 봄"))
     return {"anchor": zero, "corruption": one, "truncation": two, "dates": three,
             "filings": four, "cross": sum(five.values()),
             "caps": sum(six.values()), "money": sum(seven.values()),
-            "pool": eight[0], "pool_share": eight[1]}
+            "gate": eight[0], "gate_share": eight[1]}
 
 
 def build_verified(prices=None, samples=25, **kwargs):

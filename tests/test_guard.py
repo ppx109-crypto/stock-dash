@@ -367,3 +367,48 @@ class ShallowPool(unittest.TestCase):
     def test_a_table_with_no_ranks_at_all_is_left_alone(self):
         """순위를 안 붙인 표는 그 문턱을 안 쓰는 것입니다. 아무것도 안 사집니다."""
         self.assertEqual(guard.check_pool(self.rows(0, 50)), (0, 0.0))
+
+
+class GateHoles(unittest.TestCase):
+    """문턱 안에 들었을 종목이 순위를 못 받고 있나(58회차).
+
+    55회차의 check_pool은 "몇 %가 순위를 받았나"를 물었고, 그 수치 하나로
+    56·57회차에 두 번 잘못 읽었습니다. 이 겹은 위쪽만 봅니다.
+    """
+
+    def day(self, n):
+        return f"2024{n // 28 + 1:02d}{n % 28 + 1:02d}"
+
+    def test_a_small_stock_with_no_rank_is_not_a_hole(self):
+        """순위를 못 받았지만 다음에 받은 등수가 문턱 밖이면 상관없습니다."""
+        rows = []
+        for n in range(4):
+            rows.append({"code": "000001", "date": self.day(n), caps.RANK: 5})
+            rows.append({"code": "000002", "date": self.day(n)})
+        rows.append({"code": "000002", "date": self.day(9), caps.RANK: 400})
+        count, share = guard.check_gate(rows, top=100)
+        self.assertEqual(count, 0)
+
+    def test_a_big_stock_with_no_rank_stops_everything(self):
+        rows = []
+        for n in range(4):
+            rows.append({"code": "000001", "date": self.day(n), caps.RANK: 5})
+            rows.append({"code": "000002", "date": self.day(n)})
+        rows.append({"code": "000002", "date": self.day(9), caps.RANK: 20})
+        with self.assertRaises(guard.ShallowPoolError):
+            guard.check_gate(rows, top=100)
+
+    def test_a_stock_never_ranked_at_all_cannot_be_judged(self):
+        """한 번도 순위를 안 받은 종목은 크기를 어림할 길이 없어 넘어갑니다."""
+        rows = [{"code": "000001", "date": self.day(0), caps.RANK: 5},
+                {"code": "000009", "date": self.day(0)}]
+        self.assertEqual(guard.check_gate(rows, top=100), (0, 0.0))
+
+    def test_only_later_ranks_are_used_not_earlier_ones(self):
+        """뒤에 받은 등수로만 어림합니다. 앞의 등수는 이미 지난 일입니다."""
+        rows = [{"code": "000001", "date": self.day(0), caps.RANK: 10},
+                {"code": "000002", "date": self.day(0), caps.RANK: 20},
+                {"code": "000002", "date": self.day(1)},
+                {"code": "000001", "date": self.day(1), caps.RANK: 10}]
+        # 000002는 그 뒤로 순위를 받은 날이 없으니 어림할 수 없습니다.
+        self.assertEqual(guard.check_gate(rows, top=100), (0, 0.0))
