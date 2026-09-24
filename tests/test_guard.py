@@ -352,6 +352,17 @@ class ShallowPool(unittest.TestCase):
     def test_nothing_at_all_is_not_an_error(self):
         self.assertEqual(guard.check_pool([]), (0, 1.0))
 
+    def test_days_before_the_share_data_begins_are_left_out(self):
+        """주식수 자료는 2015년부터입니다. 그 앞의 날까지 세면 몫이
+
+        '문턱이 느슨한가'가 아니라 '자료가 언제 시작하나'를 재게 됩니다.
+        """
+        old = [{"code": f"{k:06d}", "date": "19990102"} for k in range(100)]
+        new = self.rows(90, 100, days=2)
+        count, share = guard.check_pool(old + new)
+        self.assertEqual(count, 90)
+        self.assertEqual(share, 0.9)
+
 
     def test_a_table_with_no_ranks_at_all_is_left_alone(self):
         """순위를 안 붙인 표는 그 문턱을 안 쓰는 것입니다. 아무것도 안 사집니다."""

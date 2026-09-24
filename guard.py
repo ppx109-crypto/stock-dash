@@ -383,6 +383,11 @@ def check_pool(rows, floor=POOL_FLOOR, samples=40, seed=7):
 
     그날 값이 있는 종목 가운데 순위를 받은 몫이 floor 아래이면 멈춥니다.
     (종목, 몫)을 돌려줍니다.
+
+    **한 줄도 순위가 없는 날은 빼고 셉니다.** 주식수 자료는 2015년부터라
+    그 앞의 날은 아무도 순위를 못 받습니다. 그런 날까지 넣으면 몫이 자료의
+    시작 시점을 재는 값이 되어 버립니다. 규칙이 실제로 고르는 날, 곧 순위가
+    있는 날만 봐야 '문턱이 느슨한가'를 재는 것이 됩니다.
     """
     by_day = {}
     for row in rows:
@@ -390,10 +395,11 @@ def check_pool(rows, floor=POOL_FLOOR, samples=40, seed=7):
         seen[0] += 1
         if row.get(caps.RANK) is not None:
             seen[1] += 1
-    if not by_day:
-        return 0, 1.0
+    live = sorted(day for day, seen in by_day.items() if seen[1])
+    if not live:
+        return 0, 0.0 if by_day else 1.0
     picker = random.Random(seed)
-    days = picker.sample(sorted(by_day), min(samples, len(by_day)))
+    days = picker.sample(live, min(samples, len(live)))
     here = sum(by_day[day][0] for day in days)
     ranked = sum(by_day[day][1] for day in days)
     share = ranked / here if here else 1.0
