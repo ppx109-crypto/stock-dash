@@ -10,6 +10,7 @@
 import unittest
 from unittest.mock import patch
 
+import caps
 import guard
 import lab
 
@@ -316,3 +317,42 @@ class Anchor(unittest.TestCase):
         days = ["2024010%d" % k for k in range(1, 6)]
         rows = [{"code": "000660", "date": days[1], "i": 1}]
         self.assertEqual(guard.check_anchor(self.prices(days), rows), 1)
+
+
+class ShallowPool(unittest.TestCase):
+    """'100등 안'이 정말 100등 안인지. 54회차에 199종목으로 줄을 세우고
+
+    있었던 것을 쉰 회차 만에 알았습니다. 자료가 모자라 문턱이 느슨해진 것은
+    미래참조가 아니지만 수치를 똑같이 부풀립니다.
+    """
+
+    def rows(self, ranked, total, days=5):
+        found = []
+        for day in range(days):
+            for spot in range(total):
+                row = {"code": f"{spot:06d}", "date": f"2024010{day + 1}"}
+                if spot < ranked:
+                    row[caps.RANK] = spot + 1
+                found.append(row)
+        return found
+
+    def test_a_full_pool_passes(self):
+        count, share = guard.check_pool(self.rows(100, 100))
+        self.assertEqual(count, 100)
+        self.assertEqual(share, 1.0)
+
+    def test_a_thin_pool_stops_everything(self):
+        with self.assertRaises(guard.ShallowPoolError) as caught:
+            guard.check_pool(self.rows(199, 507))
+        self.assertIn("39%", str(caught.exception))
+
+    def test_the_floor_is_where_it_is_asked_to_be(self):
+        guard.check_pool(self.rows(199, 507), floor=0.3)
+
+    def test_nothing_at_all_is_not_an_error(self):
+        self.assertEqual(guard.check_pool([]), (0, 1.0))
+
+
+    def test_a_table_with_no_ranks_at_all_is_left_alone(self):
+        """순위를 안 붙인 표는 그 문턱을 안 쓰는 것입니다. 아무것도 안 사집니다."""
+        self.assertEqual(guard.check_pool(self.rows(0, 50)), (0, 0.0))

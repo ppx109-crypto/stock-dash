@@ -62,6 +62,17 @@ class LookaheadError(AssertionError):
     """미래를 본 값이 있습니다. 결과를 믿을 수 없으니 멈춥니다."""
 
 
+class ShallowPoolError(AssertionError):
+    """문턱이 자료가 모자라 조용히 느슨해져 있습니다.
+
+    미래를 본 것은 아니지만, 재고 있는 것이 적어 둔 것과 다릅니다. 그대로
+    두면 수치가 실제보다 좋게 나오므로 같은 무게로 멈춥니다.
+    """
+
+
+POOL_FLOOR = 0.8        # 순위를 매긴 종목이 그날 값이 있는 종목의 이만큼은 돼야
+
+
 def _one(code, block):
     return {code: block}
 
@@ -361,8 +372,48 @@ def check_anchor(prices, rows):
     return len(first)
 
 
-def verify(prices, rows, samples=40, loud=True):
-    """네 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다."""
+def check_pool(rows, floor=POOL_FLOOR, samples=40, seed=7):
+    """'100등 안'이 정말 100등 안인지 — 줄을 몇 종목으로 세웠는지 봅니다.
+
+    `caps.tag`는 그날 주식수가 접수된 종목끼리만 줄을 세웁니다. 주식수 자료가
+    일부 종목에만 있으면 '코스피 100등 안'은 조용히 **'자료가 있는 N종목 중
+    100등 안'**이 됩니다. 문턱이 느슨해진 만큼 성적이 좋게 나오는데, 어디에도
+    그렇다고 적히지 않습니다 — 54회차에 507종목을 모아 두고 199종목으로 줄을
+    세우고 있었던 것을 쉰 회차 만에 알았습니다.
+
+    그날 값이 있는 종목 가운데 순위를 받은 몫이 floor 아래이면 멈춥니다.
+    (종목, 몫)을 돌려줍니다.
+    """
+    by_day = {}
+    for row in rows:
+        seen = by_day.setdefault(row["date"], [0, 0])
+        seen[0] += 1
+        if row.get(caps.RANK) is not None:
+            seen[1] += 1
+    if not by_day:
+        return 0, 1.0
+    picker = random.Random(seed)
+    days = picker.sample(sorted(by_day), min(samples, len(by_day)))
+    here = sum(by_day[day][0] for day in days)
+    ranked = sum(by_day[day][1] for day in days)
+    share = ranked / here if here else 1.0
+    # 순위가 한 줄도 없으면 그 문턱을 안 쓰고 있는 것입니다. 느슨한 것이
+    # 아니라 없는 것이라, 아무것도 사지지 않으므로 그냥 둡니다.
+    if ranked and share < floor:
+        raise ShallowPoolError(
+            f"순위를 매긴 종목이 그날 종목의 {share * 100:.0f}%뿐입니다"
+            f"(있어야 할 몫 {floor * 100:.0f}%). '100등 안'이 실제로는 "
+            f"'자료가 있는 것 중 100등 안'입니다. share-data를 마저 모으십시오.")
+    return round(ranked / len(days)), round(share, 3)
+
+
+def verify(prices, rows, samples=40, loud=True, pool=True):
+    """아홉 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다.
+
+    아홉째(줄 세운 종목)만 성격이 다릅니다 — 미래를 본 것이 아니라 문턱이
+    자료 탓에 느슨해진 것을 봅니다. 자료를 아직 다 못 모은 동안에는
+    pool=False로 끌 수 있지만, 그때 낸 수치는 실제보다 좋습니다.
+    """
     zero = check_anchor(prices, rows)
     one = check_corruption(prices, rows, samples=samples)
     two = check_truncation(prices, rows, samples=samples)
@@ -371,6 +422,9 @@ def verify(prices, rows, samples=40, loud=True):
     five = check_cross_section(rows)
     six = check_caps(rows)
     seven = check_money(rows)
+    # 순위를 매긴 종목이 줄어 있으면 문턱이 느슨해진 것입니다. 표를 아직 다
+    # 못 모은 동안에는 pool=False로 끌 수 있게 두되, 기본은 멈춥니다.
+    eight = check_pool(rows) if pool else (0, None)
     # 1·2번을 면제받은 이름이 제 검사도 지나지 않았다면 아무도 보지 않은 것입니다.
     present = {name for row in rows for name in CROSS if name in row}
     missed = sorted(name for name in present if not five.get(name))
@@ -388,10 +442,13 @@ def verify(prices, rows, samples=40, loud=True):
     if loud:
         print(f"미래참조 검사 통과 · 자리 확인 {zero}종목 · 더럽히기 {one}건 · 잘라내기 {two}건 · "
               f"날짜 확인 {three}건 · 공시 {four}건 · 가로줄 {sum(five.values())}건 "
-              f"· 시가총액 {sum(six.values())}건 · 거래대금 {sum(seven.values())}건")
+              f"· 시가총액 {sum(six.values())}건 · 거래대금 {sum(seven.values())}건"
+              + (f" · 줄 세운 종목 {eight[0]}({eight[1] * 100:.0f}%)"
+                 if eight[1] is not None else " · 줄 세운 종목 안 봄"))
     return {"anchor": zero, "corruption": one, "truncation": two, "dates": three,
             "filings": four, "cross": sum(five.values()),
-            "caps": sum(six.values()), "money": sum(seven.values())}
+            "caps": sum(six.values()), "money": sum(seven.values()),
+            "pool": eight[0], "pool_share": eight[1]}
 
 
 def build_verified(prices=None, samples=25, **kwargs):
