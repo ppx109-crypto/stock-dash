@@ -38,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-22",
+  "fetched": "2026-09-24",
   "disclosures": [
     {
       "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
@@ -74,16 +74,6 @@
       "title": "현금ㆍ현물배당결정              ",
       "date": "20260713",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713800760"
-    },
-    {
-      "title": "주요사항보고서(상각형조건부자본증권발행결정)",
-      "date": "20260625",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625000589"
-    },
-    {
-      "title": "지속가능경영보고서등관련사항(자율공시)              ",
-      "date": "20260625",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260625800696"
     }
   ]
 }
