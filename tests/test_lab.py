@@ -639,3 +639,61 @@ class VolumeRatio(unittest.TestCase):
     def test_a_missing_file_gives_nothing_rather_than_breaking(self):
         days = self.days(30)
         self.assertEqual(lab.volume_line("000009", days), [None] * 30)
+
+
+class ChartPlaces(unittest.TestCase):
+    """사람이 차트를 보고 사는 자리(65회차, 사용자 제안).
+
+    지지·저항을 보고 매매하는 사람이 많으면 그 자리에 주문이 몰립니다.
+    표에는 이동평균과 거래량만 있어 그런 자리가 없었습니다.
+    """
+
+    def test_a_new_high_today_still_looks_at_yesterdays_high(self):
+        """오늘을 넣으면 신고가인 날이 늘 0%가 되어 뜻이 없어집니다."""
+        closes = [100.0] * 60 + [200.0]
+        highs = [(c, c) for c in closes]
+        got = lab.peak_lines(closes, highs, spans=(60,))
+        self.assertAlmostEqual(got["60일 전고점 대비"][-1], 100.0)
+
+    def test_the_distance_to_the_old_high_is_a_percentage_below_it(self):
+        closes = [100.0] * 30 + [120.0] + [110.0] * 30
+        highs = [(c, c) for c in closes]
+        got = lab.peak_lines(closes, highs, spans=(60,))
+        self.assertAlmostEqual(got["60일 전고점 대비"][-1], 110 / 120 * 100 - 100)
+
+    def test_the_age_counts_from_the_most_recent_touch(self):
+        """같은 고점을 두 번 찍었으면 나중 것이 사람이 보는 고점입니다."""
+        closes = [100.0] * 61
+        closes[5] = closes[50] = 150.0
+        highs = [(c, c) for c in closes]
+        got = lab.peak_lines(closes, highs, spans=(60,))
+        self.assertEqual(got["60일 전고점 지난날"][60], 10)
+
+    def test_the_high_column_is_used_when_there_is_one(self):
+        """전고점은 종가가 아니라 고가로 봐야 차트와 같습니다."""
+        closes = [100.0] * 61
+        highs = [(130.0, 90.0)] + [(c, c) for c in closes[1:]]
+        got = lab.peak_lines(closes, highs, spans=(60,))
+        self.assertAlmostEqual(got["60일 전고점 대비"][60], 100 / 130 * 100 - 100)
+
+    def test_the_band_puts_the_low_at_zero_and_the_high_at_one(self):
+        closes = [100.0, 101.0] * 30
+        got = lab.band_lines(closes)
+        self.assertGreaterEqual(got["밴드 자리"][-1], 0.0)
+        self.assertLessEqual(got["밴드 자리"][-1], 1.0)
+
+    def test_breaking_the_upper_band_goes_above_one(self):
+        closes = [100.0] * 30 + [130.0]
+        got = lab.band_lines(closes)
+        self.assertGreater(got["밴드 자리"][-1], 1.0)
+
+    def test_a_flat_stretch_has_no_band_at_all(self):
+        """값이 한 번도 안 움직이면 표준편차가 0이라 밴드가 없습니다."""
+        got = lab.band_lines([100.0] * 40)
+        self.assertIsNone(got["밴드 자리"][-1])
+
+    def test_the_band_is_priced_not_returns(self):
+        """표의 '변동성'은 등락률의 표준편차입니다. 볼린저는 가격입니다."""
+        closes = [100.0 + k for k in range(40)]
+        got = lab.band_lines(closes)
+        self.assertGreater(got["밴드 폭"][-1], 0)

@@ -156,6 +156,85 @@ def since_cross(fast, slow):
 
 
 VOLUME_BACK = 20        # 거래량비를 견줄 지난 구간. 한 달입니다.
+PEAKS = (60, 120, 250)  # 전고점을 볼 구간. 석 달·반년·한 해입니다.
+BAND = 20               # 볼린저 밴드의 기간. 통상 쓰는 값입니다.
+BAND_WIDE = 2.0         # 밴드의 폭. 표준편차 몇 배인지.
+
+
+def price_range(code, days):
+    """그 종목의 날짜별 (고가, 저가). 표를 구울 때 씁니다.
+
+    `day_range`는 시뮬레이터의 '길'을 받는데, 표를 구울 때는 아직 길이
+    없습니다. 같은 파일을 같은 방식(날짜로 맞추기)으로 읽되 종목코드와
+    날짜 목록만 받습니다.
+    """
+    seen = {}
+    try:
+        body = json.loads((RANGE_DIR / f"{code}.json").read_text(encoding="utf-8"))
+        names = body.get("칸") or []
+        hi, lo = names.index("고가"), names.index("저가")
+        for row in body.get("날") or []:
+            if row and row[hi] and row[lo]:
+                seen[str(row[0])] = (row[hi], row[lo])
+    except (OSError, ValueError):
+        return [None] * len(days)
+    return [seen.get(day) for day in days]
+
+
+def peak_lines(closes, highs, spans=PEAKS):
+    """전고점까지 얼마나 남았나, 그 고점은 며칠 전인가.
+
+    사람이 차트를 보고 사는 자리를 재려는 것입니다(65회차, 사용자 제안).
+    지지·저항을 보고 매매하는 사람이 많으면 그 자리에 주문이 몰리고, 그것이
+    값에 남습니다. 지금 표에는 이동평균과 거래량만 있어 그런 자리가 없습니다.
+
+    **그날까지의 고가만 봅니다.** 오늘을 뺀 지난 N일의 최고 고가와 견줍니다 —
+    오늘을 넣으면 신고가인 날이 늘 '전고점 0%'가 되어 뜻이 없어집니다.
+
+    돌려주는 것(구간마다):
+      · 전고점 대비 — 오늘 종가가 그 고점보다 몇 % 아래인지(음수).
+      · 전고점 지난날 — 그 고점이 며칠 전이었는지.
+    고가가 없는 종목은 종가를 대신 씁니다.
+    """
+    tops = [got[0] if got else closes[k] for k, got in enumerate(highs)]
+    out = {}
+    for span in spans:
+        gap, age = [None] * len(closes), [None] * len(closes)
+        for k in range(span, len(closes)):
+            window = tops[k - span:k]
+            best = max(window)
+            if best and closes[k]:
+                gap[k] = (closes[k] / best - 1) * 100
+                # 같은 값이 여러 번이면 **가장 최근** 것을 씁니다. 사람이
+                # 보는 것은 마지막으로 그 값을 찍은 날이지 처음이 아닙니다.
+                back = len(window) - 1 - window[::-1].index(best)
+                age[k] = span - back
+        out[f"{span}일 전고점 대비"] = gap
+        out[f"{span}일 전고점 지난날"] = age
+    return out
+
+
+def band_lines(closes, span=BAND, wide=BAND_WIDE):
+    """볼린저 밴드. 지금 값이 밴드 어디쯤이고 폭은 얼마나 좁은지.
+
+    표의 '변동성'은 **등락률**의 표준편차입니다. 볼린저는 **가격**의
+    표준편차라 다른 값입니다(65회차에 헷갈릴 뻔했습니다).
+
+      · 밴드 자리 — 하단 0, 상단 1. 1을 넘으면 상단을 뚫은 것입니다.
+      · 밴드 폭 — (상단−하단) ÷ 중심. 좁으면 눌려 있는 것입니다.
+    """
+    spot, width = [None] * len(closes), [None] * len(closes)
+    for k in range(span, len(closes)):
+        chunk = closes[k - span + 1:k + 1]
+        mid = sum(chunk) / span
+        var = sum((c - mid) ** 2 for c in chunk) / (span - 1)
+        sd = math.sqrt(var)
+        if sd <= 0 or not mid:
+            continue
+        low, high = mid - wide * sd, mid + wide * sd
+        spot[k] = (closes[k] - low) / (high - low)
+        width[k] = (high - low) / mid * 100
+    return {"밴드 자리": spot, "밴드 폭": width}
 
 
 def volume_line(code, days):
@@ -227,6 +306,11 @@ def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
         rising = run_length([(slopes["장기"][i] or -99) > 0
                              for i in range(len(closes))])
         bursts = volume_line(code, days)
+        highs = price_range(code, days)
+        peaks = peak_lines(closes, highs)
+        # 이름을 bands로 두었다가 축별 이격밴드(bands)를 덮어써 표가 통째로
+        # 깨졌습니다. 53회차의 size/nudge와 같은 사고입니다.
+        bollinger = band_lines(closes)
         money = study.money_timeline(code)
         targets = study.target_timeline(code)
         money_at, target_at = {}, {}
@@ -273,6 +357,9 @@ def build(prices=None, horizons=(5, 10, 20, 60), warmup=120):
                 # 34회차에 새로 넣은 것들
                 # 그날 거래량이 지난 한 달 가운데값의 몇 배인지(51회차).
                 "거래량비": bursts[i],
+                # 사람이 차트를 보고 사는 자리(65회차) — 전고점과 볼린저.
+                **{name: got[i] for name, got in peaks.items()},
+                **{name: got[i] for name, got in bollinger.items()},
                 "모임폭": wide[i],
                 "모임폭밴드": wide_band[i],
                 "정배열일수": lined[i],
