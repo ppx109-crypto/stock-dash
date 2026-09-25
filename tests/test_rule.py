@@ -141,6 +141,34 @@ class Risk(unittest.TestCase):
             self.assertEqual(rule.risk_stats([], {}), {})
 
 
+class Halves(unittest.TestCase):
+    """공격 갈래(73회차)도 규칙과 같은 길로 재야 합니다."""
+
+    def _seen(self, **kw):
+        calls = []
+
+        def fake(rows, prices, holds, exit_at, **opts):
+            calls.append((exit_at, opts["slots"]))
+            return None
+        with patch.object(lab, "run", side_effect=fake), \
+                patch.object(lab, "exit_fixed", side_effect=lambda *a: a), \
+                patch.object(rule, "apart", return_value=None):
+            rule.halves([], {}, **kw)
+        return calls
+
+    def test_left_empty_it_is_the_rule(self):
+        for exit_at, slots in self._seen():
+            self.assertEqual(exit_at, (rule.TAKE, rule.STOP, rule.LIMIT))
+            self.assertEqual(slots, rule.SLOTS)
+
+    def test_the_aggressive_track_is_passed_through(self):
+        seen = self._seen(slots=2, take=12, stop=8)
+        self.assertEqual(len(seen), 2)
+        for exit_at, slots in seen:
+            self.assertEqual(exit_at, (12, 8, rule.LIMIT))
+            self.assertEqual(slots, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -126,7 +126,7 @@ CAVEAT = (
     "안이었다가 지금 작아진 회사는 아예 들어 있지 않습니다. 살아남은 것만 "
     "보는 쪽이라 성적이 실제보다 좋게 나옵니다. "
     "507종목에서 여덟 번 돌린 가운데값으로 연수익은 앞쪽(2017~2020) "
-    "**+3.95%**(폭 2.0)·뒤쪽(2021~) **+18.63%**(폭 1.4)이고, 골은 "
+    "**+6.12%**(폭 3.0)·뒤쪽(2021~) **+18.35%**(폭 1.3)이고, 골은 "
     "**−13.5%와 −10.5%**, 연패는 5와 7입니다. "
     "**두 구간은 믿을 만한 정도가 다릅니다.** 뒤쪽은 그날 100등을 매길 "
     "자료가 거의 다 차 있어(빠진 자리 1% 아래) 곧이곧대로 읽어도 됩니다. "
@@ -137,7 +137,7 @@ CAVEAT = (
     "한 번만 돌린 "
     "수치는 여러 번 중 좋은 쪽일 수 있습니다 — 40회차에 그런 수치 하나에 "
     "속아 결론을 냈다가 거뒀습니다. 열 번에 다섯 번은 집니다. "
-    "앞쪽 구간은 한 해 스물한 번 매매해서 +3.95%입니다. 비용과 "
+    "앞쪽 구간은 한 해 스물한 번 매매해서 +6.12%입니다. 비용과 "
     "미끄러짐을 더 얹으면 남는 것이 거의 없을 수도 있습니다. "
     "뒤쪽(2021~)을 둘로 쪼개면 2021~2023 +12.31%, 2024~ +25.34%로 둘 다 "
     "양수이고 골은 −10% 언저리로 같습니다. 한 시기에 기댄 수치는 아닙니다. "
@@ -366,15 +366,23 @@ def risk_stats(rows, prices, since=SINCE):
             "해마다 골": yearly}
 
 
-def halves(rows, prices):
-    """앞뒤로 나눠 나란히 냅니다. 한쪽에서만 좋은 것은 믿지 않으려는 것입니다."""
+def halves(rows, prices, slots=None, take=None, stop=None):
+    """앞뒤로 나눠 나란히 냅니다. 한쪽에서만 좋은 것은 믿지 않으려는 것입니다.
+
+    slots·take·stop을 주면 그 값으로 굴립니다. 73회차의 공격 갈래(자리 2 ·
+    익절 12 · 손절 8)를 연구 스크립트가 아니라 이 길로 재려고 낸 자리입니다.
+    비워 두면 지금 규칙 그대로입니다.
+    """
+    slots = SLOTS if slots is None else slots
+    take = TAKE if take is None else take
+    stop = STOP if stop is None else stop
     kin = apart(prices)
     found = {}
     for tag, use, since in ((f"앞쪽 {SINCE[:4]}~{int(MID[:4]) - 1}",
                              [r for r in rows if r["date"] < MID], SINCE),
                             (f"뒤쪽 {MID[:4]}~", rows, MID)):
-        got = lab.run(use, prices, holds, lab.exit_fixed(TAKE, STOP, LIMIT),
-                      slots=SLOTS, rank=order, since=since, per_day=PER_DAY,
+        got = lab.run(use, prices, holds, lab.exit_fixed(take, stop, LIMIT),
+                      slots=slots, rank=order, since=since, per_day=PER_DAY,
                       apart=kin, realistic=True)
         if got:
             found[tag] = {k: got[k] for k in
