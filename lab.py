@@ -560,6 +560,21 @@ def portfolio(rows, prices, holds, slots=10, take=10.0, stop=7.0, limit=60,
 _lanes_for = None
 
 
+_days_for = None
+
+
+def trading_days(lane):
+    """모든 종목 길을 합친 거래일 달력. 같은 길이면 한 번만 셉니다."""
+    global _days_for
+    if _days_for is not None and _days_for[0] is lane:
+        return _days_for[1]
+    found = set()
+    for one in lane.values():
+        found.update(one["날"])
+    _days_for = (lane, sorted(found))
+    return _days_for[1]
+
+
 def lanes(prices):
     """종목마다 종가·중기선·변동성을 한 번만 만들어 둡니다. 청산 판정에 씁니다.
 
@@ -758,9 +773,17 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     for row in rows:
         if holds(row) and (since is None or row["date"] >= since):
             picks.setdefault(row["date"], []).append(row)
-    days = sorted(picks)
-    if not days:
+    signal_days = sorted(picks)
+    if not signal_days:
         return None
+    # 86회차: 전에는 신호가 난 날만 돌았습니다(days = sorted(picks)). 들고 있는
+    # 종목은 한 바퀴에 한 거래일씩 나아가므로, 신호 없는 날이 끼면 달력보다
+    # 느리게 나아가 자리를 실제보다 오래 차지했습니다. 지금 규칙은 거래일의
+    # 36%에만 신호가 나서, 10일 보유가 달력으로 약 세 배로 늘어나 있었습니다.
+    # 이제 첫 신호 날부터 표의 마지막 날까지 모든 거래일을 돕니다.
+    last = max(row["date"] for row in rows)
+    days = [day for day in trading_days(lane)
+            if signal_days[0] <= day <= last]
     rank = rank or (lambda r: r.get("중기 이격밴드") or 0)
     size = size or (lambda r: 1)
     open_slots, trades, missed, held_days = {}, [], 0, []
@@ -818,10 +841,12 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             if purse / crest - 1 <= -deep / 100:
                 top = max(1, int(slots * share))
         if busy_cap is not None:
-            want = busy_cap(picks[day][0]) if callable(busy_cap) else busy_cap
+            today = picks.get(day)
+            want = (busy_cap(today[0]) if callable(busy_cap) and today
+                    else busy_cap if not callable(busy_cap) else top)
             top = min(top, max(int(want), 0))
         room = top - used
-        ready = [row for row in sorted(picks[day], key=rank)
+        ready = [row for row in sorted(picks.get(day, []), key=rank)
                  if row["i"] >= rest.get(row["code"], 0)]
         # 빈 자리 수만큼만 위에서부터 봅니다. 그중 이미 들고 있는 종목이 있으면
         # 그 자리는 그날 비워 둡니다. greedy=True면 다음 후보로 마저 채웁니다.

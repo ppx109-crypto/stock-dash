@@ -156,8 +156,33 @@ class Slots(unittest.TestCase):
         self.assertAlmostEqual(out["평균"], round(sum(gains) / len(gains), 2), places=1)
         years = int(max(g["판 날"] for g in out["매매목록"])[:4]) - \
             int(min(g["산 날"] for g in out["매매목록"])[:4]) + 1
+        # 장부의 손익은 둘째 자리에서 반올림돼 있어, 건수만큼 오차가 쌓일 수 있습니다.
         self.assertAlmostEqual(out["연수익"], round(sum(gains) * 2 / 2 / years, 2),
-                               places=1)
+                               delta=len(gains) * 0.005 / years + 0.01)
+
+    def test_a_held_position_ages_on_days_without_signals(self):
+        """신호가 없는 날에도 들고 있는 종목은 하루씩 나아가야 합니다(86회차).
+
+        자리 하나, 신호는 150일째와 170일째에만 납니다. 10일 들고 파는 청산이면
+        첫 종목은 160일째에 나가고, 170일째 신호를 살 수 있어야 합니다. 예전에는
+        신호 난 날만 돌아 170일째가 겨우 둘째 날이라 자리가 차 있었습니다.
+        """
+        days = [f"2020{(k // 21) + 1:02d}{(k % 21) + 1:02d}" for k in range(200)]
+        prices = {code: {"name": code, "rows": [(d, 100.0) for d in days]}
+                  for code in ("000001", "000002")}
+        rows = [{"code": "000001", "date": days[150], "i": 150, "price": 100.0},
+                {"code": "000002", "date": days[170], "i": 170, "price": 100.0},
+                {"code": "000002", "date": days[199], "i": 199, "price": 100.0}]
+        bought = []
+
+        def exit_at(lane, start, price, step, peak, row=None):
+            if step == 1:
+                bought.append((row["code"], start))
+            return step >= 10
+
+        lab.run(rows, prices, lambda r: r["date"] != days[199], exit_at, slots=1)
+        self.assertEqual(bought, [("000001", 150), ("000002", 170)],
+                         "신호 없는 날에 들고 있던 종목이 나이를 먹지 않았습니다")
 
     def test_a_position_never_takes_more_room_than_there_is(self):
         rows, out = plan(self.prices, detail=True, size=lambda r: 5)
