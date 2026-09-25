@@ -372,7 +372,7 @@ def check_anchor(prices, rows):
     return len(first)
 
 
-def check_gate(rows, top=100, slack=0.1, samples=40, seed=7):
+def check_gate(rows, top=100, slack=0.1, samples=40, seed=7, since=None):
     """문턱 안에 들었을 종목이 순위를 못 받고 있는지 봅니다.
 
     `check_pool`(55회차)은 "값이 있는 종목 중 몇 %가 순위를 받았나"를
@@ -386,6 +386,10 @@ def check_gate(rows, top=100, slack=0.1, samples=40, seed=7):
     보는 데만** 씁니다 — 표에 넣지 않고, 여기서 세고 버립니다.
 
     문턱 자리 가운데 이렇게 비어 있는 몫이 slack을 넘으면 멈춥니다.
+
+    since를 주면 그날부터만 봅니다. 조사에 안 쓰는 구간이 비어 있는 것은
+    흠이 아닙니다 — 60회차에 2015·2016년을 조사에서 뺀 것이 그 까닭이고,
+    그 두 해가 비어 있다고 멈추면 쓰지도 않는 자료 때문에 일을 못 합니다.
     """
     seen = {}
     for row in rows:
@@ -396,6 +400,8 @@ def check_gate(rows, top=100, slack=0.1, samples=40, seed=7):
         seen[code].sort()
     by_day = {}
     for row in rows:
+        if since is not None and row["date"] < since:
+            continue
         by_day.setdefault(row["date"], []).append(row)
     live = sorted(day for day, here in by_day.items()
                   if any(r.get(caps.RANK) is not None for r in here))
@@ -468,7 +474,7 @@ def check_pool(rows, floor=POOL_FLOOR, samples=40, seed=7):
     return round(ranked / len(days)), round(share, 3)
 
 
-def verify(prices, rows, samples=40, loud=True, pool=True):
+def verify(prices, rows, samples=40, loud=True, pool=True, since=None):
     """아홉 겹을 모두 지나야 참입니다. 하나라도 어긋나면 멈춥니다.
 
     아홉째(줄 세운 종목)만 성격이 다릅니다 — 미래를 본 것이 아니라 문턱이
@@ -485,7 +491,7 @@ def verify(prices, rows, samples=40, loud=True, pool=True):
     seven = check_money(rows)
     # 순위를 매긴 종목이 줄어 있으면 문턱이 느슨해진 것입니다. 표를 아직 다
     # 못 모은 동안에는 pool=False로 끌 수 있게 두되, 기본은 멈춥니다.
-    eight = check_gate(rows) if pool else (0, None)
+    eight = check_gate(rows, since=since) if pool else (0, None)
     # 1·2번을 면제받은 이름이 제 검사도 지나지 않았다면 아무도 보지 않은 것입니다.
     present = {name for row in rows for name in CROSS if name in row}
     missed = sorted(name for name in present if not five.get(name))
@@ -512,7 +518,7 @@ def verify(prices, rows, samples=40, loud=True, pool=True):
             "gate": eight[0], "gate_share": eight[1]}
 
 
-def build_verified(prices=None, samples=25, **kwargs):
+def build_verified(prices=None, samples=25, since=None, **kwargs):
     """특징을 만들고, 검사를 지난 것만 돌려줍니다.
 
     만들기와 검사를 따로 부르게 두면 언젠가 검사를 빼먹습니다. 한 문으로
@@ -520,5 +526,5 @@ def build_verified(prices=None, samples=25, **kwargs):
     """
     prices = prices if prices is not None else study.load_prices()
     rows = lab.build(prices, **kwargs)
-    verify(prices, rows, samples=samples)
+    verify(prices, rows, samples=samples, since=since)
     return prices, rows

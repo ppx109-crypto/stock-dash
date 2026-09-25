@@ -412,3 +412,23 @@ class GateHoles(unittest.TestCase):
                 {"code": "000001", "date": self.day(1), caps.RANK: 10}]
         # 000002는 그 뒤로 순위를 받은 날이 없으니 어림할 수 없습니다.
         self.assertEqual(guard.check_gate(rows, top=100), (0, 0.0))
+
+    def test_years_the_study_does_not_use_are_not_counted(self):
+        """60회차에 2015·2016년을 조사에서 뺐습니다. 안 쓰는 구간이 비어
+
+        있다고 멈추면 쓰지도 않는 자료 때문에 일을 못 합니다.
+        """
+        rows = []
+        # 옛 구간: 한 종목만 순위가 있고 나머지 열은 비어 있습니다.
+        for k in range(10):
+            rows.append({"code": f"01{k:04d}", "date": "20150102"})
+        rows.append({"code": "000001", "date": "20150102", caps.RANK: 5})
+        # 새 구간: 그 열 종목이 모두 순위를 받습니다.
+        for k in range(10):
+            rows.append({"code": f"01{k:04d}", "date": self.day(0),
+                         caps.RANK: 20 + k})
+        rows.append({"code": "000001", "date": self.day(0), caps.RANK: 5})
+        with self.assertRaises(guard.ShallowPoolError):
+            guard.check_gate(rows, top=100)
+        self.assertEqual(guard.check_gate(rows, top=100, since="20240101"),
+                         (0, 0.0))
