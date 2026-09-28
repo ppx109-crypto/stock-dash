@@ -432,6 +432,65 @@ class KIS:
         found.sort(key=lambda r: r['date'])
         return found
 
+    def _market_rows(self, path, tr_id, params, what):
+        """시세 쪽 조회 한 번. 줄 목록(dict)만 돌려줍니다. 조회 전용입니다."""
+        self.authorize()
+        _, data = self.request('GET', path, headers={
+            'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+            'appsecret': self.secret, 'tr_id': tr_id, 'custtype': 'P'}, params=params)
+        if str(data.get('rt_cd')) != '0':
+            code_seen = str(data.get('msg_cd') or '').strip()
+            code_seen = code_seen if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', code_seen) else ''
+            raise BrokerError(f'{what} 조회가 거절되었습니다.' + (f' · {code_seen}' if code_seen else ''))
+        rows = data.get('output2') if data.get('output2') is not None else data.get('output')
+        if isinstance(rows, dict):
+            rows = [rows]
+        if not isinstance(rows, list):
+            raise BrokerError(f'{what} 응답 형식이 달라 읽지 않았습니다.')
+        return [r for r in rows if isinstance(r, dict)]
+
+    @staticmethod
+    def _numbers(row, names):
+        got = {}
+        for name, key in names:
+            try:
+                got[name] = amount(row.get(key))
+            except BrokerError:
+                got[name] = None
+        return got
+
+    def short_daily(self, code, start, end):
+        """공매도 일별추이(FHPST04830000). 기간 안의 날마다 공매도 수량·비중과 거래량. 오래된 날이 먼저."""
+        if not re.fullmatch(r'[0-9]{6}', str(code)) or not all(re.fullmatch(r'[0-9]{8}', str(d)) for d in (start, end)):
+            raise BrokerError('종목코드는 숫자 6자리, 날짜는 8자리여야 합니다.')
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/daily-short-sale', 'FHPST04830000',
+                                 {'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code),
+                                  'FID_INPUT_DATE_1': str(start), 'FID_INPUT_DATE_2': str(end)}, '공매도 일별추이')
+        found = []
+        for row in rows:
+            day = str(row.get('stck_bsop_date', '')).strip()
+            if re.fullmatch(r'[0-9]{8}', day):
+                found.append({'date': day, **self._numbers(row, (
+                    ('공매도량', 'ssts_cntg_qty'), ('공매도비중', 'ssts_vol_rlim'), ('거래량', 'acml_vol'),
+                    ('종가', 'stck_clpr')))})
+        return sorted(found, key=lambda r: r['date'])
+
+    def credit_daily(self, code, day):
+        """신용잔고 일별추이(FHPST04760000). 그 결제일까지 서른 거래일. 오래된 날이 먼저(매매일 기준)."""
+        if not re.fullmatch(r'[0-9]{6}', str(code)) or not re.fullmatch(r'[0-9]{8}', str(day)):
+            raise BrokerError('종목코드는 숫자 6자리, 날짜는 8자리여야 합니다.')
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/daily-credit-balance', 'FHPST04760000',
+                                 {'fid_cond_mrkt_div_code': 'J', 'fid_cond_scr_div_code': '20476',
+                                  'fid_input_iscd': str(code), 'fid_input_date_1': str(day)}, '신용잔고 일별추이')
+        found = []
+        for row in rows:
+            when = str(row.get('deal_date', '')).strip()
+            if re.fullmatch(r'[0-9]{8}', when):
+                found.append({'date': when, **self._numbers(row, (
+                    ('잔고율', 'whol_loan_rmnd_rate'), ('잔고주수', 'whol_loan_rmnd_stcn'),
+                    ('공여율', 'whol_loan_gvrt'), ('신규주수', 'whol_loan_new_stcn'), ('상환주수', 'whol_loan_rdmp_stcn')))})
+        return sorted(found, key=lambda r: r['date'])
+
     def balance(self):
         self.authorize()
         rows, seen = [], set()
