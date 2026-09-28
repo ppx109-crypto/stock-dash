@@ -3,7 +3,6 @@ import hashlib
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 COURSE = Path(__file__).resolve().parent / "course" / "index.html"
 
@@ -39,5 +38,6 @@ def render_education():
         iframe[title="st.iframe"]{height:calc(100vh - 150px)!important;min-height:600px}
         </style>''', unsafe_allow_html=True)
     st.caption("프로필 · 강의 요약 · 1~12강 · 오른쪽 아래에서 필기 도구를 켤 수 있습니다.")
-    components.html(content, height=1000, scrolling=True)
+    # 교육자료는 저장소에 둔 우리 파일입니다. st.components.v1.html은 곧 없어져 st.iframe으로 씁니다.
+    st.iframe(content, height=1000)
     watch_course(version)

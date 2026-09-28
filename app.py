@@ -8,7 +8,6 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 from dotenv import load_dotenv
 
 from research_ui import render_research
@@ -122,22 +121,22 @@ def auth_token(secret):
 
 def remember_login(token):
     """브라우저에 로그인 표시를 남깁니다. 30일 뒤에 저절로 사라집니다."""
-    components.html(
+    st.iframe(
         "<script>try{(window.parent||window).document.cookie="
         f"'{AUTH_COOKIE}={token}; path=/; max-age=2592000; SameSite=Lax'"
         "}catch(e){document.cookie="
         f"'{AUTH_COOKIE}={token}; path=/; max-age=2592000; SameSite=Lax'" "}</script>",
-        height=0,
+        height=1,
     )
 
 
 def forget_login():
-    components.html(
+    st.iframe(
         "<script>try{(window.parent||window).document.cookie="
         f"'{AUTH_COOKIE}=; path=/; max-age=0; SameSite=Lax'"
         "}catch(e){document.cookie="
         f"'{AUTH_COOKIE}=; path=/; max-age=0; SameSite=Lax'" "}</script>",
-        height=0,
+        height=1,
     )
 
 
