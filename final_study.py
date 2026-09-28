@@ -177,7 +177,7 @@ def compute():
         raise SystemExit("study/features.json이 없습니다. lab.build로 먼저 만드세요.")
     caps.tag(rows, rule.TOP)
     rule.calm_edge(rows)
-    rows = [r for r in rows if r["date"] >= rule.SINCE]
+    rows = lab.realign([r for r in rows if r["date"] >= rule.SINCE], prices)
     lanes = lab.lanes(prices)
     shape = shapes(lanes, {r["code"] for r in rows})
     breadth = breadth_by_day(rows, shape)

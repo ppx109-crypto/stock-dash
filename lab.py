@@ -575,6 +575,22 @@ def trading_days(lane):
     return _days_for[1]
 
 
+def realign(rows, prices):
+    """표의 순번(i)을 지금 일봉의 날짜 자리로 다시 맞춥니다. 일봉에 없는 날의 행은 뺍니다.
+
+    표(features.json)는 만든 날의 일봉으로 순번을 매깁니다. 그 뒤 수집이 더 옛날 일봉을 앞에
+    붙이면(2026-09-28에 70종목) 순번이 통째로 밀려, 청산이 엉뚱한 날의 종가를 봅니다.
+    """
+    where = {code: {day: k for k, (day, _) in enumerate(block["rows"])} for code, block in prices.items()}
+    kept = []
+    for row in rows:
+        k = where.get(row["code"], {}).get(row["date"])
+        if k is not None:
+            row["i"] = k
+            kept.append(row)
+    return kept
+
+
 def lanes(prices):
     """종목마다 종가·중기선·변동성을 한 번만 만들어 둡니다. 청산 판정에 씁니다.
 

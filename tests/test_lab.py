@@ -722,3 +722,14 @@ class ChartPlaces(unittest.TestCase):
         closes = [100.0 + k for k in range(40)]
         got = lab.band_lines(closes)
         self.assertGreater(got["밴드 폭"][-1], 0)
+
+
+class Realign(unittest.TestCase):
+    """표를 만든 뒤 일봉 앞쪽이 늘어도 순번이 날짜를 따라갑니다."""
+
+    def test_rows_follow_their_dates(self):
+        prices = {"000001": {"rows": [("20200101", 1.0), ("20200102", 2.0), ("20200103", 3.0)]}}
+        rows = [{"code": "000001", "date": "20200103", "i": 0},
+                {"code": "000001", "date": "20191231", "i": 0}]
+        got = lab.realign(rows, prices)
+        self.assertEqual([(r["date"], r["i"]) for r in got], [("20200103", 2)])
