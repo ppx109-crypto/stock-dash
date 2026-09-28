@@ -1,10 +1,9 @@
 name: Signal study
 # 모아 둔 일봉으로 그룹이 실제로 맞았는지 세어, 앱이 읽을 결과 파일을 남깁니다.
+# 확률 검증 화면의 그룹 성적은 이제 final_study.py가 만듭니다. 이 작업은 날마다 60분 제한에
+# 걸려 멈췄으므로, 그룹과 무관한 참고 표 두 개가 필요할 때만 손으로 돌립니다.
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Daily price history"]
-    types: [completed]
 permissions:
   contents: write
 concurrency:
