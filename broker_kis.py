@@ -387,6 +387,48 @@ class KIS:
         found.sort(key=lambda r: r['date'])
         return found
 
+    # 종목별 투자자매매동향(일별). 날짜를 주면 그날까지 서른 거래일을 줍니다.
+    # 투신(ivtr) · 연기금(fund) · 사모(pe_fund)가 따로 있어 과거 수급을 거슬러 받을 수 있습니다.
+    INVESTORS = (('개인', 'prsn_ntby_qty'), ('외국인', 'frgn_ntby_qty'), ('기관', 'orgn_ntby_qty'),
+                 ('투신', 'ivtr_ntby_qty'), ('연기금', 'fund_ntby_qty'), ('사모', 'pe_fund_ntby_vol'))
+
+    def investor_daily(self, code, day):
+        """그날까지 서른 거래일의 투자자별 순매수(주)와 종가. 오래된 날이 먼저입니다. 조회 전용입니다."""
+        if not re.fullmatch(r'[0-9]{6}', str(code)) or not re.fullmatch(r'[0-9]{8}', str(day)):
+            raise BrokerError('종목코드는 숫자 6자리, 날짜는 8자리여야 합니다.')
+        self.authorize()
+        _, data = self.request(
+            'GET', '/uapi/domestic-stock/v1/quotations/investor-trade-by-stock-daily',
+            headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+                     'appsecret': self.secret, 'tr_id': 'FHPTJ04160001', 'custtype': 'P'},
+            params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code),
+                    'FID_INPUT_DATE_1': str(day), 'FID_ORG_ADJ_PRC': '', 'FID_ETC_CLS_CODE': ''})
+        if str(data.get('rt_cd')) != '0':
+            raise BrokerError('투자자 매매동향(일별) 조회가 승인되지 않았습니다. API 신청 상태를 확인하세요.')
+        rows = data.get('output2')
+        if rows is None:
+            rows = []
+        if isinstance(rows, dict):
+            rows = [rows]
+        if not isinstance(rows, list):
+            raise BrokerError('투자자 매매동향(일별) 응답 형식이 달라 읽지 않았습니다.')
+        found = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            when = str(row.get('stck_bsop_date', '')).strip()
+            if not re.fullmatch(r'[0-9]{8}', when):
+                continue
+            got = {'date': when}
+            for name, key in self.INVESTORS + (('종가', 'stck_clpr'),):
+                try:
+                    got[name] = amount(row.get(key))
+                except BrokerError:
+                    got[name] = None
+            found.append(got)
+        found.sort(key=lambda r: r['date'])
+        return found
+
     def balance(self):
         self.authorize()
         rows, seen = [], set()

@@ -1,0 +1,72 @@
+name: Investor flow history
+# 개인·외국인·기관·투신·연기금·사모의 날짜별 순매수를 2017년까지 거슬러 모읍니다.
+# 스승님 조건(외국인·투신이 사고 개인이 판다) 검증용입니다. 조회 전용입니다.
+# 종목 묶음마다 커밋하므로, 제한 시간에 걸려도 다시 돌리면 받은 데서 이어 갑니다.
+on:
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (쉼표 구분, 비우면 study/flow_universe.json 전체)'
+        required: false
+        default: ''
+      batch:
+        description: '한 묶음에 몇 종목씩 받고 커밋할지'
+        required: false
+        default: '20'
+permissions:
+  contents: write
+concurrency:
+  # 증권사 토큰을 받는 다른 작업과 같은 줄에 섭니다.
+  group: kis-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python -m unittest tests.test_investor_history -v
+      - name: Collect in batches, saving each batch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python - <<'PY' > /tmp/batches.txt
+          import json, os, re
+          from pathlib import Path
+          picked = [c.strip() for c in os.getenv("INVESTOR_CODES", "").split(",") if c.strip()]
+          if not picked:
+              picked = json.loads(Path("study/flow_universe.json").read_text(encoding="utf-8"))["codes"]
+          picked = [c for c in picked if re.fullmatch(r"[0-9]{6}", c)]
+          # 처음까지 받아 둔 종목은 뒤로 돌립니다.
+          def done(code):
+              try:
+                  return json.loads(Path(f"investor-data/{code}.json").read_text(encoding="utf-8")).get("처음까지")
+              except (OSError, ValueError):
+                  return False
+          picked = [c for c in picked if not done(c)] + [c for c in picked if done(c)]
+          size = int(os.getenv("INVESTOR_BATCH", "20"))
+          for k in range(0, len(picked), size):
+              print(",".join(picked[k:k + size]))
+          PY
+          while read -r batch; do
+            [ -z "$batch" ] && continue
+            INVESTOR_CODES="$batch" python collect_investor_history.py || true
+            git add -A investor-data
+            if git diff --cached --quiet; then
+              echo '이 묶음에서 바뀐 것이 없습니다.'
+            else
+              git commit -q -m 'Collect investor flow history'
+              git pull -q --rebase origin main && git push -q
+            fi
+          done < /tmp/batches.txt
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          INVESTOR_CODES: ${{ inputs.codes || '' }}
+          INVESTOR_BATCH: ${{ inputs.batch || '20' }}
