@@ -1,0 +1,41 @@
+name: A group
+# 일봉 수집이 끝나면 오늘의 A그룹(연구 89회차 최종 조건)을 셉니다.
+# 앱은 study/a_group.json을 읽어 '오늘의 A그룹'과 관심종목 A그룹에 씁니다.
+# Signal study와 따로 둔 것은, 그쪽이 한 시간 제한에 걸려 멈추는 날에도
+# A그룹은 제때 나와야 하기 때문입니다.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Daily price history"]
+    types: [completed]
+permissions:
+  contents: write
+concurrency:
+  group: a-group
+  cancel-in-progress: false
+jobs:
+  pick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: A그룹 셈 테스트
+        run: python -m unittest tests.test_final_group -v
+      - run: python final_group.py
+      - name: Save only when the list changed
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add study/a_group.json
+          if git diff --cached --quiet; then
+            echo '바뀐 것이 없어 커밋하지 않습니다.'
+          else
+            git commit -m 'Refresh the A group'
+            git pull --rebase origin main
+            git push
+          fi

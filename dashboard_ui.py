@@ -363,7 +363,7 @@ def section(label: str, note: str = "") -> str:
 
 
 
-GROUP_TITLES = {"A": ("A그룹 · 투자적기", "종가가 EMA 5·20·40·60 모두 위", "a"),
+GROUP_TITLES = {"A": ("A그룹 · 매수 후보", "최종 조건(기본 규칙 또는 정배열) 충족", "a"),
                 "B": ("B그룹 · 투자보류", "EMA 20·40·60 위 · 단기선만 미달", "b"),
                 "C": ("C그룹 · 아직보류", "중기선 아래 · 충족 2개 이하 포함", "c")}
 
@@ -863,9 +863,37 @@ def _settled_cards(book: dict, price: float | None) -> str:
     return card_growth, card_margin, card_fair
 
 
-RULE_TEXT = ("일봉 종가가 EMA 5·20·40·60 각각의 위에 있는지 네 가지를 셉니다 · "
-             "넷 다 충족 A · 20·40·60만 충족 B · 그 밖 C · "
+RULE_TEXT = ("A는 연구 89회차의 최종 조건(기본 규칙 또는 정배열 갈래)을 오늘 채운 종목 · "
+             "B는 종가가 EMA 20·40·60 위이지만 A가 아닌 종목 · 그 밖 C · "
              "같은 그룹 안에서는 영업이익이 좋은 순서 · 매수·매도 신호가 아닙니다")
+
+
+def a_group_panel(found: dict | None) -> str:
+    """오늘의 A그룹(507종목 전체에서 최종 조건을 채운 종목)을 그립니다."""
+    if not found or not found.get("date"):
+        return ('<div class="pxb"><div class="pxb-note">오늘의 A그룹 계산 결과가 아직 없습니다. '
+                'GitHub Actions의 \'A group\'이 일봉 수집 뒤에 만듭니다.</div></div>')
+    picks, near = found.get("picks") or [], found.get("near") or []
+    head = (f'종가 기준일 {_e(as_day(found["date"]))} · 시장 폭 {_e(found.get("breadth"))}% '
+            f'(정배열 갈래는 50% 이상일 때만 삼) · 최대 {_e(found.get("slots", 5))}종목 · '
+            f'하루 2종목까지 · 기울기 가파른 순')
+    body = f'<div class="pxb-note">{head}</div>'
+    if picks:
+        items = "".join(
+            f'<li><b>{_e(one["name"])}</b> ({_e(one["code"])}) · {_e("·".join(one.get("갈래") or []))} · '
+            f'시총 {_e(one.get("시총순위"))}등 · 기울기 {_e(one.get("추세 기울기"))} · '
+            f'60일 {_e(one.get("60일 전 대비"))}% · 팔기: {_e(one.get("팔기"))}</li>'
+            for one in picks)
+        body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
+    else:
+        body += ('<div class="pxb-note" style="margin-top:6px"><b>오늘은 최종 조건을 채운 종목이 '
+                 '없습니다.</b> 조건이 맞지 않는 날은 사지 않고 쉬는 것이 규칙입니다.</div>')
+    if near:
+        names = ", ".join(f'{_e(one["name"])}({_e(one["code"])})' for one in near)
+        body += (f'<div class="pxb-note" style="margin-top:6px">시장 폭만 모자란 정배열 종목: {names}'
+                 f' · {_e(near[0].get("모자란 것", ""))}</div>')
+    return f'<div class="pxb">{body}</div>'
+
 
 
 def close_frame() -> str:
