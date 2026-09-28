@@ -1,0 +1,37 @@
+name: Fresh tab check
+# 종목 탭 네 개(어떤 기업인가요? · 실적은 어떤가요? · 주가 흐름 · 가격과 확인 사항)가
+# 진짜 자료로 채워지는지 손으로 돌려 확인합니다. 조회 전용입니다.
+on:
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (빈칸으로 구분)'
+        required: false
+        default: '005930 000660 247540'
+permissions:
+  contents: read
+concurrency:
+  # 증권사 토큰을 받는 다른 작업과 겹치지 않게 같은 줄에 섭니다.
+  group: kis-collect
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - name: Draw the four tabs with live data
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          CODES: ${{ github.event.inputs.codes }}
+        # 입력은 환경 변수로만 넘기고, 스크립트가 숫자 6자리만 받습니다.
+        run: python check_fresh_tabs.py $CODES
