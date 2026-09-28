@@ -27,7 +27,7 @@ AMBER = "#B8730A"  # 영업이익선
 INK = "#2E2822"
 GOLD = "#B08343"
 # 그룹은 색만으로 뜻을 전하지 않도록 이름·기호를 항상 함께 답니다.
-STATUS = {"A": "#0CA30C", "B": "#FAB219", "C": "#7B7465"}
+STATUS = {"A": "#0CA30C", "B": "#FAB219"}
 SAMPLE = "샘플"
 
 # (꽃잎 수, 꽃잎 색, 꽃술 색)
@@ -74,7 +74,6 @@ _CSS = """
   border:1px solid #EDE3D2;background:linear-gradient(170deg,#FFFDF8,#FBF6EC);
   box-shadow:0 10px 26px rgba(90,72,44,.06);animation:pxbRise .5s ease both}
 .pxb-slot.a{border-color:#BFD8C4;background:linear-gradient(170deg,#FBFEFB,#F1F7F0)}
-.pxb-slot.c{border-color:#E2D6BD;background:linear-gradient(170deg,#FFFDF6,#F8F3E6)}
 .pxb-slot-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
 .pxb-slot-h b{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;color:#2E2822}
 .pxb-dot{width:9px;height:9px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.7)}
@@ -895,8 +894,7 @@ EMA_ONLY = """<div class="pxb"><div class="pxb-note" style="line-height:1.75;mar
 GROUP_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
 <b>A그룹</b> · 오늘 위 조건을 모두 채운 종목<br>
 <b>B그룹</b> · 두 방식 가운데 가까운 쪽에서 조건이 1~2개 모자란 종목 (무엇이 모자란지 함께 적음)<br>
-조건이 3개 이상 모자란 종목은 싣지 않습니다<br>
-매수·매도 신호가 아닙니다
+조건이 3개 이상 모자란 종목은 싣지 않습니다
 </div></div>"""
 
 
@@ -916,18 +914,7 @@ def a_group_panel(found: dict | None) -> str:
             f'60일 {_e(one.get("60일 전 대비"))}% · 팔기: {_e(one.get("팔기"))}</li>'
             for one in picks)
         body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
-    else:
-        body += ('<div class="pxb-note" style="margin-top:6px"><b>오늘은 A그룹 종목이 없습니다.</b><br>'
-                 '조건이 맞지 않는 날은 사지 않고 쉬는 것이 규칙입니다.</div>')
-    close = found.get("b_group") or []
-    if close:
-        shown = close[:15]
-        items = "".join(f'<li><b>{_e(one["name"])}</b> ({_e(one["code"])}) · {_e(one.get("코멘트", ""))}</li>'
-                        for one in shown)
-        more = f' · 외 {len(close) - len(shown)}종목' if len(close) > len(shown) else ''
-        body += (f'<div class="pxb-note" style="margin-top:8px"><b>B그룹 · 조건 1~2개 미달 '
-                 f'{len(close)}종목</b>{more}<br>적게 모자란 순서, 같으면 180일선이 가파른 순서</div>'
-                 f'<ol class="pxb-note" style="margin:4px 0 0 18px">{items}</ol>')
+    # 오늘 A가 없을 때의 안내와 B 목록은 싣지 않습니다(사용자 요청). B는 아래 관심종목 판에서 봅니다.
     return f'<div class="pxb">{body}</div>'
 
 

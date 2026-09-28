@@ -1,5 +1,6 @@
 import hashlib
 import json
+import re
 from datetime import date
 
 import pandas as pd
@@ -40,6 +41,189 @@ def broker_targets(code):
         return broker_kis.market().opinions(code, days=365)
     except broker_kis.BrokerError:
         return None
+
+
+# 아래 네 탭(어떤 기업인가요? · 실적은 어떤가요? · 주가 흐름 · 가격과 확인 사항)은 누를 때
+# 그 종목의 최신 자료를 받아 옵니다. 누른 탭 것만 받고, 같은 종목을 다시 누르면 잠시 모아 둔
+# 것을 씁니다. 공시·결산은 하루에 몇 번 바뀌지 않아 30분, 주가·수급은 5분 둡니다.
+FRESH_FAILED = '최신 자료를 받지 못했습니다. 잠시 뒤 탭을 다시 눌러 보세요. 아래는 저장된 조사 결과입니다.'
+
+
+def _is_code(code):
+    return bool(re.fullmatch(r'[0-9]{6}', str(code or '')))
+
+
+@st.cache_resource(show_spinner=False)
+def _official():
+    """DART 기업 목록은 크므로 한 번 받은 것을 계속 씁니다."""
+    from providers import Official
+    return Official()
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def _fresh_report(code):
+    return _official().automatic(code)
+
+
+def fresh_report(code):
+    """최신 공시·결산. (자료, 실패 안내) 둘 중 하나만 채워 돌려줍니다."""
+    from providers import DataError
+    try:
+        with st.spinner('최신 공시·실적을 받는 중'):
+            return _fresh_report(code), None
+    except DataError as error:
+        # 우리가 만든 안내문만 담깁니다. 응답 본문은 싣지 않습니다.
+        return None, str(error)[:80]
+    except Exception:
+        return None, FRESH_FAILED
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def fresh_closes(code):
+    """최근 약 1년 일봉 종가. 증권사 수정주가를 먼저 쓰고, 막히면 공공데이터 시세를 씁니다."""
+    from datetime import timedelta
+    from urllib.parse import unquote
+    import os
+    today = date.today()
+    try:
+        rows = broker_kis.market().history(code, days=400)
+        if rows:
+            return rows, '증권사 수정주가'
+    except broker_kis.BrokerError:
+        pass
+    key = unquote(os.getenv('DATA_GO_KR_SERVICE_KEY', '').strip())
+    if not key:
+        return [], None
+    try:
+        return market.daily_closes(code, key, span_days=400), '공공데이터포털 시세(수정주가 아님)'
+    except Exception:
+        return [], None
+
+
+@st.cache_data(ttl=300, show_spinner=False)
+def fresh_flows(code):
+    """최근 며칠 외국인·기관·개인 순매수(주)."""
+    try:
+        return broker_kis.market().flows(code)
+    except broker_kis.BrokerError:
+        return []
+
+
+def years_table(report):
+    """결산 3개년 매출·영업이익(억원)과 전년 대비 변화."""
+    table, prev = [], None
+    for year in report.get('years') or []:
+        rev, pro = year.get('revenue'), year.get('profit')
+        table.append({'결산연도': str(year.get('year', '')),
+                      '매출(억원)': f'{rev:,.0f}' if rev is not None else '—',
+                      '매출 변화': growth(rev, prev['revenue']) if prev and rev is not None and prev.get('revenue') is not None else '—',
+                      '영업이익(억원)': f'{pro:,.0f}' if pro is not None else '—',
+                      '영업이익 변화': growth(pro, prev['profit']) if prev and pro is not None and prev.get('profit') is not None else '—'})
+        prev = year
+    return table
+
+
+def flow_sums(rows, days=5):
+    """최근 days거래일 순매수 합계. 값이 빠진 날은 건너뜁니다."""
+    recent = rows[-days:]
+    sums = {}
+    for who in ('외국인', '기관', '개인'):
+        values = [r.get(who) for r in recent if r.get(who) is not None]
+        sums[who] = sum(values) if values else None
+    return sums, (recent[0]['date'] if recent else None), (recent[-1]['date'] if recent else None)
+
+
+def _day(text):
+    text = str(text or '')
+    return f'{text[:4]}-{text[4:6]}-{text[6:8]}' if len(text) == 8 and text.isdigit() else text
+
+
+def latest_company(code):
+    report, problem = fresh_report(code)
+    with st.container(border=True):
+        st.markdown('**최신 공시 기준 · 방금 받아 온 자료**')
+        if problem:
+            st.caption(problem); return
+        company = report.get('company') or {}
+        facts = [f"설립 {_day(company['est_dt'])}" if company.get('est_dt') else '',
+                 f"결산월 {company['acc_mt']}월" if company.get('acc_mt') else '',
+                 f"업종코드 {company['induty_code']}" if company.get('induty_code') else '']
+        st.caption(' · '.join(f for f in facts if f) + f" · 받은 날 {report.get('fetched', '')}")
+        excerpt = (report.get('business_excerpt') or '').strip()
+        if excerpt:
+            st.write(excerpt[:600] + ('…' if len(excerpt) > 600 else ''))
+            if len(excerpt) > 600:
+                with st.expander('사업보고서 원문 더 보기'):
+                    st.write(excerpt[:6000])
+        if company.get('hm_url'):
+            url = company['hm_url'] if company['hm_url'].startswith('http') else 'https://' + company['hm_url']
+            st.link_button('회사 홈페이지', url)
+        for d in (report.get('disclosures') or [])[:5]:
+            st.markdown(f"- [{d['title'].strip()}]({d['url']}) · {_day(d['date'])}")
+
+
+def latest_results(code):
+    report, problem = fresh_report(code)
+    with st.container(border=True):
+        st.markdown('**최신 결산 실적 · 방금 받아 온 자료**')
+        if problem:
+            st.caption(problem); return
+        st.caption(f"DART 사업보고서 · {'연결' if report.get('basis') == 'CFS' else '별도'} 기준 · 받은 날 {report.get('fetched', '')}")
+        st.dataframe(years_table(report), hide_index=True, width='stretch')
+        info = brief(report)
+        if info.get('margin') is not None:
+            st.caption(f"최근 결산 영업이익률 {info['margin']:.1f}% · {info['growth']}")
+
+
+def latest_prices(code):
+    with st.container(border=True):
+        st.markdown('**최신 주가 흐름 · 방금 받아 온 자료**')
+        with st.spinner('최신 주가를 받는 중'):
+            rows, source = fresh_closes(code)
+            flows = fresh_flows(code)
+        if rows:
+            chart = pd.DataFrame(rows, columns=['date', '종가'])
+            chart['date'] = pd.to_datetime(chart['date'])
+            chart = chart.set_index('date')
+            chart['20일 평균'] = chart['종가'].rolling(20).mean()
+            chart['60일 평균'] = chart['종가'].rolling(60).mean()
+            st.caption(f"{source} · 마지막 거래일 {_day(rows[-1][0])} · 종가 {rows[-1][1]:,.0f}원")
+            st.line_chart(chart.tail(250))
+        else:
+            st.caption(FRESH_FAILED)
+        if flows:
+            sums, begin, end = flow_sums(flows)
+            st.caption(f'최근 순매수 합계 · {_day(begin)} ~ {_day(end)} · 단위 주')
+            cols = st.columns(3)
+            for col, who in zip(cols, ('외국인', '기관', '개인')):
+                col.metric(who, '—' if sums[who] is None else f'{sums[who]:+,.0f}')
+
+
+def latest_price_check(code):
+    with st.container(border=True):
+        st.markdown('**지금 가격 · 방금 받아 온 자료**')
+        quote = live_quote(code)
+        if quote:
+            rate = f" ({quote['rate']:+.2f}%)" if quote.get('rate') is not None else ''
+            st.metric('현재가', f"{quote['price']:,.0f}원", f"{quote['change']:+,.0f}원{rate}")
+            st.caption(f"받은 시각 {quote['at']} · 장중에는 실시간, 장 마감 뒤에는 그날 종가")
+        report, problem = fresh_report(code)
+        if report:
+            fair = brief(report).get('fair')
+            if fair:
+                a, b, c = st.columns(3)
+                for col, key, label in [(a, 'low', '낮은 참고가'), (b, 'base', '기본 참고가'), (c, 'high', '높은 참고가')]:
+                    col.metric(label, f'{fair[key]:,.0f}원')
+                st.caption('과거 결산 발표 뒤의 시가총액 ÷ 영업이익 배수를 최근 결산 이익에 적용한 참고 가격입니다.')
+            else:
+                st.caption('참고 가격 보류 · ' + brief(report)['fair_reason'])
+        elif problem and not quote:
+            st.caption(problem)
+        targets = broker_targets(code) or []
+        if targets:
+            st.dataframe([{'날짜': _day(t['date']), '증권사': t['member'], '의견': t['opinion'],
+                           '목표가': f"{t['target']:,.0f}원"} for t in targets[:5]],
+                         hide_index=True, width='stretch')
 
 
 def link_codes(store, state, known):
@@ -447,23 +631,32 @@ def render_research(store, state, sample_mode):
     st.markdown('### 기업 하나를 깊게 보기')
     selected = st.selectbox('자세히 볼 종목', list(details), format_func=lambda k:stocks[k]['name'], key='research_selected')
     stock, r, trend, frame = details[selected]
+    code = r.get('code') or selected
     if not r:
         st.info('이 종목의 채팅 조사 결과가 아직 없습니다. 위 요청문을 대화창에 보내면 조사 결과를 채울 수 있습니다.')
         if stock.get('report'):
             st.write('기존 공식 결산 분석: ' + brief(stock['report'])['summary'])
-        return
-    st.subheader(stock['name'])
-    st.caption('조사일 ' + r['as_of'] + ' · 각 표의 자료 기간은 아래에 별도 표시합니다. 실시간 분석이 아닙니다.')
-    grade = next((g for g in (graded_stocks([selected], max(research, default='')) or [])
-                  if g['code'] == selected), None)
-    detail(r, grade)
-    summary = r.get('summary')
-    if summary:
-        with st.container(border=True):
-            st.markdown('**핵심 요약**')
-            st.write(summary['text'])
-    tabs = st.tabs(['어떤 기업인가요?', '실적은 어떤가요?', '주가 흐름', '가격과 확인 사항'])
+        if not _is_code(code):
+            return
+        st.subheader(stock['name'])
+    else:
+        st.subheader(stock['name'])
+        st.caption('조사일 ' + r['as_of'] + ' · 각 표의 자료 기간은 아래에 별도 표시합니다. 탭을 누르면 그 탭의 최신 자료를 받아 위에 보여 줍니다.')
+        grade = next((g for g in (graded_stocks([selected], max(research, default='')) or [])
+                      if g['code'] == selected), None)
+        detail(r, grade)
+        summary = r.get('summary')
+        if summary:
+            with st.container(border=True):
+                st.markdown('**핵심 요약**')
+                st.write(summary['text'])
+    # on_change='rerun'이면 누른 탭만 .open이 참입니다. 그 탭의 최신 자료만 받습니다.
+    tabs = st.tabs(['어떤 기업인가요?', '실적은 어떤가요?', '주가 흐름', '가격과 확인 사항'],
+                   key='research_tab', on_change='rerun')
+    fresh = _is_code(code)
     with tabs[0]:
+        if fresh and tabs[0].open:
+            latest_company(code)
         for label, key in [('주력사업과 기업 특징','business')]:
             st.subheader(label)
             entry = r.get(key)
@@ -471,6 +664,8 @@ def render_research(store, state, sample_mode):
                 st.write(entry['text']); st.link_button('설명의 원문 근거', entry['source'], key='research_'+key)
             else: st.info('조사 필요')
     with tabs[1]:
+        if fresh and tabs[1].open:
+            latest_results(code)
         f = r.get('financial')
         if f:
             st.caption(f"{period_label(f['period'])} / 전년 {period_label(f['prior_period'])}"
@@ -489,6 +684,8 @@ def render_research(store, state, sample_mode):
             st.dataframe(df.sort_values('순위')[['순위','name','operating_profit','source']].rename(columns={'name':'기업','operating_profit':'영업이익','source':'출처'}), hide_index=True)
         else: st.info('같은 기간·회계기준의 경쟁사 실적 조사 필요')
     with tabs[2]:
+        if fresh and tabs[2].open:
+            latest_prices(code)
         flow = r.get('flow')
         if flow:
             st.caption(flow['start'] + ' ~ ' + flow['end'] + ' · 순매수 ' + flow['unit'])
@@ -502,6 +699,8 @@ def render_research(store, state, sample_mode):
             st.line_chart(frame.set_index('date')['close'])
             st.link_button('가격 자료 근거', r['prices']['source'])
     with tabs[3]:
+        if fresh and tabs[3].open:
+            latest_price_check(code)
         v = r.get('valuation')
         if v:
             a,b,c=st.columns(3)

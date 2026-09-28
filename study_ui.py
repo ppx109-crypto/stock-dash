@@ -7,6 +7,7 @@ import streamlit as st
 from dashboard_ui import GROUP_TITLES, close_frame, frame, header, section
 
 RESULT = Path("study") / "result.json"
+HIDDEN = "C"    # C그룹은 화면에서 뺐습니다(사용자 요청). 조사 파일에는 남아 있습니다.
 CAVEAT = ("수수료·세금·체결 미끄러짐·배당을 넣지 않은 값입니다. 실제 손익이 아니라 "
           "신호가 어느 쪽으로 얼마나 기울었는지 보는 눈금입니다. 또 오늘 A그룹이면 "
           "내일도 대개 A그룹이라 관측이 서로 겹칩니다. 그래서 건수는 서로 다른 "
@@ -46,6 +47,8 @@ def render_study():
     st.subheader("그룹별 성적")
     rows = []
     for group, spans in found["groups"].items():
+        if group == HIDDEN:
+            continue
         for span, tal in spans.items():
             if not tal:
                 continue
@@ -84,6 +87,7 @@ def render_study():
                    "두 값이 크게 다르면 차이의 대부분은 그룹에서 온 것입니다. "
                    "종목수를 꼭 함께 보십시오. 천 건이라도 두세 종목에서 나온 숫자라면 "
                    "그 종목들의 사정일 뿐입니다.")
+        best = {k: v for k, v in best.items() if not _hidden(k)}
         picked = st.selectbox("그룹과 보유 기간", list(best), key="px_best_pick")
         st.dataframe([{"조건": r["조건"], "건수": r["건수"],
                        "종목수": r.get("종목수", 0),
@@ -101,7 +105,7 @@ def render_study():
         st.caption(f'A그룹 관측 {found["a_total"]:,}건 가운데 실적이 이미 공시돼 있던 것은 '
                    f'{money:,}건입니다. 나머지 구간은 그룹 판정만 보고 센 것입니다.')
 
-    targets = found.get("target_best") or {}
+    targets = {k: v for k, v in (found.get("target_best") or {}).items() if not _hidden(k)}
     if targets:
         st.subheader("증권사 목표가가 붙은 구간만")
         st.caption(f'{found.get("target_since", "")}부터의 {found.get("target_rows", 0):,}건입니다. '
@@ -149,7 +153,7 @@ def render_study():
                      hide_index=True, width="stretch", height=_fits(len(ahead[which])))
 
     st.subheader("오늘 기준 종목")
-    today = found.get("today") or []
+    today = [r for r in found.get("today") or [] if r.get("group") != HIDDEN]
     st.dataframe([{"종목": r["name"], "그룹": r.get("group") or "판정 보류",
                    "충족": f'{r.get("met", 0)}/4',
                    "매출성장": _pct(r.get("매출성장")),
@@ -159,6 +163,11 @@ def render_study():
                  hide_index=True, width="stretch", height=_fits(len(today), cap=24))
 
     st.markdown(frame(section("이 숫자를 읽는 법", CAVEAT)), unsafe_allow_html=True)
+
+
+def _hidden(key):
+    """'C·20일' 같은 C그룹 칸이면 참."""
+    return key.split("·")[0] == HIDDEN
 
 
 def _fits(lines, cap=40):

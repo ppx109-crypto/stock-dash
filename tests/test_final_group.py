@@ -109,14 +109,13 @@ class Lines(unittest.TestCase):
 @unittest.skipIf(a_group_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class Panel(unittest.TestCase):
 
-    def test_empty_day_says_so_and_lists_b(self):
+    def test_an_empty_day_shows_only_the_basis(self):
         html = a_group_panel({"date": "20260923", "breadth": 41.0, "picks": [],
                               "b_group": [{"name": "가", "code": "000001",
                                            "코멘트": "정배열 추세까지 1개 모자람: 시장 폭 41%"}]})
-        self.assertIn("A그룹 종목이 없습니다", html)
         self.assertIn("2026-09-23", html)
-        self.assertIn("B그룹", html)
-        self.assertIn("시장 폭 41%", html)
+        self.assertNotIn("B그룹", html, "B 목록은 이 판에 싣지 않기로 했습니다")
+        self.assertNotIn("A그룹 종목이 없습니다", html)
 
     def test_listed_stocks_are_named(self):
         html = a_group_panel({"date": "20260923", "breadth": 60.0,
