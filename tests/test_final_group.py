@@ -1,39 +1,81 @@
-"""A그룹(최종 조건)이 시킨 대로 나뉘고 그려지는지 봅니다."""
+"""A·B그룹(최종 조건)이 시킨 대로 나뉘고 그려지는지 봅니다."""
 import tempfile
 import unittest
 from pathlib import Path
 
+import caps
 import final_group
+import rule
 
 try:        # 화면 쪽은 streamlit이 있어야 불러집니다. A그룹을 세는 CI에는 없습니다.
-    from dashboard_ui import a_group_panel
+    from dashboard_ui import a_group_panel, group_buckets
 except ModuleNotFoundError:
-    a_group_panel = None
+    a_group_panel = group_buckets = None
 
 
 class Regroup(unittest.TestCase):
-    """관심종목 그룹판: A는 오늘 목록으로, 예전 A는 B로, 나머지는 그대로."""
+    """관심종목 그룹판: A는 오늘 목록, B는 1~2개 미달(코멘트), 그 밖은 싣지 않음."""
 
-    found = {"picks": [{"code": "000001", "갈래": ["정배열"]}]}
+    found = {"date": "20260923",
+             "picks": [{"code": "000001", "갈래": ["정배열"]}],
+             "b_group": [{"code": "000002", "모자란 수": 1,
+                          "코멘트": "기본 규칙까지 1개 모자람 · 60일 상승 +11.10%"}],
+             "counted": ["000001", "000002", "000003"]}
 
     def test_a_listed_stock_becomes_a(self):
         got = final_group.regroup([{"code": "000001", "group": "C"}], self.found)
         self.assertEqual(got[0]["group"], "A")
-        self.assertIn("정배열", got[0]["reason"])
+        self.assertIn("정배열", got[0]["comment"])
 
-    def test_an_old_ema_a_that_is_not_listed_drops_to_b(self):
+    def test_a_near_stock_becomes_b_with_its_reason(self):
         got = final_group.regroup([{"code": "000002", "group": "A"}], self.found)
         self.assertEqual(got[0]["group"], "B")
+        self.assertIn("60일 상승", got[0]["comment"])
+        self.assertEqual(got[0]["shortfall"], 1)
 
-    def test_b_and_c_stay_and_ungraded_is_untouched(self):
-        rows = [{"code": "000003", "group": "B"}, {"code": "000004", "group": "C"},
-                {"code": "000005", "group": None}]
-        got = final_group.regroup(rows, self.found)
-        self.assertEqual([r["group"] for r in got], ["B", "C", None])
+    def test_a_counted_stock_that_misses_more_is_left_out(self):
+        got = final_group.regroup([{"code": "000003", "group": "B"}], self.found)
+        self.assertEqual(got[0]["group"], "밖")
 
-    def test_no_list_means_no_a(self):
-        got = final_group.regroup([{"code": "000001", "group": "A"}], None)
-        self.assertEqual(got[0]["group"], "B")
+    def test_a_stock_outside_the_study_is_pending(self):
+        got = final_group.regroup([{"code": "999999", "group": "A"}], self.found)
+        self.assertIsNone(got[0]["group"])
+        self.assertIn("507종목", got[0]["note"])
+
+
+class Shortfalls(unittest.TestCase):
+    """갈래마다 못 채운 조건을 읽을 말로 돌려줍니다."""
+
+    def row(self, **kw):
+        base = {caps.RANK: 10, "변동성": 1.5, "추세 기울기": 2.0, "60일 전 대비": 30.0}
+        return {**base, **kw}
+
+    form = {"정배열": True, "간격": 30.0}
+
+    def test_everything_met_is_empty(self):
+        got = final_group.shortfalls(self.row(), self.form, 60.0, 2.0)
+        self.assertEqual(got, {"기본 규칙": [], "정배열": []})
+
+    def test_each_missing_rule_condition_is_named(self):
+        got = final_group.shortfalls(self.row(**{"변동성": 3.7, "60일 전 대비": 11.1}),
+                                     self.form, 60.0, 2.0)
+        self.assertEqual(len(got["기본 규칙"]), 2)
+        self.assertIn("흔들림", got["기본 규칙"][0])
+        self.assertIn("60일 상승", got["기본 규칙"][1])
+        self.assertEqual(got["정배열"], [])
+
+    def test_the_rank_gate_counts_in_both_doors(self):
+        got = final_group.shortfalls(self.row(**{caps.RANK: 150}), self.form, 60.0, 2.0)
+        self.assertIn("150등", got["기본 규칙"][0])
+        self.assertIn("150등", got["정배열"][0])
+
+    def test_a_thin_market_holds_the_lines_door(self):
+        got = final_group.shortfalls(self.row(), self.form, 41.0, 2.0)
+        self.assertEqual(got["정배열"], ["시장 폭 41% (50% 이상이어야 함)"])
+
+    def test_the_slope_threshold_is_the_rules(self):
+        got = final_group.shortfalls(self.row(**{"추세 기울기": rule.SLOPE - 0.01}), self.form, 60.0, 2.0)
+        self.assertIn("180일선 기울기", got["기본 규칙"][0])
 
 
 class Files(unittest.TestCase):
@@ -67,12 +109,14 @@ class Lines(unittest.TestCase):
 @unittest.skipIf(a_group_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class Panel(unittest.TestCase):
 
-    def test_empty_day_says_so(self):
+    def test_empty_day_says_so_and_lists_b(self):
         html = a_group_panel({"date": "20260923", "breadth": 41.0, "picks": [],
-                              "near": [{"name": "가", "code": "000001", "모자란 것": "시장 폭 41%"}]})
+                              "b_group": [{"name": "가", "code": "000001",
+                                           "코멘트": "정배열까지 1개 모자람 · 시장 폭 41%"}]})
         self.assertIn("채운 종목이", html)
         self.assertIn("2026-09-23", html)
-        self.assertIn("시장 폭만 모자란", html)
+        self.assertIn("B그룹", html)
+        self.assertIn("시장 폭 41%", html)
 
     def test_listed_stocks_are_named(self):
         html = a_group_panel({"date": "20260923", "breadth": 60.0,
@@ -85,6 +129,11 @@ class Panel(unittest.TestCase):
     def test_missing_result_is_explained(self):
         self.assertIn("아직 없습니다", a_group_panel(None))
 
+    def test_the_board_has_no_c_and_leaves_out_the_rest(self):
+        buckets, pending = group_buckets([{"code": "1", "group": "A"}, {"code": "2", "group": "B"},
+                                          {"code": "3", "group": "밖"}, {"code": "4", "group": None}])
+        self.assertEqual(set(buckets), {"A", "B"})
+        self.assertEqual([r["code"] for r in pending], ["4"])
 
 
 if __name__ == "__main__":

@@ -364,8 +364,7 @@ def section(label: str, note: str = "") -> str:
 
 
 GROUP_TITLES = {"A": ("A그룹 · 매수 후보", "최종 조건(기본 규칙 또는 정배열) 충족", "a"),
-                "B": ("B그룹 · 투자보류", "EMA 20·40·60 위 · 단기선만 미달", "b"),
-                "C": ("C그룹 · 아직보류", "중기선 아래 · 충족 2개 이하 포함", "c")}
+                "B": ("B그룹 · 조건 1~2개 미달", "가까운 갈래에서 무엇이 모자란지 함께 적음", "b")}
 
 
 EARNINGS_ORDER = {"양호": 0, "보통": 1, "부진": 2, "미확인": 3}
@@ -379,7 +378,7 @@ def rank_rows(rows: list) -> list:
     """
     def key(row):
         money = row.get("earnings") or {}
-        return (-row.get("met", 0), EARNINGS_ORDER.get(money.get("grade"), 3),
+        return (row.get("shortfall", 0), -row.get("met", 0), EARNINGS_ORDER.get(money.get("grade"), 3),
                 -(money.get("met") or 0), row.get("name", ""))
     return sorted(rows, key=key)
 
@@ -389,6 +388,9 @@ SHOWN_PER_GROUP = 8      # 칸 안에 바로 보일 종목 수. 나머지는 '�
 
 def chip_label(row: dict) -> str:
     """그룹판에 적을 종목 한 줄. 이름 뒤에 판단 근거를 짧게 답니다."""
+    if row.get("comment"):
+        # 최종 조건으로 나눈 판에서는 무엇을 채웠고 무엇이 모자란지가 판단 근거입니다.
+        return f'{row["name"]}  ·  {row["comment"]}'
     money = (row.get("earnings") or {}).get("grade")
     note = f'EMA {row.get("met", 0)}/{row.get("total", 4)}'
     # 실적이 빠진 자리를 비워 두면 좋은 실적처럼 읽힙니다. 없다고 적되, 아직 못
@@ -411,6 +413,8 @@ def group_buckets(graded: list) -> tuple[dict, list]:
     for row in graded or []:
         if row.get("group") in buckets:
             buckets[row["group"]].append(row)
+        elif row.get("group") == "밖":
+            continue            # 최종 조건이 3개 이상 모자란 종목은 판에 싣지 않습니다.
         else:
             pending.append(row)
     return {key: rank_rows(rows) for key, rows in buckets.items()}, pending
@@ -442,6 +446,9 @@ def board_basis(graded: list | None, pending: list | None = None) -> str:
         basis += f" · 실적 미수집 {len(graded) - counted - finance}종목"
     if finance:
         basis += f" · 금융업 {finance}종목은 비교 기준이 달라 제외"
+    hidden = sum(1 for row in graded if row.get("group") == "밖")
+    if hidden:
+        basis += f" · 최종 조건이 3개 이상 모자란 {hidden}종목은 싣지 않음"
     note = f'<div class="pxb"><div class="pxb-note">{basis}</div></div>'
     if pending:
         reason = _e(pending[0].get("note") or pending[0].get("reason") or "자료 부족")
@@ -864,8 +871,8 @@ def _settled_cards(book: dict, price: float | None) -> str:
 
 
 RULE_TEXT = ("A는 연구 89회차의 최종 조건(기본 규칙 또는 정배열 갈래)을 오늘 채운 종목 · "
-             "B는 종가가 EMA 20·40·60 위이지만 A가 아닌 종목 · 그 밖 C · "
-             "같은 그룹 안에서는 영업이익이 좋은 순서 · 매수·매도 신호가 아닙니다")
+             "B는 둘 중 가까운 갈래에서 조건이 1~2개 모자란 종목(무엇이 모자란지 적음) · "
+             "3개 이상 모자란 종목은 싣지 않음 · 매수·매도 신호가 아닙니다")
 
 
 def a_group_panel(found: dict | None) -> str:
@@ -873,7 +880,7 @@ def a_group_panel(found: dict | None) -> str:
     if not found or not found.get("date"):
         return ('<div class="pxb"><div class="pxb-note">오늘의 A그룹 계산 결과가 아직 없습니다. '
                 'GitHub Actions의 \'A group\'이 일봉 수집 뒤에 만듭니다.</div></div>')
-    picks, near = found.get("picks") or [], found.get("near") or []
+    picks = found.get("picks") or []
     head = (f'종가 기준일 {_e(as_day(found["date"]))} · 시장 폭 {_e(found.get("breadth"))}% '
             f'(정배열 갈래는 50% 이상일 때만 삼) · 최대 {_e(found.get("slots", 5))}종목 · '
             f'하루 2종목까지 · 기울기 가파른 순')
@@ -888,10 +895,15 @@ def a_group_panel(found: dict | None) -> str:
     else:
         body += ('<div class="pxb-note" style="margin-top:6px"><b>오늘은 최종 조건을 채운 종목이 '
                  '없습니다.</b> 조건이 맞지 않는 날은 사지 않고 쉬는 것이 규칙입니다.</div>')
-    if near:
-        names = ", ".join(f'{_e(one["name"])}({_e(one["code"])})' for one in near)
-        body += (f'<div class="pxb-note" style="margin-top:6px">시장 폭만 모자란 정배열 종목: {names}'
-                 f' · {_e(near[0].get("모자란 것", ""))}</div>')
+    close = found.get("b_group") or []
+    if close:
+        shown = close[:15]
+        items = "".join(f'<li><b>{_e(one["name"])}</b> ({_e(one["code"])}) · {_e(one.get("코멘트", ""))}</li>'
+                        for one in shown)
+        more = f' · 외 {len(close) - len(shown)}종목' if len(close) > len(shown) else ''
+        body += (f'<div class="pxb-note" style="margin-top:8px"><b>B그룹 · 조건 1~2개 미달 '
+                 f'{len(close)}종목</b>{more} (적게 모자란 순, 같으면 기울기 가파른 순)</div>'
+                 f'<ol class="pxb-note" style="margin:4px 0 0 18px">{items}</ol>')
     return f'<div class="pxb">{body}</div>'
 
 

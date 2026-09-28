@@ -27,11 +27,13 @@ jobs:
       - name: A그룹 셈 테스트
         run: python -m unittest tests.test_final_group -v
       - run: python final_group.py
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
       - name: Save only when the list changed
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add study/a_group.json
+          git add study/a_group.json study/names.json 2>/dev/null || git add study/a_group.json
           if git diff --cached --quiet; then
             echo '바뀐 것이 없어 커밋하지 않습니다.'
           else

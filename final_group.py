@@ -69,6 +69,70 @@ def lines_now(closes):
             "50>200": means[50][last] > means[200][last]}
 
 
+NAMES = Path("study") / "names.json"
+CORP_CODES = "https://opendart.fss.or.kr/api/corpCode.xml"
+
+
+def names_for(codes, prices=None):
+    """종목 이름. 일봉 파일 → 조사 자료(public-data) → 저장해 둔 이름표 → DART 순으로 채웁니다.
+
+    일봉 파일 가운데 300여 종목은 이름 칸에 코드가 들어 있습니다. DART 기업 목록은
+    인증키(DART_CRTFC_KEY)가 있을 때만 받고, 받은 이름은 study/names.json에 남겨
+    다음에는 키 없이도 씁니다. 인증키와 응답 본문은 어디에도 적지 않습니다.
+    """
+    import os
+    found = {}
+    for code in codes:
+        name = ((prices or {}).get(code) or {}).get("name")
+        if name and name != code:
+            found[code] = name
+    for code in codes:
+        if code not in found:
+            try:
+                name = json.loads((Path("public-data") / f"{code}.json").read_text(encoding="utf-8")).get("name")
+            except (OSError, ValueError):
+                name = None
+            if name:
+                found[code] = name
+    try:
+        kept = json.loads(NAMES.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        kept = {}
+    for code in codes:
+        if code not in found and kept.get(code):
+            found[code] = kept[code]
+    key = os.getenv("DART_CRTFC_KEY", "").strip()
+    if key and any(code not in found for code in codes):
+        dart = _dart_names(key)
+        for code in codes:
+            if code not in found and dart.get(code):
+                found[code] = dart[code]
+        kept.update({code: found[code] for code in codes if code in found})
+        NAMES.parent.mkdir(exist_ok=True)
+        NAMES.write_text(json.dumps(dict(sorted(kept.items())), ensure_ascii=False, indent=0), encoding="utf-8")
+    return found
+
+
+def _dart_names(key):
+    """DART 기업 목록(corpCode.xml)에서 종목코드→회사명. 실패하면 빈 사전입니다."""
+    import io
+    import urllib.parse
+    import urllib.request
+    import zipfile
+    from xml.etree import ElementTree
+    try:
+        with urllib.request.urlopen(CORP_CODES + "?" + urllib.parse.urlencode({"crtfc_key": key}),
+                                    timeout=60) as reply:
+            raw = reply.read()
+        with zipfile.ZipFile(io.BytesIO(raw)) as box:
+            root = ElementTree.fromstring(box.read(box.namelist()[0]))
+    except Exception:           # 응답 본문에 계정 정보가 섞일 수 있어 그대로 적지 않습니다.
+        print("DART 기업 목록을 받지 못했습니다 · 이름은 코드로 둡니다")
+        return {}
+    return {(one.findtext("stock_code") or "").strip(): (one.findtext("corp_name") or "").strip()
+            for one in root.findall("list") if (one.findtext("stock_code") or "").strip()}
+
+
 def compute(prices=None):
     """오늘(마지막 종가 날) A그룹을 셉니다."""
     prices = prices if prices is not None else study.load_prices()
@@ -98,31 +162,69 @@ def compute(prices=None):
     breadth = (sum(shape[row["code"]]["50>200"] for row in inside) / len(inside) * 100
                if inside else 0.0)
     align_open = breadth >= BREADTH
-    picks, near = [], []
+    names = names_for([row["code"] for row in today], prices)
+    picks, b_group, rest = [], [], 0
     for row in today:
         form = shape.get(row["code"]) or {}
-        by_rule = rule.holds(row)
-        by_lines = (caps.inside(row, rule.TOP) and bool(form.get("정배열"))
-                    and SPREAD[0] <= form.get("간격", -1) < SPREAD[1])
-        doors = (["기본 규칙"] if by_rule else []) + (["정배열"] if by_lines and align_open else [])
-        entry = {"code": row["code"], "name": prices[row["code"]].get("name") or row["code"],
+        entry = {"code": row["code"], "name": names.get(row["code"], row["code"]),
                  "시총순위": row.get(caps.RANK),
                  "추세 기울기": _round(row.get("추세 기울기")),
                  "60일 전 대비": _round(row.get("60일 전 대비")),
                  "변동성": _round(row.get("변동성")),
                  "정배열": form.get("정배열"), "정배열 된 지": form.get("된 지"),
                  "선 간격": _round(form.get("간격")), "종가": row.get("price")}
+        missing = shortfalls(row, form, breadth, rule._calm)
+        doors = [door for door, gaps in missing.items() if not gaps]
         if doors:
             picks.append({**entry, "갈래": doors,
                           "팔기": "종가 +10% 익절 · −5% 손절 · 최대 10거래일" if doors[0] == "기본 규칙"
                           else "정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일"})
-        elif by_lines and not align_open:
-            near.append({**entry, "모자란 것": f"시장 폭 {breadth:.0f}% (50% 이상일 때만 삼)"})
+            continue
+        fewest = min(len(gaps) for gaps in missing.values())
+        if fewest <= 2:
+            doors_near = [door for door, gaps in missing.items() if len(gaps) == fewest]
+            b_group.append({**entry, "가까운 갈래": doors_near, "모자란 수": fewest,
+                            "모자란 것": {door: missing[door] for door in doors_near},
+                            "코멘트": " / ".join(f"{door}까지 {fewest}개 모자람 · " + " · ".join(missing[door])
+                                               for door in doors_near)})
+        else:
+            rest += 1
     picks.sort(key=lambda one: -(one.get("추세 기울기") or -99))
-    near.sort(key=lambda one: -(one.get("추세 기울기") or -99))
+    b_group.sort(key=lambda one: (one["모자란 수"], -(one.get("추세 기울기") or -99)))
     return {"date": day, "breadth": round(breadth, 1), "align_open": align_open,
-            "calm_edge": round(rule._calm, 3), "slots": SLOTS, "picks": picks, "near": near,
-            "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M")}
+            "calm_edge": round(rule._calm, 3), "slots": SLOTS, "picks": picks, "b_group": b_group,
+            "rest": rest, "counted": sorted(row["code"] for row in today), "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M")}
+
+
+def shortfalls(row, form, breadth, calm_edge):
+    """갈래마다 오늘 못 채운 조건을 사람이 읽을 말로 돌려줍니다. 빈 목록이면 채운 것입니다."""
+    place = row.get(caps.RANK)
+    rank_gap = ([] if place is not None and place <= rule.TOP
+                else [f"시총 {place}등 (100등 안이어야 함)" if place else "시총 순위 모름"])
+    vol, slope, sixty = row.get("변동성"), row.get("추세 기울기"), row.get("60일 전 대비")
+    by_rule = list(rank_gap)
+    if vol is None or vol > calm_edge:
+        by_rule.append(f"주가 흔들림 {_text(vol)} (조용함 문턱 {calm_edge:.2f} 이하여야 함)")
+    if slope is None or slope < rule.SLOPE:
+        by_rule.append(f"180일선 기울기 {_text(slope)} ({rule.SLOPE:g} 이상이어야 함)")
+    if sixty is None or sixty < rule.SIXTY:
+        by_rule.append(f"60일 상승 {_text(sixty, '%')} ({rule.SIXTY:g}% 이상이어야 함)")
+    by_lines = list(rank_gap)
+    if not form:
+        by_lines.append("상장 기간이 짧아 정배열을 셀 수 없음")
+    else:
+        if not form.get("정배열"):
+            by_lines.append("단순이동평균 3>15>20>90>150>200 정배열 아님")
+        gap = form.get("간격")
+        if gap is None or not SPREAD[0] <= gap < SPREAD[1]:
+            by_lines.append(f"선 간격 {_text(gap, '%', 0)} ({SPREAD[0]:g}~{SPREAD[1]:g}%여야 함)")
+    if breadth < BREADTH:
+        by_lines.append(f"시장 폭 {breadth:.0f}% ({BREADTH:g}% 이상이어야 함)")
+    return {"기본 규칙": by_rule, "정배열": by_lines}
+
+
+def _text(value, unit="", places=2):
+    return "모름" if value is None else f"{value:.{places}f}{unit}"
 
 
 def _round(value, places=2):
@@ -144,23 +246,29 @@ def load(path=OUT):
 def regroup(graded, found):
     """관심종목 그룹판을 최종 조건으로 다시 나눕니다.
 
-    오늘 A그룹 목록에 있으면 A, 아니면 예전 이평선 판정에서 A였던 것도 B(보류)로,
-    B·C는 그대로 둡니다. 판정하지 못한 종목(그룹 없음)은 건드리지 않습니다.
+    오늘 A그룹 목록에 있으면 A, 조건이 1~2개 모자라면 B(무엇이 모자란지 코멘트),
+    그 밖(3개 이상 모자람)은 '밖'으로 두어 판에 싣지 않습니다. 조사 대상 507종목
+    밖이라 셀 수 없는 종목은 그룹 없이 '판정 보류'로 남깁니다.
     """
-    chosen = {one["code"]: one for one in (found or {}).get("picks", [])}
+    found = found or {}
+    chosen = {one["code"]: one for one in found.get("picks", [])}
+    close = {one["code"]: one for one in found.get("b_group", [])}
+    counted = chosen.keys() | close.keys() | set(found.get("counted", []))
     out = []
     for row in graded or []:
-        group = row.get("group")
-        if group is None:
-            out.append(row)
-        elif row.get("code") in chosen:
-            doors = "·".join(chosen[row["code"]].get("갈래") or [])
-            out.append({**row, "group": "A", "reason": f"매수 후보 · 최종 조건 충족({doors})"})
-        elif group == "A":
-            out.append({**row, "group": "B",
-                        "reason": "투자보류 · 이평선은 모두 위이나 최종 조건 미충족"})
+        code = row.get("code")
+        if code in chosen:
+            doors = "·".join(chosen[code].get("갈래") or [])
+            out.append({**row, "group": "A", "reason": f"매수 후보 · 최종 조건 충족({doors})",
+                        "comment": f"최종 조건 충족 · {doors}"})
+        elif code in close:
+            out.append({**row, "group": "B", "reason": close[code]["코멘트"],
+                        "comment": close[code]["코멘트"], "shortfall": close[code]["모자란 수"]})
+        elif code in counted:
+            out.append({**row, "group": "밖", "reason": "최종 조건이 3개 이상 모자람"})
         else:
-            out.append(row)
+            out.append({**row, "group": None,
+                        "note": "조사 대상 507종목 밖이거나 시세가 없어 최종 조건을 셀 수 없습니다"})
     return out
 
 
@@ -168,6 +276,6 @@ if __name__ == "__main__":
     got = compute()
     save(got)
     print(f'{got["date"]} · 시장 폭 {got.get("breadth")}% · A그룹 {len(got["picks"])}종목 · '
-          f'시장 폭만 모자란 정배열 {len(got.get("near", []))}종목')
+          f'B그룹 {len(got.get("b_group", []))}종목 · 그 밖 {got.get("rest")}종목')
     for one in got["picks"]:
         print(f'  {one["name"]}({one["code"]}) · {"·".join(one["갈래"])} · 시총 {one["시총순위"]}등')
