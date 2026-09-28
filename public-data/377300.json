@@ -117,7 +117,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-23",
+  "fetched": "2026-09-28",
   "disclosures": [
     {
       "title": "최대주주등소유주식변동신고서              ",
@@ -193,11 +193,6 @@
       "title": "결산실적공시예고(안내공시)              ",
       "date": "20260720",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800471"
-    },
-    {
-      "title": "지속가능경영보고서등관련사항(자율공시)              ",
-      "date": "20260629",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260629800887"
     }
   ]
 }
