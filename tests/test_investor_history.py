@@ -71,5 +71,26 @@ class Fill(unittest.TestCase):
         self.assertEqual(C.load("000003")["rows"][-1][0], "20200930")
 
 
+class Patience(unittest.TestCase):
+
+    def test_waits_out_the_token_limit(self):
+        import broker_kis
+        calls, naps = [], []
+        def job():
+            calls.append(1)
+            if len(calls) < 3:
+                raise broker_kis.BrokerError(broker_kis.KIS.REFUSALS["EGW00133"])
+            return "ok"
+        self.assertEqual(C._patiently(job, sleep=naps.append), "ok")
+        self.assertEqual(naps, [C.TOKEN_WAIT, C.TOKEN_WAIT])
+
+    def test_other_refusals_are_not_retried(self):
+        import broker_kis
+        def job():
+            raise broker_kis.BrokerError("다른 거절")
+        with self.assertRaises(broker_kis.BrokerError):
+            C._patiently(job, sleep=lambda s: None)
+
+
 if __name__ == "__main__":
     unittest.main()

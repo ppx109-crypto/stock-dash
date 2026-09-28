@@ -13,6 +13,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -103,6 +104,21 @@ def fill(client, code, today):
     return added, asks
 
 
+TOKEN_WAIT = 65         # 접근토큰은 1분에 한 번만 발급됩니다(EGW00133).
+
+
+def _patiently(job, tries=5, sleep=time.sleep):
+    """토큰 발급 제한에 걸리면 1분 남짓 쉬고 다시 합니다. 다른 거절은 그대로 올립니다."""
+    for turn in range(tries):
+        try:
+            return job()
+        except broker_kis.BrokerError as error:
+            if broker_kis.KIS.REFUSALS["EGW00133"] not in str(error) or turn == tries - 1:
+                raise
+            print(f"  토큰 발급 제한 · {TOKEN_WAIT}초 쉬고 다시", flush=True)
+            sleep(TOKEN_WAIT)
+
+
 def main():
     codes = codes_to_collect()
     if not codes:
@@ -117,7 +133,7 @@ def main():
     done = failed = 0
     for code in codes:
         try:
-            added, asks = fill(client, code, today)
+            added, asks = _patiently(lambda: fill(client, code, today))
             body = load(code)
             rows = body["rows"]
             print(f"{code} · 새 줄 {added} · 물음 {asks} · "
