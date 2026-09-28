@@ -4,7 +4,11 @@ import unittest
 from pathlib import Path
 
 import final_group
-from dashboard_ui import a_group_panel
+
+try:        # 화면 쪽은 streamlit이 있어야 불러집니다. A그룹을 세는 CI에는 없습니다.
+    from dashboard_ui import a_group_panel
+except ModuleNotFoundError:
+    a_group_panel = None
 
 
 class Regroup(unittest.TestCase):
@@ -32,6 +36,13 @@ class Regroup(unittest.TestCase):
         self.assertEqual(got[0]["group"], "B")
 
 
+class Files(unittest.TestCase):
+
+    def test_load_of_a_missing_file_is_none(self):
+        with tempfile.TemporaryDirectory() as folder:
+            self.assertIsNone(final_group.load(Path(folder) / "없음.json"))
+
+
 class Lines(unittest.TestCase):
     """단순이동평균 3>15>20>90>150>200 판정."""
 
@@ -53,6 +64,7 @@ class Lines(unittest.TestCase):
         self.assertIsNone(final_group.lines_now([100.0] * 200))
 
 
+@unittest.skipIf(a_group_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class Panel(unittest.TestCase):
 
     def test_empty_day_says_so(self):
@@ -73,9 +85,6 @@ class Panel(unittest.TestCase):
     def test_missing_result_is_explained(self):
         self.assertIn("아직 없습니다", a_group_panel(None))
 
-    def test_load_of_a_missing_file_is_none(self):
-        with tempfile.TemporaryDirectory() as folder:
-            self.assertIsNone(final_group.load(Path(folder) / "없음.json"))
 
 
 if __name__ == "__main__":
