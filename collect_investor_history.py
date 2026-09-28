@@ -104,6 +104,7 @@ def fill(client, code, today):
     return added, asks
 
 
+LANES = int(os.getenv("INVESTOR_LANES", "4"))
 STOP_AFTER = 5         # 잇달아 이만큼 실패하면 멈춥니다.
 TOKEN_WAIT = 65         # 접근토큰은 1분에 한 번만 발급됩니다(EGW00133).
 
@@ -132,25 +133,43 @@ def main():
         return 1
     # 오늘 날짜로 물으면 장중에는 거절됩니다(확인할 때 지난날로 물은 것은 됐습니다). 어제까지만 묻습니다.
     today = _before(datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d"))
-    done = failed = in_a_row = 0
-    for code in codes:
+    # 한 번 묻는 데 1초 남짓 걸려(대부분 기다림) 한 줄로는 274종목에 아홉 시간이 넘습니다. 네 갈래로
+    # 겹쳐 묻습니다. 호출 사이 간격은 broker_kis가 프로세스 전체로 지키므로 초당 호출 수는 늘지 않습니다.
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    import threading
+    lock = threading.Lock()
+    state = {"done": 0, "failed": 0, "in_a_row": 0, "stop": False}
+
+    def one(code):
+        if state["stop"]:
+            return
         try:
             added, asks = _patiently(lambda: fill(client, code, today))
             body = load(code)
             rows = body["rows"]
-            print(f"{code} · 새 줄 {added} · 물음 {asks} · "
-                  f"{rows[0][0] if rows else '-'}~{rows[-1][0] if rows else '-'} · "
-                  f"{'처음까지' if body.get('처음까지') else '이어 받을 것 있음'}", flush=True)
-            done += 1
-            in_a_row = 0
+            with lock:
+                state["done"] += 1
+                state["in_a_row"] = 0
+                print(f"{code} · 새 줄 {added} · 물음 {asks} · "
+                      f"{rows[0][0] if rows else '-'}~{rows[-1][0] if rows else '-'} · "
+                      f"{'처음까지' if body.get('처음까지') else '이어 받을 것 있음'}", flush=True)
         except broker_kis.BrokerError as error:
-            failed += 1
-            in_a_row += 1
-            print(f"{code} · 실패 · {str(error)[:80]}", flush=True)
-            if in_a_row >= STOP_AFTER:
-                # 같은 거절이 이어지면 더 물어도 소용없고 증권사에 짐만 됩니다.
-                print(f"잇달아 {in_a_row}번 실패해 멈춥니다.", flush=True)
-                return 2
+            with lock:
+                state["failed"] += 1
+                state["in_a_row"] += 1
+                print(f"{code} · 실패 · {str(error)[:80]}", flush=True)
+                if state["in_a_row"] >= STOP_AFTER:
+                    # 같은 거절이 이어지면 더 물어도 소용없고 증권사에 짐만 됩니다.
+                    state["stop"] = True
+
+    with ThreadPoolExecutor(max_workers=LANES) as pool:
+        for job in as_completed([pool.submit(one, code) for code in codes]):
+            job.result()
+    done, failed = state["done"], state["failed"]
+    if state["stop"]:
+        print(f"잇달아 {STOP_AFTER}번 실패해 멈춥니다.", flush=True)
+        print(f"끝 · 받은 종목 {done} · 실패 {failed}")
+        return 2
     print(f"끝 · 받은 종목 {done} · 실패 {failed}")
     return 0
 
