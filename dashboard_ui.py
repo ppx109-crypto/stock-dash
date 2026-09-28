@@ -457,7 +457,7 @@ def board_basis(graded: list | None, pending: list | None = None) -> str:
 
 
 
-FINAL_CONDITIONS = 4    # final_group.CONDITIONS와 같습니다. 갈래마다 시총 100위 안 + 조건 셋.
+FINAL_CONDITIONS = 5    # final_group.CONDITIONS와 같습니다. 갈래마다 시총 100위 안 + 조건 셋 + 수급.
 
 
 def stock_score(grade: dict | None) -> tuple[int, list[tuple[str, int]], str]:
@@ -874,20 +874,22 @@ def _settled_cards(book: dict, price: float | None) -> str:
 RULE_TEXT = "A는 오늘 조건을 모두 채운 종목, B는 조건이 1~2개 모자란 종목입니다"
 
 A_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
-<b>A그룹이 되는 조건</b> · 아래 두 방식 가운데 하나를 모두 채우면 A그룹입니다<br><br>
-<b>① 추세 규칙</b> · 네 가지를 모두 채울 때<br>
+<b>A그룹이 되는 조건</b> · 아래 두 방식 가운데 하나와 공통 조건을 모두 채우면 A그룹입니다<br><br>
+<b>① 추세 규칙</b> · 네 가지와 공통 조건을 모두 채울 때<br>
 &nbsp;· 그날 코스피 시가총액 100위 안<br>
 &nbsp;· 최근 주가 흔들림이 작은 편 (전체 종목 가운데 조용한 40%)<br>
 &nbsp;· 180일 이동평균선이 가파르게 오르는 중 (5거래일 사이 1.46% 이상)<br>
 &nbsp;· 주가가 60거래일 전보다 20% 이상 오름<br>
 &nbsp;→ 팔 때: 종가 +10% 익절 · −5% 손절 · 최대 10거래일<br><br>
-<b>② 정배열 추세</b> · 네 가지를 모두 채울 때<br>
+<b>② 정배열 추세</b> · 네 가지와 공통 조건을 모두 채울 때<br>
 &nbsp;· 그날 코스피 시가총액 100위 안<br>
 &nbsp;· 단순이동평균 3·15·20·90·150·200일선이 짧은 것부터 차례로 위에 놓임<br>
 &nbsp;· 3일선이 200일선보다 19~53% 위 (너무 붙지도, 너무 벌어지지도 않음)<br>
 &nbsp;· 시장 폭 50% 이상 (시가총액 100위 안 종목의 절반 이상이 50일선 &gt; 200일선)<br>
 &nbsp;→ 팔 때: 정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일<br><br>
-<b>공통</b> · 한 번에 최대 5종목, 하루에 새로 사는 것은 2종목까지, 후보가 많으면 180일선이 가파른 순서
+<b>공통 조건</b> · 두 방식 모두 이것까지 채워야 합니다<br>
+&nbsp;· 전날까지 5거래일 동안 외국인 순매수 · 투신 순매수 · 개인 순매도 (수급은 장 마감 뒤에 나와 그날 것은 쓰지 않음)<br><br>
+<b>사고파는 방법</b> · 한 번에 최대 5종목, 하루에 새로 사는 것은 2종목까지, 후보가 많으면 180일선이 가파른 순서
 </div></div>"""
 
 EMA_ONLY = """<div class="pxb"><div class="pxb-note" style="line-height:1.75;margin-top:10px">

@@ -34,6 +34,13 @@ def codes_to_collect():
             picked = json.loads(UNIVERSE.read_text(encoding="utf-8")).get("codes", [])
         except (OSError, ValueError):
             picked = []
+        # 오늘 A·B그룹에 새로 들어온 종목도 받습니다(목록 밖에서 새로 커진 종목).
+        try:
+            found = json.loads(Path("study/a_group.json").read_text(encoding="utf-8"))
+            picked = list(dict.fromkeys(list(picked) + [one["code"] for one in
+                                                       found.get("picks", []) + found.get("b_group", [])]))
+        except (OSError, ValueError, KeyError, TypeError):
+            pass
     return [str(c) for c in picked if re.fullmatch(r"[0-9]{6}", str(c))]
 
 

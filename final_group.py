@@ -9,6 +9,8 @@
           가장 긴 선보다 19~53% 위 · 그날 100등 안 종목 가운데 50일선이 200일선
           위인 몫(시장 폭)이 50% 이상.
           팔기: 정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일.
+  공통(97회차 · 스승님 수급 조건): 전날까지 5거래일 합으로 외국인 순매수 · 투신 순매수 ·
+        개인 순매도. 수급은 장 마감 뒤에 나오므로 그날 것은 쓰지 않습니다(investor-data).
   자리: 최대 5종목(한 종목에 계좌의 1/5) · 하루 2종목까지 · 후보가 많으면
         180일선 기울기가 가파른 순.
 
@@ -35,7 +37,10 @@ LINES = (3, 15, 20, 90, 150, 200)
 SPREAD = (19.0, 53.0)
 BREADTH = 50.0
 SLOTS = 5
-CONDITIONS = 4      # 갈래마다 조건 넷: 시총 100위 안 + 그 갈래의 조건 셋
+CONDITIONS = 5      # 갈래마다 조건 다섯: 시총 100위 안 + 그 갈래의 조건 셋 + 수급
+FLOWS = Path("investor-data")
+FLOW_DAYS = 5
+FLOW_STALE = 10     # 수급의 마지막 날이 이보다 많이(달력 날) 앞이면 낡은 자료로 봅니다.
 BATCH = 40
 # 화면에 나가는 두 방식의 이름. 연구 기록에서는 '기본 규칙'·'정배열 갈래'라고 불렀습니다.
 RULE_DOOR = "추세 규칙"
@@ -177,7 +182,9 @@ def compute(prices=None):
                  "변동성": _round(row.get("변동성")),
                  "정배열": form.get("정배열"), "정배열 된 지": form.get("된 지"),
                  "선 간격": _round(form.get("간격")), "종가": row.get("price")}
-        missing = shortfalls(row, form, breadth, rule._calm)
+        flow = flow_before(flow_rows(row["code"]), day)
+        entry["수급 5일"] = flow
+        missing = shortfalls(row, form, breadth, rule._calm, flow)
         doors = [door for door, gaps in missing.items() if not gaps]
         if doors:
             picks.append({**entry, "갈래": doors,
@@ -203,7 +210,41 @@ def compute(prices=None):
             "rest": rest, "far": far, "counted": sorted(row["code"] for row in today), "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M")}
 
 
-def shortfalls(row, form, breadth, calm_edge):
+def flow_rows(code, folder=FLOWS):
+    """한 종목의 날짜별 수급(오래된 날이 먼저). 없으면 빈 목록."""
+    try:
+        body = json.loads((folder / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    cols = body.get("cols") or []
+    return [dict(zip(cols, one)) for one in body.get("rows") or []]
+
+
+def flow_before(rows, day, days=FLOW_DAYS):
+    """그날 **전날까지** days거래일의 외국인·투신·개인 순매수 합. 모자라거나 낡으면 None."""
+    before = [r for r in rows if r.get("date", "") < day][-days:]
+    if len(before) < days:
+        return None
+    if any(r.get(k) is None for r in before for k in ("외국인", "투신", "개인")):
+        return None
+    last = datetime.strptime(before[-1]["date"], "%Y%m%d")
+    if (datetime.strptime(day, "%Y%m%d") - last).days > FLOW_STALE:
+        return None
+    return {"외국인": sum(r["외국인"] for r in before), "투신": sum(r["투신"] for r in before),
+            "개인": sum(r["개인"] for r in before), "끝날": before[-1]["date"]}
+
+
+def flow_gap(flow):
+    """수급 조건을 못 채웠으면 그 까닭 한 줄, 채웠으면 None."""
+    if flow is None:
+        return f"수급 자료 없음 (외국인·투신 {FLOW_DAYS}일 순매수, 개인 순매도여야 함)"
+    if flow["외국인"] > 0 and flow["투신"] > 0 and flow["개인"] < 0:
+        return None
+    return (f"{FLOW_DAYS}일 수급 외국인 {flow['외국인']:+,.0f} · 투신 {flow['투신']:+,.0f} · "
+            f"개인 {flow['개인']:+,.0f}주 (외국인·투신 순매수, 개인 순매도여야 함)")
+
+
+def shortfalls(row, form, breadth, calm_edge, flow=None):
     """갈래마다 오늘 못 채운 조건을 사람이 읽을 말로 돌려줍니다. 빈 목록이면 채운 것입니다."""
     place = row.get(caps.RANK)
     rank_gap = ([] if place is not None and place <= rule.TOP
@@ -227,6 +268,11 @@ def shortfalls(row, form, breadth, calm_edge):
             by_lines.append(f"선 간격 {_text(gap, '%', 0)} ({SPREAD[0]:g}~{SPREAD[1]:g}%여야 함)")
     if breadth < BREADTH:
         by_lines.append(f"시장 폭 {breadth:.0f}% ({BREADTH:g}% 이상이어야 함)")
+    # 두 갈래 공통: 외국인·투신이 사고 개인이 판 추세만 삽니다(97회차).
+    gap = flow_gap(flow)
+    if gap:
+        by_rule.append(gap)
+        by_lines.append(gap)
     return {RULE_DOOR: by_rule, LINES_DOOR: by_lines}
 
 

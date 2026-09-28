@@ -101,13 +101,23 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
         continue-on-error: true
 
+      # A그룹 공통 조건(외국인·투신 순매수, 개인 순매도)에 쓰는 수급을 하루치씩 붙입니다(97회차).
+      - run: python collect_investor_history.py
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+        continue-on-error: true
+
       - name: Save only when something actually changed
         if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           mkdir -p price-data
-          git add -A price-data opinion-data flow-data
+          mkdir -p investor-data
+          git add -A price-data opinion-data flow-data investor-data
           if git diff --cached --quiet; then
             echo '바뀐 것이 없어 커밋하지 않습니다.'
           else

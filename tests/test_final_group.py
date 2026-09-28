@@ -57,31 +57,61 @@ class Shortfalls(unittest.TestCase):
         return {**base, **kw}
 
     form = {"정배열": True, "간격": 30.0}
+    good = {"외국인": 100.0, "투신": 10.0, "개인": -110.0, "끝날": "20260922"}
 
     def test_everything_met_is_empty(self):
-        got = final_group.shortfalls(self.row(), self.form, 60.0, 2.0)
+        got = final_group.shortfalls(self.row(), self.form, 60.0, 2.0, self.good)
         self.assertEqual(got, {"추세 규칙": [], "정배열 추세": []})
 
     def test_each_missing_rule_condition_is_named(self):
         got = final_group.shortfalls(self.row(**{"변동성": 3.7, "60일 전 대비": 11.1}),
-                                     self.form, 60.0, 2.0)
+                                     self.form, 60.0, 2.0, self.good)
         self.assertEqual(len(got["추세 규칙"]), 2)
         self.assertIn("흔들림", got["추세 규칙"][0])
         self.assertIn("60일 상승", got["추세 규칙"][1])
         self.assertEqual(got["정배열 추세"], [])
 
     def test_the_rank_gate_counts_in_both_doors(self):
-        got = final_group.shortfalls(self.row(**{caps.RANK: 150}), self.form, 60.0, 2.0)
+        got = final_group.shortfalls(self.row(**{caps.RANK: 150}), self.form, 60.0, 2.0, self.good)
         self.assertIn("150위", got["추세 규칙"][0])
         self.assertIn("150위", got["정배열 추세"][0])
 
     def test_a_thin_market_holds_the_lines_door(self):
-        got = final_group.shortfalls(self.row(), self.form, 41.0, 2.0)
+        got = final_group.shortfalls(self.row(), self.form, 41.0, 2.0, self.good)
         self.assertEqual(got["정배열 추세"], ["시장 폭 41% (50% 이상이어야 함)"])
 
     def test_the_slope_threshold_is_the_rules(self):
-        got = final_group.shortfalls(self.row(**{"추세 기울기": rule.SLOPE - 0.01}), self.form, 60.0, 2.0)
+        got = final_group.shortfalls(self.row(**{"추세 기울기": rule.SLOPE - 0.01}), self.form, 60.0, 2.0, self.good)
         self.assertIn("180일선 기울기", got["추세 규칙"][0])
+
+
+class Flows(unittest.TestCase):
+    """스승님 수급 조건: 전날까지 5일 합으로 외국인·투신 순매수, 개인 순매도."""
+
+    def rows(self, n=8, f=10.0, t=1.0, p=-11.0):
+        days = [f"202609{d:02d}" for d in (10, 11, 14, 15, 16, 17, 18, 21, 22, 23)][:n]
+        return [{"date": d, "외국인": f, "투신": t, "개인": p} for d in days]
+
+    def test_the_signal_day_is_left_out(self):
+        rows = self.rows(n=6) + [{"date": "20260923", "외국인": -999.0, "투신": -999.0, "개인": 999.0}]
+        got = final_group.flow_before(rows, "20260923")
+        self.assertEqual(got["외국인"], 50.0)
+        self.assertEqual(got["끝날"], "20260917")
+
+    def test_too_few_days_is_unknown(self):
+        self.assertIsNone(final_group.flow_before(self.rows(n=4), "20260923"))
+
+    def test_stale_flows_are_unknown(self):
+        self.assertIsNone(final_group.flow_before(self.rows(n=6), "20261020"))
+
+    def test_both_doors_need_the_flow(self):
+        row = {caps.RANK: 10, "변동성": 1.5, "추세 기울기": 2.0, "60일 전 대비": 30.0}
+        form = {"정배열": True, "간격": 30.0}
+        bad = {"외국인": 10.0, "투신": -1.0, "개인": -9.0}
+        got = final_group.shortfalls(row, form, 60.0, 2.0, bad)
+        self.assertIn("투신 -1", got["추세 규칙"][0])
+        self.assertIn("투신 -1", got["정배열 추세"][0])
+        self.assertIn("수급 자료 없음", final_group.shortfalls(row, form, 60.0, 2.0)["추세 규칙"][0])
 
 
 class Files(unittest.TestCase):
@@ -136,8 +166,8 @@ class Panel(unittest.TestCase):
 
     def test_the_score_follows_the_final_conditions(self):
         self.assertEqual(stock_score({"group": "A", "comment": "정배열 추세 조건을 모두 채움"})[0], 100)
-        self.assertEqual(stock_score({"group": "B", "shortfall": 1, "comment": "x"})[0], 75)
-        self.assertEqual(stock_score({"group": "밖", "shortfall": 3, "comment": "x"})[0], 25)
+        self.assertEqual(stock_score({"group": "B", "shortfall": 1, "comment": "x"})[0], 80)
+        self.assertEqual(stock_score({"group": "밖", "shortfall": 3, "comment": "x"})[0], 40)
         self.assertEqual(stock_score({"group": None, "note": "셀 수 없음"}), (0, [], "셀 수 없음"))
 
     def test_the_board_has_no_c_and_leaves_out_the_rest(self):

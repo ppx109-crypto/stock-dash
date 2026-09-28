@@ -30,17 +30,25 @@ class Grade(unittest.TestCase):
         return {"code": "000001", "i": 280, "date": "20240102", caps.RANK: 10, "변동성": 1.5,
                 "추세 기울기": 2.0, "60일 전 대비": 30.0, **kw}
 
+    def flows(self, f=10.0, t=1.0, p=-11.0):
+        days = ["20231222", "20231226", "20231227", "20231228", "20231229"]
+        rows = [{"date": d, "외국인": f, "투신": t, "개인": p} for d in days]
+        return {"000001": (days, rows)}
+
+    def test_no_flow_data_cannot_be_a(self):
+        self.assertNotEqual(final_study.grade(self.row(), self.shape, {"20240102": 60.0})[0], "A")
+
     def test_both_doors_open(self):
-        group, doors = final_study.grade(self.row(), self.shape, {"20240102": 60.0})
+        group, doors = final_study.grade(self.row(), self.shape, {"20240102": 60.0}, self.flows())
         self.assertEqual(group, "A")
         self.assertEqual(doors, [final_group.RULE_DOOR, final_group.LINES_DOOR])
 
     def test_a_thin_market_leaves_only_the_rule(self):
-        group, doors = final_study.grade(self.row(), self.shape, {"20240102": 40.0})
+        group, doors = final_study.grade(self.row(), self.shape, {"20240102": 40.0}, self.flows())
         self.assertEqual(doors, [final_group.RULE_DOOR])
 
     def test_one_short_on_both_is_b(self):
-        got = final_study.grade(self.row(**{caps.RANK: 150}), self.shape, {"20240102": 60.0})
+        got = final_study.grade(self.row(**{caps.RANK: 150}), self.shape, {"20240102": 60.0}, self.flows())
         self.assertEqual(got, ("B", []))
 
     def test_three_short_is_out(self):
