@@ -404,7 +404,10 @@ class KIS:
             params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code),
                     'FID_INPUT_DATE_1': str(day), 'FID_ORG_ADJ_PRC': '', 'FID_ETC_CLS_CODE': ''})
         if str(data.get('rt_cd')) != '0':
-            raise BrokerError('투자자 매매동향(일별) 조회가 승인되지 않았습니다. API 신청 상태를 확인하세요.')
+            # 정해진 꼴의 코드만 붙입니다. 응답 본문은 옮기지 않습니다.
+            code_seen = str(data.get('msg_cd') or '').strip()
+            code_seen = code_seen if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', code_seen) else ''
+            raise BrokerError('투자자 매매동향(일별) 조회가 거절되었습니다.' + (f' · {code_seen}' if code_seen else ''))
         rows = data.get('output2')
         if rows is None:
             rows = []

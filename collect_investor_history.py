@@ -104,6 +104,7 @@ def fill(client, code, today):
     return added, asks
 
 
+STOP_AFTER = 5         # 잇달아 이만큼 실패하면 멈춥니다.
 TOKEN_WAIT = 65         # 접근토큰은 1분에 한 번만 발급됩니다(EGW00133).
 
 
@@ -129,8 +130,9 @@ def main():
     except broker_kis.BrokerError as error:
         print("증권사 연결을 만들지 못했습니다 ·", error)
         return 1
-    today = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d")
-    done = failed = 0
+    # 오늘 날짜로 물으면 장중에는 거절됩니다(확인할 때 지난날로 물은 것은 됐습니다). 어제까지만 묻습니다.
+    today = _before(datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d"))
+    done = failed = in_a_row = 0
     for code in codes:
         try:
             added, asks = _patiently(lambda: fill(client, code, today))
@@ -140,9 +142,15 @@ def main():
                   f"{rows[0][0] if rows else '-'}~{rows[-1][0] if rows else '-'} · "
                   f"{'처음까지' if body.get('처음까지') else '이어 받을 것 있음'}", flush=True)
             done += 1
+            in_a_row = 0
         except broker_kis.BrokerError as error:
             failed += 1
+            in_a_row += 1
             print(f"{code} · 실패 · {str(error)[:80]}", flush=True)
+            if in_a_row >= STOP_AFTER:
+                # 같은 거절이 이어지면 더 물어도 소용없고 증권사에 짐만 됩니다.
+                print(f"잇달아 {in_a_row}번 실패해 멈춥니다.", flush=True)
+                return 2
     print(f"끝 · 받은 종목 {done} · 실패 {failed}")
     return 0
 

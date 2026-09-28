@@ -54,7 +54,7 @@ jobs:
           PY
           while read -r batch; do
             [ -z "$batch" ] && continue
-            INVESTOR_CODES="$batch" python collect_investor_history.py || true
+            INVESTOR_CODES="$batch" python collect_investor_history.py; status=$?
             mkdir -p investor-data
             git add -A investor-data
             if git diff --cached --quiet; then
@@ -63,6 +63,8 @@ jobs:
               git commit -q -m 'Collect investor flow history'
               git pull -q --rebase origin main && git push -q
             fi
+            # 잇달아 거절되어 멈췄으면 다음 묶음도 같을 것이니 여기서 끝냅니다.
+            if [ "$status" = "2" ]; then echo '거절이 이어져 멈춥니다.'; exit 1; fi
           done < /tmp/batches.txt
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
