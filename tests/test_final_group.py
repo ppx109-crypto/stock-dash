@@ -17,9 +17,9 @@ class Regroup(unittest.TestCase):
     """관심종목 그룹판: A는 오늘 목록, B는 1~2개 미달(코멘트), 그 밖은 싣지 않음."""
 
     found = {"date": "20260923",
-             "picks": [{"code": "000001", "갈래": ["정배열"]}],
+             "picks": [{"code": "000001", "갈래": ["정배열 추세"]}],
              "b_group": [{"code": "000002", "모자란 수": 1,
-                          "코멘트": "기본 규칙까지 1개 모자람 · 60일 상승 +11.10%"}],
+                          "코멘트": "추세 규칙까지 1개 모자람: 60일 상승 +11.10%"}],
              "counted": ["000001", "000002", "000003"]}
 
     def test_a_listed_stock_becomes_a(self):
@@ -54,28 +54,28 @@ class Shortfalls(unittest.TestCase):
 
     def test_everything_met_is_empty(self):
         got = final_group.shortfalls(self.row(), self.form, 60.0, 2.0)
-        self.assertEqual(got, {"기본 규칙": [], "정배열": []})
+        self.assertEqual(got, {"추세 규칙": [], "정배열 추세": []})
 
     def test_each_missing_rule_condition_is_named(self):
         got = final_group.shortfalls(self.row(**{"변동성": 3.7, "60일 전 대비": 11.1}),
                                      self.form, 60.0, 2.0)
-        self.assertEqual(len(got["기본 규칙"]), 2)
-        self.assertIn("흔들림", got["기본 규칙"][0])
-        self.assertIn("60일 상승", got["기본 규칙"][1])
-        self.assertEqual(got["정배열"], [])
+        self.assertEqual(len(got["추세 규칙"]), 2)
+        self.assertIn("흔들림", got["추세 규칙"][0])
+        self.assertIn("60일 상승", got["추세 규칙"][1])
+        self.assertEqual(got["정배열 추세"], [])
 
     def test_the_rank_gate_counts_in_both_doors(self):
         got = final_group.shortfalls(self.row(**{caps.RANK: 150}), self.form, 60.0, 2.0)
-        self.assertIn("150등", got["기본 규칙"][0])
-        self.assertIn("150등", got["정배열"][0])
+        self.assertIn("150위", got["추세 규칙"][0])
+        self.assertIn("150위", got["정배열 추세"][0])
 
     def test_a_thin_market_holds_the_lines_door(self):
         got = final_group.shortfalls(self.row(), self.form, 41.0, 2.0)
-        self.assertEqual(got["정배열"], ["시장 폭 41% (50% 이상이어야 함)"])
+        self.assertEqual(got["정배열 추세"], ["시장 폭 41% (50% 이상이어야 함)"])
 
     def test_the_slope_threshold_is_the_rules(self):
         got = final_group.shortfalls(self.row(**{"추세 기울기": rule.SLOPE - 0.01}), self.form, 60.0, 2.0)
-        self.assertIn("180일선 기울기", got["기본 규칙"][0])
+        self.assertIn("180일선 기울기", got["추세 규칙"][0])
 
 
 class Files(unittest.TestCase):
@@ -112,8 +112,8 @@ class Panel(unittest.TestCase):
     def test_empty_day_says_so_and_lists_b(self):
         html = a_group_panel({"date": "20260923", "breadth": 41.0, "picks": [],
                               "b_group": [{"name": "가", "code": "000001",
-                                           "코멘트": "정배열까지 1개 모자람 · 시장 폭 41%"}]})
-        self.assertIn("채운 종목이", html)
+                                           "코멘트": "정배열 추세까지 1개 모자람: 시장 폭 41%"}]})
+        self.assertIn("A그룹 종목이 없습니다", html)
         self.assertIn("2026-09-23", html)
         self.assertIn("B그룹", html)
         self.assertIn("시장 폭 41%", html)

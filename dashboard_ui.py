@@ -363,8 +363,8 @@ def section(label: str, note: str = "") -> str:
 
 
 
-GROUP_TITLES = {"A": ("A그룹 · 매수 후보", "최종 조건(기본 규칙 또는 정배열) 충족", "a"),
-                "B": ("B그룹 · 조건 1~2개 미달", "가까운 갈래에서 무엇이 모자란지 함께 적음", "b")}
+GROUP_TITLES = {"A": ("A그룹 · 매수 후보", "추세 규칙 또는 정배열 추세의 조건을 모두 채움", "a"),
+                "B": ("B그룹 · 조건 1~2개 미달", "무엇이 모자란지 함께 적음", "b")}
 
 
 EARNINGS_ORDER = {"양호": 0, "보통": 1, "부진": 2, "미확인": 3}
@@ -755,12 +755,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
             target_from = f'{view.get("member") or "증권사"} 목표가 1건'
         else:
             target_from = f'최근 {view["months"]}개월 증권사 {view["count"]}곳 목표가의 중앙값'
-        if view.get("opinion"):
-            target_from += f' · 최근 의견 {view["opinion"]}'
-            if view.get("member") and view["count"] > 1:
-                target_from += f'({view["member"]})'
-            if view.get("date"):
-                target_from += f' {as_day(view["date"])}'
+        # 최근 의견(증권사·날짜)은 위 그래프에 이미 있어 여기서 다시 적지 않습니다.
     elif value:
         target, target_from = value.get("base"), "조사 자료의 평가"
     elif fair:
@@ -782,8 +777,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
                 f'{_e(as_day(row.get("date", "")))}<b>{row["target"]:,.0f}원</b></li>'
                 for row in (view.get("recent") or [])[:3] if view and view["count"] > 1)
             + '</ul>'
-            f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))} · '
-            '매수·매도 신호가 아닙니다.</p>')
+            f'<p class="pxb-sub" style="margin-top:8px">{_e(str(target_from))}</p>')
     elif here:
         why = _e(str(target_from))[:80]
         if book and not book.get("anchors_fresh"):
@@ -870,31 +864,61 @@ def _settled_cards(book: dict, price: float | None) -> str:
     return card_growth, card_margin, card_fair
 
 
-RULE_TEXT = ("A는 연구 89회차의 최종 조건(기본 규칙 또는 정배열 갈래)을 오늘 채운 종목 · "
-             "B는 둘 중 가까운 갈래에서 조건이 1~2개 모자란 종목(무엇이 모자란지 적음) · "
-             "3개 이상 모자란 종목은 싣지 않음 · 매수·매도 신호가 아닙니다")
+RULE_TEXT = "A는 오늘 조건을 모두 채운 종목, B는 조건이 1~2개 모자란 종목입니다"
+
+A_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
+<b>A그룹이 되는 조건</b> · 아래 두 방식 가운데 하나를 모두 채우면 A그룹입니다<br><br>
+<b>① 추세 규칙</b> · 네 가지를 모두 채울 때<br>
+&nbsp;· 그날 코스피 시가총액 100위 안<br>
+&nbsp;· 최근 주가 흔들림이 작은 편 (전체 종목 가운데 조용한 40%)<br>
+&nbsp;· 180일 이동평균선이 가파르게 오르는 중 (5거래일 사이 1.46% 이상)<br>
+&nbsp;· 주가가 60거래일 전보다 20% 이상 오름<br>
+&nbsp;→ 팔 때: 종가 +10% 익절 · −5% 손절 · 최대 10거래일<br><br>
+<b>② 정배열 추세</b> · 네 가지를 모두 채울 때<br>
+&nbsp;· 그날 코스피 시가총액 100위 안<br>
+&nbsp;· 단순이동평균 3·15·20·90·150·200일선이 짧은 것부터 차례로 위에 놓임<br>
+&nbsp;· 3일선이 200일선보다 19~53% 위 (너무 붙지도, 너무 벌어지지도 않음)<br>
+&nbsp;· 시장 폭 50% 이상 (시가총액 100위 안 종목의 절반 이상이 50일선 &gt; 200일선)<br>
+&nbsp;→ 팔 때: 정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일<br><br>
+<b>공통</b> · 한 번에 최대 5종목, 하루에 새로 사는 것은 2종목까지, 후보가 많으면 180일선이 가파른 순서
+</div></div>"""
+
+EMA_ONLY = """<div class="pxb"><div class="pxb-note" style="line-height:1.75;margin-top:10px">
+<b>EMA 정배열만 보고 사고팔면 안 되는 이유</b><br>
+&nbsp;· 정배열인 날이 너무 흔합니다. 시가총액 100위 안 종목의 거래일 가운데 약 30%가 정배열이고,
+그 뒤 오른 비율은 절반이 안 됩니다(열흘 뒤 기준 약 46~47%).<br>
+&nbsp;· 2017년 이후 자료로 정배열만 보고 사고팔아 보면, 계좌가 가장 크게 떨어진 폭이 −35%~−60% 수준까지 갔습니다.<br>
+&nbsp;· 정배열은 '이미 오른 모양'을 확인할 뿐, 추세가 얼마나 힘 있는지, 주가가 얼마나 출렁이는지,
+시장 전체가 받쳐 주는지는 알려 주지 않습니다. 그래서 위 조건처럼 추세의 힘·흔들림·시장 폭을 함께 봅니다.
+</div></div>"""
+
+GROUP_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
+<b>A그룹</b> · 오늘 위 조건을 모두 채운 종목<br>
+<b>B그룹</b> · 두 방식 가운데 가까운 쪽에서 조건이 1~2개 모자란 종목 (무엇이 모자란지 함께 적음)<br>
+조건이 3개 이상 모자란 종목은 싣지 않습니다<br>
+매수·매도 신호가 아닙니다
+</div></div>"""
 
 
 def a_group_panel(found: dict | None) -> str:
     """오늘의 A그룹(507종목 전체에서 최종 조건을 채운 종목)을 그립니다."""
     if not found or not found.get("date"):
-        return ('<div class="pxb"><div class="pxb-note">오늘의 A그룹 계산 결과가 아직 없습니다. '
-                'GitHub Actions의 \'A group\'이 일봉 수집 뒤에 만듭니다.</div></div>')
+        return ('<div class="pxb"><div class="pxb-note">오늘의 결과가 아직 없습니다. '
+                '장 마감 뒤 주가를 받으면 자동으로 계산됩니다.</div></div>')
     picks = found.get("picks") or []
-    head = (f'종가 기준일 {_e(as_day(found["date"]))} · 시장 폭 {_e(found.get("breadth"))}% '
-            f'(정배열 갈래는 50% 이상일 때만 삼) · 최대 {_e(found.get("slots", 5))}종목 · '
-            f'하루 2종목까지 · 기울기 가파른 순')
-    body = f'<div class="pxb-note">{head}</div>'
+    head = (f'<b>오늘의 결과</b> · 종가 기준일 {_e(as_day(found["date"]))}<br>'
+            f'시장 폭 {_e(found.get("breadth"))}% (정배열 추세는 50% 이상일 때만 삼)')
+    body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
     if picks:
         items = "".join(
             f'<li><b>{_e(one["name"])}</b> ({_e(one["code"])}) · {_e("·".join(one.get("갈래") or []))} · '
-            f'시총 {_e(one.get("시총순위"))}등 · 기울기 {_e(one.get("추세 기울기"))} · '
+            f'시총 {_e(one.get("시총순위"))}위 · 180일선 기울기 {_e(one.get("추세 기울기"))} · '
             f'60일 {_e(one.get("60일 전 대비"))}% · 팔기: {_e(one.get("팔기"))}</li>'
             for one in picks)
         body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
     else:
-        body += ('<div class="pxb-note" style="margin-top:6px"><b>오늘은 최종 조건을 채운 종목이 '
-                 '없습니다.</b> 조건이 맞지 않는 날은 사지 않고 쉬는 것이 규칙입니다.</div>')
+        body += ('<div class="pxb-note" style="margin-top:6px"><b>오늘은 A그룹 종목이 없습니다.</b><br>'
+                 '조건이 맞지 않는 날은 사지 않고 쉬는 것이 규칙입니다.</div>')
     close = found.get("b_group") or []
     if close:
         shown = close[:15]
@@ -902,7 +926,7 @@ def a_group_panel(found: dict | None) -> str:
                         for one in shown)
         more = f' · 외 {len(close) - len(shown)}종목' if len(close) > len(shown) else ''
         body += (f'<div class="pxb-note" style="margin-top:8px"><b>B그룹 · 조건 1~2개 미달 '
-                 f'{len(close)}종목</b>{more} (적게 모자란 순, 같으면 기울기 가파른 순)</div>'
+                 f'{len(close)}종목</b>{more}<br>적게 모자란 순서, 같으면 180일선이 가파른 순서</div>'
                  f'<ol class="pxb-note" style="margin:4px 0 0 18px">{items}</ol>')
     return f'<div class="pxb">{body}</div>'
 

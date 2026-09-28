@@ -9,7 +9,8 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP, a_group_panel, board_basis,
+from dashboard_ui import (A_RULES, EMA_ONLY, GROUP_RULES, GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP,
+                          a_group_panel, board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
                           stock_cards)
@@ -64,7 +65,7 @@ def link_codes(store, state, known):
 
 # 판정 규칙을 바꾸면 캐시에 남은 옛 등급이 그대로 보입니다. 규칙 이름을 캐시
 # 열쇠에 넣어, 규칙이 바뀌면 옛 값이 저절로 버려지게 합니다.
-RULES = 'final-89-a-b-shortfall'
+RULES = 'final-a-b-shortfall-v2'
 
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -235,9 +236,9 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '없습니다. 아래 <b>＋ 조사된 종목 담기</b>로 자료가 준비된 종목을 한 번에 '
                  '담거나, <b>＋ 시가총액 상위 종목 담기</b>로 코스피·코스닥 상위 종목을 '
                  '담으면 여기에 그룹이 나옵니다.</p>')
-    st.markdown(header() + section('오늘의 A·B그룹 · 조사 대상 전체에서', '연구 89회차 최종 조건 · 기본 규칙 또는 정배열 갈래')
-                + a_group_panel(today_a_group(a_group_stamp()))
-                + section('그룹 판정 · 관심종목', RULE_TEXT)
+    st.markdown(header() + section('오늘의 A그룹 · 조사 대상 507종목 전체에서')
+                + A_RULES + a_group_panel(today_a_group(a_group_stamp())) + EMA_ONLY
+                + section('그룹 판정 · 관심종목') + GROUP_RULES
                 + (board or '') + close_frame(), unsafe_allow_html=True)
     if board is None:
         group_board_ui(graded)

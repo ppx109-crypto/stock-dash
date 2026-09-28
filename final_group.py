@@ -36,6 +36,9 @@ SPREAD = (19.0, 53.0)
 BREADTH = 50.0
 SLOTS = 5
 BATCH = 40
+# 화면에 나가는 두 방식의 이름. 연구 기록에서는 '기본 규칙'·'정배열 갈래'라고 불렀습니다.
+RULE_DOOR = "추세 규칙"
+LINES_DOOR = "정배열 추세"
 
 
 def sma(closes, span):
@@ -177,7 +180,7 @@ def compute(prices=None):
         doors = [door for door, gaps in missing.items() if not gaps]
         if doors:
             picks.append({**entry, "갈래": doors,
-                          "팔기": "종가 +10% 익절 · −5% 손절 · 최대 10거래일" if doors[0] == "기본 규칙"
+                          "팔기": "종가 +10% 익절 · −5% 손절 · 최대 10거래일" if doors[0] == RULE_DOOR
                           else "정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일"})
             continue
         fewest = min(len(gaps) for gaps in missing.values())
@@ -185,7 +188,7 @@ def compute(prices=None):
             doors_near = [door for door, gaps in missing.items() if len(gaps) == fewest]
             b_group.append({**entry, "가까운 갈래": doors_near, "모자란 수": fewest,
                             "모자란 것": {door: missing[door] for door in doors_near},
-                            "코멘트": " / ".join(f"{door}까지 {fewest}개 모자람 · " + " · ".join(missing[door])
+                            "코멘트": " / ".join(f"{door}까지 {fewest}개 모자람: " + ", ".join(missing[door])
                                                for door in doors_near)})
         else:
             rest += 1
@@ -200,7 +203,7 @@ def shortfalls(row, form, breadth, calm_edge):
     """갈래마다 오늘 못 채운 조건을 사람이 읽을 말로 돌려줍니다. 빈 목록이면 채운 것입니다."""
     place = row.get(caps.RANK)
     rank_gap = ([] if place is not None and place <= rule.TOP
-                else [f"시총 {place}등 (100등 안이어야 함)" if place else "시총 순위 모름"])
+                else [f"시총 {place}위 (100위 안이어야 함)" if place else "시총 순위 모름"])
     vol, slope, sixty = row.get("변동성"), row.get("추세 기울기"), row.get("60일 전 대비")
     by_rule = list(rank_gap)
     if vol is None or vol > calm_edge:
@@ -220,7 +223,7 @@ def shortfalls(row, form, breadth, calm_edge):
             by_lines.append(f"선 간격 {_text(gap, '%', 0)} ({SPREAD[0]:g}~{SPREAD[1]:g}%여야 함)")
     if breadth < BREADTH:
         by_lines.append(f"시장 폭 {breadth:.0f}% ({BREADTH:g}% 이상이어야 함)")
-    return {"기본 규칙": by_rule, "정배열": by_lines}
+    return {RULE_DOOR: by_rule, LINES_DOOR: by_lines}
 
 
 def _text(value, unit="", places=2):
@@ -259,16 +262,16 @@ def regroup(graded, found):
         code = row.get("code")
         if code in chosen:
             doors = "·".join(chosen[code].get("갈래") or [])
-            out.append({**row, "group": "A", "reason": f"매수 후보 · 최종 조건 충족({doors})",
-                        "comment": f"최종 조건 충족 · {doors}"})
+            out.append({**row, "group": "A", "reason": f"매수 후보 · {doors} 조건 충족",
+                        "comment": f"{doors} 조건을 모두 채움"})
         elif code in close:
             out.append({**row, "group": "B", "reason": close[code]["코멘트"],
                         "comment": close[code]["코멘트"], "shortfall": close[code]["모자란 수"]})
         elif code in counted:
-            out.append({**row, "group": "밖", "reason": "최종 조건이 3개 이상 모자람"})
+            out.append({**row, "group": "밖", "reason": "조건이 3개 이상 모자람"})
         else:
             out.append({**row, "group": None,
-                        "note": "조사 대상 507종목 밖이거나 시세가 없어 최종 조건을 셀 수 없습니다"})
+                        "note": "조사 대상 507종목 밖이거나 시세가 없어 조건을 셀 수 없습니다"})
     return out
 
 
