@@ -35,6 +35,7 @@ LINES = (3, 15, 20, 90, 150, 200)
 SPREAD = (19.0, 53.0)
 BREADTH = 50.0
 SLOTS = 5
+CONDITIONS = 4      # 갈래마다 조건 넷: 시총 100위 안 + 그 갈래의 조건 셋
 BATCH = 40
 # 화면에 나가는 두 방식의 이름. 연구 기록에서는 '기본 규칙'·'정배열 갈래'라고 불렀습니다.
 RULE_DOOR = "추세 규칙"
@@ -166,7 +167,7 @@ def compute(prices=None):
                if inside else 0.0)
     align_open = breadth >= BREADTH
     names = names_for([row["code"] for row in today], prices)
-    picks, b_group, rest = [], [], 0
+    picks, b_group, rest, far = [], [], 0, {}
     for row in today:
         form = shape.get(row["code"]) or {}
         entry = {"code": row["code"], "name": names.get(row["code"], row["code"]),
@@ -184,19 +185,22 @@ def compute(prices=None):
                           else "정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일"})
             continue
         fewest = min(len(gaps) for gaps in missing.values())
+        doors_near = [door for door, gaps in missing.items() if len(gaps) == fewest]
+        comment = " / ".join(f"{door}까지 {fewest}개 모자람: " + ", ".join(missing[door])
+                             for door in doors_near)
         if fewest <= 2:
-            doors_near = [door for door, gaps in missing.items() if len(gaps) == fewest]
             b_group.append({**entry, "가까운 갈래": doors_near, "모자란 수": fewest,
                             "모자란 것": {door: missing[door] for door in doors_near},
-                            "코멘트": " / ".join(f"{door}까지 {fewest}개 모자람: " + ", ".join(missing[door])
-                                               for door in doors_near)})
+                            "코멘트": comment})
         else:
+            # 판에는 싣지 않지만, 종목을 골라 자세히 볼 때 무엇이 모자란지 보여 줍니다.
+            far[row["code"]] = {"모자란 수": fewest, "코멘트": comment}
             rest += 1
     picks.sort(key=lambda one: -(one.get("추세 기울기") or -99))
     b_group.sort(key=lambda one: (one["모자란 수"], -(one.get("추세 기울기") or -99)))
     return {"date": day, "breadth": round(breadth, 1), "align_open": align_open,
             "calm_edge": round(rule._calm, 3), "slots": SLOTS, "picks": picks, "b_group": b_group,
-            "rest": rest, "counted": sorted(row["code"] for row in today), "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M")}
+            "rest": rest, "far": far, "counted": sorted(row["code"] for row in today), "made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M")}
 
 
 def shortfalls(row, form, breadth, calm_edge):
@@ -268,7 +272,9 @@ def regroup(graded, found):
             out.append({**row, "group": "B", "reason": close[code]["코멘트"],
                         "comment": close[code]["코멘트"], "shortfall": close[code]["모자란 수"]})
         elif code in counted:
-            out.append({**row, "group": "밖", "reason": "조건이 3개 이상 모자람"})
+            far = (found.get("far") or {}).get(code) or {}
+            out.append({**row, "group": "밖", "reason": "조건이 3개 이상 모자람",
+                        "comment": far.get("코멘트"), "shortfall": far.get("모자란 수")})
         else:
             out.append({**row, "group": None,
                         "note": "조사 대상 507종목 밖이거나 시세가 없어 조건을 셀 수 없습니다"})

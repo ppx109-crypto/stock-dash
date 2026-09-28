@@ -457,14 +457,20 @@ def board_basis(graded: list | None, pending: list | None = None) -> str:
 
 
 
+FINAL_CONDITIONS = 4    # final_group.CONDITIONS와 같습니다. 갈래마다 시총 100위 안 + 조건 셋.
+
+
 def stock_score(grade: dict | None) -> tuple[int, list[tuple[str, int]], str]:
-    """한 종목의 판단점수. 그룹과 같은 잣대인 EMA 충족 비율만 씁니다."""
-    if not grade or not grade.get("trend"):
-        return 0, [], "판정 자료 부족"
-    axis = grade["trend"]
-    total = axis.get("total") or 4
-    score = round(axis.get("met", 0) / total * 100)
-    return score, [("추세 EMA", score)], grade.get("reason", "")
+    """한 종목의 판단점수. A·B그룹과 같은 잣대(최종 조건)로, 가까운 갈래의 조건 넷 중 채운 비율입니다."""
+    if not grade or not grade.get("group"):
+        return 0, [], (grade or {}).get("note") or "판정 자료 부족"
+    if grade["group"] == "A":
+        return 100, [("최종 조건", 100)], grade.get("comment") or "조건을 모두 채움"
+    short = grade.get("shortfall")
+    if not isinstance(short, int):
+        return 0, [], grade.get("comment") or grade.get("reason", "")
+    score = round(max(FINAL_CONDITIONS - short, 0) / FINAL_CONDITIONS * 100)
+    return score, [("최종 조건", score)], grade.get("comment") or grade.get("reason", "")
 
 
 def frame(body: str) -> str:
@@ -607,12 +613,14 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     axis = (grade or {}).get("trend") or {}
 
     score, _rows, verdict = stock_score(grade)
-    checks = axis.get("checks") or {}
+    # 모자란 조건을 한 줄씩 적습니다. 코멘트는 "갈래까지 N개 모자람: 가, 나 / …" 꼴입니다.
     check_list = ""
-    if checks:
+    parts = [part.split(": ", 1) for part in str(verdict).split(" / ") if ": " in part]
+    if parts:
+        items = list(dict.fromkeys(item for _, rest in parts for item in rest.split(", ")))
         check_list = '<ul class="pxb-list">' + "".join(
-            f'<li>{_e(name)}<em style="color:{LINE if ok else DOWN}">'
-            f'{"충족" if ok else "미충족"}</em></li>' for name, ok in checks.items()) + "</ul>"
+            f'<li>{_e(item)}<em style="color:{DOWN}">미충족</em></li>' for item in items) + "</ul>"
+        verdict = " / ".join(head for head, _ in parts)
     # 규칙이 바뀌어 사라진 그룹 이름이 남아 있어도 화면이 멈추지 않게 합니다.
     group = (grade or {}).get("group")
     tone = STATUS.get(group)

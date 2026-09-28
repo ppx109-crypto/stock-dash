@@ -8,9 +8,9 @@ import final_group
 import rule
 
 try:        # 화면 쪽은 streamlit이 있어야 불러집니다. A그룹을 세는 CI에는 없습니다.
-    from dashboard_ui import a_group_panel, group_buckets
+    from dashboard_ui import a_group_panel, group_buckets, stock_score
 except ModuleNotFoundError:
-    a_group_panel = group_buckets = None
+    a_group_panel = group_buckets = stock_score = None
 
 
 class Regroup(unittest.TestCase):
@@ -36,6 +36,12 @@ class Regroup(unittest.TestCase):
     def test_a_counted_stock_that_misses_more_is_left_out(self):
         got = final_group.regroup([{"code": "000003", "group": "B"}], self.found)
         self.assertEqual(got[0]["group"], "밖")
+
+    def test_a_far_stock_keeps_what_it_misses(self):
+        found = {**self.found, "far": {"000003": {"모자란 수": 3, "코멘트": "추세 규칙까지 3개 모자람: 가, 나, 다"}}}
+        got = final_group.regroup([{"code": "000003"}], found)
+        self.assertEqual(got[0]["shortfall"], 3)
+        self.assertIn("가, 나, 다", got[0]["comment"])
 
     def test_a_stock_outside_the_study_is_pending(self):
         got = final_group.regroup([{"code": "999999", "group": "A"}], self.found)
@@ -127,6 +133,12 @@ class Panel(unittest.TestCase):
 
     def test_missing_result_is_explained(self):
         self.assertIn("아직 없습니다", a_group_panel(None))
+
+    def test_the_score_follows_the_final_conditions(self):
+        self.assertEqual(stock_score({"group": "A", "comment": "정배열 추세 조건을 모두 채움"})[0], 100)
+        self.assertEqual(stock_score({"group": "B", "shortfall": 1, "comment": "x"})[0], 75)
+        self.assertEqual(stock_score({"group": "밖", "shortfall": 3, "comment": "x"})[0], 25)
+        self.assertEqual(stock_score({"group": None, "note": "셀 수 없음"}), (0, [], "셀 수 없음"))
 
     def test_the_board_has_no_c_and_leaves_out_the_rest(self):
         buckets, pending = group_buckets([{"code": "1", "group": "A"}, {"code": "2", "group": "B"},

@@ -103,9 +103,13 @@ def trend_panel(grade):
         return
     left,right=st.columns([1,1.25])
     with left:
-        st.metric(f"{grade['group']}그룹",grade.get('reason',''))
-        st.caption(f"추세 {axis.get('grade')} · 실적 {money.get('grade')}"
-                   f" · 조건 {grade.get('met')}/{grade.get('total')}")
+        # 그룹은 최종 조건(A·B)입니다. 오른쪽 EMA 막대는 참고로만 둡니다.
+        title={'A':'A그룹 · 매수 후보','B':'B그룹 · 조건 1~2개 미달','밖':'A·B그룹 밖'}.get(grade['group'],f"{grade['group']}그룹")
+        value=f"조건 {grade['shortfall']}개 미달" if grade['group']=='B' and grade.get('shortfall') else grade.get('reason','')
+        st.metric(title,value)
+        if grade.get('comment') and grade['group']!='A':
+            st.caption(grade['comment'])
+        st.caption(f"참고 · 실적 {money.get('grade')}")
     with right:
         lines=axis.get('ema') or {}
         if lines:
@@ -115,11 +119,8 @@ def trend_panel(grade):
                 x=alt.X('값:Q',title='원',scale=alt.Scale(zero=False)),
                 color=alt.Color('선:N',scale=alt.Scale(range=['#9db9a4',GOLD,'#c8b184','#d8c8a7','#e6dcc6']),legend=None),
                 tooltip=['선',alt.Tooltip('값:Q',format=',.0f')]).properties(height=170))
-        st.caption(f"이평선 간격 {axis.get('spread')}% · 60일선 {'상승' if axis.get('slope_up') else '하락'}"
+        st.caption(f"참고 · 지수이동평균(EMA) · 이평선 간격 {axis.get('spread')}% · 60일선 {'상승' if axis.get('slope_up') else '하락'}"
                    f" · 거래일 {axis.get('days')}개")
-    missing=grade.get('missing') or []
-    if missing:
-        st.caption('미달 조건 · '+' / '.join(missing))
     if axis.get('price_breaks'):
         st.caption(f"가격이 하루 사이 크게 끊긴 지점 {axis['price_breaks']}곳 · "
                    '공공데이터포털 종가는 수정주가가 아니라 분할·병합 구간에서 이동평균이 왜곡될 수 있습니다.')
