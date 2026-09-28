@@ -52,5 +52,38 @@ class Codes(unittest.TestCase):
         self.assertFalse(research_ui._is_code(None))
 
 
+class Filings(unittest.TestCase):
+    """시세 키가 없어도 DART만으로 결산·공시를 받습니다."""
+
+    def provider(self):
+        import providers
+        one = providers.Official.__new__(providers.Official)
+        one.names = {"005930": "삼성전자"}
+        one.corp = lambda code: "00126380"
+        have = {2023, 2024, 2025}
+        one.annual = lambda corp, year, basis: ({"year": year, "revenue": 10.0 * year, "profit": 1.0,
+                                                 "receipt": f"{year}0301000001"}
+                                                if basis == "CFS" and year in have else None)
+        one.dart = lambda endpoint, **kw: ({"corp_name": "삼성전자", "est_dt": "19690113"}
+                                           if endpoint == "company.json" else {"list": []})
+        one.business_excerpt = lambda receipt: "사업의 개요 " + receipt
+        return one
+
+    def test_three_years_without_a_price(self):
+        got = self.provider().filings("005930")
+        self.assertEqual([y["year"] for y in got["years"]], [2023, 2024, 2025])
+        self.assertTrue(got["no_price"])
+        self.assertIsNone(got["price"])
+        self.assertIn("20250301000001", got["business_excerpt"])
+        self.assertEqual(got["company"]["est_dt"], "19690113")
+
+    def test_a_single_year_is_not_enough(self):
+        import providers
+        one = self.provider()
+        one.annual = lambda corp, year, basis: {"year": year, "revenue": 1.0, "profit": 1.0} if year == 2025 else None
+        with self.assertRaises(providers.DataError):
+            one.filings("005930")
+
+
 if __name__ == "__main__":
     unittest.main()

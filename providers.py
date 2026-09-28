@@ -452,6 +452,47 @@ class Official:
             report["warnings"].append("사업 원문을 자동 추출하지 못했습니다. 공시 링크에서 확인하세요.")
         return report
 
+    def filings(self, code):
+        """시세 없이 DART만으로 받는 최근 결산 · 기업개황 · 공시 · 사업 설명.
+
+        공공데이터포털 시세 키가 없거나 막힌 곳에서도 종목 탭이 비지 않게 합니다.
+        현재가가 없으니 과거 배수로 셈하는 참고 가격은 만들지 않습니다(no_price).
+        """
+        asof = date.today()
+        corp = self.corp(code)
+        years, basis = [], None
+        for year in range(asof.year - 1, asof.year - 4, -1):
+            for kind in ("CFS", "OFS"):
+                if self.annual(corp, year, kind):
+                    series = [self.annual(corp, y, kind) for y in range(year - 2, year + 1)]
+                    years, basis = [one for one in series if one], kind
+                    break
+            if years:
+                break
+        if len(years) < 2:
+            raise DataError("최근 두 해 이상의 결산 보고서를 찾지 못했습니다.")
+        report = {"code": code, "name": self.names.get(code, code), "price": None, "price_date": None,
+                  "basis": basis, "years": years, "fetched": asof.isoformat(), "sample": False,
+                  "no_price": True, "anchors": [], "shares": None, "market_cap": None, "warnings": []}
+        try:
+            info = self.dart("company.json", corp_code=corp) or {}
+            report["company"] = {k: info.get(k, "") for k in ["corp_name", "induty_code", "hm_url", "est_dt", "acc_mt"]}
+        except DataError:
+            report["company"] = {}
+        try:
+            listed = self.dart("list.json", corp_code=corp, bgn_de=(asof - timedelta(days=90)).strftime("%Y%m%d"),
+                               end_de=asof.strftime("%Y%m%d"), page_count=20) or {}
+            report["disclosures"] = [{"title": r["report_nm"], "date": r["rcept_dt"],
+                                      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=" + r["rcept_no"]}
+                                     for r in listed.get("list", [])]
+        except DataError:
+            report["disclosures"] = []
+        try:
+            report["business_excerpt"] = self.business_excerpt(years[-1].get("receipt"))
+        except DataError:
+            report["business_excerpt"] = ""
+        return report
+
     def report(self, code, year, asof=None):
         asof = asof or date.today()
         corp = self.corp(code)

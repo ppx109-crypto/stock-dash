@@ -68,14 +68,24 @@ def _fresh_report(code):
 def fresh_report(code):
     """최신 공시·결산. (자료, 실패 안내) 둘 중 하나만 채워 돌려줍니다."""
     from providers import DataError
-    try:
-        with st.spinner('최신 공시·실적을 받는 중'):
+    with st.spinner('최신 공시·실적을 받는 중'):
+        try:
             return _fresh_report(code), None
-    except DataError as error:
-        # 우리가 만든 안내문만 담깁니다. 응답 본문은 싣지 않습니다.
-        return None, str(error)[:80]
-    except Exception:
-        return None, FRESH_FAILED
+        except DataError as error:
+            # 우리가 만든 안내문만 담깁니다. 응답 본문은 싣지 않습니다.
+            first = str(error)[:80]
+        except Exception:
+            first = FRESH_FAILED
+        # 시세 쪽이 막혀도 DART만으로 받을 수 있는 것은 받아 옵니다.
+        try:
+            return _fresh_filings(code), None
+        except Exception:
+            return None, first
+
+
+@st.cache_data(ttl=1800, show_spinner=False)
+def _fresh_filings(code):
+    return _official().filings(code)
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -215,6 +225,8 @@ def latest_price_check(code):
                 for col, key, label in [(a, 'low', '낮은 참고가'), (b, 'base', '기본 참고가'), (c, 'high', '높은 참고가')]:
                     col.metric(label, f'{fair[key]:,.0f}원')
                 st.caption('과거 결산 발표 뒤의 시가총액 ÷ 영업이익 배수를 최근 결산 이익에 적용한 참고 가격입니다.')
+            elif report.get('no_price'):
+                st.caption('참고 가격 보류 · 시세 자료를 받지 못해 과거 배수로 셈할 수 없습니다.')
             else:
                 st.caption('참고 가격 보류 · ' + brief(report)['fair_reason'])
         elif problem and not quote:

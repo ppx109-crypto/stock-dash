@@ -33,10 +33,10 @@ def main():
             print("  [글]", str(c.value)[:140])
         for m in at.metric:
             print("  [칸]", m.label, "=", m.value)
-        print("  [표]", len(at.dataframe), "개 · [그래프]", len(at.get("arrow_line_chart")) + len(at.get("line_chart")),
+        print("  [표]", len(at.dataframe), "개 · [그래프]", len(at.get("vega_lite_chart")),
               "개 · [본문]", sum(len(str(t.value)) for t in at.markdown), "자")
         failed = [str(c.value) for c in at.caption
-                  if any(word in str(c.value) for word in ("받지 못했습니다", "실패", "중단", "오류"))]
+                  if any(word in str(c.value) for word in ("받지 못했습니다", "실패", "중단", "오류", "HTTP"))]
         if failed:
             bad += 1
             print("  → 받지 못한 칸", len(failed), "개")
