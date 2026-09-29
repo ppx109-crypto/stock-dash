@@ -13,7 +13,7 @@ class Message(unittest.TestCase):
         self.assertIn("2026-09-28", text)
         self.assertIn("삼성전자", text)
         self.assertIn("285,500원", text)
-        self.assertIn("SK하이닉스", text)
+        self.assertNotIn("SK하이닉스", text)   # B그룹은 보내지 않음
 
     def test_empty_day(self):
         text = "\n".join(N.lines({"date": "20260928", "picks": [], "b_group": []}))
