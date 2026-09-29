@@ -41,3 +41,10 @@ jobs:
             git pull --rebase origin main
             git push
           fi
+      - name: Send today's A group to Discord
+        # 웹훅 주소는 GitHub Secrets의 DISCORD_WEBHOOK_URL에만 둡니다. 없으면 보내지 않고 넘어갑니다.
+        run: |
+          pip install requests
+          python notify_discord.py || echo '디스코드 알림은 실패했지만 A그룹 저장은 끝났습니다.'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
