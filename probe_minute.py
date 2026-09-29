@@ -87,6 +87,63 @@ def kis_hour():
              "FID_INPUT_DATE_1": day, "FID_PW_DATA_INCU_YN": "Y", "FID_FAKE_TICK_INCU_YN": ""})
 
 
+def kis_intraday():
+    """장중(시간대별) 자료가 과거 날짜로도 나오는지: 줄 수 · 칸 이름 · 시각 · 날짜 범위만 찍음(본문 · 키 안 찍음)."""
+    import broker_kis
+    c = broker_kis.market()
+    Q = "/uapi/domestic-stock/v1/quotations/"
+
+    def ask(name, path, tr, params):
+        try:
+            c.authorize()
+            _, data = c.request("GET", Q + path, headers={
+                "authorization": "Bearer " + c.token, "appkey": c.key, "appsecret": c.secret,
+                "tr_id": tr, "custtype": "P"}, params=params)
+        except broker_kis.BrokerError as e:
+            print(f"  {name} · 거절 {str(e)[:60]}", flush=True)
+            return
+        msg = str(data.get("msg_cd") or "")
+        msg = msg if re.fullmatch(r"[A-Z]{2,4}[0-9]{3,6}", msg) else ""
+        shown = False
+        for key in ("output", "output1", "output2"):
+            rows = data.get(key)
+            rows = [rows] if isinstance(rows, dict) else (rows or [])
+            rows = [r for r in rows if isinstance(r, dict)]
+            if not rows:
+                continue
+            shown = True
+            tk = [k for k in rows[0] if "hour" in k or "time" in k or k.endswith("_tm")]
+            dk = [k for k in rows[0] if "date" in k or k.endswith("_dt")]
+            ts = sorted(str(r.get(tk[0], "")) for r in rows) if tk else []
+            ds = sorted(str(r.get(dk[0], "")) for r in rows) if dk else []
+            print(f"  {name} [{key}] · rt_cd {data.get('rt_cd')} {msg} · 줄 {len(rows)} · 시각 {ts[0] if ts else '-'}~{ts[-1] if ts else '-'}"
+                  f" · 날짜 {ds[0] if ds else '-'}~{ds[-1] if ds else '-'}", flush=True)
+            print(f"    칸: {', '.join(sorted(rows[0]))[:400]}", flush=True)
+        if not shown:
+            print(f"  {name} · rt_cd {data.get('rt_cd')} {msg} · 빈 응답", flush=True)
+
+    code = "005930"
+    for day in ("", "20260925", "20260615", "20250915"):
+        tag = day or "오늘"
+        ask(f"시간대별 체결({tag})", "inquire-time-itemconclusion", "FHPST01060000",
+            {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": code, "FID_INPUT_HOUR_1": "153000",
+             **({"FID_INPUT_DATE_1": day} if day else {})})
+        ask(f"종목 프로그램매매 체결 시간별({tag})", "program-trade-by-stock", "FHPPG04650100",
+            {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": code, **({"FID_INPUT_DATE_1": day} if day else {})})
+        ask(f"종목 투자자 추정(장중, {tag})", "investor-trend-estimate", "HHPTJ04160200",
+            {"MKSC_SHRN_ISCD": code, **({"FID_INPUT_DATE_1": day} if day else {})})
+    ask("시장 투자자 시간별(코스피)", "inquire-investor-time-by-market", "FHPTJ04030000",
+        {"FID_INPUT_ISCD": "0001", "FID_INPUT_ISCD_2": "0001"})
+    ask("종목 외국계 순매수 추이(장중)", "frgnmem-pchs-trend", "FHKST644400C0",
+        {"FID_INPUT_ISCD": code, "FID_INPUT_ISCD_2": "99999", "FID_COND_MRKT_DIV_CODE": "J"})
+    ask("프로그램매매 종합 시간별(코스피)", "comp-program-trade-today", "FHPPG04600101",
+        {"FID_COND_MRKT_DIV_CODE": "J", "FID_MRKT_CLS_CODE": "K", "FID_SCTN_CLS_CODE": "", "FID_INPUT_ISCD": "",
+         "FID_COND_MRKT_DIV_CODE1": "", "FID_INPUT_HOUR_1": ""})
+    ask("국내기관 · 외국인 매매 가집계(장중)", "foreign-institution-total", "FHPTJ04400000",
+        {"FID_COND_MRKT_DIV_CODE": "V", "FID_COND_SCR_DIV_CODE": "16449", "FID_INPUT_ISCD": "0000",
+         "FID_DIV_CLS_CODE": "0", "FID_RANK_SORT_CLS_CODE": "0", "FID_ETC_CLS_CODE": "0"})
+
+
 def yahoo():
     import datetime as dt
     import requests
@@ -115,6 +172,8 @@ if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else ""
     if which == "kis":
         kis()
+    elif which == "kis_intraday":
+        kis_intraday()
     elif which == "kis_hour":
         kis_hour()
     elif which == "yahoo":
