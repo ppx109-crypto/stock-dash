@@ -170,21 +170,35 @@ class KIS:
         국내주식 종목투자의견(국내주식-188) API입니다. 조회 전용이며 주문과
         무관합니다. 응답의 hts_goal_prc가 목표가, invt_opnn이 의견입니다.
         """
-        if not re.fullmatch(r'[0-9]{6}', str(code)):
-            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
-        self.authorize()
         today = datetime.now(ZoneInfo('Asia/Seoul')).date()
         begin = today - timedelta(days=max(days, 1))
+        return self.opinions_between(code, begin.strftime('%Y%m%d'), today.strftime('%Y%m%d'))[0]
+
+    OPINION_PAGE = 100      # 한 번에 오는 줄의 끝. 이만큼 오면 그 기간에 더 있을 수 있습니다.
+
+    def opinions_between(self, code, start, end):
+        """start~end(YYYYMMDD) 사이의 투자의견. (목표가 있는 줄들, 받은 줄 수)를 돌려줍니다.
+
+        받은 줄 수가 OPINION_PAGE에 닿으면 그 기간에 더 있을 수 있으니, 부르는 쪽이 기간을 쪼갭니다.
+        """
+        if not re.fullmatch(r'[0-9]{6}', str(code)):
+            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
+        if not (re.fullmatch(r'[0-9]{8}', str(start)) and re.fullmatch(r'[0-9]{8}', str(end))):
+            raise BrokerError('날짜는 숫자 8자리여야 합니다.')
+        self.authorize()
         _, data = self.request(
             'GET', '/uapi/domestic-stock/v1/quotations/invest-opinion',
             headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
                      'appsecret': self.secret, 'tr_id': 'FHKST663300C0', 'custtype': 'P'},
             params={'FID_COND_MRKT_DIV_CODE': 'J', 'FID_COND_SCR_DIV_CODE': '16633',
-                    'FID_INPUT_ISCD': str(code), 'FID_INPUT_DATE_1': begin.strftime('%Y%m%d'),
-                    'FID_INPUT_DATE_2': today.strftime('%Y%m%d')})
+                    'FID_INPUT_ISCD': str(code), 'FID_INPUT_DATE_1': str(start),
+                    'FID_INPUT_DATE_2': str(end)})
         if str(data.get('rt_cd')) != '0':
-            raise BrokerError('투자의견 조회가 승인되지 않았습니다. API 신청 상태와 실전·모의 환경을 확인하세요. '
-                              + str(data.get('msg1', ''))[:40])
+            # 응답 문구는 싣지 않고, 모양을 확인한 코드만 붙입니다.
+            seen = str(data.get('msg_cd') or '').strip()
+            seen = seen if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', seen) else ''
+            raise BrokerError('투자의견 조회가 승인되지 않았습니다. API 신청 상태와 실전·모의 환경을 확인하세요.'
+                              + (f' ({seen})' if seen else ''))
         rows = data.get('output')
         if rows is None:
             rows = []
@@ -206,7 +220,7 @@ class KIS:
                           'prior_opinion': str(row.get('rgbf_invt_opnn', '')).strip(),
                           'member': str(row.get('mbcr_name', '')).strip()})
         found.sort(key=lambda r: r['date'], reverse=True)
-        return found
+        return found, len(rows)
 
     def quote(self, code):
         """한 종목의 현재가. 장중에는 실시간, 장 마감 뒤에는 그날 종가입니다."""
