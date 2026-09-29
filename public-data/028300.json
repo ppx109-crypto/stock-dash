@@ -389,7 +389,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-28",
+  "fetched": "2026-09-29",
   "disclosures": [
     {
       "title": "전환사채(해외전환사채포함)발행후만기전사채취득              ",
@@ -470,11 +470,6 @@
       "title": "기업설명회(IR)개최              ",
       "date": "20260708",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260708900302"
-    },
-    {
-      "title": "기타시장안내(약명및영문명)              (영문상호)",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630900881"
     }
   ]
 }

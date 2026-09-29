@@ -38,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-22",
+  "fetched": "2026-09-29",
   "disclosures": [
     {
       "title": "특수관계인과의보험거래",
@@ -139,36 +139,6 @@
       "title": "계열금융회사의약관에의한금융거래-[보험]",
       "date": "20260714",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000142"
-    },
-    {
-      "title": "지속가능경영보고서등관련사항(자율공시)              ",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630801374"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000280"
-    },
-    {
-      "title": "특수관계인에대한부동산임대",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000274"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000271"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000267"
-    },
-    {
-      "title": "특수관계인에대한증여",
-      "date": "20260630",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260630000224"
     }
   ]
 }
