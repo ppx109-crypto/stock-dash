@@ -1,0 +1,31 @@
+name: Probe opinion history
+# 증권사가 종목별 목표가(투자의견)를 과거(2017~)까지 주는지 한 번 찔러 봅니다. 저장하지 않습니다.
+on:
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '찔러 볼 종목코드(띄어쓰기로 여럿)'
+        required: false
+        default: '005930 000660'
+permissions:
+  contents: read
+concurrency:
+  group: kis-collect
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Ask by year
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          CODES: ${{ inputs.codes }}
+        run: python probe_opinion_history.py $CODES
