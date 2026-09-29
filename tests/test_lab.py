@@ -733,3 +733,35 @@ class Realign(unittest.TestCase):
                 {"code": "000001", "date": "20191231", "i": 0}]
         got = lab.realign(rows, prices)
         self.assertEqual([(r["date"], r["i"]) for r in got], [("20200103", 2)])
+
+
+
+class PartialExit(unittest.TestCase):
+    def test_sell_one_slot_then_the_rest(self):
+        """청산이 정수 1을 내면 두 자리 가운데 한 자리만 팔고, 나머지는 뒤에 True로 팝니다."""
+        days = [f"2020{(k // 21) + 1:02d}{(k % 21) + 1:02d}" for k in range(80)]
+        closes = [100.0] * 10 + [100.0 + 2 * k for k in range(1, 71)]
+        codes = [f"{k:06d}" for k in range(1, 71)]
+        prices = {c: {"name": c, "rows": list(zip(days, closes))} for c in codes}
+        rows = [{"code": c, "date": days[9], "i": 9, "price": 100.0} for c in codes]
+        # 하루하루 더 돌게 하는 들러리(사지는 않음). 달력은 마지막 신호 날까지만 돕니다.
+        rows.append({"code": codes[0], "date": days[79], "i": 79, "price": closes[79], "들러리": True})
+        done = set()
+
+        def exit_at(lane, start, price, step, peak, row=None):
+            now = lane["closes"][start + step] / price - 1
+            if now >= 0.10:
+                return True
+            if now >= 0.05 and row["code"] not in done:
+                done.add(row["code"])
+                return 1
+            return False
+
+        out = lab.run(rows, prices, lambda r: not r.get("들러리"), exit_at, slots=140, size=lambda r: 2,
+                      detail=True, cost=0.0)
+        ledger = out["매매목록"]
+        parts = [t for t in ledger if t.get("나눠 팜")]
+        full = [t for t in ledger if not t.get("나눠 팜")]
+        self.assertEqual((len(parts), len(full)), (70, 70))
+        self.assertTrue(all(t["자리"] == 1 and abs(t["손익"] - 6.0) < 1e-9 for t in parts))
+        self.assertTrue(all(t["자리"] == 1 and abs(t["손익"] - 10.0) < 1e-9 for t in full))

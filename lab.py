@@ -824,8 +824,27 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 # 하한가에 붙은 날은 팔 수 없습니다. 팔 수 있는 날까지 갑니다.
                 spot["step"] = step
                 continue
-            if exit_at(one, spot["i"], spot["price"], step, spot["peak"],
-                       spot["row"]):
+            decided = exit_at(one, spot["i"], spot["price"], step, spot["peak"],
+                              spot["row"])
+            # 나눠 팔기: 청산이 True가 아닌 정수 k(0 < k < 들고 있는 자리)를 내면 k자리만 그날 종가에 팝니다.
+            if (decided is not True and isinstance(decided, int) and not isinstance(decided, bool)
+                    and 0 < decided < spot["자리"]):
+                part = decided
+                gain = (closes[index] / spot["price"] - 1) * 100 - cost
+                trades.append(gain)
+                weighted.append(gain * part)
+                purse *= 1 + gain * part / 100 / slots
+                crest = max(crest, purse)
+                year_gains.setdefault(day[:4], []).append(gain * part)
+                held_days.append(step)
+                if detail:
+                    ledger.append({"code": code, "산 날": spot["row"]["date"],
+                                   "판 날": day, "들고": step, "자리": part,
+                                   "손익": round(gain, 2), "행": spot["row"], "나눠 팜": True})
+                spot["자리"] -= part
+                spot["step"] = step
+                continue
+            if decided:
                 sold = closes[index]
                 if fill is not None:
                     asked = fill(one, spot["i"], spot["price"], step,
