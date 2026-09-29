@@ -103,6 +103,8 @@ def save(path, body):
 def events(d, corp, code, today):
     path = Path("dart-events") / f"{code}.json"
     body = load(path) or {"code": code, "rows": {}, "받은날": {}}
+    if all(body["받은날"].get(name, "") >= today for name in EVENTS):
+        return sum(len(v) for v in body["rows"].values())      # 오늘 이미 다 받음 — 다시 묻지 않음
     for name, ep in EVENTS.items():
         since = body["받은날"].get(name, START)
         got = d.ask(ep, corp_code=corp, bgn_de=since, end_de=today)
