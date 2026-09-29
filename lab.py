@@ -834,7 +834,12 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                     spot["step"] = step
                     continue
                 part = min(decided, spot["자리"] - 1)
-                gain = (closes[index] / spot["price"] - 1) * 100 - cost
+                sold = closes[index]
+                if fill is not None:
+                    asked = fill(one, spot["i"], spot["price"], step, spot["peak"], spot["row"])
+                    if asked:
+                        sold = asked
+                gain = (sold / spot["price"] - 1) * 100 - cost
                 trades.append(gain)
                 weighted.append(gain * part)
                 purse *= 1 + gain * part / 100 / slots
