@@ -162,14 +162,15 @@ LUCK_CAP = 30.0      # 행운 뺀 연수익: 한 번 매매의 이익을 이 %�
 
 
 def luck(g, slots, since):
-    """씨앗 0번 판의 매매목록으로 (이익 +30% 자른 연수익, 가장 크게 번 2건 뺀 연수익). 드문 대박이 평균을 흔들지 않게."""
+    """씨앗 0번 판의 매매목록으로 (단순 연수익, 이익 +30% 자른 연수익, 가장 크게 번 2건 뺀 연수익). 셋 다 복리 없이 더한 값이라
+    서로 견줌(복리 '연'과는 견주지 않음). 드문 대박이 평균을 흔들지 않게."""
     led = (g or {}).get("매매목록") or []
     if not led:
-        return None, None
+        return None, None, None
     years = max(1, int(max(t["판 날"] for t in led)[:4]) - int(str(since)[:4]) + 1)
     w = sorted(t["손익"] * t["자리"] for t in led)
     capped = sum(min(t["손익"], LUCK_CAP) * t["자리"] for t in led) / slots / years
-    return round(capped, 2), round(sum(w[:-2]) / slots / years, 2)
+    return round(sum(w) / slots / years, 2), round(capped, 2), round(sum(w[:-2]) / slots / years, 2)
 
 
 def line(g, slots=None, since=None):
@@ -178,9 +179,9 @@ def line(g, slots=None, since=None):
     text = (f"매매 {g['매매']:>3} 연 {g['연수익']:>6} (폭 {g['폭']:>5}) 골 {g['최대낙폭']:>6} (골폭 {g['골 폭']:>4}) "
             f"가동 {g['가동률']:>5} 승률 {g['승률']} 보유 {g['보유중앙']}")
     if slots and since:
-        a, b = luck(g, slots, since)
+        s, a, b = luck(g, slots, since)
         if a is not None:
-            text += f" 행운뺌 {a:>6} 큰2건뺌 {b:>6}"
+            text += f" 단순 {s:>6} 행운뺌 {a:>6} 큰2건뺌 {b:>6}"
     return text
 
 
