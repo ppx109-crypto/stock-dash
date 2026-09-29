@@ -1,0 +1,29 @@
+name: Probe data catalog
+# DART · 한국투자증권에서 과거까지 받을 수 있는 자료를 한 번 찔러 봅니다(조회 전용). 저장하지 않고, 줄 수 · 칸 이름 · 날짜 범위만 찍습니다.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: kis-collect
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: DART
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+        run: python probe_catalog.py dart
+      - name: KIS
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+        run: python probe_catalog.py kis
