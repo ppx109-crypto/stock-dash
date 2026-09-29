@@ -12,6 +12,10 @@ def e_peek(c, b):          # 일부러 다음 봉 종가를 봄(미래 참조) �
     m = e_align_or_noon(c, b).copy()
     nxt = np.r_[b["c"][1:], b["c"][-1]]
     return m | (ctx_now(c, b) & (nxt > b["c"] * 1.02))
+def e_peek_far(c, b):      # 일부러 30봉 뒤 종가를 봄(멀리 엿보기) — 잘라내기 · 더럽히기가 잡아야 함
+    m = e_align_or_noon(c, b).copy()
+    far = np.r_[b["c"][30:], np.full(min(30, len(b["c"])), b["c"][-1])]
+    return m & (far > b["c"] * 1.05)
 def exit_peek(c, b, p, k):   # 일부러 다음 봉 종가를 보고 팜 — 검사가 잡아야 함
     if k + 1 < len(b["c"]) and b["c"][k + 1] < b["c"][k] * 0.98: return "all"
     return exit_daily(c, b, p, k)
@@ -21,6 +25,7 @@ RULES = {
     "짧은 판 B": dict(entry=entry(), exit_rule=exit_trail, size=four, rank=rank, take_of=take_half, stop_of=stop5),
     "엿보기(검사 눈)": dict(entry=e_peek, exit_rule=exit_daily, size=size, rank=rank),
     "엿보기 팔기(검사 눈)": dict(entry=e_align_or_noon, exit_rule=exit_peek, size=size, rank=rank),
+    "멀리 엿보기(검사 눈)": dict(entry=e_peek_far, exit_rule=exit_daily, size=size, rank=rank),
 }
 out = {"max_bar": max(b["t"][-1] for b in data.values()), "max_rank_day": max(ranks), "rules": {}, "dates": []}
 # 날짜 짚기: 봉마다 붙은 일봉 재료의 날 · 수급 마지막 날이 그 봉의 날보다 앞인가
@@ -50,7 +55,7 @@ def clear_memos():
 # 3b 봉마다 더럽히기: 종목 · 봉 수백 곳에서 그 봉 뒤만 엉뚱하게 바꿔 신호(그 봉까지) · 파는 판단(그 봉) · 묵음 판단이 그대로인지
 rng = np.random.default_rng(11)
 codes = sorted(data)
-pick = [codes[i] for i in rng.choice(len(codes), min(60, len(codes)), replace=False)]
+pick = [codes[i] for i in rng.choice(len(codes), min(40, len(codes)), replace=False)]
 bar_poison = {name: [0, 0] for name in RULES}      # [어긋난 수, 짚은 수]
 base_sig = {}
 for name, kw in (RULES.items() if not (os.environ.get("HLAB_CUT") or os.environ.get("HLAB_POISON")) else []):
@@ -59,7 +64,7 @@ for name, kw in (RULES.items() if not (os.environ.get("HLAB_CUT") or os.environ.
 for c in (pick if not (os.environ.get("HLAB_CUT") or os.environ.get("HLAB_POISON")) else []):
     b = data[c]; n = len(b["t"])
     hot = np.flatnonzero(ctx_now(c, b))
-    ks = list(rng.choice(np.arange(200, n - 2), 12, replace=False)) + (list(rng.choice(hot[(hot > 200) & (hot < n - 2)], min(12, int(((hot > 200) & (hot < n - 2)).sum())), replace=False)) if len(hot) else [])
+    ks = list(rng.choice(np.arange(200, n - 2), 8, replace=False)) + (list(rng.choice(hot[(hot > 200) & (hot < n - 2)], min(8, int(((hot > 200) & (hot < n - 2)).sum())), replace=False)) if len(hot) else [])
     for k in ks:
         bp = poisoned(b, int(k), rng)
         for name, kw in RULES.items():

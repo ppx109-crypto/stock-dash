@@ -11,7 +11,9 @@ python hguard.py            → docs/1H-GUARD.md에 결과를 적음(회차에�
                    '조금이라도 뒷날을 쓴 것'까지 잡힘.
    4b 봉마다 더럽히기 — 종목 60개 × 봉 약 24곳(재료가 켜진 봉 절반)마다 그 봉 **뒤만** 엉뚱하게 바꿔, 그 봉까지의 사는 신호 ·
                    그 봉의 파는 판단 · 묵음(자리 바꾸기) 판단이 그대로인지. 한 봉만 엿보는 규칙도 잡으려고 수백 곳을 봄.
-5. 검사 눈 확인  — 일부러 다음 봉 종가를 보는 규칙(엿보기)은 3 · 4에서 **반드시 걸려야** 함. 안 걸리면 검사가 눈먼 것 → FAIL.
+5. 검사 눈 확인  — 일부러 미래를 보는 규칙 셋(다음 봉을 보고 사기 · 다음 봉을 보고 팔기 · 30봉 뒤를 보고 사기)은 반드시 걸려야 함.
+                   한 봉 엿보기는 자른 봉에서만 드러나 4b(봉마다)가 잡고, 멀리 엿보기는 3 · 4(세계 자르기 · 더럽히기)가 직접 잡아야 함.
+                   안 걸리면 검사가 눈먼 것 → FAIL.
 6. 날짜 짚기     — 봉마다 붙은 일봉 재료의 날 · 수급 마지막 날이 그 봉의 날보다 앞인지(전 거래일 것만 쓰는지).
 7. 문턱은 과거로 — '조용함' 문턱은 달마다 그 달 앞 자료로만(hlab.calm_by_month, tests/test_hguard.py가 뒷줄을 더해도 앞 달 값이
                    그대로인지 봄). 순위 · 분위 같은 문턱을 새로 만들면 이 방식으로만.
@@ -67,10 +69,15 @@ def main():
     d_ok = full["dates_bad"] == 0
     ok &= d_ok
     lines += ["", "| 4b 봉마다 더럽히기 | 규칙 | 어긋남 / 짚은 곳 | 판정 |", "|---|---|---|---|"]
+    eye = {}                                   # 검사 눈 규칙마다 걸린 곳 수(모든 겹을 합침)
     for name, (bad_n, n) in full["bar_poison"].items():
-        good = bad_n > 0 if name.startswith("엿보기") else bad_n == 0
-        ok &= good
-        verdict = ("통과(걸림 = 검사 눈 살아 있음)" if good else "FAIL(검사가 눈멂)") if name.startswith("엿보기") else ("통과" if good else "FAIL")
+        if "검사 눈" in name:
+            eye[name] = eye.get(name, 0) + bad_n
+            verdict = "걸림" if bad_n else "(이 겹에선 안 드러남)"
+        else:
+            good = bad_n == 0
+            ok &= good
+            verdict = "통과" if good else "FAIL"
         lines.append(f"| | {name} | {bad_n} / {n} | {verdict} |")
     lines.append("")
     lines.append(f"- 6 날짜 짚기: {'통과' if d_ok else 'FAIL'} (어긋난 봉 {full['dates_bad']} {full['dates'][:3]})")
@@ -84,7 +91,8 @@ def main():
                 lines.append(f"| {kind} | {T} | (실행 실패) | | | | FAIL: {err.splitlines()[-1] if err else ''} |")
                 continue
             for name, (ds, dt, n, ex) in compare(full, other, T).items():
-                if name.startswith("엿보기"):
+                if "검사 눈" in name:
+                    eye[name] = eye.get(name, 0) + (ds + dt > 0)
                     caught[name] = caught.get(name, 0) + (ds + dt > 0)
                     good = True
                     verdict = "걸림" if ds + dt else "(이 T에선 안 드러남)"
@@ -93,9 +101,15 @@ def main():
                     verdict = "통과" if good else f"FAIL {ex}"
                 ok &= good
                 lines.append(f"| {kind} | {T} | {name} | {ds} | {dt} | {n} | {verdict} |")
+    lines.append("")
     for name, hits in caught.items():
+        lines.append(f"- 3 · 4 {name}: 자르기 · 더럽히기 여섯 곳 가운데 {hits}곳에서 걸림")
+    for name, hits in eye.items():
         ok &= hits > 0
-        lines.append(f"- 3 · 4 검사 눈({name}): 자르기 · 더럽히기 여섯 곳 가운데 {hits}곳에서 걸림 → {'통과' if hits else 'FAIL(검사가 눈멂)'}")
+        lines.append(f"- 5 {name}: 모든 겹을 합쳐 {hits}번 걸림 → {'통과(검사 눈 살아 있음)' if hits else 'FAIL(검사가 눈멂)'}")
+    far = caught.get("멀리 엿보기(검사 눈)", 0)
+    ok &= far > 0
+    lines.append(f"- 5 멀리 엿보기는 잘라내기 · 더럽히기(3 · 4)에서 직접 걸려야 함: {far}곳 → {'통과' if far else 'FAIL'}")
     lines += ["", f"**종합: {'모두 통과' if ok else 'FAIL — 위 표에서 어긋난 곳을 고칠 때까지 결과를 믿지 않음'}**"]
     Path("docs/1H-GUARD.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
