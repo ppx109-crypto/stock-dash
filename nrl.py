@@ -141,7 +141,8 @@ def line(g):
             f"가동 {g['가동률']:>5} 승률 {g['승률']} 보유 {g['보유중앙']}")
 
 
-def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=5, per_day=2, years=False, **kw):
+# 하루 2종목 한도는 새 30회차에 뺌(빼도 같음). 견주려면 per_day=2를 넘김.
+def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=5, per_day=None, years=False, **kw):
     kw.setdefault("size", BASE_SIZE)
     out = [f"  {tag:46s}"]
     for side, pool, since in (("앞", early, rule.SINCE), ("뒤", inside, rule.MID)):
