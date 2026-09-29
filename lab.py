@@ -827,9 +827,13 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             decided = exit_at(one, spot["i"], spot["price"], step, spot["peak"],
                               spot["row"])
             # 나눠 팔기: 청산이 True가 아닌 정수 k(0 < k < 들고 있는 자리)를 내면 k자리만 그날 종가에 팝니다.
-            if (decided is not True and isinstance(decided, int) and not isinstance(decided, bool)
-                    and 0 < decided < spot["자리"]):
-                part = decided
+            # 칸이 모자라 적게 담은 자리에서도 '나눠 팔기'가 전량 매도로 바뀌지 않게, 들고 있는 칸보다 하나 적게까지만 팝니다.
+            # 한 칸만 들고 있으면 나눌 수 없으니 그날은 그냥 들고 갑니다.
+            if decided is not True and isinstance(decided, int) and not isinstance(decided, bool) and decided > 0:
+                if spot["자리"] < 2:
+                    spot["step"] = step
+                    continue
+                part = min(decided, spot["자리"] - 1)
                 gain = (closes[index] / spot["price"] - 1) * 100 - cost
                 trades.append(gain)
                 weighted.append(gain * part)
