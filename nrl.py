@@ -82,6 +82,8 @@ RULE_EXIT = lab.exit_fixed(10, 5, 10)
 tier = lambda r: "규칙" if rule.holds(r) else "정배열"
 BASE_HOLD = lambda r: (rule.holds(r) or aligned(r)) and teacher(r)
 BASE_EXIT = lab.exit_per_tier(tier, {"규칙": RULE_EXIT, "정배열": broken})
+# 새 9회차에 더함: 추세 규칙 신호는 두 자리(계좌의 2/5), 정배열 추세는 한 자리.
+BASE_SIZE = lambda r: 2 if rule.holds(r) else 1
 
 
 def line(g):
@@ -92,6 +94,7 @@ def line(g):
 
 
 def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=5, per_day=2, years=False, **kw):
+    kw.setdefault("size", BASE_SIZE)
     out = [f"  {tag:46s}"]
     for side, pool, since in (("앞", early, rule.SINCE), ("뒤", inside, rule.MID)):
         g = lab.wobble(pool, prices, holds, exits, tries=8, rank=rank, slots=slots, since=since,
