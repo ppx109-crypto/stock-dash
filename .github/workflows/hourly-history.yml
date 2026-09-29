@@ -1,0 +1,35 @@
+name: Hourly history
+# 1시간봉 RL 재료: 야후 60분봉을 모읍니다(조회 전용, 키 필요 없음). 처음엔 약 730거래일, 그 뒤로는 날마다 이어 붙임.
+# 장이 끝난 날의 봉만 저장합니다(미래 참조 막기). 한국투자증권 수집과 겹치지 않으므로 따로 돕니다.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 8 * * 1-5'   # 한국 시각 17:20(평일)
+permissions:
+  contents: write
+concurrency:
+  group: hourly-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python -m unittest tests.test_collect_hourly -v
+      - name: Collect and save
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          status=0; python collect_hourly.py || status=$?
+          mkdir -p hourly-data
+          git add -A hourly-data
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Collect hourly bars"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          exit $status
