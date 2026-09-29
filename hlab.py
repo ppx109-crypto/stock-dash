@@ -267,3 +267,159 @@ def guard_prefix(b, spans_key="A", cuts=(300, 900, 1500)):
             if not ((np.isnan(a) and np.isnan(z)) or abs(a - z) < 1e-9):
                 return f"{name} {n}봉째 {a} ≠ {z}"
     return None
+
+
+# ───────────────────────── 봉 단위 계좌 모의 ─────────────────────────
+# 미래 참조 막기: 봉 t가 닫힌 뒤 정한 사고팔기는 **그 종목의 다음 봉 시가**에 체결. 장중 손절만 봉 저가로(시가가 이미 아래면 시가).
+# 같은 봉에서 손절선과 익절선에 둘 다 닿으면 손절이 먼저(나쁜 쪽). 비용은 팔 때 왕복 0.30%를 한 번에 뺌.
+
+def simulate(data, entry, exit_rule, size, periods=(("앞", EARLY), ("뒤", LATE)), slots=10, seeds=8,
+             stop_of=None, rank=None, cost=COST):
+    """entry(code, b) → 봉마다 '이 봉이 닫히면 산다' 참/거짓 · exit_rule(code, b, pos, i) → 이 봉이 닫히면 팔 칸 수(0 = 안 팜, 'all')
+    · size(code, b, i) → 칸 수 · stop_of(pos) → 장중 손절 값(없으면 None) · rank(code, b, i) → 작을수록 먼저.
+    씨앗마다 같은 시각의 후보 순서를 조금씩 흔들어 가운데 값을 냄."""
+    sigs = {c: np.asarray(entry(c, b), bool) for c, b in data.items() if not c.startswith("K")}
+    out = {}
+    for name, (lo, hi) in periods:
+        runs = [_one_run(data, sigs, exit_rule, size, lo, hi, slots, s, stop_of, rank, cost) for s in range(seeds)]
+        runs = [r for r in runs if r]
+        if not runs:
+            out[name] = None
+            continue
+        mid = lambda k: float(np.median([r[k] for r in runs]))
+        spread = lambda k: float(np.max([r[k] for r in runs]) - np.min([r[k] for r in runs]))
+        base = runs[0]
+        out[name] = {"매매": int(mid("매매")), "연": round(mid("연"), 2), "폭": round(spread("연"), 2), "골": round(mid("골"), 1),
+                     "가동": round(mid("가동"), 1), "승률": round(mid("승률"), 1), "보유봉": round(mid("보유봉"), 1),
+                     "단순": base["단순"], "행운뺌": base["행운뺌"], "큰2건뺌": base["큰2건뺌"], "반기": base["반기"],
+                     "목록": base["목록"]}
+    return out
+
+
+def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, cost):
+    rng = np.random.default_rng(seed)
+    idx = {}          # code → (시각 → 봉 번호)
+    times = set()
+    for c in sigs:
+        t = data[c]["t"]
+        k0 = bisect.bisect_left(t, lo)
+        k1 = bisect.bisect_left(t, hi)
+        idx[c] = (k0, k1)
+        times.update(t[k0:k1])
+    times = sorted(times)
+    if not times:
+        return None
+    at = {}           # 시각 → [(code, 봉 번호)]
+    for c, (k0, k1) in idx.items():
+        t = data[c]["t"]
+        for k in range(k0, k1):
+            at.setdefault(t[k], []).append((c, k))
+    pos = {}          # code → dict(entry 봉, price, 칸, peak, 조각들)
+    want_buy, want_sell = {}, {}     # code → (다음 봉에 할 일)
+    last_day, day_end = None, []
+    ledger, used_sum, n_bars = [], 0.0, 0
+    for T in times:
+        bars = at[T]
+        # ① 다음 봉 시가에 팔기
+        for c, k in bars:
+            if c in want_sell and c in pos:
+                n = want_sell.pop(c)
+                _sell(data[c], pos, c, k, data[c]["o"][k], n, slots, ledger, cost, T)
+        # ② 다음 봉 시가에 사기(칸이 남은 만큼, 순서 흔들기)
+        buys = [(c, k) for c, k in bars if c in want_buy and c not in pos]
+        if rank:
+            buys.sort(key=lambda ck: (rank(ck[0], data[ck[0]], ck[1] - 1), rng.random()))
+        else:
+            rng.shuffle(buys)
+        for c, k in buys:
+            need = want_buy.pop(c)
+            free = slots - sum(p["칸"] for p in pos.values())
+            if free <= 0:
+                continue
+            take = min(need, free)
+            pos[c] = {"i": k, "price": data[c]["o"][k], "칸": take, "처음칸": take, "peak": data[c]["o"][k],
+                      "now": k, "day": T[:8]}
+        for c, _ in bars:              # 이 봉에서 못 산 신호는 버림(일봉 규칙처럼 그날 한 번)
+            want_buy.pop(c, None)
+        # ③ 장중 손절(봉 저가) → 그 값에(시가가 이미 아래면 시가)
+        for c, k in bars:
+            p = pos.get(c)
+            if not p:
+                continue
+            b = data[c]
+            p["now"] = k
+            if stop_of:
+                s = stop_of(p)
+                if s is not None and b["l"][k] <= s:
+                    _sell(b, pos, c, k, min(b["o"][k], s), "all", slots, ledger, cost, T)
+                    continue
+            p["peak"] = max(p["peak"], b["c"][k])
+        # ④ 봉이 닫힌 뒤: 팔 것 · 살 것을 정함(다음 봉 시가에)
+        for c, k in bars:
+            b = data[c]
+            p = pos.get(c)
+            if p:
+                n = exit_rule(c, b, p, k)
+                if n:
+                    want_sell[c] = n
+            elif sigs[c][k] and k + 1 < len(b["t"]):
+                want_buy[c] = size(c, b, k)
+        used_sum += sum(p["칸"] for p in pos.values()) / slots
+        n_bars += 1
+        # 하루 끝 평가(마지막 봉 종가로)
+        if last_day and T[:8] != last_day:
+            day_end.append(_mark(data, pos, ledger, slots))
+        last_day = T[:8]
+    day_end.append(_mark(data, pos, ledger, slots))
+    for c in list(pos):
+        b = data[c]
+        _sell(b, pos, c, pos[c]["now"], b["c"][pos[c]["now"]], "all", slots, ledger, cost, "끝")
+    if len(ledger) < 10:
+        return None
+    eq = np.array(day_end)
+    years = max(len(eq) / 245, 0.25)
+    total = eq[-1]
+    peak = np.maximum.accumulate(eq)
+    w = sorted(t["손익"] * t["칸"] for t in ledger)
+    halves = {}
+    for t in ledger:
+        h = t["판 때"][:4] + ("상" if t["판 때"][4:6] <= "06" else "하")
+        halves[h] = round(halves.get(h, 0) + t["손익"] * t["칸"] / slots, 1)
+    # 연 = 복리 없이 더한 한 해 몫(칸 크기를 처음 자금 기준으로 고정했으므로) · 골 = 계좌 꼭대기 대비 가장 깊이 빠진 %(일봉 RL과 같은 뜻)
+    return {"매매": len(ledger), "연": (total - 1) / years * 100, "골": float(((eq / peak) - 1).min() * 100),
+            "가동": used_sum / max(n_bars, 1) * 100, "승률": float(np.mean([t["손익"] > 0 for t in ledger]) * 100),
+            "보유봉": float(np.median([t["봉"] for t in ledger])),
+            "단순": round(sum(w) / slots / years, 2),
+            "행운뺌": round(sum(min(t["손익"], 30) * t["칸"] for t in ledger) / slots / years, 2),
+            "큰2건뺌": round(sum(w[:-2]) / slots / years, 2), "반기": halves, "목록": ledger}
+
+
+def _mark(data, pos, ledger, slots):
+    """하루 끝 계좌 값(1 = 처음). 실현 손익 + 들고 있는 것의 평가 손익."""
+    v = 1.0 + sum(t["손익"] / 100 * t["칸"] / slots for t in ledger)
+    for c, p in pos.items():
+        b = data[c]
+        v += (b["c"][p["now"]] / p["price"] - 1) * p["칸"] / slots
+    return v
+
+
+def _sell(b, pos, c, k, price, n, slots, ledger, cost, when):
+    p = pos[c]
+    part = p["칸"] if n == "all" or n >= p["칸"] else int(n)
+    gain = (price / p["price"] - 1) * 100 - cost
+    ledger.append({"code": c, "산 때": b["t"][p["i"]], "판 때": b["t"][k] if when != "끝" else "끝" + b["t"][k],
+                   "봉": k - p["i"], "칸": part, "손익": round(gain, 2), "나눠": part < p["칸"]})
+    p["칸"] -= part
+    if p["칸"] <= 0:
+        del pos[c]
+
+
+def line(res):
+    parts = []
+    for name, r in res.items():
+        if not r:
+            parts.append(f"{name} -")
+            continue
+        parts.append(f"{name} 매매 {r['매매']:>4} 연 {r['연']:>6}({r['폭']}) 골 {r['골']:>6} 가동 {r['가동']:>5} 승률 {r['승률']:>4} "
+                     f"보유 {r['보유봉']}봉 단순 {r['단순']} 행운뺌 {r['행운뺌']} 큰2건뺌 {r['큰2건뺌']}")
+    return " | ".join(parts)
