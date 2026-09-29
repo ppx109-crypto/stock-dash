@@ -293,6 +293,7 @@ def simulate(data, entry, exit_rule, size, periods=(("앞", EARLY), ("뒤", LATE
                      "회전": round(mid("회전"), 1),
                      "가동": round(mid("가동"), 1), "승률": round(mid("승률"), 1), "보유봉": round(mid("보유봉"), 1),
                      "단순": base["단순"], "행운뺌": base["행운뺌"], "큰2건뺌": base["큰2건뺌"], "반기": base["반기"],
+                     "곡선": base["곡선"],
                      "목록": base["목록"]}
     return out
 
@@ -317,7 +318,7 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             at.setdefault(t[k], []).append((c, k))
     pos = {}          # code → dict(entry 봉, price, 칸, peak, 조각들)
     want_buy, want_sell, want_add = {}, {}, {}     # code → (다음 봉에 할 일)
-    last_day, day_end = None, []
+    last_day, day_end, day_names = None, [], []
     bought_slots = [0]
     ledger, used_sum, n_bars = [], 0.0, 0
     for T in times:
@@ -396,8 +397,10 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
         # 하루 끝 평가(마지막 봉 종가로)
         if last_day and T[:8] != last_day:
             day_end.append(_mark(data, pos, ledger, slots))
+            day_names.append(last_day)
         last_day = T[:8]
     day_end.append(_mark(data, pos, ledger, slots))
+    day_names.append(last_day)
     for c in list(pos):
         b = data[c]
         _sell(b, pos, c, pos[c]["now"], b["c"][pos[c]["now"]], "all", slots, ledger, cost, "끝")
@@ -415,6 +418,7 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
     # 연 = 복리 없이 더한 한 해 몫(칸 크기를 처음 자금 기준으로 고정했으므로) · 골 = 계좌 꼭대기 대비 가장 깊이 빠진 %(일봉 RL과 같은 뜻)
     return {"매매": len(ledger), "연": (total - 1) / years * 100, "골": float(((eq / peak) - 1).min() * 100),
             "회전": bought_slots[0] / slots / years,
+            "곡선": dict(zip(day_names, (float(x) for x in eq))),
             "가동": used_sum / max(n_bars, 1) * 100, "승률": float(np.mean([t["손익"] > 0 for t in ledger]) * 100),
             "보유봉": float(np.median([t["봉"] for t in ledger])),
             "단순": round(sum(w) / slots / years, 2),
@@ -451,3 +455,19 @@ def line(res):
         parts.append(f"{name} 매매 {r['매매']:>4} 연 {r['연']:>6}({r['폭']}) 골 {r['골']:>6} 가동 {r['가동']:>5} 회전 {r.get('회전', '-')}배 승률 {r['승률']:>4} "
                      f"보유 {r['보유봉']}봉 단순 {r['단순']} 행운뺌 {r['행운뺌']} 큰2건뺌 {r['큰2건뺌']}")
     return " | ".join(parts)
+
+
+def blend(parts):
+    """[(비중, simulate 결과의 한 반)] → 두 자금을 날마다 합친 계좌(씨앗 0 곡선). 연 = 복리 없는 한 해 몫 · 골 = 꼭대기 대비 %."""
+    days = sorted(set().union(*[set(r["곡선"]) for _, r in parts]))
+    last = [1.0] * len(parts)
+    eq = []
+    for d in days:
+        for j, (_, r) in enumerate(parts):
+            if d in r["곡선"]:
+                last[j] = r["곡선"][d]
+        eq.append(sum(w * v for (w, _), v in zip(parts, last)))
+    eq = np.array(eq)
+    years = max(len(eq) / 245, 0.25)
+    peak = np.maximum.accumulate(eq)
+    return {"연": round((eq[-1] - 1) / years * 100, 2), "골": round(float(((eq / peak) - 1).min() * 100), 1)}
