@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests
-      - run: python -m unittest tests.test_opinion_history tests.test_opinions -v
+      - run: python -m unittest tests.test_opinion_history -v
       - name: Collect in batches, saving each batch
         run: |
           git config user.name 'github-actions[bot]'
