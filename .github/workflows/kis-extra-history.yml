@@ -38,7 +38,7 @@ jobs:
             git add -A program-data loan-data side-data market-data ratio-data
             if ! git diff --cached --quiet; then
               git commit -q -m "Collect KIS extra history ($1)"
-              git pull -q --rebase origin main && git push -q
+              for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
             fi
           }
           kinds="$KIND"; [ "$kinds" = "all" ] && kinds="market ratio program loan side"
