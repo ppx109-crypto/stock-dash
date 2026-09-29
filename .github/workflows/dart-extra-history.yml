@@ -24,20 +24,33 @@ jobs:
           python-version: '3.11'
       - run: pip install requests
       - run: python -m unittest tests.test_dart_extra -v
-      - name: Collect
+      - name: Collect, saving every 50 stocks
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python - <<'PY' > /tmp/batches.txt
+          import json, re
+          from pathlib import Path
+          picked = json.loads(Path("study/flow_universe.json").read_text(encoding="utf-8"))["codes"]
+          picked = [c for c in picked if re.fullmatch(r"[0-9]{6}", c)]
+          for k in range(0, len(picked), 50):
+              print(",".join(picked[k:k + 50]))
+          PY
           kinds="$KIND"; [ "$kinds" = "all" ] && kinds="events holders quarter"
           for kind in $kinds; do
-            status=0; python collect_dart_extra.py "$kind" || status=$?
-            git add -A dart-events holder-data quarter-data 2>/dev/null
-            if ! git diff --cached --quiet; then
-              git commit -q -m "Collect DART extra history ($kind)"
-              git pull -q --rebase origin main && git push -q
-            fi
-            if [ "$status" = "2" ]; then echo '한도·거절로 멈춥니다. 내일 다시 돌리면 이어 갑니다.'; exit 0; fi
+            while read -r batch; do
+              [ -z "$batch" ] && continue
+              status=0; INVESTOR_CODES="$batch" python collect_dart_extra.py "$kind" || status=$?
+              mkdir -p dart-events holder-data quarter-data
+              git add -A dart-events holder-data quarter-data
+              if ! git diff --cached --quiet; then
+                git commit -q -m "Collect DART extra history ($kind)"
+                git pull -q --rebase origin main && git push -q
+              fi
+              if [ "$status" = "2" ]; then echo '한도·거절로 멈춥니다. 내일 다시 돌리면 이어 갑니다.'; exit 0; fi
+            done < /tmp/batches.txt
           done
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           KIND: ${{ inputs.kind || 'all' }}
+          DART_USED_FILE: /tmp/dart-used.txt

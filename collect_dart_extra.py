@@ -23,8 +23,10 @@ from providers import DataError, Official
 
 API = "https://opendart.fss.or.kr/api/"
 PAUSE = float(os.getenv("DART_PAUSE", "0.08"))
-# 하루 한도 2만을 세 가지가 나눠 씀(매일 도는 DART 작업 몫을 남김). 넘으면 멈추고 다음 날 이어 받음.
-BUDGETS = {"events": 7000, "holders": 700, "quarter": 9000}
+# 하루 한도 2만 가운데 이 작업이 쓸 몫(매일 도는 DART 작업 몫을 남김). 넘으면 멈추고 다음 날 이어 받음.
+# 묶음마다 따로 도는 프로세스들이 같은 파일(DART_USED_FILE)에 호출 수를 이어 셉니다.
+BUDGET = int(os.getenv("DART_BUDGET", "17000"))
+USED_FILE = os.getenv("DART_USED_FILE", "")
 START = "20170101"
 EVENTS = {
     "자기주식취득": "tsstkAqDecsn.json", "자기주식처분": "tsstkDpDecsn.json",
@@ -46,10 +48,19 @@ class Stop(Exception):
 
 
 class Dart:
-    def __init__(self, budget=5000):
+    def __init__(self, budget=BUDGET):
         self.key = os.environ.get("DART_CRTFC_KEY", "").strip()
+        self.budget = budget
         self.used = 0
-        self.budget = int(os.getenv("DART_BUDGET", budget))
+        if USED_FILE:
+            try:
+                self.used = int(Path(USED_FILE).read_text().strip() or 0)
+            except (OSError, ValueError):
+                self.used = 0
+
+    def keep(self):
+        if USED_FILE:
+            Path(USED_FILE).write_text(str(self.used))
 
     def ask(self, endpoint, **params):
         if self.used >= self.budget:
@@ -157,7 +168,7 @@ def main():
     if kind not in jobs:
         print("events · holders · quarter 가운데 하나를 주세요.")
         return 1
-    d = Dart(BUDGETS[kind])
+    d = Dart()
     if not d.key:
         print("DART 키가 없습니다.")
         return 1
@@ -177,9 +188,11 @@ def main():
         try:
             n = jobs[kind](d, corp, code, today)
         except Stop as why:
+            d.keep()
             print(f"멈춤 · {why} · 받은 종목 {done} · 호출 {d.used}", flush=True)
             return 2
         done += 1
+        d.keep()
         print(f"{code} · {n} · 호출 누계 {d.used}", flush=True)
     print(f"끝 · {kind} · 받은 종목 {done} · DART에 없는 종목 {missing} · 호출 {d.used}")
     return 0
