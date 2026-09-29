@@ -316,7 +316,7 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
         for k in range(k0, k1):
             at.setdefault(t[k], []).append((c, k))
     pos = {}          # code → dict(entry 봉, price, 칸, peak, 조각들)
-    want_buy, want_sell = {}, {}     # code → (다음 봉에 할 일)
+    want_buy, want_sell, want_add = {}, {}, {}     # code → (다음 봉에 할 일)
     last_day, day_end = None, []
     bought_slots = [0]
     ledger, used_sum, n_bars = [], 0.0, 0
@@ -327,6 +327,21 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             if c in want_sell and c in pos:
                 n = want_sell.pop(c)
                 _sell(data[c], pos, c, k, data[c]["o"][k], n, slots, ledger, cost, T)
+        # ①' 다음 봉 시가에 더 사기(불타기) — 평균 단가로 합침
+        for c, k in bars:
+            if c in want_add and c in pos:
+                n = want_add.pop(c)
+                free = slots - sum(p["칸"] for p in pos.values())
+                add = min(n, free)
+                if add > 0:
+                    p = pos[c]
+                    o = data[c]["o"][k]
+                    p["price"] = (p["price"] * p["칸"] + o * add) / (p["칸"] + add)
+                    p["칸"] += add
+                    p["처음칸"] += add
+                    p["더함"] = p.get("더함", 0) + add
+                    bought_slots[0] += add
+            want_add.pop(c, None)
         # ② 다음 봉 시가에 사기(칸이 남은 만큼, 순서 흔들기)
         buys = [(c, k) for c, k in bars if c in want_buy and c not in pos]
         if rank:
@@ -370,7 +385,9 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             p = pos.get(c)
             if p:
                 n = exit_rule(c, b, p, k)
-                if n:
+                if isinstance(n, tuple) and n and n[0] == "add":
+                    want_add[c] = n[1]
+                elif n:
                     want_sell[c] = n
             elif sigs[c][k] and k + 1 < len(b["t"]):
                 want_buy[c] = size(c, b, k)
