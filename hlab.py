@@ -45,17 +45,118 @@ def load(codes=None):
     return found
 
 
-def ranks_by_day():
-    """{YYYYMMDD: {code: 시총 순위}} — 일봉 표에서. 오늘 모음에는 **전 거래일** 순위를 씀."""
+def daily_tables(since="20230101"):
+    """일봉 표에서 ({날: {code: 시총 순위}}, {(code, 날): 추세 규칙 문을 지났나}) — 모두 **그날 종가 기준** 값.
+    1시간봉에 붙일 때는 반드시 전 거래일 값을 씀(prev_day)."""
     import caps
     import lab
+    import rule
     rows = lab.load()
     caps.tag(rows, 150)
-    got = {}
+    rule.calm_edge(rows)            # nrl과 같은 '조용함' 문턱(전체 표로 한 번)
+    ranks, trend = {}, {}
     for r in rows:
-        if r["date"] >= "20230801" and r.get(caps.RANK):
-            got.setdefault(r["date"], {})[r["code"]] = r[caps.RANK]
-    return got
+        if r["date"] >= since and r.get(caps.RANK):
+            ranks.setdefault(r["date"], {})[r["code"]] = r[caps.RANK]
+            if r[caps.RANK] <= rule.TOP and rule.trend_leg(r):
+                trend[(r["code"], r["date"])] = True
+    return ranks, trend
+
+
+def ranks_by_day():
+    """{YYYYMMDD: {code: 시총 순위}} — 일봉 표에서. 오늘 모음에는 **전 거래일** 순위를 씀."""
+    return daily_tables("20230801")[0]
+
+
+def prev_day(days, stamp):
+    """정렬된 일봉 날 목록에서 stamp(YYYYMMDD…)보다 앞선 마지막 날. 없으면 None."""
+    k = bisect.bisect_left(days, stamp[:8]) - 1
+    return days[k] if k >= 0 else None
+
+
+def daily_context(codes, ranks, trend, since="20220101"):
+    """종목마다 {날: 재료} — 그날 **종가까지** 아는 일봉 재료. 1시간봉에는 prev_day로 전 거래일 것을 붙임.
+    재료: 정배열(3>15>20>90>150>200일 단순평균) · 간격(3일선÷200일선−1, %) · 50>200 · 시장 폭(그날 100위 안 50>200 몫)
+    · 추세 문 · 수급 5일 합(외국인 · 투신 · 기관 · 연기금 · 사모 · 개인) · 가르침(외국인+ · 투신+ · 개인−) · 3일 연속(외국인 · 투신 둘 다 +)
+    · 자사주 · 희석 공시(접수일이 그날까지인 것, 20거래일 안)."""
+    import json
+    import final_group
+    ctx, fifty = {}, {}
+    for code in codes:
+        p = Path(f"price-data/{code}.json")
+        if not p.exists():
+            continue
+        rows = [x for x in json.loads(p.read_text(encoding="utf-8"))["closes"] if x[0] >= "20210101"]
+        if len(rows) < 260:
+            continue
+        d = [x[0] for x in rows]
+        c = np.array([x[1] for x in rows], float)
+        cs = np.r_[0.0, np.cumsum(c)]
+        sma = lambda n, i: (cs[i + 1] - cs[i + 1 - n]) / n
+        fl = {x["date"]: x for x in final_group.flow_rows(code)}
+        fdays = sorted(fl)
+        ev = _events(code)
+        one = {}
+        for i in range(200, len(c)):
+            day = d[i]
+            if day < since:
+                continue
+            m = {n: sma(n, i) for n in (3, 15, 20, 50, 90, 150, 200)}
+            k = bisect.bisect_right(fdays, day)
+            last5 = [fl[x] for x in fdays[max(0, k - 5):k]]
+            s5 = {col: (sum((x.get(col) or 0.0) for x in last5) if len(last5) == 5 else None)
+                  for col in ("외국인", "투신", "기관", "연기금", "사모", "개인")}
+            last3 = [fl[x] for x in fdays[max(0, k - 3):k]]
+            one[day] = {
+                "정배열": m[3] > m[15] > m[20] > m[90] > m[150] > m[200],
+                "간격": (m[3] / m[200] - 1) * 100,
+                "추세문": bool(trend.get((code, day))),
+                "수급5": s5,
+                "가르침": None not in (s5["외국인"], s5["투신"], s5["개인"]) and s5["외국인"] > 0 and s5["투신"] > 0 and s5["개인"] < 0,
+                "3일연속": len(last3) == 3 and all((x.get("외국인") or 0) > 0 and (x.get("투신") or 0) > 0 for x in last3),
+                "자사주20": _had(ev, ("자기주식취득", "자기주식신탁체결"), d, i, 20),
+                "희석20": _had(ev, ("유상증자", "전환사채", "신주인수권부사채", "교환사채"), d, i, 20),
+            }
+            fifty.setdefault(day, {})[code] = m[50] > m[200]
+        ctx[code] = one
+    # 시장 폭: 그날 100위 안 종목 가운데 50일선 > 200일선 몫(%)
+    breadth = {}
+    for day, got in fifty.items():
+        top = ranks.get(day, {})
+        vals = [v for code, v in got.items() if top.get(code, 999) <= 100]
+        if len(vals) >= 30:
+            breadth[day] = sum(vals) / len(vals) * 100
+    for one in ctx.values():
+        for day, f in one.items():
+            f["시장폭"] = breadth.get(day)
+    return ctx
+
+
+def _events(code):
+    import json
+    p = Path(f"dart-events/{code}.json")
+    if not p.exists():
+        return {}
+    got = json.loads(p.read_text(encoding="utf-8")).get("rows") or {}
+    return {k: sorted(str(x.get("rcept_no", ""))[:8] for x in v if x.get("rcept_no")) for k, v in got.items()}
+
+
+def _had(ev, kinds, days, i, n):
+    """접수일이 days[i](그날)까지이고 n거래일 안인 공시가 있었나. 1시간봉엔 전 거래일 값으로 붙으므로 접수 다음 날부터 씀."""
+    lo = days[max(0, i - n)]
+    return any(lo < x <= days[i] for k in kinds for x in ev.get(k, ()))
+
+
+def attach(b, one, days):
+    """1시간봉 b의 봉마다 전 거래일 일봉 재료(dict 또는 None) 목록."""
+    out, memo = [], {}
+    for t in b["t"]:
+        day = t[:8]
+        if day not in memo:
+            pd = prev_day(days, day)
+            memo[day] = one.get(pd) if pd else None
+        out.append(memo[day])
+    return out
 
 
 class Universe:
