@@ -130,8 +130,9 @@ def target_cut(r, back_days=45):
 
 # 새 28회차에 더함: 45일 새 목표가가 내린 종목은 사지 않음(A).
 BASE_HOLD = lambda r: (rule.holds(r) or aligned(r)) and teacher(r) and not target_cut(r)
-# 새 9회차: 추세 규칙 신호는 두 자리(계좌의 2/5). 새 28회차: 정배열 신호도 외국인·투신이 3일 연속 둘 다 샀으면 두 자리(B).
-BASE_SIZE = lambda r: 2 if rule.holds(r) or steady(r) >= 3 else 1
+# 새 9회차: 추세 규칙 신호는 두 자리(계좌의 2/5). 정배열 신호는 한 자리, 외국인·투신이 3일 연속 둘 다 샀으면
+# 두 자리(새 28회차) → 세 자리(새 31회차, 계좌의 3/5).
+BASE_SIZE = lambda r: 2 if rule.holds(r) else (3 if steady(r) >= 3 else 1)
 
 
 def line(g):
