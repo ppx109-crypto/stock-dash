@@ -71,9 +71,10 @@ def aligned(r):
 
 
 def broken(lane, start, price, step, peak, row=None):
+    """정배열이 깨지면 팜 · 손절 −10%(새 14회차에 −8에서 바꿈) · 최대 60일."""
     spot = start + step
     close = lane["closes"][spot]
-    if (close / price - 1) * 100 <= -8 or step >= 60:
+    if (close / price - 1) * 100 <= -10 or step >= 60:
         return True
     return not shape[lane["code"]]["정배열"][spot]
 
