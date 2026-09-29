@@ -91,11 +91,11 @@ def line(g):
             f"가동 {g['가동률']:>5} 승률 {g['승률']} 보유 {g['보유중앙']}")
 
 
-def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=5, per_day=2, years=False):
+def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=5, per_day=2, years=False, **kw):
     out = [f"  {tag:46s}"]
     for side, pool, since in (("앞", early, rule.SINCE), ("뒤", inside, rule.MID)):
         g = lab.wobble(pool, prices, holds, exits, tries=8, rank=rank, slots=slots, since=since,
-                       per_day=per_day, apart=kin, realistic=True, cap=130)
+                       per_day=per_day, apart=kin, realistic=True, cap=130, **kw)
         out.append(side + " " + line(g))
         if years and g:
             out.append(f"해마다 {g['해마다']}")
