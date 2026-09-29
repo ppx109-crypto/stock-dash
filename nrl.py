@@ -83,7 +83,26 @@ def broken(lane, start, price, step, peak, row=None):
     return not shape[lane["code"]]["정배열"][spot]
 
 
-RULE_EXIT = lab.exit_fixed(10, 5, 10)
+def first_cross(lane, start, price, step, level):
+    """오늘 처음으로 +level%를 넘었는가(어제까지 종가가 한 번도 못 닿음). 기억 없이 값 흐름만 봄(45회차 고침)."""
+    c = lane["closes"]
+    now = (c[start + step] / price - 1) * 100
+    return now >= level and max((c[start + k] / price - 1) * 100 for k in range(0, step)) < level
+
+
+def half_rule(first=5, take=13, stop=5, days=10):
+    """추세 규칙 팔기(새 45회차, 사용자 결정): +5%에 처음 닿는 날 절반, +13% 전량 · −5% 손절 · 10거래일."""
+    def go(lane, start, price, step, peak, row=None):
+        now = (lane["closes"][start + step] / price - 1) * 100
+        if now >= take or now <= -stop or step >= days:
+            return True
+        if first and first_cross(lane, start, price, step, first):
+            return max(1, BASE_SIZE(row) // 2)
+        return False
+    return go
+
+
+RULE_EXIT = half_rule()
 tier = lambda r: "규칙" if rule.holds(r) else "정배열"
 BASE_EXIT = lab.exit_per_tier(tier, {"규칙": RULE_EXIT, "정배열": broken})
 
@@ -133,9 +152,10 @@ def target_cut(r, back_days=45):
 
 # 새 28회차에 더함: 45일 새 목표가가 내린 종목은 사지 않음(A).
 BASE_HOLD = lambda r: (rule.holds(r) or aligned(r)) and teacher(r) and not target_cut(r)
-# 새 9회차: 추세 규칙 신호는 두 자리(계좌의 2/5). 정배열 신호는 한 자리, 외국인·투신이 3일 연속 둘 다 샀으면
-# 두 자리(새 28회차) → 세 자리(새 31회차, 계좌의 3/5).
-BASE_SIZE = lambda r: 2 if rule.holds(r) else (3 if steady(r) >= 3 else 1)
+# 계좌 10칸(새 45회차부터, 반익절에 칸을 반으로 나누려고). 한 종목 최대 40%(사용자 결정 2026-09-29):
+# 추세 규칙 4칸(40%) · 정배열 2칸(20%) · 정배열 + 외국인·투신 3일 연속 둘 다 순매수 4칸(40%, 새 31회차 60%에서 낮춤).
+SLOTS = 10
+BASE_SIZE = lambda r: 4 if rule.holds(r) else (4 if steady(r) >= 3 else 2)
 
 
 def line(g):
@@ -146,7 +166,7 @@ def line(g):
 
 
 # 하루 2종목 한도는 새 30회차에 뺌(빼도 같음). 견주려면 per_day=2를 넘김.
-def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=5, per_day=None, years=False, **kw):
+def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=SLOTS, per_day=None, years=False, **kw):
     kw.setdefault("size", BASE_SIZE)
     out = [f"  {tag:46s}"]
     for side, pool, since in (("앞", early, rule.SINCE), ("뒤", inside, rule.MID)):
