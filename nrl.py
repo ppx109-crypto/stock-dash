@@ -4,6 +4,7 @@ import 하면 한 번 굽습니다(몇 분). 각 회차 스크립트는 WAYS만 
 """
 import bisect
 import sys
+from datetime import date, timedelta
 
 sys.path.insert(0, "/home/user/stock-dash")
 import final_group
@@ -81,10 +82,56 @@ def broken(lane, start, price, step, peak, row=None):
 
 RULE_EXIT = lab.exit_fixed(10, 5, 10)
 tier = lambda r: "규칙" if rule.holds(r) else "정배열"
-BASE_HOLD = lambda r: (rule.holds(r) or aligned(r)) and teacher(r)
 BASE_EXIT = lab.exit_per_tier(tier, {"규칙": RULE_EXIT, "정배열": broken})
-# 새 9회차에 더함: 추세 규칙 신호는 두 자리(계좌의 2/5), 정배열 추세는 한 자리.
-BASE_SIZE = lambda r: 2 if rule.holds(r) else 1
+
+
+def steady(r, n=3):
+    """전날까지 n거래일 가운데 외국인과 투신이 **둘 다** 순매수한 날 수(새 17~19회차)."""
+    got = FLOW.get(r["code"])
+    if not got:
+        return 0
+    days, acc, ok, _ = got
+    k = bisect.bisect_left(days, r["date"])
+    if k < n:
+        return 0
+    return sum(1 for j in range(k - n + 1, k + 1)
+               if acc["외국인"][j] - acc["외국인"][j - 1] > 0 and acc["투신"][j] - acc["투신"][j - 1] > 0)
+
+
+# 목표가(opinion-data, 2017~ · 새 24회차에 모음): 날마다 증권사별 최근 3달 안 마지막 목표가의 가운데.
+TARGETS = {}
+for code in {r["code"] for r in inside}:
+    got = study.target_timeline(code)
+    if got:
+        TARGETS[code] = ([d for d, _ in got], [x for _, x in got])
+
+
+def target_before(r, back_days=0):
+    """신호 날(에서 back_days 앞) **전날까지** 알려진 목표가 묶음. 3달 넘게 새 목표가가 없으면 None."""
+    got = TARGETS.get(r["code"])
+    if not got:
+        return None
+    days, vals = got
+    day = r["date"]
+    if back_days:
+        d = date(int(day[:4]), int(day[4:6]), int(day[6:8])) - timedelta(days=back_days)
+        day = d.strftime("%Y%m%d")
+    k = bisect.bisect_left(days, day)
+    if k == 0:
+        return None
+    return vals[k - 1] if days[k - 1] >= study._months_before(day, 3) else None
+
+
+def target_cut(r, back_days=45):
+    """back_days 사이 목표가가 내렸으면 True. 목표가가 없으면 False(빼지 않음)."""
+    now, before = target_before(r), target_before(r, back_days)
+    return bool(now and before and now["목표가"] < before["목표가"])
+
+
+# 새 28회차에 더함: 45일 새 목표가가 내린 종목은 사지 않음(A).
+BASE_HOLD = lambda r: (rule.holds(r) or aligned(r)) and teacher(r) and not target_cut(r)
+# 새 9회차: 추세 규칙 신호는 두 자리(계좌의 2/5). 새 28회차: 정배열 신호도 외국인·투신이 3일 연속 둘 다 샀으면 두 자리(B).
+BASE_SIZE = lambda r: 2 if rule.holds(r) or steady(r) >= 3 else 1
 
 
 def line(g):
