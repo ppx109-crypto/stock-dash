@@ -274,14 +274,16 @@ def guard_prefix(b, spans_key="A", cuts=(300, 900, 1500)):
 # 같은 봉에서 손절선과 익절선에 둘 다 닿으면 손절이 먼저(나쁜 쪽). 비용은 팔 때 왕복 0.30%를 한 번에 뺌.
 
 def simulate(data, entry, exit_rule, size, periods=(("앞", EARLY), ("뒤", LATE)), slots=10, seeds=8,
-             stop_of=None, rank=None, cost=COST, take_of=None):
+             stop_of=None, rank=None, cost=COST, take_of=None, yields=None):
     """entry(code, b) → 봉마다 '이 봉이 닫히면 산다' 참/거짓 · exit_rule(code, b, pos, i) → 이 봉이 닫히면 팔 칸 수(0 = 안 팜, 'all')
     · size(code, b, i) → 칸 수 · stop_of(pos) → 장중 손절 값(없으면 None) · rank(code, b, i) → 작을수록 먼저.
-    씨앗마다 같은 시각의 후보 순서를 조금씩 흔들어 가운데 값을 냄."""
+    씨앗마다 같은 시각의 후보 순서를 조금씩 흔들어 가운데 값을 냄.
+    yields(code, b, i) → 참이면 이 매매는 '양보' 칸(쉬는 돈으로 굴림): 양보 아닌 매수가 칸이 모자라면 그 봉 시가에
+    양보 칸을 (전 봉 종가 기준 손익이 나쁜 것부터) 팔아 자리를 냄 — 결정은 전 봉이 닫힌 뒤라 미래 참조 없음."""
     sigs = {c: np.asarray(entry(c, b), bool) for c, b in data.items() if not c.startswith("K")}
     out = {}
     for name, (lo, hi) in periods:
-        runs = [_one_run(data, sigs, exit_rule, size, lo, hi, slots, s, stop_of, rank, cost, take_of) for s in range(seeds)]
+        runs = [_one_run(data, sigs, exit_rule, size, lo, hi, slots, s, stop_of, rank, cost, take_of, yields) for s in range(seeds)]
         runs = [r for r in runs if r]
         if not runs:
             out[name] = None
@@ -298,7 +300,7 @@ def simulate(data, entry, exit_rule, size, periods=(("앞", EARLY), ("뒤", LATE
     return out
 
 
-def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, cost, take_of=None):
+def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, cost, take_of=None, yields=None):
     rng = np.random.default_rng(seed)
     idx = {}          # code → (시각 → 봉 번호)
     times = set()
@@ -351,12 +353,25 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             rng.shuffle(buys)
         for c, k in buys:
             need = want_buy.pop(c)
+            give = bool(yields and yields(c, data[c], k - 1))
             free = slots - sum(p["칸"] for p in pos.values())
+            if yields and not give and free < need:
+                weak = sorted((q for q in pos.values() if q.get("양보")),
+                              key=lambda q: data[q["code"]]["c"][q["now"]] / q["price"])
+                for q in weak:
+                    if free >= need:
+                        break
+                    qc = q["code"]; qb = data[qc]
+                    kk = bisect.bisect_left(qb["t"], T)
+                    if kk < len(qb["t"]) and qb["t"][kk] == T:
+                        free += q["칸"]
+                        _sell(qb, pos, qc, kk, qb["o"][kk], "all", slots, ledger, cost, T)
+                        want_sell.pop(qc, None); want_add.pop(qc, None)
             if free <= 0:
                 continue
             take = min(need, free)
             pos[c] = {"i": k, "price": data[c]["o"][k], "칸": take, "처음칸": take, "peak": data[c]["o"][k],
-                      "now": k, "day": T[:8], "code": c}
+                      "now": k, "day": T[:8], "code": c, "양보": give}
             bought_slots[0] += take
         for c, _ in bars:              # 이 봉에서 못 산 신호는 버림(일봉 규칙처럼 그날 한 번)
             want_buy.pop(c, None)
@@ -440,7 +455,7 @@ def _sell(b, pos, c, k, price, n, slots, ledger, cost, when):
     part = p["칸"] if n == "all" or n >= p["칸"] else int(n)
     gain = (price / p["price"] - 1) * 100 - cost
     ledger.append({"code": c, "산 때": b["t"][p["i"]], "판 때": b["t"][k] if when != "끝" else "끝" + b["t"][k],
-                   "봉": k - p["i"], "칸": part, "손익": round(gain, 2), "나눠": part < p["칸"]})
+                   "봉": k - p["i"], "칸": part, "손익": round(gain, 2), "나눠": part < p["칸"], "양보": bool(p.get("양보"))})
     p["칸"] -= part
     if p["칸"] <= 0:
         del pos[c]
