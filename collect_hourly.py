@@ -5,7 +5,7 @@
 
 저장: hourly-data/{종목코드}/{해}.csv — 한 줄에 "YYYYMMDDHH,시가,고가,저가,종가,거래량" (시각은 한국 시각, 봉이 시작한 시).
 미래 참조 막기: **장이 끝난 날의 봉만** 저장합니다(한국 시각 16시 전에 돌면 오늘 봉은 버림). 값이 비어 있는 봉도 버립니다.
-종목: hourly-data/universe.json(2023-09 뒤로 하루라도 시총 150위 안에 든 종목) + 코스피 · 코스닥 지수.
+종목: hourly-data/universe.json(2023-09 뒤로 하루라도 시총 300위 안에 든 종목) + 코스피 · 코스닥 지수.
 python collect_hourly.py [종목코드,...]
 """
 import json
