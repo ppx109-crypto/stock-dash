@@ -39,6 +39,54 @@ def kis():
                 show("분봉 칸", rows[:1])
 
 
+def kis_hour():
+    """한국투자증권에 1시간봉을 바로 주는 조회가 있는지: 간격을 고르는 칸이 있는 조회를 3600초(1시간)로 불러 봄."""
+    import broker_kis
+    c = broker_kis.market()
+    Q = "/uapi/domestic-stock/v1/quotations/"
+
+    def ask(name, path, tr, params, stamp=("stck_bsop_date", "stck_cntg_hour")):
+        try:
+            c.authorize()
+            _, data = c.request("GET", Q + path, headers={
+                "authorization": "Bearer " + c.token, "appkey": c.key, "appsecret": c.secret,
+                "tr_id": tr, "custtype": "P"}, params=params)
+        except broker_kis.BrokerError as e:
+            print(f"  {name} · 거절 {str(e)[:60]}", flush=True)
+            return
+        msg = str(data.get("msg_cd") or "")
+        msg = msg if re.fullmatch(r"[A-Z]{2,4}[0-9]{3,6}", msg) else ""
+        rows = [r for r in (data.get("output2") or []) if isinstance(r, dict)]
+        stamps = sorted(f"{r.get(stamp[0], '')} {r.get(stamp[1], '')}" for r in rows)
+        gaps = sorted({s[-6:-2] for s in stamps})[:8]
+        print(f"  {name} · rt_cd {data.get('rt_cd')} {msg} · 줄 {len(rows)} · "
+              f"{stamps[0] if stamps else '-'} ~ {stamps[-1] if stamps else '-'} · 시분 예 {gaps}", flush=True)
+        if rows:
+            print(f"    칸: {', '.join(sorted(rows[0]))[:300]}", flush=True)
+
+    # ① 업종(지수) 분봉조회: 간격(초)을 고르는 칸이 있음 — 3600 = 1시간봉
+    for iv in ("3600", "60"):
+        ask(f"코스피 지수 분봉 간격 {iv}초", "inquire-time-indexchartprice", "FHKUP03500200",
+            {"FID_COND_MRKT_DIV_CODE": "U", "FID_ETC_CLS_CODE": "0", "FID_INPUT_ISCD": "0001",
+             "FID_INPUT_HOUR_1": iv, "FID_PW_DATA_INCU_YN": "Y"}, stamp=("stck_bsop_date", "stck_cntg_hour"))
+    # ② 주식 당일분봉: 과거 포함(Y)으로 몇 날이 오는지
+    ask("삼성전자 당일분봉(과거 포함)", "inquire-time-itemchartprice", "FHKST03010200",
+        {"FID_ETC_CLS_CODE": "", "FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": "005930",
+         "FID_INPUT_HOUR_1": "153000", "FID_PW_DATA_INCU_YN": "Y"})
+    # ③ 기간별 시세에 시간 단위가 있는지(문서엔 일 · 주 · 월 · 년뿐)
+    for div in ("H", "60"):
+        ask(f"삼성전자 기간별 시세 구분 {div}", "inquire-daily-itemchartprice", "FHKST03010100",
+            {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": "005930", "FID_INPUT_DATE_1": "20260901",
+             "FID_INPUT_DATE_2": "20260925", "FID_PERIOD_DIV_CODE": div, "FID_ORG_ADJ_PRC": "0"},
+            stamp=("stck_bsop_date", "stck_cntg_hour"))
+    # ④ 일별분봉의 끝(1분봉을 모아 1시간봉을 만들 수 있는 가장 먼 날)
+    path = "inquire-time-dailychartprice"
+    for day in ("20250919", "20250918", "20250917", "20250916"):
+        ask(f"삼성전자 일별분봉 {day}", path, "FHKST03010230",
+            {"FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": "005930", "FID_INPUT_HOUR_1": "153000",
+             "FID_INPUT_DATE_1": day, "FID_PW_DATA_INCU_YN": "Y", "FID_FAKE_TICK_INCU_YN": ""})
+
+
 def yahoo():
     import datetime as dt
     import requests
@@ -67,6 +115,8 @@ if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else ""
     if which == "kis":
         kis()
+    elif which == "kis_hour":
+        kis_hour()
     elif which == "yahoo":
         yahoo()
     else:
