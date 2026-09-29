@@ -63,6 +63,31 @@ def daily_tables(since="20230101"):
     return ranks, trend
 
 
+def cached_tables(since="20220101"):
+    """daily_tables를 한 번만 굽고 .cache/에 둠. 일봉 표(study/features.json, 4GB)를 읽는 데 2분 반 · 메모리 13GB가
+    들어 여러 회차를 동시에 못 돌렸음. 표 파일의 크기 · 고친 시각이 같으면 저장본을 씀(몇 초 · 1GB 안)."""
+    import os
+    import pickle
+    import lab
+    src = Path(lab.CACHE)
+    st = os.stat(src)
+    key = (st.st_size, int(st.st_mtime), since)
+    path = Path(".cache") / "hourly_tables.pkl"
+    if path.exists():
+        try:
+            saved = pickle.loads(path.read_bytes())
+            if saved.get("key") == key:
+                return saved["ranks"], saved["trend"]
+        except Exception:
+            pass
+    ranks, trend = daily_tables(since)
+    path.parent.mkdir(exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_bytes(pickle.dumps({"key": key, "ranks": ranks, "trend": trend}))
+    tmp.replace(path)
+    return ranks, trend
+
+
 def ranks_by_day():
     """{YYYYMMDD: {code: 시총 순위}} — 일봉 표에서. 오늘 모음에는 **전 거래일** 순위를 씀."""
     return daily_tables("20230801")[0]

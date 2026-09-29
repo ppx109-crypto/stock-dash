@@ -8,7 +8,7 @@ import hlab as H
 
 data = H.load()
 codes = [c for c in data if not c.startswith("K")]
-ranks, trend = H.daily_tables("20220101")
+ranks, trend = H.cached_tables("20220101")
 uni = H.Universe({d: v for d, v in ranks.items() if d >= "20230801"}, top=100)
 CTX = H.daily_context(codes, ranks, trend)
 DAYS = {c: sorted(v) for c, v in CTX.items()}
