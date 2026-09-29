@@ -158,11 +158,30 @@ SLOTS = 10
 BASE_SIZE = lambda r: 4 if rule.holds(r) else (4 if steady(r) >= 3 else 2)
 
 
-def line(g):
+LUCK_CAP = 30.0      # 행운 뺀 연수익: 한 번 매매의 이익을 이 %에서 자름(사용자 요청 2026-09-29)
+
+
+def luck(g, slots, since):
+    """씨앗 0번 판의 매매목록으로 (이익 +30% 자른 연수익, 가장 크게 번 2건 뺀 연수익). 드문 대박이 평균을 흔들지 않게."""
+    led = (g or {}).get("매매목록") or []
+    if not led:
+        return None, None
+    years = max(1, int(max(t["판 날"] for t in led)[:4]) - int(str(since)[:4]) + 1)
+    w = sorted(t["손익"] * t["자리"] for t in led)
+    capped = sum(min(t["손익"], LUCK_CAP) * t["자리"] for t in led) / slots / years
+    return round(capped, 2), round(sum(w[:-2]) / slots / years, 2)
+
+
+def line(g, slots=None, since=None):
     if not g:
         return "60건 미만"
-    return (f"매매 {g['매매']:>3} 연 {g['연수익']:>6} (폭 {g['폭']:>5}) 골 {g['최대낙폭']:>6} (골폭 {g['골 폭']:>4}) "
+    text = (f"매매 {g['매매']:>3} 연 {g['연수익']:>6} (폭 {g['폭']:>5}) 골 {g['최대낙폭']:>6} (골폭 {g['골 폭']:>4}) "
             f"가동 {g['가동률']:>5} 승률 {g['승률']} 보유 {g['보유중앙']}")
+    if slots and since:
+        a, b = luck(g, slots, since)
+        if a is not None:
+            text += f" 행운뺌 {a:>6} 큰2건뺌 {b:>6}"
+    return text
 
 
 # 하루 2종목 한도는 새 30회차에 뺌(빼도 같음). 견주려면 per_day=2를 넘김.
@@ -171,8 +190,8 @@ def run(tag, holds=BASE_HOLD, exits=BASE_EXIT, rank=rule.order, slots=SLOTS, per
     out = [f"  {tag:46s}"]
     for side, pool, since in (("앞", early, rule.SINCE), ("뒤", inside, rule.MID)):
         g = lab.wobble(pool, prices, holds, exits, tries=8, rank=rank, slots=slots, since=since,
-                       per_day=per_day, apart=kin, realistic=True, cap=130, **kw)
-        out.append(side + " " + line(g))
+                       per_day=per_day, apart=kin, realistic=True, cap=130, detail=True, **kw)
+        out.append(side + " " + line(g, slots, since))
         if years and g:
             out.append(f"해마다 {g['해마다']}")
     print(" | ".join(out), flush=True)
