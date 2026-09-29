@@ -6,7 +6,7 @@ python collect_dart_extra.py events|holders|quarter
 - holders → holder-data/{code}.json : 임원·주요주주 소유보고 · 5% 대량보유 보고. (DART가 최근 약 2년치만 줌 — 과거 검증엔 못 씀)
 - quarter → quarter-data/{code}.json: 분기마다(1분기 · 반기 · 3분기 · 사업보고서) 주요계정 — 매출 · 영업이익 · 순이익 · 자산 ·
             부채 · 자본(연결 먼저, 없으면 별도)과 접수번호(= 공시 날짜). 2016~.
-대상은 study/flow_universe.json(+ 그날 A·B그룹). 받은 해·보고서는 다시 묻지 않고 올해 것만 새로 봅니다.
+대상은 study/flow_universe.json(+ 그날 A·B그룹) — 작업(DART extra history)에서는 1시간봉 종목(hourly-data/universe.json)도 더함. 받은 해·보고서는 다시 묻지 않고 올해 것만 새로 봅니다.
 키는 환경변수 DART_CRTFC_KEY로만 받고, 응답 본문과 키는 찍지 않습니다. 하루 호출 한도(2만)를 넘지 않게 멈춥니다.
 """
 import json

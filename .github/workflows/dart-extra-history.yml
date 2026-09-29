@@ -1,7 +1,13 @@
 name: DART extra history
 # DART에서 과거까지 주는 자료를 더 모읍니다(공개 자료). events(주요사항보고서 2017~) · holders(임원·5% 보유, 최근 2년) · quarter(분기 주요계정 2016~) · all
 # 하루 호출 한도(2만)를 넘지 않게 멈추며, 다시 돌리면 받은 데서 이어 갑니다.
+# 대상 = study/flow_universe.json + hourly-data/universe.json(1시간봉 종목) — 1시간봉 종목이 늘면 자동으로 따라 받음.
+# 평일 저녁: 새 공시(events) · 보유 보고(holders)를 이어 붙임(매일 도는 DART 작업 몫을 남기려고 호출 9천 번까지).
+# 토요일: 분기 실적(quarter) — 올해 · 작년 보고서만 다시 봄.
 on:
+  schedule:
+    - cron: '30 10 * * 1-5'   # 한국 시각 19:30(평일) — Daily DART refresh(18:00) 뒤
+    - cron: '30 1 * * 6'      # 한국 시각 토요일 10:30
   workflow_dispatch:
     inputs:
       kind:
@@ -9,7 +15,7 @@ on:
         required: false
         default: 'all'
       codes:
-        description: '종목코드 (쉼표 구분, 비우면 study/flow_universe.json 전체)'
+        description: '종목코드 (쉼표 구분, 비우면 study/flow_universe.json + 1시간봉 종목 전체)'
         required: false
         default: ''
 permissions:
@@ -38,6 +44,9 @@ jobs:
           picked = [c.strip() for c in os.getenv("PICKED_CODES", "").split(",") if c.strip()]
           if not picked:
               picked = json.loads(Path("study/flow_universe.json").read_text(encoding="utf-8"))["codes"]
+              hourly = Path("hourly-data/universe.json")
+              if hourly.exists():
+                  picked = list(dict.fromkeys(picked + json.loads(hourly.read_text(encoding="utf-8"))["codes"]))
           picked = [c for c in picked if re.fullmatch(r"[0-9]{6}", c)]
           for k in range(0, len(picked), 50):
               print(",".join(picked[k:k + 50]))
@@ -58,6 +67,7 @@ jobs:
           done
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
-          KIND: ${{ inputs.kind || 'all' }}
+          KIND: ${{ inputs.kind || (github.event.schedule == '30 1 * * 6' && 'quarter') || (github.event_name == 'schedule' && 'events holders') || 'all' }}
           PICKED_CODES: ${{ inputs.codes || '' }}
+          DART_BUDGET: ${{ github.event_name == 'schedule' && '9000' || '17000' }}
           DART_USED_FILE: /tmp/dart-used.txt
