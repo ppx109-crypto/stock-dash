@@ -1,0 +1,48 @@
+name: KIS hourly bars
+# 한국투자증권 1분봉(약 1년치)을 모아 1시간봉으로 저장합니다(1시간봉 RL 재료, 조회 전용). 받은 날은 건너뛰고 이어 받습니다.
+# 처음엔 한 번에 4만 번씩 여러 번 돌려 1년치를 채우고, 그 뒤로는 평일 장 끝난 뒤 그날 것만 받습니다.
+on:
+  workflow_dispatch:
+    inputs:
+      max_calls:
+        description: '이번에 부를 최대 수(하루치 = 종목당 4번)'
+        required: false
+        default: '40000'
+  schedule:
+    - cron: '50 7 * * 1-5'   # 한국 시각 16:50(평일)
+permissions:
+  contents: write
+concurrency:
+  group: kis-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python -m unittest tests.test_collect_kis_hourly -v
+      - name: Collect and save
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          status=0; python collect_kis_hourly.py || status=$?
+          mkdir -p hourly-kis
+          git add -A hourly-kis
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Collect KIS hourly bars"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          if [ "$status" = "3" ]; then echo '이번 몫을 다 불렀습니다. 다시 돌리면 이어 받습니다.'; exit 0; fi
+          exit $status
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.07'
+          KIS_HOURLY_MAX_CALLS: ${{ inputs.max_calls || '40000' }}
