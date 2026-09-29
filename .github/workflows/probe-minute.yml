@@ -1,6 +1,6 @@
 name: Probe minute bars
 # 1시간봉 연구를 위해 과거 분봉을 얼마나 받을 수 있는지 한 번 찔러 봅니다(조회 전용). 저장하지 않고 줄 수 · 시각 범위만 찍습니다.
-# 야후는 한국투자증권 수집과 겹쳐도 되므로 따로 바로 돌고, 한국투자증권 쪽만 수집 작업이 끝나기를 기다립니다.
+# 야후 · 한국투자증권 둘 다 바로 돕니다(한국투자증권은 스무 번 남짓만 부름).
 on:
   workflow_dispatch:
 permissions:
@@ -19,9 +19,7 @@ jobs:
   kis:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    concurrency:
-      group: kis-collect
-      cancel-in-progress: false
+    # 부르는 횟수가 스무 번 남짓이라 수집 작업을 기다리지 않고 바로 돕니다(수집기는 거절되면 다시 부름).
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

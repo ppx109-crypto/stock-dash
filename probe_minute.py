@@ -14,8 +14,10 @@ def kis():
     import broker_kis
     c = broker_kis.market()
     path = "/uapi/domestic-stock/v1/quotations/inquire-time-dailychartprice"
-    for day in ("20260925", "20260615", "20260316", "20250915", "20250314", "20240913", "20230915", "20210315", "20170315"):
-        for hour in ("153000", "110000"):
+    days = ("20260925", "20260615", "20260316", "20250915", "20250314", "20240913", "20240315",
+            "20230915", "20220915", "20210315", "20200316", "20190315", "20170315")
+    for day in days:
+        for hour in (("153000", "110000") if day == "20260925" else ("153000",)):
             try:
                 c.authorize()
                 _, data = c.request("GET", path, headers={
