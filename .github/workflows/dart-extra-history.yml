@@ -1,0 +1,43 @@
+name: DART extra history
+# DART에서 과거까지 주는 자료를 더 모읍니다(공개 자료). events(주요사항보고서 2017~) · holders(임원·5% 보유, 최근 2년) · quarter(분기 주요계정 2016~) · all
+# 하루 호출 한도(2만)를 넘지 않게 멈추며, 다시 돌리면 받은 데서 이어 갑니다.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'events · holders · quarter · all'
+        required: false
+        default: 'all'
+permissions:
+  contents: write
+concurrency:
+  group: dart-extra
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python -m unittest tests.test_dart_extra -v
+      - name: Collect
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          kinds="$KIND"; [ "$kinds" = "all" ] && kinds="events holders quarter"
+          for kind in $kinds; do
+            status=0; python collect_dart_extra.py "$kind" || status=$?
+            git add -A dart-events holder-data quarter-data 2>/dev/null
+            if ! git diff --cached --quiet; then
+              git commit -q -m "Collect DART extra history ($kind)"
+              git pull -q --rebase origin main && git push -q
+            fi
+            if [ "$status" = "2" ]; then echo '한도·거절로 멈춥니다. 내일 다시 돌리면 이어 갑니다.'; exit 0; fi
+          done
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          KIND: ${{ inputs.kind || 'all' }}

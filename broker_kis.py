@@ -446,7 +446,7 @@ class KIS:
         found.sort(key=lambda r: r['date'])
         return found
 
-    def _market_rows(self, path, tr_id, params, what):
+    def _market_rows(self, path, tr_id, params, what, key=None):
         """시세 쪽 조회 한 번. 줄 목록(dict)만 돌려줍니다. 조회 전용입니다."""
         self.authorize()
         _, data = self.request('GET', path, headers={
@@ -456,7 +456,12 @@ class KIS:
             code_seen = str(data.get('msg_cd') or '').strip()
             code_seen = code_seen if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', code_seen) else ''
             raise BrokerError(f'{what} 조회가 거절되었습니다.' + (f' · {code_seen}' if code_seen else ''))
-        rows = data.get('output2') if data.get('output2') is not None else data.get('output')
+        if key:
+            rows = data.get(key)
+        else:
+            rows = data.get('output2') if data.get('output2') is not None else data.get('output')
+        if rows is None:
+            rows = []
         if isinstance(rows, dict):
             rows = [rows]
         if not isinstance(rows, list):
@@ -472,6 +477,114 @@ class KIS:
             except BrokerError:
                 got[name] = None
         return got
+
+    @staticmethod
+    def _check(code=None, *days):
+        if code is not None and not re.fullmatch(r'[0-9]{6}', str(code)):
+            raise BrokerError('종목코드는 숫자 6자리여야 합니다.')
+        if not all(re.fullmatch(r'[0-9]{8}', str(d)) for d in days):
+            raise BrokerError('날짜는 숫자 8자리여야 합니다.')
+
+    def _dated(self, rows, date_key, names):
+        found = []
+        for row in rows:
+            day = str(row.get(date_key, '')).strip()
+            if re.fullmatch(r'[0-9]{8}', day):
+                found.append({'date': day, **self._numbers(row, names)})
+        return sorted(found, key=lambda r: r['date'])
+
+    def program_daily(self, code, day):
+        """종목별 프로그램매매추이(일별, FHPPG04650201). day까지 서른 거래일. 오래된 날이 먼저."""
+        self._check(code, day)
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/program-trade-by-stock-daily', 'FHPPG04650201',
+                                 {'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code),
+                                  'FID_INPUT_DATE_1': str(day)}, '프로그램매매 일별', key='output')
+        return self._dated(rows, 'stck_bsop_date', (
+            ('순매수량', 'whol_smtn_ntby_qty'), ('순매수대금', 'whol_smtn_ntby_tr_pbmn'),
+            ('매수량', 'whol_smtn_shnu_vol'), ('매도량', 'whol_smtn_seln_vol'),
+            ('거래량', 'acml_vol'), ('종가', 'stck_clpr')))
+
+    def loan_daily(self, code, start, end):
+        """종목별 일별 대차거래추이(HHPST074500C0). 기간 안 날마다 신규·상환·잔고 주수와 잔고 금액."""
+        self._check(code, start, end)
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/daily-loan-trans', 'HHPST074500C0',
+                                 {'MRKT_DIV_CLS_CODE': '3', 'MKSC_SHRN_ISCD': str(code), 'START_DATE': str(start),
+                                  'END_DATE': str(end), 'CTS': ''}, '대차거래 일별', key='output1')
+        return self._dated(rows, 'bsop_date', (
+            ('신규주수', 'new_stcn'), ('상환주수', 'rdmp_stcn'), ('잔고주수', 'rmnd_stcn'), ('잔고금액', 'rmnd_amt'),
+            ('거래량', 'acml_vol'), ('종가', 'stck_prpr')))
+
+    def trade_side_daily(self, code, start, end):
+        """종목별 일별 매수·매도 체결량(FHKST03010800). 매수 쪽이 먼저 부른 체결량과 매도 쪽 체결량."""
+        self._check(code, start, end)
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/inquire-daily-trade-volume', 'FHKST03010800',
+                                 {'FID_COND_MRKT_DIV_CODE': 'J', 'FID_INPUT_ISCD': str(code), 'FID_PERIOD_DIV_CODE': 'D',
+                                  'FID_INPUT_DATE_1': str(start), 'FID_INPUT_DATE_2': str(end)}, '매수·매도 체결량',
+                                 key='output2')
+        return self._dated(rows, 'stck_bsop_date', (('매수체결량', 'total_shnu_qty'), ('매도체결량', 'total_seln_qty')))
+
+    def index_daily(self, index, start, end):
+        """업종(지수) 기간별 시세(FHKUP03500100). 0001 코스피 · 1001 코스닥. 한 번에 약 50일."""
+        self._check(None, start, end)
+        if not re.fullmatch(r'[0-9]{4}', str(index)):
+            raise BrokerError('지수 코드는 숫자 4자리여야 합니다.')
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice', 'FHKUP03500100',
+                                 {'FID_COND_MRKT_DIV_CODE': 'U', 'FID_INPUT_ISCD': str(index), 'FID_INPUT_DATE_1': str(start),
+                                  'FID_INPUT_DATE_2': str(end), 'FID_PERIOD_DIV_CODE': 'D'}, '지수 일별', key='output2')
+        return self._dated(rows, 'stck_bsop_date', (
+            ('시가', 'bstp_nmix_oprc'), ('고가', 'bstp_nmix_hgpr'), ('저가', 'bstp_nmix_lwpr'),
+            ('종가', 'bstp_nmix_prpr'), ('거래량', 'acml_vol'), ('거래대금', 'acml_tr_pbmn')))
+
+    def market_investor_daily(self, market, day):
+        """시장별 투자자매매동향(일별, FHPTJ04040000). day까지 약 300거래일, 투자자별 순매수 대금."""
+        self._check(None, day)
+        index, short = {'KSP': ('0001', 'KSP'), 'KSQ': ('1001', 'KSQ')}[market]
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market', 'FHPTJ04040000',
+                                 {'FID_COND_MRKT_DIV_CODE': 'U', 'FID_INPUT_ISCD': index, 'FID_INPUT_DATE_1': str(day),
+                                  'FID_INPUT_ISCD_1': short, 'FID_INPUT_DATE_2': str(day), 'FID_INPUT_ISCD_2': index},
+                                 '시장별 투자자 일별', key='output')
+        return self._dated(rows, 'stck_bsop_date', (
+            ('개인', 'prsn_ntby_tr_pbmn'), ('외국인', 'frgn_ntby_tr_pbmn'), ('기관', 'orgn_ntby_tr_pbmn'),
+            ('투신', 'ivtr_ntby_tr_pbmn'), ('연기금', 'fund_ntby_tr_pbmn'), ('사모', 'pe_fund_ntby_tr_pbmn'),
+            ('금융투자', 'scrt_ntby_tr_pbmn'), ('보험', 'insu_ntby_tr_pbmn'), ('은행', 'bank_ntby_tr_pbmn'),
+            ('지수', 'bstp_nmix_prpr')))
+
+    def market_program_daily(self, market, start, end):
+        """프로그램매매 종합현황(일별, FHPPG04600001). K 코스피 · Q 코스닥. 차익·비차익 순매수 대금."""
+        self._check(None, start, end)
+        if market not in ('K', 'Q'):
+            raise BrokerError('시장은 K 또는 Q여야 합니다.')
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/comp-program-trade-daily', 'FHPPG04600001',
+                                 {'FID_COND_MRKT_DIV_CODE': 'J', 'FID_MRKT_CLS_CODE': market, 'FID_INPUT_DATE_1': str(start),
+                                  'FID_INPUT_DATE_2': str(end)}, '프로그램매매 종합 일별', key='output')
+        return self._dated(rows, 'stck_bsop_date', (
+            ('차익순매수', 'arbt_smtn_ntby_tr_pbmn'), ('비차익순매수', 'nabt_smtn_ntby_tr_pbmn'),
+            ('전체순매수', 'whol_smtn_ntby_tr_pbmn')))
+
+    def market_funds(self, day):
+        """국내 증시자금 종합(FHKST649100C0). day까지 약 100거래일: 고객예탁금 · 신용융자잔고 · 미수금 등."""
+        self._check(None, day)
+        rows = self._market_rows('/uapi/domestic-stock/v1/quotations/mktfunds', 'FHKST649100C0',
+                                 {'FID_INPUT_DATE_1': str(day)}, '증시자금 종합', key='output')
+        return self._dated(rows, 'bsop_date', (
+            ('고객예탁금', 'cust_dpmn_amt'), ('신용융자잔고', 'crdt_loan_rmnd'), ('미수금', 'uncl_amt'),
+            ('대주잔고', 'secu_lend_amt'), ('선물예수금', 'futs_tfam_amt'), ('MMF', 'mmf_amt'), ('지수', 'bstp_nmix_prpr')))
+
+    def financial_ratio(self, code, quarterly=False):
+        """재무비율(FHKST66430300). 연간(2004~) 또는 분기(2019~): ROE · EPS · BPS · 매출/영업이익/순이익 증가율 · 부채비율."""
+        self._check(code)
+        rows = self._market_rows('/uapi/domestic-stock/v1/finance/financial-ratio', 'FHKST66430300',
+                                 {'FID_DIV_CLS_CODE': '1' if quarterly else '0', 'fid_cond_mrkt_div_code': 'J',
+                                  'fid_input_iscd': str(code)}, '재무비율', key='output')
+        found = []
+        for row in rows:
+            ym = str(row.get('stac_yymm', '')).strip()
+            if re.fullmatch(r'[0-9]{6}', ym):
+                found.append({'결산월': ym, **self._numbers(row, (
+                    ('매출증가율', 'grs'), ('영업이익증가율', 'bsop_prfi_inrt'), ('순이익증가율', 'ntin_inrt'),
+                    ('ROE', 'roe_val'), ('EPS', 'eps'), ('SPS', 'sps'), ('BPS', 'bps'), ('유보율', 'rsrv_rate'),
+                    ('부채비율', 'lblt_rate')))})
+        return sorted(found, key=lambda r: r['결산월'])
 
     def short_daily(self, code, start, end):
         """공매도 일별추이(FHPST04830000). 기간 안의 날마다 공매도 수량·비중과 거래량. 오래된 날이 먼저."""

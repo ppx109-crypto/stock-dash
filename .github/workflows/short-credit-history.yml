@@ -54,7 +54,7 @@ jobs:
           PY
           while read -r batch; do
             [ -z "$batch" ] && continue
-            INVESTOR_CODES="$batch" python collect_short_credit.py; status=$?
+            status=0; INVESTOR_CODES="$batch" python collect_short_credit.py || status=$?
             mkdir -p short-data credit-data
             git add -A short-data credit-data
             if git diff --cached --quiet; then

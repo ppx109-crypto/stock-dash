@@ -54,7 +54,7 @@ jobs:
           PY
           while read -r batch; do
             [ -z "$batch" ] && continue
-            INVESTOR_CODES="$batch" python collect_investor_history.py; status=$?
+            status=0; INVESTOR_CODES="$batch" python collect_investor_history.py || status=$?
             mkdir -p investor-data
             git add -A investor-data
             if git diff --cached --quiet; then

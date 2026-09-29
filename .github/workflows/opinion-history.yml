@@ -52,7 +52,7 @@ jobs:
           PY
           while read -r batch; do
             [ -z "$batch" ] && continue
-            INVESTOR_CODES="$batch" python collect_opinion_history.py; status=$?
+            status=0; INVESTOR_CODES="$batch" python collect_opinion_history.py || status=$?
             mkdir -p opinion-data
             git add -A opinion-data
             if git diff --cached --quiet; then
