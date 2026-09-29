@@ -42,7 +42,11 @@ class Merge(unittest.TestCase):
             lines = (folder / "2026.csv").read_text().splitlines()
             self.assertEqual(lines, ["2026010209,3,3,3,3,3", "2026010210,4,4,4,4,4"])
             self.assertTrue((folder / "2025.csv").exists())
-            self.assertEqual(H.merge(folder, [("2026010210", 4, 4, 4, 4, 4)]), 0)
+            # 같은 날을 다시 받으면 그날 봉을 통째로 바꿈(낡은 봉이 남지 않음)
+            H.merge(folder, [("2026010209", 5, 5, 5, 5, 5)])
+            lines = (folder / "2026.csv").read_text().splitlines()
+            self.assertEqual(lines, ["2026010209,5,5,5,5,5"])
+            self.assertEqual(H.merge(folder, [("2026010209", 5, 5, 5, 5, 5)]), 0)
 
 
 if __name__ == "__main__":

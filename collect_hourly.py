@@ -57,7 +57,8 @@ def closed_only(bars, now=None):
 
 
 def merge(folder, bars):
-    """해마다 파일에 합침(같은 시각은 새 값으로). 바뀐 파일 수를 돌려줌."""
+    """해마다 파일에 합침. 새로 받은 날은 **그날 봉을 통째로** 새 것으로 바꿈(야후는 가장 최근 날만 15시 봉을 따로 주다가
+    나중에 14시 봉에 합치므로, 시각 단위로 덮으면 낡은 15시 봉이 남음). 바뀐 파일 수를 돌려줌."""
     by_year = {}
     for b in bars:
         by_year.setdefault(b[0][:4], []).append(b)
@@ -71,6 +72,8 @@ def merge(folder, bars):
                 if len(parts) == 6:
                     old[parts[0]] = line
         before = dict(old)
+        fresh_days = {b[0][:8] for b in new}
+        old = {k: v for k, v in old.items() if k[:8] not in fresh_days}
         for b in new:
             old[b[0]] = ",".join(str(x) for x in b)
         if old != before:

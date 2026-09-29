@@ -27,6 +27,15 @@ def load(codes=None):
         lines = []
         for f in sorted(folder.glob("*.csv")):
             lines += [ln.split(",") for ln in f.read_text(encoding="utf-8").splitlines() if ln.count(",") == 5]
+        # 15시 봉은 가장 최근 날에만 따로 있어(옛날은 14시 봉에 합쳐짐) 모양을 맞추려 뺌
+        lines = [p for p in lines if p[0][8:] != "15"]
+        # 하루에 봉이 하나뿐인 날이 많은 종목은 야후가 1시간봉을 안 주는 종목(그 봉에 하루 전체 값이 들어 있어 쓰면 안 됨)
+        per_day = {}
+        for p in lines:
+            per_day[p[0][:8]] = per_day.get(p[0][:8], 0) + 1
+        if not per_day or sum(1 for n in per_day.values() if n <= 1) > 0.2 * len(per_day):
+            continue
+        lines = [p for p in lines if per_day[p[0][:8]] >= 4]
         if len(lines) < 200:
             continue
         lines.sort(key=lambda p: p[0])
