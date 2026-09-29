@@ -12,11 +12,15 @@ def e_peek(c, b):          # 일부러 다음 봉 종가를 봄(미래 참조) �
     m = e_align_or_noon(c, b).copy()
     nxt = np.r_[b["c"][1:], b["c"][-1]]
     return m | (ctx_now(c, b) & (nxt > b["c"] * 1.02))
+def exit_peek(c, b, p, k):   # 일부러 다음 봉 종가를 보고 팜 — 검사가 잡아야 함
+    if k + 1 < len(b["c"]) and b["c"][k + 1] < b["c"][k] * 0.98: return "all"
+    return exit_daily(c, b, p, k)
 RULES = {
     "지금": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank),
     "자리 바꾸기": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "짧은 판 B": dict(entry=entry(), exit_rule=exit_trail, size=four, rank=rank, take_of=take_half, stop_of=stop5),
     "엿보기(검사 눈)": dict(entry=e_peek, exit_rule=exit_daily, size=size, rank=rank),
+    "엿보기 팔기(검사 눈)": dict(entry=e_align_or_noon, exit_rule=exit_peek, size=size, rank=rank),
 }
 out = {"max_bar": max(b["t"][-1] for b in data.values()), "max_rank_day": max(ranks), "rules": {}, "dates": []}
 # 날짜 짚기: 봉마다 붙은 일봉 재료의 날 · 수급 마지막 날이 그 봉의 날보다 앞인가
@@ -28,6 +32,55 @@ for c in data:
             bad += 1
             if len(out["dates"]) < 5: out["dates"].append((c, data[c]["t"][k], x["날"], x["수급끝"]))
 out["dates_bad"] = bad
+def poisoned(b, k, rng):
+    """k봉 뒤를 엉뚱한 값으로 바꾼 같은 길이의 봉 묶음."""
+    n = len(b["c"]) - k - 1
+    if n <= 0: return b
+    walk = b["c"][k] * np.exp(np.cumsum(rng.normal(0, 0.03, n)))
+    o = walk * np.exp(rng.normal(0, 0.01, n))
+    nb = {"t": b["t"], **{x: b[x].copy() for x in "ohlcv"}}
+    nb["o"][k + 1:] = o; nb["c"][k + 1:] = walk
+    nb["h"][k + 1:] = np.maximum(o, walk) * 1.01; nb["l"][k + 1:] = np.minimum(o, walk) * 0.99
+    nb["v"][k + 1:] = rng.uniform(0.2, 5, n) * max(b["v"][:k + 1].mean(), 1)
+    return nb
+def clear_memos():
+    H._ST.clear()
+    for m in ("_E20",):
+        if m in globals(): globals()[m].clear()
+# 3b 봉마다 더럽히기: 종목 · 봉 수백 곳에서 그 봉 뒤만 엉뚱하게 바꿔 신호(그 봉까지) · 파는 판단(그 봉) · 묵음 판단이 그대로인지
+rng = np.random.default_rng(11)
+codes = sorted(data)
+pick = [codes[i] for i in rng.choice(len(codes), min(60, len(codes)), replace=False)]
+bar_poison = {name: [0, 0] for name in RULES}      # [어긋난 수, 짚은 수]
+base_sig = {}
+for name, kw in (RULES.items() if not (os.environ.get("HLAB_CUT") or os.environ.get("HLAB_POISON")) else []):
+    clear_memos()
+    base_sig[name] = {c: np.asarray(kw["entry"](c, data[c]), bool) for c in pick}
+for c in (pick if not (os.environ.get("HLAB_CUT") or os.environ.get("HLAB_POISON")) else []):
+    b = data[c]; n = len(b["t"])
+    hot = np.flatnonzero(ctx_now(c, b))
+    ks = list(rng.choice(np.arange(200, n - 2), 12, replace=False)) + (list(rng.choice(hot[(hot > 200) & (hot < n - 2)], min(12, int(((hot > 200) & (hot < n - 2)).sum())), replace=False)) if len(hot) else [])
+    for k in ks:
+        bp = poisoned(b, int(k), rng)
+        for name, kw in RULES.items():
+            clear_memos()
+            real = data[c]; data[c] = bp
+            try:
+                sp = np.asarray(kw["entry"](c, bp), bool)
+                p = {"i": max(int(k) - 5, 0), "price": b["o"][max(int(k) - 5, 0)], "칸": 4, "처음칸": 4, "peak": b["c"][max(int(k) - 5, 0)],
+                     "now": int(k), "day": b["t"][int(k)][:8], "code": c}
+                ep = kw["exit_rule"](c, bp, dict(p), int(k))
+                stp = kw.get("stale_of")(dict(p)) if kw.get("stale_of") else None
+            finally:
+                data[c] = real
+            clear_memos()
+            e0 = kw["exit_rule"](c, b, dict(p), int(k))
+            st0 = kw.get("stale_of")(dict(p)) if kw.get("stale_of") else None
+            same = np.array_equal(sp[: int(k) + 1], base_sig[name][c][: int(k) + 1]) and ep == e0 and stp == st0
+            bar_poison[name][0] += 0 if same else 1
+            bar_poison[name][1] += 1
+out["bar_poison"] = bar_poison
+clear_memos()
 for name, kw in RULES.items():
     e = kw.pop("entry")
     sigs = {c: [t for t, v in zip(b["t"], np.asarray(e(c, b), bool)) if v] for c, b in data.items()}

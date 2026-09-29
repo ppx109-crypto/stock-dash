@@ -9,6 +9,8 @@ python hguard.py            → docs/1H-GUARD.md에 결과를 적음(회차에�
                    T까지의 신호와 T까지 끝난 매매가 전체 세계와 **한 건도 다르지 않은지**.
 4. 더럽히기      — T 뒤 자료를 엉뚱한 값(제멋대로 걷는 주가 · 뒤섞은 순위 · 가짜 수급 · 가짜 공시)으로 바꾼 세계에서 같은 비교.
                    '조금이라도 뒷날을 쓴 것'까지 잡힘.
+   4b 봉마다 더럽히기 — 종목 60개 × 봉 약 24곳(재료가 켜진 봉 절반)마다 그 봉 **뒤만** 엉뚱하게 바꿔, 그 봉까지의 사는 신호 ·
+                   그 봉의 파는 판단 · 묵음(자리 바꾸기) 판단이 그대로인지. 한 봉만 엿보는 규칙도 잡으려고 수백 곳을 봄.
 5. 검사 눈 확인  — 일부러 다음 봉 종가를 보는 규칙(엿보기)은 3 · 4에서 **반드시 걸려야** 함. 안 걸리면 검사가 눈먼 것 → FAIL.
 6. 날짜 짚기     — 봉마다 붙은 일봉 재료의 날 · 수급 마지막 날이 그 봉의 날보다 앞인지(전 거래일 것만 쓰는지).
 7. 문턱은 과거로 — '조용함' 문턱은 달마다 그 달 앞 자료로만(hlab.calm_by_month, tests/test_hguard.py가 뒷줄을 더해도 앞 달 값이
@@ -64,7 +66,15 @@ def main():
     lines.append("- 2 체결 감사: 통과(모든 규칙의 모의가 감사에 걸리지 않고 끝남)")
     d_ok = full["dates_bad"] == 0
     ok &= d_ok
+    lines += ["", "| 4b 봉마다 더럽히기 | 규칙 | 어긋남 / 짚은 곳 | 판정 |", "|---|---|---|---|"]
+    for name, (bad_n, n) in full["bar_poison"].items():
+        good = bad_n > 0 if name.startswith("엿보기") else bad_n == 0
+        ok &= good
+        verdict = ("통과(걸림 = 검사 눈 살아 있음)" if good else "FAIL(검사가 눈멂)") if name.startswith("엿보기") else ("통과" if good else "FAIL")
+        lines.append(f"| | {name} | {bad_n} / {n} | {verdict} |")
+    lines.append("")
     lines.append(f"- 6 날짜 짚기: {'통과' if d_ok else 'FAIL'} (어긋난 봉 {full['dates_bad']} {full['dates'][:3]})")
+    caught = {}
     lines += ["", "| 검사 | T | 규칙 | 어긋난 신호 | 어긋난 매매 | T까지 끝난 매매 | 판정 |", "|---|---|---|---|---|---|---|"]
     for kind, var in (("3 잘라내기", "HLAB_CUT"), ("4 더럽히기", "HLAB_POISON")):
         for T in CUTS:
@@ -75,13 +85,17 @@ def main():
                 continue
             for name, (ds, dt, n, ex) in compare(full, other, T).items():
                 if name.startswith("엿보기"):
-                    good = (ds + dt) > 0        # 검사 눈: 반드시 걸려야 함
-                    verdict = "통과(걸림 = 검사 눈 살아 있음)" if good else "FAIL(검사가 눈멂)"
+                    caught[name] = caught.get(name, 0) + (ds + dt > 0)
+                    good = True
+                    verdict = "걸림" if ds + dt else "(이 T에선 안 드러남)"
                 else:
                     good = (ds + dt) == 0
                     verdict = "통과" if good else f"FAIL {ex}"
                 ok &= good
                 lines.append(f"| {kind} | {T} | {name} | {ds} | {dt} | {n} | {verdict} |")
+    for name, hits in caught.items():
+        ok &= hits > 0
+        lines.append(f"- 3 · 4 검사 눈({name}): 자르기 · 더럽히기 여섯 곳 가운데 {hits}곳에서 걸림 → {'통과' if hits else 'FAIL(검사가 눈멂)'}")
     lines += ["", f"**종합: {'모두 통과' if ok else 'FAIL — 위 표에서 어긋난 곳을 고칠 때까지 결과를 믿지 않음'}**"]
     Path("docs/1H-GUARD.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
