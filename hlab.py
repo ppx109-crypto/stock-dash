@@ -4,8 +4,13 @@
 - 신호는 봉이 닫힌 뒤 그 봉까지의 값으로만 셈 → **다음 봉 시가**에 사고, k봉 뒤 종가에 판다고 봄.
 - 그날 종목 모음은 **전 거래일** 시총 순위로 정함(오늘 오른 종목만 고르지 않게).
 - 일봉 재료(수급 등)는 전날 것까지만.
+- '조용함' 문턱(추세 문)은 **그 달 전까지의 표로만** 정함(예전엔 전체 기간 표로 한 번 → 뒷날이 섞였음, 2026-09-30 고침).
+- 시험지(2026-09-30 뒤)는 잠가 둠: 봉 · 일봉 · 수급 · 공시 · 순위 모두 그 날 앞까지만 읽음(HLAB_OPEN_HOLDOUT=1일 때만 엶).
+- 검사용 세계: HLAB_CUT=YYYYMMDDHH → 그 시각 뒤 자료를 모두 잘라 냄 · HLAB_POISON=YYYYMMDDHH → 그 시각 뒤 자료를 엉뚱한 값으로 바꿈
+  (hguard.py가 두 세계에서 그 시각 전에 끝난 매매가 똑같은지 봄).
 """
 import bisect
+import os
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +21,32 @@ HOME = Path("hourly-data")
 COST = 0.30          # 왕복 비용 %(수수료 · 세금 · 미끄러짐을 넉넉히)
 EARLY = ("2023100100", "2025040100")   # 앞 반
 LATE = ("2025040100", "2026093000")    # 뒤 반(2026-09-30 뒤는 쓰지 않는 시험지)
+HOLDOUT = "2026093000"                 # 이 시각부터는 시험지 — 연구 중엔 읽지 않음
+TABLES_VERSION = 2                     # 2: 조용함 문턱을 달마다 지난 자료로만
+
+
+def _env(name):
+    v = os.environ.get(name, "").strip()
+    return v if v and v.isdigit() and len(v) == 10 else None
+
+
+def bar_limit():
+    """이 시각 **뒤** 봉은 없는 것으로 봄(시험지 잠금 · 잘라내기). 반환: 마지막으로 쓸 수 있는 봉 시각 상한(포함) 또는 None."""
+    lim = None if os.environ.get("HLAB_OPEN_HOLDOUT") == "1" else str(int(HOLDOUT) - 1)
+    cut = _env("HLAB_CUT")
+    if cut and (lim is None or cut < lim):
+        lim = cut
+    return lim
+
+
+def day_limit():
+    """일봉 자료(종가 · 수급 · 공시 · 순위)는 이 날 **앞**까지만 씀. 잘라낸 시각의 그날 종가는 아직 모름."""
+    lim = bar_limit()
+    return lim[:8] if lim else None
+
+
+def poison_at():
+    return _env("HLAB_POISON")
 
 
 def load(codes=None):
@@ -39,10 +70,41 @@ def load(codes=None):
         if len(lines) < 200:
             continue
         lines.sort(key=lambda p: p[0])
+        lim = bar_limit()
+        if lim:
+            lines = [p for p in lines if p[0] <= lim]
+            if len(lines) < 200:
+                continue
         arr = np.array([[float(x) for x in p[1:]] for p in lines])
+        pz = poison_at()
+        if pz:
+            arr = _poison_bars([p[0] for p in lines], arr, pz, folder.name)
         found[folder.name] = {"t": [p[0] for p in lines], "o": arr[:, 0], "h": arr[:, 1], "l": arr[:, 2],
                               "c": arr[:, 3], "v": arr[:, 4]}
     return found
+
+
+def _seed(*parts):
+    import zlib
+    return zlib.crc32("|".join(map(str, parts)).encode())
+
+
+def _poison_bars(ts, arr, pz, code):
+    """pz 시각 뒤 봉을 엉뚱한 값(제멋대로 걷는 값)으로 바꿈 — 검사용."""
+    rng = np.random.default_rng(_seed("bars", code, pz))
+    k0 = bisect.bisect_right(ts, pz)
+    if k0 >= len(ts):
+        return arr
+    arr = arr.copy()
+    base = arr[k0 - 1, 3] if k0 > 0 else arr[0, 3]
+    walk = base * np.exp(np.cumsum(rng.normal(0, 0.03, len(ts) - k0)))
+    o = walk * np.exp(rng.normal(0, 0.01, len(walk)))
+    arr[k0:, 0] = o
+    arr[k0:, 3] = walk
+    arr[k0:, 1] = np.maximum(o, walk) * (1 + rng.uniform(0, 0.03, len(walk)))
+    arr[k0:, 2] = np.minimum(o, walk) * (1 - rng.uniform(0, 0.03, len(walk)))
+    arr[k0:, 4] = rng.uniform(0.2, 5, len(walk)) * max(arr[:k0, 4].mean() if k0 else 1, 1)
+    return arr
 
 
 def daily_tables(since="20230101"):
@@ -53,14 +115,35 @@ def daily_tables(since="20230101"):
     import rule
     rows = lab.load()
     caps.tag(rows, 150)
-    rule.calm_edge(rows)            # nrl과 같은 '조용함' 문턱(전체 표로 한 번)
+    edge = calm_by_month(rows, rule.CALM)   # 그 달 첫날 앞까지의 표로만 정한 '조용함' 문턱
     ranks, trend = {}, {}
     for r in rows:
         if r["date"] >= since and r.get(caps.RANK):
             ranks.setdefault(r["date"], {})[r["code"]] = r[caps.RANK]
-            if r[caps.RANK] <= rule.TOP and rule.trend_leg(r):
+            vol = r.get("변동성")
+            th = edge.get(r["date"][:6])
+            if (r[caps.RANK] <= rule.TOP and th is not None and vol is not None and vol <= th
+                    and (r.get("추세 기울기") or -99) >= rule.SLOPE and (r.get("60일 전 대비") or -99) >= rule.SIXTY):
                 trend[(r["code"], r["date"])] = True
     return ranks, trend
+
+
+def calm_by_month(rows, q):
+    """{YYYYMM: 그 달 첫날 **앞** 모든 줄의 변동성 가운데 아래 q 자리} — rule.calm_edge(전체 표로 한 번)의 미래 참조를 없앤 판.
+    값을 고르는 법(정렬 뒤 int(n·q)째)은 rule.calm_edge와 같음."""
+    got = sorted((r["date"], r["변동성"]) for r in rows if r.get("변동성") is not None)
+    if not got:
+        return {}
+    dates = [d for d, _ in got]
+    months = sorted({d[:6] for d in dates})
+    out = {}
+    vals = np.array([v for _, v in got], float)
+    for m in months:
+        n = bisect.bisect_left(dates, m + "01")
+        if n < 5000:                       # 앞 자료가 너무 적은 달은 문을 열지 않음
+            continue
+        out[m] = float(np.sort(vals[:n])[int(n * q)])
+    return out
 
 
 def cached_tables(since="20220101"):
@@ -71,20 +154,43 @@ def cached_tables(since="20220101"):
     import lab
     src = Path(lab.CACHE)
     st = os.stat(src)
-    key = (st.st_size, int(st.st_mtime), since)
+    key = (st.st_size, int(st.st_mtime), since, TABLES_VERSION)
     path = Path(".cache") / "hourly_tables.pkl"
+    got = None
     if path.exists():
         try:
             saved = pickle.loads(path.read_bytes())
             if saved.get("key") == key:
-                return saved["ranks"], saved["trend"]
+                got = saved["ranks"], saved["trend"]
         except Exception:
             pass
-    ranks, trend = daily_tables(since)
-    path.parent.mkdir(exist_ok=True)
-    tmp = path.with_suffix(".tmp")
-    tmp.write_bytes(pickle.dumps({"key": key, "ranks": ranks, "trend": trend}))
-    tmp.replace(path)
+    if got is None:
+        got = daily_tables(since)
+        path.parent.mkdir(exist_ok=True)
+        tmp = path.with_suffix(".tmp")
+        tmp.write_bytes(pickle.dumps({"key": key, "ranks": got[0], "trend": got[1]}))
+        tmp.replace(path)
+    return _limit_tables(*got)
+
+
+def _limit_tables(ranks, trend):
+    """순위 · 추세 문 표에 시험지 잠금 · 잘라내기 · 더럽히기를 입힘(그날 값은 그날 종가 뒤에야 앎 → 날 < 한계 날만)."""
+    lim = day_limit()
+    if lim:
+        ranks = {d: v for d, v in ranks.items() if d < lim}
+        trend = {k: v for k, v in trend.items() if k[1] < lim}
+    pz = poison_at()
+    if pz:
+        pd = pz[:8]
+        rng = np.random.default_rng(_seed("tables", pz))
+        ranks = {d: (v if d < pd else {c: int(r) for c, r in zip(v, rng.permutation(list(v.values())))}) for d, v in ranks.items()}
+        keep = {k: v for k, v in trend.items() if k[1] < pd}
+        for d, v in ranks.items():
+            if d >= pd:
+                for c in v:
+                    if rng.random() < 0.3:
+                        keep[(c, d)] = True
+        trend = keep
     return ranks, trend
 
 
@@ -112,15 +218,36 @@ def daily_context(codes, ranks, trend, since="20220101"):
         if not p.exists():
             continue
         rows = [x for x in json.loads(p.read_text(encoding="utf-8"))["closes"] if x[0] >= "20210101"]
+        lim = day_limit()
+        if lim:
+            rows = [x for x in rows if x[0] < lim]
         if len(rows) < 260:
             continue
         d = [x[0] for x in rows]
         c = np.array([x[1] for x in rows], float)
+        pz = poison_at()
+        if pz:
+            k0 = bisect.bisect_left(d, pz[:8])
+            if k0 < len(c):
+                rng = np.random.default_rng(_seed("daily", code, pz))
+                c = c.copy()
+                c[k0:] = c[max(k0 - 1, 0)] * np.exp(np.cumsum(rng.normal(0, 0.04, len(c) - k0)))
         cs = np.r_[0.0, np.cumsum(c)]
         sma = lambda n, i: (cs[i + 1] - cs[i + 1 - n]) / n
-        fl = {x["date"]: x for x in final_group.flow_rows(code)}
+        fl = {x["date"]: x for x in final_group.flow_rows(code) if not lim or x.get("date", "") < lim}
+        if pz:
+            rng = np.random.default_rng(_seed("flows", code, pz))
+            for day in list(fl):
+                if day >= pz[:8]:
+                    fl[day] = {"date": day, **{k: float(rng.normal(0, 1e5)) for k in ("외국인", "투신", "기관", "연기금", "사모", "개인")}}
         fdays = sorted(fl)
         ev = _events(code)
+        if lim:
+            ev = {k: [x for x in v if x < lim] for k, v in ev.items()}
+        if pz:
+            rng = np.random.default_rng(_seed("events", code, pz))
+            fake = [x for x in d if x >= pz[:8] and rng.random() < 0.05]
+            ev = {k: sorted([x for x in v if x < pz[:8]] + fake) for k, v in ev.items()} or {"유상증자": fake, "자기주식취득": fake}
         one = {}
         for i in range(200, len(c)):
             day = d[i]
@@ -133,6 +260,7 @@ def daily_context(codes, ranks, trend, since="20220101"):
                   for col in ("외국인", "투신", "기관", "연기금", "사모", "개인")}
             last3 = [fl[x] for x in fdays[max(0, k - 3):k]]
             one[day] = {
+                "날": day, "수급끝": fdays[k - 1] if k > 0 else None,     # 검사용: 이 재료가 기댄 마지막 날
                 "정배열": m[3] > m[15] > m[20] > m[90] > m[150] > m[200],
                 "간격": (m[3] / m[200] - 1) * 100,
                 "추세문": bool(trend.get((code, day))),
@@ -322,6 +450,7 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             at.setdefault(t[k], []).append((c, k))
     pos = {}          # code → dict(entry 봉, price, 칸, peak, 조각들)
     want_buy, want_sell, want_add = {}, {}, {}     # code → (다음 봉에 할 일)
+    asked = {}                                      # (할 일, code) → 그 일을 정한 봉 번호(체결 감사용)
     last_day, day_end, day_names = None, [], []
     bought_slots = [0]
     ledger, used_sum, n_bars = [], 0.0, 0
@@ -331,11 +460,13 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
         for c, k in bars:
             if c in want_sell and c in pos:
                 n = want_sell.pop(c)
+                _audit(asked, ("팔기", c), k)
                 _sell(data[c], pos, c, k, data[c]["o"][k], n, slots, ledger, cost, T)
         # ①' 다음 봉 시가에 더 사기(불타기) — 평균 단가로 합침
         for c, k in bars:
             if c in want_add and c in pos:
                 n = want_add.pop(c)
+                _audit(asked, ("더 사기", c), k)
                 free = slots - sum(p["칸"] for p in pos.values())
                 add = min(n, free)
                 if add > 0:
@@ -355,6 +486,7 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             rng.shuffle(buys)
         for c, k in buys:
             need = want_buy.pop(c)
+            _audit(asked, ("사기", c), k)
             give = bool(yields and yields(c, data[c], k - 1))
             free = slots - sum(p["칸"] for p in pos.values())
             if (yields or stale_of) and not give and free < need:
@@ -367,6 +499,8 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
                     qc = q["code"]; qb = data[qc]
                     kk = bisect.bisect_left(qb["t"], T)
                     if kk < len(qb["t"]) and qb["t"][kk] == T:
+                        if q["now"] >= kk:
+                            raise AssertionError(f"미래 참조 감사: 비킴 판단 봉 {q['now']} ≥ 체결 봉 {kk}")
                         free += q["칸"]
                         q["비킴"] = True
                         _sell(qb, pos, qc, kk, qb["o"][kk], "all", slots, ledger, cost, T)
@@ -390,11 +524,13 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             if stop_of:
                 s = stop_of(p)
                 if s is not None and b["l"][k] <= s:
+                    _audit_price(b, k, min(b["o"][k], s), "손절")
                     _sell(b, pos, c, k, min(b["o"][k], s), "all", slots, ledger, cost, T)
                     continue
             if take_of:
                 tp, n = take_of(p)
                 if tp is not None and b["h"][k] >= tp:
+                    _audit_price(b, k, max(b["o"][k], tp), "익절")
                     _sell(b, pos, c, k, max(b["o"][k], tp), n, slots, ledger, cost, T)
                     if c not in pos:
                         continue
@@ -407,10 +543,13 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
                 n = exit_rule(c, b, p, k)
                 if isinstance(n, tuple) and n and n[0] == "add":
                     want_add[c] = n[1]
+                    asked[("더 사기", c)] = k
                 elif n:
                     want_sell[c] = n
+                    asked[("팔기", c)] = k
             elif sigs[c][k] and k + 1 < len(b["t"]):
                 want_buy[c] = size(c, b, k)
+                asked[("사기", c)] = k
         used_sum += sum(p["칸"] for p in pos.values()) / slots
         n_bars += 1
         # 하루 끝 평가(마지막 봉 종가로)
@@ -443,6 +582,19 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
             "단순": round(sum(w) / slots / years, 2),
             "행운뺌": round(sum(min(t["손익"], 30) * t["칸"] for t in ledger) / slots / years, 2),
             "큰2건뺌": round(sum(w[:-2]) / slots / years, 2), "반기": halves, "목록": ledger}
+
+
+def _audit(asked, key, k):
+    """체결 감사: 봉 k 시가에 체결하는 일은 반드시 그 종목의 **바로 앞 봉**(k−1)이 닫힌 뒤 정한 것이어야 함."""
+    got = asked.pop(key, None)
+    if got is None or got != k - 1:
+        raise AssertionError(f"미래 참조 감사: {key} 체결 봉 {k} · 정한 봉 {got}")
+
+
+def _audit_price(b, k, price, kind):
+    """장중 체결 값은 그 봉의 저가~고가 안이어야 함(없는 값에 팔지 않게)."""
+    if not (b["l"][k] - 1e-9 <= price <= b["h"][k] + 1e-9):
+        raise AssertionError(f"미래 참조 감사: {kind} 값 {price} 가 봉 {b['t'][k]} 범위 밖")
 
 
 def _mark(data, pos, ledger, slots):
