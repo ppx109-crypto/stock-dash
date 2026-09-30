@@ -8,6 +8,15 @@ exec(open("research/h021.py", encoding="utf-8").read().split('print("== 1시간�
 
 def stale(n, x):
     return lambda p: (p["now"] - p["i"] >= n) and (data[p["code"]]["c"][p["now"]] / p["price"] - 1) * 100 < x
+IN_W = {c: np.where(np.array([bool(x) and (x["시장폭"] if x["시장폭"] is not None else 100) < 70 for x in ATT[c]]), IN150[c], IN[c]) for c in data}
+def e_wide(c, b):          # 42회차 후보: 전날 시장 폭 < 70%인 날만 종목 모음을 150위로
+    global IN
+    keep = IN
+    IN = IN_W
+    try:
+        return e_align_or_noon(c, b)
+    finally:
+        IN = keep
 def e_peek(c, b):          # 일부러 다음 봉 종가를 봄(미래 참조) — 검사가 이것을 잡아야 함
     m = e_align_or_noon(c, b).copy()
     nxt = np.r_[b["c"][1:], b["c"][-1]]
@@ -22,6 +31,7 @@ def exit_peek(c, b, p, k):   # 일부러 다음 봉 종가를 보고 팜 — 검
 RULES = {
     "지금": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank),
     "자리 바꾸기": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
+    "폭<70 150위 + 자리 바꾸기": dict(entry=e_wide, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "짧은 판 B": dict(entry=entry(), exit_rule=exit_trail, size=four, rank=rank, take_of=take_half, stop_of=stop5),
     "엿보기(검사 눈)": dict(entry=e_peek, exit_rule=exit_daily, size=size, rank=rank),
     "엿보기 팔기(검사 눈)": dict(entry=e_align_or_noon, exit_rule=exit_peek, size=size, rank=rank),
