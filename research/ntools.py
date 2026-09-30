@@ -24,14 +24,17 @@ def _load(path):
 
 
 # ── 거래량(전날까지 평균) ──
-VOL = {}
-for _code in {r["code"] for r in nrl.inside}:
-    body = _load(f"volume-data/{_code}.json") or {}
+def vol_entry(body):
     got = sorted((str(d), float(v)) for d, v, *_ in (body.get("날") or []) if v is not None)
     acc = [0.0]
     for _, v in got:
         acc.append(acc[-1] + v)
-    VOL[_code] = ([d for d, _ in got], acc)
+    return ([d for d, _ in got], acc)
+
+
+VOL = {}
+for _code in {r["code"] for r in nrl.inside}:
+    VOL[_code] = vol_entry(_load(f"volume-data/{_code}.json") or {})
 
 
 def vol_avg(code, day, n=20):
@@ -145,9 +148,7 @@ def _num(x):
         return None
 
 
-QUARTER = {}
-for _code in {r["code"] for r in nrl.inside}:
-    body = _load(f"quarter-data/{_code}.json") or {}
+def quarter_entry(body):
     got = []
     for _k, v in (body.get("rows") or {}).items():
         if not v or not str(v.get("접수번호", ""))[:8].isdigit():
@@ -155,8 +156,14 @@ for _code in {r["code"] for r in nrl.inside}:
         got.append((str(v["접수번호"])[:8], {x: _num(v.get(x)) for x in
                     ("매출", "매출_작년", "영업이익", "영업이익_작년", "순이익", "순이익_작년", "자본", "부채")}))
     got.sort(key=lambda x: x[0])
-    if got:
-        QUARTER[_code] = ([d for d, _ in got], [x for _, x in got])
+    return ([d for d, _ in got], [x for _, x in got]) if got else None
+
+
+QUARTER = {}
+for _code in {r["code"] for r in nrl.inside}:
+    _got = quarter_entry(_load(f"quarter-data/{_code}.json") or {})
+    if _got:
+        QUARTER[_code] = _got
 
 
 def quarter_now(r):
@@ -199,21 +206,29 @@ def fresh_days(r):
 
 
 # ── 한투 재무비율(분기): 발표일이 없어 분기 끝 + 60일(12월 결산 + 90일) 뒤부터 씀 ──
-RATIO = {}
-for _code in {r["code"] for r in nrl.inside}:
-    body = _load(f"ratio-data/{_code}.json") or {}
+def ratio_known(ym):
+    """재무비율 결산월(YYYYMM) → 쓸 수 있는 첫날(분기 끝 + 60일, 12월 + 90일)."""
+    y, m = int(ym[:4]), int(ym[4:])
+    end = date(y + (m == 12), 1 if m == 12 else m + 1, 1) - timedelta(days=1)
+    return (end + timedelta(days=90 if m == 12 else 60)).strftime("%Y%m%d")
+
+
+def ratio_entry(body):
     got = []
     for v in body.get("분기") or []:
         ym = str(v.get("결산월", ""))
         if len(ym) != 6 or not ym.isdigit():
             continue
-        y, m = int(ym[:4]), int(ym[4:])
-        end = date(y + (m == 12), 1 if m == 12 else m + 1, 1) - timedelta(days=1)
-        known = end + timedelta(days=90 if m == 12 else 60)
-        got.append((known.strftime("%Y%m%d"), v))
+        got.append((ratio_known(ym), v))
     got.sort(key=lambda x: x[0])
-    if got:
-        RATIO[_code] = ([d for d, _ in got], [x for _, x in got])
+    return ([d for d, _ in got], [x for _, x in got]) if got else None
+
+
+RATIO = {}
+for _code in {r["code"] for r in nrl.inside}:
+    _got = ratio_entry(_load(f"ratio-data/{_code}.json") or {})
+    if _got:
+        RATIO[_code] = _got
 
 
 def ratio_now(r, key):

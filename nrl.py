@@ -21,14 +21,34 @@ from pathlib import Path
 # 표(features.json 4GB)를 풀면 메모리가 12GB를 넘어 작업 공간에서 꺼질 수 있어, 한 번 구운 결과를 NRL_CACHE에 담아 다시 씀.
 # 표나 일봉이 바뀌면 파일을 지우면 됨(날짜가 표보다 옛것이면 저절로 다시 구움).
 CACHE = Path(os.environ.get("NRL_CACHE", "/tmp/nrl-cache.pkl"))
+def _calm_by_month(rows):
+    """달마다 그 달 첫날 **앞**의 모든 종목 · 날 변동성으로 rule.CALM 자리 문턱(지난 자료만). 규칙의 문턱은 전체 기간 한 번이라 견줌용."""
+    import numpy as np
+    got = sorted((r["date"], r["변동성"]) for r in rows if r.get("변동성") is not None)
+    days = [d for d, _ in got]
+    vals = np.array([v for _, v in got], dtype=float)
+    out = {}
+    for y in range(int(rule.SINCE[:4]), 2027):
+        for m in range(1, 13):
+            key = f"{y}{m:02d}"
+            k = bisect.bisect_left(days, key + "01")
+            if k > 1000:
+                out[key] = float(np.partition(vals[:k], int(k * rule.CALM))[int(k * rule.CALM)])
+    return out
+
+
+CALM_MONTH = None       # 달마다 그 달 앞 자료로만 잰 '조용함' 문턱(dguard 아홉째 겹이 봄)
 if CACHE.exists() and CACHE.stat().st_mtime > lab.CACHE.stat().st_mtime:
     with CACHE.open("rb") as fh:
-        prices, lanes, shape, BR, inside, rule._calm = pickle.load(fh)
+        got = pickle.load(fh)
+    prices, lanes, shape, BR, inside, rule._calm = got[:6]
+    CALM_MONTH = got[6] if len(got) > 6 else None
 else:
     prices = study.load_prices()
     rows = lab.load()
     caps.tag(rows, rule.TOP)
     rule.calm_edge(rows)
+    CALM_MONTH = _calm_by_month(rows)
     rows = lab.realign([r for r in rows if r["date"] >= rule.SINCE], prices)
     lanes = lab.lanes(prices)
     shape = F.shapes(lanes, {r["code"] for r in rows})
@@ -36,18 +56,15 @@ else:
     inside = [r for r in rows if caps.inside(r, rule.TOP)]
     del rows
     with CACHE.open("wb") as fh:
-        pickle.dump((prices, lanes, shape, BR, inside, rule._calm), fh, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump((prices, lanes, shape, BR, inside, rule._calm, CALM_MONTH), fh, protocol=pickle.HIGHEST_PROTOCOL)
 early = [r for r in inside if r["date"] < rule.MID]
 kin = rule.apart(prices)
 LO, HI = final_group.SPREAD
 
 # 수급: 종목마다 날짜 목록과 누적합(칸별). 창 합을 전날까지로 빠르게 셉니다.
 COLS = ("개인", "외국인", "기관", "투신", "연기금", "사모")
-FLOW = {}
-for code in {r["code"] for r in inside}:
-    fr = final_group.flow_rows(code)
-    if not fr:
-        continue
+def flow_entry(fr):
+    """수급 줄들 → (날짜들, 칸별 누적합, 값 있는 날 누적, 종가). dguard가 잘라낸 · 더럽힌 줄로 다시 만들 때도 씀."""
     days = [x["date"] for x in fr]
     acc = {c: [0.0] for c in COLS}
     ok = [0]
@@ -57,7 +74,14 @@ for code in {r["code"] for r in inside}:
         for c in COLS:
             acc[c].append(acc[c][-1] + (x.get(c) or 0.0))
     closes = [x.get("종가") for x in fr]
-    FLOW[code] = (days, acc, ok, closes)
+    return (days, acc, ok, closes)
+
+
+FLOW = {}
+for code in {r["code"] for r in inside}:
+    fr = final_group.flow_rows(code)
+    if fr:
+        FLOW[code] = flow_entry(fr)
 
 
 def flow_sum(row, n, col, lag=1):
@@ -135,11 +159,15 @@ def steady(r, n=3):
 
 
 # 목표가(opinion-data, 2017~ · 새 24회차에 모음): 날마다 증권사별 최근 3달 안 마지막 목표가의 가운데.
+def target_entry(got):
+    return ([d for d, _ in got], [x for _, x in got])
+
+
 TARGETS = {}
 for code in {r["code"] for r in inside}:
     got = study.target_timeline(code)
     if got:
-        TARGETS[code] = ([d for d, _ in got], [x for _, x in got])
+        TARGETS[code] = target_entry(got)
 
 
 def target_before(r, back_days=0):
