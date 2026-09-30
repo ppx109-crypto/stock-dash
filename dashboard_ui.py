@@ -118,6 +118,16 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
 .pxb-slot.a .pxb-chip{border-color:#CFE2D2}
 .pxb-empty{margin-top:12px;font-size:11px;color:#7E7463}
 .pxb-note{font-size:11px;color:#7B7465;line-height:1.6}
+.pxb-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:4px}
+.pxb-rule{padding:12px 14px;border-radius:14px;border:1px solid #E7DCC7;background:#FFFDF8}
+.pxb-rule.x{background:#FBF7EE}
+.pxb-rule h4{margin:0 0 8px;font-size:12.5px;font-weight:800;color:#2E2822}
+.pxb-rule h4 span{font-weight:600;font-size:10.5px;color:#946E38;margin-left:6px}
+.pxb-rule dl{display:grid;grid-template-columns:40px 1fr;gap:5px 8px;margin:0;font-size:11px;line-height:1.5}
+.pxb-rule dt{font-weight:800;color:#946E38}
+.pxb-rule dd{margin:0;color:#4A4339}
+.pxb-rule dd.up{color:#2F7A45}.pxb-rule dd.down{color:#B04A3A}
+.pxb-rule-foot{margin-top:8px;font-size:11px;color:#7B7465;line-height:1.6}
 .pxb-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
 .pxb-card{position:relative;overflow:hidden;padding:24px 24px 22px;border-radius:20px;min-height:208px;
   background:linear-gradient(170deg,#FFFDF8,#FBF6EC);border:1px solid #EDE3D2;
@@ -873,33 +883,31 @@ def _settled_cards(book: dict, price: float | None) -> str:
 
 RULE_TEXT = "A는 오늘 조건을 모두 채운 종목, B는 조건이 1~2개 모자란 종목입니다"
 
-A_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
-<b>A그룹이 되는 조건</b> · 아래 두 방식 가운데 하나와 공통 조건을 모두 채우면 A그룹입니다<br><br>
-<b>① 추세 규칙</b> · 네 가지와 공통 조건을 모두 채울 때<br>
-&nbsp;· 그날 코스피 시가총액 100위 안<br>
-&nbsp;· 최근 주가 흔들림이 작은 편 (전체 종목 가운데 조용한 40%)<br>
-&nbsp;· 180일 이동평균선이 가파르게 오르는 중 (5거래일 사이 1.46% 이상)<br>
-&nbsp;· 주가가 60거래일 전보다 20% 이상 오름<br>
-&nbsp;→ 팔 때: 종가 +10% 익절 · −5% 손절 · 최대 10거래일<br><br>
-<b>② 정배열 추세</b> · 네 가지와 공통 조건을 모두 채울 때<br>
-&nbsp;· 그날 코스피 시가총액 100위 안<br>
-&nbsp;· 단순이동평균 3·15·20·90·150·200일선이 짧은 것부터 차례로 위에 놓임<br>
-&nbsp;· 3일선이 200일선보다 19~53% 위 (너무 붙지도, 너무 벌어지지도 않음)<br>
-&nbsp;· 시장 폭 50% 이상 (시가총액 100위 안 종목의 절반 이상이 50일선 &gt; 200일선)<br>
-&nbsp;→ 팔 때: 정배열이 깨지는 날 종가 · −8% 손절 · 최대 60거래일<br><br>
-<b>공통 조건</b> · 두 방식 모두 이것까지 채워야 합니다<br>
-&nbsp;· 전날까지 5거래일 동안 외국인 순매수 · 투신 순매수 · 개인 순매도 (수급은 장 마감 뒤에 나와 그날 것은 쓰지 않음)<br><br>
-<b>사고파는 방법</b> · 한 번에 최대 5종목, 하루에 새로 사는 것은 2종목까지, 후보가 많으면 180일선이 가파른 순서
-</div></div>"""
+A_RULES = """<div class="pxb"><div class="pxb-rules">
+<div class="pxb-rule"><h4>① 추세 규칙<span>일봉</span></h4><dl>
+<dt>대상</dt><dd>코스피 시가총액 100위 안</dd>
+<dt>사기</dt><dd>흔들림 작은 40% · 180일선 5일 +1.46%↑ · 60일 +20%↑</dd>
+<dt>팔기</dt><dd class="up">종가 +10% 익절</dd><dt></dt><dd class="down">−5% 손절 · 최대 10거래일</dd>
+</dl></div>
+<div class="pxb-rule"><h4>② 정배열 추세<span>일봉</span></h4><dl>
+<dt>대상</dt><dd>코스피 시가총액 100위 안 · 시장 폭 50%↑</dd>
+<dt>사기</dt><dd>3·15·20·90·150·200일선 정배열 · 3일선이 200일선보다 19~53% 위</dd>
+<dt>팔기</dt><dd>정배열 깨진 날 종가</dd><dt></dt><dd class="down">−8% 손절 · 최대 60거래일</dd>
+</dl></div>
+<div class="pxb-rule x"><h4>공통 · 수급<span>둘 다 필수</span></h4><dl>
+<dt>5일</dt><dd>외국인 순매수 · 투신 순매수 · 개인 순매도 (전날까지)</dd>
+<dt>자리</dt><dd>최대 5종목 · 하루 새로 2종목 · 180일선 가파른 순</dd>
+</dl></div>
+</div>
+<div class="pxb-rule-foot">① 또는 ② 하나 + 공통을 모두 채우면 A그룹 · 시장 폭 = 100위 안에서 50일선 &gt; 200일선인 종목 비율</div>
+</div>"""
 
-EMA_ONLY = """<div class="pxb"><div class="pxb-note" style="line-height:1.75;margin-top:10px">
-<b>EMA 정배열만 보고 사고팔면 안 되는 이유</b><br>
-&nbsp;· 정배열인 날이 너무 흔합니다. 시가총액 100위 안 종목의 거래일 가운데 약 30%가 정배열이고,
-그 뒤 오른 비율은 절반이 안 됩니다(열흘 뒤 기준 약 46~47%).<br>
-&nbsp;· 2017년 이후 자료로 정배열만 보고 사고팔아 보면, 계좌가 가장 크게 떨어진 폭이 −35%~−60% 수준까지 갔습니다.<br>
-&nbsp;· 정배열은 '이미 오른 모양'을 확인할 뿐, 추세가 얼마나 힘 있는지, 주가가 얼마나 출렁이는지,
-시장 전체가 받쳐 주는지는 알려 주지 않습니다. 그래서 위 조건처럼 추세의 힘·흔들림·시장 폭을 함께 봅니다.
-</div></div>"""
+EMA_ONLY = """<div class="pxb"><details class="pxb-more"><summary>EMA 정배열만 보고 사면 안 되는 이유</summary>
+<div class="pxb-note" style="line-height:1.75">
+&nbsp;· 너무 흔함: 100위 안 거래일의 약 30%가 정배열, 열흘 뒤 오른 비율은 약 46~47%<br>
+&nbsp;· 2017년 이후 정배열만으로 사고팔면 계좌 최대 낙폭 −35%~−60%<br>
+&nbsp;· 이미 오른 모양만 확인할 뿐 추세의 힘·흔들림·시장 폭은 모름 → 위 조건으로 함께 봄
+</div></details></div>"""
 
 GROUP_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
 <b>A그룹</b> · 오늘 위 조건을 모두 채운 종목<br>
@@ -925,6 +933,63 @@ def a_group_panel(found: dict | None) -> str:
             for one in picks)
         body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
     # 오늘 A가 없을 때의 안내와 B 목록은 싣지 않습니다(사용자 요청). B는 아래 관심종목 판에서 봅니다.
+    return f'<div class="pxb">{body}</div>'
+
+
+HOURLY_RULES = """<div class="pxb"><div class="pxb-rules">
+<div class="pxb-rule x"><h4>후보<span>전날 마감 뒤</span></h4><dl>
+<dt>문</dt><dd>일봉 추세 규칙 또는 정배열 추세 + 수급 5일 · 시총 100위 안</dd>
+<dt>크기</dt><dd>10칸 계좌 · 추세 규칙·3일 연속 4칸(40%) · 그 밖 2칸(20%)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>살 때<span>1시간봉</span></h4><dl>
+<dt>신호</dt><dd>EMA 5·20·60·120·180 정배열 된 봉 → 다음 봉 시가</dd>
+<dt>없으면</dt><dd>11시 봉까지 없으면 12:00 시가</dd>
+<dt>순서</dt><dd>추세 규칙 → 3일 연속 → 수급 덜 몰리고 20일 오른 것</dd>
+<dt>비킴</dt><dd>칸 모자라면 7봉↑ 들고 +4% 못 간 것 (시장 폭 90 미만)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>팔 때 · 추세 규칙</h4><dl>
+<dt>익절</dt><dd class="up">+5% 처음 닿으면 절반 · +13% 전량</dd>
+<dt>손절</dt><dd class="down">−5%</dd>
+<dt>청산</dt><dd>60봉(약 10거래일)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>팔 때 · 정배열 추세</h4><dl>
+<dt>익절</dt><dd class="up">+8% 닿은 뒤 +1% 아래로 오면</dd>
+<dt>손절</dt><dd class="down">−10%</dd>
+<dt>청산</dt><dd>일봉 정배열 깨지면 다음 날 09:00</dd>
+</dl></div>
+</div>
+<div class="pxb-rule-foot">모두 1시간봉 종가로 판단 → 다음 봉 시가에 사고팜 · 알림 10:01 · 11:01 · 12:01 · 13:01 · 14:01 · 15:31 ·
+마지막 봉(14시~15:30)에서 나온 결정은 다음 날 09:00 시가 · 주문은 넣지 않는 연습 계좌 · 연구 90회차(약한 장 연 +39% · 센 장 연 +113%)</div>
+</div>"""
+
+
+def hourly_a_panel(plan: dict | None, state: dict | None, alerts: list | None) -> str:
+    """1시간봉 A그룹: 다음 거래일 후보 · 들고 있는 종목(연습 계좌) · 최근 알림."""
+    if not plan or not plan.get("base"):
+        return ('<div class="pxb"><div class="pxb-note">1시간봉 A그룹 후보가 아직 없습니다. '
+                '장 마감 뒤 일봉 A그룹 계산이 끝나면 자동으로 만들어집니다.</div></div>')
+    cands = plan.get("candidates") or []
+    head = (f'<b>후보</b> · {_e(as_day(plan["base"]))} 마감 기준 → 다음 거래일 · 시장 폭 {_e(plan.get("breadth"))}% · '
+            f'{len(cands)}종목 (만든 때 {_e(plan.get("made"))})')
+    body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
+    if cands:
+        items = "".join(
+            f'<li><b>{_e(c.get("name"))}</b> ({_e(c.get("code"))}) · {_e("·".join(c.get("갈래") or []))}'
+            f'{" · 3일 연속" if c.get("3일연속") else ""} · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸</li>'
+            for c in cands)
+        body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
+    held = (state or {}).get("positions") or {}
+    if held:
+        rows = "".join(
+            f'<li><b>{_e(p.get("name"))}</b> ({_e(p.get("code"))}) · {_e(p.get("kind"))} · {_e(p.get("칸"))}칸 · '
+            f'산 값 {float(p.get("price") or 0):,.0f}원 · 지금 '
+            f'{((float(p.get("last_close") or p.get("price") or 0) / float(p.get("price") or 1)) - 1) * 100:+.1f}% · '
+            f'산 때 {_e(p.get("bought"))}</li>' for p in held.values())
+        body += f'<div class="pxb-note" style="margin-top:10px"><b>들고 있는 종목(연습 계좌)</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>'
+    recent = list(reversed((alerts or [])[-12:]))
+    if recent:
+        rows = "".join(f'<li>{_e(a.get("at"))} · {_e(a.get("kind"))} · {_e(a.get("text"))}</li>' for a in recent)
+        body += f'<div class="pxb-note" style="margin-top:10px"><b>최근 알림</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>'
     return f'<div class="pxb">{body}</div>'
 
 

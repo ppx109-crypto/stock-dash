@@ -23,7 +23,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -142,8 +142,11 @@ def _dart_names(key):
             for one in root.findall("list") if (one.findtext("stock_code") or "").strip()}
 
 
-def compute(prices=None):
-    """오늘(마지막 종가 날) A그룹을 셉니다."""
+def compute(prices=None, flow_day=None):
+    """오늘(마지막 종가 날) A그룹을 셉니다.
+
+    flow_day를 주면 수급을 그날 **전날까지**로 셉니다. "next"면 다음 날의 전날까지 = 오늘 수급까지(1시간봉 A그룹이 다음 거래일 후보를 오늘 저녁에 셀 때).
+    주지 않으면 지금처럼 오늘 전날까지(일봉 A그룹)."""
     prices = prices if prices is not None else study.load_prices()
     codes = sorted(prices)
     vols, latest = [], []
@@ -163,6 +166,8 @@ def compute(prices=None):
     # rule.calm_edge와 같은 셈입니다(표 전체 변동성의 아래 CALM 자리).
     rule._calm = vols[int(len(vols) * rule.CALM)]
     day = max(row["date"] for row in latest)
+    # flow_day="next": 다음 날의 '전날까지' = 오늘 수급까지(1시간봉 A그룹이 다음 거래일 후보를 셀 때)
+    next_day = (datetime.strptime(day, "%Y%m%d") + timedelta(days=1)).strftime("%Y%m%d")
     today = [row for row in latest if row["date"] == day]
     caps.tag(today, rule.TOP)
     shape = {row["code"]: lines_now([c for _, c in prices[row["code"]]["rows"]][:row["i"] + 1])
@@ -182,7 +187,7 @@ def compute(prices=None):
                  "변동성": _round(row.get("변동성")),
                  "정배열": form.get("정배열"), "정배열 된 지": form.get("된 지"),
                  "선 간격": _round(form.get("간격")), "종가": row.get("price")}
-        flow = flow_before(flow_rows(row["code"]), day)
+        flow = flow_before(flow_rows(row["code"]), next_day if flow_day == "next" else (flow_day or day))
         entry["수급 5일"] = flow
         missing = shortfalls(row, form, breadth, rule._calm, flow)
         doors = [door for door, gaps in missing.items() if not gaps]
