@@ -50,13 +50,18 @@ def codes_to_collect():
     picked = [c.strip() for c in os.getenv("EVENT_CODES", "").split(",") if c.strip()]
     if picked:
         return [c for c in picked if re.fullmatch(r"[0-9]{6}", c)]
-    try:
-        chosen = json.loads(Path("universe.json").read_text(encoding="utf-8"))
-        found = [c for c in chosen.get("codes", []) if re.fullmatch(r"[0-9]{6}", str(c))]
-        if found:
-            return found
-    except (OSError, ValueError):
-        pass
+    found = []
+    # 앱 종목(universe.json)과 1시간봉 연구 종목(hourly-data/universe.json)을 함께 받습니다(2026-09-30: 1시간봉 종목 절반이 빠져 있었음).
+    for source in ("universe.json", "hourly-data/universe.json"):
+        try:
+            chosen = json.loads(Path(source).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for c in chosen.get("codes", []):
+            if re.fullmatch(r"[0-9]{6}", str(c)) and str(c) not in found:
+                found.append(str(c))
+    if found:
+        return found
     return sorted(p.stem for p in Path("public-data").glob("*.json")
                   if re.fullmatch(r"[0-9]{6}", p.stem))
 
