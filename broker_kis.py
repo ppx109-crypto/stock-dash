@@ -448,10 +448,15 @@ class KIS:
 
     def _market_rows(self, path, tr_id, params, what, key=None):
         """시세 쪽 조회 한 번. 줄 목록(dict)만 돌려줍니다. 조회 전용입니다."""
+        return self._market_page(path, tr_id, params, what, key)[0]
+
+    def _market_page(self, path, tr_id, params, what, key=None, continuation=''):
+        """시세 쪽 조회 한 쪽. (줄 목록, 다음 쪽 있음)을 돌려줍니다. 다음 쪽은 continuation='N'으로 묻습니다. 조회 전용입니다."""
         self.authorize()
-        _, data = self.request('GET', path, headers={
+        response, data = self.request('GET', path, headers={
             'authorization': 'Bearer ' + self.token, 'appkey': self.key,
-            'appsecret': self.secret, 'tr_id': tr_id, 'custtype': 'P'}, params=params)
+            'appsecret': self.secret, 'tr_id': tr_id, 'custtype': 'P', 'tr_cont': continuation}, params=params)
+        more = getattr(response, 'headers', {}).get('tr_cont') in ('F', 'M')
         if str(data.get('rt_cd')) != '0':
             code_seen = str(data.get('msg_cd') or '').strip()
             code_seen = code_seen if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', code_seen) else ''
@@ -466,7 +471,7 @@ class KIS:
             rows = [rows]
         if not isinstance(rows, list):
             raise BrokerError(f'{what} 응답 형식이 달라 읽지 않았습니다.')
-        return [r for r in rows if isinstance(r, dict)]
+        return [r for r in rows if isinstance(r, dict)], more
 
     @staticmethod
     def _numbers(row, names):

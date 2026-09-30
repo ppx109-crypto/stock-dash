@@ -55,13 +55,6 @@ def parse_program(rows):
     return out
 
 
-def earlier(t):
-    """HHMMSS보다 1분 앞(다음 쪽을 물을 시각)."""
-    h, m = int(t[:2]), int(t[2:4])
-    total = h * 60 + m - 1
-    return f"{total // 60:02d}{total % 60:02d}00"
-
-
 def market_open_today(client, today):
     rows = client._market_rows(Q + "inquire-time-dailychartprice", "FHKST03010230", {
         "FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": "005930", "FID_INPUT_HOUR_1": "153000",
@@ -70,21 +63,22 @@ def market_open_today(client, today):
 
 
 def program_day(client, market):
-    got, hour = {}, ""
-    for _ in range(20):
-        rows = parse_program(client._market_rows(Q + "comp-program-trade-today", "FHPPG04600101", {
+    """그날 분별 프로그램매매. 시각 값은 증권사가 무시하므로(늘 마지막 30줄) 다음 쪽 표시(tr_cont)로 거슬러 받습니다."""
+    got, cont = {}, ""
+    for _ in range(40):
+        raw, more = client._market_page(Q + "comp-program-trade-today", "FHPPG04600101", {
             "FID_COND_MRKT_DIV_CODE": "J", "FID_MRKT_CLS_CODE": market, "FID_SCTN_CLS_CODE": "", "FID_INPUT_ISCD": "",
-            "FID_COND_MRKT_DIV_CODE1": "", "FID_INPUT_HOUR_1": hour}, "프로그램매매 종합", key="output"))
+            "FID_COND_MRKT_DIV_CODE1": "", "FID_INPUT_HOUR_1": ""}, "프로그램매매 종합", key="output", continuation=cont)
+        rows = parse_program(raw)
         time.sleep(GAP)
         new = [r for r in rows if r[0] not in got]
         if not new:
             break
         for r in new:
             got[r[0]] = r
-        first = min(r[0] for r in rows)
-        if first <= "090000":
+        if not more or min(r[0] for r in rows) <= "090000":
             break
-        hour = earlier(first)
+        cont = "N"
     return [got[t] for t in sorted(got)]
 
 
