@@ -1,6 +1,6 @@
 """1시간봉 81회차 — 계좌 브레이크(80회차: 약한 장 큰 낙폭의 절반이 '낙폭 중 새로 산 매매'). 계좌가 꼭대기에서 −X% 넘게 빠져 있으면
 새 매수를 멈춤(또는 칸을 절반으로) · 회복하면 다시. 계좌 값은 지난 날들의 값만(hlab.simulate brake) — 미래 참조 없음.
-X = 3 · 5 · 7 · 10(고원). 바탕: 1시간봉 최고 규칙. 씨앗 16 · 큰 매매 뺀 연 · 골."""
+X = 3 · 5 · 7 · 10(고원). (처음 돌린 판은 엔진이 numpy 참을 못 알아들어 멈춤이 걸리지 않았음 → 고쳐 다시 돌림) 바탕: 1시간봉 최고 규칙. 씨앗 16 · 큰 매매 뺀 연 · 골."""
 import sys
 sys.path.insert(0, "/home/user/stock-dash")
 import numpy as np
@@ -21,7 +21,7 @@ def trim(bk):
         got[s] = {kk: round(float(np.median(v)), 1) for kk, v in vals.items()}
     return got
 print("== 1시간봉 81회차 (계좌 브레이크) ==", flush=True)
-cases = [("지금(브레이크 없음)", None)] + [(f"꼭대기 −{X}%면 새 매수 멈춤", stop_at(X)) for X in (3, 5, 7, 10)] + [(f"꼭대기 −{X}%면 칸 절반", half_at(X)) for X in (5, 7)]
+cases = [("지금(브레이크 없음)", None)] + [(f"꼭대기 −{X}%면 새 매수 멈춤", stop_at(X)) for X in (3, 5, 7, 10)] + [(f"꼭대기 −{X}%면 칸 절반", half_at(X)) for X in (5, 7, 10)]
 for tag, bk in cases:
     res = H.simulate(data, e_align_or_noon, EX, size, rank=rank, stale_of=stale90, seeds=16, brake=bk)
     tr = trim(bk)

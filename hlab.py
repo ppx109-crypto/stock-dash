@@ -491,9 +491,10 @@ def _one_run(data, sigs, exit_rule, size, lo, hi, slots, seed, stop_of, rank, co
         for c, k in buys:
             need = want_buy.pop(c)
             _audit(asked, ("사기", c), k)
-            if slow is True:
-                continue
-            if slow not in (None, False):
+            if isinstance(slow, (bool, np.bool_)):
+                if slow:
+                    continue
+            elif slow is not None:
                 need = max(1, int(round(need * float(slow))))
             give = bool(yields and yields(c, data[c], k - 1))
             free = slots - sum(p["칸"] for p in pos.values())

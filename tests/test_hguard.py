@@ -95,8 +95,8 @@ class PrefixInvariance(unittest.TestCase):
     def test_brake_uses_only_past_and_blocks_buys(self):
         data = make_world()
         T = data["000001"]["t"][300]
-        def dd_brake(eq):                    # 지난 날 끝 계좌 값만 봄: 꼭대기 대비 −1%면 새 매수 멈춤
-            return bool(eq) and eq[-1] < max(eq) * 0.99
+        def dd_brake(eq):                    # 지난 날 끝 계좌 값만 봄: 꼭대기 대비 −1%면 새 매수 칸을 절반으로
+            return 0.5 if eq and eq[-1] < max(eq) * 0.99 else None
         full = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2, brake=dd_brake)
         part = H.simulate(cut(data, T), fair, exit8, two, periods=PER, seeds=1, slots=2, brake=dd_brake)
         self.assertEqual(closed(full, T), closed(part, T))
@@ -105,6 +105,8 @@ class PrefixInvariance(unittest.TestCase):
         self.assertEqual(closed(none, "9999"), closed(same, "9999"))
         stop = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2, brake=lambda eq: True)
         self.assertIsNone(stop["전체"])        # 모든 새 매수를 거르면 매매가 없음
+        stop_np = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2, brake=lambda eq: np.float64(1.0) > 0)
+        self.assertIsNone(stop_np["전체"])     # numpy 참/거짓도 같게 알아들음
 
 
 class Audit(unittest.TestCase):
