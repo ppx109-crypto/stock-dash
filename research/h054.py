@@ -68,7 +68,7 @@ def quarters(code):
             rc = str(v.get("접수번호", ""))[:8]
             op, op0, sa, sa0 = (num(v.get(x)) for x in ("영업이익", "영업이익_작년", "매출", "매출_작년"))
             if rc: qs.append((rc, op, op0, sa, sa0))
-        QT[code] = sorted(qs)
+        QT[code] = sorted(qs, key=lambda x: x[0])
     return QT[code]
 def feat(r):
     code, day = r["code"], r["date"]
