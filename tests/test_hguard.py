@@ -92,6 +92,20 @@ class PrefixInvariance(unittest.TestCase):
         part = H.simulate(cut(data, T), fair, exit8, two, periods=PER, seeds=1, slots=2, stale_of=st)
         self.assertEqual(closed(full, T), closed(part, T))
 
+    def test_brake_uses_only_past_and_blocks_buys(self):
+        data = make_world()
+        T = data["000001"]["t"][300]
+        def dd_brake(eq):                    # 지난 날 끝 계좌 값만 봄: 꼭대기 대비 −1%면 새 매수 멈춤
+            return bool(eq) and eq[-1] < max(eq) * 0.99
+        full = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2, brake=dd_brake)
+        part = H.simulate(cut(data, T), fair, exit8, two, periods=PER, seeds=1, slots=2, brake=dd_brake)
+        self.assertEqual(closed(full, T), closed(part, T))
+        none = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2)
+        same = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2, brake=lambda eq: None)
+        self.assertEqual(closed(none, "9999"), closed(same, "9999"))
+        stop = H.simulate(data, fair, exit8, two, periods=PER, seeds=1, slots=2, brake=lambda eq: True)
+        self.assertIsNone(stop["전체"])        # 모든 새 매수를 거르면 매매가 없음
+
 
 class Audit(unittest.TestCase):
     def test_audit_catches_wrong_bar(self):
