@@ -21,6 +21,21 @@ def stale90(p):             # 53회차 후보: 비킬 매매의 전 거래일 �
     if not stale(7, 4)(p): return False
     x = ATT[p["code"]][p["now"]]
     return (x["시장폭"] if x and x["시장폭"] is not None else 100) < 90
+def exit_regime(c, b, p, k):   # 59회차 후보: 추세 문 매매가 센 장(판단 봉의 전 거래일 시장 폭 ≥ 70%)이면 +13%에 팔지 않고 고점 15% 되밀림까지
+    x = ATT[c][k]
+    strong = x is not None and (x["시장폭"] if x["시장폭"] is not None else 0) >= 70
+    if (door(ATT[c][p["i"]]) or "정배열") != "추세" or not strong:
+        return exit_daily(c, b, p, k)
+    now = (b["c"][k] / p["price"] - 1) * 100
+    armed = (p["peak"] / p["price"] - 1) * 100 >= 13
+    held = k - p["i"]
+    if not armed and (now <= -5 or held >= 60): return "all"
+    if armed and (b["c"][k] <= p["peak"] * 0.85 or now <= -5): return "all"
+    if held >= 240: return "all"
+    before = b["c"][p["i"]:k].max() if k > p["i"] else -1
+    if now >= 5 and (before / p["price"] - 1) * 100 < 5 and p["칸"] == p["처음칸"]:
+        return max(1, p["처음칸"] // 2)
+    return 0
 def e_peek(c, b):          # 일부러 다음 봉 종가를 봄(미래 참조) — 검사가 이것을 잡아야 함
     m = e_align_or_noon(c, b).copy()
     nxt = np.r_[b["c"][1:], b["c"][-1]]
@@ -36,6 +51,7 @@ RULES = {
     "지금": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank),
     "자리 바꾸기": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "자리 바꾸기(폭<90일 때만)": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale90),
+    "센 장만 따라가기(폭≥70)": dict(entry=e_align_or_noon, exit_rule=exit_regime, size=size, rank=rank, stale_of=stale90),
     "폭<70 150위 + 자리 바꾸기": dict(entry=e_wide, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "짧은 판 B": dict(entry=entry(), exit_rule=exit_trail, size=four, rank=rank, take_of=take_half, stop_of=stop5),
     "엿보기(검사 눈)": dict(entry=e_peek, exit_rule=exit_daily, size=size, rank=rank),
