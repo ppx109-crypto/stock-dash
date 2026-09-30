@@ -111,6 +111,8 @@ for code, day, y, f in data:
     hit = y >= GOAL
     if hit and not prev.get(code, False): start.add((code, day))
     prev[code] = hit
+import pickle
+pickle.dump((data, sorted(start)), open("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/h054.pkl", "wb"))
 PER = (("2017~19", "20170101", "20200101"), ("2020~22", "20200101", "20230101"), ("2023~26", "20230101", END))
 def per(day):
     for n, a, b in PER:
@@ -134,7 +136,9 @@ for key in keys:
     table = {}
     for (code, day, y, f), v in zip(data, vals):
         if np.isnan(v): continue
-        p = per(day); b = buck(v)
+        p = per(day)
+        if p is None: continue
+        b = buck(v)
         t = table.setdefault(b, {n: [0, 0] for n, _, _ in PER})
         t[p][0] += 1; t[p][1] += (code, day) in start
     base = {n: (sum(1 for x in data if a <= x[1] < b and (x[0], x[1]) in start) / max(sum(1 for x in data if a <= x[1] < b), 1)) for n, a, b in PER}
@@ -147,6 +151,4 @@ for key in keys:
     for b, lifts, cnt in lines:
         print(f"      {b:8s} 들어올림 " + " · ".join(f"{l:4.2f}" for l in lifts) + "   (날/시작: " + " · ".join(f"{c[0]}/{c[1]}" for c in cnt) + ")", flush=True)
 json.dump({"keys": {k: v for k, v in out.items()}}, open("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/h054.json", "w"), ensure_ascii=False, default=float)
-import pickle
-pickle.dump((data, sorted(start)), open("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/h054.pkl", "wb"))
 print("끝", flush=True)
