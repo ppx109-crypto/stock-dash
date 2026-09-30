@@ -50,6 +50,56 @@ def e_dil(c, b):           # 72회차 후보: 20일 안 희석 공시(유상증�
         x = ATT[c][k + 1] if k + 1 < n else ATT[c][k]
         if x and x["희석20"]: m[k] = False
     return m
+# 90회차 후보: 같은 봉 시각에 나온 후보끼리 '외국인+투신 5일 수급이 약하고 20일 수익이 큰' 무리부터 삼(추세 문 · 3일 연속 다음).
+# 순위에 쓰는 일봉 자료(종가 · 수급 · 거래량)도 이 세계의 잘라내기(HLAB_CUT) · 더럽히기(HLAB_POISON)를 똑같이 받게 함.
+import json as _json, bisect as _bis
+import final_group as _fg
+def _daily_rows(code):
+    lim, pz = H.day_limit(), H.poison_at()
+    px = _json.loads(open(f"price-data/{code}.json", encoding="utf-8").read())["closes"] if os.path.exists(f"price-data/{code}.json") else []
+    vv = _json.loads(open(f"volume-data/{code}.json", encoding="utf-8").read())["날"] if os.path.exists(f"volume-data/{code}.json") else []
+    fl = sorted(_fg.flow_rows(code), key=lambda x: x["date"])
+    if lim:
+        px = [x for x in px if x[0] < lim]; vv = [x for x in vv if x[0] < lim]; fl = [x for x in fl if x["date"] < lim]
+    if pz:
+        rng = np.random.default_rng(H._seed("order", code, pz))
+        px = [x if x[0] < pz[:8] else [x[0], float(x[1]) * float(np.exp(rng.normal(0, 0.2)))] for x in px]
+        vv = [x if x[0] < pz[:8] else [x[0], float(rng.uniform(1e3, 1e7))] + list(x[2:]) for x in vv]
+        fl = [x if x["date"] < pz[:8] else {"date": x["date"], "외국인": float(rng.normal(0, 1e5)), "투신": float(rng.normal(0, 1e5))} for x in fl]
+    return px, vv, fl
+_ORD = {}
+def _order_tiers():
+    if _ORD: return _ORD
+    rows = {c: _daily_rows(c) for c in data}
+    sc = {}
+    for c, b in data.items():
+        px, vv, fl = rows[c]
+        pd_, pc = [x[0] for x in px], [float(x[1]) for x in px]
+        vd, vol = [x[0] for x in vv], [float(x[1]) for x in vv]
+        fd = [x["date"] for x in fl]
+        for k in np.flatnonzero(np.asarray(e_align_or_noon(c, b), bool)):
+            day = b["t"][k + 1][:8] if k + 1 < len(b["t"]) else b["t"][k][:8]
+            i = _bis.bisect_left(pd_, day) - 1; j = _bis.bisect_left(vd, day) - 1; f = _bis.bisect_left(fd, day) - 1
+            r20 = pc[i] / pc[i - 20] - 1 if i >= 20 and pc[i - 20] > 0 else np.nan
+            av = np.mean(vol[j - 19:j + 1]) if j >= 20 else np.nan
+            s5 = sum((x.get("외국인") or 0) + (x.get("투신") or 0) for x in fl[max(0, f - 4):f + 1]) if f >= 4 else np.nan
+            sc[(c, k)] = (s5 / av if av and av == av and av > 0 else np.nan, r20)
+    bybar = {}
+    for (c, k) in sc: bybar.setdefault(data[c]["t"][k], []).append((c, k))
+    for t, L in bybar.items():
+        if len(L) == 1: _ORD[L[0]] = 2; continue
+        tot = np.zeros(len(L))
+        for col, good_high in ((0, False), (1, True)):
+            v = np.array([sc[z][col] for z in L], float)
+            v = np.where(np.isnan(v), np.nanmedian(v) if np.any(~np.isnan(v)) else 0, v)
+            r = np.argsort(np.argsort(v)) / (len(v) - 1)
+            if not good_high: r = 1 - r
+            tot += np.minimum((r * 3).astype(int), 2)
+        for z, x in zip(L, tot): _ORD[z] = int(x)
+    return _ORD
+def rank_order(c, b, k):
+    x = ATT[c][k + 1] if k + 1 < len(b["t"]) else ATT[c][k]
+    return (0 if x and x["추세문"] else 1, 0 if x and x["3일연속"] else 1, -_order_tiers().get((c, k), 2))
 def e_peek(c, b):          # 일부러 다음 봉 종가를 봄(미래 참조) — 검사가 이것을 잡아야 함
     m = e_align_or_noon(c, b).copy()
     nxt = np.r_[b["c"][1:], b["c"][-1]]
@@ -65,6 +115,7 @@ RULES = {
     "지금": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank),
     "자리 바꾸기": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "자리 바꾸기(폭<90일 때만)": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale90),
+    "순서: 같은 봉 수급 약 + 20일 수익 큼(90회차)": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank_order, stale_of=stale90),
     "희석 공시 거르기 + 자리 바꾸기(폭<90)": dict(entry=e_dil, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale90),
     "공시 거르기 + 자리 바꾸기(폭<90)": dict(entry=e_disc, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale90),
     "센 장만 따라가기(폭≥70)": dict(entry=e_align_or_noon, exit_rule=exit_regime, size=size, rank=rank, stale_of=stale90),
