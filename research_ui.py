@@ -1,4 +1,5 @@
 import hashlib
+from pathlib import Path
 import json
 import re
 from datetime import date
@@ -10,7 +11,7 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (A_RULES, EMA_ONLY, GROUP_RULES, GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP,
+from dashboard_ui import (A_RULES, EMA_ONLY, HOURLY_RULES, hourly_a_panel, GROUP_RULES, GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP,
                           a_group_panel, board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
@@ -270,6 +271,26 @@ def today_a_group(stamp=None):
     return final_group.load()
 
 
+@st.cache_data(ttl=300, show_spinner=False)
+def hourly_a(stamp=None):
+    """1시간봉 A그룹(연구 90회차). GitHub Actions가 저녁(후보)과 장중 1시간마다(알림 · 연습 계좌) hourly-live/에 남깁니다."""
+    got = []
+    for name, empty in (("plan.json", None), ("state.json", None), ("alerts.json", [])):
+        try:
+            got.append(json.loads(Path("hourly-live", name).read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            got.append(empty)
+    return got
+
+
+def hourly_a_stamp():
+    try:
+        return max(Path("hourly-live", n).stat().st_mtime for n in ("plan.json", "state.json", "alerts.json")
+                   if Path("hourly-live", n).exists())
+    except ValueError:
+        return None
+
+
 def a_group_stamp():
     try:
         return final_group.OUT.stat().st_mtime
@@ -434,6 +455,7 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '담으면 여기에 그룹이 나옵니다.</p>')
     st.markdown(header() + section('오늘의 A그룹 · 조사 대상 507종목 전체에서')
                 + A_RULES + a_group_panel(today_a_group(a_group_stamp())) + EMA_ONLY
+                + section('1시간봉 A그룹 · 장중 1시간마다') + HOURLY_RULES + hourly_a_panel(*hourly_a(hourly_a_stamp()))
                 + section('그룹 판정 · 관심종목') + GROUP_RULES
                 + (board or '') + close_frame(), unsafe_allow_html=True)
     if board is None:

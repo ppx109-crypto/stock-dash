@@ -16,7 +16,7 @@ concurrency:
 jobs:
   pick:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,4 +47,19 @@ jobs:
           pip install requests
           python notify_discord.py || echo '디스코드 알림은 실패했지만 A그룹 저장은 끝났습니다.'
         env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - name: 1시간봉 A그룹 — 다음 거래일 후보 · 정배열 깨진 보유 종목 청산 알림
+        # 연구 90회차 최종 규칙(사용자 허락 2026-10-01). 오늘 종가 · 오늘 수급까지로 후보를 셉니다. 주문은 넣지 않습니다.
+        run: |
+          pip install numpy
+          status=0; python hourly_a.py plan || status=$?
+          mkdir -p hourly-live
+          git add -A hourly-live
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Hourly A group plan"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          exit $status
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

@@ -83,8 +83,24 @@ for d in days:
             state["pending"].append({"type": "sell", "code": c, "칸": p["칸"], "why": "일봉 정배열 깨짐", "decided": d + "14"})
 closed = state.get("closed", [])
 years = max(len(days) / 245, 0.25)
-tot = sum(t["손익"] * t["칸"] / 10 for t in closed)
-print(f"  실시간 모듈 되감기: 매매 조각 {len(closed)} · 연 {tot / years:.2f}(끝에 들고 있는 것 {len(state['positions'])}종목 뺌) · 승률 {np.mean([t['손익'] > 0 for t in closed]) * 100:.1f}%", flush=True)
+last_t = max(t for t in times)
+opened = []
+for c, p in state["positions"].items():     # 엔진처럼 끝에 들고 있는 것은 마지막 종가로 팜
+    k = max(i for t, i in idx[c].items() if t <= last_t)
+    opened.append({"code": c, "산 때": p["bought"], "칸": p["칸"], "손익": (data[c]["c"][k] / p["price"] - 1) * 100 - 0.30})
+tot = sum(t["손익"] * t["칸"] / 10 for t in closed + opened)
+print(f"  실시간 모듈 되감기: 매매 조각 {len(closed)} + 끝에 든 것 {len(opened)} · 연 {tot / years:.2f} · 승률 {np.mean([t['손익'] > 0 for t in closed]) * 100:.1f}%", flush=True)
+el = {}
+for t in eng["목록"]: el.setdefault((t["code"], t["산 때"]), []).append(t)
+ll = {}
+for t in closed + opened: ll.setdefault((t["code"], t["산 때"]), []).append(t)
+diff = []
+for k in set(el) & set(ll):
+    a = sum(x["손익"] * x["칸"] for x in el[k]) / sum(x["칸"] for x in el[k]); b = sum(x["손익"] * x["칸"] for x in ll[k]) / sum(x["칸"] for x in ll[k])
+    diff.append(b - a)
+print(f"  같은 매매 손익 차이(되감기 − 엔진): {len(diff)}건 · 0.01%p 안 {sum(abs(x) < 0.01 for x in diff)}건 · 평균 {np.mean(diff):+.3f}%p · 가장 큰 {max(diff, key=abs):+.2f}%p", flush=True)
+res1 = H.simulate(data, e_align_or_noon, EX, size, rank=rk, stale_of=stale90, seeds=1, periods=(("구간", (LO, HI)),))
+print("  연구 엔진(씨앗 0 한 판): " + H.line(res1), flush=True)
 ek = {(t["code"], t["산 때"]) for t in eng["목록"]}; lk = {(t["code"], t["산 때"]) for t in closed}
 print(f"  같은 매매(종목 · 산 봉): 엔진 {len(ek)} · 되감기 {len(lk)} · 겹침 {len(ek & lk)} ({len(ek & lk) / max(len(ek), 1) * 100:.0f}%)", flush=True)
 from collections import Counter
