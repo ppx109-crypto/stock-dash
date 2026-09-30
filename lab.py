@@ -904,7 +904,9 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             edge = (datetime.strptime(day, "%Y%m%d")
                     - timedelta(days=back)).strftime("%Y%m%d")
             lately = [when for when in opened_on if when >= edge]
-        for row in (ready if (greedy or swap) else ready[:max(room, 0)]):
+        for spot_no, row in enumerate(ready if (greedy or swap) else ready[:max(room, 0)]):
+            # 자리 바꾸기에서 원래 보던 몫(빈 자리 수) 밖의 후보는 묵은 종목을 팔아 만든 칸에만 담습니다(비워 두던 칸은 그대로).
+            beyond = bool(swap) and not greedy and spot_no >= max(room, 0)
             allowed = (per_day(row) if callable(per_day) else per_day) \
                 if per_day is not None else None
             if (used >= top and not swap) or (allowed is not None and bought >= allowed):
@@ -922,9 +924,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 continue
             if realistic and locked(one["closes"], one["날"], spot, 1):
                 continue        # 상한가에 붙은 날은 종가에 살 수 없습니다.
-            if swap and top - used < max(int(size(row)), 1):
+            if swap and (beyond or top - used < max(int(size(row)), 1)):
                 old_days, below, gate = swap
-                need = max(int(size(row)), 1) - max(top - used, 0)
+                need = max(int(size(row)), 1) - (0 if beyond else max(top - used, 0))
+                freed = 0
 
                 def _now(c):
                     s_ = open_slots[c]
@@ -949,10 +952,11 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                                        "자리": s_["자리"], "손익": round(gain, 2), "행": s_["row"], "자리 바꿈": True})
                     used -= s_["자리"]
                     need -= s_["자리"]
-                if used >= top:
+                    freed += s_["자리"]
+                if used >= top or (beyond and not freed):
                     continue
             # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
-            want = min(max(int(size(row)), 1), top - used)
+            want = min(max(int(size(row)), 1), top - used, freed if beyond else top)
             open_slots[row["code"]] = {"i": spot, "price": one["closes"][spot],
                                        "step": 0, "peak": one["closes"][spot],
                                        "row": row, "자리": want}
