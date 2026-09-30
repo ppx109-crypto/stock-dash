@@ -63,7 +63,7 @@ def market_open_today(client, today):
 
 
 def program_day(client, market):
-    """그날 분별 프로그램매매. 시각 값은 증권사가 무시하므로(늘 마지막 30줄) 다음 쪽 표시(tr_cont)로 거슬러 받습니다."""
+    """그날 분별 프로그램매매. 증권사는 시각 값을 무시하고 마지막 30줄(15:29~15:58)만 줌 · 다음 쪽 표시(tr_cont)가 오면 이어 받음(2026-09-30엔 오지 않음)."""
     got, cont = {}, ""
     for _ in range(40):
         raw, more = client._market_page(Q + "comp-program-trade-today", "FHPPG04600101", {

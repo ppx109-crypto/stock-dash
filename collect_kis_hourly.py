@@ -109,6 +109,8 @@ def main(codes=None):
     lock = threading.Lock()
     fails = [0]
 
+    why = [""]
+
     def one(code, day):
         with lock:
             if calls[0] + len(ENDS) > MAX_CALLS or fails[0] >= 30:
@@ -119,12 +121,13 @@ def main(codes=None):
             with lock:
                 fails[0] = 0
             return code, day, bars
-        except broker_kis.BrokerError:
+        except broker_kis.BrokerError as e:
             with lock:
                 fails[0] += 1
+                why[0] = why[0] or str(e)
             return code, day, None
 
-    done_codes = 0
+    done_codes, blocked = 0, 0
     for code in codes:
         need = [d for d in days if d not in have_days(code)]
         if not need:
@@ -143,8 +146,15 @@ def main(codes=None):
             print("이번 몫을 다 불렀습니다(다음에 이어 받음).", flush=True)
             return 3
         if fails[0] >= 30:
-            print("거절이 이어져 멈춥니다.", flush=True)
-            return 2
+            # 한 종목만 막힌 것(거래정지 등)이면 그 종목만 건너뜀. 막힌 종목이 셋 이어지면 전체 문제로 보고 멈춤.
+            blocked = blocked + 1 if not got else 0
+            print(f"  {code} · 거절이 이어져 건너뜀 · {why[0]}", flush=True)
+            fails[0], why[0] = 0, ""
+            if blocked >= 3:
+                print("여러 종목이 이어서 거절되어 멈춥니다.", flush=True)
+                return 2
+            continue
+        blocked = 0
         done_codes += 1
     print(f"끝 · 다 받은 종목 {done_codes}/{len(codes)} · 부른 수 {calls[0]}", flush=True)
     return 0
