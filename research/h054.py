@@ -64,6 +64,7 @@ def quarters(code):
             got = {}
         qs = []
         for k, v in got.items():
+            if not isinstance(v, dict): continue
             rc = str(v.get("접수번호", ""))[:8]
             op, op0, sa, sa0 = (num(v.get(x)) for x in ("영업이익", "영업이익_작년", "매출", "매출_작년"))
             if rc: qs.append((rc, op, op0, sa, sa0))
