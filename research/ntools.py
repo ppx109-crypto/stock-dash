@@ -206,11 +206,31 @@ def fresh_days(r):
 
 
 # ── 한투 재무비율(분기): 발표일이 없어 분기 끝 + 60일(12월 결산 + 90일) 뒤부터 씀 ──
-def ratio_known(ym):
-    """재무비율 결산월(YYYYMM) → 쓸 수 있는 첫날(분기 끝 + 60일, 12월 + 90일)."""
+_FILED = {}
+
+
+def dart_filed(code):
+    """그 종목의 다트 분기 보고서 접수일: {결산월 YYYYMM: YYYYMMDD}(정정이면 정정 날 — 늦게 잡는 쪽)."""
+    if code not in _FILED:
+        out = {}
+        for key, v in ((_load(f"quarter-data/{code}.json") or {}).get("rows") or {}).items():
+            if v and str(v.get("접수번호", ""))[:8].isdigit() and "-" in key:
+                y, kind = key.split("-", 1)
+                end = {"1분기": "03", "반기": "06", "3분기": "09", "사업": "12"}.get(kind)
+                if end:
+                    out[y + end] = str(v["접수번호"])[:8]
+        _FILED[code] = out
+    return _FILED[code]
+
+
+def ratio_known(ym, code=None):
+    """재무비율 결산월(YYYYMM) → 쓸 수 있는 첫날: 분기 끝 + 60일(12월 + 90일)과 다트 실제 접수일 가운데 늦은 날
+    (dguard 5겹이 60 · 90일만으로는 6.9%가 발표 전이라 잡아 고침, 2026-10-01)."""
     y, m = int(ym[:4]), int(ym[4:])
     end = date(y + (m == 12), 1 if m == 12 else m + 1, 1) - timedelta(days=1)
-    return (end + timedelta(days=90 if m == 12 else 60)).strftime("%Y%m%d")
+    known = (end + timedelta(days=90 if m == 12 else 60)).strftime("%Y%m%d")
+    filed = dart_filed(code).get(ym) if code else None
+    return max(known, filed) if filed else known
 
 
 def ratio_entry(body):
@@ -219,7 +239,7 @@ def ratio_entry(body):
         ym = str(v.get("결산월", ""))
         if len(ym) != 6 or not ym.isdigit():
             continue
-        got.append((ratio_known(ym), v))
+        got.append((ratio_known(ym, body.get("code")), v))
     got.sort(key=lambda x: x[0])
     return ([d for d, _ in got], [x for _, x in got]) if got else None
 

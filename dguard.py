@@ -163,7 +163,7 @@ def ratio_cut(body, r, dirty):
         ym = str(v.get("결산월", ""))
         if len(ym) != 6 or not ym.isdigit():
             continue
-        if T.ratio_known(ym) < r["date"]:
+        if T.ratio_known(ym, body.get("code")) < r["date"]:
             rows.append(v)
         elif dirty:
             rows.append({**v, **{k: _junk() for k in ("ROE", "영업이익증가율", "매출증가율", "부채비율")}})
@@ -330,10 +330,10 @@ def layer5():
             ym = str(v.get("결산월", ""))
             if ym in filed:
                 total += 1
-                early += T.ratio_known(ym) < filed[ym]
+                early += T.ratio_known(ym, code) < filed[ym]
     share = early / max(1, total) * 100
-    say("5 날짜 짚기", share <= 2.0,
-        f"재무비율을 쓰는 날이 다트 발표보다 앞선 몫 {share:.1f}% ({early}/{total}, 2% 넘으면 늦춤을 더 늘려야 함)")
+    say("5 날짜 짚기", early == 0,
+        f"재무비율을 쓰는 날이 다트 발표보다 앞선 몫 {share:.1f}% ({early}/{total}, 하나라도 있으면 어긋남)")
 
 
 def layer6():
