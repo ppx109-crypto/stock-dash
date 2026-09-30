@@ -3,7 +3,7 @@
   되돌림 = 꼭대기 전에 사서 꼭대기 날 이익 중이던 매매(이익을 돌려준 몫 · 산 값 아래로 더 빠진 몫을 따로)
   이미 손해 = 꼭대기 전에 샀고 꼭대기 날 이미 손해 중
   새 진입 = 꼭대기 뒤에 산 매매
-계좌 값은 hlab._mark와 같음(1 + 실현 + 평가, 칸 무게 고정). 날 끝 값은 그날 마지막 봉 종가.
+계좌 값은 hlab._mark와 같음(1 + 실현 + 평가, 칸 무게 고정). 곡선의 그날 값은 엔진이 다음 거래일 09시 봉까지 처리한 뒤 적으므로 같은 때로 셈.
 그리고 낙폭 첫 5거래일의 모습(계좌 몫 · 손절 수 · 시장 폭 · 코스피 5일)과, 같은 모습이 '큰 낙폭 없이 끝난' 때도 흔했는지(헛경보)."""
 import sys, json, bisect
 sys.path.insert(0, "/home/user/stock-dash")
@@ -27,12 +27,16 @@ def close_on(c, day):
 def breadth(day):
     vals = [x["시장폭"] for c in list(data)[:60] for x in [ATT[c][DAYEND[c][1][day]]] if day in DAYEND[c][1] and x and x["시장폭"] is not None] if True else []
     return np.median(vals) if vals else np.nan
+NEXT = {}
 def val(piece, day):
+    """hlab._mark와 같은 때: 계좌 곡선의 그날 값은 다음 거래일 첫 봉(09시 봉)까지 처리한 뒤의 값."""
     c, i, k, kan, gain = piece
-    bday, sday = data[c]["t"][i][:8], data[c]["t"][k][:8] if k is not None else "99999999"
-    if day < bday: return 0.0
-    if day >= sday: return gain / 100 * kan / 10
-    return (close_on(c, day) / data[c]["o"][i] - 1) * kan / 10
+    E = NEXT.get(day, day + "99")
+    tb = data[c]["t"][i]; ts = data[c]["t"][k] if k is not None else "9999999999"
+    if E < tb: return 0.0
+    if ts <= E: return gain / 100 * kan / 10
+    j = bisect.bisect_right(data[c]["t"], E) - 1
+    return (data[c]["c"][j] / data[c]["o"][i] - 1) * kan / 10
 def episodes(curve):
     days = sorted(curve); v = np.array([curve[d] for d in days]); out = []; pi = ti = 0; inside = False
     for i in range(1, len(v)):
@@ -51,6 +55,7 @@ for s, (lo, hi) in (("앞", H.EARLY), ("뒤", H.LATE)):
     for seed in range(16):
         r = H._one_run(data, sigs, EX, size, lo, hi, 10, seed, None, rank, H.COST, None, None, stale90)
         curve = r["곡선"]; days = sorted(curve)
+        NEXT.clear(); NEXT.update({days[j]: days[j + 1] + "09" for j in range(len(days) - 1)})
         pieces = []
         for t in r["목록"]:
             c = t["code"]; i = data[c]["t"].index(t["산 때"])
