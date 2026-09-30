@@ -3,8 +3,8 @@
 import sys
 sys.path.insert(0, "/home/user/stock-dash")
 import numpy as np
-src = open("research/h089.py", encoding="utf-8").read()
-pre = src.split("TF = monthly_tier(")[0].replace("== 1시간봉 89회차 (그달 앞 신호로 정한 무리 순서) ==", "== 1시간봉 90회차 (같은 봉 시각 후보끼리 순위) ==")
+SRC89 = open("research/h089.py", encoding="utf-8").read()
+pre = SRC89.split("TF = monthly_tier(")[0].replace("== 1시간봉 89회차 (그달 앞 신호로 정한 무리 순서) ==", "== 1시간봉 90회차 (같은 봉 시각 후보끼리 순위) ==")
 exec(pre)
 bybar = {}
 for (c, k) in F: bybar.setdefault(data[c]["t"][k], []).append((c, k))
@@ -21,8 +21,8 @@ def bar_tier(fn, good_high):
     return T
 TF = bar_tier(flow, False); TP = bar_tier(SC["프로그램 5일 세기"], False); TR = bar_tier(SC["20일 수익"], True)
 TB = {z: TF[z] + TR[z] for z in F}
-exec(src.split("TB = {z: TF[z] + TR[z] for z in F}")[1].split('CASES = {')[0])
+exec(SRC89.split("TB = {z: TF[z] + TR[z] for z in F}")[1].split('CASES = {')[0])
 CASES = {"지금": rank, "수급 약한 무리 먼저(같은 봉)": tier_rank(TF), "프로그램 약한 무리 먼저(같은 봉)": tier_rank(TP),
          "20일 수익 큰 무리 먼저(같은 봉)": tier_rank(TR), "둘 합(수급 약 + 20일 수익 큼)": tier_rank(TB),
          "거꾸로: 수급 센 무리 먼저": tier_rank({z: 2 - v for z, v in TF.items()})}
-exec("CASES_KEEP = CASES\n" + src.split('"둘 합(수급 약 + 20일 수익 큼)": tier_rank(TB)}')[1])
+exec("CASES_KEEP = CASES\n" + SRC89.split('"둘 합(수급 약 + 20일 수익 큼)": tier_rank(TB)}')[1])
