@@ -106,16 +106,17 @@ def once(tag, holds=None, **kw):
     kw.setdefault("rank", rule.order)
     kw.setdefault("exit_at", nrl.BASE_EXIT)
     exit_at = kw.pop("exit_at")
+    slots = kw.pop("slots", nrl.SLOTS)
     out, got = [f"  {tag:40s}"], {}
     for side, pool, since in (("앞", nrl.early, rule.SINCE), ("뒤", nrl.inside, rule.MID)):
-        g = lab.wobble(pool, nrl.prices, holds, exit_at, tries=8, slots=nrl.SLOTS, since=since,
+        g = lab.wobble(pool, nrl.prices, holds, exit_at, tries=8, slots=slots, since=since,
                        apart=nrl.kin, realistic=True, cap=130, detail=True, **kw)
         got[side] = g
-        text = side + " " + nrl.line(g, nrl.SLOTS, since)
+        text = side + " " + nrl.line(g, slots, since)
         if g:
             led = g["매매목록"]
             yrs = max(1, int(max(t["판 날"] for t in led)[:4]) - int(since[:4]) + 1)
-            text += f" 회전 {round(sum(t['자리'] for t in led) / nrl.SLOTS / yrs, 1)}배"
+            text += f" 회전 {round(sum(t['자리'] for t in led) / slots / yrs, 1)}배"
         out.append(text)
     print(" | ".join(out), flush=True)
     return got
