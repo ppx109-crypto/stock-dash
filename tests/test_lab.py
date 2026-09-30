@@ -184,6 +184,21 @@ class Slots(unittest.TestCase):
         self.assertEqual(bought, [("000001", 150), ("000002", 170)],
                          "신호 없는 날에 들고 있던 종목이 나이를 먹지 않았습니다")
 
+    def test_swap_sells_a_stale_position_for_a_new_signal(self):
+        """자리 바꾸기(일봉 새 63회차): 칸이 찼을 때 오래 들고 못 오른 종목을 그날 종가에 팔고 새 신호를 담습니다."""
+        days = [f"{2000 + k // 200}{(k % 200) // 20 + 1:02d}{(k % 20) + 1:02d}" for k in range(700)]
+        codes = [f"{100000 + j}" for j in range(80)]
+        prices = {c: {"name": c, "rows": [(d, 100.0) for d in days]} for c in codes}
+        rows = [{"code": c, "date": days[10 + 6 * j], "i": 10 + 6 * j, "price": 100.0} for j, c in enumerate(codes)]
+        never = lambda lane, start, price, step, peak, row=None: False
+        run = lambda **kw: lab.run(rows, prices, lambda r: True, never, slots=1, detail=True, cap=999, **kw)
+        self.assertIsNone(run())                                      # 바꾸지 않으면 첫 종목만 들고 끝(60건 미만)
+        self.assertIsNone(run(swap=(5, 1.0, lambda day: False)))       # 문이 닫혀 있으면 바꾸지 않음
+        self.assertIsNone(run(swap=(7, 1.0, None)))                    # 6일마다 신호 · 7일 넘게 든 것만 → 못 바꿈
+        got = run(swap=(5, 1.0, None))
+        self.assertEqual(got["매매"], 79)
+        self.assertTrue(all(t.get("자리 바꿈") and t["들고"] == 6 for t in got["매매목록"]))
+
     def test_a_position_never_takes_more_room_than_there_is(self):
         rows, out = plan(self.prices, detail=True, size=lambda r: 5)
         if out is None:
