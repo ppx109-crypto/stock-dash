@@ -283,7 +283,8 @@ def material_check(name, fn, src, rows):
         seen += full is not None and full is not False and full != {}
         original = raw_of(code)
         saved = {"flow": nrl.FLOW.get(code), "vol": T.VOL.get(code), "q": T.QUARTER.get(code), "ratio": T.RATIO.get(code),
-                 "tg": nrl.TARGETS.get(code), "lane": nrl.lanes.get(code), "shape": nrl.shape.get(code)}
+                 "tg": nrl.TARGETS.get(code), "lane": nrl.lanes.get(code), "shape": nrl.shape.get(code),
+                 "ev": T.EVENTS.get(code)}
         try:
             for dirty in (False, True):
                 put(code, cut(original, r, dirty))
@@ -295,7 +296,7 @@ def material_check(name, fn, src, rows):
                         diff_cut += 1
         finally:
             for key, table in (("flow", nrl.FLOW), ("vol", T.VOL), ("q", T.QUARTER), ("ratio", T.RATIO), ("tg", nrl.TARGETS),
-                               ("lane", nrl.lanes), ("shape", nrl.shape)):
+                               ("lane", nrl.lanes), ("shape", nrl.shape), ("ev", T.EVENTS)):
                 if saved[key] is None:
                     table.pop(code, None)
                 else:
