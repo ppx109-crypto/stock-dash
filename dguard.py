@@ -116,6 +116,23 @@ def put_opinion(code, body):
         nrl.TARGETS.pop(code, None)
 
 
+def raw_event(code):
+    return T._load(f"event-data/{code}.json") or {}
+
+
+def put_event(code, body):
+    T.EVENTS[code] = T.event_entry(body)
+
+
+def event_cut(body, r, dirty):
+    rows = body.get("rows") or []
+    keep = [x for x in rows if str(x.get("date", "")) < r["date"]]
+    if dirty:
+        keep += [{**x, "kind": "공급계약"} for x in rows if str(x.get("date", "")) >= r["date"]]
+        keep += [{"date": r["date"], "kind": "공급계약", "title": "엉터리"}]
+    return {**body, "rows": keep}
+
+
 def raw_close(code):
     return nrl.lanes[code]
 
@@ -195,6 +212,7 @@ SOURCES = {
     "재무비율": (raw_ratio, put_ratio, ratio_cut),
     "목표가": (raw_opinion, put_opinion, opinion_cut),
     "종가": (raw_close, put_close, close_cut),
+    "공시": (raw_event, put_event, event_cut),
 }
 
 # 연구에서 쓰는 재료(값 함수, 원자료 이름)
@@ -216,6 +234,8 @@ MATERIALS = [
     ("발표 뒤 지난 날", T.fresh_days, "분기 실적"),
     ("ROE", lambda r: T.ratio_now(r, "ROE"), "재무비율"),
     ("영업이익증가율(재무비율)", lambda r: T.ratio_now(r, "영업이익증가율"), "재무비율"),
+    ("공급계약 20일 안(공시 목록)", lambda r: T.had_event(r, "공급계약", 20), "공시"),
+    ("실적공시 20일 안(공시 목록)", lambda r: T.had_event(r, "실적공시", 20), "공시"),
 ]
 
 # 검사 눈: 일부러 미래를 본 재료. 반드시 걸려야 함.
@@ -225,6 +245,7 @@ PEEKS = [
     ("엿보기: 5일 뒤 종가", lambda r: nrl.lanes[r["code"]]["closes"][r["i"] + 5] if r["i"] + 5 < len(nrl.lanes[r["code"]]["closes"]) else None, "종가"),
     ("엿보기: 30일 뒤까지 발표된 실적", lambda r: T.op_yoy({**r, "date": _later(r["date"], 30)}), "분기 실적"),
     ("엿보기: 90일 뒤까지 재무비율", lambda r: T.ratio_now({**r, "date": _later(r["date"], 90)}, "ROE"), "재무비율"),
+    ("엿보기: 그날 · 뒤 10일 공급계약", lambda r: T.had_event({**r, "date": _later(r["date"], 11)}, "공급계약", 20), "공시"),
     ("엿보기: 30일 뒤까지 목표가", lambda r: (nrl.target_before({**r, "date": _later(r["date"], 30)}) or {}).get("목표가"), "목표가"),
 ]
 
@@ -368,6 +389,16 @@ def layer6():
     rows = [r for d in days if d <= day for r in T.BY_DAY[d]][-300:]
     bad = sum(1 for r in rows if key_full(r) != key_cut(r))
     say("6 가로줄", bad == 0, f"같은 날 후보 순서: {day}까지 {len(rows)}줄 · 뒷날 후보를 지웠을 때 달라진 순서 {bad}")
+    # 공급계약 먼저 순서(71 · 72회차 후보): 공시 목록을 신호 날 앞까지만 남겨도 순서 열쇠가 같은가
+    key = lambda r: (0 if T.had_event(r, "공급계약", 20) else 1, rule.order(r))
+    bad = 0
+    for r in rows:
+        full = key(r)
+        saved = T.EVENTS.get(r["code"])
+        put_event(r["code"], event_cut(raw_event(r["code"]), r, True))
+        bad += key(r) != full
+        T.EVENTS[r["code"]] = saved
+    say("6 가로줄", bad == 0, f"공급계약 먼저 순서: {len(rows)}줄 · 뒷날 공시를 더럽혔을 때 달라진 순서 {bad}")
 
 
 def _cut_world(Tday):

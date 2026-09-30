@@ -268,3 +268,31 @@ def cover(fn):
     """지금 규칙 후보 신호 가운데 값이 있는 몫(%)."""
     rows = [r for rs in BY_DAY.values() for r in rs]
     return round(sum(1 for r in rows if fn(r) is not None) / max(1, len(rows)) * 100, 1)
+
+
+# ── 다트 공시 목록(event-data: 첫 발표 날짜 · 갈래) ──
+def event_entry(body):
+    """공시 줄들 → {갈래: 정렬된 날짜들}."""
+    out = {}
+    for r in body.get("rows") or []:
+        if str(r.get("date", "")).isdigit():
+            out.setdefault(r.get("kind"), []).append(str(r["date"]))
+    for k in out:
+        out[k].sort()
+    return out
+
+
+EVENTS = {}
+for _code in {r["code"] for r in nrl.inside}:
+    EVENTS[_code] = event_entry(_load(f"event-data/{_code}.json") or {})
+
+
+def had_event(r, kind, days=20):
+    """신호 날 **앞**(그날 빼고) days일(달력) 안에 그 갈래 공시가 있었나."""
+    got = (EVENTS.get(r["code"]) or {}).get(kind)
+    if not got:
+        return False
+    d = r["date"]
+    edge = (date(int(d[:4]), int(d[4:6]), int(d[6:8])) - timedelta(days=days)).strftime("%Y%m%d")
+    k = bisect.bisect_left(got, d)
+    return k > 0 and got[k - 1] >= edge
