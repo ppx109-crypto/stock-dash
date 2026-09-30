@@ -5,7 +5,7 @@ import sys
 sys.path.insert(0, "/home/user/stock-dash")
 src = open("research/h051.py", encoding="utf-8").read()
 exec(src.split("# 모의: 같은 39종목")[0].replace("== 1시간봉 51회차 (한국투자증권 1시간봉 78종목으로 다시 확인) ==", "== 1시간봉 62회차 (한국투자증권 1시간봉으로 다시 확인) =="))
-exec(src.split("# 모의: 같은 39종목")[1].split("def run(D, stale=None):")[0])
+exec("#" + src.split("# 모의: 같은 39종목")[1].split("def run(D, stale=None):")[0])
 def exit_regime(c, b, p, k):
     x = ATT[c][k]
     strong = x is not None and (x["시장폭"] if x["시장폭"] is not None else 0) >= 70
