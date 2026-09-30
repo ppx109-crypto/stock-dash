@@ -1,6 +1,8 @@
 name: Disclosure events
 # 공시 제목을 날짜와 함께 모읍니다. 본문은 받지 않습니다.
 on:
+  schedule:
+    - cron: '30 3 * * 6'   # 토 12:30 한국 시각 — 새 종목이 들어와도 공시 목록이 따라가게
   workflow_dispatch:
     inputs:
       codes:
