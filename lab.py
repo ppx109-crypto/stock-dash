@@ -746,7 +746,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None, realistic=False, brake=None, fill=None):
+        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -777,6 +777,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     fill을 두면 파는 값을 그날 종가 대신 그 함수가 정합니다. 청산 함수와
     같은 것을 받고 값을 돌려주며, None이면 종가입니다. 장중에 손절선이
     걸린 날 그 자리에서 팔린 것으로 세려고 낸 자리입니다(48·49회차).
+
+    swap=(며칠, 몫%, 문)을 두면 새 후보에 칸이 모자랄 때, 며칠 이상 들고 있는데 오늘 종가 손익이 몫% 아래인 종목을
+    손익이 나쁜 것부터 오늘 종가에 팔고 그 칸에 새 후보를 담습니다(1시간봉 자리 바꾸기를 일봉에, 일봉 새 63회차).
+    문은 그날(day)을 받아 참일 때만 바꾸는 함수이며 None이면 늘 바꿉니다. 오늘 종가까지만 봅니다.
 
     per_day를 두면 하루에 그만큼만 새로 담습니다. busy_cap을 두면 자리가
     남아 있어도 그만큼까지만 채우고 나머지는 현금으로 둡니다. 둘 다 그날의
@@ -900,10 +904,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             edge = (datetime.strptime(day, "%Y%m%d")
                     - timedelta(days=back)).strftime("%Y%m%d")
             lately = [when for when in opened_on if when >= edge]
-        for row in (ready if greedy else ready[:max(room, 0)]):
+        for row in (ready if (greedy or swap) else ready[:max(room, 0)]):
             allowed = (per_day(row) if callable(per_day) else per_day) \
                 if per_day is not None else None
-            if used >= top or (allowed is not None and bought >= allowed):
+            if (used >= top and not swap) or (allowed is not None and bought >= allowed):
                 break
             if per_window and len(lately) + bought >= per_window[0]:
                 break
@@ -918,6 +922,35 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 continue
             if realistic and locked(one["closes"], one["날"], spot, 1):
                 continue        # 상한가에 붙은 날은 종가에 살 수 없습니다.
+            if swap and top - used < max(int(size(row)), 1):
+                old_days, below, gate = swap
+                need = max(int(size(row)), 1) - max(top - used, 0)
+
+                def _now(c):
+                    s_ = open_slots[c]
+                    return lane[c]["closes"][s_["i"] + s_["step"]] / s_["price"] - 1
+                stale = [] if (gate is not None and not gate(day)) else sorted(
+                    (c for c, s_ in open_slots.items() if s_["step"] >= old_days and _now(c) * 100 < below
+                     and not (realistic and locked(lane[c]["closes"], lane[c]["날"], s_["i"] + s_["step"], -1))),
+                    key=_now)
+                for c in stale:
+                    if need <= 0:
+                        break
+                    s_ = open_slots.pop(c)
+                    gain = (lane[c]["closes"][s_["i"] + s_["step"]] / s_["price"] - 1) * 100 - cost
+                    trades.append(gain)
+                    weighted.append(gain * s_["자리"])
+                    purse *= 1 + gain * s_["자리"] / 100 / slots
+                    crest = max(crest, purse)
+                    year_gains.setdefault(day[:4], []).append(gain * s_["자리"])
+                    held_days.append(s_["step"])
+                    if detail:
+                        ledger.append({"code": c, "산 날": s_["row"]["date"], "판 날": day, "들고": s_["step"],
+                                       "자리": s_["자리"], "손익": round(gain, 2), "행": s_["row"], "자리 바꿈": True})
+                    used -= s_["자리"]
+                    need -= s_["자리"]
+                if used >= top:
+                    continue
             # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
             want = min(max(int(size(row)), 1), top - used)
             open_slots[row["code"]] = {"i": spot, "price": one["closes"][spot],

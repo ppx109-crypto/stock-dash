@@ -14,15 +14,29 @@ import lab
 import rule
 import study
 
-prices = study.load_prices()
-rows = lab.load()
-caps.tag(rows, rule.TOP)
-rule.calm_edge(rows)
-rows = lab.realign([r for r in rows if r["date"] >= rule.SINCE], prices)
-lanes = lab.lanes(prices)
-shape = F.shapes(lanes, {r["code"] for r in rows})
-BR = F.breadth_by_day(rows, shape)
-inside = [r for r in rows if caps.inside(r, rule.TOP)]
+import os
+import pickle
+from pathlib import Path
+
+# 표(features.json 4GB)를 풀면 메모리가 12GB를 넘어 작업 공간에서 꺼질 수 있어, 한 번 구운 결과를 NRL_CACHE에 담아 다시 씀.
+# 표나 일봉이 바뀌면 파일을 지우면 됨(날짜가 표보다 옛것이면 저절로 다시 구움).
+CACHE = Path(os.environ.get("NRL_CACHE", "/tmp/nrl-cache.pkl"))
+if CACHE.exists() and CACHE.stat().st_mtime > lab.CACHE.stat().st_mtime:
+    with CACHE.open("rb") as fh:
+        prices, lanes, shape, BR, inside, rule._calm = pickle.load(fh)
+else:
+    prices = study.load_prices()
+    rows = lab.load()
+    caps.tag(rows, rule.TOP)
+    rule.calm_edge(rows)
+    rows = lab.realign([r for r in rows if r["date"] >= rule.SINCE], prices)
+    lanes = lab.lanes(prices)
+    shape = F.shapes(lanes, {r["code"] for r in rows})
+    BR = F.breadth_by_day(rows, shape)
+    inside = [r for r in rows if caps.inside(r, rule.TOP)]
+    del rows
+    with CACHE.open("wb") as fh:
+        pickle.dump((prices, lanes, shape, BR, inside, rule._calm), fh, protocol=pickle.HIGHEST_PROTOCOL)
 early = [r for r in inside if r["date"] < rule.MID]
 kin = rule.apart(prices)
 LO, HI = final_group.SPREAD
