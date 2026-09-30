@@ -36,6 +36,13 @@ def exit_regime(c, b, p, k):   # 59회차 후보: 추세 문 매매가 센 장(�
     if now >= 5 and (before / p["price"] - 1) * 100 < 5 and p["칸"] == p["처음칸"]:
         return max(1, p["처음칸"] // 2)
     return 0
+def e_disc(c, b):          # 67회차 후보: 20일 안 자사주 · 희석 공시가 있으면 사지 않음(산 봉에 붙는 전 거래일 재료)
+    m = e_align_or_noon(c, b).copy()
+    n = len(b["t"])
+    for k in np.flatnonzero(m):
+        x = ATT[c][k + 1] if k + 1 < n else ATT[c][k]
+        if x and (x["자사주20"] or x["희석20"]): m[k] = False
+    return m
 def e_peek(c, b):          # 일부러 다음 봉 종가를 봄(미래 참조) — 검사가 이것을 잡아야 함
     m = e_align_or_noon(c, b).copy()
     nxt = np.r_[b["c"][1:], b["c"][-1]]
@@ -51,6 +58,7 @@ RULES = {
     "지금": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank),
     "자리 바꾸기": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "자리 바꾸기(폭<90일 때만)": dict(entry=e_align_or_noon, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale90),
+    "공시 거르기 + 자리 바꾸기(폭<90)": dict(entry=e_disc, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale90),
     "센 장만 따라가기(폭≥70)": dict(entry=e_align_or_noon, exit_rule=exit_regime, size=size, rank=rank, stale_of=stale90),
     "폭<70 150위 + 자리 바꾸기": dict(entry=e_wide, exit_rule=exit_daily, size=size, rank=rank, stale_of=stale(7, 4)),
     "짧은 판 B": dict(entry=entry(), exit_rule=exit_trail, size=four, rank=rank, take_of=take_half, stop_of=stop5),
