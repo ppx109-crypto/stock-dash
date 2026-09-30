@@ -9,6 +9,7 @@ import json
 import sys
 
 sys.path.insert(0, "/home/user/stock-dash/research")
+sys.path.insert(0, "/home/user/stock-dash")
 import lab
 import ntools as T
 import nrl
