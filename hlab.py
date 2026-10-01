@@ -379,8 +379,36 @@ _ST = {}
 def states(code, b, spans_key="A"):
     key = (code, spans_key)
     if key not in _ST:
-        _ST[key] = rna.states(b["c"], rna.SETS[spans_key])
+        _ST[key] = _disk_states(b["c"], spans_key)
     return _ST[key]
+
+
+def _disk_states(closes, spans_key):
+    """HLAB_ST_CACHE(폴더)를 주면 같은 종가 · 같은 선 묶음의 결과를 파일로 남겨 다음 계산에서 다시 씀(15분봉 161종목에서 한 번에 약 90초 아낌).
+    열쇠는 종가 값 전체와 선 길이의 지문이라, 잘라내기 · 더럽히기 · 잡음 세계처럼 값이 다르면 다른 파일이 됨(미래 참조 검사에 영향 없음)."""
+    import hashlib
+    import os
+    folder = os.environ.get("HLAB_ST_CACHE", "").strip()
+    if not folder:
+        return rna.states(closes, rna.SETS[spans_key])
+    arr = np.ascontiguousarray(np.asarray(closes, float))
+    tag = hashlib.sha1(arr.tobytes() + repr(rna.SETS[spans_key]).encode()).hexdigest()
+    path = Path(folder) / f"{spans_key}_{tag}.npz"
+    if path.exists():
+        try:
+            with np.load(path) as z:
+                return {k: z[k] for k in z.files}
+        except (OSError, ValueError):
+            pass
+    got = rna.states(closes, rna.SETS[spans_key])
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(f".{os.getpid()}.npz")
+        np.savez(tmp, **{k: np.asarray(v) for k, v in got.items()})
+        os.replace(tmp, path)
+    except OSError:
+        pass
+    return got
 
 
 def guard_prefix(b, spans_key="A", cuts=(300, 900, 1500)):
