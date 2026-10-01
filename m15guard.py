@@ -6,6 +6,7 @@ python m15guard.py  → docs/15M-GUARD.md에 결과를 적음(15분봉 회차에
 2. 체결 감사    — 모의 안에서 체결마다 바로 앞 봉이 닫힌 뒤 정한 것인지 · 장중 체결 값이 봉 안인지(hlab._audit — 어긋나면 모의가 멈춰 세계가 실패).
 3. 잘라내기     — 시각 T 뒤 15분봉 · 일봉 · 수급 · 공시 · 순위를 모두 잘라 낸 세계에서, T까지의 신호 · T까지 끝난 매매가 한 건도 다르지 않은지.
 4. 더럽히기     — T 뒤 자료를 엉뚱한 값으로 바꾼 세계에서 같은 비교.
+   4b 봉마다    — 종목 60개 × 봉 약 24곳마다 그 봉 뒤만 엉뚱하게 바꿔, 그 봉의 사는 신호 · 파는 판단이 그대로인지(한 봉 엿보기를 잡음).
 5. 검사 눈 확인 — 일부러 미래를 보는 규칙 셋(다음 봉 보고 사기 · 120봉 뒤 보고 사기 · 다음 봉 보고 팔기)은 3 · 4 가운데 어디서든 반드시 걸려야 함.
 6. 날짜 짚기    — 봉에 붙은 일봉 재료의 날 · 수급 마지막 날이 그 봉의 날보다 앞인지.
 (단위 시험 tests/test_m15lab.py: 읽기 · 잠금 · 잘라내기 · 더럽히기 · 다음 봉 시가 체결)
@@ -78,6 +79,17 @@ def main():
                     if ds + dt:
                         fails.append(f"{how} {T} {name}")
                 lines.append(f"| {how} | {T} | {name} | {ds} | {dt} | {n} | {res} |")
+    lines.append("")
+    for name, (seen, diff) in (full.get("bar_poison") or {}).items():
+        eye = name in EYES
+        if eye:
+            caught[name] += diff
+        res = ("검사 눈" if diff else "-") if eye else ("통과" if diff == 0 else "**어긋남**")
+        if not eye and diff:
+            fails.append(f"4b 봉마다 {name}")
+        lines.append(f"- 4b 봉마다 더럽히기 '{name}': 본 봉 {seen} · 달라진 판단 {diff} → {res}")
+    if not full.get("bar_poison"):
+        fails.append("4b 봉마다 더럽히기를 못 돌림")
     lines.append("")
     for e, n in caught.items():
         ok = n > 0
