@@ -36,7 +36,7 @@ class Guard(unittest.TestCase):
 
     def test_account_forms(self):
         for text, want in (("50123456-01", ("50123456", "01")), ("5012345601", ("50123456", "01")),
-                           (" 50123456 – 01 \n", ("50123456", "01")), ("50123456", ("50123456", "01"))):
+                           (" 50123456 – 01 \n", ("50123456", "01")), ("1234567", ("1234567", "01")), ("1234567-01", ("1234567", "01")), ("50123456", ("50123456", "01"))):
             self.assertEqual(P.account_parts(text), want)
         with self.assertRaises(broker_kis.BrokerError) as e:
             P.account_parts("987-654")
