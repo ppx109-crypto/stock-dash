@@ -12,7 +12,7 @@ from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, NAME_B, RULE_TEXT, SHOWN_PER_GROUP,
-                          CLOSE_RULES, close_panel, ledger_mini, top_bar, frame_open, near_panel, as_day,
+                          CLOSE_RULES, close_panel, ledger_mini, top_bar, kospi_box, lights_box, frame_open, near_panel, as_day,
                           board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
@@ -278,11 +278,44 @@ def repo_json_live(path):
 
 
 @st.fragment(run_every=60)
+@st.cache_data(ttl=300, show_spinner=False)
+def kospi_last():
+    """코스피 마지막 값. 한투에서 바로 받고(5분마다), 못 받으면 저장소에 모아 둔 일별 자료를 씁니다."""
+    from datetime import datetime as _dt, timedelta as _td
+    from zoneinfo import ZoneInfo
+    now = _dt.now(ZoneInfo('Asia/Seoul'))
+    rows, src = [], '한국투자증권'
+    try:
+        import broker_kis
+        rows = broker_kis.market().index_daily('0001', (now - _td(days=14)).strftime('%Y%m%d'), now.strftime('%Y%m%d'))
+    except Exception:
+        rows = []
+    if not rows:
+        rows, src = ((repo_json('market-data/index_KOSPI.json') or {}).get('rows') or [])[-5:], '모아 둔 일별 자료'
+    rows = [r for r in rows if r.get('종가')]
+    if not rows:
+        return None
+    last = rows[-1]
+    chg = (last['종가'] / rows[-2]['종가'] - 1) * 100 if len(rows) > 1 and rows[-2].get('종가') else None
+    live = last['date'] == now.strftime('%Y%m%d') and now.strftime('%H%M') < '1530'
+    return {'date': last['date'], 'close': float(last['종가']), 'change': chg, 'live': live, 'from': src}
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def api_lights():
+    from datetime import datetime as _dt
+    from zoneinfo import ZoneInfo
+    from data_registry import quick_status
+    return quick_status(), _dt.now(ZoneInfo('Asia/Seoul')).strftime('%H:%M')
+
+
 def live_top_bar():
-    """맨 위 제목 줄 + 1시간봉 · 1일봉 모의투자 거래 내역. 1분마다 이 부분만 새로 그림(사용자 요청: 실시간 연동)."""
+    """맨 위 제목 줄 + 가운데 코스피 · API 연결 불빛 + 1시간봉 · 1일봉 모의투자 거래 내역. 1분마다 이 부분만 새로 그림."""
+    lights, at = api_lights()
     st.markdown(top_bar(
         ledger_mini('1시간봉 모의투자', repo_json_live('hourly-live/state.json'), repo_json_live('hourly-live/paper-orders.json')),
-        ledger_mini('1일봉 모의투자', repo_json_live('daily-live/state.json'), repo_json_live('daily-live/paper-orders.json'))),
+        ledger_mini('1일봉 모의투자', repo_json_live('daily-live/state.json'), repo_json_live('daily-live/paper-orders.json')),
+        kospi_box(kospi_last()) + lights_box(lights, at)),
         unsafe_allow_html=True)
 
 
