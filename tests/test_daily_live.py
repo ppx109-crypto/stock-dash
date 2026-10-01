@@ -77,5 +77,16 @@ class Settle(unittest.TestCase):
         self.assertEqual(len(lines), 2)
 
 
+class Alerts(unittest.TestCase):
+    def test_decision_lines_like_hourly(self):
+        sells = [{"type": "sell", "code": "000001", "칸": 2, "why": "절반 익절 +5% 처음 닿음(오늘 +5.2%)", "name": "가", "kind": "추세"}]
+        buys = [{"type": "buy", "code": "000002", "칸": 3, "name": "나", "kind": "정배열", "why": "② 정배열 조건"}]
+        lines = D.decision_lines("20261002", 55.0, [{}, {}], sells, buys, {"000001": 105.2, "000002": 50000.0}, {"000001": {}})
+        self.assertIn("15:20 판단", lines[0])
+        self.assertTrue(lines[1].startswith("🟡 절반 익절"))
+        self.assertTrue(lines[2].startswith("🟢 매수") and "3칸(30%)" in lines[2] and "50,000원" in lines[2])
+        self.assertIn("사고팔 것이 없어요", D.decision_lines("20261002", 40.0, [], [], [], {}, {})[-1])
+
+
 if __name__ == "__main__":
     unittest.main()

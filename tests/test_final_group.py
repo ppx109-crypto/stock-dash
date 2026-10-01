@@ -8,9 +8,9 @@ import final_group
 import rule
 
 try:        # 화면 쪽은 streamlit이 있어야 불러집니다. A그룹을 세는 CI에는 없습니다.
-    from dashboard_ui import sortie_panel, group_buckets, stock_score, close_panel, ledger_panel
+    from dashboard_ui import sortie_panel, group_buckets, stock_score, close_panel, ledger_panel, ledger_mini
 except ModuleNotFoundError:
-    sortie_panel = group_buckets = stock_score = close_panel = ledger_panel = None
+    sortie_panel = group_buckets = stock_score = close_panel = ledger_panel = ledger_mini = None
 
 
 class Regroup(unittest.TestCase):
@@ -206,7 +206,7 @@ class Panel(unittest.TestCase):
 @unittest.skipIf(close_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class DailyPanels(unittest.TestCase):
     def test_close_panel(self):
-        self.assertIn("아직 없습니다", close_panel(None, None, None))
+        self.assertEqual(close_panel(None, None, None), "", "결과가 없으면 아무것도 쓰지 않음(사용자 요청)")
         html = close_panel({"date": "20261001", "breadth": 55.0, "made": "2026-10-01 15:33", "candidates": [{"code": "1"}],
                             "buys": [{"code": "000001", "name": "가<b>", "칸": 4, "why": "① 추세 조건"}], "sells": []},
                            {"positions": {"000001": {"code": "000001", "name": "가", "kind": "추세", "칸": 4, "price": 100.0,
@@ -214,6 +214,16 @@ class DailyPanels(unittest.TestCase):
         self.assertIn("2026-10-01", html)
         self.assertIn("+3.0%", html)
         self.assertNotIn("가<b>", html)
+
+    def test_ledger_mini(self):
+        self.assertIn("끝난 매매 없음", ledger_mini("1시간봉 모의투자", None, None))
+        html = ledger_mini("1일봉 모의투자", {"closed": [{"판 날": "20261002", "name": "가", "code": "1", "칸": 4, "손익": 5.0}],
+                                                "positions": {"2": {"code": "2"}}},
+                           {"orders": [{"at": "2026-10-02 15:21", "side": "buy", "name": "나<b>", "qty": 7, "status": "접수"}]})
+        self.assertIn("손익 합 +2.0%", html)
+        self.assertIn("들고 있는 1종목", html)
+        self.assertIn("7주", html)
+        self.assertNotIn("나<b>", html)
 
     def test_ledger_panel(self):
         self.assertIn("아직 끝난 매매가 없습니다", ledger_panel("1일봉 모의투자", None, None))

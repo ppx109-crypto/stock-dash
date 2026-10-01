@@ -219,6 +219,28 @@ def send(lines):
     return ok
 
 
+ICON = {"매수": "🟢", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪"}
+
+
+def decision_lines(day, breadth, cands, sells, buys, now_price, held):
+    """15:20 판단 알림 줄들(1시간봉 알림처럼 아이콘 · 종목 · 칸 · 까닭 · 지금 값)."""
+    out = [f"🌇 **{NAME} · {day[4:6]}-{day[6:]} 15:20 판단** (시장 폭 {breadth}% · 조건을 채운 종목 {len(cands)}개 · "
+           f"들고 있는 종목 {len(held)}개)"]
+    for x in sells:
+        kind = ("절반 익절" if "절반" in x["why"] else "익절" if "익절" in x["why"] or "지키기" in x["why"]
+                else "손절" if "손절" in x["why"] else "청산")
+        px = now_price.get(x["code"])
+        out.append(f"{ICON[kind]} {kind} · {x['name']}({x['code']}) · 오늘 종가에 {x['칸']}칸 팔기"
+                   + (f" (지금 약 {px:,.0f}원)" if px else "") + f" · {x['why']}")
+    for x in buys:
+        px = now_price.get(x["code"])
+        out.append(f"🟢 매수 · {x['name']}({x['code']}) · 오늘 종가에 {x['칸']}칸({x['칸'] * 10}%) 사기"
+                   + (f" (지금 약 {px:,.0f}원)" if px else "") + f" · {x['why']}")
+    if not sells and not buys:
+        out.append("오늘은 사고팔 것이 없어요.")
+    return out
+
+
 def _wait_until(hhmm):
     while datetime.now(KST).strftime("%H%M") < hhmm:
         time.sleep(15)
@@ -305,6 +327,8 @@ def run(now=None):
     now_price = {c: q["price"] for c, q in quotes.items()}
     rate = {c: q.get("rate") for c, q in quotes.items()}
     sells, buys = decide(state, cands, now_price, aligned, rate, kin_ok)
+    # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
+    send(decision_lines(day, found.get("breadth"), cands, sells, buys, now_price, held) + [NOTE])
     paper = []
     if (sells or buys) and not late:
         try:
@@ -335,12 +359,8 @@ def run(now=None):
     alerts += [{"at": at, "kind": "매도" if x["type"] == "sell" else "매수", "text": f"{x['name']}({x['code']}) {x['칸']}칸 · {x['why']}"}
                for x in sells + buys]
     _save(ALERTS, alerts[-500:])
-    head = (f"🌇 **{NAME} · {day[4:6]}-{day[6:]} 종가** (일봉 규칙 · 시장 폭 {found.get('breadth')}% · "
-            f"후보 {len(cands)}종목 · 들고 있는 종목 {len(state['positions'])}개)")
-    body = fills + paper
-    if not body:
-        body = ["오늘은 사고팔 것이 없어요."]
-    send([head] + body + [NOTE])
+    if fills or paper:                   # 체결 알림(사고판 것이 있을 때만)
+        send([f"✅ **{NAME} · 체결 · {day[4:6]}-{day[6:]} 종가** (들고 있는 종목 {len(state['positions'])}개)"] + fills + paper)
     print(f"후보 {len(cands)} · 매도 {len(sells)} · 매수 {len(buys)} · 늦음 {late}")
     return 0
 
