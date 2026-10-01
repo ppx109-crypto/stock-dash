@@ -116,6 +116,42 @@ def put_opinion(code, body):
         nrl.TARGETS.pop(code, None)
 
 
+RAWVOL = {}
+
+
+def raw_vol_day(code):
+    if code not in RAWVOL:
+        body = T._load(f"volume-data/{code}.json") or {}
+        RAWVOL[code] = sorted((str(x[0]), x[1]) for x in (body.get("날") or []) if x and x[1])
+    return RAWVOL[code]
+
+
+def put_vol_day(code, rows):
+    RAWVOL[code] = rows
+
+
+def vol_day_cut(rows, r, dirty):
+    keep = [x for x in rows if x[0] <= r["date"]]          # 그날 거래량은 그날 종가에 앎(그날 종가에 삼)
+    if dirty:
+        keep += [(x[0], abs(_junk()) + 1) for x in rows if x[0] > r["date"]]
+    return keep
+
+
+def vratio(r):
+    """표의 거래량비(lab.volume_line)를 원자료에서 다시 셈: 그날 거래량 ÷ 앞 20거래일 가운데값(날짜로 맞춤)."""
+    import statistics
+    rows = raw_vol_day(r["code"])
+    days = [d for d, _ in rows]
+    k = bisect.bisect_left(days, r["date"])
+    if k >= len(days) or days[k] != r["date"]:
+        return None
+    back = [v for _, v in rows[max(0, k - 20):k] if v]
+    if len(back) < 10:
+        return None
+    mid = statistics.median(back)
+    return rows[k][1] / mid if mid else None
+
+
 def raw_event(code):
     return T._load(f"event-data/{code}.json") or {}
 
@@ -213,6 +249,7 @@ SOURCES = {
     "목표가": (raw_opinion, put_opinion, opinion_cut),
     "종가": (raw_close, put_close, close_cut),
     "공시": (raw_event, put_event, event_cut),
+    "거래량(그날 포함)": (raw_vol_day, put_vol_day, vol_day_cut),
 }
 
 # 연구에서 쓰는 재료(값 함수, 원자료 이름)
@@ -236,6 +273,7 @@ MATERIALS = [
     ("영업이익증가율(재무비율)", lambda r: T.ratio_now(r, "영업이익증가율"), "재무비율"),
     ("공급계약 20일 안(공시 목록)", lambda r: T.had_event(r, "공급계약", 20), "공시"),
     ("실적공시 20일 안(공시 목록)", lambda r: T.had_event(r, "실적공시", 20), "공시"),
+    ("거래량비(그날 ÷ 앞 20일 가운데값, 74 · 75회차)", vratio, "거래량(그날 포함)"),
 ]
 
 # 검사 눈: 일부러 미래를 본 재료. 반드시 걸려야 함.
@@ -246,6 +284,8 @@ PEEKS = [
     ("엿보기: 30일 뒤까지 발표된 실적", lambda r: T.op_yoy({**r, "date": _later(r["date"], 30)}), "분기 실적"),
     ("엿보기: 90일 뒤까지 재무비율", lambda r: T.ratio_now({**r, "date": _later(r["date"], 90)}, "ROE"), "재무비율"),
     ("엿보기: 그날 · 뒤 10일 공급계약", lambda r: T.had_event({**r, "date": _later(r["date"], 11)}, "공급계약", 20), "공시"),
+    ("엿보기: 다음 날 거래량비", lambda r: vratio({**r, "date": nrl.lanes[r["code"]]["날"][r["i"] + 1]})
+     if r["i"] + 1 < len(nrl.lanes[r["code"]]["날"]) else None, "거래량(그날 포함)"),
     ("엿보기: 30일 뒤까지 목표가", lambda r: (nrl.target_before({**r, "date": _later(r["date"], 30)}) or {}).get("목표가"), "목표가"),
 ]
 
@@ -284,7 +324,7 @@ def material_check(name, fn, src, rows):
         original = raw_of(code)
         saved = {"flow": nrl.FLOW.get(code), "vol": T.VOL.get(code), "q": T.QUARTER.get(code), "ratio": T.RATIO.get(code),
                  "tg": nrl.TARGETS.get(code), "lane": nrl.lanes.get(code), "shape": nrl.shape.get(code),
-                 "ev": T.EVENTS.get(code)}
+                 "ev": T.EVENTS.get(code), "rv": RAWVOL.get(code)}
         try:
             for dirty in (False, True):
                 put(code, cut(original, r, dirty))
@@ -296,7 +336,7 @@ def material_check(name, fn, src, rows):
                         diff_cut += 1
         finally:
             for key, table in (("flow", nrl.FLOW), ("vol", T.VOL), ("q", T.QUARTER), ("ratio", T.RATIO), ("tg", nrl.TARGETS),
-                               ("lane", nrl.lanes), ("shape", nrl.shape), ("ev", T.EVENTS)):
+                               ("lane", nrl.lanes), ("shape", nrl.shape), ("ev", T.EVENTS), ("rv", RAWVOL)):
                 if saved[key] is None:
                     table.pop(code, None)
                 else:
@@ -334,6 +374,11 @@ def layer5():
             k = bisect.bisect_left(got[0], r["date"])
             bad_t += bool(k and got[0][k - 1] >= r["date"])
     say("5 날짜 짚기", bad_q == 0 and bad_t == 0, f"후보 {len(rows)}줄: 신호 날 이후 발표 실적을 쓴 줄 {bad_q} · 목표가 {bad_t}")
+    both = [(r.get("거래량비"), vratio(r)) for r in rows]
+    both = [(a, b) for a, b in both if a is not None and b is not None]
+    off = sum(1 for a, b in both if abs(a - b) > 1e-6 * max(1.0, abs(a)))
+    say("5 날짜 짚기", len(both) > 100 and off <= len(both) * 0.01,
+        f"표의 거래량비 = 그날까지 거래량으로 다시 센 값: {len(both)}줄 가운데 다른 줄 {off}(1% 넘으면 어긋남)")
     # 재무비율을 쓰는 날(분기 끝 + 60 · 90일)이 실제 다트 분기 보고서 발표일보다 앞서는 경우(= 발표 전에 씀)
     early = total = 0
     for code, (days, vals) in T.RATIO.items():
