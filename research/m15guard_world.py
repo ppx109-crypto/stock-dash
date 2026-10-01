@@ -27,8 +27,31 @@ def peek_sell(c, b, p, k):     # 다음 봉이 내리면 미리 팜(한 봉 엿�
     return exit_rule(c, b, p, k)
 
 
+import m15feat as F
+MK = F.market(data)
+
+
+def final_entry(c, b):
+    """15분봉 22회차 최종 후보: 정배열 된 봉 또는 10:45 봉 뒤, 단 그날 +2% 위 · 장중 시장 흐름 −1% 아래면 안 삼(그날 처음 한 번).
+    재료는 넘겨받은 봉(b)에서 다시 셈 — 봉마다 더럽히기(4b)에서도 그 봉까지 값만 쓰는지 보려고."""
+    dr = np.nan_to_num(F.day_ret(b), nan=0.0)
+    mk = np.nan_to_num(np.array([MK.get(t, np.nan) for t in b["t"]], float), nan=0.0)
+    ok = ~(dr > 0.02) & ~(mk < -0.01)
+    hh = M.hhmm(b)
+    cand = (e_align(c, b) & ok) | (ctx_now(c, b) & (hh == "1045") & ok)
+    m, seen = np.zeros(len(b["t"]), bool), set()
+    for k in np.flatnonzero(cand):
+        d = b["t"][k][:8]
+        if d not in seen:
+            m[k] = True
+            seen.add(d)
+    return m
+
+
+FINAL = {c: final_entry(c, b) for c, b in data.items()}
 RULES = {
     "15분봉 0회차(1시간봉 최고 규칙 옮김)": (SIGS, exit_rule, RANK, stale90),
+    "15분봉 22회차 최종 후보": (FINAL, exit_rule, rank_of(tiers(FINAL)), stale90),
     "엿보기: 다음 봉 보고 사기": ({c: peek_buy(c, b) for c, b in data.items()}, exit_rule, None, None),
     "엿보기: 120봉 뒤 보고 사기": ({c: peek_far(c, b) for c, b in data.items()}, exit_rule, None, None),
     "엿보기: 다음 봉 보고 팔기": (SIGS, peek_sell, RANK, stale90),
@@ -49,7 +72,8 @@ for c, b in data.items():                     # 날짜 짚기: 봉에 붙은 일
 if not os.environ.get("HLAB_CUT") and not os.environ.get("HLAB_POISON"):
     import rna
     rng = np.random.default_rng(7)
-    ENTRY = {"15분봉 0회차(1시간봉 최고 규칙 옮김)": (e_align_or_noon, exit_rule), "엿보기: 다음 봉 보고 사기": (peek_buy, exit_rule),
+    ENTRY = {"15분봉 0회차(1시간봉 최고 규칙 옮김)": (e_align_or_noon, exit_rule), "15분봉 22회차 최종 후보": (final_entry, exit_rule),
+             "엿보기: 다음 봉 보고 사기": (peek_buy, exit_rule),
              "엿보기: 120봉 뒤 보고 사기": (peek_far, exit_rule), "엿보기: 다음 봉 보고 팔기": (e_align_or_noon, peek_sell)}
     bar = {name: [0, 0] for name in ENTRY}
     codes = sorted(data)
