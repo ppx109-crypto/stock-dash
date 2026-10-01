@@ -299,6 +299,13 @@ def make_plan():
     if not day:
         print("일봉이 없어 후보를 만들지 못했습니다.")
         return 1
+    import data_guard
+    ready, _, why = data_guard.daily_ready(prices, day)
+    print("자료 확인 ·", why)
+    if not ready:
+        # 자료가 덜 들어온 채 만든 후보는 틀림(2026-10-02 사고). 옛 후보는 내일 장중 실행이 '낡은 후보'로 보고 새로 사지 않음.
+        send([f"⚠️ **1시간봉 후보 만들기 멈춤** · {why}", "자료가 다 들어오면 다시 만듭니다. 그때까지 1시간봉은 새로 사지 않고 들고 있는 종목만 관리해요."])
+        return 1
     cands = []
     for one in found.get("picks", []):
         flow5, r20, steady = _flow_features(one["code"], day)
@@ -430,6 +437,15 @@ def run_live(now=None):
         if not I.market_open_today(client, day):
             print(f"{day}은 장이 열리지 않은 날로 보여 넘어갑니다.")
             return 0
+        import data_guard
+        ready, why = data_guard.plan_ready(plan, data_guard.prev_trading_day(client, day))
+        if not ready:
+            # 낡은 후보로는 새로 사지 않음 · 들고 있는 종목의 팔기 · 정해 둔 매매 체결은 그대로(사용자 요청 2026-10-02)
+            print("자료 확인 ·", why)
+            plan = {**plan, "candidates": []}
+            if state.get("자료 멈춤") != day:
+                state["자료 멈춤"] = day
+                send([f"⚠️ **1시간봉 새로 사기 멈춤** · {why}", "들고 있는 종목의 팔기는 그대로 해요."])
         live = {c: today_bars(client, c, day) for c in codes}
     except broker_kis.BrokerError as e:
         print("증권사 조회 실패 ·", e)

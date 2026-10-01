@@ -335,7 +335,15 @@ def regroup(graded, found):
 
 
 if __name__ == "__main__":
-    got = compute()
+    import sys
+    import data_guard
+    _prices = study.load_prices()
+    _ok, _, _why = data_guard.daily_ready(_prices)
+    print("자료 확인 ·", _why)
+    if not _ok:
+        # 2026-10-02 사고: 일부 종목만 오늘 종가가 있어 시장 폭 · 후보가 틀렸음 → 덮어쓰지 않고 멈춤(작업이 빨갛게 보임)
+        sys.exit(1)
+    got = compute(_prices)
     save(got)
     print(f'{got["date"]} · 시장 폭 {got.get("breadth")}% · A그룹 {len(got["picks"])}종목 · '
           f'B그룹 {len(got.get("b_group", []))}종목 · 그 밖 {got.get("rest")}종목')

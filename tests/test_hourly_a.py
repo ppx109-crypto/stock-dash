@@ -152,6 +152,24 @@ class LivePaper(unittest.TestCase):
         self.assertEqual(after["positions"], {})
         self.assertEqual(after["pending"], [])
 
+    def test_stale_plan_blocks_new_buys_but_keeps_sells(self):
+        """후보 기준일이 어제 거래일이 아니면(낡은 후보) 새로 사지 않음 · 정해 둔 매도는 그대로(사용자 요청 2026-10-02)."""
+        from unittest import mock
+        import data_guard
+        state = {"positions": {"000001": {"code": "000001", "name": "가", "kind": "정배열", "price": 100.0, "peak": 100.0, "칸": 2,
+                                          "처음칸": 2, "bars": 5, "bought": "2026093011", "max_close": 101.0}},
+                 "pending": [{"type": "sell", "code": "000001", "칸": 2, "why": "정배열 깨짐", "decided": "2026093014"},
+                             {"type": "buy", "code": "000009", "칸": 2, "why": "옛 매수", "decided": "2026093014"}],
+                 "last_bar": "2026093014"}
+        plan = {"base": "20260930", "candidates": [{"code": "000002", "name": "나", "추세문": True}]}
+        bars = {"000001": [("2026100209", 97.0, 98.0, 96.0, 97.5, 10)],
+                "000002": [("2026100209", 50.0, 60.0, 50.0, 60.0, 10), ("2026100210", 61.0, 61.0, 61.0, 61.0, 10)]}
+        with mock.patch.object(data_guard, "prev_trading_day", return_value="20261001"):
+            calls, after = self.run_at("1101", state, plan, bars)
+        self.assertNotIn("000002", after["positions"])
+        self.assertNotIn("000001", after["positions"], "정해 둔 매도는 체결")
+        self.assertEqual(after.get("자료 멈춤"), "20261002")
+
     def test_nothing_due_at_0901_means_no_orders(self):
         plan = {"base": "20261001", "candidates": []}
         state = {"positions": {"000001": {"code": "000001", "name": "가", "kind": "정배열", "price": 100.0, "peak": 100.0, "칸": 2,
