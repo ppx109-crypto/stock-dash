@@ -357,19 +357,26 @@ def daily_live():
 
 
 def near_lists():
-    """두 칸 아래쪽 '충족 미달' 목록: (1시간봉, 1일봉, 1시간봉 기준 글, 1일봉 기준 글). 더 새로운 결과를 씀."""
+    """두 칸 아래쪽 '충족 미달' 목록: (1시간봉, 1일봉, 1시간봉 기준 글, 1일봉 기준 글).
+
+    두 칸이 같은 파일을 나눠 쓰면 늘 똑같이 보여서(2026-10-01 사용자 지적), 칸마다 제 규칙의 결과만 씁니다.
+    - 1시간봉: 저녁 A그룹 작업이 남기는 hourly-live/plan.json의 near(오늘 종가 · 오늘 수급까지 → 다음 거래일).
+      아직 없으면 빈 칸과 언제 나오는지만 적음.
+    - 1일봉: 15:20 판단(daily-live/today.json)의 near(그때 값 · 어제 수급까지 · 목표가 내림 거르기 포함).
+      그 전에는 일봉 A그룹(study/a_group.json, 같은 '어제 수급까지' 셈)의 목록.
+    """
     plan, _, _ = hourly_a()
     today, _, _ = daily_live()
     group = today_a_group() or {}
     g_day = str(group.get("date") or "")
-    if plan and plan.get("near") is not None and str(plan.get("base") or "") >= g_day:
-        hourly, h_basis = plan["near"], f'{as_day(plan["base"])} 마감 기준 → 다음 거래일'
+    if plan and plan.get("near") is not None:
+        hourly, h_basis = plan["near"], f'{as_day(plan["base"])} 마감 · 그날 수급까지 → 다음 거래일 장중'
     else:
-        hourly, h_basis = group.get("b_group") or [], (f'{as_day(g_day)} 마감 기준' if g_day else "")
+        hourly, h_basis = None, '첫 계산은 오늘 밤 일봉 수집이 끝난 뒤(새벽 3시쯤)에 나옵니다'
     if today and today.get("near") is not None and str(today.get("date") or "") >= g_day:
-        daily, d_basis = today["near"], f'{as_day(today["date"])} 15:20 판단'
+        daily, d_basis = today["near"], f'{as_day(today["date"])} 15:20 판단 · 전날 수급까지'
     else:
-        daily, d_basis = group.get("b_group") or [], (f'{as_day(g_day)} 마감 기준' if g_day else "")
+        daily, d_basis = group.get("b_group") or [], (f'{as_day(g_day)} 마감 · 전날 수급까지' if g_day else "")
     return hourly, daily, h_basis, d_basis
 
 
@@ -582,9 +589,7 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
         st.markdown(frame(section(f'{name} · 투자판단', note)
                           + stock_cards(report, grade, official, opinions, live)),
                     unsafe_allow_html=True)
-    elif stocks:
-        st.markdown(frame(section('투자판단', '위 목록에서 종목을 고르면 판단점수·실적·흐름이 열립니다')),
-                    unsafe_allow_html=True)
+    # 종목을 고르기 전 '투자판단' 안내 칸은 뺌(사용자 요청 2026-10-01 · 매매 규칙과 무관).
 
     if stocks:
         with st.expander(f'관심종목 목록 · {len(stocks)}종목'):
@@ -634,8 +639,7 @@ def render_research(store, state, sample_mode):
     research = published()
     if not sample_mode and seed_watchlist(store, state, research):
         state = store.read()
-        st.info(f'저장된 목록이 비어 있어 조사 자료가 있는 {len(research)}종목을 담았습니다. '
-                '필요 없는 종목은 아래 －  종목 빼기에서 빼시면 됩니다.')
+        # 앱을 다시 켜면(Reboot) 실행 서버 파일이 비어 관심종목을 다시 담음. 안내 문구는 매매와 무관해 뺌(사용자 요청 2026-10-01).
     known = {**research, **{r['code']: r for r in state.get('chat_research', [])}}
     if not sample_mode and link_codes(store, state, known):
         state = store.read()

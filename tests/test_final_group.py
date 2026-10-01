@@ -235,5 +235,19 @@ class DailyPanels(unittest.TestCase):
         self.assertIn("10주", html)
 
 
+class NearPanel(unittest.TestCase):
+    def test_only_one_short_and_fold_after_three(self):
+        from dashboard_ui import near_panel
+        rows = [{"code": f"00000{i}", "name": f"종목{i}", "모자란 수": 1 if i < 5 else 2,
+                 "가까운 갈래": "추세", "모자란 것": {"추세": ["시총 120위 (100위 안이어야 함)"]}} for i in range(8)]
+        html = near_panel("1시간봉 매수 후보(충족 미달)", rows)
+        self.assertIn("1개만 모자란", html)
+        self.assertNotIn("2개 미달", html)
+        self.assertEqual(html.count("<li>"), 5)
+        self.assertIn("나머지 2종목 더 보기", html)
+        self.assertIn("아직 계산 전", near_panel("x", None))
+        self.assertIn("해당 종목 없음", near_panel("x", rows[5:]))
+
+
 if __name__ == "__main__":
     unittest.main()

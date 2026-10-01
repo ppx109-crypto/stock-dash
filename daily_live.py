@@ -358,7 +358,7 @@ def run(now=None):
                    "sells": sells, "buys": buys, "late": late,
                    # 조건이 1~2개만 모자란 종목(대시보드 '1일봉 매수 후보(충족 미달)' · 사용자 요청 2026-10-01)
                    "near": cut_out + [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")}
-                                      for b in found.get("b_group", [])[:15]]})
+                                      for b in found.get("b_group", []) if b.get("모자란 수") == 1]})
     alerts = _load(ALERTS, [])
     at = datetime.now(KST).strftime("%Y-%m-%d %H:%M")
     alerts += [{"at": at, "kind": "매도" if x["type"] == "sell" else "매수", "text": f"{x['name']}({x['code']}) {x['칸']}칸 · {x['why']}"}
