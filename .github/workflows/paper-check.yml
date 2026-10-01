@@ -1,0 +1,39 @@
+name: Paper trading check
+# 한투 모의투자 연결 점검(손으로만 실행). check = 토큰 · 잔고 조회만 · order = 1주 매수 → 1주 매도(모의투자 계좌에만).
+# 계좌번호 · 키 · 응답 본문은 기록에 찍지 않습니다.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'check(조회만) 또는 order(1주 매수 · 매도 시험)'
+        required: true
+        default: 'check'
+permissions:
+  contents: read
+concurrency:
+  group: paper-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: 모의투자 점검
+        run: |
+          case "$MODE" in check|order) ;; *) echo "mode는 check 또는 order"; exit 1;; esac
+          python paper_check.py "$MODE"
+        env:
+          MODE: ${{ inputs.mode }}
+          PAPER_TRADING: 'on'
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
+          KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
+          KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
+          KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
