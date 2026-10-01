@@ -393,6 +393,22 @@ def kis_history(code):
     return {"t": t, "c": [by[x] for x in t]} if t else None
 
 
+def history_bars(yahoo, kis, day):
+    """오늘(day) 앞의 1시간봉 종가 줄 → (시각들, 종가들). 야후가 있으면 야후를 쓰고, 야후 마지막 봉 **뒤**의 날은 한투(15분봉을 묶은 것)로
+    채움(야후 수집이 늦거나 빠진 날 · 2026-10-02). 야후가 없으면 한투만."""
+    t, cl = [], []
+    if yahoo:
+        for x, v in zip(yahoo["t"], yahoo["c"]):
+            if x[:8] < day:
+                t.append(x); cl.append(float(v))
+    if kis:
+        last = t[-1] if t else ""
+        for x, v in zip(kis["t"], kis["c"]):
+            if last < x and x[:8] < day:
+                t.append(x); cl.append(float(v))
+    return t, cl
+
+
 def closed_bars(now):
     """지금까지 닫힌 오늘 봉 이름들(HH)."""
     hm = now.strftime("%H%M")
@@ -454,12 +470,20 @@ def run_live(now=None):
     except broker_kis.BrokerError as e:
         print("증권사 조회 실패 ·", e)
         return 1
-    hist = hlab.load(codes)
+    # 운영은 연구용 시험지 잠금(hlab.HOLDOUT · 2026-09-30 뒤 봉 감춤)과 상관없이 모든 지난 봉을 씀(2026-10-02 찾음: 잠금 때문에
+    # 야후 1시간봉이 09-29에서 잘려 오늘 EMA가 빈 날을 건너뛰고 셈해졌음).
+    saved = os.environ.get("HLAB_OPEN_HOLDOUT")
+    os.environ["HLAB_OPEN_HOLDOUT"] = "1"
+    try:
+        hist = hlab.load(codes)
+    finally:
+        if saved is None:
+            os.environ.pop("HLAB_OPEN_HOLDOUT", None)
+        else:
+            os.environ["HLAB_OPEN_HOLDOUT"] = saved
     bars = {}
     for c in codes:
-        h = hist.get(c) or kis_history(c)
-        t = [x for x in (h["t"] if h else []) if x[:8] < day]
-        cl = [float(x) for x in (h["c"][:len(t)] if h else [])]
+        t, cl = history_bars(hist.get(c), kis_history(c), day)
         for row in live.get(c, []):
             t.append(row[0]); cl.append(row[4])
         bars[c] = {"t": t, "c": cl}
