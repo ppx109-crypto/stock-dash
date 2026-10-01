@@ -35,6 +35,29 @@ class Exits(unittest.TestCase):
         self.assertEqual(D.exit_decision(pos(kind="정배열", peak=107), 100.5, True), (0, None), "+8%까지 못 갔으면 아님")
         self.assertEqual(D.exit_decision(p, 140, True), (0, None), "정해진 익절 가격 없음")
 
+    def test_half_take_matches_research(self):
+        """연구(nrl.half_rule · lab.run): 4칸의 절반 = 2칸을 들고 있는 칸보다 하나 적게까지 · 1칸이면 안 나눔 · 한 번만."""
+        self.assertEqual(D.exit_decision(pos(칸=3), 105, None)[0], 2)
+        self.assertEqual(D.exit_decision(pos(칸=2), 105, None)[0], 1)
+        self.assertEqual(D.exit_decision(pos(칸=1), 105, None), (0, None))
+        halved = dict(pos(칸=2), 처음칸=4)
+        self.assertEqual(D.exit_decision(halved, 105, None), (0, None), "15:20 값과 종가가 갈려도 두 번 팔지 않음")
+
+
+class Kin(unittest.TestCase):
+    def test_held_window_ends_on_buy_day_like_research(self):
+        import random
+        rnd = random.Random(7)
+        a = [rnd.gauss(0, 0.02) for _ in range(200)]
+        b = [rnd.gauss(0, 0.02) for _ in range(120)] + a[120:]          # 최근 80일은 똑같이 움직임
+        steps = {"000001": a, "000002": b}
+        idx = {"000001": 199, "000002": 199}
+        days = {c: [f"2026{n:04d}" for n in range(200)] for c in steps}
+        ok_research = D.kin_checker(steps, idx, days, {"000002": days["000002"][100]})
+        ok_today = D.kin_checker(steps, idx, days, {})
+        self.assertTrue(ok_research("000001", ["000002"]), "산 날(100번째) 창은 서로 무관 → 담음")
+        self.assertFalse(ok_today("000001", ["000002"]), "오늘 창이면 똑같이 움직여 거름")
+
 
 class Decide(unittest.TestCase):
     def test_sells_free_slots_and_buys_in_slope_order(self):
@@ -56,6 +79,24 @@ class Decide(unittest.TestCase):
         sells, buys = D.decide(state, cands, {"000001": 101.0}, {}, {"000002": 29.9},
                                lambda c, h: c != "000003")
         self.assertEqual([x["code"] for x in buys], ["000004"])
+
+    def test_only_as_many_candidates_as_free_slots_are_looked_at(self):
+        """연구(lab.run)처럼 빈 칸 수만큼 위 후보만 봄 — 그중 든 · 상한가면 그 칸은 비워 두고 아래로 내려가지 않음(새 94회차)."""
+        state = {"positions": {"000001": pos(칸=4, price=100.0), "000005": dict(pos(kind="정배열", 칸=4), code="000005")}}
+        cands = [{"code": "000001", "name": "가", "추세문": True, "추세 기울기": 9},
+                 {"code": "000002", "name": "나", "추세 기울기": 8},
+                 {"code": "000003", "name": "다", "추세 기울기": 7}]
+        sells, buys = D.decide(state, cands, {"000001": 101.0, "000005": 101.0}, {"000005": True}, {"000002": 29.9},
+                               lambda c, h: True)
+        self.assertEqual(sells, [])
+        self.assertEqual(buys, [], "빈 칸 2 → 위 2개(든 것 · 상한가)만 보고 000003까지 내려가지 않음")
+
+    def test_sold_today_can_be_bought_again_like_research(self):
+        state = {"positions": {"000001": pos(칸=4, days=9)}}
+        cands = [{"code": "000001", "name": "가", "추세문": True, "추세 기울기": 9}]
+        sells, buys = D.decide(state, cands, {"000001": 101.0}, {}, {}, lambda c, h: True)
+        self.assertEqual([x["code"] for x in sells], ["000001"], "10거래일 기간 청산")
+        self.assertEqual([(x["code"], x["칸"]) for x in buys], [("000001", 4)], "다 판 날 종가에 다시 삼(연구와 같음)")
 
     def test_limit_down_cannot_sell(self):
         state = {"positions": {"000001": pos(칸=4)}}

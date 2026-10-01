@@ -7,8 +7,10 @@
 규칙(새 82회차):
   살 때 — 시총 100위 안 · (① 추세 문 또는 ② 정배열 문) + 공통 수급(전날까지 5일 외국인+ · 투신+ · 개인−) · 45일 새 목표가 내림이면 안 삼.
   크기 — 10칸 · ① 4칸 · ②인데 외국인·투신 3일 연속 4칸 · ②인데 그날 거래량 ≥ 앞 20일 가운데값 × 2 · 정배열 10일 안 3칸 · 그 밖 2칸.
-         칸이 모자라면 남은 만큼 · 180일선 기울기 가파른 순 · 이미 든 종목과 60일 같이 움직임 0.6 이상이면 안 담음 · 상한가면 못 삼.
-  팔 때 — ① +5% 처음 닿는 날 절반 · +13% 전량 · −5% · 10거래일 / ② 정배열 깨짐 · −10% · 한때 +8% 뒤 +1% 아래.
+         칸이 모자라면 남은 만큼 · 180일선 기울기 가파른 순으로 **빈 칸 수만큼 위 후보만** 봄(그중 이미 든 · 닮음 · 상한가면 그 칸은 비워 둠) ·
+         이미 든 종목(그 종목을 산 날까지 60일)과 같이 움직임 0.6 이상이면 안 담음 · 오늘 다 판 종목은 다시 살 수 있음 — 모두 연구(lab.run)와 같게(2026-10-02).
+  팔 때 — ① +5% 처음 닿는 날 2칸(들고 있는 칸보다 하나 적게까지 · 1칸이면 안 나눔) · +13% 전량 · −5% · 10거래일 / ② 정배열 깨짐 · −10% · 한때 +8% 뒤 +1% 아래.
+  자료 확인 — 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼(data_guard) · 모자라면 팔기만 하고 디스코드로 알림.
 지금 값으로 셈하므로 마감 10분 사이 값이 바뀌면 연구와 조금 다를 수 있음(거래량도 마감 동시호가 몫이 빠져 조금 작음).
 """
 from __future__ import annotations
@@ -63,8 +65,10 @@ def exit_decision(pos, close, aligned_now):
         if pos["days"] >= 10:
             return pos["칸"], f"기간 청산(10거래일, 오늘 {now:+.1f}%)"
         before = (pos["max_close"] / pos["price"] - 1) * 100
-        if now >= 5 and before < 5:
-            return max(1, pos["처음칸"] // 2), f"절반 익절 +5% 처음 닿음(오늘 {now:+.1f}%)"
+        # 연구(nrl.half_rule · lab.run)와 같게: 원래 크기(4칸)의 절반 = 2칸을 팔되 들고 있는 칸보다 하나 적게까지만,
+        # 1칸만 들고 있으면 나누지 않고 들고 감. 한 번 절반을 판 매매는 다시 절반 팔지 않음(15:20 값과 종가가 갈려도).
+        if now >= 5 and before < 5 and pos["칸"] == pos["처음칸"] and pos["칸"] >= 2:
+            return min(2, pos["칸"] - 1), f"절반 익절 +5% 처음 닿음(오늘 {now:+.1f}%)"
         return 0, None
     if now <= -10:
         return pos["칸"], f"손절 −10% 닿음(오늘 {now:+.1f}%)"
@@ -74,6 +78,26 @@ def exit_decision(pos, close, aligned_now):
     if aligned_now is False:
         return pos["칸"], f"추세 끝(일봉 정배열 깨짐, 오늘 {now:+.1f}%)"
     return 0, None
+
+
+def kin_checker(steps, idx, days, bought, kin=KIN):
+    """연구(lab.run의 apart → lab.kinship)와 같은 닮음 거르기 → kin_ok(code, holding).
+    사려는 종목은 오늘까지 60일, 들고 있는 종목은 **그 종목을 산 날**까지 60일 일봉 수익률로 상관을 잼.
+    오늘 새로 담은 종목(산 날 기록 없음)은 오늘 창. 오늘 창으로만 재면 같은 업종을 실제로 걸러 연구 성적보다 낮음(일봉 새 91 · 94회차)."""
+    import bisect
+    import lab
+
+    def at(h):
+        b = bought.get(h)
+        if not b or h not in days:
+            return idx.get(h, 0)
+        j = bisect.bisect_right(days[h], str(b)) - 1
+        return j if j >= 0 else idx.get(h, 0)
+
+    def ok(code, holding):
+        row = {"code": code, "i": idx.get(code, 0)}
+        return all(lab.kinship(steps, row, {"code": h, "i": at(h)}) < kin for h in holding if h in idx)
+    return ok
 
 
 def decide(state, cands, now_price, aligned, rate, kin_ok):
@@ -97,9 +121,14 @@ def decide(state, cands, now_price, aligned, rate, kin_ok):
         left[code] = p["칸"] - n
     free = SLOTS - sum(left.values())
     holding = [c for c, k in left.items() if k > 0]
-    for c in sorted(cands, key=lambda c: -(c.get("추세 기울기") or -99)):
+    # 연구(lab.run)와 같게(사용자 2026-10-02 "연구의 수익률 · 낙폭 값이 나오게"): 빈 칸 수만큼 위 후보만 보고,
+    # 그중 이미 든 · 닮음 · 상한가 종목이 있으면 그 칸은 오늘 비워 둠(아래 후보로 내려가 채우지 않음 · 일봉 새 94회차).
+    # 오늘 다 판 종목은 같은 날 종가에 다시 살 수 있음(연구와 같음 · 모의주문은 팔기를 먼저 넣음).
+    for c in sorted(cands, key=lambda c: -(c.get("추세 기울기") or -99))[:max(free, 0)]:
         code = c["code"]
-        if code in held or free <= 0:
+        if free <= 0:
+            break
+        if code in holding:
             continue
         if (rate.get(code) or 0) >= 29.5:
             continue                                            # 상한가면 종가에 못 삼
@@ -280,7 +309,10 @@ def run(now=None):
         print(f"{day}은 장이 열리지 않은 날로 보여 넘어갑니다.")
         return 0
     prices = study.load_prices()
-    last = max((v["rows"][-1][0] for v in prices.values()), default="")
+    # 자료 확인(사용자 2026-10-02): 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼 · 모자라면 팔기만 함(data_guard)
+    import data_guard
+    ready, last, why = data_guard.daily_ready(prices, data_guard.prev_trading_day(client, day))
+    print("자료 확인 ·", why)
     if not last or last >= day:
         print("일봉 자료가 어제 것까지 있지 않아 넘어갑니다.")
         return 1
@@ -322,15 +354,16 @@ def run(now=None):
             aligned[code] = bool(form and form.get("정배열"))
     steps = lab.moves(live)
     idx = {c: len(live[c]["rows"]) - 1 for c in live}
-
-    def kin_ok(code, holding):
-        row = {"code": code, "i": idx.get(code, 0)}
-        return all(lab.kinship(steps, row, {"code": h, "i": idx.get(h, 0)}) < KIN for h in holding if h in idx)
+    kin_ok = kin_checker(steps, idx, {c: [str(d) for d, _ in live[c]["rows"]] for c in live},
+                         {c: p.get("bought") for c, p in held.items()})
     now_price = {c: q["price"] for c, q in quotes.items()}
     rate = {c: q.get("rate") for c, q in quotes.items()}
+    if not ready:
+        cands = []           # 자료가 덜 들어왔으면 새로 사지 않음 · 들고 있는 종목 팔기는 그대로(사용자 2026-10-02)
     sells, buys = decide(state, cands, now_price, aligned, rate, kin_ok)
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
-    send(decision_lines(day, found.get("breadth"), cands, sells, buys, now_price, held) + [NOTE])
+    warn = [] if ready else [f"⚠️ **1일봉 새로 사기 멈춤** · {why}", "들고 있는 종목의 팔기는 그대로 해요."]
+    send(warn + decision_lines(day, found.get("breadth"), cands, sells, buys, now_price, held) + [NOTE])
     paper = []
     if (sells or buys) and not late:
         try:
