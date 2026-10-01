@@ -25,7 +25,7 @@ def main(mode="check", code=TEST_CODE):
     print("앱 시크릿:", "✅ 있음" if os.getenv("KIS_PAPER_APP_SECRET", "").strip() else "❌ 없음")
     try:
         paper_trade.account_parts(os.getenv("KIS_PAPER_ACCOUNT", ""))
-        print("계좌번호: ✅ 모양 맞음(8자리 + 2자리)")
+        print("계좌번호: ✅ 읽음 · 앞자리 " + str(len(paper_trade.account_parts(os.getenv("KIS_PAPER_ACCOUNT", ""))[0])) + "자리 + 상품코드 2자리")
     except broker_kis.BrokerError as e:
         print("계좌번호: ❌", e)
     try:
