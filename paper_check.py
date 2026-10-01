@@ -15,6 +15,26 @@ import paper_trade
 TEST_CODE = "010140"        # 시험 주문 종목(시총 100위 안 · 1주 값이 작은 편). 환경에 따라 바꿀 수 있게 인자로도 받음
 
 
+def why_refused(broker):
+    """잔고 거절 문구를 정해진 갈래로만 옮김(문구 자체는 찍지 않음)."""
+    try:
+        _, data = broker.request("GET", "/uapi/domestic-stock/v1/trading/inquire-balance", headers={
+            "authorization": "Bearer " + broker.token, "appkey": broker.key, "appsecret": broker.secret,
+            "tr_id": "VTTC8434R", "custtype": "P"},
+            params={"CANO": broker.cano, "ACNT_PRDT_CD": broker.product, "AFHR_FLPR_YN": "N", "OFL_YN": "",
+                    "INQR_DVSN": "02", "UNPR_DVSN": "01", "FUND_STTL_ICLD_YN": "N", "FNCG_AMT_AUTO_RDPT_YN": "N",
+                    "PRCS_DVSN": "00", "CTX_AREA_FK100": "", "CTX_AREA_NK100": ""})
+    except broker_kis.BrokerError:
+        return "다시 물어보기도 실패"
+    said = str(data.get("msg1") or "").upper()
+    for key, text in (("ACNO", "계좌번호가 이 앱 키에 등록된 계좌와 다름(또는 없는 계좌)"),
+                      ("PRDT", "상품코드(뒤 2자리)가 다름"), ("CANO", "계좌번호 형식이 다름"),
+                      ("모의", "모의투자 쪽 설정 문제"), ("권한", "API 권한 문제")):
+        if key in said:
+            return text
+    return "알 수 없는 갈래(문구 길이 %d)" % len(said)
+
+
 def main(mode="check", code=TEST_CODE):
     ok, why = paper_trade.enabled()
     print("주문 켜짐:", "예" if ok else f"아니오 · {why}")
@@ -40,6 +60,7 @@ def main(mode="check", code=TEST_CODE):
         bal = broker.balance()
     except broker_kis.BrokerError as e:
         print("❌ 연결 · 잔고 조회 실패 ·", e)
+        print("까닭 짐작:", why_refused(broker))
         return 1
     cash = bal.get("cash") or 0
     print(f"✅ 잔고 조회 · 예수금 약 {cash / 1e4:,.0f}만 원 · 보유 {len(bal['positions'])}종목 · 평가 약 {bal['value'] / 1e4:,.0f}만 원")
