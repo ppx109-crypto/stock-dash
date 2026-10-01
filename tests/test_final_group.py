@@ -144,7 +144,7 @@ class Lines(unittest.TestCase):
 
 @unittest.skipIf(sortie_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class Panel(unittest.TestCase):
-    """메인 '정시 출격 · 오늘의 결과' 판."""
+    """메인 '1시간봉 매매 규칙 · 오늘의 결과' 판."""
     from datetime import datetime as _dt
     MORNING = _dt(2026, 10, 1, 11, 0)      # 목요일 장중
     EVENING = _dt(2026, 10, 1, 18, 0)
@@ -154,7 +154,7 @@ class Panel(unittest.TestCase):
                              "b_group": [{"name": "가", "code": "000001",
                                           "코멘트": "정배열 추세까지 1개 모자람: 시장 폭 41%"}]}, None, None, None, now=self.EVENING)
         self.assertIn("2026-09-23", html)
-        self.assertNotIn("가</b>", html, "출격 대기 목록은 이 판에 싣지 않기로 했습니다")
+        self.assertNotIn("가</b>", html, "조건 1~2개 미달 목록은 이 판에 싣지 않기로 했습니다")
         self.assertIn("새로 사지 않습니다", html)
 
     def test_listed_stocks_are_named(self):
@@ -192,15 +192,15 @@ class Panel(unittest.TestCase):
                                           {"code": "3", "group": "밖"}, {"code": "4", "group": None}])
         self.assertEqual(set(buckets), {"A", "B"})
         self.assertEqual([r["code"] for r in pending], ["4"])
-        self.assertEqual([r["code"] for r in buckets["B"]], [], "조건 1~2개 미달(옛 출격 대기)은 싣지 않음")
+        self.assertEqual([r["code"] for r in buckets["B"]], [], "조건 1~2개 미달(옛 조건 1~2개 미달)은 싣지 않음")
 
     def test_two_rules_fill_the_two_columns(self):
         graded = [{"code": "1", "group": "A", "name": "가"}, {"code": "2", "group": "B", "name": "나"},
                   {"code": "3", "group": "밖", "name": "다"}]
-        buckets, _ = group_buckets(graded, hourly={"3": "다 · 정시 출격 보유 중"}, daily={"1": "가 · 종가 출격 후보", "2": "나 · 종가 출격 보유 중"})
+        buckets, _ = group_buckets(graded, hourly={"3": "다 · 1시간봉 규칙 보유 중"}, daily={"1": "가 · 1일봉 규칙 후보", "2": "나 · 1일봉 규칙 보유 중"})
         self.assertEqual(sorted(r["code"] for r in buckets["A"]), ["1", "3"])
         self.assertEqual(sorted(r["code"] for r in buckets["B"]), ["1", "2"])
-        self.assertTrue(all("종가 출격" in r["comment"] for r in buckets["B"]))
+        self.assertTrue(all("1일봉 규칙" in r["comment"] for r in buckets["B"]))
 
 
 @unittest.skipIf(close_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
@@ -208,7 +208,7 @@ class DailyPanels(unittest.TestCase):
     def test_close_panel(self):
         self.assertIn("아직 없습니다", close_panel(None, None, None))
         html = close_panel({"date": "20261001", "breadth": 55.0, "made": "2026-10-01 15:33", "candidates": [{"code": "1"}],
-                            "buys": [{"code": "000001", "name": "가<b>", "칸": 4, "why": "① 추세 출격"}], "sells": []},
+                            "buys": [{"code": "000001", "name": "가<b>", "칸": 4, "why": "① 추세 조건"}], "sells": []},
                            {"positions": {"000001": {"code": "000001", "name": "가", "kind": "추세", "칸": 4, "price": 100.0,
                                                       "last_close": 103.0, "bought": "20261001"}}}, [])
         self.assertIn("2026-10-01", html)
@@ -216,7 +216,7 @@ class DailyPanels(unittest.TestCase):
         self.assertNotIn("가<b>", html)
 
     def test_ledger_panel(self):
-        self.assertIn("아직 끝난 매매가 없습니다", ledger_panel("종가 출격 모의투자", None, None))
+        self.assertIn("아직 끝난 매매가 없습니다", ledger_panel("1일봉 모의투자", None, None))
         html = ledger_panel("x", {"closed": [{"판 날": "20261002", "name": "가", "code": "000001", "칸": 4, "손익": 5.0, "까닭": "익절"},
                                              {"판 날": "20261003", "name": "나", "code": "000002", "칸": 2, "손익": -5.0, "까닭": "손절"}]},
                             {"orders": [{"at": "2026-10-02 15:21", "side": "sell", "name": "가", "code": "000001", "qty": 10, "status": "접수"}]})

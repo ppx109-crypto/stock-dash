@@ -308,7 +308,7 @@ def make_plan():
             "candidates": cands}
     _save(PLAN, plan)
     state = _load(STATE, {"positions": {}, "pending": []})
-    lines = [f"📋 **정시 출격 · {day[:4]}-{day[4:6]}-{day[6:]} 마감 기준 → 다음 거래일 후보 {len(cands)}종목**",
+    lines = [f"📋 **1시간봉 매매 · {day[:4]}-{day[4:6]}-{day[6:]} 마감 기준 → 다음 거래일 후보 {len(cands)}종목**",
              f"시장 폭 {found.get('breadth')}% · 장중 1시간마다 1시간봉 EMA 정배열(없으면 12시)에 사는지 알려 드려요."]
     for c in sorted(cands, key=lambda c: (not c["추세문"], not c["3일연속"])):
         size = size_of(c)
@@ -473,11 +473,11 @@ def run_live(now=None):
         paper.append(f"🧪 모의투자 주문 중 문제 · {type(e).__name__}")
     fills = fill_lines(filled)
     if (paper or fills) and not items:
-        send([f"✅ **정시 출격 · 체결 · {now.strftime('%m-%d %H:%M')}**"] + fills + paper)
+        send([f"✅ **1시간봉 매매 · 체결 · {now.strftime('%m-%d %H:%M')}**"] + fills + paper)
     if items:
         _log_alerts(items)
         icon = {"매수": "🟢", "자리 바꾸기": "🔄", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "못 삼": "⚫"}
-        head = f"⏰ **정시 출격 · {now.strftime('%m-%d %H:%M')}** (봉 {', '.join(b[8:] + '시' for b in todo)} 마감)"
+        head = f"⏰ **1시간봉 매매 · {now.strftime('%m-%d %H:%M')}** (봉 {', '.join(b[8:] + '시' for b in todo)} 마감)"
         try:
             import paper_trade
             note = NOTE_PAPER if paper_trade.enabled()[0] else NOTE_PLAIN

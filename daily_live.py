@@ -1,4 +1,4 @@
-"""종가 출격 — 일봉 최고 규칙(새 82회차, docs/RULESET.md)을 실제 날에 돌려 디스코드로 알리고 한투 모의투자 계좌에 주문.
+"""1일봉 규칙 — 일봉 최고 규칙(새 82회차, docs/RULESET.md)을 실제 날에 돌려 디스코드로 알리고 한투 모의투자 계좌에 주문.
 
 사용자 요청(2026-10-01): "모의투자 1H, 1봉기준으로 진행 · 모의투자 거래 내역은 각각 기록하여 보관".
 일봉 규칙은 '신호 날 종가에 삼 · 판단도 종가'라, 장 마감 동시호가(15:20 ~ 15:30) 안에 판단하고 주문을 넣어 종가에 체결되게 함:
@@ -33,7 +33,7 @@ DECIDE_AT, LAST_ORDER, SETTLE_AT = "1520", "1528", "1532"
 VOL_BIG, FRESH_DAYS = 2.0, 10
 COST = 0.25                # 연구(lab.COST)와 같은 왕복 비용 어림값(%)
 KIN = 0.6
-NAME = "종가 출격"
+NAME = "1일봉 매매"
 NOTE = "※ 연구용 자동 알림이에요. 실제 계좌에는 주문하지 않고, 한투 모의투자 계좌에만 자동 주문해요(🧪). 실제 매매 판단은 직접 확인한 뒤에 하세요."
 
 
@@ -109,7 +109,7 @@ def decide(state, cands, now_price, aligned, rate, kin_ok):
         free -= take
         holding.append(code)
         buys.append({"type": "buy", "code": code, "칸": take, "name": c["name"], "kind": "추세" if c.get("추세문") else "정배열",
-                     "why": ("① 추세 출격" if c.get("추세문") else "② 정배열 출격")
+                     "why": ("① 추세 조건" if c.get("추세문") else "② 정배열 조건")
                             + (" · 외국인·투신 3일 연속" if c.get("3일연속") and not c.get("추세문") else "")
                             + (" · 거래량 터진 새 정배열" if size_of(c) == 3 else "")})
     return sells, buys
@@ -235,7 +235,7 @@ def run(now=None):
     state = _load(STATE, {"positions": {}, "closed": []})
     start = os.getenv("DAILY_START", "").strip()           # 이 날(YYYYMMDD)부터 운영(사용자 결정 2026-10-01: 내일부터)
     if start and day < start:
-        print(f"종가 출격은 {start}부터 시작해 오늘은 넘어갑니다.")
+        print(f"1일봉 매매는 {start}부터 시작해 오늘은 넘어갑니다.")
         return 0
     if state.get("last_day") == day:
         print("오늘은 이미 처리했습니다.")
@@ -313,9 +313,9 @@ def run(now=None):
             paper = paper_trade.execute([dict(x, decided=day) for x in sells + buys], after, now_price, day + "1520",
                                         now=datetime.now(KST), strategy="1d")
         except Exception as e:           # 모의투자 주문이 잘못돼도 연습 계좌 · 알림은 그대로
-            paper = [f"🧪 모의투자(종가 출격) 주문 중 문제 · {type(e).__name__}"]
+            paper = [f"🧪 모의투자(1일봉) 주문 중 문제 · {type(e).__name__}"]
     elif (sells or buys) and late:
-        paper = ["🧪 모의투자(종가 출격) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
+        paper = ["🧪 모의투자(1일봉) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
     _wait_until(SETTLE_AT)
     close = {}
     for code in {x["code"] for x in sells + buys} | set(held):
