@@ -180,7 +180,19 @@ def execute(done, state, prices, bar_id, broker=None, now=None):
     seen = {o["key"] for o in book["orders"]}
     names = {p["code"]: p.get("name") for p in state.get("positions", {}).values()}
     lines = []
-    for key, code, side, qty, why in plan_orders(done, state, balance, prices, bar_id):
+    planned = plan_orders(done, state, balance, prices, bar_id)
+    # 주문을 못 넣는 매매도 알림에 남김(사용자 요청: 진입 · 청산은 모두 알림)
+    have = {p["code"] for p in balance.get("positions", []) if int(p.get("quantity") or 0) > 0}
+    for x in done:
+        if any(code == x["code"] and side == x["type"] for _, code, side, _, _ in planned):
+            continue
+        name = x.get("name") or names.get(x["code"]) or x["code"]
+        if x["type"] == "sell":
+            why = "모의 계좌에 그 종목이 없음" if x["code"] not in have else "팔 수량이 0주"
+        else:
+            why = "시가를 몰라서" if not prices.get(x["code"]) else "살 돈이 모자람(1주 미만)"
+        lines.append(f"🧪 모의투자 {'매수' if x['type'] == 'buy' else '매도'} 건너뜀 · {name}({x['code']}) · {why}")
+    for key, code, side, qty, why in planned:
         if key in seen:
             continue
         name = names.get(code) or next((x.get("name") for x in done if x["code"] == code), code)

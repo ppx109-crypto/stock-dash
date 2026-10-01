@@ -123,7 +123,7 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
 .pxb-rule.x{background:#FBF7EE}
 .pxb-rule h4{margin:0 0 8px;font-size:12.5px;font-weight:800;color:#2E2822}
 .pxb-rule h4 span{font-weight:600;font-size:10.5px;color:#946E38;margin-left:6px}
-.pxb-rule dl{display:grid;grid-template-columns:40px 1fr;gap:5px 8px;margin:0;font-size:11px;line-height:1.5}
+.pxb-rule dl{display:grid;grid-template-columns:44px 1fr;gap:5px 8px;margin:0;font-size:11px;line-height:1.5}
 .pxb-rule dt{font-weight:800;color:#946E38}
 .pxb-rule dd{margin:0;color:#4A4339}
 .pxb-rule dd.up{color:#2F7A45}.pxb-rule dd.down{color:#B04A3A}
@@ -888,44 +888,53 @@ NAME_B = "출격 대기"
 RULE_TEXT = f"{NAME_A}은 오늘 조건을 모두 채운 종목, {NAME_B}는 조건이 1~2개 모자란 종목입니다"
 
 SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule"><h4>① 추세 출격<span>전 거래일 일봉</span></h4><dl>
-<dt>대상</dt><dd>코스피 시가총액 100위 안</dd>
-<dt>조건</dt><dd>20일 흔들림 작은 40% · 180일선 5일 기울기 +1.46%↑ · 60일 전보다 +20%↑</dd>
+<div class="pxb-rule"><h4>① 추세 출격<span>어제 일봉으로 판단</span></h4><dl>
+<dt>대상</dt><dd>코스피 시가총액 1~100위 종목</dd>
+<dt>조건1</dt><dd>최근 20일 주가 흔들림이 작은 편 (100종목 중 덜 흔들리는 40% 안)</dd>
+<dt>조건2</dt><dd>180일 이동평균선이 최근 5거래일 동안 1.46% 이상 올라감 (긴 추세가 가파르게 오르는 중)</dd>
+<dt>조건3</dt><dd>주가가 60거래일 전보다 20% 이상 오름</dd>
 </dl></div>
-<div class="pxb-rule"><h4>② 정배열 출격<span>전 거래일 일봉</span></h4><dl>
-<dt>대상</dt><dd>코스피 시가총액 100위 안 · 시장 폭 50%↑</dd>
-<dt>조건</dt><dd>3·15·20·90·150·200일선 정배열 · 3일선이 200일선보다 19~53% 위</dd>
+<div class="pxb-rule"><h4>② 정배열 출격<span>어제 일봉으로 판단</span></h4><dl>
+<dt>대상</dt><dd>코스피 시가총액 1~100위 종목</dd>
+<dt>조건1</dt><dd>3·15·20·90·150·200일 이동평균선이 짧은 것부터 위에서 아래로 차례대로 놓임 (정배열 = 오르는 추세)</dd>
+<dt>조건2</dt><dd>3일선이 200일선보다 19~53% 위 (너무 덜 오르지도, 너무 많이 오르지도 않음)</dd>
+<dt>조건3</dt><dd>시장 폭 50% 이상 (100종목 중 절반 이상이 오르는 흐름일 때만)</dd>
 </dl></div>
-<div class="pxb-rule x"><h4>공통 조건<span>①·② 모두 필수</span></h4><dl>
-<dt>수급</dt><dd>전날까지 5일 외국인 순매수 · 투신 순매수 · 개인 순매도</dd>
-<dt>판정</dt><dd>① 또는 ② 하나 + 공통 = 정시 출격 후보(다음 거래일)</dd>
+<div class="pxb-rule x"><h4>공통 조건<span>①·② 모두 꼭 채워야 함</span></h4><dl>
+<dt>수급</dt><dd>어제까지 5거래일 동안 외국인은 사고(순매수), 투신(펀드)도 사고, 개인은 팖(순매도)</dd>
+<dt>결과</dt><dd>① 또는 ② 가운데 하나 + 공통 조건을 채우면 → 오늘 장중 <b>정시 출격 후보</b></dd>
 </dl></div>
-<div class="pxb-rule"><h4>매수<span>1시간봉</span></h4><dl>
-<dt>신호</dt><dd>EMA 5·20·60·120·180 정배열이 된 봉 → 다음 봉 시가</dd>
-<dt>없으면</dt><dd>11시 봉까지 신호가 없으면 12:00 시가</dd>
-<dt>크기</dt><dd>10칸 계좌 · ① 또는 외국인·투신 3일 연속 순매수 4칸(40%) · 그 밖 2칸(20%)</dd>
-<dt>순서</dt><dd>① → 3일 연속 → 수급 덜 몰리고 20일 더 오른 것</dd>
-<dt>비킴</dt><dd>칸이 모자라면 7봉↑ 들고 +4% 못 간 것을 손익 나쁜 순으로 팔고 삼 (시장 폭 90% 미만일 때)</dd>
+<div class="pxb-rule"><h4>매수<span>오늘 장중 · 1시간봉</span></h4><dl>
+<dt>언제</dt><dd>후보의 1시간봉 지수이동평균선 5·20·60·120·180개가 정배열로 바뀌면 → 그 봉이 끝난 바로 다음 시각(정시) 시작 가격에 삼</dd>
+<dt>없으면</dt><dd>11시 봉(11:00~12:00)이 끝날 때까지 신호가 없어도 12:00 시작 가격에 삼</dd>
+<dt>얼마</dt><dd>계좌를 10칸으로 나눔 · ①이거나 외국인·투신이 3일 연속 함께 샀으면 4칸(계좌의 40%) · 그 밖은 2칸(20%)</dd>
+<dt>순서</dt><dd>같은 시각에 여러 종목이면 ① → 3일 연속 → 수급이 덜 몰렸는데 최근 20일 더 오른 종목 먼저</dd>
+<dt>교체</dt><dd>돈(칸)이 모자라면, 산 지 7시간(약 하루) 넘었는데 +4%도 못 오른 종목을 손익이 나쁜 것부터 팔고 그 돈으로 삼 · 시장 폭 90% 이상인 아주 센 장에서는 바꾸지 않음</dd>
 </dl></div>
-<div class="pxb-rule"><h4>매도 · ① 추세로 산 것</h4><dl>
-<dt>익절</dt><dd class="up">+5% 처음 닿으면 절반 · 나머지 +13% 전량</dd>
-<dt>손절</dt><dd class="down">−5%</dd>
-<dt>청산</dt><dd>60봉(약 10거래일) 지나면 전량</dd>
+<div class="pxb-rule"><h4>매도 · ①로 산 종목<span>4가지 중 먼저 오는 것</span></h4><dl>
+<dt>익절1</dt><dd class="up">처음으로 +5% 이상 오르면 가진 것의 절반을 팖</dd>
+<dt>익절2</dt><dd class="up">+13% 이상 오르면 남은 것을 모두 팖</dd>
+<dt>손절</dt><dd class="down">산 값보다 5% 이상 내리면 모두 팖 (절반 판 뒤에도 같음)</dd>
+<dt>기간</dt><dd>위에 하나도 안 닿고 60시간(약 10거래일)이 지나면 모두 팖</dd>
 </dl></div>
-<div class="pxb-rule"><h4>매도 · ② 정배열로 산 것</h4><dl>
-<dt>익절</dt><dd class="up">한때 +8% 갔다가 +1% 아래로 오면 전량</dd>
-<dt>손절</dt><dd class="down">−10%</dd>
-<dt>청산</dt><dd>일봉 정배열이 깨지면 다음 날 09:00 시가</dd>
+<div class="pxb-rule"><h4>매도 · ②로 산 종목<span>3가지 중 먼저 오는 것</span></h4><dl>
+<dt>익절</dt><dd class="up">정해진 익절 가격이 없음 · 오르는 동안 계속 들고 있다가 아래 '추세 끝'에서 팖</dd>
+<dt>손절</dt><dd class="down">산 값보다 10% 이상 내리면 모두 팖</dd>
+<dt>지킴</dt><dd>한때 +8% 이상 올랐던 종목이 다시 +1% 아래로 내려오면 이익을 지키려고 모두 팖 (+8%까지 못 간 종목엔 해당 없음)</dd>
+<dt>추세끝</dt><dd>일봉 정배열(조건1)이 깨지면 다음 날 09:00 시작 가격에 모두 팖</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot">모두 1시간봉 종가로 판단 → 다음 봉 시가에 사고팜 · 판단 09:01 · 10:01 · 11:01 · 12:01 · 13:01 · 14:01 · 15:31 ·
-마지막 봉(14시~15:30)에서 나온 결정은 다음 날 09:00 시가 · 시장 폭 = 100위 안에서 50일선 &gt; 200일선인 종목 비율 ·
-성적(연구 90·94회차, 비용 0.30%) 2023-10~2025-03 연 +39.2% · 2025-04~2026-09 연 +112.8% · 실전 계좌 주문 없음(한투 모의투자 계좌에만 자동 주문)</div>
+<div class="pxb-rule-foot"><b>판단과 체결</b> · 오르고 내린 %는 모두 산 값과 1시간봉 종가(그 시간이 끝날 때 값)를 견줘 셈 → 결정은 다음 정시 시작 가격에 실행 ·
+판단 시각 09:01 · 10:01 · 11:01 · 12:01 · 13:01 · 14:01 · 15:31 · 마지막 봉(14:00~15:30)에서 나온 결정은 다음 날 09:00에 실행<br>
+<b>시장 폭</b> · 시가총액 100위 안에서 50일 이동평균선이 200일선보다 위에 있는 종목의 비율(시장 전체가 얼마나 오르는 흐름인지) ·
+<b>지수이동평균선(EMA)</b> · 최근 값에 더 무게를 둔 평균 가격선<br>
+<b>지난 성적</b>(연구 90·94회차, 사고팔 때 비용 0.30% 뺌) · 2023-10~2025-03 해마다 +39.2% · 2025-04~2026-09 해마다 +112.8% · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음<br>
+<b>주문</b> · 실전 계좌에는 주문하지 않음 · 한투 모의투자 계좌에만 자동 주문 · 매수·매도 결정과 체결은 모두 디스코드로 알림</div>
 </div>"""
 
 GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75">
-<b>{NAME_A}</b> · 오늘 위 조건을 모두 채운 종목 (다음 거래일 1시간봉 신호에 삼)<br>
-<b>{NAME_B}</b> · ①·② 가운데 가까운 쪽에서 조건이 1~2개 모자란 종목 (무엇이 모자란지 함께 적음)<br>
+<b>{NAME_A}</b> · 위 조건을 모두 채운 종목 → 다음 거래일 장중에 1시간봉 매수 신호를 기다림<br>
+<b>{NAME_B}</b> · ①·② 가운데 더 가까운 쪽에서 조건이 1~2개만 모자란 종목 (무엇이 모자란지 함께 적음) · 아직 사지 않음<br>
 조건이 3개 이상 모자란 종목은 싣지 않습니다
 </div></div>"""
 
@@ -965,7 +974,7 @@ def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, aler
                  for p in found.get("picks") or []]
     when = sortie_target(base, now)
     head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> 정시 출격 후보 {len(cands)}종목 · '
-            f'시장 폭 {_e(breadth)}% (정배열 출격은 50% 이상일 때만)')
+            f'시장 폭 {_e(breadth)}% (②정배열 출격은 50% 이상일 때만 삼)')
     if made:
         head += f'<br><small>후보 계산 {_e(made)} · 화면은 5분마다 새 결과를 읽습니다</small>'
     else:
