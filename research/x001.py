@@ -6,16 +6,28 @@ import sys
 from datetime import date
 sys.path.insert(0, "/home/user/stock-dash/research")
 sys.path.insert(0, "/home/user/stock-dash")
-import hlab as H
-exec(open("research/h094.py", encoding="utf-8").read().split('print("== 1시간봉 94회차')[0])
-RK = rk_of(tiers(20, 5, 3))
-res = H.simulate(data, e_align_or_noon, EX, size, rank=RK, stale_of=stale90, seeds=1)
-hour = [(t["code"], t["산 때"][:8], t["손익"], t["칸"]) for side in ("앞", "뒤") if res.get(side) for t in res[side]["목록"]]
-import ntools as T
-got = T.once("일봉 새 82회차")
+import json
+OUT = "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/x001_"
+part = sys.argv[1] if len(sys.argv) > 1 else "compare"
 lo, hi = "20231001", "20260930"
-day = [(t["code"], t["산 날"], t["손익"], t.get("자리") or t.get("칸")) for side in ("앞", "뒤") if got.get(side)
-       for t in got[side]["매매목록"] if lo <= t["산 날"] <= hi]
+if part == "hour":
+    import hlab as H
+    exec(open("research/h094.py", encoding="utf-8").read().split('print("== 1시간봉 94회차')[0])
+    RK = rk_of(tiers(20, 5, 3))
+    res = H.simulate(data, e_align_or_noon, EX, size, rank=RK, stale_of=stale90, seeds=1)
+    hour = [(t["code"], t["산 때"][:8], t["손익"], t["칸"]) for side in ("앞", "뒤") if res.get(side) for t in res[side]["목록"]]
+    json.dump(hour, open(OUT + "hour.json", "w"))
+    sys.exit()
+if part == "day":
+    import ntools as T
+    got = T.once("일봉 새 82회차")
+    day = [(t["code"], t["산 날"], t["손익"], t.get("자리") or t.get("칸")) for side in ("앞", "뒤") if got.get(side)
+           for t in got[side]["매매목록"]]
+    json.dump(day, open(OUT + "day.json", "w"))
+    sys.exit()
+hour = [tuple(x) for x in json.load(open(OUT + "hour.json"))]
+day = [tuple(x) for x in json.load(open(OUT + "day.json"))]
+day = [x for x in day if lo <= x[1] <= hi]
 hour = [x for x in hour if lo <= x[1] <= hi]
 d = lambda s: date(int(s[:4]), int(s[4:6]), int(s[6:8]))
 
