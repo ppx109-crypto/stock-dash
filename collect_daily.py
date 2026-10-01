@@ -10,9 +10,11 @@
 import json
 import os
 import re
+import time
+from datetime import date, timedelta
 from pathlib import Path
 
-from collect_public_dart import Official, collect
+from collect_public_dart import FIRST_YEAR as FIRST_YEAR_DEFAULT, Official, collect
 
 CHUNK = 25
 FOLDER = Path("public-data")
@@ -56,47 +58,181 @@ def already_done(code, first_year, on_day):
     return kept.get("since") in (first_year, None)
 
 
-def run(codes=None):
+# ── 빠른 하루치 갱신(2026-10-01) ─────────────────────────────────────────
+# 예전에는 매일 모든 종목을 처음부터 다시 받았습니다(종목마다 결산 · 반기 스무 번 넘게 +
+# 사업보고서 원문 수십 MB). 하루 60종목쯤에서 6시간 제한에 걸려 멈추고, 그 뒤 일봉 · A그룹
+# 계산이 새벽 3시까지 밀렸습니다. 지난 결산은 바뀌지 않으므로 이제는
+#   1) 그사이 올라온 시장 전체 공시 목록을 한 번에 받아(100줄씩 몇십 번) 종목마다 붙이고,
+#   2) 정기보고서(사업 · 반기 · 분기)가 새로 나온 종목, 파일이 없는 종목, 오래된 종목,
+#      그리고 돌아가며 하루 1/28만 처음부터 다시 받습니다(4갈래로 나눠 동시에).
+#   3) 사업보고서 원문은 마지막 결산 접수번호가 그대로면 전에 받은 것을 씁니다.
+PERIODIC = ("사업보고서", "반기보고서", "분기보고서")
+WINDOW = 89          # 시장 전체 공시 목록은 석 달까지만 한 번에 물을 수 있음
+ROTATE = 28          # 이 날수에 한 번은 모든 종목을 처음부터 다시 받음
+LANES = int(os.getenv("PUBLIC_LANES", "4"))
+DEADLINE_MIN = float(os.getenv("PUBLIC_DEADLINE_MIN", "150"))
+
+
+def market_list(p, begin, end):
+    """begin~end(YYYYMMDD) 시장 전체 공시 목록. 종목코드가 있는 줄만."""
+    rows, page = [], 1
+    while True:
+        got = p.dart("list.json", bgn_de=begin, end_de=end, page_count=100, page_no=page) or {}
+        rows += [r for r in got.get("list", []) if str(r.get("stock_code") or "").strip()]
+        if page >= int(got.get("total_page") or 1):
+            return rows
+        page += 1
+
+
+def notice(r):
+    return {"title": r.get("report_nm", ""), "date": r.get("rcept_dt", ""),
+            "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=" + str(r.get("rcept_no", ""))}
+
+
+def merged_disclosures(old, rows, today):
+    """전에 받아 둔 공시 + 새 공시 → 최근 90일 · 새것 먼저 · 30건까지(처음부터 받을 때와 같은 모양)."""
+    floor = (today - timedelta(days=90)).strftime("%Y%m%d")
+    seen, out = set(), []
+    for d in [notice(r) for r in rows] + list(old or []):
+        if d["url"] in seen or str(d.get("date", "")) < floor:
+            continue
+        seen.add(d["url"])
+        out.append(d)
+    return sorted(out, key=lambda d: d["date"], reverse=True)[:30]
+
+
+def needs_full(code, kept, new_rows, today):
+    """처음부터 다시 받을 까닭(없으면 빈 글)."""
+    if not kept:
+        return "파일 없음"
+    if kept.get("since") not in (FIRST_YEAR_DEFAULT, None):
+        return "받은 깊이 다름"
+    try:
+        fetched = date.fromisoformat(str(kept.get("fetched")))
+    except ValueError:
+        return "받은 날 모름"
+    if (today - fetched).days >= WINDOW:
+        return "오래됨"
+    if any(any(k in str(r.get("report_nm", "")) for k in PERIODIC) for r in new_rows):
+        return "정기보고서 새로 나옴"
+    if int(code) % ROTATE == today.toordinal() % ROTATE:
+        return "돌아가며 다시 받기"
+    return ""
+
+
+def _full(code, shared, kept):
+    """처음부터 받되, 사업보고서 원문은 마지막 결산이 같으면 전 것을 씀."""
+    os.environ["PUBLIC_WITH_EXCERPT"] = "0"
+    data = collect(code, shared)
+    receipt = (data.get("years") or [{}])[-1].get("receipt")
+    if kept and (kept.get("years") or [{}])[-1].get("receipt") == receipt and kept.get("business_excerpt"):
+        data["business_excerpt"] = kept["business_excerpt"]
+    else:
+        try:
+            data["business_excerpt"] = shared.business_excerpt(receipt)
+        except Exception:
+            data["business_excerpt"] = ""
+    return data
+
+
+def _save(code, data, kept):
+    """내용이 같으면 쓰지 않음. 바뀌었으면 True."""
+    if kept and same_apart_from_fetched(kept, data):
+        return False
+    (FOLDER / f"{code}.json").write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    return True
+
+
+def _kept(code):
+    try:
+        return json.loads((FOLDER / f"{code}.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def run(codes=None, shared=None, today=None):
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     codes = codes or stored_codes()
     if not codes:
         print("받을 종목이 없습니다.")
         return 0, 0, 0
+    today = today or date.today()
+    began = time.monotonic()
+    FOLDER.mkdir(exist_ok=True)
+    shared = shared or Official()
+    kept = {c: _kept(c) for c in codes}
     if os.getenv("PUBLIC_SKIP_DONE", "1").strip() not in ("0", "false", "False"):
-        from collect_public_dart import FIRST_YEAR
-        from datetime import date
-        today = date.today().isoformat()
-        before = len(codes)
-        codes = [c for c in codes if not already_done(c, FIRST_YEAR, today)]
-        if before != len(codes):
-            print(f"오늘 이미 받아 둔 {before - len(codes)}종목은 건너뜁니다.")
+        done = [c for c in codes if kept[c] and kept[c].get("fetched") == today.isoformat()
+                and kept[c].get("since") in (FIRST_YEAR_DEFAULT, None)]
+        if done:
+            print(f"오늘 이미 받아 둔 {len(done)}종목은 건너뜁니다.")
+        codes = [c for c in codes if c not in set(done)]
         if not codes:
             print("모두 받아 두었습니다.")
-            return 0, before, 0
-    FOLDER.mkdir(exist_ok=True)
-    shared = Official()
-    changed, same, failed = 0, 0, 0
-    for start in range(0, len(codes), CHUNK):
-        for code in codes[start:start + CHUNK]:
-            target = FOLDER / f"{code}.json"
+            return 0, len(done), 0
+    # 1) 시장 전체 공시 목록(가장 오래 전에 받은 날부터 오늘까지, 석 달 안)
+    dates = [date.fromisoformat(k["fetched"]) for k in kept.values() if k and _is_day(k.get("fetched"))]
+    begin = max([today - timedelta(days=WINDOW)] + [min(dates)] if dates else [today - timedelta(days=WINDOW)])
+    rows = market_list(shared, begin.strftime("%Y%m%d"), today.strftime("%Y%m%d"))
+    by_code = {}
+    for r in rows:
+        by_code.setdefault(str(r["stock_code"]).strip(), []).append(r)
+    print(f"시장 공시 {len(rows)}건 · {begin} ~ {today}")
+    # 2) 가벼운 갱신(공시만 붙임)과 처음부터 받을 종목 나누기
+    changed, same, failed, full = 0, 0, 0, []
+    for c in codes:
+        k = kept[c]
+        since = str(k.get("fetched", "")).replace("-", "") if k else ""
+        fresh = [r for r in by_code.get(c, []) if str(r.get("rcept_dt", "")) >= since]
+        why = needs_full(c, k, fresh, today)
+        if why:
+            full.append((c, why))
+            continue
+        data = dict(k, disclosures=merged_disclosures(k.get("disclosures"), fresh, today), fetched=today.isoformat())
+        if _save(c, data, k):
+            changed += 1
+        else:
+            same += 1
+    order = {"정기보고서 새로 나옴": 0, "받은 깊이 다름": 1, "오래됨": 2, "받은 날 모름": 2, "돌아가며 다시 받기": 3, "파일 없음": 4}
+    full.sort(key=lambda x: order.get(x[1], 5))
+    print(f"공시만 붙인 종목 {changed + same} · 처음부터 받을 종목 {len(full)}")
+    # 3) 처음부터 받기(여러 갈래 · 시간 넘으면 남은 것은 다음 날)
+    if full:
+        shared.corp(full[0][0])          # 종목코드 목록을 한 번만 받아 둠(갈래끼리 겹치지 않게)
+    left = list(full)
+    with ThreadPoolExecutor(max_workers=max(1, LANES)) as pool:
+        jobs = {}
+        while left or jobs:
+            while left and len(jobs) < LANES and (time.monotonic() - began) / 60 < DEADLINE_MIN:
+                c, why = left.pop(0)
+                jobs[pool.submit(_full, c, shared, kept[c])] = (c, why)
+            if not jobs:
+                break
+            fut = next(as_completed(jobs))
+            c, why = jobs.pop(fut)
             try:
-                data = collect(code, shared)
+                data = fut.result()
             except Exception as error:
                 failed += 1
-                print(f"{code} 수집 실패 · 기존 파일 유지 · {str(error)[:60]}")
+                print(f"{c} 수집 실패 · 기존 파일 유지 · {str(error)[:60]}")
                 continue
-            if target.exists():
-                try:
-                    old = json.loads(target.read_text(encoding="utf-8"))
-                except (ValueError, OSError):
-                    old = None
-                if old and same_apart_from_fetched(old, data):
-                    same += 1
-                    continue
-            target.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-            changed += 1
-            print(f"{code} 갱신")
-    print(f"갱신 {changed} · 변화 없음 {same} · 실패 {failed} · 대상 {len(codes)}종목")
+            if _save(c, data, kept[c]):
+                changed += 1
+                print(f"{c} 갱신 · {why}")
+            else:
+                same += 1
+    if left:
+        print(f"시간({DEADLINE_MIN:g}분)이 다 되어 {len(left)}종목은 다음 날로 넘깁니다.")
+    print(f"갱신 {changed} · 변화 없음 {same} · 실패 {failed} · 대상 {len(codes)}종목 · {(time.monotonic() - began) / 60:.1f}분")
     return changed, same, failed
+
+
+def _is_day(v):
+    try:
+        date.fromisoformat(str(v))
+        return True
+    except ValueError:
+        return False
 
 
 if __name__ == "__main__":

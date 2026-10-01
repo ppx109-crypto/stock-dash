@@ -27,10 +27,16 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests
+      - name: 다트 하루치 갱신 시험
+        run: python -m unittest tests.test_dart_daily tests.test_resume -v
+      # 시장 전체 공시 목록을 한 번에 받아 종목마다 붙이고, 정기보고서가 새로 나온 종목 등만
+      # 처음부터 다시 받습니다(4갈래). 150분이 넘으면 남은 것은 다음 날로 넘겨, 뒤의 일봉 · A그룹이 밀리지 않게 합니다.
       - run: python collect_daily.py
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           PUBLIC_CODES: ${{ inputs.codes || '' }}
+          PUBLIC_LANES: '4'
+          PUBLIC_DEADLINE_MIN: '150'
       - name: Save only when something actually changed
         if: always()
         run: |
