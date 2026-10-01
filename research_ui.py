@@ -12,7 +12,7 @@ from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, NAME_B, RULE_TEXT, SHOWN_PER_GROUP,
-                          CLOSE_RULES, close_panel, ledger_mini, top_bar, frame_open,
+                          CLOSE_RULES, close_panel, ledger_mini, top_bar, frame_open, near_panel, as_day,
                           board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
@@ -323,6 +323,23 @@ def daily_live():
             repo_json("daily-live/alerts.json") or [])
 
 
+def near_lists():
+    """두 칸 아래쪽 '충족 미달' 목록: (1시간봉, 1일봉, 1시간봉 기준 글, 1일봉 기준 글). 더 새로운 결과를 씀."""
+    plan, _, _ = hourly_a()
+    today, _, _ = daily_live()
+    group = today_a_group() or {}
+    g_day = str(group.get("date") or "")
+    if plan and plan.get("near") is not None and str(plan.get("base") or "") >= g_day:
+        hourly, h_basis = plan["near"], f'{as_day(plan["base"])} 마감 기준 → 다음 거래일'
+    else:
+        hourly, h_basis = group.get("b_group") or [], (f'{as_day(g_day)} 마감 기준' if g_day else "")
+    if today and today.get("near") is not None and str(today.get("date") or "") >= g_day:
+        daily, d_basis = today["near"], f'{as_day(today["date"])} 15:20 판단'
+    else:
+        daily, d_basis = group.get("b_group") or [], (f'{as_day(g_day)} 마감 기준' if g_day else "")
+    return hourly, daily, h_basis, d_basis
+
+
 def board_marks():
     """관심종목 판의 두 칸: 코드 → 한 줄 설명(1시간봉 규칙 · 1일봉 규칙)."""
     plan, hstate, _ = hourly_a()
@@ -407,6 +424,8 @@ def group_board_ui(graded):
     처리되어 로그인도, 펼쳐 둔 칸도 그대로 남습니다.
     """
     buckets, pending = group_buckets(graded, *board_marks())
+    h_near, d_near, h_basis, d_basis = near_lists()
+    near = {"A": ("1시간봉 매수 후보(충족 미달)", h_near, h_basis), "B": ("1일봉 매수 후보(충족 미달)", d_near, d_basis)}
     columns = st.columns(len(GROUP_TITLES))
     for column, key in zip(columns, GROUP_TITLES):
         klass = GROUP_TITLES[key][2]
@@ -424,6 +443,9 @@ def group_board_ui(graded):
                     for row in rest:
                         st.button(chip_label(row), key=f'pxpick-{key}-{row["code"]}',
                                   on_click=_choose, args=(row['code'],), width='stretch')
+            if key in near:
+                title, near_rows, basis = near[key]
+                st.markdown('<div class="pxb">' + near_panel(title, near_rows, basis) + '</div>', unsafe_allow_html=True)
     # 관심종목 기준일 안내 줄 · '판정 보류' 칸은 매수 규칙과 무관해 뺌(사용자 요청 2026-10-01)
 
 
