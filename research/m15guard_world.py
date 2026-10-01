@@ -1,5 +1,6 @@
 """m15guard.py가 부르는 '한 세계' — 환경(HLAB_CUT · HLAB_POISON)에 따라 잘리거나 더럽혀진 15분봉 · 일봉 자료로 같은 규칙들을 돌려
 신호 · 매매 목록을 pickle로 남김. 규칙: 15분봉 0회차(1시간봉 최고 규칙을 옮긴 것) · 엿보기 셋(검사 눈 확인용 · 반드시 걸려야 함)."""
+import os
 import pickle
 import sys
 sys.path.insert(0, "/home/user/stock-dash")
@@ -43,4 +44,38 @@ for c, b in data.items():                     # 날짜 짚기: 봉에 붙은 일
             out["dates_seen"] += 1
             if x["날"] >= t[:8] or (x.get("수급끝") and x["수급끝"] >= t[:8]):
                 out["dates_bad"] += 1
+# 4b 봉마다 더럽히기(잘리지 않은 온 세계에서만): 종목 60개 × 봉 약 24곳마다 그 봉 **뒤만** 엉뚱하게 바꿔,
+# 그 봉의 사는 신호 · (그 봉에 들고 있다고 친 매매의) 파는 판단이 그대로인지. 한 봉만 엿보는 규칙도 잡으려고.
+if not os.environ.get("HLAB_CUT") and not os.environ.get("HLAB_POISON"):
+    import rna
+    rng = np.random.default_rng(7)
+    ENTRY = {"15분봉 0회차(1시간봉 최고 규칙 옮김)": (e_align_or_noon, exit_rule), "엿보기: 다음 봉 보고 사기": (peek_buy, exit_rule),
+             "엿보기: 120봉 뒤 보고 사기": (peek_far, exit_rule), "엿보기: 다음 봉 보고 팔기": (e_align_or_noon, peek_sell)}
+    bar = {name: [0, 0] for name in ENTRY}
+    codes = sorted(data)
+    for c in [codes[i] for i in rng.choice(len(codes), min(60, len(codes)), replace=False)]:
+        b = data[c]
+        n = len(b["t"])
+        on = np.flatnonzero(ctx_now(c, b))
+        picks = list(rng.choice(on, min(12, len(on)), replace=False)) if len(on) else []
+        picks += list(rng.integers(200, n - 2, 12)) if n > 210 else []
+        for k in picks:
+            k = int(k)
+            bad = {key: (v.copy() if isinstance(v, np.ndarray) else v) for key, v in b.items()}
+            walk = b["c"][k] * np.exp(np.cumsum(rng.normal(0, 0.03, n - k - 1)))
+            for key in ("o", "h", "l", "c"):
+                bad[key][k + 1:] = walk * (1.02 if key == "h" else 0.98 if key == "l" else 1.0)
+            bad["v"][k + 1:] = rng.uniform(0.1, 10, n - k - 1) * max(b["v"][:k + 1].mean(), 1)
+            p = {"i": max(0, k - 6), "price": b["c"][max(0, k - 6)], "칸": 2, "처음칸": 2, "peak": max(b["c"][max(0, k - 6):k + 1]),
+                 "now": k, "code": c}
+            for name, (ent, ex) in ENTRY.items():
+                H._ST.pop((c, SPAN), None)
+                s1 = bool(ent(c, b)[k])
+                H._ST.pop((c, SPAN), None)
+                s2 = bool(ent(c, bad)[k])
+                H._ST.pop((c, SPAN), None)
+                d1, d2 = ex(c, b, dict(p), k), ex(c, bad, dict(p), k)
+                bar[name][0] += 1
+                bar[name][1] += (s1 != s2) + (d1 != d2)
+    out["bar_poison"] = bar
 pickle.dump(out, open(sys.argv[1], "wb"))
