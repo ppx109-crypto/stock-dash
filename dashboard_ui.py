@@ -27,7 +27,7 @@ AMBER = "#B8730A"  # 영업이익선
 INK = "#2E2822"
 GOLD = "#B08343"
 # 그룹은 색만으로 뜻을 전하지 않도록 이름·기호를 항상 함께 답니다.
-STATUS = {"A": "#0CA30C", "B": "#FAB219"}
+STATUS = {"A": "#0CA30C", "B": "#0CA30C"}
 SAMPLE = "샘플"
 
 # (꽃잎 수, 꽃잎 색, 꽃술 색)
@@ -68,8 +68,19 @@ _CSS = """
 .pxb-title span{display:block;margin-top:9px;font-size:13px;color:#7B7465}
 .pxb-meta{text-align:right;font-size:12px;color:#7B7465;line-height:1.9}
 .pxb-headbox{margin-bottom:14px;padding:18px 22px}
-.pxb-top2{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.pxb-top2{display:grid;grid-template-columns:minmax(260px,1fr) minmax(220px,280px) minmax(300px,460px);align-items:center;gap:16px}
 .pxb-ledgers{display:flex;flex-direction:column;gap:8px;min-width:300px;flex:0 1 520px}
+.pxb-mid{display:flex;flex-direction:column;gap:8px;min-width:220px;flex:0 1 300px}
+.pxb-kospi{padding:9px 12px;border:1px solid #E7DCC7;border-radius:12px;background:#FFFDF8}
+.pxb-kospi b{display:block;font-size:12px;font-weight:800;color:#946E38}
+.pxb-kospi strong{font-size:22px;font-weight:700;color:#2E2822;font-variant-numeric:tabular-nums}
+.pxb-kospi em{margin-left:8px;font-style:normal;font-size:13px;font-weight:700}
+.pxb-kospi small{display:block;margin-top:2px;font-size:11px;color:#7B7465}
+.pxb-lights{padding:9px 12px;border:1px solid #E7DCC7;border-radius:12px;background:#FFFDF8;font-size:12px;color:#4A4339}
+.pxb-lights b{display:block;font-size:12px;font-weight:800;color:#946E38;margin-bottom:3px}
+.pxb-lights div{display:flex;align-items:center;gap:7px;line-height:1.7}
+.pxb-lights small{color:#7B7465;font-size:11px}
+.pxb-light{width:10px;height:10px;border-radius:50%;flex:none}
 .pxb-ledger{padding:9px 12px;border:1px solid #E7DCC7;border-radius:12px;background:#FFFDF8}
 .pxb-ledger b{display:block;font-size:12px;font-weight:800;color:#946E38}
 .pxb-ledger small{display:block;margin-top:2px;font-size:11px;color:#4A4339}
@@ -77,6 +88,10 @@ _CSS = """
 .pxb-near b{display:block;font-size:13px;font-weight:800;color:#2E2822}
 .pxb-near small{display:block;margin-top:2px;font-size:11px;color:#7B7465}
 .pxb-near ul{margin:6px 0 0 16px;padding:0;font-size:11.5px;color:#4A4339;line-height:1.6}
+.pxb-more summary{margin-top:6px;cursor:pointer;font-size:12px;font-weight:700;color:#946E38;list-style:none}
+.pxb-more summary::-webkit-details-marker{display:none}
+.pxb-more summary:before{content:"▼ "}
+.pxb-more[open] summary:before{content:"▲ "}
 .pxb-near-empty{margin-top:6px;font-size:12px;color:#9C9486}
 .pxb-ledger ul{margin:4px 0 0 16px;padding:0;font-size:10.5px;color:#7B7465;line-height:1.5}
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
@@ -202,7 +217,8 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
 .pxb-pens i:nth-child(4){background:#C9A24D}
 
 
-@media(max-width:1080px){.pxb-grid,.pxb-board{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1080px){.pxb-grid,.pxb-board{grid-template-columns:repeat(2,1fr)}
+  .pxb-top2{grid-template-columns:1fr 1fr}.pxb-title{grid-column:1/-1}}
 @media(max-width:720px){
   .pxb-grid,.pxb-board{grid-template-columns:1fr;gap:14px}
   /* 규칙 설명이 길어 좁은 창에서는 줄바꿈해야 화면 밖으로 나가지 않습니다. */
@@ -210,7 +226,8 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
   .pxb-section-h span{white-space:normal;flex:1 1 100%}
   .pxb-section-h:after{display:none}
   .pxb-title em{font-size:30px}
-  .pxb-ledgers{min-width:0;flex:1 1 100%}
+  .pxb-ledgers,.pxb-mid{min-width:0}
+  .pxb-top2{grid-template-columns:1fr}
   .pxb-meta{text-align:left}
   .pxb-sub{max-width:100%}
 }
@@ -542,12 +559,35 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
             f'<ul>{body}</ul></div>')
 
 
-def top_bar(hourly_ledger: str, daily_ledger: str) -> str:
-    """첫 화면 맨 위: 제목(작게) + 오른쪽에 1시간봉 · 1일봉 모의투자 거래 내역(위 · 아래). 1분마다 새로 그림."""
+def kospi_box(k: dict | None) -> str:
+    """코스피 칸: 마지막 종가(장중이면 지금 값) · 전날보다 · 날짜."""
+    if not k or not k.get("close"):
+        return '<div class="pxb-kospi"><b>코스피</b><small>지수를 아직 받지 못했습니다</small></div>'
+    chg = k.get("change")
+    color = "#C0392B" if (chg or 0) > 0 else "#1F5FBF" if (chg or 0) < 0 else "#4A4339"
+    tail = f'<em style="color:{color}">{chg:+.2f}%</em>' if chg is not None else ""
+    d = str(k.get("date", ""))
+    when = f'{d[4:6]}-{d[6:8]}' if len(d) == 8 else _e(d)
+    return (f'<div class="pxb-kospi"><b>코스피 · {"장중" if k.get("live") else "장 마감"}</b>'
+            f'<strong>{k["close"]:,.2f}</strong>{tail}<small>{when} 기준 · {_e(k.get("from", ""))}</small></div>')
+
+
+def lights_box(rows: list | None, at: str = "") -> str:
+    """연결 불빛: 초록 = 지금 답함, 빨강 = 안 됨."""
+    lines = "".join(
+        f'<div><i class="pxb-light" style="background:{"#0CA30C" if r.get("ok") else "#D93025"}"></i>'
+        f'{_e(r.get("name"))} <small>{_e(r.get("note"))}</small></div>' for r in (rows or []))
+    return (f'<div class="pxb-lights"><b>API 연결 상태{" · " + _e(at) + " 확인" if at else ""}</b>'
+            f'{lines or "<small>확인 중</small>"}</div>')
+
+
+def top_bar(hourly_ledger: str, daily_ledger: str, middle: str = "") -> str:
+    """첫 화면 맨 위: 제목 + 가운데(코스피 · 연결 불빛) + 오른쪽 1시간봉 · 1일봉 모의투자 거래 내역. 1분마다 새로 그림."""
     return (
         _CSS + '<div class="pxb"><div class="pxb-frame pxb-headbox"><div class="pxb-top2">'
         '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
         f'<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다 · {date.today():%Y년 %m월 %d일}</span></div>'
+        + (f'<div class="pxb-mid">{middle}</div>' if middle else "") +
         f'<div class="pxb-ledgers">{hourly_ledger}{daily_ledger}</div>'
         "</div></div></div>"
     )
@@ -1168,17 +1208,21 @@ def near_reason(row: dict) -> str:
     return " / ".join(parts)
 
 
-def near_panel(title: str, rows: list | None, basis: str = "", shown: int = 8) -> str:
-    """'매수 후보(충족 미달)' 칸 안의 목록(조사 대상 507종목 전체에서 조건이 적게 모자란 순)."""
-    rows = sorted(rows or [], key=lambda r: r.get("모자란 수") or 9)[:shown]
+def near_panel(title: str, rows: list | None, basis: str = "", shown: int = 3, most: int = 15) -> str:
+    """'매수 후보(충족 미달)' 칸 안의 목록(조사 대상 507종목 전체에서 조건이 적게 모자란 순).
+    처음엔 shown개만 보이고, 나머지는 화살표를 누르면 아래로 열립니다(사용자 요청 2026-10-01)."""
+    rows = sorted(rows or [], key=lambda r: r.get("모자란 수") or 9)[:most]
     head = (f'<div class="pxb-near"><b>{_e(title)}</b>'
             f'<small>조사 대상 507종목에서 조건이 1~2개만 모자란 종목{(" · " + _e(basis)) if basis else ""}</small>')
     if not rows:
         return head + '<div class="pxb-near-empty">해당 종목 없음</div></div>'
-    items = "".join(
-        f'<li><b>{_e(r.get("name"))}</b> ({_e(r.get("code"))}) · {_e(r.get("모자란 수"))}개 미달 · {_e(near_reason(r))}</li>'
-        for r in rows)
-    return head + f'<ul>{items}</ul></div>'
+    line = lambda r: (f'<li><b>{_e(r.get("name"))}</b> ({_e(r.get("code"))}) · {_e(r.get("모자란 수"))}개 미달 · '
+                      f'{_e(near_reason(r))}</li>')
+    out = head + f'<ul>{"".join(line(r) for r in rows[:shown])}</ul>'
+    if rows[shown:]:
+        out += (f'<details class="pxb-more"><summary>나머지 {len(rows) - shown}종목 더 보기</summary>'
+                f'<ul>{"".join(line(r) for r in rows[shown:])}</ul></details>')
+    return out + '</div>'
 
 
 def close_frame() -> str:
