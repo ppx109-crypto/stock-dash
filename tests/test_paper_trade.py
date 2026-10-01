@@ -58,6 +58,15 @@ class Guard(unittest.TestCase):
             self.assertFalse(P.enabled()[0])
 
 
+class StartDay(unittest.TestCase):
+    def test_no_orders_before_the_start_day(self):
+        from datetime import datetime
+        env = {"PAPER_TRADING": "on", "KIS_PAPER_APP_KEY": "k", "PAPER_START": "20261002"}
+        with mock.patch.dict(os.environ, env), mock.patch.object(P, "OFF", Path("/nonexistent/off")):
+            self.assertFalse(P.enabled(datetime(2026, 10, 1, 15, 0, tzinfo=P.KST))[0])
+            self.assertTrue(P.enabled(datetime(2026, 10, 2, 9, 1, tzinfo=P.KST))[0])
+
+
 class Sizing(unittest.TestCase):
     def test_buy_uses_slots_of_total_and_cash(self):
         done = [{"type": "buy", "code": "000001", "칸": 4, "decided": "2026100110", "kind": "추세"},

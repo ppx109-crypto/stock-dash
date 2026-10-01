@@ -48,6 +48,7 @@ jobs:
           # 한투 모의투자 자동 주문(사용자 결정 2026-10-01 '가'). 세 비밀값이 다 있어야 주문하고, 없으면 알림만.
           # 끄려면 hourly-live/paper-off 파일을 만들거나 PAPER_TRADING을 'off'로.
           PAPER_TRADING: 'on'
+          PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
