@@ -47,6 +47,8 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # 한투 모의투자 자동 주문(사용자 요청 2026-10-01). 계좌 하나를 1시간봉과 반씩 나눠 씀(PAPER_SHARE 0.5).
           PAPER_TRADING: 'on'
+          PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
+          DAILY_START: '20261002'          # 종가 출격도 2026-10-02부터
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}

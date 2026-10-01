@@ -233,6 +233,10 @@ def run(now=None):
     now = now or datetime.now(KST)
     day = now.strftime("%Y%m%d")
     state = _load(STATE, {"positions": {}, "closed": []})
+    start = os.getenv("DAILY_START", "").strip()           # 이 날(YYYYMMDD)부터 운영(사용자 결정 2026-10-01: 내일부터)
+    if start and day < start:
+        print(f"종가 출격은 {start}부터 시작해 오늘은 넘어갑니다.")
+        return 0
     if state.get("last_day") == day:
         print("오늘은 이미 처리했습니다.")
         return 0

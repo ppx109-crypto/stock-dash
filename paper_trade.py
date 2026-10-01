@@ -120,9 +120,13 @@ class PaperBroker(broker_kis.KIS):
         return no if re.fullmatch(r"[0-9]{1,12}", no) else ""
 
 
-def enabled():
+def enabled(now=None):
     if os.getenv("PAPER_TRADING", "").strip().lower() != "on":
         return False, "PAPER_TRADING이 on이 아니라 모의투자 주문을 넣지 않습니다."
+    start = os.getenv("PAPER_START", "").strip()           # 이 날(YYYYMMDD)부터 주문(사용자 결정 2026-10-01: 내일부터)
+    today = (now or datetime.now(KST)).strftime("%Y%m%d")
+    if start and today < start:
+        return False, f"모의투자는 {start[:4]}-{start[4:6]}-{start[6:]}부터 시작해 오늘은 주문을 넣지 않습니다."
     if OFF.exists():
         return False, "끄기 파일(hourly-live/paper-off)이 있어 모의투자 주문을 넣지 않습니다."
     if not os.getenv("KIS_PAPER_APP_KEY", "").strip():
