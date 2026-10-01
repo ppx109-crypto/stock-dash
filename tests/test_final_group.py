@@ -8,9 +8,9 @@ import final_group
 import rule
 
 try:        # 화면 쪽은 streamlit이 있어야 불러집니다. A그룹을 세는 CI에는 없습니다.
-    from dashboard_ui import a_group_panel, group_buckets, stock_score
+    from dashboard_ui import sortie_panel, group_buckets, stock_score
 except ModuleNotFoundError:
-    a_group_panel = group_buckets = stock_score = None
+    sortie_panel = group_buckets = stock_score = None
 
 
 class Regroup(unittest.TestCase):
@@ -142,27 +142,44 @@ class Lines(unittest.TestCase):
         self.assertIsNone(final_group.lines_now([100.0] * 200))
 
 
-@unittest.skipIf(a_group_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
+@unittest.skipIf(sortie_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class Panel(unittest.TestCase):
+    """메인 '정시 출격 · 오늘의 결과' 판."""
+    from datetime import datetime as _dt
+    MORNING = _dt(2026, 10, 1, 11, 0)      # 목요일 장중
+    EVENING = _dt(2026, 10, 1, 18, 0)
 
     def test_an_empty_day_shows_only_the_basis(self):
-        html = a_group_panel({"date": "20260923", "breadth": 41.0, "picks": [],
-                              "b_group": [{"name": "가", "code": "000001",
-                                           "코멘트": "정배열 추세까지 1개 모자람: 시장 폭 41%"}]})
+        html = sortie_panel({"date": "20260923", "breadth": 41.0, "picks": [],
+                             "b_group": [{"name": "가", "code": "000001",
+                                          "코멘트": "정배열 추세까지 1개 모자람: 시장 폭 41%"}]}, None, None, None, now=self.EVENING)
         self.assertIn("2026-09-23", html)
-        self.assertNotIn("B그룹", html, "B 목록은 이 판에 싣지 않기로 했습니다")
-        self.assertNotIn("A그룹 종목이 없습니다", html)
+        self.assertNotIn("가</b>", html, "출격 대기 목록은 이 판에 싣지 않기로 했습니다")
+        self.assertIn("새로 사지 않습니다", html)
 
     def test_listed_stocks_are_named(self):
-        html = a_group_panel({"date": "20260923", "breadth": 60.0,
-                              "picks": [{"name": "나<b>", "code": "000002", "갈래": ["기본 규칙"],
-                                         "시총순위": 5, "추세 기울기": 2.0, "60일 전 대비": 30.0,
-                                         "팔기": "종가 +10% 익절"}]})
+        html = sortie_panel({"date": "20260923", "breadth": 60.0,
+                             "picks": [{"name": "나<b>", "code": "000002", "갈래": ["추세 규칙"]}]}, None, None, None)
         self.assertIn("000002", html)
+        self.assertIn("4칸", html)
         self.assertNotIn("나<b>", html, "이름을 그대로 넣으면 화면이 깨집니다")
 
     def test_missing_result_is_explained(self):
-        self.assertIn("아직 없습니다", a_group_panel(None))
+        self.assertIn("아직 없습니다", sortie_panel(None, None, None, None))
+
+    def test_the_newest_result_wins(self):
+        daily = {"date": "20260930", "breadth": 40.0, "picks": [{"name": "다", "code": "000003", "갈래": ["정배열 추세"]}]}
+        old_plan = {"base": "20260929", "breadth": 45.0, "candidates": [{"name": "옛", "code": "000009"}]}
+        html = sortie_panel(daily, old_plan, None, None, now=self.MORNING)
+        self.assertIn("2026-09-30", html)
+        self.assertIn("000003", html)
+        self.assertNotIn("000009", html, "옛 저녁 계산이 새 일봉 결과를 가리면 안 됩니다")
+        self.assertIn("<b>오늘</b>", html, "어제 마감 결과는 오늘 장중 후보입니다")
+        new_plan = {"base": "20260930", "breadth": 40.0, "made": "2026-10-01 03:00",
+                    "candidates": [{"name": "라", "code": "000004", "3일연속": True}]}
+        html = sortie_panel(daily, new_plan, None, None, now=self.EVENING)
+        self.assertIn("000004", html)
+        self.assertIn("다음 거래일", html)
 
     def test_the_score_follows_the_final_conditions(self):
         self.assertEqual(stock_score({"group": "A", "comment": "정배열 추세 조건을 모두 채움"})[0], 100)

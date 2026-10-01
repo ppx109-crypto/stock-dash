@@ -11,8 +11,8 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (A_RULES, EMA_ONLY, HOURLY_RULES, hourly_a_panel, GROUP_RULES, GROUP_TITLES, RULE_TEXT, SHOWN_PER_GROUP,
-                          a_group_panel, board_basis,
+from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, RULE_TEXT, SHOWN_PER_GROUP,
+                          board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
                           stock_cards)
@@ -265,43 +265,49 @@ def link_codes(store, state, known):
 RULES = 'final-a-b-shortfall-v2'
 
 
-@st.cache_data(ttl=600, show_spinner=False)
-def today_a_group(stamp=None):
-    """오늘의 A그룹. GitHub Actions가 일봉 수집 뒤에 study/a_group.json으로 남깁니다."""
-    return final_group.load()
+RAW = "https://raw.githubusercontent.com/ppx109-crypto/stock-dash/main/"
 
 
 @st.cache_data(ttl=300, show_spinner=False)
-def hourly_a(stamp=None):
-    """1시간봉 A그룹(연구 90회차). GitHub Actions가 저녁(후보)과 장중 1시간마다(알림 · 연습 계좌) hourly-live/에 남깁니다."""
-    got = []
-    for name, empty in (("plan.json", None), ("state.json", None), ("alerts.json", [])):
-        try:
-            got.append(json.loads(Path("hourly-live", name).read_text(encoding="utf-8")))
-        except (OSError, ValueError):
-            got.append(empty)
-    return got
+def repo_json(path):
+    """GitHub Actions가 방금 올린 결과 파일을 5분마다 새로 읽습니다.
 
-
-def hourly_a_stamp():
+    앱 서버는 다시 배포되기 전까지 옛 파일을 들고 있어 '오늘의 결과'가 며칠 전에 멈춰 보였습니다
+    (2026-10-01). 그래서 저장소의 최신 파일을 직접 받고, 못 받으면 앱 안의 파일을 씁니다.
+    """
+    import requests
     try:
-        return max(Path("hourly-live", n).stat().st_mtime for n in ("plan.json", "state.json", "alerts.json")
-                   if Path("hourly-live", n).exists())
-    except ValueError:
+        got = requests.get(RAW + path, timeout=8)
+        if got.status_code == 200:
+            return got.json()
+    except (requests.RequestException, ValueError):
+        pass
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
         return None
+
+
+def today_a_group():
+    """가장 최근 마감의 일봉 조건 결과(정시 출격 · 출격 대기). GitHub Actions가 study/a_group.json으로 남깁니다."""
+    return repo_json(str(final_group.OUT))
+
+
+def hourly_a():
+    """정시 출격(1시간봉 규칙) 후보 · 연습 계좌 · 알림. GitHub Actions가 저녁(후보)과 장중 1시간마다 hourly-live/에 남깁니다."""
+    return (repo_json("hourly-live/plan.json"), repo_json("hourly-live/state.json"),
+            repo_json("hourly-live/alerts.json") or [])
 
 
 def a_group_stamp():
-    try:
-        return final_group.OUT.stat().st_mtime
-    except OSError:
-        return None
+    """관심종목 그룹 캐시 열쇠: 결과의 기준일이 바뀌면 새로 나눕니다."""
+    return (today_a_group() or {}).get("date")
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def graded_stocks(codes, research_key, rules=RULES, a_stamp=None):
     """관심종목의 등급. A는 최종 조건 목록으로, B·C는 EMA로 나눕니다."""
-    return final_group.regroup(market.grade_all(codes, published()), final_group.load())
+    return final_group.regroup(market.grade_all(codes, published()), today_a_group())
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -453,9 +459,8 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '없습니다. 아래 <b>＋ 조사된 종목 담기</b>로 자료가 준비된 종목을 한 번에 '
                  '담거나, <b>＋ 시가총액 상위 종목 담기</b>로 코스피·코스닥 상위 종목을 '
                  '담으면 여기에 그룹이 나옵니다.</p>')
-    st.markdown(header() + section('오늘의 A그룹 · 조사 대상 507종목 전체에서')
-                + A_RULES + a_group_panel(today_a_group(a_group_stamp())) + EMA_ONLY
-                + section('1시간봉 A그룹 · 장중 1시간마다') + HOURLY_RULES + hourly_a_panel(*hourly_a(hourly_a_stamp()))
+    st.markdown(header() + section(f'{NAME_A} · 1시간봉 매수 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
+                + SORTIE_RULES + sortie_panel(today_a_group(), *hourly_a())
                 + section('그룹 판정 · 관심종목') + GROUP_RULES
                 + (board or '') + close_frame(), unsafe_allow_html=True)
     if board is None:

@@ -372,8 +372,8 @@ def section(label: str, note: str = "") -> str:
 
 
 
-GROUP_TITLES = {"A": ("A그룹 · 매수 후보", "추세 규칙 또는 정배열 추세의 조건을 모두 채움", "a"),
-                "B": ("B그룹 · 조건 1~2개 미달", "무엇이 모자란지 함께 적음", "b")}
+GROUP_TITLES = {"A": ("정시 출격 · 1시간봉 매수 후보", "출격 조건 ① 또는 ② + 공통 조건을 모두 채움", "a"),
+                "B": ("출격 대기 · 조건 1~2개 미달", "무엇이 모자란지 함께 적음", "b")}
 
 
 EARNINGS_ORDER = {"양호": 0, "보통": 1, "부진": 2, "미확인": 3}
@@ -635,7 +635,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     group = (grade or {}).get("group")
     tone = STATUS.get(group)
     badge = (f'<span class="pxb-tag" style="color:{tone};background:{tone}1f">'
-             f'{group}그룹</span>') if tone else ""
+             f'{_e({"A": NAME_A, "B": NAME_B}.get(group, f"{group}그룹"))}</span>') if tone else ""
     card_score = _card(
         0, "판단점수",
         f'<div class="pxb-value">{score}<small>/100</small></div>'
@@ -881,103 +881,104 @@ def _settled_cards(book: dict, price: float | None) -> str:
     return card_growth, card_margin, card_fair
 
 
-RULE_TEXT = "A는 오늘 조건을 모두 채운 종목, B는 조건이 1~2개 모자란 종목입니다"
+# A그룹 · B그룹의 이름(사용자 요청 2026-10-01: 1시간봉으로 사는 종목에 맞는 이름).
+# '정시 출격' = 매 정시(1시간봉이 닫히는 때) 신호를 보고 다음 봉 시가에 사러 나감.
+NAME_A = "정시 출격"
+NAME_B = "출격 대기"
+RULE_TEXT = f"{NAME_A}은 오늘 조건을 모두 채운 종목, {NAME_B}는 조건이 1~2개 모자란 종목입니다"
 
-A_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule"><h4>① 추세 규칙<span>일봉</span></h4><dl>
+SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
+<div class="pxb-rule"><h4>① 추세 출격<span>전 거래일 일봉</span></h4><dl>
 <dt>대상</dt><dd>코스피 시가총액 100위 안</dd>
-<dt>사기</dt><dd>흔들림 작은 40% · 180일선 5일 +1.46%↑ · 60일 +20%↑</dd>
-<dt>팔기</dt><dd class="up">종가 +10% 익절</dd><dt></dt><dd class="down">−5% 손절 · 최대 10거래일</dd>
+<dt>조건</dt><dd>20일 흔들림 작은 40% · 180일선 5일 기울기 +1.46%↑ · 60일 전보다 +20%↑</dd>
 </dl></div>
-<div class="pxb-rule"><h4>② 정배열 추세<span>일봉</span></h4><dl>
+<div class="pxb-rule"><h4>② 정배열 출격<span>전 거래일 일봉</span></h4><dl>
 <dt>대상</dt><dd>코스피 시가총액 100위 안 · 시장 폭 50%↑</dd>
-<dt>사기</dt><dd>3·15·20·90·150·200일선 정배열 · 3일선이 200일선보다 19~53% 위</dd>
-<dt>팔기</dt><dd>정배열 깨진 날 종가</dd><dt></dt><dd class="down">−8% 손절 · 최대 60거래일</dd>
+<dt>조건</dt><dd>3·15·20·90·150·200일선 정배열 · 3일선이 200일선보다 19~53% 위</dd>
 </dl></div>
-<div class="pxb-rule x"><h4>공통 · 수급<span>둘 다 필수</span></h4><dl>
-<dt>5일</dt><dd>외국인 순매수 · 투신 순매수 · 개인 순매도 (전날까지)</dd>
-<dt>자리</dt><dd>최대 5종목 · 하루 새로 2종목 · 180일선 가파른 순</dd>
+<div class="pxb-rule x"><h4>공통 조건<span>①·② 모두 필수</span></h4><dl>
+<dt>수급</dt><dd>전날까지 5일 외국인 순매수 · 투신 순매수 · 개인 순매도</dd>
+<dt>판정</dt><dd>① 또는 ② 하나 + 공통 = 정시 출격 후보(다음 거래일)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>매수<span>1시간봉</span></h4><dl>
+<dt>신호</dt><dd>EMA 5·20·60·120·180 정배열이 된 봉 → 다음 봉 시가</dd>
+<dt>없으면</dt><dd>11시 봉까지 신호가 없으면 12:00 시가</dd>
+<dt>크기</dt><dd>10칸 계좌 · ① 또는 외국인·투신 3일 연속 순매수 4칸(40%) · 그 밖 2칸(20%)</dd>
+<dt>순서</dt><dd>① → 3일 연속 → 수급 덜 몰리고 20일 더 오른 것</dd>
+<dt>비킴</dt><dd>칸이 모자라면 7봉↑ 들고 +4% 못 간 것을 손익 나쁜 순으로 팔고 삼 (시장 폭 90% 미만일 때)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>매도 · ① 추세로 산 것</h4><dl>
+<dt>익절</dt><dd class="up">+5% 처음 닿으면 절반 · 나머지 +13% 전량</dd>
+<dt>손절</dt><dd class="down">−5%</dd>
+<dt>청산</dt><dd>60봉(약 10거래일) 지나면 전량</dd>
+</dl></div>
+<div class="pxb-rule"><h4>매도 · ② 정배열로 산 것</h4><dl>
+<dt>익절</dt><dd class="up">한때 +8% 갔다가 +1% 아래로 오면 전량</dd>
+<dt>손절</dt><dd class="down">−10%</dd>
+<dt>청산</dt><dd>일봉 정배열이 깨지면 다음 날 09:00 시가</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot">① 또는 ② 하나 + 공통을 모두 채우면 A그룹 · 시장 폭 = 100위 안에서 50일선 &gt; 200일선인 종목 비율</div>
+<div class="pxb-rule-foot">모두 1시간봉 종가로 판단 → 다음 봉 시가에 사고팜 · 판단 09:01 · 10:01 · 11:01 · 12:01 · 13:01 · 14:01 · 15:31 ·
+마지막 봉(14시~15:30)에서 나온 결정은 다음 날 09:00 시가 · 시장 폭 = 100위 안에서 50일선 &gt; 200일선인 종목 비율 ·
+성적(연구 90·94회차, 비용 0.30%) 2023-10~2025-03 연 +39.2% · 2025-04~2026-09 연 +112.8% · 실전 계좌 주문 없음(한투 모의투자 계좌에만 자동 주문)</div>
 </div>"""
 
-EMA_ONLY = """<div class="pxb"><details class="pxb-more"><summary>EMA 정배열만 보고 사면 안 되는 이유</summary>
-<div class="pxb-note" style="line-height:1.75">
-&nbsp;· 너무 흔함: 100위 안 거래일의 약 30%가 정배열, 열흘 뒤 오른 비율은 약 46~47%<br>
-&nbsp;· 2017년 이후 정배열만으로 사고팔면 계좌 최대 낙폭 −35%~−60%<br>
-&nbsp;· 이미 오른 모양만 확인할 뿐 추세의 힘·흔들림·시장 폭은 모름 → 위 조건으로 함께 봄
-</div></details></div>"""
-
-GROUP_RULES = """<div class="pxb"><div class="pxb-note" style="line-height:1.75">
-<b>A그룹</b> · 오늘 위 조건을 모두 채운 종목<br>
-<b>B그룹</b> · 두 방식 가운데 가까운 쪽에서 조건이 1~2개 모자란 종목 (무엇이 모자란지 함께 적음)<br>
+GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75">
+<b>{NAME_A}</b> · 오늘 위 조건을 모두 채운 종목 (다음 거래일 1시간봉 신호에 삼)<br>
+<b>{NAME_B}</b> · ①·② 가운데 가까운 쪽에서 조건이 1~2개 모자란 종목 (무엇이 모자란지 함께 적음)<br>
 조건이 3개 이상 모자란 종목은 싣지 않습니다
 </div></div>"""
 
 
-def a_group_panel(found: dict | None) -> str:
-    """오늘의 A그룹(507종목 전체에서 최종 조건을 채운 종목)을 그립니다."""
-    if not found or not found.get("date"):
+def _kst_now():
+    from zoneinfo import ZoneInfo
+    return datetime.now(ZoneInfo("Asia/Seoul"))
+
+
+def sortie_target(base: str, now=None) -> str:
+    """base(마감 기준일)로 고른 후보가 언제 쓰이는지: 오늘 장중이면 '오늘', 아니면 '다음 거래일'."""
+    now = now or _kst_now()
+    today = now.strftime("%Y%m%d")
+    if str(base) < today and now.weekday() < 5 and now.strftime("%H%M") < "1530":
+        return "오늘"
+    return "다음 거래일"
+
+
+def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, alerts: list | None, now=None) -> str:
+    """오늘의 결과: 정시 출격 후보(가장 최근 마감 기준) · 들고 있는 종목(연습 계좌) · 최근 알림.
+
+    저녁 계산(hourly-live/plan.json)이 일봉 결과(study/a_group.json)보다 옛것이거나 없으면 일봉 결과로 후보를 적습니다.
+    """
+    found, plan = found or {}, plan or {}
+    day_daily, day_plan = str(found.get("date") or ""), str(plan.get("base") or "")
+    if not day_daily and not day_plan:
         return ('<div class="pxb"><div class="pxb-note">오늘의 결과가 아직 없습니다. '
                 '장 마감 뒤 주가를 받으면 자동으로 계산됩니다.</div></div>')
-    picks = found.get("picks") or []
-    head = (f'<b>오늘의 결과</b> · 종가 기준일 {_e(as_day(found["date"]))}<br>'
-            f'시장 폭 {_e(found.get("breadth"))}% (정배열 추세는 50% 이상일 때만 삼)')
-    body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
-    if picks:
-        items = "".join(
-            f'<li><b>{_e(one["name"])}</b> ({_e(one["code"])}) · {_e("·".join(one.get("갈래") or []))} · '
-            f'시총 {_e(one.get("시총순위"))}위 · 180일선 기울기 {_e(one.get("추세 기울기"))} · '
-            f'60일 {_e(one.get("60일 전 대비"))}% · 팔기: {_e(one.get("팔기"))}</li>'
-            for one in picks)
-        body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
-    # 오늘 A가 없을 때의 안내와 B 목록은 싣지 않습니다(사용자 요청). B는 아래 관심종목 판에서 봅니다.
-    return f'<div class="pxb">{body}</div>'
-
-
-HOURLY_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule x"><h4>후보<span>전날 마감 뒤</span></h4><dl>
-<dt>문</dt><dd>일봉 추세 규칙 또는 정배열 추세 + 수급 5일 · 시총 100위 안</dd>
-<dt>크기</dt><dd>10칸 계좌 · 추세 규칙·3일 연속 4칸(40%) · 그 밖 2칸(20%)</dd>
-</dl></div>
-<div class="pxb-rule"><h4>살 때<span>1시간봉</span></h4><dl>
-<dt>신호</dt><dd>EMA 5·20·60·120·180 정배열 된 봉 → 다음 봉 시가</dd>
-<dt>없으면</dt><dd>11시 봉까지 없으면 12:00 시가</dd>
-<dt>순서</dt><dd>추세 규칙 → 3일 연속 → 수급 덜 몰리고 20일 오른 것</dd>
-<dt>비킴</dt><dd>칸 모자라면 7봉↑ 들고 +4% 못 간 것 (시장 폭 90 미만)</dd>
-</dl></div>
-<div class="pxb-rule"><h4>팔 때 · 추세 규칙</h4><dl>
-<dt>익절</dt><dd class="up">+5% 처음 닿으면 절반 · +13% 전량</dd>
-<dt>손절</dt><dd class="down">−5%</dd>
-<dt>청산</dt><dd>60봉(약 10거래일)</dd>
-</dl></div>
-<div class="pxb-rule"><h4>팔 때 · 정배열 추세</h4><dl>
-<dt>익절</dt><dd class="up">+8% 닿은 뒤 +1% 아래로 오면</dd>
-<dt>손절</dt><dd class="down">−10%</dd>
-<dt>청산</dt><dd>일봉 정배열 깨지면 다음 날 09:00</dd>
-</dl></div>
-</div>
-<div class="pxb-rule-foot">모두 1시간봉 종가로 판단 → 다음 봉 시가에 사고팜 · 알림 10:01 · 11:01 · 12:01 · 13:01 · 14:01 · 15:31 ·
-마지막 봉(14시~15:30)에서 나온 결정은 다음 날 09:00 시가 · 주문은 넣지 않는 연습 계좌 · 연구 90회차(약한 장 연 +39% · 센 장 연 +113%)</div>
-</div>"""
-
-
-def hourly_a_panel(plan: dict | None, state: dict | None, alerts: list | None) -> str:
-    """1시간봉 A그룹: 다음 거래일 후보 · 들고 있는 종목(연습 계좌) · 최근 알림."""
-    if not plan or not plan.get("base"):
-        return ('<div class="pxb"><div class="pxb-note">1시간봉 A그룹 후보가 아직 없습니다. '
-                '장 마감 뒤 일봉 A그룹 계산이 끝나면 자동으로 만들어집니다.</div></div>')
-    cands = plan.get("candidates") or []
-    head = (f'<b>후보</b> · {_e(as_day(plan["base"]))} 마감 기준 → 다음 거래일 · 시장 폭 {_e(plan.get("breadth"))}% · '
-            f'{len(cands)}종목 (만든 때 {_e(plan.get("made"))})')
+    if day_plan and day_plan >= day_daily:
+        base, breadth = day_plan, plan.get("breadth")
+        cands = [{**c, "칸": 4 if (c.get("추세문") or c.get("3일연속")) else 2} for c in plan.get("candidates") or []]
+        made = plan.get("made")
+    else:
+        base, breadth, made = day_daily, found.get("breadth"), None
+        cands = [{"code": p.get("code"), "name": p.get("name"), "갈래": p.get("갈래"),
+                  "칸": 4 if "추세 규칙" in (p.get("갈래") or []) else 2}
+                 for p in found.get("picks") or []]
+    when = sortie_target(base, now)
+    head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> 정시 출격 후보 {len(cands)}종목 · '
+            f'시장 폭 {_e(breadth)}% (정배열 출격은 50% 이상일 때만)')
+    if made:
+        head += f'<br><small>후보 계산 {_e(made)} · 화면은 5분마다 새 결과를 읽습니다</small>'
+    else:
+        head += '<br><small>화면은 5분마다 새 결과를 읽습니다</small>'
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
     if cands:
         items = "".join(
             f'<li><b>{_e(c.get("name"))}</b> ({_e(c.get("code"))}) · {_e("·".join(c.get("갈래") or []))}'
-            f'{" · 3일 연속" if c.get("3일연속") else ""} · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸</li>'
-            for c in cands)
+            f'{" · 3일 연속" if c.get("3일연속") else ""} · {c["칸"]}칸</li>' for c in cands)
         body += f'<ol class="pxb-note" style="margin:6px 0 0 18px">{items}</ol>'
+    else:
+        body += ('<div class="pxb-note" style="margin-top:6px">조건을 모두 채운 종목이 없어 '
+                 f'{when}은 새로 사지 않습니다.</div>')
     held = (state or {}).get("positions") or {}
     if held:
         rows = "".join(
@@ -985,13 +986,14 @@ def hourly_a_panel(plan: dict | None, state: dict | None, alerts: list | None) -
             f'산 값 {float(p.get("price") or 0):,.0f}원 · 지금 '
             f'{((float(p.get("last_close") or p.get("price") or 0) / float(p.get("price") or 1)) - 1) * 100:+.1f}% · '
             f'산 때 {_e(p.get("bought"))}</li>' for p in held.values())
-        body += f'<div class="pxb-note" style="margin-top:10px"><b>들고 있는 종목(연습 계좌)</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>'
+        body += (f'<div class="pxb-note" style="margin-top:10px"><b>들고 있는 종목(연습 계좌)</b></div>'
+                 f'<ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>')
     recent = list(reversed((alerts or [])[-12:]))
     if recent:
         rows = "".join(f'<li>{_e(a.get("at"))} · {_e(a.get("kind"))} · {_e(a.get("text"))}</li>' for a in recent)
-        body += f'<div class="pxb-note" style="margin-top:10px"><b>최근 알림</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>'
+        body += (f'<div class="pxb-note" style="margin-top:10px"><b>최근 알림</b></div>'
+                 f'<ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>')
     return f'<div class="pxb">{body}</div>'
-
 
 
 def close_frame() -> str:
