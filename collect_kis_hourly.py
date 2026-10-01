@@ -65,6 +65,9 @@ def to_hours(rows, day):
     return [(f"{day}{hh:02d}", *[round(x, 2) for x in by[hh][:4]], int(by[hh][4])) for hh in sorted(by)]
 
 
+EMPTY = "empty.txt"     # 물었는데 증권사가 그날 봉을 하나도 주지 않은 날(다시 묻지 않음 · 2026-10-01: 한 종목이 1년치를 매번 0개로 돌려줘 조회를 헛씀)
+
+
 def have_days(code):
     folder = HOME / code
     got = set()
@@ -72,7 +75,21 @@ def have_days(code):
         for line in f.read_text(encoding="utf-8").splitlines():
             if line[:8].isdigit():
                 got.add(line[:8])
+    empty = folder / EMPTY
+    if empty.exists():
+        got.update(x.strip() for x in empty.read_text(encoding="utf-8").split() if x.strip().isdigit())
     return got
+
+
+def mark_empty(code, days):
+    """봉이 하나도 없던 날을 적어 둠(오류로 못 받은 날은 적지 않음)."""
+    if not days:
+        return
+    folder = HOME / code
+    folder.mkdir(parents=True, exist_ok=True)
+    path = folder / EMPTY
+    old = set(path.read_text(encoding="utf-8").split()) if path.exists() else set()
+    path.write_text("\n".join(sorted(old | set(days))) + "\n", encoding="utf-8")
 
 
 def trading_days(today):
@@ -133,14 +150,17 @@ def main(codes=None):
         if not need:
             done_codes += 1
             continue
-        got = []
+        got, empty = [], []
         with ThreadPoolExecutor(LANES) as pool:
             for fut in as_completed([pool.submit(one, code, d) for d in need]):
                 _, day, bars = fut.result()
                 if bars:
                     got += bars
+                elif bars is not None:
+                    empty.append(day)          # 물었고 답은 왔는데 봉이 없음(None = 못 물음 · 오류)
         if got:
             merge(HOME / code, got)
+        mark_empty(code, empty)
         print(f"  {code} · 빈 날 {len(need)} · 받은 봉 {len(got)} · 부른 수 {calls[0]}", flush=True)
         if calls[0] + len(ENDS) > MAX_CALLS:
             print("이번 몫을 다 불렀습니다(다음에 이어 받음).", flush=True)
