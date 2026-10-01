@@ -94,6 +94,50 @@ def _dart_fallback(started: float) -> dict:
                    "DART에 닿지 않고 수집본도 받지 못했습니다. 잠시 뒤 다시 눌러 보세요.", started)
 
 
+# 증권사 토큰 '1분에 한 번' 제한 문구(broker_kis.REFUSALS['EGW00133']의 앞부분).
+RATE_LIMITED = "접근토큰 발급이 잠시 제한"
+
+
+def quick_status() -> list[dict]:
+    """첫 화면 위 불빛: 다트 · 한국투자증권이 지금 답하는지 가볍게 봅니다(1분마다).
+
+    다트는 회사 정보 한 번, 한투는 토큰(있으면 재사용) + 삼성전자 현재가 한 번만 부릅니다.
+    응답 본문은 싣지 않고 정해 둔 짧은 말만 돌려줍니다.
+    """
+    out = []
+    key = os.getenv("DART_CRTFC_KEY", "").strip()
+    if not key:
+        out.append({"name": "다트", "ok": False, "note": "키 없음"})
+    else:
+        try:
+            got = requests.get("https://opendart.fss.or.kr/api/company.json",
+                               params={"crtfc_key": key, "corp_code": "00126380"}, timeout=(5, 10))
+            code = str(got.json().get("status", ""))
+            out.append({"name": "다트", "ok": code == "000",
+                        "note": "정상" if code == "000" else {"010": "키 미등록", "011": "키 사용 중지", "012": "IP 제한",
+                                                              "020": "호출 한도 초과", "800": "기관 점검 중"}.get(code, "응답 이상")})
+        except (requests.RequestException, ValueError, AttributeError):
+            out.append({"name": "다트", "ok": False, "note": "응답 없음"})
+    if not (os.getenv("KIS_APP_KEY", "").strip() and os.getenv("KIS_APP_SECRET", "").strip()):
+        out.append({"name": "한국투자증권", "ok": False, "note": "키 없음"})
+    else:
+        import broker_kis
+        try:
+            client = broker_kis.market()
+            client.authorize()
+            client.quote("005930")
+            out.append({"name": "한국투자증권", "ok": True, "note": "정상"})
+        except broker_kis.BrokerError as error:
+            if RATE_LIMITED in str(error):
+                # 서버는 키를 알아보고 '잠깐 기다려'라고 답한 것 — 연결은 살아 있습니다.
+                out.append({"name": "한국투자증권", "ok": True, "note": "연결됨 · 토큰 1분 발급 제한(곧 다시 확인)"})
+            else:
+                out.append({"name": "한국투자증권", "ok": False, "note": "인증 · 시세 실패"})
+        except (requests.RequestException, ValueError, KeyError, TypeError):
+            out.append({"name": "한국투자증권", "ok": False, "note": "응답 없음"})
+    return out
+
+
 def health(spec: ProviderSpec) -> dict:
     started = time.perf_counter()
     if not configured(spec):
@@ -187,6 +231,12 @@ def health(spec: ProviderSpec) -> dict:
                 client = broker_kis.market()
                 client.authorize()
             except broker_kis.BrokerError as error:
+                if RATE_LIMITED in str(error):
+                    # 키는 맞습니다. 같은 키로 자료를 모으는 GitHub 작업이 방금 토큰을 받아,
+                    # 증권사의 '1분에 한 번 발급' 제한에 걸린 것입니다(2026-10-01 19:13).
+                    return _result(spec.provider_id, "busy",
+                                   f"{label} 서버 · 같은 키로 자료를 모으는 작업이 방금 토큰을 받아 1분 발급 제한 중 · 1분 뒤 다시 누르세요",
+                                   started)
                 return _result(spec.provider_id, "error", f"{label} 서버 인증 실패 · {error}"[:120], started)
             notes = []
             try:

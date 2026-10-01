@@ -754,6 +754,8 @@ def render_sources():
                     source_badge("인증정보 필요", "wait")
                 elif check["status"] == "fallback":
                     source_badge("수집본 사용", "wait")
+                elif check["status"] == "busy":
+                    source_badge("잠시 대기", "wait")
                 else:
                     source_badge("확인 필요", "bad")
             with right:
