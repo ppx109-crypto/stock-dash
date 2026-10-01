@@ -67,7 +67,7 @@ class Settle(unittest.TestCase):
     def test_fills_at_close_and_records(self):
         state = {"positions": {"000001": pos(칸=4)}, "closed": []}
         sells = [{"type": "sell", "code": "000001", "칸": 2, "why": "절반 익절", "name": "가", "kind": "추세"}]
-        buys = [{"type": "buy", "code": "000002", "칸": 3, "name": "나", "kind": "정배열", "why": "② 정배열 출격"}]
+        buys = [{"type": "buy", "code": "000002", "칸": 3, "name": "나", "kind": "정배열", "why": "② 정배열 조건"}]
         lines = D.settle(state, "20261002", sells, buys, {"000001": 106.0, "000002": 50_000.0})
         self.assertEqual(state["positions"]["000001"]["칸"], 2)
         self.assertEqual(state["positions"]["000001"]["max_close"], 106.0)

@@ -21,9 +21,9 @@ import broker_kis
 KST = ZoneInfo("Asia/Seoul")
 PAPER_BASE = "https://openapivts.koreainvestment.com:29443"
 ORDER_PATH = "/uapi/domestic-stock/v1/trading/order-cash"
-BOOK = Path("hourly-live/paper-orders.json")              # 1시간봉(정시 출격) 주문 장부
-DAILY_BOOK = Path("daily-live/paper-orders.json")        # 일봉(종가 출격) 주문 장부
-LABEL = {"1h": "정시 출격 · 1시간봉", "1d": "종가 출격 · 일봉"}
+BOOK = Path("hourly-live/paper-orders.json")              # 1시간봉(1시간봉 규칙) 주문 장부
+DAILY_BOOK = Path("daily-live/paper-orders.json")        # 일봉(1일봉 규칙) 주문 장부
+LABEL = {"1h": "1시간봉 매수 후보", "1d": "1일봉 매수 후보"}
 # 모의 계좌 하나를 두 규칙이 나눠 씀(사용자 요청 2026-10-01: 1시간봉 · 일봉 모의투자를 함께, 거래 내역은 따로).
 # 규칙마다 계좌 총액의 SHARE만큼을 제 돈으로 보고 칸을 셈 · 팔 때는 그 규칙이 산 수량(장부의 held)만 팖.
 SHARE = float(os.getenv("PAPER_SHARE", "0.5"))

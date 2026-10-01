@@ -372,8 +372,8 @@ def section(label: str, note: str = "") -> str:
 
 
 
-GROUP_TITLES = {"A": ("정시 출격 · 1시간봉", "어제 종가로 조건을 다 채움 → 오늘 장중 1시간봉 신호에 삼 · 들고 있는 종목 포함", "a"),
-                "B": ("종가 출격 · 일봉", "오늘 15:20 일봉 규칙으로 고른 종목(종가에 삼) · 들고 있는 종목 포함", "b")}
+GROUP_TITLES = {"A": ("1시간봉 매수 후보", "어제 종가로 조건을 다 채움 → 오늘 장중 1시간봉 신호에 삼 · 들고 있는 종목 포함", "a"),
+                "B": ("1일봉 매수 후보", "오늘 15:20 1일봉 규칙으로 고른 종목(종가에 삼) · 들고 있는 종목 포함", "b")}
 
 
 EARNINGS_ORDER = {"양호": 0, "보통": 1, "부진": 2, "미확인": 3}
@@ -418,9 +418,9 @@ def chip_label(row: dict) -> str:
 def group_buckets(graded: list, hourly: dict | None = None, daily: dict | None = None) -> tuple[dict, list]:
     """두 규칙의 칸으로 나누고, 판정하지 못한 종목은 따로 돌려줍니다.
 
-    A(정시 출격): 조건을 다 채운 종목(group A) 또는 1시간봉 규칙이 들고 있는 종목(hourly: 코드 → 한 줄 설명).
-    B(종가 출격): 일봉 규칙이 오늘 고른 종목 · 들고 있는 종목(daily: 코드 → 한 줄 설명). 한 종목이 두 칸에 다 있을 수 있습니다.
-    조건이 1~2개 모자란 종목(예전 '출격 대기')은 사용자 요청(2026-10-01)으로 판에 싣지 않습니다."""
+    A(1시간봉 규칙): 조건을 다 채운 종목(group A) 또는 1시간봉 규칙이 들고 있는 종목(hourly: 코드 → 한 줄 설명).
+    B(1일봉 규칙): 일봉 규칙이 오늘 고른 종목 · 들고 있는 종목(daily: 코드 → 한 줄 설명). 한 종목이 두 칸에 다 있을 수 있습니다.
+    조건이 1~2개 모자란 종목(예전 '조건 1~2개 미달')은 사용자 요청(2026-10-01)으로 판에 싣지 않습니다."""
     hourly, daily = hourly or {}, daily or {}
     buckets = {key: [] for key in GROUP_TITLES}
     pending = []
@@ -641,7 +641,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     group = (grade or {}).get("group")
     tone = STATUS.get(group)
     badge = (f'<span class="pxb-tag" style="color:{tone};background:{tone}1f">'
-             f'{_e({"A": NAME_A + " 후보", "B": "조건 1~2개 미달", "밖": "조건 3개 이상 미달"}.get(group, f"{group}그룹"))}</span>') if tone else ""
+             f'{_e({"A": "1시간봉 매수 후보", "B": "조건 1~2개 미달", "밖": "조건 3개 이상 미달"}.get(group, f"{group}그룹"))}</span>') if tone else ""
     card_score = _card(
         0, "판단점수",
         f'<div class="pxb-value">{score}<small>/100</small></div>'
@@ -888,19 +888,18 @@ def _settled_cards(book: dict, price: float | None) -> str:
 
 
 # A그룹 · B그룹의 이름(사용자 요청 2026-10-01: 1시간봉으로 사는 종목에 맞는 이름).
-# '정시 출격' = 매 정시(1시간봉이 닫히는 때) 신호를 보고 다음 봉 시가에 사러 나감.
-NAME_A = "정시 출격"
-NAME_B = "종가 출격"
-RULE_TEXT = f"{NAME_A}은 1시간봉 규칙, {NAME_B}은 일봉 규칙으로 고른 종목입니다"
+NAME_A = "1시간봉"
+NAME_B = "1일봉"
+RULE_TEXT = "1시간봉 매매 규칙과 1일봉 매매 규칙으로 고른 종목입니다"
 
 SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule"><h4>① 추세 출격<span>어제 일봉으로 판단</span></h4><dl>
+<div class="pxb-rule"><h4>① 추세 조건<span>어제 일봉으로 판단</span></h4><dl>
 <dt>대상</dt><dd>코스피 시가총액 1~100위 종목</dd>
 <dt>조건1</dt><dd>최근 20일 주가 흔들림이 작은 편 (100종목 중 덜 흔들리는 40% 안)</dd>
 <dt>조건2</dt><dd>180일 이동평균선이 최근 5거래일 동안 1.46% 이상 올라감 (긴 추세가 가파르게 오르는 중)</dd>
 <dt>조건3</dt><dd>주가가 60거래일 전보다 20% 이상 오름</dd>
 </dl></div>
-<div class="pxb-rule"><h4>② 정배열 출격<span>어제 일봉으로 판단</span></h4><dl>
+<div class="pxb-rule"><h4>② 정배열 조건<span>어제 일봉으로 판단</span></h4><dl>
 <dt>대상</dt><dd>코스피 시가총액 1~100위 종목</dd>
 <dt>조건1</dt><dd>3·15·20·90·150·200일 이동평균선이 짧은 것부터 위에서 아래로 차례대로 놓임 (정배열 = 오르는 추세)</dd>
 <dt>조건2</dt><dd>3일선이 200일선보다 19~53% 위 (너무 덜 오르지도, 너무 많이 오르지도 않음)</dd>
@@ -908,7 +907,7 @@ SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
 </dl></div>
 <div class="pxb-rule x"><h4>공통 조건<span>①·② 모두 꼭 채워야 함</span></h4><dl>
 <dt>수급</dt><dd>어제까지 5거래일 동안 외국인은 사고(순매수), 투신(펀드)도 사고, 개인은 팖(순매도)</dd>
-<dt>결과</dt><dd>① 또는 ② 가운데 하나 + 공통 조건을 채우면 → 오늘 장중 <b>정시 출격 후보</b></dd>
+<dt>결과</dt><dd>① 또는 ② 가운데 하나 + 공통 조건을 채우면 → 오늘 장중 <b>1시간봉 매수 후보</b></dd>
 </dl></div>
 <div class="pxb-rule"><h4>매수<span>오늘 장중 · 1시간봉</span></h4><dl>
 <dt>언제</dt><dd>후보의 1시간봉 지수이동평균선 5·20·60·120·180개가 정배열로 바뀌면 → 그 봉이 끝난 바로 다음 시각(정시) 시작 가격에 삼</dd>
@@ -935,19 +934,19 @@ SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
 <b>시장 폭</b> · 시가총액 100위 안에서 50일 이동평균선이 200일선보다 위에 있는 종목의 비율(시장 전체가 얼마나 오르는 흐름인지) ·
 <b>지수이동평균선(EMA)</b> · 최근 값에 더 무게를 둔 평균 가격선<br>
 <b>지난 성적</b>(연구 90·94회차, 사고팔 때 비용 0.30% 뺌) · 2023-10~2025-03 해마다 +39.2% · 2025-04~2026-09 해마다 +112.8% · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음<br>
-<b>주문</b> · 실전 계좌에는 주문하지 않음 · 한투 모의투자 계좌의 절반으로 자동 주문(나머지 절반은 아래 종가 출격) · 매수·매도 결정과 체결은 모두 디스코드로 알림</div>
+<b>주문</b> · 실전 계좌에는 주문하지 않음 · 한투 모의투자 계좌의 절반으로 자동 주문(나머지 절반은 아래 1일봉 규칙) · 매수·매도 결정과 체결은 모두 디스코드로 알림</div>
 </div>"""
 
 GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75">
-<b>{NAME_A}</b> · 1시간봉 규칙 · 어제 종가로 조건을 다 채운 종목(오늘 장중 신호를 기다림)과 이 규칙이 들고 있는 종목<br>
-<b>{NAME_B}</b> · 일봉 규칙 · 오늘 15:20에 고른 종목(오늘 종가에 삼)과 이 규칙이 들고 있는 종목<br>
+<b>1시간봉 매수 후보</b> · 어제 종가로 조건을 다 채운 종목(오늘 장중 신호를 기다림)과 이 규칙이 들고 있는 종목<br>
+<b>1일봉 매수 후보</b> · 오늘 15:20에 고른 종목(오늘 종가에 삼)과 이 규칙이 들고 있는 종목<br>
 두 규칙은 같은 조건(①·② + 공통)에서 출발해 한 종목이 두 칸에 함께 나올 수 있습니다 · 조건을 다 채우지 못한 종목은 싣지 않습니다
 </div></div>"""
 
 
 CLOSE_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule x"><h4>사는 조건<span>위 정시 출격과 같음 + 하나 더</span></h4><dl>
-<dt>조건</dt><dd>위 ① 추세 출격 또는 ② 정배열 출격 가운데 하나 + 공통 조건(수급) — 다만 어제가 아니라 <b>오늘 값</b>으로 판단</dd>
+<div class="pxb-rule x"><h4>사는 조건<span>위 1시간봉 규칙과 같음 + 하나 더</span></h4><dl>
+<dt>조건</dt><dd>위 ① 추세 조건 또는 ② 정배열 조건 가운데 하나 + 공통 조건(수급) — 다만 어제가 아니라 <b>오늘 값</b>으로 판단</dd>
 <dt>거름</dt><dd>최근 45일 사이 증권사 목표가(여러 증권사의 가운데 값)가 내린 종목은 사지 않음</dd>
 </dl></div>
 <div class="pxb-rule"><h4>매수<span>오늘 종가에</span></h4><dl>
@@ -970,7 +969,7 @@ CLOSE_RULES = """<div class="pxb"><div class="pxb-rules">
 </dl></div>
 </div>
 <div class="pxb-rule-foot"><b>판단과 체결</b> · 하루에 한 번, 장 마감 직전(15:20)에 판단 · %는 모두 산 값과 그날 종가를 견줘 셈 · 사고파는 것은 모두 그날 종가(마감 동시호가)<br>
-<b>정시 출격과 다른 점</b> · 신호가 난 <b>그날 종가에 바로</b> 삼(정시 출격은 다음 날 장중) · 하루 한 번만 판단해 매매가 적고 사고팔 때 드는 비용에 3~4배 덜 흔들림(연구 새 83회차) · 2017년부터 9년 동안 여러 하락장에서 시험함<br>
+<b>1시간봉 규칙과 다른 점</b> · 신호가 난 <b>그날 종가에 바로</b> 삼(1시간봉 규칙은 다음 날 장중) · 하루 한 번만 판단해 매매가 적고 사고팔 때 드는 비용에 3~4배 덜 흔들림(연구 새 83회차) · 2017년부터 9년 동안 여러 하락장에서 시험함<br>
 <b>지난 성적</b>(연구 새 82회차, 비용 0.25% 뺌) · 2017~2020 해마다 +13.9% (가장 크게 빠진 때 −6.6%) · 2021~2026-09 해마다 +58.4% (−14.4%) · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음<br>
 <b>주문</b> · 실전 계좌에는 주문하지 않음 · 한투 모의투자 계좌의 절반으로 자동 주문 · 매수·매도와 체결은 모두 디스코드로 알림</div>
 </div>"""
@@ -991,7 +990,7 @@ def sortie_target(base: str, now=None) -> str:
 
 
 def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, alerts: list | None, now=None) -> str:
-    """오늘의 결과: 정시 출격 후보(가장 최근 마감 기준) · 들고 있는 종목(연습 계좌) · 최근 알림.
+    """오늘의 결과: 1시간봉 규칙 후보(가장 최근 마감 기준) · 들고 있는 종목(연습 계좌) · 최근 알림.
 
     저녁 계산(hourly-live/plan.json)이 일봉 결과(study/a_group.json)보다 옛것이거나 없으면 일봉 결과로 후보를 적습니다.
     """
@@ -1010,8 +1009,8 @@ def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, aler
                   "칸": 4 if "추세 규칙" in (p.get("갈래") or []) else 2}
                  for p in found.get("picks") or []]
     when = sortie_target(base, now)
-    head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> 정시 출격 후보 {len(cands)}종목 · '
-            f'시장 폭 {_e(breadth)}% (②정배열 출격은 50% 이상일 때만 삼)')
+    head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> 1시간봉 매수 후보 {len(cands)}종목 · '
+            f'시장 폭 {_e(breadth)}% (②정배열 조건은 50% 이상일 때만 삼)')
     if made:
         head += f'<br><small>후보 계산 {_e(made)} · 화면은 5분마다 새 결과를 읽습니다</small>'
     else:
@@ -1043,13 +1042,13 @@ def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, aler
 
 
 def close_panel(today: dict | None, state: dict | None, alerts: list | None) -> str:
-    """종가 출격(일봉 규칙) 오늘의 결과 · 들고 있는 종목(연습 계좌) · 최근 알림."""
+    """1일봉 규칙(일봉 규칙) 오늘의 결과 · 들고 있는 종목(연습 계좌) · 최근 알림."""
     if not today or not today.get("date"):
-        return ('<div class="pxb"><div class="pxb-note">종가 출격 결과가 아직 없습니다. '
+        return ('<div class="pxb"><div class="pxb-note">1일봉 규칙 결과가 아직 없습니다. '
                 '평일 15:20에 일봉 규칙으로 판단하면 자동으로 채워집니다.</div></div>')
     cands = today.get("candidates") or []
     head = (f'<b>오늘의 결과</b> · {_e(as_day(today["date"]))} 15:20 판단 · 조건을 채운 종목 {len(cands)}개 · '
-            f'시장 폭 {_e(today.get("breadth"))}% (②정배열 출격은 50% 이상일 때만 삼)'
+            f'시장 폭 {_e(today.get("breadth"))}% (②정배열 조건은 50% 이상일 때만 삼)'
             f'<br><small>계산 {_e(today.get("made"))} · 화면은 5분마다 새 결과를 읽습니다</small>')
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
     trades = [("매도", x) for x in today.get("sells") or []] + [("매수", x) for x in today.get("buys") or []]

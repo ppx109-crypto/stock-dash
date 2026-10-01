@@ -290,35 +290,35 @@ def repo_json(path):
 
 
 def today_a_group():
-    """가장 최근 마감의 일봉 조건 결과(정시 출격 · 출격 대기). GitHub Actions가 study/a_group.json으로 남깁니다."""
+    """가장 최근 마감의 일봉 조건 결과(1시간봉 규칙 · 조건 1~2개 미달). GitHub Actions가 study/a_group.json으로 남깁니다."""
     return repo_json(str(final_group.OUT))
 
 
 def hourly_a():
-    """정시 출격(1시간봉 규칙) 후보 · 연습 계좌 · 알림. GitHub Actions가 저녁(후보)과 장중 1시간마다 hourly-live/에 남깁니다."""
+    """1시간봉 규칙(1시간봉 규칙) 후보 · 연습 계좌 · 알림. GitHub Actions가 저녁(후보)과 장중 1시간마다 hourly-live/에 남깁니다."""
     return (repo_json("hourly-live/plan.json"), repo_json("hourly-live/state.json"),
             repo_json("hourly-live/alerts.json") or [])
 
 
 def daily_live():
-    """종가 출격(일봉 규칙) 오늘 결과 · 연습 계좌 · 알림. GitHub Actions가 평일 15:20 ~ 15:35에 daily-live/에 남깁니다."""
+    """1일봉 규칙(일봉 규칙) 오늘 결과 · 연습 계좌 · 알림. GitHub Actions가 평일 15:20 ~ 15:35에 daily-live/에 남깁니다."""
     return (repo_json("daily-live/today.json"), repo_json("daily-live/state.json"),
             repo_json("daily-live/alerts.json") or [])
 
 
 def board_marks():
-    """관심종목 판의 두 칸: 코드 → 한 줄 설명(정시 출격 · 종가 출격)."""
+    """관심종목 판의 두 칸: 코드 → 한 줄 설명(1시간봉 규칙 · 1일봉 규칙)."""
     plan, hstate, _ = hourly_a()
     today, dstate, _ = daily_live()
     hourly, daily = {}, {}
     for c in (plan or {}).get("candidates") or []:
-        hourly[c["code"]] = f'{c.get("name")}  ·  정시 출격 후보 · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸'
+        hourly[c["code"]] = f'{c.get("name")}  ·  1시간봉 매수 후보 · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸'
     for p in ((hstate or {}).get("positions") or {}).values():
-        hourly[p["code"]] = f'{p.get("name")}  ·  정시 출격 보유 중 · {p.get("칸")}칸'
+        hourly[p["code"]] = f'{p.get("name")}  ·  1시간봉 규칙 보유 중 · {p.get("칸")}칸'
     for c in (today or {}).get("candidates") or []:
-        daily[c["code"]] = f'{c.get("name")}  ·  종가 출격 후보 · {c.get("칸")}칸'
+        daily[c["code"]] = f'{c.get("name")}  ·  1일봉 매수 후보 · {c.get("칸")}칸'
     for p in ((dstate or {}).get("positions") or {}).values():
-        daily[p["code"]] = f'{p.get("name")}  ·  종가 출격 보유 중 · {p.get("칸")}칸'
+        daily[p["code"]] = f'{p.get("name")}  ·  1일봉 규칙 보유 중 · {p.get("칸")}칸'
     return hourly, daily
 
 
@@ -484,12 +484,12 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '담으면 여기에 그룹이 나옵니다.</p>')
     plan, hstate, halerts = hourly_a()
     dtoday, dstate, dalerts = daily_live()
-    st.markdown(header() + section(f'{NAME_A} · 1시간봉 매수 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
+    st.markdown(header() + section('1시간봉 매매 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
                 + SORTIE_RULES + sortie_panel(today_a_group(), plan, hstate, halerts)
-                + ledger_panel(f'{NAME_A} 모의투자', hstate, repo_json('hourly-live/paper-orders.json'))
-                + section(f'{NAME_B} · 일봉 매수 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20')
+                + ledger_panel('1시간봉 모의투자', hstate, repo_json('hourly-live/paper-orders.json'))
+                + section('1일봉 매매 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20')
                 + CLOSE_RULES + close_panel(dtoday, dstate, dalerts)
-                + ledger_panel(f'{NAME_B} 모의투자', dstate, repo_json('daily-live/paper-orders.json'))
+                + ledger_panel('1일봉 모의투자', dstate, repo_json('daily-live/paper-orders.json'))
                 + section('그룹 판정 · 관심종목') + GROUP_RULES
                 + (board or '') + close_frame(), unsafe_allow_html=True)
     if board is None:
