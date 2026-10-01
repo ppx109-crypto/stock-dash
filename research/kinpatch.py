@@ -4,7 +4,8 @@
 1일봉 규칙도 들고 있는 줄은 그 줄이 산 날의 창을 씀(lab.kinship). 뒷날 값은 쓰지 않음.
 쓰는 법: import kinpatch; kinpatch.set_edge(0.6) — None이면 끔. set_edge(0.6, align=True)는 두 종목 모두 같은 날 창(날짜 맞춤).
 주의(2026-10-02 찾음): lab.kinship은 들고 있는 줄의 창을 그 줄이 산 날에 두어, 산 날이 열흘만 달라도 닮음이 0 근처로 떨어짐
-(삼성전자 · SK하이닉스 같은 날 0.91 · 열흘 어긋남 0.03) → 1일봉 규칙의 거르기는 사실상 같은 날 함께 사는 것끼리만 걸림."""
+(삼성전자 · SK하이닉스 같은 날 0.91 · 열흘 어긋남 0.03) → 1일봉 규칙의 거르기는 사실상 같은 날 함께 사는 것끼리만 걸림.
+set_daycap(n): 하루에 새로 사는 종목 수 한도(G10)."""
 import bisect
 import inspect
 import json
@@ -77,9 +78,35 @@ def _hooked(c, T, pos):
     return good
 
 
+DAYCAP = [None]   # 하루(같은 날짜)에 새로 사는 종목 수 한도 · None이면 없음(1일봉 lab.run per_day와 같은 뜻)
+_DAY = {}
+
+
+def set_daycap(n):
+    DAYCAP[0] = n
+
+
+def _day_ok(T):
+    return DAYCAP[0] is None or _DAY.get(T[:8], 0) < DAYCAP[0]
+
+
+def _day_count(T):
+    _DAY[T[:8]] = _DAY.get(T[:8], 0) + 1
+
+
+def _day_reset():
+    _DAY.clear()
+
+
 _src = inspect.getsource(H._one_run)
 _mark = '            _audit(asked, ("사기", c), k)\n'
 assert _src.count(_mark) == 1
-_src = _src.replace(_mark, _mark + '            if not _KIN_OK(c, T, pos):\n                continue\n')
-H.__dict__["_KIN_OK"] = _hooked
+_src = _src.replace(_mark, _mark + '            if not _KIN_OK(c, T, pos) or not _DAY_OK(T):\n                continue\n')
+_m2 = '"now": k, "day": T[:8], "code": c, "양보": give}\n            bought_slots[0] += take\n'
+assert _src.count(_m2) == 1
+_src = _src.replace(_m2, _m2 + '            _DAY_COUNT(T)\n')
+_m3 = '    rng = np.random.default_rng(seed)\n'
+assert _src.count(_m3) == 1
+_src = _src.replace(_m3, _m3 + '    _DAY_RESET()\n')
+H.__dict__.update(_KIN_OK=_hooked, _DAY_OK=_day_ok, _DAY_COUNT=_day_count, _DAY_RESET=_day_reset)
 exec(compile(_src, H.__file__, "exec"), H.__dict__)
