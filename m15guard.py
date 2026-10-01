@@ -97,7 +97,9 @@ def main():
         if not ok:
             fails.append(f"검사 눈 {e}")
     lines += ["", "**종합: " + ("모두 통과**" if not fails else f"어긋남 {len(fails)}곳** — " + " · ".join(fails))]
-    Path("docs/15M-GUARD.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    # 시험용 자료(M15_HOME)로 돌린 결과는 문서에 남기지 않음(진짜 15분봉 결과만 docs/15M-GUARD.md에)
+    if not os.environ.get("M15_HOME"):
+        Path("docs/15M-GUARD.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
     return 0 if not fails else 1
 
