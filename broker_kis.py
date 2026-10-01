@@ -638,11 +638,8 @@ class KIS:
             if str(data.get('rt_cd')) != '0':
                 code = str(data.get('msg_cd') or '').strip()
                 code = code if re.fullmatch(r'[A-Z0-9]{4,10}', code) else ''
-                # 증권사 문구는 숫자를 모두 가려(계좌번호가 섞일 수 있음) 짧게만 덧붙입니다.
-                said = re.sub(r'[0-9]', '#', str(data.get('msg1') or '').strip())[:60]
-                said = said if re.fullmatch(r'[\w\s:.,()/#_-]*', said) else ''
                 raise BrokerError('잔고 조회가 승인되지 않았습니다. 계좌·상품코드와 API 신청 상태를 확인하세요.'
-                                  + (f' · {code}' if code else '') + (f' · {said}' if said else ''))
+                                  + (f' · {code}' if code else ''))
             if not isinstance(data.get('output1'), list) or not isinstance(data.get('output2'), list):
                 raise BrokerError('잔고 응답 형식이 달라 조회를 중단했습니다.')
             rows.extend(data['output1'])
