@@ -29,19 +29,31 @@ TR_BUY = os.getenv("KIS_PAPER_TR_BUY", "VTTC0012U")
 TR_SELL = os.getenv("KIS_PAPER_TR_SELL", "VTTC0011U")
 
 
+def account_parts(text):
+    """계좌번호 → (앞 8자리, 상품코드 2자리). '50123456-01' · '5012345601' · '50123456'(상품코드 01로 봄) ·
+    빈칸 · 다른 꼴의 줄표가 섞여도 숫자만 봄. 맞지 않으면 숫자 자리 수만 알려 줌(번호는 찍지 않음)."""
+    digits = re.sub(r"[^0-9]", "", str(text or ""))
+    if len(digits) == 10:
+        return digits[:8], digits[8:]
+    if len(digits) == 8:
+        return digits, "01"
+    raise broker_kis.BrokerError(f"모의투자 계좌번호(KIS_PAPER_ACCOUNT)의 숫자가 {len(digits)}자리입니다. "
+                                 "'50123456-01'처럼 8자리-2자리로 넣어 주세요.")
+
+
 class PaperBroker(broker_kis.KIS):
     """모의투자 전용 연결. 실전 키 · 실전 주소는 받지 않습니다."""
 
     def __init__(self):
         self.key = os.getenv("KIS_PAPER_APP_KEY", "").strip()
         self.secret = os.getenv("KIS_PAPER_APP_SECRET", "").strip()
-        account = os.getenv("KIS_PAPER_ACCOUNT", "").strip().replace(" ", "")
-        m = re.fullmatch(r"([0-9]{8})-?([0-9]{2})", account)
-        if not self.key or not self.secret or not m:
-            raise broker_kis.BrokerError("모의투자 키 · 계좌(KIS_PAPER_APP_KEY · KIS_PAPER_APP_SECRET · KIS_PAPER_ACCOUNT)가 없습니다.")
+        missing = [n for n, v in (("KIS_PAPER_APP_KEY", self.key), ("KIS_PAPER_APP_SECRET", self.secret),
+                                   ("KIS_PAPER_ACCOUNT", os.getenv("KIS_PAPER_ACCOUNT", "").strip())) if not v]
+        if missing:
+            raise broker_kis.BrokerError("모의투자 비밀값이 없습니다: " + " · ".join(missing))
+        self.cano, self.product = account_parts(os.getenv("KIS_PAPER_ACCOUNT", ""))
         if self.key == os.getenv("KIS_APP_KEY", "").strip():
             raise broker_kis.BrokerError("모의투자 키가 실전 키와 같습니다. 모의투자 앱의 키를 넣어 주세요.")
-        self.cano, self.product = m.group(1), m.group(2)
         self.mode = "demo"
         self.base = PAPER_BASE
         self.token = None

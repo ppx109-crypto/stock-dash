@@ -34,6 +34,14 @@ class Guard(unittest.TestCase):
         with self.env(KIS_PAPER_ACCOUNT="1234"), self.assertRaises(broker_kis.BrokerError):
             P.PaperBroker()
 
+    def test_account_forms(self):
+        for text, want in (("50123456-01", ("50123456", "01")), ("5012345601", ("50123456", "01")),
+                           (" 50123456 – 01 \n", ("50123456", "01")), ("50123456", ("50123456", "01"))):
+            self.assertEqual(P.account_parts(text), want)
+        with self.assertRaises(broker_kis.BrokerError) as e:
+            P.account_parts("987-654")
+        self.assertNotIn("987", str(e.exception), "번호를 찍지 않음")
+
     def test_bad_order_refused_before_sending(self):
         with self.env():
             b = P.PaperBroker()
