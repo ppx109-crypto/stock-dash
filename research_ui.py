@@ -11,7 +11,8 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, RULE_TEXT, SHOWN_PER_GROUP,
+from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, NAME_B, RULE_TEXT, SHOWN_PER_GROUP,
+                          CLOSE_RULES, close_panel, ledger_panel,
                           board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
@@ -299,6 +300,28 @@ def hourly_a():
             repo_json("hourly-live/alerts.json") or [])
 
 
+def daily_live():
+    """종가 출격(일봉 규칙) 오늘 결과 · 연습 계좌 · 알림. GitHub Actions가 평일 15:20 ~ 15:35에 daily-live/에 남깁니다."""
+    return (repo_json("daily-live/today.json"), repo_json("daily-live/state.json"),
+            repo_json("daily-live/alerts.json") or [])
+
+
+def board_marks():
+    """관심종목 판의 두 칸: 코드 → 한 줄 설명(정시 출격 · 종가 출격)."""
+    plan, hstate, _ = hourly_a()
+    today, dstate, _ = daily_live()
+    hourly, daily = {}, {}
+    for c in (plan or {}).get("candidates") or []:
+        hourly[c["code"]] = f'{c.get("name")}  ·  정시 출격 후보 · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸'
+    for p in ((hstate or {}).get("positions") or {}).values():
+        hourly[p["code"]] = f'{p.get("name")}  ·  정시 출격 보유 중 · {p.get("칸")}칸'
+    for c in (today or {}).get("candidates") or []:
+        daily[c["code"]] = f'{c.get("name")}  ·  종가 출격 후보 · {c.get("칸")}칸'
+    for p in ((dstate or {}).get("positions") or {}).values():
+        daily[p["code"]] = f'{p.get("name")}  ·  종가 출격 보유 중 · {p.get("칸")}칸'
+    return hourly, daily
+
+
 def a_group_stamp():
     """관심종목 그룹 캐시 열쇠: 결과의 기준일이 바뀌면 새로 나눕니다."""
     return (today_a_group() or {}).get("date")
@@ -366,7 +389,7 @@ def group_board_ui(graded):
     새로 시작돼 로그인이 풀립니다. 그래서 단추로 둡니다. 단추는 같은 화면 안에서
     처리되어 로그인도, 펼쳐 둔 칸도 그대로 남습니다.
     """
-    buckets, pending = group_buckets(graded)
+    buckets, pending = group_buckets(graded, *board_marks())
     columns = st.columns(len(GROUP_TITLES))
     for column, key in zip(columns, GROUP_TITLES):
         klass = GROUP_TITLES[key][2]
@@ -459,8 +482,14 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '없습니다. 아래 <b>＋ 조사된 종목 담기</b>로 자료가 준비된 종목을 한 번에 '
                  '담거나, <b>＋ 시가총액 상위 종목 담기</b>로 코스피·코스닥 상위 종목을 '
                  '담으면 여기에 그룹이 나옵니다.</p>')
+    plan, hstate, halerts = hourly_a()
+    dtoday, dstate, dalerts = daily_live()
     st.markdown(header() + section(f'{NAME_A} · 1시간봉 매수 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
-                + SORTIE_RULES + sortie_panel(today_a_group(), *hourly_a())
+                + SORTIE_RULES + sortie_panel(today_a_group(), plan, hstate, halerts)
+                + ledger_panel(f'{NAME_A} 모의투자', hstate, repo_json('hourly-live/paper-orders.json'))
+                + section(f'{NAME_B} · 일봉 매수 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20')
+                + CLOSE_RULES + close_panel(dtoday, dstate, dalerts)
+                + ledger_panel(f'{NAME_B} 모의투자', dstate, repo_json('daily-live/paper-orders.json'))
                 + section('그룹 판정 · 관심종목') + GROUP_RULES
                 + (board or '') + close_frame(), unsafe_allow_html=True)
     if board is None:

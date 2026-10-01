@@ -8,9 +8,9 @@ import final_group
 import rule
 
 try:        # 화면 쪽은 streamlit이 있어야 불러집니다. A그룹을 세는 CI에는 없습니다.
-    from dashboard_ui import sortie_panel, group_buckets, stock_score
+    from dashboard_ui import sortie_panel, group_buckets, stock_score, close_panel, ledger_panel
 except ModuleNotFoundError:
-    sortie_panel = group_buckets = stock_score = None
+    sortie_panel = group_buckets = stock_score = close_panel = ledger_panel = None
 
 
 class Regroup(unittest.TestCase):
@@ -192,6 +192,37 @@ class Panel(unittest.TestCase):
                                           {"code": "3", "group": "밖"}, {"code": "4", "group": None}])
         self.assertEqual(set(buckets), {"A", "B"})
         self.assertEqual([r["code"] for r in pending], ["4"])
+        self.assertEqual([r["code"] for r in buckets["B"]], [], "조건 1~2개 미달(옛 출격 대기)은 싣지 않음")
+
+    def test_two_rules_fill_the_two_columns(self):
+        graded = [{"code": "1", "group": "A", "name": "가"}, {"code": "2", "group": "B", "name": "나"},
+                  {"code": "3", "group": "밖", "name": "다"}]
+        buckets, _ = group_buckets(graded, hourly={"3": "다 · 정시 출격 보유 중"}, daily={"1": "가 · 종가 출격 후보", "2": "나 · 종가 출격 보유 중"})
+        self.assertEqual(sorted(r["code"] for r in buckets["A"]), ["1", "3"])
+        self.assertEqual(sorted(r["code"] for r in buckets["B"]), ["1", "2"])
+        self.assertTrue(all("종가 출격" in r["comment"] for r in buckets["B"]))
+
+
+@unittest.skipIf(close_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
+class DailyPanels(unittest.TestCase):
+    def test_close_panel(self):
+        self.assertIn("아직 없습니다", close_panel(None, None, None))
+        html = close_panel({"date": "20261001", "breadth": 55.0, "made": "2026-10-01 15:33", "candidates": [{"code": "1"}],
+                            "buys": [{"code": "000001", "name": "가<b>", "칸": 4, "why": "① 추세 출격"}], "sells": []},
+                           {"positions": {"000001": {"code": "000001", "name": "가", "kind": "추세", "칸": 4, "price": 100.0,
+                                                      "last_close": 103.0, "bought": "20261001"}}}, [])
+        self.assertIn("2026-10-01", html)
+        self.assertIn("+3.0%", html)
+        self.assertNotIn("가<b>", html)
+
+    def test_ledger_panel(self):
+        self.assertIn("아직 끝난 매매가 없습니다", ledger_panel("종가 출격 모의투자", None, None))
+        html = ledger_panel("x", {"closed": [{"판 날": "20261002", "name": "가", "code": "000001", "칸": 4, "손익": 5.0, "까닭": "익절"},
+                                             {"판 날": "20261003", "name": "나", "code": "000002", "칸": 2, "손익": -5.0, "까닭": "손절"}]},
+                            {"orders": [{"at": "2026-10-02 15:21", "side": "sell", "name": "가", "code": "000001", "qty": 10, "status": "접수"}]})
+        self.assertIn("끝난 매매 2건", html)
+        self.assertIn("+1.0%", html)          # 5 × 4/10 − 5 × 2/10
+        self.assertIn("10주", html)
 
 
 if __name__ == "__main__":
