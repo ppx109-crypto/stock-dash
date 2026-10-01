@@ -220,3 +220,26 @@ class KisHistory(unittest.TestCase):
                 os.chdir(here)
         self.assertEqual(got["t"], ["2026092914", "2026093009", "2026093014"])
         self.assertEqual(got["c"], [101.0, 103.0, 105.0], "그 시간 마지막 봉 · 15시는 14시에 합쳐 마감 종가")
+
+
+class History(unittest.TestCase):
+    def test_yahoo_then_kis_fills_days_after_yahoo_ends(self):
+        yahoo = {"t": ["2026092913", "2026092914"], "c": [1.0, 2.0]}
+        kis = {"t": ["2026092914", "2026093009", "2026100114", "2026100209"], "c": [9.0, 3.0, 4.0, 5.0]}
+        t, c = A.history_bars(yahoo, kis, "20261002")
+        self.assertEqual(t, ["2026092913", "2026092914", "2026093009", "2026100114"], "야후 뒤 날만 한투로 · 오늘 봉은 뺌")
+        self.assertEqual(c, [1.0, 2.0, 3.0, 4.0])
+        self.assertEqual(A.history_bars(None, kis, "20261002")[0], ["2026092914", "2026093009", "2026100114"])
+        self.assertEqual(A.history_bars(None, None, "20261002"), ([], []))
+
+    def test_live_load_is_not_cut_by_research_holdout(self):
+        import os
+        import hlab
+        old = os.environ.pop("HLAB_OPEN_HOLDOUT", None)
+        try:
+            os.environ["HLAB_OPEN_HOLDOUT"] = "1"
+            self.assertIsNone(hlab.bar_limit())
+        finally:
+            os.environ.pop("HLAB_OPEN_HOLDOUT", None)
+            if old is not None:
+                os.environ["HLAB_OPEN_HOLDOUT"] = old
