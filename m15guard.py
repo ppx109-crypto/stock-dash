@@ -2,7 +2,7 @@
 
 python m15guard.py  → docs/15M-GUARD.md에 결과를 적음(15분봉 회차에서 새 규칙을 올리기 전에 돌림).
 
-1. 시험지 잠금  — 2026-09-30 뒤 15분봉을 읽지 않음(hlab.bar_limit · m15lab.load).
+1. 시험지 잠금  — 최종 시험 달(2026-09) 15분봉을 읽지 않음(m15lab.load · M15_OPEN_OOS) · 2026-09-30 뒤도(hlab.bar_limit).
 2. 체결 감사    — 모의 안에서 체결마다 바로 앞 봉이 닫힌 뒤 정한 것인지 · 장중 체결 값이 봉 안인지(hlab._audit — 어긋나면 모의가 멈춰 세계가 실패).
 3. 잘라내기     — 시각 T 뒤 15분봉 · 일봉 · 수급 · 공시 · 순위를 모두 잘라 낸 세계에서, T까지의 신호 · T까지 끝난 매매가 한 건도 다르지 않은지.
 4. 더럽히기     — T 뒤 자료를 엉뚱한 값으로 바꾼 세계에서 같은 비교.
@@ -26,6 +26,7 @@ def world(env_extra, tag):
     path = Path(tempfile.gettempdir()) / f"m15guard_{tag}.pkl"
     env = {**os.environ, **env_extra}
     env.pop("HLAB_OPEN_HOLDOUT", None)
+    env.pop("M15_OPEN_OOS", None)
     r = subprocess.run([sys.executable, "research/m15guard_world.py", str(path)], env=env, capture_output=True, text=True)
     if r.returncode != 0:
         return None, (r.stderr or r.stdout)[-1500:]
@@ -52,8 +53,8 @@ def main():
     if err:
         print(err)
         return 1
-    lines.append(f"- 1 시험지 잠금: 마지막 봉 {full['last']} (2026-09-30 앞) → {'통과' if full['last'] < '202609300000' else '**어긋남**'}")
-    if full["last"] >= "202609300000":
+    lines.append(f"- 1 시험지 잠금: 마지막 봉 {full['last']} (최종 시험 달 2026-09 앞) → {'통과' if full['last'] < '202609010000' else '**어긋남**'}")
+    if full["last"] >= "202609010000":
         fails.append("잠금")
     lines.append("- 2 체결 감사: 전체 세계 모의가 감사에 걸리지 않고 끝남 → 통과")
     lines.append(f"- 6 날짜 짚기: 재료가 붙은 봉 {full['dates_seen']:,}개 가운데 그 봉의 날보다 늦은 재료 {full['dates_bad']} → "
