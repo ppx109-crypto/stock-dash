@@ -1209,11 +1209,13 @@ def near_reason(row: dict) -> str:
 
 
 def near_panel(title: str, rows: list | None, basis: str = "", shown: int = 3, most: int = 15) -> str:
-    """'매수 후보(충족 미달)' 칸 안의 목록(조사 대상 507종목 전체에서 조건이 적게 모자란 순).
-    처음엔 shown개만 보이고, 나머지는 화살표를 누르면 아래로 열립니다(사용자 요청 2026-10-01)."""
-    rows = sorted(rows or [], key=lambda r: r.get("모자란 수") or 9)[:most]
+    """'매수 후보(충족 미달)' 칸 안의 목록: 조사 대상 507종목에서 조건이 **딱 1개만** 모자란 종목(사용자 요청 2026-10-01).
+    처음엔 shown개만 보이고, 나머지는 화살표를 누르면 아래로 열립니다. rows가 None이면 아직 계산 전."""
     head = (f'<div class="pxb-near"><b>{_e(title)}</b>'
-            f'<small>조사 대상 507종목에서 조건이 1~2개만 모자란 종목{(" · " + _e(basis)) if basis else ""}</small>')
+            f'<small>조사 대상 507종목에서 조건이 1개만 모자란 종목{(" · " + _e(basis)) if basis else ""}</small>')
+    if rows is None:
+        return head + '<div class="pxb-near-empty">아직 계산 전입니다</div></div>'
+    rows = [r for r in rows if r.get("모자란 수") == 1][:most]
     if not rows:
         return head + '<div class="pxb-near-empty">해당 종목 없음</div></div>'
     line = lambda r: (f'<li><b>{_e(r.get("name"))}</b> ({_e(r.get("code"))}) · {_e(r.get("모자란 수"))}개 미달 · '
