@@ -9,6 +9,10 @@ on:
         description: '이번에 부를 최대 수(하루치 = 종목당 4번)'
         required: false
         default: '40000'
+      call_gap:
+        description: '조회 사이 쉬는 초(기본 0.07 · 장중 빈 시간에 받을 땐 0.15처럼 늦춤)'
+        required: false
+        default: '0.07'
   schedule:
     - cron: '20 8,11,14,17,20 * * *'   # 한국 시각 17:20 · 20:20 · 23:20 · 02:20 · 05:20
 permissions:
@@ -45,6 +49,6 @@ jobs:
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           KIS_ENV: real
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
-          KIS_CALL_GAP: '0.07'
+          KIS_CALL_GAP: ${{ inputs.call_gap || '0.07' }}
           KIS_HOURLY_START: '20250917'
           KIS_HOURLY_MAX_CALLS: ${{ inputs.max_calls || '40000' }}
