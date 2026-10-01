@@ -197,7 +197,10 @@ BASE_HOLD = lambda r: (rule.holds(r) or aligned(r)) and teacher(r) and not targe
 # 계좌 10칸(새 45회차부터, 반익절에 칸을 반으로 나누려고). 한 종목 최대 40%(사용자 결정 2026-09-29):
 # 추세 규칙 4칸(40%) · 정배열 2칸(20%) · 정배열 + 외국인·투신 3일 연속 둘 다 순매수 4칸(40%, 새 31회차 60%에서 낮춤).
 SLOTS = 10
-BASE_SIZE = lambda r: 4 if rule.holds(r) else (4 if steady(r) >= 3 else 2)
+# 새 82회차(사용자 결정 2026-10-01 '나'): 정배열 신호 날 거래량비(그날 ÷ 앞 20일 가운데값) 2배↑ · 정배열 10일 안이면 3칸(30%).
+VOL_BIG, FRESH_DAYS, FRESH_SIZE = 2.0, 10, 3
+BASE_SIZE = lambda r: 4 if rule.holds(r) else (4 if steady(r) >= 3 else (
+    FRESH_SIZE if (r.get("거래량비") or 0) >= VOL_BIG and (r.get("정배열일수") or 999) <= FRESH_DAYS else 2))
 
 
 LUCK_CAP = 30.0      # 행운 뺀 연수익: 한 번 매매의 이익을 이 %에서 자름(사용자 요청 2026-09-29)
