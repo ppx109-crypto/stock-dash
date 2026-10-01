@@ -160,3 +160,20 @@ class LivePaper(unittest.TestCase):
         calls, after = self.run_at("0901", state, plan, {"000001": [("2026100209", 97.0, 98.0, 96.0, 97.5, 10)]})
         self.assertEqual(calls, [])
         self.assertIn("000001", after["positions"])
+
+
+class FillAlerts(unittest.TestCase):
+    """진입 · 청산 체결은 모두 디스코드 줄이 됨(사용자 요청 2026-10-01)."""
+
+    def test_buy_and_sell_fills_become_lines(self):
+        state = {"positions": {"000002": {"code": "000002", "name": "나", "kind": "추세", "price": 100.0, "peak": 110.0,
+                                          "칸": 4, "처음칸": 4, "bars": 9, "bought": "2026093010", "max_close": 110.0}},
+                 "pending": [{"type": "sell", "code": "000002", "칸": 4, "why": "익절 +13% 닿음", "decided": "2026100110"},
+                             {"type": "buy", "code": "000001", "칸": 2, "decided": "2026100110", "kind": "정배열",
+                              "name": "가", "why": "1시간봉 EMA 정배열이 됨"}]}
+        px = {"000001": 50000.0, "000002": 113.0}
+        done = A.fill(state, "2026100111", px)
+        lines = A.fill_lines([("2026100111", done, px)])
+        self.assertEqual(len(lines), 2)
+        self.assertTrue(any("매수 체결" in x and "가(000001)" in x and "11:00" in x and "50,000원" in x for x in lines))
+        self.assertTrue(any("매도 체결" in x and "나(000002)" in x and "+12.7%" in x for x in lines))

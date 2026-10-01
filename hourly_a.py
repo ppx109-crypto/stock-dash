@@ -227,6 +227,7 @@ def fill(state, bar_id, opens):
             gain = (price / p["price"] - 1) * 100 - 0.30
             closed.append({"code": x["code"], "name": p["name"], "산 때": p["bought"], "판 때": bar_id, "칸": part,
                            "손익": round(gain, 2), "까닭": x["why"]})
+            x = {**x, "name": p["name"], "손익": round(gain, 2), "칸": part}
             p["칸"] -= part
             if p["칸"] <= 0:
                 del pos_all[x["code"]]
@@ -307,7 +308,7 @@ def make_plan():
             "candidates": cands}
     _save(PLAN, plan)
     state = _load(STATE, {"positions": {}, "pending": []})
-    lines = [f"📋 **1시간봉 A그룹 · {day[:4]}-{day[4:6]}-{day[6:]} 마감 기준 → 다음 거래일 후보 {len(cands)}종목**",
+    lines = [f"📋 **정시 출격 · {day[:4]}-{day[4:6]}-{day[6:]} 마감 기준 → 다음 거래일 후보 {len(cands)}종목**",
              f"시장 폭 {found.get('breadth')}% · 장중 1시간마다 1시간봉 EMA 정배열(없으면 12시)에 사는지 알려 드려요."]
     for c in sorted(cands, key=lambda c: (not c["추세문"], not c["3일연속"])):
         size = size_of(c)
@@ -385,6 +386,23 @@ def closed_bars(now):
     return [hh for hh in HOURS if hm >= CLOSE_AT[hh]]
 
 
+def fill_lines(filled):
+    """연습 계좌에서 이번에 체결된 매수 · 매도를 디스코드 줄로(사용자 요청: 진입 · 청산은 모두 알림)."""
+    out = []
+    for bar_id, done, px in filled:
+        when = "09:00" if bar_id[8:] == "09" else f"{bar_id[8:]}:00"
+        for x in done:
+            price = px.get(x["code"])
+            at = f" {price:,.0f}원" if price else ""
+            name = x.get("name") or x["code"]
+            if x["type"] == "buy":
+                out.append(f"✅ 매수 체결 · {name}({x['code']}) · {x['칸']}칸({x['칸'] * 10}%) · {when} 시가{at}")
+            else:
+                out.append(f"✅ 매도 체결 · {name}({x['code']}) · {x['칸']}칸 · {when} 시가{at} · "
+                           f"손익 {x.get('손익', 0):+.1f}%(비용 뺌) · {x.get('why', '')}")
+    return out
+
+
 def run_live(now=None):
     import broker_kis
     import hlab
@@ -453,18 +471,19 @@ def run_live(now=None):
             paper += paper_trade.execute(done, state, {c: v for c, v in px.items() if v}, bar_id, now=now)
     except Exception as e:          # 모의투자 주문이 잘못돼도 알림 · 연습 계좌는 그대로 돌아가게
         paper.append(f"🧪 모의투자 주문 중 문제 · {type(e).__name__}")
-    if paper and not items:
-        send([f"🧪 **모의투자 주문 · {now.strftime('%m-%d %H:%M')}**"] + paper)
+    fills = fill_lines(filled)
+    if (paper or fills) and not items:
+        send([f"✅ **정시 출격 · 체결 · {now.strftime('%m-%d %H:%M')}**"] + fills + paper)
     if items:
         _log_alerts(items)
         icon = {"매수": "🟢", "자리 바꾸기": "🔄", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "못 삼": "⚫"}
-        head = f"⏰ **1시간봉 A그룹 · {now.strftime('%m-%d %H:%M')}** (봉 {', '.join(b[8:] + '시' for b in todo)} 마감)"
+        head = f"⏰ **정시 출격 · {now.strftime('%m-%d %H:%M')}** (봉 {', '.join(b[8:] + '시' for b in todo)} 마감)"
         try:
             import paper_trade
             note = NOTE_PAPER if paper_trade.enabled()[0] else NOTE_PLAIN
         except Exception:
             note = NOTE_PLAIN
-        send([head] + [f"{icon.get(k, '•')} {k} · {t}" for k, t, _ in items] + paper + [note])
+        send([head] + fills + [f"{icon.get(k, '•')} {k} · {t}" for k, t, _ in items] + paper + [note])
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")
     return 0
 
