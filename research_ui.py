@@ -12,7 +12,7 @@ from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
 from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, NAME_B, RULE_TEXT, SHOWN_PER_GROUP,
-                          CLOSE_RULES, close_panel, ledger_panel,
+                          CLOSE_RULES, close_panel, ledger_mini, top_bar, frame_open,
                           board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
                           live_note, period_label, price_now, section, slot_head,
@@ -266,7 +266,24 @@ def link_codes(store, state, known):
 RULES = 'final-a-b-shortfall-v2'
 
 
+SHOW_FILL = False      # '자료 받기' 칸을 다시 보이려면 True
+
 RAW = "https://raw.githubusercontent.com/ppx109-crypto/stock-dash/main/"
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def repo_json_live(path):
+    """모의투자 거래 내역처럼 자주 바뀌는 파일: 1분마다 새로 읽음."""
+    return repo_json.__wrapped__(path)
+
+
+@st.fragment(run_every=60)
+def live_top_bar():
+    """맨 위 제목 줄 + 1시간봉 · 1일봉 모의투자 거래 내역. 1분마다 이 부분만 새로 그림(사용자 요청: 실시간 연동)."""
+    st.markdown(top_bar(
+        ledger_mini('1시간봉 모의투자', repo_json_live('hourly-live/state.json'), repo_json_live('hourly-live/paper-orders.json')),
+        ledger_mini('1일봉 모의투자', repo_json_live('daily-live/state.json'), repo_json_live('daily-live/paper-orders.json'))),
+        unsafe_allow_html=True)
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -484,16 +501,17 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '담으면 여기에 그룹이 나옵니다.</p>')
     plan, hstate, halerts = hourly_a()
     dtoday, dstate, dalerts = daily_live()
-    st.markdown(header() + section('1시간봉 매매 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
-                + SORTIE_RULES + sortie_panel(today_a_group(), plan, hstate, halerts)
-                + ledger_panel('1시간봉 모의투자', hstate, repo_json('hourly-live/paper-orders.json'))
-                + section('1일봉 매매 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20')
-                + CLOSE_RULES + close_panel(dtoday, dstate, dalerts)
-                + ledger_panel('1일봉 모의투자', dstate, repo_json('daily-live/paper-orders.json'))
-                + section('그룹 판정 · 관심종목') + GROUP_RULES
-                + (board or '') + close_frame(), unsafe_allow_html=True)
+    live_top_bar()
+    # 1시간봉 · 1일봉 매수 후보 두 칸을 제목 바로 아래에(사용자 요청 2026-10-01)
     if board is None:
         group_board_ui(graded)
+    else:
+        st.markdown(board, unsafe_allow_html=True)
+    st.markdown(frame_open() + section('1시간봉 매매 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
+                + SORTIE_RULES + sortie_panel(today_a_group(), plan, hstate, halerts)
+                + section('1일봉 매매 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20')
+                + CLOSE_RULES + close_panel(dtoday, dstate, dalerts)
+                + close_frame(), unsafe_allow_html=True)
     named = {g['code']: g['name'] for g in graded}
     code = st.session_state.get('px_pick')
     if code:
@@ -538,7 +556,8 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
             st.info('받을 종목이 없었습니다.')
 
     gaps = missing_reports(state)
-    if gaps and not sample_mode and store is not None:
+    # '자료 받기'는 관심종목 자세히 보기(판단점수 · 실적)용 손 받기 단추 — 매매 규칙 · 모의투자와 무관해 화면에서 뺌(사용자 요청 2026-10-01).
+    if SHOW_FILL and gaps and not sample_mode and store is not None:
         with st.expander(f'자료 받기 · {len(gaps)}종목'):
             st.caption('DART 확정 결산·공시와 공공데이터포털 시세를 종목마다 받아 저장합니다. '
                        '아직 받지 않은 종목과, 과거 시가총액 배수가 빠져 적정주가 참고 범위가 '

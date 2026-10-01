@@ -67,6 +67,13 @@ _CSS = """
 .pxb-title em i{font-style:normal;color:#946E38}
 .pxb-title span{display:block;margin-top:9px;font-size:13px;color:#7B7465}
 .pxb-meta{text-align:right;font-size:12px;color:#7B7465;line-height:1.9}
+.pxb-headbox{margin-bottom:14px;padding:18px 22px}
+.pxb-top2{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.pxb-ledgers{display:flex;flex-direction:column;gap:8px;min-width:300px;flex:0 1 520px}
+.pxb-ledger{padding:9px 12px;border:1px solid #E7DCC7;border-radius:12px;background:#FFFDF8}
+.pxb-ledger b{display:block;font-size:12px;font-weight:800;color:#946E38}
+.pxb-ledger small{display:block;margin-top:2px;font-size:11px;color:#4A4339}
+.pxb-ledger ul{margin:4px 0 0 16px;padding:0;font-size:10.5px;color:#7B7465;line-height:1.5}
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
 
 .pxb-board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
@@ -198,6 +205,7 @@ a.pxb-chip,a.pxb-chip:visited,a.pxb-chip em{color:#5F584B;text-decoration:none}
   .pxb-section-h span{white-space:normal;flex:1 1 100%}
   .pxb-section-h:after{display:none}
   .pxb-title em{font-size:30px}
+  .pxb-ledgers{min-width:0;flex:1 1 100%}
   .pxb-meta{text-align:left}
   .pxb-sub{max-width:100%}
 }
@@ -503,6 +511,46 @@ def header() -> str:
         f'<div class="pxb-meta"><b>PLANX · STOCK INTELLIGENCE</b>{date.today():%Y년 %m월 %d일}</div>'
         "</div>"
     )
+
+
+def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 3) -> str:
+    """머리 오른쪽 작은 칸: 모의투자 거래 내역(끝난 매매 · 들고 있는 종목 · 최근 주문)."""
+    closed = (state or {}).get("closed") or []
+    held = list(((state or {}).get("positions") or {}).values())
+    orders = (book or {}).get("orders") or []
+    if closed:
+        acc = sum((t.get("손익") or 0) * (t.get("칸") or 0) / 10 for t in closed)
+        wins = sum(1 for t in closed if (t.get("손익") or 0) > 0)
+        line = f'끝난 매매 {len(closed)}건 · 이긴 {wins}건 · 손익 합 {acc:+.1f}%'
+    else:
+        line = "끝난 매매 없음"
+    line += f' · 들고 있는 {len(held)}종목'
+    rows = []
+    for o in reversed(orders[-shown:]):
+        rows.append(f'{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
+                    f'{_e(o.get("name"))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}')
+    if not rows:
+        for t in reversed(closed[-shown:]):
+            rows.append(f'{_e(t.get("판 때") or t.get("판 날"))} {_e(t.get("name"))} {float(t.get("손익") or 0):+.1f}%')
+    body = "".join(f"<li>{r}</li>" for r in rows) or "<li>아직 주문이 없습니다</li>"
+    return (f'<div class="pxb-ledger"><b>{_e(title)} · 거래 내역</b><small>{line}</small>'
+            f'<ul>{body}</ul></div>')
+
+
+def top_bar(hourly_ledger: str, daily_ledger: str) -> str:
+    """첫 화면 맨 위: 제목(작게) + 오른쪽에 1시간봉 · 1일봉 모의투자 거래 내역(위 · 아래). 1분마다 새로 그림."""
+    return (
+        _CSS + '<div class="pxb"><div class="pxb-frame pxb-headbox"><div class="pxb-top2">'
+        '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
+        f'<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다 · {date.today():%Y년 %m월 %d일}</span></div>'
+        f'<div class="pxb-ledgers">{hourly_ledger}{daily_ledger}</div>'
+        "</div></div></div>"
+    )
+
+
+def frame_open() -> str:
+    """제목 없이 판만 엶(첫 화면은 제목을 top_bar로 따로 그림). close_frame으로 닫습니다."""
+    return _CSS + '<div class="pxb"><div class="pxb-frame">'
 
 
 def settled(official: dict | None) -> dict:
@@ -929,12 +977,7 @@ SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
 <dt>추세끝</dt><dd>일봉 정배열(조건1)이 깨지면 다음 날 09:00 시작 가격에 모두 팖</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot"><b>판단과 체결</b> · 오르고 내린 %는 모두 산 값과 1시간봉 종가(그 시간이 끝날 때 값)를 견줘 셈 → 결정은 다음 정시 시작 가격에 실행 ·
-판단 시각 09:01 · 10:01 · 11:01 · 12:01 · 13:01 · 14:01 · 15:31 · 마지막 봉(14:00~15:30)에서 나온 결정은 다음 날 09:00에 실행<br>
-<b>시장 폭</b> · 시가총액 100위 안에서 50일 이동평균선이 200일선보다 위에 있는 종목의 비율(시장 전체가 얼마나 오르는 흐름인지) ·
-<b>지수이동평균선(EMA)</b> · 최근 값에 더 무게를 둔 평균 가격선<br>
-<b>지난 성적</b>(연구 90·94회차, 사고팔 때 비용 0.30% 뺌) · 2023-10~2025-03 해마다 +39.2% · 2025-04~2026-09 해마다 +112.8% · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음<br>
-<b>주문</b> · 실전 계좌에는 주문하지 않음 · 한투 모의투자 계좌의 절반으로 자동 주문(나머지 절반은 아래 1일봉 규칙) · 매수·매도 결정과 체결은 모두 디스코드로 알림</div>
+<div class="pxb-rule-foot"><b>지난 성적</b>(연구 90·94회차, 사고팔 때 비용 0.30% 뺌) · 2023-10~2025-03 해마다 +39.2% · 2025-04~2026-09 해마다 +112.8% · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음</div>
 </div>"""
 
 GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75">
@@ -968,10 +1011,7 @@ CLOSE_RULES = """<div class="pxb"><div class="pxb-rules">
 <dt>추세끝</dt><dd>일봉 정배열이 깨진 날 종가에 모두 팖</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot"><b>판단과 체결</b> · 하루에 한 번, 장 마감 직전(15:20)에 판단 · %는 모두 산 값과 그날 종가를 견줘 셈 · 사고파는 것은 모두 그날 종가(마감 동시호가)<br>
-<b>1시간봉 규칙과 다른 점</b> · 신호가 난 <b>그날 종가에 바로</b> 삼(1시간봉 규칙은 다음 날 장중) · 하루 한 번만 판단해 매매가 적고 사고팔 때 드는 비용에 3~4배 덜 흔들림(연구 새 83회차) · 2017년부터 9년 동안 여러 하락장에서 시험함<br>
-<b>지난 성적</b>(연구 새 82회차, 비용 0.25% 뺌) · 2017~2020 해마다 +13.9% (가장 크게 빠진 때 −6.6%) · 2021~2026-09 해마다 +58.4% (−14.4%) · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음<br>
-<b>주문</b> · 실전 계좌에는 주문하지 않음 · 한투 모의투자 계좌의 절반으로 자동 주문 · 매수·매도와 체결은 모두 디스코드로 알림</div>
+<div class="pxb-rule-foot"><b>지난 성적</b>(연구 새 82회차, 비용 0.25% 뺌) · 2017~2020 해마다 +13.9% (가장 크게 빠진 때 −6.6%) · 2021~2026-09 해마다 +58.4% (−14.4%) · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음</div>
 </div>"""
 
 
@@ -1012,9 +1052,7 @@ def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, aler
     head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> 1시간봉 매수 후보 {len(cands)}종목 · '
             f'시장 폭 {_e(breadth)}% (②정배열 조건은 50% 이상일 때만 삼)')
     if made:
-        head += f'<br><small>후보 계산 {_e(made)} · 화면은 5분마다 새 결과를 읽습니다</small>'
-    else:
-        head += '<br><small>화면은 5분마다 새 결과를 읽습니다</small>'
+        head += f'<br><small>후보 계산 {_e(made)}</small>'
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
     if cands:
         items = "".join(
@@ -1044,12 +1082,11 @@ def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, aler
 def close_panel(today: dict | None, state: dict | None, alerts: list | None) -> str:
     """1일봉 규칙(일봉 규칙) 오늘의 결과 · 들고 있는 종목(연습 계좌) · 최근 알림."""
     if not today or not today.get("date"):
-        return ('<div class="pxb"><div class="pxb-note">1일봉 규칙 결과가 아직 없습니다. '
-                '평일 15:20에 일봉 규칙으로 판단하면 자동으로 채워집니다.</div></div>')
+        return ""
     cands = today.get("candidates") or []
     head = (f'<b>오늘의 결과</b> · {_e(as_day(today["date"]))} 15:20 판단 · 조건을 채운 종목 {len(cands)}개 · '
             f'시장 폭 {_e(today.get("breadth"))}% (②정배열 조건은 50% 이상일 때만 삼)'
-            f'<br><small>계산 {_e(today.get("made"))} · 화면은 5분마다 새 결과를 읽습니다</small>')
+            f'<br><small>계산 {_e(today.get("made"))}</small>')
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
     trades = [("매도", x) for x in today.get("sells") or []] + [("매수", x) for x in today.get("buys") or []]
     if trades:
