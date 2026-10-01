@@ -107,3 +107,56 @@ class Flow(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LivePaper(unittest.TestCase):
+    """장중 실행(run_live)이 체결된 매매를 모의투자 주문으로 넘기는지 — 09:01(전날 정한 매도) · 11:01(앞 봉 매수)."""
+
+    def run_at(self, hhmm, state, plan, bars):
+        import json
+        import tempfile
+        from datetime import datetime
+        from pathlib import Path
+        from unittest import mock
+        import broker_kis
+        import collect_kis_intraday
+        import hlab
+        import paper_trade
+        calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            (home / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+            (home / "state.json").write_text(json.dumps(state), encoding="utf-8")
+            now = datetime(2026, 10, 2, int(hhmm[:2]), int(hhmm[2:]), tzinfo=A.KST)
+            with mock.patch.object(A, "PLAN", home / "plan.json"), mock.patch.object(A, "STATE", home / "state.json"), \
+                    mock.patch.object(A, "ALERTS", home / "alerts.json", create=True), \
+                    mock.patch.object(broker_kis, "market", return_value=object()), \
+                    mock.patch.object(collect_kis_intraday, "market_open_today", return_value=True), \
+                    mock.patch.object(A, "today_bars", side_effect=lambda client, c, day: bars.get(c, [])), \
+                    mock.patch.object(hlab, "load", return_value={}), mock.patch.object(A, "kis_history", return_value=None), \
+                    mock.patch.object(A, "send"), mock.patch.object(A, "_log_alerts", create=True), \
+                    mock.patch.object(paper_trade, "execute", side_effect=lambda done, st, px, bar, now=None: calls.append((bar, [x["code"] for x in done], px)) or []):
+                A.run_live(now)
+                after = json.loads((home / "state.json").read_text(encoding="utf-8"))
+        return calls, after
+
+    def test_0901_fills_yesterdays_sell_at_open(self):
+        state = {"positions": {"000001": {"code": "000001", "name": "가", "kind": "정배열", "price": 100.0, "peak": 100.0, "칸": 2,
+                                          "처음칸": 2, "bars": 5, "bought": "2026093011", "max_close": 101.0}},
+                 "pending": [{"type": "sell", "code": "000001", "칸": 2, "why": "정배열 깨짐", "decided": "2026100114"}],
+                 "last_bar": "2026100114"}
+        plan = {"base": "20261001", "candidates": []}
+        bars = {"000001": [("2026100209", 97.0, 98.0, 96.0, 97.5, 10)]}
+        calls, after = self.run_at("0901", state, plan, bars)
+        self.assertEqual(calls, [("2026100209", ["000001"], {"000001": 97.0})])
+        self.assertEqual(after["positions"], {})
+        self.assertEqual(after["pending"], [])
+
+    def test_nothing_due_at_0901_means_no_orders(self):
+        plan = {"base": "20261001", "candidates": []}
+        state = {"positions": {"000001": {"code": "000001", "name": "가", "kind": "정배열", "price": 100.0, "peak": 100.0, "칸": 2,
+                                          "처음칸": 2, "bars": 5, "bought": "2026093011", "max_close": 101.0}},
+                 "pending": [], "last_bar": "2026100114"}
+        calls, after = self.run_at("0901", state, plan, {"000001": [("2026100209", 97.0, 98.0, 96.0, 97.5, 10)]})
+        self.assertEqual(calls, [])
+        self.assertIn("000001", after["positions"])
