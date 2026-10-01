@@ -35,5 +35,25 @@ class Slots(unittest.TestCase):
         self.assertIsNot(M.K.to_hours, M.to_bars)
 
 
+class EmptyDays(unittest.TestCase):
+    def test_empty_days_are_remembered(self):
+        import tempfile
+        from pathlib import Path
+        import collect_kis_hourly as K
+        saved = K.HOME
+        with tempfile.TemporaryDirectory() as tmp:
+            K.HOME = Path(tmp)
+            try:
+                (Path(tmp) / "000001").mkdir()
+                (Path(tmp) / "000001" / "2026.csv").write_text("202601020900,1,1,1,1,1\n", encoding="utf-8")
+                K.mark_empty("000001", ["20260105", "20260106"])
+                K.mark_empty("000001", ["20260106", "20260107"])
+                self.assertEqual(K.have_days("000001"), {"20260102", "20260105", "20260106", "20260107"})
+                K.mark_empty("000002", [])
+                self.assertFalse((Path(tmp) / "000002").exists(), "빈 목록이면 아무것도 쓰지 않음")
+            finally:
+                K.HOME = saved
+
+
 if __name__ == "__main__":
     unittest.main()
