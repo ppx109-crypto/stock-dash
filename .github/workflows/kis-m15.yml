@@ -13,6 +13,10 @@ on:
         description: '조회 사이 쉬는 초(기본 0.07 · 장중 빈 시간에 받을 땐 0.15처럼 늦춤)'
         required: false
         default: '0.07'
+      lanes:
+        description: '동시에 묻는 줄 수(한 번 묻는 데 약 1초라 줄이 많을수록 빠름 · 한투 한도 초당 20번 안)'
+        required: false
+        default: '12'
   schedule:
     - cron: '20 8,11,14,17,20 * * *'   # 한국 시각 17:20 · 20:20 · 23:20 · 02:20 · 05:20
 permissions:
@@ -32,17 +36,24 @@ jobs:
       - run: pip install requests
       - run: python -m unittest tests.test_collect_kis_m15 -v
       - name: Collect and save
+        # 5천 번마다 저장(멈추거나 시간 제한에 걸려도 받은 만큼은 남음 · 2026-10-01 고침). 받은 날은 건너뛰므로 이어 받음.
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          status=0; python collect_kis_m15.py || status=$?
-          mkdir -p m15-kis
-          git add -A m15-kis
-          if ! git diff --cached --quiet; then
-            git commit -q -m "Collect KIS 15-minute bars"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
-          fi
-          if [ "$status" = "3" ]; then echo '이번 몫을 다 불렀습니다. 다음 예약에 이어 받습니다.'; exit 0; fi
+          total=${MAX_TOTAL:-40000}; left=$total; status=3
+          while [ "$left" -gt 0 ]; do
+            chunk=$(( left < 5000 ? left : 5000 ))
+            status=0; KIS_HOURLY_MAX_CALLS=$chunk python collect_kis_m15.py || status=$?
+            mkdir -p m15-kis
+            git add -A m15-kis
+            if ! git diff --cached --quiet; then
+              git commit -q -m "15분봉 받기 · 5천 번 몫"
+              for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            fi
+            left=$(( left - chunk ))
+            [ "$status" = "3" ] || break       # 3 = 이번 몫을 다 부름(더 받을 것이 있음) · 그 밖은 다 받았거나 문제가 있음
+          done
+          if [ "$status" = "3" ] || [ "$status" = "0" ]; then echo '이번 몫을 다 받았습니다.'; exit 0; fi
           exit $status
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
@@ -51,4 +62,5 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_CALL_GAP: ${{ inputs.call_gap || '0.07' }}
           KIS_HOURLY_START: '20250917'
-          KIS_HOURLY_MAX_CALLS: ${{ inputs.max_calls || '40000' }}
+          MAX_TOTAL: ${{ inputs.max_calls || '40000' }}
+          KIS_HOURLY_LANES: ${{ inputs.lanes || '12' }}
