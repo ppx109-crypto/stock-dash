@@ -48,7 +48,12 @@ jobs:
             git add -A m15-kis
             if ! git diff --cached --quiet; then
               git commit -q -m "15분봉 받기 · 5천 번 몫"
-              for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+              # rebase가 충돌로 멈추면 그 뒤 저장이 모두 막혔음(2026-10-01, 약 57종목치를 잃음) → 합치기(merge)로 하고, 충돌 땐 새로 받은 쪽을 씀
+              for try in 1 2 3 4 5; do
+                git pull -q --no-rebase --no-edit -X ours origin main && git push -q && break
+                git merge --abort 2>/dev/null; git rebase --abort 2>/dev/null
+                echo "올리기 다시 시도 $try"; sleep $((try * 7))
+              done
             fi
             left=$(( left - chunk ))
             [ "$status" = "3" ] || break       # 3 = 이번 몫을 다 부름(더 받을 것이 있음) · 그 밖은 다 받았거나 문제가 있음
