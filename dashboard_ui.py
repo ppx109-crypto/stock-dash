@@ -73,6 +73,11 @@ _CSS = """
 .pxb-ledger{padding:9px 12px;border:1px solid #E7DCC7;border-radius:12px;background:#FFFDF8}
 .pxb-ledger b{display:block;font-size:12px;font-weight:800;color:#946E38}
 .pxb-ledger small{display:block;margin-top:2px;font-size:11px;color:#4A4339}
+.pxb-near{margin-top:10px;padding-top:10px;border-top:1px dashed #E7DCC7}
+.pxb-near b{display:block;font-size:13px;font-weight:800;color:#2E2822}
+.pxb-near small{display:block;margin-top:2px;font-size:11px;color:#7B7465}
+.pxb-near ul{margin:6px 0 0 16px;padding:0;font-size:11.5px;color:#4A4339;line-height:1.6}
+.pxb-near-empty{margin-top:6px;font-size:12px;color:#9C9486}
 .pxb-ledger ul{margin:4px 0 0 16px;padding:0;font-size:10.5px;color:#7B7465;line-height:1.5}
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
 
@@ -1133,6 +1138,47 @@ def ledger_panel(title: str, state: dict | None, book: dict | None, shown: int =
         body += (f'<div class="pxb-note" style="margin-top:6px">모의투자 주문 (최근 {len(orders)}건)</div>'
                  f'<ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>')
     return f'<div class="pxb">{body}</div>'
+
+
+def _short_gap(gap: str) -> str:
+    """모자란 조건 한 줄을 짧게. 수급 줄은 어긋난 쪽만('투신 순매도' 따위)."""
+    if gap.startswith("5일 수급"):
+        import re
+        got = dict(re.findall(r"(외국인|투신|개인) ([+-][\d,]+)", gap))
+        num = {k: float(v.replace(",", "")) for k, v in got.items()}
+        bad = []
+        if num.get("외국인", 1) <= 0:
+            bad.append("외국인 순매도")
+        if num.get("투신", 1) <= 0:
+            bad.append("투신 순매도")
+        if num.get("개인", -1) >= 0:
+            bad.append("개인 순매수")
+        return "5일 수급 어긋남(" + " · ".join(bad) + ")" if bad else "5일 수급 어긋남"
+    if gap.startswith("수급 자료 없음"):
+        return "수급 자료 없음"
+    return gap
+
+
+def near_reason(row: dict) -> str:
+    """미달 종목의 까닭: 가까운 갈래마다 모자란 조건."""
+    label = {"추세 규칙": "① 추세", "정배열 추세": "② 정배열", "거름": "거름"}
+    parts = []
+    for door, gaps in (row.get("모자란 것") or {}).items():
+        parts.append(f'{label.get(door, door)}: ' + " · ".join(_short_gap(str(g)) for g in gaps))
+    return " / ".join(parts)
+
+
+def near_panel(title: str, rows: list | None, basis: str = "", shown: int = 8) -> str:
+    """'매수 후보(충족 미달)' 칸 안의 목록(조사 대상 507종목 전체에서 조건이 적게 모자란 순)."""
+    rows = sorted(rows or [], key=lambda r: r.get("모자란 수") or 9)[:shown]
+    head = (f'<div class="pxb-near"><b>{_e(title)}</b>'
+            f'<small>조사 대상 507종목에서 조건이 1~2개만 모자란 종목{(" · " + _e(basis)) if basis else ""}</small>')
+    if not rows:
+        return head + '<div class="pxb-near-empty">해당 종목 없음</div></div>'
+    items = "".join(
+        f'<li><b>{_e(r.get("name"))}</b> ({_e(r.get("code"))}) · {_e(r.get("모자란 수"))}개 미달 · {_e(near_reason(r))}</li>'
+        for r in rows)
+    return head + f'<ul>{items}</ul></div>'
 
 
 def close_frame() -> str:

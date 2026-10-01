@@ -305,7 +305,9 @@ def make_plan():
         cands.append({"code": one["code"], "name": one["name"], "추세문": final_group.RULE_DOOR in (one.get("갈래") or []),
                       "3일연속": steady, "flow5": flow5, "r20": r20, "시총순위": one.get("시총순위"), "갈래": one.get("갈래")})
     plan = {"base": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "breadth": found.get("breadth"),
-            "candidates": cands}
+            "candidates": cands,
+            # 조건이 1~2개만 모자란 종목(대시보드 '1시간봉 매수 후보(충족 미달)' · 사용자 요청 2026-10-01)
+            "near": [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")} for b in found.get("b_group", [])[:15]]}
     _save(PLAN, plan)
     state = _load(STATE, {"positions": {}, "pending": []})
     lines = [f"📋 **1시간봉 매매 · {day[:4]}-{day[4:6]}-{day[6:]} 마감 기준 → 다음 거래일 후보 {len(cands)}종목**",

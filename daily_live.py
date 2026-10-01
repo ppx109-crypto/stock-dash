@@ -303,10 +303,12 @@ def run(now=None):
     if found.get("date") != day:
         print("오늘 값으로 셈하지 못했습니다.")
         return 1
-    cands = []
+    cands, cut_out = [], []
     for one in found.get("picks", []):
         code = one["code"]
         if target_cut(code, day):
+            cut_out.append({"code": code, "name": one["name"], "모자란 수": 1, "가까운 갈래": one.get("갈래"),
+                            "모자란 것": {"거름": ["최근 45일 사이 증권사 목표가가 내림"]}})
             continue
         cands.append({**one, "추세문": final_group.RULE_DOOR in (one.get("갈래") or []), "3일연속": steady3(code, day),
                       "거래량비": volume_ratio(code, day, (quotes.get(code) or {}).get("volume"))})
@@ -353,7 +355,10 @@ def run(now=None):
     _save(RESULT, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "breadth": found.get("breadth"),
                    "candidates": [{k: c.get(k) for k in ("code", "name", "갈래", "추세문", "3일연속", "거래량비", "정배열일수", "칸",
                                                           "추세 기울기")} for c in cands],
-                   "sells": sells, "buys": buys, "late": late})
+                   "sells": sells, "buys": buys, "late": late,
+                   # 조건이 1~2개만 모자란 종목(대시보드 '1일봉 매수 후보(충족 미달)' · 사용자 요청 2026-10-01)
+                   "near": cut_out + [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")}
+                                      for b in found.get("b_group", [])[:15]]})
     alerts = _load(ALERTS, [])
     at = datetime.now(KST).strftime("%Y-%m-%d %H:%M")
     alerts += [{"at": at, "kind": "매도" if x["type"] == "sell" else "매수", "text": f"{x['name']}({x['code']}) {x['칸']}칸 · {x['why']}"}
