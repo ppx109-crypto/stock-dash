@@ -17,6 +17,8 @@ TEST_CODE = "010140"        # 시험 주문 종목(시총 100위 안 · 1주 값
 
 def why_refused(broker):
     """잔고 거절 문구를 정해진 갈래로만 옮김(문구 자체는 찍지 않음)."""
+    if not broker.token:
+        return "토큰을 못 받아 잔고까지 가지 못함"
     try:
         _, data = broker.request("GET", "/uapi/domestic-stock/v1/trading/inquire-balance", headers={
             "authorization": "Bearer " + broker.token, "appkey": broker.key, "appsecret": broker.secret,
