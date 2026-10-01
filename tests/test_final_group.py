@@ -235,6 +235,7 @@ class DailyPanels(unittest.TestCase):
         self.assertIn("10주", html)
 
 
+@unittest.skipIf(close_panel is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
 class NearPanel(unittest.TestCase):
     def test_only_one_short_and_fold_after_three(self):
         from dashboard_ui import near_panel
