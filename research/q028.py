@@ -6,7 +6,8 @@ Q_PART=2: 전날 시장 폭 70% 아래인 날만 종목 모음을 시총 150위�
 import os
 import sys
 sys.path.insert(0, "/home/user/stock-dash")
-exec(open("/home/user/stock-dash/research/q027.py", encoding="utf-8").read().split('part = os.environ')[0])
+exec(open("/home/user/stock-dash/research/q027.py", encoding="utf-8").read().split('\npart = os.environ')[0])
+CTX = W["CTX"]
 
 BR = {}
 for c in CTX:
