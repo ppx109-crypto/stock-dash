@@ -37,7 +37,9 @@ SLOTS = 10
 EMA_A = (5, 20, 60, 120, 180)
 HOURS = ("09", "10", "11", "12", "13", "14")
 CLOSE_AT = {"09": "1000", "10": "1100", "11": "1200", "12": "1300", "13": "1400", "14": "1530"}
-NOTE = "※ 연구용 자동 알림이에요(주문은 넣지 않아요). 매매 판단은 직접 확인한 뒤에 하세요."
+NOTE_PLAIN = "※ 연구용 자동 알림이에요(주문은 넣지 않아요). 매매 판단은 직접 확인한 뒤에 하세요."
+NOTE_PAPER = "※ 연구용 자동 알림이에요. 실제 계좌에는 주문하지 않고, 한투 모의투자 계좌에만 자동 주문해요(🧪). 실제 매매 판단은 직접 확인한 뒤에 하세요."
+NOTE = NOTE_PLAIN
 
 
 # ───────────────────────── 계산(자료 · 증권사 없이 시험할 수 있게) ─────────────────────────
@@ -425,9 +427,11 @@ def run_live(now=None):
     items = []
     log = lambda kind, text, extra: items.append((kind, text, extra))
     names = {c["code"]: c["name"] for c in plan.get("candidates", [])}
+    filled = []          # (봉, 체결된 매매, 그 봉 시가) — 모의투자 주문이 따라 넣음
     for bar_id in todo:
         # 이 봉 시가로 앞에서 정한 것들 체결
-        fill(state, bar_id, {c: opens[c].get(bar_id) for c in codes})
+        px = {c: opens[c].get(bar_id) for c in codes}
+        filled.append((bar_id, fill(state, bar_id, px), px))
         closed = {c: {"t": [x for x in bars[c]["t"] if x <= bar_id], "c": bars[c]["c"][:len([x for x in bars[c]["t"] if x <= bar_id])]}
                   for c in codes}
         nxt = HOURS[HOURS.index(bar_id[8:]) + 1] if bar_id[8:] != "14" else None
@@ -436,14 +440,31 @@ def run_live(now=None):
         state["last_bar"] = bar_id
     # 방금 시작한 봉의 시가가 이미 있으면 바로 체결(알림의 '약 몇 원'과 같은 값)
     cur = [hh for hh in HOURS if hh not in done_bars]
-    if cur and todo:
-        fill(state, day + cur[0], {c: opens[c].get(day + cur[0]) for c in codes})
+    # 09:01 실행: 오늘 닫힌 봉은 없지만 전날 마지막 봉 · 일봉 정배열 깨짐으로 정한 매도는 오늘 09시 시가에 체결
+    first_open = bool(cur) and not todo and cur[0] == "09" and any(x["decided"] < day + "09" for x in state.get("pending", []))
+    if cur and (todo or first_open):
+        px = {c: opens[c].get(day + cur[0]) for c in codes}
+        filled.append((day + cur[0], fill(state, day + cur[0], px), px))
     _save(STATE, state)
+    paper = []
+    try:
+        import paper_trade
+        for bar_id, done, px in filled:
+            paper += paper_trade.execute(done, state, {c: v for c, v in px.items() if v}, bar_id, now=now)
+    except Exception as e:          # 모의투자 주문이 잘못돼도 알림 · 연습 계좌는 그대로 돌아가게
+        paper.append(f"🧪 모의투자 주문 중 문제 · {type(e).__name__}")
+    if paper and not items:
+        send([f"🧪 **모의투자 주문 · {now.strftime('%m-%d %H:%M')}**"] + paper)
     if items:
         _log_alerts(items)
         icon = {"매수": "🟢", "자리 바꾸기": "🔄", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "못 삼": "⚫"}
         head = f"⏰ **1시간봉 A그룹 · {now.strftime('%m-%d %H:%M')}** (봉 {', '.join(b[8:] + '시' for b in todo)} 마감)"
-        send([head] + [f"{icon.get(k, '•')} {k} · {t}" for k, t, _ in items] + [NOTE])
+        try:
+            import paper_trade
+            note = NOTE_PAPER if paper_trade.enabled()[0] else NOTE_PLAIN
+        except Exception:
+            note = NOTE_PLAIN
+        send([head] + [f"{icon.get(k, '•')} {k} · {t}" for k, t, _ in items] + paper + [note])
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")
     return 0
 
