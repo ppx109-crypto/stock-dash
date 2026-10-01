@@ -59,6 +59,20 @@ class Load(unittest.TestCase):
             got = M.load(home=tmp)["000001"]
             self.assertLess(got["t"][-1], "202609300000")
 
+    def test_final_test_month_locked(self):
+        """마지막 한 달(2026-09)은 최종 시험지 — M15_OPEN_OOS=1일 때만 읽음."""
+        with tempfile.TemporaryDirectory() as tmp:
+            write_days(tmp, "000001", DAYS + ["20260828", "20260901", "20260915"])
+            with mock.patch.dict(os.environ, {}, clear=False):
+                os.environ.pop("M15_OPEN_OOS", None)
+                got = M.load(home=tmp)["000001"]
+                self.assertLess(got["t"][-1], "202609010000")
+                self.assertEqual([p[0] for p in M.periods()], ["앞", "뒤"])
+            with mock.patch.dict(os.environ, {"M15_OPEN_OOS": "1"}):
+                got = M.load(home=tmp)["000001"]
+                self.assertTrue(got["t"][-1].startswith("20260915"))
+                self.assertEqual([p[0] for p in M.periods()], ["앞", "뒤", "시험"])
+
 
 class Simulate(unittest.TestCase):
     def test_hlab_account_runs_on_15min_and_audits(self):

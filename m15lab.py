@@ -8,7 +8,8 @@ hlab의 계좌 모의(simulate · _one_run)는 봉 시각을 글자로만 다룹
 - 일봉 재료(정배열 · 추세 문 · 수급 · 시장 폭 · 공시)는 hlab.daily_context → hlab.attach로 **전 거래일 것만**.
 - 시험지 잠금 · 잘라내기 · 더럽히기: hlab.bar_limit · poison_at(HLAB_CUT · HLAB_POISON, 10자리 'YYYYMMDDHH')를 따름.
   10자리 시각 T로 자르면 T시가 시작하는 15분봉부터 없는 것으로 봄(글자 비교: '202601161400' > '2026011614').
-- 두 반: 자료가 약 1년(2025-09-17 ~)뿐이라 앞 2025-09-17 ~ 2026-03-31 · 뒤 2026-04-01 ~ 2026-09-29.
+- 두 반: 자료가 약 1년(2025-09-17 ~)뿐이라 앞 2025-09-17 ~ 2026-03-31 · 뒤 2026-04-01 ~ 2026-08-31.
+- 최종 시험(OOS): 2026-09-01 ~ 09-30은 잠가 두고(M15_OPEN_OOS=1일 때만 읽음) 최종 규칙을 정한 뒤 한 번만 씀.
 """
 from pathlib import Path
 
@@ -20,8 +21,19 @@ import os
 
 HOME = Path(os.environ.get("M15_HOME", "m15-kis"))      # 시험 · 점검용으로 다른 폴더를 줄 수 있음
 EARLY = ("202509170000", "202604010000")
-LATE = ("202604010000", "202609300000")
+LATE = ("202604010000", "202609010000")
+# 최종 시험(사용자 결정 2026-10-01): 마지막 한 달(2026-09)은 최종 규칙을 정한 뒤 한 번만 여는 시험지 — 연구 중엔 읽지 않음.
+OOS = ("202609010000", "202610010000")
 PERIODS = (("앞", EARLY), ("뒤", LATE))
+
+
+def oos_open():
+    """M15_OPEN_OOS=1일 때만 9월 봉을 읽음(사용자 허락 뒤 최종 시험 한 번)."""
+    return os.environ.get("M15_OPEN_OOS") == "1"
+
+
+def periods():
+    return PERIODS + ((("시험", OOS),) if oos_open() else ())
 PER_DAY = 26
 SCALE = 4            # 1시간봉 봉 수 × 4 = 15분봉 봉 수(보유 · 자리 바꾸기 봉 수를 옮길 때)
 
@@ -48,6 +60,8 @@ def load(codes=None, home=None, min_per_day=20, min_bars=500):
         lines = sorted((p for p in lines if per_day[p[0][:8]] >= min_per_day), key=lambda p: p[0])
         if lim:
             lines = [p for p in lines if p[0] <= lim]
+        if not oos_open():
+            lines = [p for p in lines if p[0] < OOS[0]]        # 9월(최종 시험지)은 잠금
         if len(lines) < min_bars:
             continue
         arr = np.array([[float(x) for x in p[1:]] for p in lines])
@@ -86,7 +100,7 @@ def setup(codes=None, home=None, top=100):
 
 def simulate(data, entry, exit_rule, size, **kw):
     """hlab.simulate를 15분봉 두 반으로."""
-    kw.setdefault("periods", PERIODS)
+    kw.setdefault("periods", periods())
     return H.simulate(data, entry, exit_rule, size, **kw)
 
 
