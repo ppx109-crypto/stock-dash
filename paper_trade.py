@@ -37,9 +37,6 @@ def account_parts(text):
         return digits[:8], digits[8:]
     if len(digits) == 8:
         return digits, "01"
-    if len(digits) in (7, 9):
-        # KIS Developers 표의 모의투자 계좌가 7자리로 나옴(2026-10-01 사용자 화면). 그대로 7자리 + 상품코드 01로 시험(사용자 제안).
-        return digits[:7], digits[7:] or "01"
     raise broker_kis.BrokerError(f"모의투자 계좌번호(KIS_PAPER_ACCOUNT)의 숫자가 {len(digits)}자리입니다. "
                                  "'50123456-01'처럼 8자리-2자리로 넣어 주세요"
                                  "(KIS Developers 표의 7자리 번호는 앞 0을 붙여도 잔고 조회가 거절됨(OPSQ2000) · 모의투자 화면의 계좌번호를 쓰세요).")
