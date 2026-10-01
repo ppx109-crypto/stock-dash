@@ -51,9 +51,9 @@ class PaperBroker(broker_kis.KIS):
                                    ("KIS_PAPER_ACCOUNT", os.getenv("KIS_PAPER_ACCOUNT", "").strip())) if not v]
         if missing:
             raise broker_kis.BrokerError("모의투자 비밀값이 없습니다: " + " · ".join(missing))
-        self.cano, self.product = account_parts(os.getenv("KIS_PAPER_ACCOUNT", ""))
         if self.key == os.getenv("KIS_APP_KEY", "").strip():
             raise broker_kis.BrokerError("모의투자 키가 실전 키와 같습니다. 모의투자 앱의 키를 넣어 주세요.")
+        self.cano, self.product = account_parts(os.getenv("KIS_PAPER_ACCOUNT", ""))
         self.mode = "demo"
         self.base = PAPER_BASE
         self.token = None

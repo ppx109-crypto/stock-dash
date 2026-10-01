@@ -18,6 +18,16 @@ TEST_CODE = "010140"        # 시험 주문 종목(시총 100위 안 · 1주 값
 def main(mode="check", code=TEST_CODE):
     ok, why = paper_trade.enabled()
     print("주문 켜짐:", "예" if ok else f"아니오 · {why}")
+    import os
+    real = os.getenv("KIS_APP_KEY", "").strip()
+    paper = os.getenv("KIS_PAPER_APP_KEY", "").strip()
+    print("앱 키:", "❌ 실전 키와 같음" if paper and paper == real else ("✅ 실전 키와 다름" if paper else "❌ 없음"))
+    print("앱 시크릿:", "✅ 있음" if os.getenv("KIS_PAPER_APP_SECRET", "").strip() else "❌ 없음")
+    try:
+        paper_trade.account_parts(os.getenv("KIS_PAPER_ACCOUNT", ""))
+        print("계좌번호: ✅ 모양 맞음(8자리 + 2자리)")
+    except broker_kis.BrokerError as e:
+        print("계좌번호: ❌", e)
     try:
         broker = paper_trade.PaperBroker()
     except broker_kis.BrokerError as e:
