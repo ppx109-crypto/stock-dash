@@ -424,12 +424,7 @@ def group_board_ui(graded):
                     for row in rest:
                         st.button(chip_label(row), key=f'pxpick-{key}-{row["code"]}',
                                   on_click=_choose, args=(row['code'],), width='stretch')
-    st.markdown(board_basis(graded, pending), unsafe_allow_html=True)
-    if pending:
-        with st.expander(f'판정 보류 {len(pending)}종목'):
-            for row in pending:
-                st.button(chip_label(row), key=f'pxpick-wait-{row["code"]}',
-                          on_click=_choose, args=(row['code'],), width='stretch')
+    # 관심종목 기준일 안내 줄 · '판정 보류' 칸은 매수 규칙과 무관해 뺌(사용자 요청 2026-10-01)
 
 
 def fill_reports(store, stocks, limit=20):
