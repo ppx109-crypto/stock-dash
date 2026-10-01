@@ -142,7 +142,7 @@ def _dart_names(key):
             for one in root.findall("list") if (one.findtext("stock_code") or "").strip()}
 
 
-def compute(prices=None, flow_day=None):
+def compute(prices=None, flow_day=None, calm=None):
     """오늘(마지막 종가 날) A그룹을 셉니다.
 
     flow_day를 주면 수급을 그날 **전날까지**로 셉니다. "next"면 다음 날의 전날까지 = 오늘 수급까지(1시간봉 A그룹이 다음 거래일 후보를 오늘 저녁에 셀 때).
@@ -164,7 +164,8 @@ def compute(prices=None, flow_day=None):
         return {"date": None, "picks": [], "note": "일봉이 없습니다."}
     vols.sort()
     # rule.calm_edge와 같은 셈입니다(표 전체 변동성의 아래 CALM 자리).
-    rule._calm = vols[int(len(vols) * rule.CALM)]
+    # calm을 주면 그 문턱을 씀(일봉 장중 판단이 일부 종목만 셀 때 — 전날 전체로 센 문턱, daily_live.py)
+    rule._calm = calm if calm is not None else vols[int(len(vols) * rule.CALM)]
     day = max(row["date"] for row in latest)
     # flow_day="next": 다음 날의 '전날까지' = 오늘 수급까지(1시간봉 A그룹이 다음 거래일 후보를 셀 때)
     next_day = (datetime.strptime(day, "%Y%m%d") + timedelta(days=1)).strftime("%Y%m%d")
@@ -186,7 +187,8 @@ def compute(prices=None, flow_day=None):
                  "60일 전 대비": _round(row.get("60일 전 대비")),
                  "변동성": _round(row.get("변동성")),
                  "정배열": form.get("정배열"), "정배열 된 지": form.get("된 지"),
-                 "선 간격": _round(form.get("간격")), "종가": row.get("price")}
+                 "선 간격": _round(form.get("간격")), "종가": row.get("price"),
+                 "정배열일수": row.get("정배열일수")}
         flow = flow_before(flow_rows(row["code"]), next_day if flow_day == "next" else (flow_day or day))
         entry["수급 5일"] = flow
         missing = shortfalls(row, form, breadth, rule._calm, flow)

@@ -30,3 +30,10 @@
   주문 거래 ID(매수 VTTC0012U · 매도 VTTC0011U) · 잔고 조회(VTTC8434R)가 모의투자 서버에서 동작함.
 - 계좌번호는 KIS Developers 표의 7자리가 아니라 한국투자증권 '모의투자 → 나의계좌'의 8자리(50…)를 씀. 앱도 그 계좌로 신청해야 함(아니면 OPSQ2000).
 - 접근토큰은 1분에 한 번만 받을 수 있어, 점검을 연달아 누르면 1분쯤 기다려야 함.
+
+## 두 규칙을 한 모의 계좌로 (2026-10-01 사용자 요청: "모의투자 1H, 1봉기준으로 진행 · 거래 내역은 각각 기록하여 보관")
+- **정시 출격(1시간봉)**: hourly_a.py · 작업 'Hourly A group live' · 주문 장부 hourly-live/paper-orders.json · 연습 계좌 hourly-live/state.json(closed = 끝난 매매).
+- **종가 출격(일봉 새 82회차)**: daily_live.py · 작업 'Daily rule live (종가 출격)' · 평일 15:20 판단 → 마감 동시호가 시장가(종가 체결) → 15:32 종가로 연습 계좌 ·
+  주문 장부 daily-live/paper-orders.json · 연습 계좌 daily-live/state.json · 오늘 결과 daily-live/today.json · 알림 daily-live/alerts.json.
+- 계좌 나누기: 규칙마다 모의 계좌 총액의 50%(PAPER_SHARE)를 제 돈으로 보고 칸을 셈. 장부의 held에 그 규칙이 산 수량을 적고, 팔 때는 그 수량만 팖
+  (두 규칙이 같은 종목을 들어도 서로의 수량을 건드리지 않음). 모든 주문 · 체결 · 손익은 디스코드로 알림.

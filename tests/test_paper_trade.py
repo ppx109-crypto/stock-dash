@@ -79,6 +79,19 @@ class Sizing(unittest.TestCase):
         self.assertEqual([(c, s, q) for _, c, s, q, _ in got], [("000001", "sell", 7), ("000002", "sell", 6)])
 
 
+class TwoRules(unittest.TestCase):
+    def test_a_rule_sells_only_what_it_bought(self):
+        done = [{"type": "sell", "code": "000001", "칸": 4, "decided": "d", "why": "손절"}]
+        # 모의 계좌엔 30주(두 규칙 합), 이 규칙 장부엔 10주 → 10주만 팖
+        got = P.plan_orders(done, {"positions": {}}, bal(0, [("000001", 30, 1)]), {}, "b", held={"000001": 10})
+        self.assertEqual(got[0][3], 10)
+        got = P.plan_orders(done, {"positions": {}}, bal(0, [("000001", 30, 1)]), {}, "b", held={})
+        self.assertEqual(got, [], "이 규칙이 산 적 없으면 팔지 않음")
+
+    def test_daily_book_is_separate(self):
+        self.assertNotEqual(P.book_path("1h"), P.book_path("1d"))
+
+
 class Execute(unittest.TestCase):
     def test_orders_once_and_books(self):
         class Fake:
@@ -98,10 +111,11 @@ class Execute(unittest.TestCase):
             done = [{"type": "buy", "code": "000001", "칸": 2, "decided": "2026100110", "name": "가"}]
             lines = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=fake)
             again = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=fake)
-            self.assertEqual(fake.sent, [("000001", "buy", 200)])
+            self.assertEqual(fake.sent, [("000001", "buy", 100)], "규칙마다 계좌의 절반(SHARE 0.5)")
             self.assertEqual(len(lines), 1)
             self.assertEqual(again, [])
             book = json.loads((Path(tmp) / "book.json").read_text(encoding="utf-8"))
+            self.assertEqual(book["held"], {"000001": 100})
             self.assertNotIn("12345678", json.dumps(book))
             (Path(tmp) / "off").write_text("")
             self.assertEqual(P.execute([dict(done[0], decided="x")], {"positions": {}}, {"000001": 1}, "b", broker=fake), [])

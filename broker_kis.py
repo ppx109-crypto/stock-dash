@@ -260,7 +260,12 @@ class KIS:
             cap = amount(row.get('hts_avls'))
         except BrokerError:
             cap = None
-        return {'price': price, 'change': change, 'rate': rate, 'market_cap': cap,
+        volume = None
+        try:
+            volume = amount(row.get('acml_vol'))
+        except BrokerError:
+            volume = None
+        return {'price': price, 'change': change, 'rate': rate, 'market_cap': cap, 'volume': volume,
                 'name': str(row.get('hts_kor_isnm', '')).strip(),
                 'at': datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
 

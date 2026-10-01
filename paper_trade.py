@@ -21,7 +21,12 @@ import broker_kis
 KST = ZoneInfo("Asia/Seoul")
 PAPER_BASE = "https://openapivts.koreainvestment.com:29443"
 ORDER_PATH = "/uapi/domestic-stock/v1/trading/order-cash"
-BOOK = Path("hourly-live/paper-orders.json")
+BOOK = Path("hourly-live/paper-orders.json")              # 1시간봉(정시 출격) 주문 장부
+DAILY_BOOK = Path("daily-live/paper-orders.json")        # 일봉(종가 출격) 주문 장부
+LABEL = {"1h": "정시 출격 · 1시간봉", "1d": "종가 출격 · 일봉"}
+# 모의 계좌 하나를 두 규칙이 나눠 씀(사용자 요청 2026-10-01: 1시간봉 · 일봉 모의투자를 함께, 거래 내역은 따로).
+# 규칙마다 계좌 총액의 SHARE만큼을 제 돈으로 보고 칸을 셈 · 팔 때는 그 규칙이 산 수량(장부의 held)만 팖.
+SHARE = float(os.getenv("PAPER_SHARE", "0.5"))
 OFF = Path("hourly-live/paper-off")
 SLOTS = 10
 # 모의투자 주문 거래 ID(현금 매수 · 매도). 한투가 바꾸면 환경변수로 덮어씀.
@@ -125,15 +130,21 @@ def enabled():
     return True, ""
 
 
-def plan_orders(done, state, balance, prices, bar_id):
+def book_path(strategy="1h"):
+    return BOOK if strategy == "1h" else DAILY_BOOK
+
+
+def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
     """fill이 체결한 매매(done) → 넣을 주문 [(열쇠, 종목, 'buy'|'sell', 수량, 까닭)]. 계산만(주문은 안 넣음).
 
     살 때: 계좌 총액 × 칸 / 10 ÷ 체결 값(그 봉 시가) 내림 · 현금 안에서.
     팔 때: 연습 계좌에서 그 종목이 다 팔렸으면 모의 잔고 전부, 일부(절반 익절)면 잔고 × 판 칸 / (판 칸 + 남은 칸) 반올림.
     """
-    held = {p["code"]: int(p["quantity"]) for p in balance.get("positions", [])}
+    account = {p["code"]: int(p["quantity"]) for p in balance.get("positions", [])}
+    # 규칙 장부(held)가 있으면 그 규칙이 산 수량까지만 팖(다른 규칙이 같은 종목을 들고 있어도 건드리지 않음)
+    held = account if held is None else {c: min(int(q), account.get(c, 0)) for c, q in held.items()}
     cash = float(balance.get("cash") or 0)
-    total = cash + float(balance.get("value") or 0)
+    total = (cash + float(balance.get("value") or 0)) * share
     left = cash * 0.98                        # 시장가 체결 값이 조금 높을 때를 위한 여유
     out = []
     for x in done:
@@ -161,7 +172,7 @@ def plan_orders(done, state, balance, prices, bar_id):
     return out
 
 
-def execute(done, state, prices, bar_id, broker=None, now=None):
+def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
     """체결된 매매를 모의투자 주문으로 넣고 주문 장부에 적음. 디스코드에 보낼 줄들을 돌려줌."""
     ok, why = enabled()
     if not done:
@@ -175,23 +186,26 @@ def execute(done, state, prices, bar_id, broker=None, now=None):
         balance = broker.balance()
     except broker_kis.BrokerError as e:
         print("모의투자 연결 · 잔고 조회 실패 ·", e)
-        return [f"🧪 모의투자 주문 못 넣음 · {e}"]
-    book = json.loads(BOOK.read_text(encoding="utf-8")) if BOOK.exists() else {"orders": []}
+        return [f"🧪 모의투자({LABEL.get(strategy, strategy)}) 주문 못 넣음 · {e}"]
+    path = book_path(strategy)
+    tag = LABEL.get(strategy, strategy)
+    book = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {"orders": []}
+    book.setdefault("held", {})
     seen = {o["key"] for o in book["orders"]}
     names = {p["code"]: p.get("name") for p in state.get("positions", {}).values()}
     lines = []
-    planned = plan_orders(done, state, balance, prices, bar_id)
+    planned = plan_orders(done, state, balance, prices, bar_id, held=book["held"], share=SHARE)
     # 주문을 못 넣는 매매도 알림에 남김(사용자 요청: 진입 · 청산은 모두 알림)
-    have = {p["code"] for p in balance.get("positions", []) if int(p.get("quantity") or 0) > 0}
+    have = {c for c, q in book["held"].items() if q > 0}
     for x in done:
         if any(code == x["code"] and side == x["type"] for _, code, side, _, _ in planned):
             continue
         name = x.get("name") or names.get(x["code"]) or x["code"]
         if x["type"] == "sell":
-            why = "모의 계좌에 그 종목이 없음" if x["code"] not in have else "팔 수량이 0주"
+            why = "이 규칙이 모의 계좌에서 산 수량이 없음" if x["code"] not in have else "팔 수량이 0주"
         else:
             why = "시가를 몰라서" if not prices.get(x["code"]) else "살 돈이 모자람(1주 미만)"
-        lines.append(f"🧪 모의투자 {'매수' if x['type'] == 'buy' else '매도'} 건너뜀 · {name}({x['code']}) · {why}")
+        lines.append(f"🧪 모의투자({tag}) {'매수' if x['type'] == 'buy' else '매도'} 건너뜀 · {name}({x['code']}) · {why}")
     for key, code, side, qty, why in planned:
         if key in seen:
             continue
@@ -199,12 +213,15 @@ def execute(done, state, prices, bar_id, broker=None, now=None):
         try:
             no = broker.order(code, side, qty)
             status = "접수"
+            book["held"][code] = max(0, book["held"].get(code, 0) + (qty if side == "buy" else -qty))
+            if not book["held"][code]:
+                del book["held"][code]
         except broker_kis.BrokerError as e:
             no, status = "", f"실패 · {e}"
         book["orders"].append({"key": key, "at": now.strftime("%Y-%m-%d %H:%M"), "code": code, "name": name,
                                "side": side, "qty": qty, "status": status, "order_no": no})
-        lines.append(f"🧪 모의투자 {'매수' if side == 'buy' else '매도'} · {name}({code}) {qty}주 · 시장가 · {status}")
-    book["orders"] = book["orders"][-1000:]
-    BOOK.parent.mkdir(parents=True, exist_ok=True)
-    BOOK.write_text(json.dumps(book, ensure_ascii=False, indent=1), encoding="utf-8")
+        lines.append(f"🧪 모의투자({tag}) {'매수' if side == 'buy' else '매도'} · {name}({code}) {qty}주 · 시장가 · {status}")
+    book["orders"] = book["orders"][-5000:]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(book, ensure_ascii=False, indent=1), encoding="utf-8")
     return lines

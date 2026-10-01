@@ -1,0 +1,53 @@
+name: Daily rule live (종가 출격)
+# 일봉 최고 규칙(새 82회차)을 실제 날에 — 15:20 마감 직전 값으로 판단 → 한투 모의투자 계좌에 시장가 주문(마감 동시호가 → 종가 체결)
+# → 15:32 진짜 종가로 연습 계좌에 적고 디스코드로 알림. 실전 계좌 주문은 없음. 거래 내역은 daily-live/에 남김.
+# GitHub 예약은 늦게 돌 수 있어 일찍(14:40 · 15:00) 띄우고 15:20까지 기다림. 두 번째는 첫 번째가 끝냈으면 그냥 끝남.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 5 * * 1-5'          # 한국 시각 14:40(평일)
+    - cron: '0 6 * * 1-5'           # 한국 시각 15:00(평일, 첫 예약이 밀렸을 때)
+permissions:
+  contents: write
+concurrency:
+  group: daily-live
+  cancel-in-progress: false
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests numpy
+      - run: python -m unittest tests.test_daily_live tests.test_paper_trade -v
+      - name: 종가 출격 판단 · 모의투자 주문 · 연습 계좌 저장
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          status=0; python daily_live.py || status=$?
+          mkdir -p daily-live
+          git add -A daily-live
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Daily rule live"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          exit $status
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.07'
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # 한투 모의투자 자동 주문(사용자 요청 2026-10-01). 계좌 하나를 1시간봉과 반씩 나눠 씀(PAPER_SHARE 0.5).
+          PAPER_TRADING: 'on'
+          KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
+          KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
+          KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
+          KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
