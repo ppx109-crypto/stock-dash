@@ -3,7 +3,7 @@
 주식일별분봉조회(FHKST03010230)는 약 1년 전까지 1분봉을 줍니다. 하루를 네 번(15:30 · 13:30 · 11:30 · 09:30 끝) 물어
 15분 칸(09:00 · 09:15 · … · 15:15 — 15:15 칸은 15:15~15:30, 마감 동시호가 포함)으로 묶습니다.
 저장: m15-kis/{종목코드}/{해}.csv — "YYYYMMDDHHMM,시가,고가,저가,종가,거래량"(HHMM = 그 칸이 시작한 시각).
-종목: hourly-data/universe.json의 top100(2023-09 뒤 하루라도 시총 100위 안에 든 종목).
+종목: hourly-data/universe.json의 1시간봉 대상 전부(435 · top100 먼저). 2026-10-02부터 1시간봉도 여기서 만듦(같은 1분봉을 두 번 받지 않게).
 python collect_kis_m15.py [종목코드,...]   · 환경변수 KIS_HOURLY_MAX_CALLS(한 번에 부를 최대 수, 기본 40000)
 """
 import json
@@ -56,7 +56,8 @@ def main(codes=None):
     K.HOME, K.to_hours = HOME, to_bars
     try:
         uni = json.loads(Path("hourly-data/universe.json").read_text(encoding="utf-8"))
-        return K.main(codes or list(uni["top100"]))
+        # 2026-10-02 사용자 결정: 1시간봉도 15분봉에서 만들므로 1시간봉 대상 전부(435)를 받음(100위 경험 종목 먼저)
+        return K.main(codes or (list(uni["top100"]) + [c for c in uni["codes"] if c not in uni["top100"]]))
     finally:
         K.HOME, K.to_hours = saved
 

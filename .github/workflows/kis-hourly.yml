@@ -8,8 +8,7 @@ on:
         description: '이번에 부를 최대 수(하루치 = 종목당 4번)'
         required: false
         default: '40000'
-  schedule:
-    - cron: '50 7 * * 1-5'   # 한국 시각 16:50(평일)
+  # 2026-10-02 사용자 결정: 정기 실행 끔 — 같은 한투 1분봉을 15분봉 수집(kis-m15.yml)이 435종목 모두 받고, 1시간봉은 거기서 만듦.
 permissions:
   contents: write
 concurrency:

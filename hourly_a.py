@@ -373,18 +373,22 @@ def today_bars(client, code, day):
 
 
 def kis_history(code):
-    """야후 1시간봉이 없는 종목은 한국투자증권 1시간봉 기록(hourly-kis, 15시 봉은 14시 봉에 합침)으로 EMA를 셈."""
-    folder = Path("hourly-kis") / code
-    if not folder.is_dir():
-        return None
+    """야후 1시간봉이 없는 종목은 한국투자증권 기록으로 EMA를 셈(15시 봉은 14시 봉에 합침).
+    한투 1시간봉(hourly-kis)과 한투 15분봉(m15-kis, 1시간으로 묶음)을 함께 읽음 — 둘은 같은 1분봉에서 만들어 종가가 100% 같고
+    (2026-10-02 확인), 2026-10-02부터 1시간봉 따로 받기를 멈추고 15분봉으로만 받음(사용자 결정 · 같은 자료 두 번 받지 않게)."""
     by = {}
-    for f in sorted(folder.glob("*.csv")):
-        for ln in f.read_text(encoding="utf-8").splitlines():
-            p = ln.split(",")
-            if len(p) != 6:
-                continue
-            key = p[0][:8] + ("14" if p[0][8:] == "15" else p[0][8:])
-            by[key] = float(p[4])          # 시각 순으로 읽으므로 15시 봉 종가가 14시 봉 종가를 덮음(마감 종가)
+    for home in ("hourly-kis", "m15-kis"):
+        folder = Path(home) / code
+        if not folder.is_dir():
+            continue
+        for f in sorted(folder.glob("*.csv")):
+            for ln in f.read_text(encoding="utf-8").splitlines():
+                p = ln.split(",")
+                if len(p) != 6 or not p[0][:1].isdigit():
+                    continue
+                hh = p[0][8:10]
+                key = p[0][:8] + ("14" if hh == "15" else hh)
+                by[key] = float(p[4])      # 시각 순으로 읽으므로 그 시간 마지막 봉(15시 봉은 마감) 종가가 남음
     t = sorted(by)
     return {"t": t, "c": [by[x] for x in t]} if t else None
 

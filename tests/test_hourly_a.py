@@ -195,3 +195,28 @@ class FillAlerts(unittest.TestCase):
         self.assertEqual(len(lines), 2)
         self.assertTrue(any("매수 체결" in x and "가(000001)" in x and "11:00" in x and "50,000원" in x for x in lines))
         self.assertTrue(any("매도 체결" in x and "나(000002)" in x and "+12.7%" in x for x in lines))
+
+
+class KisHistory(unittest.TestCase):
+    """야후 1시간봉이 없는 종목: 한투 1시간봉 + 한투 15분봉(1시간으로 묶음)을 함께 읽음(2026-10-02 · 1시간봉 따로 받기 멈춤)."""
+
+    def test_reads_hourly_and_m15_together(self):
+        import os
+        import tempfile
+        from pathlib import Path
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "hourly-kis" / "000001").mkdir(parents=True)
+            (Path(tmp) / "m15-kis" / "000001").mkdir(parents=True)
+            (Path(tmp) / "hourly-kis" / "000001" / "2026.csv").write_text(
+                "2026092914,1,1,1,100,1\n2026092915,1,1,1,101,1\n", encoding="utf-8")
+            (Path(tmp) / "m15-kis" / "000001" / "2026.csv").write_text(
+                "202609300900,1,1,1,102,1\n202609300945,1,1,1,103,1\n202609301500,1,1,1,104,1\n202609301515,1,1,1,105,1\n",
+                encoding="utf-8")
+            here = os.getcwd()
+            os.chdir(tmp)
+            try:
+                got = A.kis_history("000001")
+            finally:
+                os.chdir(here)
+        self.assertEqual(got["t"], ["2026092914", "2026093009", "2026093014"])
+        self.assertEqual(got["c"], [101.0, 103.0, 105.0], "그 시간 마지막 봉 · 15시는 14시에 합쳐 마감 종가")
