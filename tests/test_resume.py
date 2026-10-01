@@ -66,8 +66,13 @@ class PriceResume(unittest.TestCase):
             encoding="utf-8")
 
     def test_a_full_series_from_today_is_skipped(self):
-        self.write("005930", [["20260101", 100.0]] * 200, "2026-09-22")
+        self.write("005930", [["20260101", 100.0]] * 199 + [["20260922", 100.0]], "2026-09-22")
         self.assertTrue(collect_prices.done_today("005930", "2026-09-22"))
+
+    def test_fetched_after_midnight_without_todays_close_is_collected_again(self):
+        # 전날 밤 수집이 자정을 넘겨 받은 날이 오늘로 찍혔지만 오늘 종가는 없음(2026-10-01 사고)
+        self.write("005930", [["20260101", 100.0]] * 199 + [["20260930", 100.0]], "2026-10-01")
+        self.assertFalse(collect_prices.done_today("005930", "2026-10-01"))
 
     def test_a_short_series_is_collected_again(self):
         self.write("005930", [["20260101", 100.0]] * 10, "2026-09-22")

@@ -139,12 +139,18 @@ def catch_up(client, code, have, back=25):
 
 
 def done_today(code, on_day):
-    """오늘 이미 받아 둔 종목인지 봅니다. 이어받을 때 시간을 아낍니다."""
+    """오늘 이미 받아 둔 종목인지 봅니다. 이어받을 때 시간을 아낍니다.
+
+    받은 날만 보면 안 됩니다(2026-10-02): 전날 밤 수집이 자정을 넘겨 끝나면 받은 날이 '오늘'로 찍혀,
+    그날 저녁 수집이 오늘 종가를 받지 않고 건너뛰었습니다(479종목 · 10-01 종가 빠짐 → 후보 계산이 틀림).
+    그래서 **오늘 종가까지 들어 있을 때만** 건너뜁니다."""
     try:
         kept = json.loads((OUT / f"{code}.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False
-    return kept.get("fetched") == on_day and len(kept.get("closes") or []) >= 120
+    closes = kept.get("closes") or []
+    return (kept.get("fetched") == on_day and len(closes) >= 120
+            and str(closes[-1][0]) == on_day.replace("-", ""))
 
 
 def main():
