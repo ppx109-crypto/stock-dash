@@ -104,7 +104,7 @@ def trend_panel(grade):
     left,right=st.columns([1,1.25])
     with left:
         # 그룹은 최종 조건(A·B)입니다. 오른쪽 EMA 막대는 참고로만 둡니다.
-        title={'A':'A그룹 · 매수 후보','B':'B그룹 · 조건 1~2개 미달','밖':'A·B그룹 밖'}.get(grade['group'],f"{grade['group']}그룹")
+        title={'A':'정시 출격 · 1시간봉 매수 후보','B':'출격 대기 · 조건 1~2개 미달','밖':'정시 출격 · 출격 대기 밖'}.get(grade['group'],f"{grade['group']}그룹")
         value=f"조건 {grade['shortfall']}개 미달" if grade['group']=='B' and grade.get('shortfall') else grade.get('reason','')
         st.metric(title,value)
         if grade.get('comment') and grade['group']!='A':
