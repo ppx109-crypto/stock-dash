@@ -63,12 +63,16 @@ def stats(r, lo, hi):
     return (eq[-1] - 1) * 100, (eq[-1] ** (1 / yrs) - 1) * 100, dd, min(w.values()) * 100, w
 
 
+# I_SPLIT=1: C를 2021 ~ 2025 · 2026으로 나눠 봄(I10 · 2026 쏠림 빼고도 보탬인지)
+PERS = (("B", "20170101", "20210101"), ("C", "20210101", "20991231"))
+if __import__("os").environ.get("I_SPLIT"):
+    PERS = (("B", "20170101", "20210101"), ("C1 21~25", "20210101", "20260101"), ("C2 2026", "20260101", "20991231"))
 print(f"== I 5회차(I5): 1일봉 규칙 + I 규칙(1일봉이 비워 둔 돈으로만) · 판 {MODE or '기본'} ==", flush=True)
 print(f"  1일봉이 비워 둔 몫(평균): B {free[[i for i,x in enumerate(D) if '2017' <= x < '2021']].mean()*100:.0f}% · C {free[[i for i,x in enumerate(D) if x >= '2021']].mean()*100:.0f}%", flush=True)
 for th, take, stop, maxd, cool in ((-0.05, 0.03, -0.03, 20, 20), (-0.05, 0.03, -0.04, 20, 20), (-0.05, 0.06, -0.05, 20, 10), (-0.06, 0.04, -0.04, 20, 20)):
     mine, tr = i_daily(th, take, stop, maxd, cool)
     print(f"\n[I: 5일 {th*100:.0f}% · 익절 {take*100:.0f} · 손절 {stop*100:.0f} · {maxd}일 · 쉬기 {cool}]", flush=True)
-    for name, lo, hi in (("B", "20170101", "20210101"), ("C", "20210101", "20991231")):
+    for name, lo, hi in PERS:
         a = stats(d1, lo, hi)
         m = stats(mine, lo, hi)
         c = stats(d1 + mine, lo, hi)
