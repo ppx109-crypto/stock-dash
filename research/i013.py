@@ -4,7 +4,7 @@
   · I_W(비운 돈 가운데 넣는 몫 · 기본 1) · I_MA(상품이 그 이평선 위일 때만 · 기본 0 = 안 봄)
   · I_COST(기본 0.002) · I_REB(week · mon · day) · I_GUARD(trend · crash · nas20 — 나스닥 빼는 때)
   · I_DOLLAR=2(원 · 달러 20일 +2% · 코스피 < 20일선인 날은 돌리기 대신 달러만)
-  · I_QINV=free · hedge(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
+  · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
 import json
 import os
@@ -62,9 +62,19 @@ if os.environ.get("I_QINV"):
     qq = R.P.get("229200") if "229200" in R.P else I.px("229200")
     qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= 0.10
     qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
+    _cr = I.series("market-data/funds.json", "신용융자잔고")
+    credit20 = np.full(n, np.nan)
+    credit20[20:] = _cr[20:] / _cr[:-20] - 1
+    credit20 = np.nan_to_num(credit20, nan=0)
     qinv = np.zeros(n)
     for a, b, _ in qtr:
-        qinv[a:b + 1] += qd[a:b + 1] * (0.3 if os.environ["I_QINV"] == "hedge" else free[a])
+        if os.environ["I_QINV"] == "hedge":
+            wq = 0.3
+        elif os.environ["I_QINV"] == "tier":      # 2단 몫(I27): 신용융자 20일 +5% 이상이면 비운 돈 전부, 아니면 절반
+            wq = free[a] * (1.0 if credit20[a] >= 0.05 else 0.5)
+        else:
+            wq = free[a]
+        qinv[a:b + 1] += qd[a:b + 1] * wq
 prev_free = np.concatenate([[1.0], free[:-1]])
 mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
