@@ -83,7 +83,7 @@ prev_free = np.concatenate([[1.0], free[:-1]])
 mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
     # 급락 되돌림(I2b · 시장 폭 < 50일 때만)이 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼(돈이 겹치지 않게)
-    sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= -0.05) & gate_weak
+    sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= float(os.environ.get("I_DIP_TH", "-0.05"))) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
     tr, dd = I.sim(sig, "069500", -0.03, 0.03, 20, cool=20, cost=COST)
     on = np.zeros(n, bool)
     dip = np.zeros(n)
