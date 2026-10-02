@@ -7,7 +7,7 @@ import collect_kosdaq as K
 
 def line(code, name, group):
     head = code.ljust(9).encode("cp949") + b"KR7" + b"0" * 9 + name.encode("cp949")
-    tail = group.encode("cp949") + b" " * 220
+    tail = group.encode("cp949") + b" " * 219
     return head + tail
 
 
