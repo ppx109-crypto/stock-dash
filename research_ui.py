@@ -752,7 +752,7 @@ def render_research(store, state, sample_mode):
     for p in st.session_state.get('account_snapshot', {}).get('positions', []):
         stocks[p['code']] = {**stocks.get(p['code'], {}), 'code':p['code'], 'name':p['name']}
     with st.expander('조사 요청 · 최신 내용으로 업데이트'):
-        st.write('① 종목을 추가하거나 포트폴리오에서 계좌를 불러옵니다. ② 아래 요청문을 복사해 지금 대화창에 보냅니다. ③ 조사 결과가 반영되면 이 화면을 새로고침합니다.')
+        st.write('① 종목을 추가합니다. ② 아래 요청문을 복사해 지금 대화창에 보냅니다. ③ 조사 결과가 반영되면 이 화면을 새로고침합니다.')
         st.code(request_text(list(stocks.values())), language=None)
         st.caption('요청문에는 종목명만 포함됩니다. 이 채팅에 요청문을 보내야 조사가 시작됩니다.')
         if st.button('반영된 조사 결과 다시 읽기'): st.rerun()
@@ -775,7 +775,6 @@ def render_research(store, state, sample_mode):
         with st.container(border=True):
             st.subheader('첫 관심종목을 담아보세요')
             st.write('위의 종목 추가를 열고 기업 이름 하나만 입력하면 시작할 수 있습니다.')
-            st.caption('계좌가 있다면 왼쪽 계좌 연결에서 보유종목을 가져올 수도 있습니다.')
         return
     rows, details = [], {}
     for key, stock in stocks.items():

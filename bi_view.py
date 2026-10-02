@@ -60,9 +60,8 @@ def overview(details, snapshot):
                     tooltip=['종목',alt.Tooltip('평가액:Q',format=',.0f'),alt.Tooltip('비중:Q',format='.1%')]).properties(height=245))
                 st.caption('조회된 국내주식 평가액 기준 · 현금 제외')
         else:
-            st.markdown('**계좌를 연결하면 보유 비중을 보여드립니다.**')
+            st.markdown('**담아 둔 관심종목**')
             st.write('관심종목만 등록해도 오른쪽에서 기업별 실적을 비교할 수 있습니다.')
-            st.caption('왼쪽 메뉴 → 계좌 연결')
             st.markdown(' · '.join(html.escape(s['name']) for s,_,_,_ in details.values()))
     with right, st.container(border=True):
         st.subheader('이익이 더 빠르게 늘어나는 기업은?')
