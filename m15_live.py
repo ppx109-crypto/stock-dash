@@ -357,5 +357,13 @@ def run_live(now=None):
     return 0
 
 
+NEAR_NOW = HOME / "near-now.json"     # 장중 15분마다 다시 센 후보 · 충족 미달(대시보드 · 사용자 요청 2026-10-02 "실시간 반영")
+
+
 if __name__ == "__main__":
-    sys.exit(run_live())
+    code = run_live()
+    try:                   # 보기용이라 실패해도 매매 실행 결과는 그대로(1시간봉 실행의 매시 셈과 같은 셈 · 더 자주)
+        A.refresh_near(out=NEAR_NOW)
+    except Exception as e:
+        print("후보 다시 세기 실패 ·", type(e).__name__)
+    sys.exit(code)

@@ -356,6 +356,18 @@ def daily_live():
             repo_json("daily-live/alerts.json") or [])
 
 
+def latest_near():
+    """장중에 지금 값으로 다시 센 후보 · 충족 미달 가운데 가장 늦게 판정한 것(15분봉 실행 m15-live · 1시간봉 실행 hourly-live)."""
+    got = [x for x in (repo_json("m15-live/near-now.json"), repo_json("hourly-live/near-now.json")) if x]
+    return max(got, key=lambda x: str(x.get("at") or "")) if got else {}
+
+
+def daily_preview(today, now_near):
+    """오늘 15:20 1일봉 판단이 아직 없고, 오늘 장중에 다시 센 것이 있으면 그것으로 1일봉 칸을 미리 보여 줌."""
+    day = str((now_near or {}).get("date") or "")
+    return bool(day) and str((today or {}).get("date") or "") < day
+
+
 def near_lists():
     """두 칸 아래쪽 '충족 미달' 목록: (1시간봉, 1일봉, 1시간봉 기준 글, 1일봉 기준 글).
 
@@ -370,17 +382,21 @@ def near_lists():
     today, _, _ = daily_live()
     group = today_a_group() or {}
     g_day = str(group.get("date") or "")
-    # 장중에는 1시간봉 실행이 매시 지금 값으로 다시 센 것(near-now.json)을 먼저 씀(사용자 요청 2026-10-02 "매시간 판정 · 판정 시각")
-    now_near = repo_json("hourly-live/near-now.json") or {}
+    # 장중에는 지금 값으로 다시 센 것(near-now.json)을 먼저 씀 — 15분봉 실행(15분마다) · 1시간봉 실행(매시) 가운데 늦게 판정한 것
+    # (사용자 요청 2026-10-02 "매시간 판정 · 판정 시각" · "실시간 반영")
+    now_near = latest_near()
     if now_near.get("near") is not None and str(now_near.get("date") or "") > str((plan or {}).get("base") or ""):
         hourly = now_near["near"]
-        h_basis = f'{now_near.get("at")} 판정 · 그 시각 현재가 · 전날 수급까지 (장중 매시 다시 셈)'
+        h_basis = f'{now_near.get("at")} 판정 · 그 시각 현재가 · 전날 수급까지 (장중 15분마다 다시 셈)'
     elif plan and plan.get("near") is not None:
         made = f' · {plan["made"]} 판정' if plan.get("made") else ""
         hourly, h_basis = plan["near"], f'{as_day(plan["base"])} 마감 · 그날 수급까지{made} → 다음 거래일 장중'
     else:
         hourly, h_basis = None, '첫 계산은 오늘 밤 일봉 수집이 끝난 뒤(새벽 3시쯤)에 나옵니다'
-    if today and today.get("near") is not None and str(today.get("date") or "") >= g_day:
+    if daily_preview(today, now_near):
+        daily = now_near.get("near_daily") if now_near.get("near_daily") is not None else now_near["near"]
+        d_basis = f'{now_near.get("at")} 판정 · 그 시각 현재가 · 전날 수급까지 (15:20 판단 전 미리 보기 · 15분마다 다시 셈)'
+    elif today and today.get("near") is not None and str(today.get("date") or "") >= g_day:
         daily, d_basis = today["near"], f'{as_day(today["date"])} 15:20 판단 · 전날 수급까지'
     else:
         daily, d_basis = group.get("b_group") or [], (f'{as_day(g_day)} 마감 · 전날 수급까지' if g_day else "")
@@ -398,6 +414,10 @@ def board_marks():
         hourly[p["code"]] = f'{p.get("name")}  ·  1시간봉 규칙 보유 중 · {p.get("칸")}칸'
     for c in (today or {}).get("candidates") or []:
         daily[c["code"]] = f'{c.get("name")}  ·  1일봉 매수 후보 · {c.get("칸")}칸'
+    now_near = latest_near()
+    if daily_preview(today, now_near):       # 15:20 판단 전: 지금 값이면 1일봉 후보(15분마다 다시 셈)
+        for c in now_near.get("picks_daily") or []:
+            daily.setdefault(c["code"], f'{c.get("name")}  ·  1일봉 후보(지금 값이면 · {str(now_near.get("at"))[11:16]} 판정 · 15:20에 다시 판단)')
     for p in ((dstate or {}).get("positions") or {}).values():
         daily[p["code"]] = f'{p.get("name")}  ·  1일봉 규칙 보유 중 · {p.get("칸")}칸'
     return hourly, daily

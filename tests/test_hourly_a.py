@@ -294,3 +294,35 @@ class NearNow(unittest.TestCase):
         self.assertEqual([r["code"] for r in body["near"]], ["000002"], "1개만 모자란 것만")
         self.assertEqual([r["code"] for r in body["picks"]], ["000001"])
         self.assertEqual(seen["live"]["000001"]["rows"][-1], ("20261002", 110.0), "지금 값을 오늘 값으로 붙여 셈")
+
+
+class NearDaily(unittest.TestCase):
+    def test_target_cut_moves_pick_to_daily_near(self):
+        import tempfile
+        from datetime import datetime
+        from pathlib import Path
+        from unittest import mock
+        import caps
+        import collect_kis_intraday as I
+        import daily_live
+        import final_group
+        import study
+
+        class Client:
+            def quote(self, code):
+                return {"price": 110.0}
+        prices = {"000001": {"name": "가", "rows": [("20261001", 100.0)]}, "000002": {"name": "나", "rows": [("20261001", 50.0)]}}
+        found = {"date": "20261002", "breadth": 55.0, "picks": [{"code": "000001", "name": "가", "갈래": ["정배열"]},
+                                                                 {"code": "000002", "name": "나", "갈래": ["정배열"]}], "b_group": []}
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(study, "load_prices", return_value=prices), \
+                mock.patch.object(caps, "tag", side_effect=lambda rows, n: [r.update({caps.RANK: 1}) for r in rows]), \
+                mock.patch.object(I, "market_open_today", return_value=True), \
+                mock.patch.object(final_group, "compute", return_value=found), \
+                mock.patch.object(daily_live, "target_cut", side_effect=lambda c, d: c == "000002"):
+            out = Path(tmp) / "near-now.json"
+            A.refresh_near(datetime(2026, 10, 2, 10, 18, tzinfo=A.KST), client=Client(), out=out)
+            body = A._load(out, None)
+        self.assertEqual([p["code"] for p in body["picks"]], ["000001", "000002"])
+        self.assertEqual([p["code"] for p in body["picks_daily"]], ["000001"])
+        self.assertEqual([r["code"] for r in body["near_daily"]], ["000002"])

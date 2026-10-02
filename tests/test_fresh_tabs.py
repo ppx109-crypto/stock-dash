@@ -112,3 +112,62 @@ class HourlyNear(unittest.TestCase):
         hourly, _, basis, _ = self.run_with({"hourly-live/plan.json": plan, "hourly-live/near-now.json": now})
         self.assertEqual([r["code"] for r in hourly], ["000001"])
         self.assertIn("2026-10-02 19:40 판정", basis)
+
+
+@unittest.skipIf(research_ui is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
+class IntradayFlow(unittest.TestCase):
+    """장중 흐름(사용자 요청 2026-10-02 '실시간 반영 · 장중 변화 흐름으로 대시보드 내용이 변하는지 테스트'):
+    15분마다 다시 센 파일이 바뀌면 두 칸(1시간봉 · 1일봉)의 충족 미달과 1일봉 후보가 따라 바뀌고, 15:20 판단 뒤에는 그 판단을 씀."""
+
+    plan = {"base": "20261001", "made": "2026-10-01 19:40", "candidates": [], "near": [{"code": "000009", "모자란 수": 1}]}
+
+    def board(self, files):
+        from unittest import mock
+        with mock.patch.object(research_ui, "repo_json", side_effect=lambda p: files.get(p)), \
+                mock.patch.object(research_ui, "today_a_group", return_value={}):
+            return research_ui.near_lists(), research_ui.board_marks()
+
+    def snap(self, at, near, picks, near_daily=None, picks_daily=None):
+        return {"date": "20261002", "at": at, "near": near, "picks": picks,
+                "near_daily": near if near_daily is None else near_daily,
+                "picks_daily": picks if picks_daily is None else picks_daily}
+
+    def test_board_follows_the_day(self):
+        n = lambda c: {"code": c, "name": c, "모자란 수": 1}
+        p = lambda c: {"code": c, "name": c}
+        # 10:03 — 15분봉 실행이 셈: 1개 모자람 A · 지금 값이면 후보 없음
+        files = {"hourly-live/plan.json": self.plan,
+                 "m15-live/near-now.json": self.snap("2026-10-02 10:03", [n("A")], [])}
+        (h, d, hb, db), (_, daily) = self.board(files)
+        self.assertEqual([r["code"] for r in h], ["A"])
+        self.assertEqual([r["code"] for r in d], ["A"])
+        self.assertIn("10:03 판정", hb)
+        self.assertIn("10:03 판정", db)
+        self.assertEqual(daily, {})
+        # 10:11 — 1시간봉 실행(매시)도 셈했지만 10:18 15분봉 셈이 더 늦음 → 늦은 것을 씀 · B가 지금 값이면 후보가 됨
+        files["hourly-live/near-now.json"] = self.snap("2026-10-02 10:11", [n("A")], [])
+        files["m15-live/near-now.json"] = self.snap("2026-10-02 10:18", [n("C")], [p("B")])
+        (h, d, hb, db), (_, daily) = self.board(files)
+        self.assertEqual([r["code"] for r in h], ["C"])
+        self.assertIn("10:18 판정", hb)
+        self.assertIn("B", daily)
+        self.assertIn("지금 값이면", daily["B"])
+        # 목표가가 내린 후보는 1일봉 칸에서 충족 미달(거름)로 · 1시간봉 칸 충족 미달은 그대로
+        files["m15-live/near-now.json"] = self.snap("2026-10-02 10:33", [n("C")], [p("B")],
+                                                    near_daily=[{"code": "B", "모자란 수": 1}, n("C")], picks_daily=[])
+        (h, d, hb, db), (_, daily) = self.board(files)
+        self.assertEqual([r["code"] for r in d], ["B", "C"])
+        self.assertNotIn("B", daily)
+        # 15:32 — 15:20 1일봉 판단이 나오면 1일봉 칸은 그 판단을 씀(미리 보기 끝)
+        files["daily-live/today.json"] = {"date": "20261002", "made": "2026-10-02 15:32", "candidates": [{"code": "D", "name": "D", "칸": 2}],
+                                          "near": [n("E")]}
+        files["m15-live/near-now.json"] = self.snap("2026-10-02 15:48", [n("C")], [p("B")])
+        (h, d, hb, db), (_, daily) = self.board(files)
+        self.assertEqual([r["code"] for r in d], ["E"])
+        self.assertIn("15:20 판단", db)
+        self.assertEqual(set(daily), {"D"})
+        self.assertIn("15:48 판정", hb, "1시간봉 칸은 장 끝까지 15분마다")
+        # 저녁 — 다음 거래일 후보(plan)가 나오면 1시간봉 칸은 그것을 씀
+        files["hourly-live/plan.json"] = {"base": "20261002", "made": "2026-10-02 19:40", "candidates": [], "near": [n("F")]}
+        (h, d, hb, db), _ = self.board(files)
+        self.assertEqual([r["code"] for r in h], ["F"])

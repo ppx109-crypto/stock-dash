@@ -536,7 +536,7 @@ def run_live(now=None):
     return 0
 
 
-def refresh_near(now=None, client=None):
+def refresh_near(now=None, client=None, out=None):
     """장중 매시: 지금 값(그 시각 현재가를 오늘 종가로 보고) · 전날 수급까지로 1시간봉 후보 조건을 다시 세어
     '조건이 1개만 모자란 종목'과 '지금 값이면 충족하는 종목'을 판정 시각과 함께 near-now.json에 남김(사용자 요청 2026-10-02
     "매시간 판정하고 판정된 시각 남겨줘"). 매매 판단(plan.json · 저녁에 정한 후보)은 바꾸지 않음 — 보기용."""
@@ -579,11 +579,21 @@ def refresh_near(now=None, client=None):
     if found.get("date") != day:
         print("지금 값으로 셈하지 못했습니다.")
         return 1
+    near = [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")}
+            for b in found.get("b_group", []) if b.get("모자란 수") == 1]
+    picks = [{"code": p["code"], "name": p.get("name"), "갈래": p.get("갈래")} for p in found.get("picks", [])]
+    # 1일봉 규칙은 같은 셈(그때 값 · 전날 수급까지)에 '45일 새 목표가 내림이면 안 삼'을 더함(daily_live와 같음) → 15:20 판단 전 미리 보기
+    try:
+        import daily_live
+        cut = {p["code"] for p in picks if daily_live.target_cut(p["code"], day)}
+    except Exception:
+        cut = set()
     body = {"date": day, "at": now.strftime("%Y-%m-%d %H:%M"), "breadth": found.get("breadth"),
-            "picks": [{"code": p["code"], "name": p.get("name"), "갈래": p.get("갈래")} for p in found.get("picks", [])],
-            "near": [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")}
-                     for b in found.get("b_group", []) if b.get("모자란 수") == 1]}
-    _save(NEAR_NOW, body)
+            "picks": picks, "near": near,
+            "picks_daily": [p for p in picks if p["code"] not in cut],
+            "near_daily": [{"code": p["code"], "name": p.get("name"), "모자란 수": 1, "가까운 갈래": p.get("갈래"),
+                            "모자란 것": {"거름": ["최근 45일 사이 증권사 목표가가 내림"]}} for p in picks if p["code"] in cut] + near}
+    _save(out or NEAR_NOW, body)
     print(f"충족 미달 다시 셈 · {body['at']} · 1개 모자람 {len(body['near'])} · 지금 값이면 충족 {len(body['picks'])}")
     return 0
 
