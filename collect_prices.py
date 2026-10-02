@@ -18,7 +18,8 @@ from zoneinfo import ZoneInfo
 
 import broker_kis
 
-OUT = Path("price-data")
+# 운영 종목 일봉은 price-data. 연구용(인버스 ETF 등)은 PRICE_OUT으로 따로 둬 운영 후보 목록에 섞이지 않게 합니다.
+OUT = Path(os.getenv("PRICE_OUT", "price-data").strip() or "price-data")
 # 한계일 뿐입니다. 상장 이전에 닿으면 거기서 멈춥니다.
 YEARS = int(os.getenv("PRICE_YEARS", "30"))
 # 시작을 고정합니다. "오늘부터 서른 해 전"으로 두면 하루가 지날 때마다 가장
