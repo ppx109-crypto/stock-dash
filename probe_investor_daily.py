@@ -34,16 +34,18 @@ def ask(client, code, day):
           f"{days[0] if days else '-'} ~ {days[-1] if days else '-'}")
     if rows and isinstance(rows[0], dict):
         keys = sorted(rows[0])
-        print("    칸:", ", ".join(k for k in keys if k.endswith(("_qty", "_vol")) or k in WANT)[:600])
-        first = rows[0]
-        print("    첫 줄:", {k: first.get(k) for k in WANT if k in first})
+        # 칸 이름만 찍습니다(값은 찍지 않음). 순매수 칸 · 금액 칸을 잘리지 않게 따로.
+        print("    순매수 칸:", ", ".join(k for k in keys if "ntby" in k))
+        print("    그 밖 칸:", ", ".join(k for k in keys if "ntby" not in k))
+        filled = sum(1 for r in rows if isinstance(r, dict) and str(r.get("frgn_ntby_qty") or "").strip() not in ("", "0"))
+        print(f"    외국인 칸이 비지 않은 줄 {filled}/{len(rows)}")
 
 
 def main():
     code = sys.argv[1] if len(sys.argv) > 1 and re.fullmatch(r"[0-9]{6}", sys.argv[1]) else "005930"
     client = broker_kis.market()
     print("종목", code)
-    for day in ("20260925", "20251230", "20240628", "20210630", "20180629", "20150630"):
+    for day in ("20260925", "20150630", "20120629", "20100630", "20080630", "20050630", "20020628", "20000630", "19970630"):
         try:
             ask(client, code, day)
         except broker_kis.BrokerError as error:
