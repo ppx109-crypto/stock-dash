@@ -265,7 +265,13 @@ class KIS:
             volume = amount(row.get('acml_vol'))
         except BrokerError:
             volume = None
-        return {'price': price, 'change': change, 'rate': rate, 'market_cap': cap, 'volume': volume,
+        day_open = None
+        try:
+            # 그날 시가(15분봉 운영의 '장중 시장 흐름' = 현재가 ÷ 시가 − 1 · 2026-10-02)
+            day_open = amount(row.get('stck_oprc')) or None
+        except BrokerError:
+            day_open = None
+        return {'price': price, 'change': change, 'rate': rate, 'market_cap': cap, 'volume': volume, 'open': day_open,
                 'name': str(row.get('hts_kor_isnm', '')).strip(),
                 'at': datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
 

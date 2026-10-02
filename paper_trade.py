@@ -23,10 +23,13 @@ PAPER_BASE = "https://openapivts.koreainvestment.com:29443"
 ORDER_PATH = "/uapi/domestic-stock/v1/trading/order-cash"
 BOOK = Path("hourly-live/paper-orders.json")              # 1시간봉(1시간봉 규칙) 주문 장부
 DAILY_BOOK = Path("daily-live/paper-orders.json")        # 일봉(1일봉 규칙) 주문 장부
-LABEL = {"1h": "1시간봉 매수 후보", "1d": "1일봉 매수 후보"}
-# 모의 계좌 하나를 두 규칙이 나눠 씀(사용자 요청 2026-10-01: 1시간봉 · 일봉 모의투자를 함께, 거래 내역은 따로).
-# 규칙마다 계좌 총액의 SHARE만큼을 제 돈으로 보고 칸을 셈 · 팔 때는 그 규칙이 산 수량(장부의 held)만 팖.
-SHARE = float(os.getenv("PAPER_SHARE", "0.5"))
+M15_BOOK = Path("m15-live/paper-orders.json")            # 15분봉(15분봉 22회차 후보) 주문 장부
+LABEL = {"1h": "1시간봉 매수 후보", "1d": "1일봉 매수 후보", "15m": "15분봉 매수 후보"}
+# 모의 계좌 하나를 세 규칙이 나눠 씀(사용자 2026-10-01: 1시간봉 · 일봉을 함께, 거래 내역은 따로 · 2026-10-02: 15분봉도 — 1일봉 40 · 1시간봉 40 · 15분봉 20).
+# 규칙마다 계좌 총액의 그 몫을 제 돈으로 보고 칸을 셈 · 팔 때는 그 규칙이 산 수량(장부의 held)만 팖.
+SHARES = {"1h": float(os.getenv("PAPER_SHARE_1H", "0.4")), "1d": float(os.getenv("PAPER_SHARE_1D", "0.4")),
+          "15m": float(os.getenv("PAPER_SHARE_15M", "0.2"))}
+SHARE = SHARES["1h"]
 OFF = Path("hourly-live/paper-off")
 SLOTS = 10
 # 모의투자 주문 거래 ID(현금 매수 · 매도). 한투가 바꾸면 환경변수로 덮어씀.
@@ -135,7 +138,7 @@ def enabled(now=None):
 
 
 def book_path(strategy="1h"):
-    return BOOK if strategy == "1h" else DAILY_BOOK
+    return {"1h": BOOK, "1d": DAILY_BOOK, "15m": M15_BOOK}[strategy]
 
 
 def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
@@ -198,7 +201,7 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
     seen = {o["key"] for o in book["orders"]}
     names = {p["code"]: p.get("name") for p in state.get("positions", {}).values()}
     lines = []
-    planned = plan_orders(done, state, balance, prices, bar_id, held=book["held"], share=SHARE)
+    planned = plan_orders(done, state, balance, prices, bar_id, held=book["held"], share=SHARES[strategy])
     # 주문을 못 넣는 매매도 알림에 남김(사용자 요청: 진입 · 청산은 모두 알림)
     have = {c for c, q in book["held"].items() if q > 0}
     for x in done:
