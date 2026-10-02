@@ -74,7 +74,7 @@ def breadth():
     return np.array([nrl.BR.get(d, np.nan) for d in DAYS])
 
 
-def sim(entry, code="114800", stop=-0.05, take=0.08, maxd=10, exit_sig=None, cost=0.002, weight=1.0):
+def sim(entry, code="114800", stop=-0.05, take=0.08, maxd=10, exit_sig=None, cost=0.002, weight=1.0, cool=0):
     """entry[i] 참이고 들고 있지 않으면 i일 종가에 삼. 손절 · 익절 · 기간(거래일) · 나가는 신호(종가 판단) 가운데 먼저.
     돌려줌: 매매 목록 [(산 날 i, 판 날 j, 손익)], 날마다 계좌 수익률(배열, weight = 계좌에서 넣는 몫)."""
     px = PX[code]
@@ -101,7 +101,8 @@ def sim(entry, code="114800", stop=-0.05, take=0.08, maxd=10, exit_sig=None, cos
         j = min(j, n - 1)
         daily[j] -= cost / 2 * weight
         trades.append((i, j, px[j] / p0 - 1 - cost))
-        i = j + 1
+        # cool: 손절로 나왔으면 그 뒤 cool 거래일은 새로 사지 않음(연달아 손절 막기)
+        i = j + 1 + (cool if px[j] / p0 - 1 <= stop else 0)
     return trades, daily
 
 
