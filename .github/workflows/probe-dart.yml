@@ -1,0 +1,24 @@
+name: Probe DART more
+# DART에서 규칙 재료로 더 쓸 만한 것이 있는지 찔러 봅니다(조회 전용). 저장하지 않고 공시 갈래별 건수 · 줄 수 · 칸 이름 · 날짜 범위만 찍습니다.
+# 한국투자증권 수집 줄(kis-collect)과 따로 돕니다.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: dart-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: DART
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+        run: python probe_dart_more.py

@@ -2,7 +2,7 @@
 
 바뀐 점(PlanX 안에서 돌게): 따로 쓰던 page_config · 비밀번호 화면 · 왼쪽 메뉴를 빼고 화면 위 선택으로 바꿈,
 PlanX 모양을 건드리지 않게 pd- 꾸밈만 넣음, 연결 해제 때 PlanX 세션은 두고 교실 기록만 지움.
-증권사 키는 이 접속 세션에만 둡니다(predash.classroom). PlanX 서버의 KIS 비밀값은 쓰지 않습니다. 주문 기능 없음(조회 전용).
+증권사 키는 이 접속 세션에만 둡니다(predash.classroom). 직접 넣거나, 'Secrets 키로 연결'을 눌렀을 때만 앱 Secrets의 KIS 키를 씁니다(사용자 요청 2026-10-02). 주문 기능 없음(조회 전용).
 """
 import hmac
 import html
@@ -124,7 +124,7 @@ def stock_evidence_charts(item):
                 '상승 배수':f"{r['multiple']:.2f}배" if r['multiple'] is not None else '미산정',
                 '지수 대비':f"{r['excess_pp']:+.2f}%p" if r['excess_pp'] is not None else '보류','상태':r['status']})
         st.dataframe(rows,hide_index=True,use_container_width=True)
-        st.caption('지수 거래일 기준 동일 기간 종가 비교 · 상승장 3배 이상 매우 우수 / 1배 초과~3배 미만 양호 / 1배 이하 소외. 지수 ±0.1% 미만 배수 보류, 하락장은 상대 강약으로 구분. 베타·예측 수익률 아님. 수정주가 미확인.')
+        st.caption('지수 거래일 기준 동일 기간 종가 비교 · 상승장 3배 이상 매우 우수 / 1배 초과～3배 미만 양호 / 1배 이하 소외. 지수 ±0.1% 미만 배수 보류, 하락장은 상대 강약으로 구분. 베타·예측 수익률 아님. 수정주가 미확인.')
     elif item.get('errors',{}).get('relative'):st.caption('시장 대비 성과 보류 · '+item['errors']['relative'])
     financial_comparison(item.get('metrics'))
     prices=item.get('price_chart',[])
@@ -134,7 +134,7 @@ def stock_evidence_charts(item):
         a.metric('조회기간 가격 변화',f"{(latest['종가']/prices[0]['종가']-1)*100:+.1f}%")
         b.metric('20일선 대비',f"{(latest['종가']/latest['20일선']-1)*100:+.1f}%" if latest['20일선'] else '보류')
         st.line_chart(prices,x='날짜',y=['종가','10일선','20일선'],height=280,color=['#214b3a','#a68137','#527dad'])
-        st.caption(f"공공데이터포털 · {prices[0]['날짜']}~{latest['날짜']} · 원 · 거래 관측값 기준 평균 · 수정주가 미확인, 권리락·분할 시 해석 주의")
+        st.caption(f"공공데이터포털 · {prices[0]['날짜']}～{latest['날짜']} · 원 · 거래 관측값 기준 평균 · 수정주가 미확인, 권리락·분할 시 해석 주의")
     else:st.info('근거 자료 새로고침으로 종가와 이동평균을 조회하세요.')
     financial,investor=st.columns(2)
     with financial:
@@ -155,7 +155,7 @@ def stock_evidence_charts(item):
         if history:
             chart=[{'날짜':r['date'],**{label:r['cumulative'][k] for label,k in [('외국인','foreign'),('기관','institution'),('개인','individual')]}} for r in history]
             st.line_chart(chart,x='날짜',y=['외국인','기관','개인'],height=300,color=['#b63f3f','#214b3a','#527dad'])
-            st.caption(f"KIS · {history[0]['date']}~{history[-1]['date']} · {len(history)}거래 관측일 · 누적 순매수 수량(주), 보유량 아님 · 시작일 직전 누적=0")
+            st.caption(f"KIS · {history[0]['date']}～{history[-1]['date']} · {len(history)}거래 관측일 · 누적 순매수 수량(주), 보유량 아님 · 시작일 직전 누적=0")
             st.dataframe([{'투자자':label,'누적 순매수(주)':history[-1]['cumulative'][k]} for label,k in [('외국인','foreign'),('기관','institution'),('개인','individual')]],hide_index=True,use_container_width=True)
         else:st.info('근거 자료 새로고침으로 수급을 조회하세요. KIS 연결이 필요합니다.')
 
@@ -212,7 +212,8 @@ def open_research(code):
 
 def render_classroom():
     try:
-        for k in ('DART_CRTFC_KEY','DATA_GO_KR_SERVICE_KEY','KRX_AUTH_KEY','CUSTOMS_API_KEY'):
+        for k in ('DART_CRTFC_KEY','DATA_GO_KR_SERVICE_KEY','KRX_AUTH_KEY','CUSTOMS_API_KEY','KIS_ENV','KIS_APP_KEY','KIS_APP_SECRET','KIS_CANO','KIS_ACNT_PRDT_CD',
+                  'KIS_DEMO_APP_KEY','KIS_DEMO_APP_SECRET','KIS_DEMO_CANO','KIS_DEMO_ACNT_PRDT_CD'):
             if k in st.secrets and not os.getenv(k,'').strip(): os.environ[k]=str(st.secrets[k])
     except FileNotFoundError:
         pass
@@ -242,7 +243,7 @@ def render_classroom():
                 v=cached_vix(datetime.now(ZoneInfo('America/New_York')).date())
                 color={'낮음':'#214b3a','보통':'#876119','주의':'#b57621','높음':'#b63f3f'}[v['level']]
                 st.html(f"<div class='pd-holding'><strong style='color:{color}'>VIX {v['close']:.2f} · 변동성 {v['level']}</strong> · 전 관측일 대비 {v['change']:+.2f}p · 미국 기준일 {v['date']}<div style='height:12px;background:linear-gradient(to right,#214b3a 0% 30%,#a68137 30% 40%,#b57621 40% 60%,#b63f3f 60% 100%);position:relative'><span style='position:absolute;left:{min(v['close']/50*100,99):.1f}%;top:-5px;color:#000'>▼</span></div></div>")
-                st.caption('Cboe 일별 종가 · S&P 500 옵션 기대 변동성, 한국시장 손실 확률 아님. PreDash 기준: 15 미만 낮음 / 15~20 보통 / 20~30 주의 / 30 이상 높음. 실시간 아님 · 30분 캐시 · 눈금 범위 0~50, 50 이상 오른쪽 끝 표시.')
+                st.caption('Cboe 일별 종가 · S&P 500 옵션 기대 변동성, 한국시장 손실 확률 아님. PreDash 기준: 15 미만 낮음 / 15～20 보통 / 20～30 주의 / 30 이상 높음. 실시간 아님 · 30분 캐시 · 눈금 범위 0～50, 50 이상 오른쪽 끝 표시.')
                 with st.expander('VIX 최근 흐름'):st.line_chart(v['rows'],x='날짜',y='VIX',height=180)
             except MacroError as exc:st.info(str(exc))
 
@@ -347,7 +348,7 @@ def render_classroom():
             except (BrokerError,TradeDataError) as exc:st.error(str(exc))
         payload=st.session_state.get('demo_trade_payload')
         if payload:
-            st.caption(f"{payload['from']} ~ {payload['to']} · 조회 {payload['fetched']}")
+            st.caption(f"{payload['from']} ～ {payload['to']} · 조회 {payload['fetched']}")
             skipped=payload.get('skipped',[])
             if skipped:
                 st.warning(f"종목코드를 확인하지 못한 응답 {len(skipped)}건은 표시에서 제외했습니다. 표시된 내역은 전체 체결 내역이 아닐 수 있습니다.")
@@ -586,7 +587,7 @@ def render_classroom():
                     if metrics:
                         st.write(f"OpenDART {period} · 전년 동기 누적 영업이익 {metrics['prior_profit']:,.1f}억" if metrics['prior_profit'] is not None else f"OpenDART {period} · 전년 동기 수치 없음")
                         if metrics['receipt']:st.link_button('실적 공시 원문',f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={metrics['receipt']}")
-                    if flow:st.write(f"최근 {flow['sessions']}거래일 수급 합계 ({flow['from']}~{flow['date']}) · 외국인 {flow['five_day']['foreign']:+,}주 · 기관 {flow['five_day']['institution']:+,}주 · 개인 {flow['five_day']['individual']:+,}주")
+                    if flow:st.write(f"최근 {flow['sessions']}거래일 수급 합계 ({flow['from']}～{flow['date']}) · 외국인 {flow['five_day']['foreign']:+,}주 · 기관 {flow['five_day']['institution']:+,}주 · 개인 {flow['five_day']['individual']:+,}주")
                     if item['report'] and item['report'].get('disclosures'):
                         d=item['report']['disclosures'][0];st.link_button(f"{d['date']} · {d['title']}",d['url'])
                     for source,reason in item['errors'].items():st.caption(f"{source} 보류 · {reason}")
@@ -789,7 +790,7 @@ def render_classroom():
             st.info('체결 기록을 가져오면 매수·매도 건수와 완료된 거래를 확인합니다. 매수가가 높았는지 판단하려면 당시 가격 범위 연결이 추가로 필요합니다.')
             st.stop()
         fills=saved['fills'];summary=saved['summary']
-        st.caption(f"조회 범위 {saved['range'][0]} ~ {saved['range'][1]} · 조회 {saved['fetched']}")
+        st.caption(f"조회 범위 {saved['range'][0]} ～ {saved['range'][1]} · 조회 {saved['fetched']}")
         a,b,c=st.columns(3)
         a.metric('매수 체결',sum(x['side']=='buy' for x in fills))
         b.metric('매도 체결',sum(x['side']=='sell' for x in fills))
