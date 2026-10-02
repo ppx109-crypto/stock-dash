@@ -1,0 +1,22 @@
+name: Probe KRX Open API
+# KRX 공식 Open API로 과거 일별매매정보(폐지 종목 포함)가 오는지 찔러 봅니다(조회 전용 · 저장 안 함). 키 = Secrets KRX_AUTH_KEY.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: krx-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - env:
+          KRX_AUTH_KEY: ${{ secrets.KRX_AUTH_KEY }}
+        run: python probe_krx_api.py
