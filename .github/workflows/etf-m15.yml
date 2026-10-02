@@ -1,0 +1,50 @@
+name: ETF 15-minute bars (research)
+# 하락 · 옆걸음장 연구(I6 사는 때 다듬기)용 상장지수펀드 15분봉(한투 1분봉 약 1년)을 etf-m15에 받습니다(조회 전용 · 사용자 요청 2026-10-02).
+# 운영 15분봉(m15-kis)과 폴더를 나눠 운영 엔진에 섞이지 않게 하고, 한투 수집 줄(kis-collect)과 따로 돌아 기다리는 운영 작업을 취소하지 않습니다.
+on:
+  schedule:
+    - cron: '55 8 * * 1-5'   # 한국 시각 17:55 — 그날 것 이어 받기
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드(쉼표). 비우면 기본 목록'
+        required: false
+        default: ''
+permissions:
+  contents: write
+concurrency:
+  group: etf-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect ETF 15-minute bars
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # 토큰은 1분에 한 번만 나옴 — 다른 한투 작업과 겹쳐 거절되면 70초 쉬고 한 번 더
+          python collect_kis_m15.py "$CODES" || { sleep 70; python collect_kis_m15.py "$CODES"; } || true
+          mkdir -p etf-m15
+          git add -A etf-m15
+          if ! git diff --cached --quiet; then
+            git commit -q -m 'Collect ETF 15-minute bars (research)'
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; sleep $((try * 7)); done
+          fi
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.1'
+          KIS_HOURLY_START: '20250917'
+          KIS_HOURLY_MAX_CALLS: '6000'
+          M15_OUT: etf-m15
+          # 069500 KODEX 200 · 229200 KODEX 코스닥150 · 114800 KODEX 인버스
+          CODES: ${{ inputs.codes || '069500,229200,114800' }}
