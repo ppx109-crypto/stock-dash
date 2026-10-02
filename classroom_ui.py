@@ -128,7 +128,7 @@ def financial_comparison(m):
         for name,key in [('매출','revenue'),('영업이익','profit')]:
             current,prior=data.get(key),data.get('prior_'+key)
             growth=(current/prior-1)*100 if current is not None and prior is not None and prior>0 else None
-            rows.append({'기간':label,'항목':name,f"{m['year']-1}년 (억원)":prior,f"{m['year']}년 (억원)":current,'동기 증가율':f'{growth:+.1f}%' if growth is not None else '산정 보류'})
+            rows.append({'기간':label,'항목':name,f"{m['year']-1}년 (억원)":round(prior,1) if prior is not None else None,f"{m['year']}년 (억원)":round(current,1) if current is not None else None,'동기 증가율':f'{growth:+.1f}%' if growth is not None else '산정 보류'})
     st.dataframe(rows,hide_index=True,use_container_width=True)
     st.caption(f"OpenDART · {m['basis']} · 조회 {m['fetched']} · 단독 3개월은 동일 공시의 당기금액/전기 분기금액 사용 · 적자/0 기저 증가율 보류")
 
@@ -152,7 +152,7 @@ def stock_evidence_charts(item):
         a.metric('조회기간 가격 변화',f"{(latest['종가']/prices[0]['종가']-1)*100:+.1f}%")
         b.metric('20일선 대비',f"{(latest['종가']/latest['20일선']-1)*100:+.1f}%" if latest['20일선'] else '보류')
         st.line_chart(prices,x='날짜',y=['종가','10일선','20일선'],height=280,color=['#214b3a','#a68137','#527dad'])
-        st.caption(f"공공데이터포털 · {prices[0]['날짜']}～{latest['날짜']} · 원 · 거래 관측값 기준 평균 · 수정주가 미확인, 권리락·분할 시 해석 주의")
+        st.caption(f"{item.get('price_source') or '공공데이터포털'} · {prices[0]['날짜']}～{latest['날짜']} · 원 · 거래 관측값 기준 평균 · 수정주가 미확인, 권리락·분할 시 해석 주의")
     else:st.info('근거 자료 새로고침으로 종가와 이동평균을 조회하세요.')
     financial,investor=st.columns(2)
     with financial:
@@ -203,6 +203,9 @@ def watch_fetch(code,provider,today):
     if api_key('DART_CRTFC_KEY'):
         try:result['metrics']=provider.latest_period_metrics(code,today)
         except DataError as exc:result['errors']['metrics']=str(exc)
+    if not result['metrics']:
+        result['metrics']=local.metrics(code,today)       # 저장소 DART 분기 실적(접수일이 오늘 앞인 것)
+        if result['metrics']:result['errors'].pop('metrics',None)
         try:
             corp=provider.corp(code)
             result['name']=provider.names.get(code,result['name'])
@@ -522,9 +525,9 @@ def render_classroom(seed_codes=()):
         raw=st.query_params.get('watch','')
         codes=clean_codes(raw.split(',') if isinstance(raw,str) else [])
         if not st.session_state.get('watch_codes') and not codes and not st.session_state.get('classroom_watch_seeded'):
-            # 처음엔 PlanX 내 종목 + 오늘의 후보(1일봉 · 1시간봉 · 15분봉 후보와 1개 모자란 종목)로 채움
+            # 처음엔 오늘의 후보(1일봉 · 1시간봉 · 15분봉 후보와 1개 모자란 종목) + PlanX 내 종목으로 채움
             st.session_state.classroom_watch_seeded=True
-            codes=clean_codes(list(seed_codes)+local.planx_codes())
+            codes=clean_codes(local.planx_codes()+list(seed_codes))   # 오늘 후보 먼저(한도 8개)
             if codes:st.query_params['watch']=','.join(codes)
         if 'watch_codes' not in st.session_state:st.session_state.watch_codes=codes
         elif codes and codes!=st.session_state.watch_codes:st.session_state.watch_codes=codes
@@ -665,7 +668,9 @@ def render_classroom(seed_codes=()):
                 selected=st.selectbox('저장한 관심종목',saved_codes,format_func=lambda c:f'{names.get(c,c)} · {c}',key='decision_pick')
             else:selected=''
             code=st.text_input('조회할 종목코드',value=selected,max_chars=6,key=f'decision_code_{selected}').strip()
-        with market_control:market_name=st.selectbox('비교 시장',['코스피','코스닥'])
+        # 비교 시장 기본값 = 그 종목 상장시장(앞서 받은 자료나 저장소 표로 앎) — 코스닥 종목에 코스피를 고르면 막혔음
+        known=(st.session_state.get('watch_results',{}).get(code) or {}).get('benchmark') or {'KOSPI':'코스피','KOSDAQ':'코스닥'}.get(local.market_of(code) or '')
+        with market_control:market_name=st.selectbox('비교 시장',['코스피','코스닥'],index=1 if known=='코스닥' else 0,key='decision_market_'+(code or 'none'))
         with refresh_control:refresh=st.button('근거 자료 새로고침',type='primary',use_container_width=True)
         cache_key='decision_'+code+'_'+market_name
         if refresh:
@@ -720,7 +725,7 @@ def render_classroom(seed_codes=()):
                 c.metric('시장 대비 차이',f"{last['stock']-last['market']:+.1f}%p")
                 chart=[{'날짜':r['date'],'종목':r['stock'],market_name:r['market']} for r in data['chart']]
                 st.line_chart(chart,x='날짜',y=['종목',market_name],height=250,color=['#214b3a','#a68137'])
-                st.caption(f"공통 거래일 {len(chart)}일 · {chart[0]['날짜']}=100 · {chart[-1]['날짜']}까지 · 종목: 공공데이터포털 / 시장: KIS · 배당 미포함 가격 변화")
+                st.caption(f"공통 거래일 {len(chart)}일 · {chart[0]['날짜']}=100 · {chart[-1]['날짜']}까지 · 종목: {item.get('price_source') or '공공데이터포털'} / 시장: KIS(연결 안 되면 저장소 지수) · 배당 미포함 가격 변화")
             else:st.info(data['chart_error'] or '공통 비교 시세 부족')
             if lamp:st.html(f"<div class='pd-badge'>종가 {lamp['close']:,.0f}원 · {lamp['state']} · 10일선 {lamp['ma10']:,.0f} / 20일선 {lamp['ma20']:,.0f} · {lamp['date']}</div>")
         with right:
@@ -1005,6 +1010,15 @@ def render_classroom(seed_codes=()):
                             st.session_state.report_errors[position['code']]='제공기관 응답을 확인하지 못했습니다. 나중에 다시 조회하세요.'
                         progress.progress((index+1)/len(snapshot['positions']),text=f"공식 자료 확인 {index+1}/{len(snapshot['positions'])}")
                     progress.empty()
+                # 공식 자료가 없거나 실패한 보유종목은 저장소 DART 분기 실적으로 '동기 실적'만 채움(공시는 비움)
+                today_kst=datetime.now(ZoneInfo('Asia/Seoul')).date()
+                for position in snapshot['positions']:
+                    code_=position['code']
+                    if code_ in st.session_state.reports or not re.fullmatch(r'[0-9]{6}',code_):continue
+                    m_=local.metrics(code_,today_kst)
+                    if m_:
+                        st.session_state.reports[code_]={'metrics':m_,'disclosures':[],'fetched':m_['fetched'],'price_date':'저장소'}
+                        st.session_state.report_errors.pop(code_,None)
             except BrokerError as exc:
                 st.error(str(exc))
                 st.caption('이전 조회 결과가 있으면 그대로 유지합니다.')
@@ -1040,7 +1054,7 @@ def render_classroom(seed_codes=()):
                     move=('▲ 상승' if info['change']>0 else '▼ 하락' if info['change']<0 else '보합')
                     move_cls='pd-plus' if info['change']>0 else 'pd-minus' if info['change']<0 else 'pd-muted'
                     movement=f"<span class='pd-index-change'>전 거래일 대비 <b class='{move_cls}'>{move} {info['change']:+,.2f}p · {info['change_pct']:+.2f}%</b></span>"
-                    pieces.append(f"<div><strong><span class='pd-lamp {color}'></span>{name} · {state}</strong><span class='pd-index-value'>{info['close']:,.2f}</span>{movement}<span class='details'>10일선 {info['ma10']:,.2f} · 20일선 {info['ma20']:,.2f}</span><small>일별 기준 {info['date']} · KIS 일별 종가</small></div>")
+                    pieces.append(f"<div><strong><span class='pd-lamp {color}'></span>{name} · {state}</strong><span class='pd-index-value'>{info['close']:,.2f}</span>{movement}<span class='details'>10일선 {info['ma10']:,.2f} · 20일선 {info['ma20']:,.2f}</span><small>일별 기준 {info['date']} · {html.escape(info.get('source') or 'KIS 일별 종가')}</small></div>")
                 else:
                     reason=html.escape(market['failures'].get(name) or '20거래일 자료 부족 또는 기준일이 오래됐습니다.')
                     pieces.append(f"<div><strong>⚪ {name} · 판정 보류</strong><span class='details'>{reason}</span></div>")
