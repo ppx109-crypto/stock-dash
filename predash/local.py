@@ -49,16 +49,25 @@ def market_of(code):
 
 
 def closes(code):
-    """[(YYYYMMDD, 종가)] 오래된 것부터. price-data 먼저, 없으면 코스닥 일봉."""
+    """[(YYYYMMDD, 종가)] 오래된 것부터. price-data 먼저, 없으면 코스닥 일봉.
+    앱 대상에서 빠진 종목은 price-data가 멈춰 있을 수 있어(예: LG 09-22), 투자자 수급 파일의 종가로 그 뒤를 이어 붙임."""
+    got = []
     body = _load(f'price-data/{code}.json')
     if body and body.get('closes'):
-        return [(str(d), float(c)) for d, c in body['closes'] if c]
-    body = _load(f'kosdaq-data/{code}.json')
-    if body and body.get('rows'):
-        cols = body.get('cols') or []
-        i = cols.index('종가') if '종가' in cols else 4
-        return [(str(r[0]), float(r[i])) for r in body['rows'] if r[i]]
-    return []
+        got = [(str(d), float(c)) for d, c in body['closes'] if c]
+    else:
+        body = _load(f'kosdaq-data/{code}.json')
+        if body and body.get('rows'):
+            cols = body.get('cols') or []
+            i = cols.index('종가') if '종가' in cols else 4
+            got = [(str(r[0]), float(r[i])) for r in body['rows'] if r[i]]
+    inv = _load(f'investor-data/{code}.json') or {}
+    cols = inv.get('cols') or []
+    if inv.get('rows') and '종가' in cols:
+        i = cols.index('종가')
+        last = got[-1][0] if got else ''
+        got += [(str(r[0]), float(r[i])) for r in inv['rows'] if str(r[0]) > last and r[i]]
+    return got
 
 
 def price_rows(code, asof, days=60):
@@ -141,3 +150,57 @@ def search(query):
     hits = [{'code': c, 'name': n} for c, n in names.items() if q in re.sub(r'\s+', '', n).casefold() or q == c]
     exact = [h for h in hits if q in (h['code'], re.sub(r'\s+', '', h['name']).casefold())]
     return exact or hits[:30]
+
+
+QUARTER_KIND = {'1분기': 1, '반기': 2, '3분기': 3, '사업': 4}
+
+
+def _won(x):
+    try:
+        return float(str(x).replace(',', ''))
+    except (TypeError, ValueError):
+        return None
+
+
+def metrics(code, asof):
+    """저장소 분기 실적(quarter-data · DART 주요계정)으로 교실 '동기 실적' 칸(Official.latest_period_metrics와 같은 꼴, 억원).
+    asof 앞에 접수된 가장 최근 보고서 기준: 누적(1분기~그 분기) vs 작년 누적, 그 분기 석 달 vs 작년 같은 석 달."""
+    body = _load(f'quarter-data/{code}.json') or {}
+    day = asof.strftime('%Y%m%d') if isinstance(asof, date) else str(asof)
+    rows = {}
+    for key, v in (body.get('rows') or {}).items():
+        if not v or '-' not in key or not str(v.get('접수번호', ''))[:8].isdigit() or str(v['접수번호'])[:8] > day:
+            continue
+        y, k = key.split('-', 1)
+        if k in QUARTER_KIND:
+            rows[(int(y), QUARTER_KIND[k])] = v
+    if not rows:
+        return None
+    y, k = max(rows)
+    v = rows[(y, k)]
+    if k == 4:
+        cur = {f: _won(v.get(f)) for f in ('매출', '매출_작년', '영업이익', '영업이익_작년')}
+        parts = [rows.get((y, j)) for j in (1, 2, 3)]
+        q = None
+        if all(parts):
+            q = {f: (cur[f] - sum(_won(p.get(f)) or 0 for p in parts)) if cur[f] is not None else None for f in cur}
+    else:
+        q = {f: _won(v.get(f)) for f in ('매출', '매출_작년', '영업이익', '영업이익_작년')}
+        parts = [rows.get((y, j)) for j in range(1, k + 1)]
+        cur = {f: (sum(_won(p.get(f)) for p in parts) if all(p and _won(p.get(f)) is not None for p in parts) else None)
+               for f in ('매출', '매출_작년', '영업이익', '영업이익_작년')}
+    if cur['매출'] is None or cur['영업이익'] is None:
+        return None
+    e = lambda x: x / 1e8 if x is not None else None
+    pct = lambda a, b: (a - b) / abs(b) * 100 if a is not None and b and b > 0 else None
+    standalone = None
+    if q:
+        standalone = {'revenue': e(q['매출']), 'profit': e(q['영업이익']), 'prior_revenue': e(q['매출_작년']), 'prior_profit': e(q['영업이익_작년']),
+                      'growth_pct': pct(q['영업이익'], q['영업이익_작년']), 'revenue_growth_pct': pct(q['매출'], q['매출_작년']),
+                      'margin_pct': q['영업이익'] / q['매출'] * 100 if q['영업이익'] is not None and q['매출'] else None}
+    return {'standalone': standalone or {}, 'revenue_growth_pct': pct(cur['매출'], cur['매출_작년']), 'year': y, 'quarter': k,
+            'basis': ('연결' if v.get('기준') == 'CFS' else '별도') + ' · 저장소 DART 주요계정',
+            'revenue': e(cur['매출']), 'profit': e(cur['영업이익']), 'prior_revenue': e(cur['매출_작년']), 'prior_profit': e(cur['영업이익_작년']),
+            'growth_pct': pct(cur['영업이익'], cur['영업이익_작년']),
+            'margin_pct': cur['영업이익'] / cur['매출'] * 100 if cur['매출'] else None,
+            'receipt': str(v.get('접수번호', '')), 'fetched': str(v.get('접수번호', ''))[:8]}
