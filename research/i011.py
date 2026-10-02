@@ -50,12 +50,20 @@ def fixed(c):
     return lambda i: {c: 1.0} if not np.isnan(P[c][i]) else {}
 
 
-def momentum(L, top, cands):
+MA = {}
+
+
+def momentum(L, top, cands, ma_n=0):
+    """주 끝에 L일 수익 1등(위 top개 · 몫 같게) · 수익 > 0 인 것만. ma_n > 0 이면 그 상품이 ma_n일선 위일 때만."""
     def pick(i):
         sc = []
         for c in cands:
             if i - L < 0 or np.isnan(P[c][i]) or np.isnan(P[c][i - L]):
                 continue
+            if ma_n:
+                m = MA.setdefault((c, ma_n), I.ma(np.nan_to_num(P[c], nan=0), ma_n))
+                if not P[c][i] > m[i]:
+                    continue
             r = P[c][i] / P[c][i - L] - 1
             if r > 0:
                 sc.append((r, c))
