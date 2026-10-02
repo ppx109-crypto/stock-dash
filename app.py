@@ -791,7 +791,7 @@ if nav == "오늘의 투자판단":
 elif nav == "PreDash 교실":
     # 수강생 실습 화면(planxs-ai/PreDash-Classroom). 이 메뉴를 열 때만 불러옵니다.
     from classroom_ui import render_classroom
-    render_classroom()
+    render_classroom([s["code"] for s in state.get("stocks", []) if re.fullmatch(r"[0-9]{6}", str(s.get("code", "")))])
 else:
     st.header("설정과 추가 도구")
     st.caption("계좌 연결 없이도 내 종목을 추가하고 조사 결과를 확인할 수 있습니다.")
