@@ -18,7 +18,7 @@ import predash.kis as kis_module
 if not hasattr(kis_module.KIS,'market_flow'):
     kis_module=importlib.reload(kis_module)
 KIS, BrokerError = kis_module.KIS, kis_module.BrokerError
-from predash.classroom import account_settings, connection_form
+from predash.classroom import account_settings, connection_form, auto_connect
 from predash.macro import fetch_vix,relative,benchmark,MacroError
 from predash.analysis import review
 from predash.health import status as holding_status
@@ -210,7 +210,7 @@ def open_research(code):
     st.session_state['decision_code_'+code]=code
 
 
-def render_classroom():
+def render_classroom(seed_codes=()):
     try:
         for k in ('DART_CRTFC_KEY','DATA_GO_KR_SERVICE_KEY','KRX_AUTH_KEY','CUSTOMS_API_KEY','KIS_ENV','KIS_APP_KEY','KIS_APP_SECRET','KIS_CANO','KIS_ACNT_PRDT_CD',
                   'KIS_DEMO_APP_KEY','KIS_DEMO_APP_SECRET','KIS_DEMO_CANO','KIS_DEMO_ACNT_PRDT_CD'):
@@ -218,6 +218,7 @@ def render_classroom():
     except FileNotFoundError:
         pass
     password=os.getenv('APP_PASSWORD','').strip()
+    if password: auto_connect()
     st.html(CSS)
     if st.session_state.get('classroom_nav') not in PAGES:
         st.session_state.classroom_nav=PAGES[0] if all(account_settings()[k] for k in ('key','secret','cano','product')) else PAGES[1]
@@ -478,7 +479,7 @@ def render_classroom():
         # Only public ticker codes are put in the bookmark URL; no account or financial payload.
         raw=st.query_params.get('watch','')
         codes=clean_codes(raw.split(',') if isinstance(raw,str) else [])
-        if 'watch_codes' not in st.session_state:st.session_state.watch_codes=codes
+        if 'watch_codes' not in st.session_state:st.session_state.watch_codes=codes or clean_codes(list(seed_codes))   # 처음엔 PlanX 내 종목으로 채움
         elif codes and codes!=st.session_state.watch_codes:st.session_state.watch_codes=codes
         codes=st.session_state.watch_codes
         if 'watch_names' not in st.session_state:st.session_state.watch_names={}
@@ -528,6 +529,8 @@ def render_classroom():
         head,action=st.columns([4,1],vertical_alignment='center')
         head.subheader(f'저장한 관심종목 {len(codes)}개')
         refresh=action.button('목록 전체 새로고침',type='primary',disabled=not codes,use_container_width=True)
+        if not refresh and codes and not st.session_state.get('watch_results') and not st.session_state.get('classroom_watch_auto'):
+            st.session_state.classroom_watch_auto=True;refresh=True   # 처음 열 때 한 번은 저절로 받아 옴
         if refresh:
             provider=Official()
             today=datetime.now(ZoneInfo('Asia/Seoul')).date()
@@ -855,6 +858,8 @@ def render_classroom():
         with action:
             refresh_account=st.button('계좌·지수 새로고침' if page=='오늘의 점검' else '내 계좌 새로고침',
                 type='primary',disabled=not(password and configured),use_container_width=True)
+        if not refresh_account and password and configured and 'snapshot' not in st.session_state and not st.session_state.get('classroom_account_auto'):
+            st.session_state.classroom_account_auto=True;refresh_account=True   # 연결돼 있으면 처음 열 때 한 번은 저절로 조회
         if refresh_account:
             try:
                 with st.spinner('증권사 잔고를 조회합니다…'):
