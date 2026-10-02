@@ -1,7 +1,9 @@
 """Read-only KIS domestic-stock balance adapter. No order endpoints."""
 from __future__ import annotations
 import os
+import hashlib
 import re
+import threading
 import time
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -9,6 +11,29 @@ import requests
 
 class BrokerError(RuntimeError):
     pass
+
+# 한투는 같은 앱키로 접근토큰을 1분에 한 번만 내주고, 어기면 HTTP 403(EGW00133)으로 거절합니다.
+# 접속(세션)마다 새로 받지 않게 앱 서버 안에서 키별로 하나를 함께 씁니다(PlanX 2026-10-02 · 403 거부 고침).
+_TOKENS = {}
+_TOKEN_GATE = threading.Lock()
+
+# 거절 코드별로 사람이 할 일(한투 응답 본문은 옮기지 않고 정해진 꼴의 코드만 씀).
+REFUSALS = {
+    'EGW00133': '접근토큰은 1분에 한 번만 받을 수 있습니다(EGW00133). 1분쯤 뒤에 다시 눌러 주세요.',
+    'EGW00123': '앱키 또는 앱시크릿이 맞지 않습니다(EGW00123).',
+    'EGW00103': '유효하지 않은 앱키입니다(EGW00103) · 실전/모의 구분(KIS_ENV)과 그 환경에서 받은 키인지 확인하세요.',
+    'EGW00105': '유효하지 않은 앱시크릿입니다(EGW00105) · 실전/모의 구분(KIS_ENV)과 그 환경에서 받은 키인지 확인하세요.',
+    'EGW00121': '토큰이 맞지 않습니다(EGW00121) · 다시 눌러 주세요.',
+    'EGW00201': '초당 호출 한도를 넘었습니다(EGW00201). 잠시 뒤 다시 눌러 주세요.',
+}
+
+
+def refusal(status, data):
+    code = str((data or {}).get('msg_cd') or (data or {}).get('error_code') or '').strip()
+    code = code if re.fullmatch(r'[A-Z]{2,4}[0-9]{3,6}', code) else ''
+    if REFUSALS.get(code):
+        return BrokerError(f'증권사 인증 거부 (HTTP {status}) · ' + REFUSALS[code])
+    return BrokerError(f'증권사 인증 거부 (HTTP {status}' + (f' · {code}' if code else '') + ') · KIS_ENV의 실전/모의 구분과 해당 환경의 키를 확인하세요.')
 
 def account_settings(mode=None):
     """An explicit demo request never falls back to real credentials."""
@@ -47,7 +72,9 @@ class KIS:
         try:
             response = requests.request(method, self.base + path, timeout=(5, 20), **kwargs)
             if response.status_code in (401,403):
-                raise BrokerError(f'증권사 인증 거부 (HTTP {response.status_code}) · KIS_ENV의 실전/모의 구분과 해당 환경의 키를 확인하세요.')
+                try:body=response.json()
+                except ValueError:body={}
+                raise refusal(response.status_code, body if isinstance(body,dict) else {})
             if response.status_code == 429:
                 raise BrokerError('증권사 호출 제한 (HTTP 429) · 잠시 후 다시 시도하세요.')
             response.raise_for_status()
@@ -70,11 +97,18 @@ class KIS:
     def authorize(self):
         if self.token and time.time() < self.expires:
             return
-        _, data = self.call('POST', '/oauth2/tokenP', json={'grant_type':'client_credentials', 'appkey':self.key, 'appsecret':self.secret})
-        if not data.get('access_token'):
-            raise self.result_error(data,'증권사 토큰 발급 실패')
-        self.token = data['access_token']
-        self.expires = time.time() + max(0, number(data.get('expires_in', 0)) - 120)
+        slot = (hashlib.sha256((self.key + '|' + self.secret).encode()).hexdigest(), self.mode)
+        with _TOKEN_GATE:
+            kept = _TOKENS.get(slot)
+            if kept and time.time() < kept[1]:
+                self.token, self.expires = kept
+                return
+            _, data = self.call('POST', '/oauth2/tokenP', json={'grant_type':'client_credentials', 'appkey':self.key, 'appsecret':self.secret})
+            if not data.get('access_token'):
+                raise self.result_error(data,'증권사 토큰 발급 실패')
+            self.token = data['access_token']
+            self.expires = time.time() + max(0, number(data.get('expires_in', 0)) - 120)
+            _TOKENS[slot] = (self.token, self.expires)
 
     def balance(self):
         self.authorize()
