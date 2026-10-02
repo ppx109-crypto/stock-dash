@@ -4,6 +4,7 @@
   · I_W(비운 돈 가운데 넣는 몫 · 기본 1) · I_MA(상품이 그 이평선 위일 때만 · 기본 0 = 안 봄)
   · I_COST(기본 0.002) · I_REB(week · mon · day) · I_GUARD(trend · crash · nas20 — 나스닥 빼는 때)
   · I_DOLLAR=2(원 · 달러 20일 +2% · 코스피 < 20일선인 날은 돌리기 대신 달러만)
+  · I_CASH=all · idle(엔진이 안 쓰는 비운 돈을 단기채권 153130에)
   · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
 import json
@@ -75,6 +76,9 @@ if os.environ.get("I_QINV"):
         else:
             wq = free[a]
         qinv[a:b + 1] += qd[a:b + 1] * wq
+if os.environ.get("I_CASH"):
+    # I36: 엔진이 쓰지 않는 비운 돈은 현금 대신 단기채권(153130 · I_CASH=all: 1일봉이 비운 돈 모두 · idle: 엔진이 켜졌는데 고른 것이 없을 때만)
+    bond = np.nan_to_num(np.concatenate([[0], I.px("153130")[1:] / I.px("153130")[:-1] - 1]), nan=0)
 prev_free = np.concatenate([[1.0], free[:-1]])
 mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
@@ -91,6 +95,11 @@ if os.environ.get("I_DIP"):
     rot = rot_on
 if os.environ.get("I_QINV"):
     mix = mix + qinv
+if os.environ.get("I_CASH"):
+    # 엔진이 그날 돈을 쓰지 않았으면(rot == 0 · 급락 · 코스닥 인버스도 없음) 비운 몫을 단기채권에. 바꿀 때 비용은 아주 작아 뺌(단기채권 호가 차이 ~0.01%).
+    idle_cash = (rot == 0) & (np.abs(mix - d1) < 1e-12)
+    use = idle_cash if os.environ["I_CASH"] == "all" else idle_cash & np.concatenate([[False], gate[:-1]])
+    mix = mix + np.where(use, bond * prev_free, 0.0)
 print(f"== I 13회차: 1일봉 + 약세장 돌리기({','.join(R.NAME.get(c, c) for c in cands)} · {L}일 · 위 {TOP} · {os.environ.get('I_GATE', 'weak')} · 몫 {W} · 이평 {MA_N}{' · 급락 되돌림 먼저' if os.environ.get('I_DIP') else ''} · 비용 {COST} · 고르는 날 {REB} · 거르기 {GUARD or '없음'} · 하락 추세 달러 {os.environ.get('I_DOLLAR', '안 씀')} · 코스닥 과열 인버스 {os.environ.get('I_QINV', '안 씀')}) ==", flush=True)
 for name, lo, hi in (("B", "20170101", "20210101"), ("C", "20210101", "20991231"), ("C1 21~25", "20210101", "20260101"), ("C2 2026", "20260101", "20991231")):
     a, m, c = I.stats(d1, lo, hi), I.stats(rot, lo, hi), I.stats(mix, lo, hi)
