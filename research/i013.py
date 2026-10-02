@@ -27,7 +27,10 @@ free = np.clip(1 - used, 0, 1)
 cands = os.environ.get("I_CANDS", "133690,138230,132030,148070").split(",")
 L, TOP = int(os.environ.get("I_L", "60")), int(os.environ.get("I_TOP", "1"))
 gate_weak = R.G.get("시장 폭<50")
-gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"]}[os.environ.get("I_GATE", "weak")]
+prev_used = np.concatenate([[0.0], used[:-1]])
+gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
+        # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
+        "idle20": prev_used < 0.2, "idle50": prev_used < 0.5}[os.environ.get("I_GATE", "weak")]
 W, MA_N = float(os.environ.get("I_W", "1")), int(os.environ.get("I_MA", "0"))
 COST, REB, GUARD = float(os.environ.get("I_COST", "0.002")), os.environ.get("I_REB", "week"), os.environ.get("I_GUARD", "")
 kk = I.K200
@@ -48,7 +51,7 @@ if os.environ.get("I_DOLLAR"):
     dol = R.P["138230"]
     d20 = np.nan_to_num(dol / np.concatenate([np.full(20, np.nan), dol[:-20]]) - 1, nan=0)
     cond = (d20 > float(os.environ["I_DOLLAR"]) / 100) & (np.nan_to_num(kk < m20k, nan=0) > 0)
-    cy = np.concatenate([[False], cond[:-1]])
+    cy = np.concatenate([[False], (cond & gate)[:-1]])     # 켜는 때(gate)가 꺼진 날은 달러도 안 듦
     flip = np.concatenate([[False], cy[1:] != cy[:-1]])
     rot = np.where(cy, R.R["138230"] * W, rot) - flip * COST / 2 * W
 prev_free = np.concatenate([[1.0], free[:-1]])
