@@ -31,13 +31,17 @@ week_end = np.array([i == n - 1 or wk[i + 1] != wk[i] for i in range(n)])
 PER = (("A", "20110101", "20170101"), ("B", "20170101", "20210101"), ("C", "20210101", "20991231"))
 
 
-def run(gate, pick, cost=0.002):
-    """pick(i) → {코드: 몫}. 주 끝에 다시 고르고, 켜는 때가 꺼지면 바로 현금. 날마다 계좌 수익률."""
+week_start = np.array([i == 0 or wk[i - 1] != wk[i] for i in range(n)])
+
+
+def run(gate, pick, cost=0.002, reb="week"):
+    """pick(i) → {코드: 몫}. 다시 고르는 날(reb: week = 주 끝 · mon = 주 첫날 · day = 날마다)에 고르고, 켜는 때가 꺼지면 바로 현금. 날마다 계좌 수익률."""
     daily = np.zeros(n)
     w, chosen = {}, {}
+    when = {"week": week_end, "mon": week_start, "day": np.ones(n, bool)}[reb]
     for i in range(1, n):
         daily[i] = sum(x * R[c][i] for c, x in w.items())
-        if week_end[i] or not chosen:
+        if when[i] or not chosen:
             chosen = pick(i)
         new = chosen if gate[i] else {}
         turn = sum(abs(new.get(c, 0) - w.get(c, 0)) for c in set(new) | set(w))
@@ -53,11 +57,14 @@ def fixed(c):
 MA = {}
 
 
-def momentum(L, top, cands, ma_n=0):
-    """주 끝에 L일 수익 1등(위 top개 · 몫 같게) · 수익 > 0 인 것만. ma_n > 0 이면 그 상품이 ma_n일선 위일 때만."""
+def momentum(L, top, cands, ma_n=0, skip=None):
+    """주 끝에 L일 수익 1등(위 top개 · 몫 같게) · 수익 > 0 인 것만. ma_n > 0 이면 그 상품이 ma_n일선 위일 때만.
+    skip: {코드: 날마다 참/거짓} — 참인 날은 그 상품을 고르지 않음(예: 코스피 하락 추세면 나스닥 뺌)."""
     def pick(i):
         sc = []
         for c in cands:
+            if skip and c in skip and skip[c][i]:
+                continue
             if i - L < 0 or np.isnan(P[c][i]) or np.isnan(P[c][i - L]):
                 continue
             if ma_n:

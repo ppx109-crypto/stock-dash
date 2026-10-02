@@ -27,7 +27,9 @@ r5, r20 = np.nan_to_num(I.ret(k, 5), nan=0), np.nan_to_num(I.ret(k, 20), nan=0)
 br = I.breadth()
 gate = np.where(np.isnan(br), np.nan_to_num(k < m200, nan=0) > 0, br < 50)
 CANDS = ["133690", "138230", "132030", "148070"]
-P = {c: I.px(c) for c in CANDS + ["114800", "069500"]}
+import os
+TA = os.environ.get("I_TA", "114800")      # 하락 추세에 드는 것(기본 인버스 · 138230 달러 · 132030 금으로 바꿔 봄)
+P = {c: I.px(c) for c in CANDS + ["114800", "069500", TA]}
 R = {c: np.nan_to_num(np.concatenate([[0], P[c][1:] / P[c][:-1] - 1]), nan=0) for c in P}
 wk = [datetime.strptime(d, "%Y%m%d").isocalendar()[:2] for d in D]
 week_end = np.array([i == n - 1 or wk[i + 1] != wk[i] for i in range(n)])
@@ -88,14 +90,14 @@ def engine(tname, use_rot=True, cost=0.002):
             if dip_on[i]:
                 new, mode[i] = {"069500": 1.0}, 1
             elif trend[i] and not banned:
-                new, mode[i] = {"114800": 1.0}, 2
+                new, mode[i] = {TA: 1.0}, 2
                 if inv_in is None:
-                    inv_in = P["114800"][i]
-                elif tname.startswith("T4") and P["114800"][i] / inv_in - 1 <= -0.03:
+                    inv_in = P[TA][i]
+                elif tname.startswith("T4") and P[TA][i] / inv_in - 1 <= -0.03:
                     new, banned, mode[i] = {}, True, 0
             elif use_rot:
                 new, mode[i] = chosen, 3
-        if "114800" not in new:
+        if TA not in new:
             inv_in = None
         daily[i] -= sum(abs(new.get(c, 0) - w.get(c, 0)) for c in set(new) | set(w)) * cost / 2
         w = new
@@ -108,6 +110,7 @@ if __name__ == "__main__":
     print(f"== I 14회차: 빈칸 엔진(빈 날에만 · 계좌 전부) · 빈 날 몫: {on} ==", flush=True)
     import os
     names = [t for t in T if t >= os.environ.get("I_FROM", "")]
+    print(f"  하락 추세에 드는 것: {TA}", flush=True)
     for tname in names:
         for use_rot in (True, False):
             d, mode = engine(tname, use_rot)
