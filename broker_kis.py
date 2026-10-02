@@ -416,9 +416,16 @@ class KIS:
     # 투신(ivtr) · 연기금(fund) · 사모(pe_fund)가 따로 있어 과거 수급을 거슬러 받을 수 있습니다.
     INVESTORS = (('개인', 'prsn_ntby_qty'), ('외국인', 'frgn_ntby_qty'), ('기관', 'orgn_ntby_qty'),
                  ('투신', 'ivtr_ntby_qty'), ('연기금', 'fund_ntby_qty'), ('사모', 'pe_fund_ntby_vol'))
+    # 같은 응답에 함께 오는 모든 투자자 칸(수급 갈래 연구용 · 2026-10-02 찔러보기로 칸 이름 확인).
+    INVESTORS_ALL = (('개인', 'prsn_ntby_qty'), ('외국인', 'frgn_ntby_qty'), ('외국인등록', 'frgn_reg_ntby_qty'),
+                     ('외국인비등록', 'frgn_nreg_ntby_qty'), ('기관', 'orgn_ntby_qty'), ('금융투자', 'scrt_ntby_qty'),
+                     ('투신', 'ivtr_ntby_qty'), ('사모', 'pe_fund_ntby_vol'), ('은행', 'bank_ntby_qty'),
+                     ('보험', 'insu_ntby_qty'), ('종금', 'mrbn_ntby_qty'), ('연기금', 'fund_ntby_qty'),
+                     ('기타단체', 'etc_orgt_ntby_vol'), ('기타법인', 'etc_corp_ntby_vol'), ('기타', 'etc_ntby_qty'))
 
-    def investor_daily(self, code, day):
-        """그날까지 서른 거래일의 투자자별 순매수(주)와 종가. 오래된 날이 먼저입니다. 조회 전용입니다."""
+    def investor_daily(self, code, day, full=False):
+        """그날까지 서른 거래일의 투자자별 순매수(주)와 종가. 오래된 날이 먼저입니다. 조회 전용입니다.
+        full=True면 INVESTORS_ALL(금융투자 · 은행 · 보험 · 기타법인 · 외국인 등록/비등록 등 모든 칸)을 줍니다."""
         if not re.fullmatch(r'[0-9]{6}', str(code)) or not re.fullmatch(r'[0-9]{8}', str(day)):
             raise BrokerError('종목코드는 숫자 6자리, 날짜는 8자리여야 합니다.')
         self.authorize()
@@ -448,7 +455,7 @@ class KIS:
             if not re.fullmatch(r'[0-9]{8}', when):
                 continue
             got = {'date': when}
-            for name, key in self.INVESTORS + (('종가', 'stck_clpr'),):
+            for name, key in (self.INVESTORS_ALL if full else self.INVESTORS) + (('종가', 'stck_clpr'),):
                 try:
                     got[name] = amount(row.get(key))
                 except BrokerError:
