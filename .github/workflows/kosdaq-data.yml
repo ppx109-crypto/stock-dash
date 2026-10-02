@@ -1,0 +1,56 @@
+name: KOSDAQ daily data (research)
+# 코스닥 상장 전체 일봉(OHLCV · 거래대금 · 수정주가 · 2015 ~)을 kosdaq-data/에 따로 모읍니다(코스닥 갈래 연구 · 사용자 2026-10-02).
+# 운영이 읽는 price-data/ · volume-data/와 섞지 않음. 조회 전용 · 주문과 무관. 묶음마다 커밋하므로 다시 돌리면 이어 갑니다.
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: '한 묶음 종목 수'
+        required: false
+        default: '60'
+      lanes:
+        description: '동시에 묻는 줄 수'
+        required: false
+        default: '4'
+permissions:
+  contents: write
+concurrency:
+  # 운영 수집 줄(kis-collect)에 서 있는 작업을 취소하지 않도록 따로 섬(주말 · 장 뒤에 띄움).
+  group: kosdaq-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python -m unittest tests.test_collect_kosdaq -v
+      - name: Collect in batches, saving each batch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python collect_kosdaq.py list > /tmp/batches.txt
+          git add study/kosdaq_codes.json && (git diff --cached --quiet || git commit -q -m 'KOSDAQ code list')
+          while read -r batch; do
+            [ -z "$batch" ] && continue
+            status=0; KOSDAQ_CODES="$batch" python collect_kosdaq.py || status=$?
+            mkdir -p kosdaq-data
+            git add -A kosdaq-data
+            if ! git diff --cached --quiet; then
+              git commit -q -m 'Collect KOSDAQ daily data'
+              for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            fi
+            if [ "$status" = "2" ]; then echo '거절이 이어져 멈춥니다.'; exit 1; fi
+          done < /tmp/batches.txt
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.07'
+          KOSDAQ_BATCH: ${{ inputs.batch || '60' }}
+          KOSDAQ_LANES: ${{ inputs.lanes || '4' }}
