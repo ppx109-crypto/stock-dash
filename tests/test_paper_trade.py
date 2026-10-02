@@ -100,6 +100,11 @@ class TwoRules(unittest.TestCase):
     def test_daily_book_is_separate(self):
         self.assertNotEqual(P.book_path("1h"), P.book_path("1d"))
 
+    def test_three_books_and_shares(self):
+        self.assertEqual(len({P.book_path(s) for s in ("1h", "1d", "15m")}), 3)
+        self.assertAlmostEqual(sum(P.SHARES.values()), 1.0)
+        self.assertEqual(P.SHARES["15m"], 0.2)
+
 
 class Execute(unittest.TestCase):
     def test_orders_once_and_books(self):
@@ -120,11 +125,11 @@ class Execute(unittest.TestCase):
             done = [{"type": "buy", "code": "000001", "칸": 2, "decided": "2026100110", "name": "가"}]
             lines = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=fake)
             again = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=fake)
-            self.assertEqual(fake.sent, [("000001", "buy", 100)], "규칙마다 계좌의 절반(SHARE 0.5)")
+            self.assertEqual(fake.sent, [("000001", "buy", 80)], "1시간봉은 계좌의 40%(1일봉 40 · 15분봉 20)")
             self.assertEqual(len(lines), 1)
             self.assertEqual(again, [])
             book = json.loads((Path(tmp) / "book.json").read_text(encoding="utf-8"))
-            self.assertEqual(book["held"], {"000001": 100})
+            self.assertEqual(book["held"], {"000001": 80})
             self.assertNotIn("12345678", json.dumps(book))
             (Path(tmp) / "off").write_text("")
             self.assertEqual(P.execute([dict(done[0], decided="x")], {"positions": {}}, {"000001": 1}, "b", broker=fake), [])
