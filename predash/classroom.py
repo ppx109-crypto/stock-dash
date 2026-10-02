@@ -1,4 +1,6 @@
 """Classroom credentials are held only in the current Streamlit session."""
+import os
+
 import streamlit as st
 from predash.kis import KIS, BrokerError
 
@@ -22,6 +24,32 @@ def account_settings(mode=None):
     return dict(mode=selected, **{k: settings.get(k, '') for k in ('key','secret','cano','product')})
 
 
+def saved_secret_sets():
+    """앱 Secrets(환경 변수)에 있는 한투 키 묶음: KIS_*(KIS_ENV가 real이면 실전 조회, 아니면 모의) · KIS_DEMO_*(모의).
+    네 값이 다 있는 묶음만 돌려줍니다. 값은 화면에 쓰지 않습니다."""
+    found = []
+    for prefix, mode in (('KIS_', 'real' if os.getenv('KIS_ENV', 'demo').strip() == 'real' else 'demo'), ('KIS_DEMO_', 'demo')):
+        settings = dict(mode=mode, key=os.getenv(prefix+'APP_KEY', '').strip(), secret=os.getenv(prefix+'APP_SECRET', '').strip(),
+                        cano=os.getenv(prefix+'CANO', '').strip(), product=os.getenv(prefix+'ACNT_PRDT_CD', '').strip())
+        if all(settings[k] for k in ('key', 'secret', 'cano', 'product')) and all(f['mode'] != mode for f in found):
+            found.append(settings)
+    return found
+
+
+def connect(settings):
+    """잔고 조회로 확인한 뒤 이 접속 세션에만 연결 정보를 둡니다."""
+    try:
+        client = KIS(settings=settings)
+        with st.spinner('잔고 조회 권한을 확인합니다…'):
+            client.balance()
+        st.session_state.classroom_credentials = settings
+        st.session_state['_kis_client_demo' if settings['mode']=='demo' else '_kis_client'] = client
+        st.session_state.classroom_clear_inputs = True
+        st.rerun()
+    except BrokerError as error:
+        st.error(str(error))
+
+
 def connection_form():
     if st.session_state.pop('classroom_clear_inputs', False):
         for key in ('class_key','class_secret','class_cano','class_product'):
@@ -36,6 +64,15 @@ def connection_form():
                 del st.session_state[key]
             st.rerun()
         return
+    secret_sets = saved_secret_sets()
+    if secret_sets:
+        st.caption('앱 Secrets에 저장된 한국투자증권 키로 바로 연결합니다. 키와 계좌번호 원문은 화면에 표시하지 않습니다.')
+        cols = st.columns(len(secret_sets))
+        for col, settings in zip(cols, secret_sets):
+            label = 'Secrets 키로 연결 · ' + ('실전 조회' if settings['mode']=='real' else '모의투자')
+            if col.button(label, type='primary', use_container_width=True, key='classroom_secret_'+settings['mode']):
+                connect(settings)
+        st.caption('또는 아래에 직접 입력하세요.')
     with st.form('classroom_connection'):
         mode = st.radio('투자 환경', ['모의투자','실전 조회'], horizontal=True)
         key = st.text_input('App Key', type='password', key='class_key')
@@ -44,15 +81,5 @@ def connection_form():
         product = st.text_input('계좌번호 뒤 2자리', max_chars=2, key='class_product')
         submitted = st.form_submit_button('연결 확인', type='primary', use_container_width=True)
     if submitted:
-        settings = dict(mode='demo' if mode=='모의투자' else 'real',key=key.strip(),secret=secret.strip(),cano=cano.strip(),product=product.strip())
-        try:
-            client = KIS(settings=settings)
-            with st.spinner('잔고 조회 권한을 확인합니다…'):
-                client.balance()
-            st.session_state.classroom_credentials = settings
-            st.session_state['_kis_client_demo' if settings['mode']=='demo' else '_kis_client'] = client
-            st.session_state.classroom_clear_inputs = True
-            st.rerun()
-        except BrokerError as error:
-            st.error(str(error))
+        connect(dict(mode='demo' if mode=='모의투자' else 'real',key=key.strip(),secret=secret.strip(),cano=cano.strip(),product=product.strip()))
     st.info('연결 해제와 로그아웃은 키·잔고·접속 중 실습 기록을 지웁니다. 필요한 기록은 먼저 백업하세요.')

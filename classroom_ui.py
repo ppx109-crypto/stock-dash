@@ -2,7 +2,7 @@
 
 바뀐 점(PlanX 안에서 돌게): 따로 쓰던 page_config · 비밀번호 화면 · 왼쪽 메뉴를 빼고 화면 위 선택으로 바꿈,
 PlanX 모양을 건드리지 않게 pd- 꾸밈만 넣음, 연결 해제 때 PlanX 세션은 두고 교실 기록만 지움.
-증권사 키는 이 접속 세션에만 둡니다(predash.classroom). PlanX 서버의 KIS 비밀값은 쓰지 않습니다. 주문 기능 없음(조회 전용).
+증권사 키는 이 접속 세션에만 둡니다(predash.classroom). 직접 넣거나, 'Secrets 키로 연결'을 눌렀을 때만 앱 Secrets의 KIS 키를 씁니다(사용자 요청 2026-10-02). 주문 기능 없음(조회 전용).
 """
 import hmac
 import html
@@ -212,7 +212,8 @@ def open_research(code):
 
 def render_classroom():
     try:
-        for k in ('DART_CRTFC_KEY','DATA_GO_KR_SERVICE_KEY','KRX_AUTH_KEY','CUSTOMS_API_KEY'):
+        for k in ('DART_CRTFC_KEY','DATA_GO_KR_SERVICE_KEY','KRX_AUTH_KEY','CUSTOMS_API_KEY','KIS_ENV','KIS_APP_KEY','KIS_APP_SECRET','KIS_CANO','KIS_ACNT_PRDT_CD',
+                  'KIS_DEMO_APP_KEY','KIS_DEMO_APP_SECRET','KIS_DEMO_CANO','KIS_DEMO_ACNT_PRDT_CD'):
             if k in st.secrets and not os.getenv(k,'').strip(): os.environ[k]=str(st.secrets[k])
     except FileNotFoundError:
         pass
