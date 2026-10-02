@@ -4,6 +4,7 @@
   · I_W(비운 돈 가운데 넣는 몫 · 기본 1) · I_MA(상품이 그 이평선 위일 때만 · 기본 0 = 안 봄)
   · I_COST(기본 0.002) · I_REB(week · mon · day) · I_GUARD(trend · crash · nas20 — 나스닥 빼는 때)
   · I_DOLLAR=2(원 · 달러 20일 +2% · 코스피 < 20일선인 날은 돌리기 대신 달러만)
+  · I_QINV=free · hedge(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
 import json
 import os
@@ -55,6 +56,15 @@ if os.environ.get("I_DOLLAR"):
     cy = np.concatenate([[False], (cond & gate)[:-1]])     # 켜는 때(gate)가 꺼진 날은 달러도 안 듦
     flip = np.concatenate([[False], cy[1:] != cy[:-1]])
     rot = np.where(cy, R.R["138230"] * W, rot) - flip * COST / 2 * W
+if os.environ.get("I_QINV"):
+    # 코스닥 과열 뒤 코스닥150 인버스(I20 · I22): 229200 10일 +10% → 251340 · 익절 1.5 · 손절 1.5 · 10일. 1일봉이 비워 둔 돈으로(사는 날 몫 고정).
+    # I_QINV=free(비운 돈) · hedge(계좌의 30%를 늘 — 1일봉이 들고 있어도)
+    qq = R.P.get("229200") if "229200" in R.P else I.px("229200")
+    qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= 0.10
+    qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
+    qinv = np.zeros(n)
+    for a, b, _ in qtr:
+        qinv[a:b + 1] += qd[a:b + 1] * (0.3 if os.environ["I_QINV"] == "hedge" else free[a])
 prev_free = np.concatenate([[1.0], free[:-1]])
 mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
@@ -69,7 +79,9 @@ if os.environ.get("I_DIP"):
     rot_on = np.where(on, 0.0, rot)
     mix = d1 + rot_on * prev_free + dip
     rot = rot_on
-print(f"== I 13회차: 1일봉 + 약세장 돌리기({','.join(R.NAME.get(c, c) for c in cands)} · {L}일 · 위 {TOP} · {os.environ.get('I_GATE', 'weak')} · 몫 {W} · 이평 {MA_N}{' · 급락 되돌림 먼저' if os.environ.get('I_DIP') else ''} · 비용 {COST} · 고르는 날 {REB} · 거르기 {GUARD or '없음'} · 하락 추세 달러 {os.environ.get('I_DOLLAR', '안 씀')}) ==", flush=True)
+if os.environ.get("I_QINV"):
+    mix = mix + qinv
+print(f"== I 13회차: 1일봉 + 약세장 돌리기({','.join(R.NAME.get(c, c) for c in cands)} · {L}일 · 위 {TOP} · {os.environ.get('I_GATE', 'weak')} · 몫 {W} · 이평 {MA_N}{' · 급락 되돌림 먼저' if os.environ.get('I_DIP') else ''} · 비용 {COST} · 고르는 날 {REB} · 거르기 {GUARD or '없음'} · 하락 추세 달러 {os.environ.get('I_DOLLAR', '안 씀')} · 코스닥 과열 인버스 {os.environ.get('I_QINV', '안 씀')}) ==", flush=True)
 for name, lo, hi in (("B", "20170101", "20210101"), ("C", "20210101", "20991231"), ("C1 21~25", "20210101", "20260101"), ("C2 2026", "20260101", "20991231")):
     a, m, c = I.stats(d1, lo, hi), I.stats(rot, lo, hi), I.stats(mix, lo, hi)
     print(f"  {name:9s} 1일봉만 연 {a[0]:+6.1f} 골 {a[1]:6.1f} | 돌리기만(계좌 전부) 연 {m[0]:+5.1f} 골 {m[1]:6.1f} | 함께 연 {c[0]:+6.1f} 골 {c[1]:6.1f}", flush=True)
