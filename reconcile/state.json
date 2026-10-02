@@ -1,0 +1,16 @@
+{
+ "1h": {
+  "positions": {},
+  "pending": [],
+  "closed": [],
+  "seen": {
+   "20261002": []
+  },
+  "last_bar": "2026100214"
+ },
+ "1d": {
+  "positions": {},
+  "closed": []
+ },
+ "last_day": "20261002"
+}
