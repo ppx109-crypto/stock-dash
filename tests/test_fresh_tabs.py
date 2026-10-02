@@ -87,3 +87,28 @@ class Filings(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipIf(research_ui is None, "streamlit이 없어 화면 쪽은 건너뜁니다")
+class HourlyNear(unittest.TestCase):
+    """1시간봉 '충족 미달': 장중에는 매시 다시 센 것(판정 시각)을, 저녁 새 후보가 나오면 그것을 씀(사용자 요청 2026-10-02)."""
+
+    def run_with(self, files):
+        from unittest import mock
+        with mock.patch.object(research_ui, "repo_json", side_effect=lambda p: files.get(p)), \
+                mock.patch.object(research_ui, "today_a_group", return_value={}):
+            return research_ui.near_lists()
+
+    def test_intraday_uses_hourly_recount_with_time(self):
+        plan = {"base": "20261001", "made": "2026-10-01 19:40", "near": [{"code": "000001", "모자란 수": 1}]}
+        now = {"date": "20261002", "at": "2026-10-02 11:01", "near": [{"code": "000002", "모자란 수": 1}]}
+        hourly, _, basis, _ = self.run_with({"hourly-live/plan.json": plan, "hourly-live/near-now.json": now})
+        self.assertEqual([r["code"] for r in hourly], ["000002"])
+        self.assertIn("2026-10-02 11:01 판정", basis)
+
+    def test_evening_plan_wins_over_older_recount(self):
+        plan = {"base": "20261002", "made": "2026-10-02 19:40", "near": [{"code": "000001", "모자란 수": 1}]}
+        now = {"date": "20261002", "at": "2026-10-02 15:31", "near": [{"code": "000002", "모자란 수": 1}]}
+        hourly, _, basis, _ = self.run_with({"hourly-live/plan.json": plan, "hourly-live/near-now.json": now})
+        self.assertEqual([r["code"] for r in hourly], ["000001"])
+        self.assertIn("2026-10-02 19:40 판정", basis)

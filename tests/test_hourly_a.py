@@ -243,3 +243,54 @@ class History(unittest.TestCase):
             os.environ.pop("HLAB_OPEN_HOLDOUT", None)
             if old is not None:
                 os.environ["HLAB_OPEN_HOLDOUT"] = old
+
+
+class NearNow(unittest.TestCase):
+    """장중 매시 '조건이 1개만 모자란 종목'을 지금 값으로 다시 세어 판정 시각과 남김(사용자 요청 2026-10-02)."""
+
+    def test_outside_market_hours_does_nothing(self):
+        from datetime import datetime
+        from unittest import mock
+
+        class NoCall:
+            def __getattr__(self, name):
+                raise AssertionError("장 밖에서는 증권사에 묻지 않음")
+        with mock.patch.object(A, "_save") as save:
+            self.assertEqual(A.refresh_near(datetime(2026, 10, 2, 18, 0, tzinfo=A.KST), client=NoCall()), 0)
+            self.assertEqual(A.refresh_near(datetime(2026, 10, 3, 10, 0, tzinfo=A.KST), client=NoCall()), 0)   # 토요일
+            save.assert_not_called()
+
+    def test_saves_near_with_judged_time(self):
+        import tempfile
+        from datetime import datetime
+        from pathlib import Path
+        from unittest import mock
+        import caps
+        import collect_kis_intraday as I
+        import final_group
+        import study
+
+        class Client:
+            def quote(self, code):
+                return {"price": 110.0}
+        prices = {"000001": {"name": "가", "rows": [("20261001", 100.0)]}, "000002": {"name": "나", "rows": [("20261001", 50.0)]}}
+        seen = {}
+
+        def compute(live, calm=None):
+            seen["live"] = live
+            return {"date": "20261002", "breadth": 55.0, "picks": [{"code": "000001", "name": "가", "갈래": ["정배열"]}],
+                    "b_group": [{"code": "000002", "name": "나", "모자란 수": 1, "가까운 갈래": "정배열", "모자란 것": {"정배열": ["간격"]}},
+                                {"code": "000003", "name": "다", "모자란 수": 2}]}
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(A, "NEAR_NOW", Path(tmp) / "near-now.json"), \
+                mock.patch.object(study, "load_prices", return_value=prices), \
+                mock.patch.object(caps, "tag", side_effect=lambda rows, n: [r.update({caps.RANK: 1}) for r in rows]), \
+                mock.patch.object(I, "market_open_today", return_value=True), \
+                mock.patch.object(final_group, "compute", side_effect=compute):
+            self.assertEqual(A.refresh_near(datetime(2026, 10, 2, 11, 1, tzinfo=A.KST), client=Client()), 0)
+            body = A._load(Path(tmp) / "near-now.json", None)
+        self.assertEqual(body["at"], "2026-10-02 11:01")
+        self.assertEqual(body["date"], "20261002")
+        self.assertEqual([r["code"] for r in body["near"]], ["000002"], "1개만 모자란 것만")
+        self.assertEqual([r["code"] for r in body["picks"]], ["000001"])
+        self.assertEqual(seen["live"]["000001"]["rows"][-1], ("20261002", 110.0), "지금 값을 오늘 값으로 붙여 셈")

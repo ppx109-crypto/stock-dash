@@ -360,7 +360,8 @@ def near_lists():
     """두 칸 아래쪽 '충족 미달' 목록: (1시간봉, 1일봉, 1시간봉 기준 글, 1일봉 기준 글).
 
     두 칸이 같은 파일을 나눠 쓰면 늘 똑같이 보여서(2026-10-01 사용자 지적), 칸마다 제 규칙의 결과만 씁니다.
-    - 1시간봉: 저녁 A그룹 작업이 남기는 hourly-live/plan.json의 near(오늘 종가 · 오늘 수급까지 → 다음 거래일).
+    - 1시간봉: 장중에는 1시간봉 실행이 매시 지금 값으로 다시 센 hourly-live/near-now.json(판정 시각 · 전날 수급까지),
+      장 뒤에는 저녁 A그룹 작업이 남기는 hourly-live/plan.json의 near(오늘 종가 · 오늘 수급까지 → 다음 거래일 · 판정 시각).
       아직 없으면 빈 칸과 언제 나오는지만 적음.
     - 1일봉: 15:20 판단(daily-live/today.json)의 near(그때 값 · 어제 수급까지 · 목표가 내림 거르기 포함).
       그 전에는 일봉 A그룹(study/a_group.json, 같은 '어제 수급까지' 셈)의 목록.
@@ -369,8 +370,14 @@ def near_lists():
     today, _, _ = daily_live()
     group = today_a_group() or {}
     g_day = str(group.get("date") or "")
-    if plan and plan.get("near") is not None:
-        hourly, h_basis = plan["near"], f'{as_day(plan["base"])} 마감 · 그날 수급까지 → 다음 거래일 장중'
+    # 장중에는 1시간봉 실행이 매시 지금 값으로 다시 센 것(near-now.json)을 먼저 씀(사용자 요청 2026-10-02 "매시간 판정 · 판정 시각")
+    now_near = repo_json("hourly-live/near-now.json") or {}
+    if now_near.get("near") is not None and str(now_near.get("date") or "") > str((plan or {}).get("base") or ""):
+        hourly = now_near["near"]
+        h_basis = f'{now_near.get("at")} 판정 · 그 시각 현재가 · 전날 수급까지 (장중 매시 다시 셈)'
+    elif plan and plan.get("near") is not None:
+        made = f' · {plan["made"]} 판정' if plan.get("made") else ""
+        hourly, h_basis = plan["near"], f'{as_day(plan["base"])} 마감 · 그날 수급까지{made} → 다음 거래일 장중'
     else:
         hourly, h_basis = None, '첫 계산은 오늘 밤 일봉 수집이 끝난 뒤(새벽 3시쯤)에 나옵니다'
     if today and today.get("near") is not None and str(today.get("date") or "") >= g_day:
