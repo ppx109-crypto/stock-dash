@@ -25,7 +25,7 @@ import broker_kis
 FULL = os.getenv("INVESTOR_SET", "").strip() == "full"
 OUT = Path("investor-full" if FULL else "investor-data")
 UNIVERSE = Path("study") / "flow_universe.json"
-START = os.getenv("INVESTOR_START", "19900101" if FULL else "20170101")
+START = os.getenv("INVESTOR_START", "20060101" if FULL else "20170101")   # 찔러보기(2026-10-02): 2008-06은 값 있음 · 2005-06 앞은 칸만 있고 빔
 COLS = (("date",) + tuple(n for n, _ in broker_kis.KIS.INVESTORS_ALL) + ("종가",) if FULL
         else ("date", "개인", "외국인", "기관", "투신", "연기금", "사모", "종가"))
 MAX_ASKS = 400 if FULL else 200   # 한 종목에 물을 수 있는 가장 많은 횟수(서른 거래일씩). 막힌 응답이 끝없이 돌지 않게.
