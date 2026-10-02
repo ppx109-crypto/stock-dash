@@ -7,7 +7,7 @@ from predash.kis import KIS, BrokerError
 
 CLASSROOM_KEYS = {'snapshot','reports','report_errors','home_price','home_price_reason','market_lamps','health_upper','health_lower','decision_pick'}
 CLASSROOM_PREFIXES = ('classroom_','class_','_kis_client','demo_','paper_','watch_','decision_','habit_','holding_evidence_',
-                      'holding_relative_','industry_note_','relative_index_')
+                      'holding_relative_','industry_note_','relative_index_','api_input_')
 
 
 def is_classroom_key(key):
