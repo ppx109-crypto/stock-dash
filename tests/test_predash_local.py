@@ -20,6 +20,16 @@ class LocalFallback(unittest.TestCase):
         price, day, name = L.last_price('005930')
         self.assertTrue(price > 0 and len(day) == 8 and name)
 
+    def test_stale_price_data_is_extended_by_investor_closes(self):
+        rows = L.price_rows('003550', date(2026, 10, 2))   # LG: price-data는 09-22에서 멈춤
+        self.assertGreaterEqual(rows[-1]['basDt'], '20260930')
+
+    def test_metrics_from_repo_quarter_data(self):
+        m = L.metrics('005930', date(2026, 10, 2))
+        self.assertTrue(m and m['revenue'] > 0 and m['quarter'] in (1, 2, 3, 4))
+        self.assertIn('standalone', m)
+        self.assertIsNone(L.metrics('005930', date(2015, 1, 2)))
+
     def test_bad_code(self):
         self.assertEqual(L.price_rows('ABC', date(2026, 10, 2)), [])
         self.assertIsNone(L.last_price('999999'))
