@@ -32,6 +32,8 @@ KST = ZoneInfo("Asia/Seoul")
 HOME = Path("hourly-live")
 PLAN = HOME / "plan.json"
 STATE = HOME / "state.json"
+NEAR_NOW = HOME / "near-now.json"    # 장중 매시 다시 센 '조건이 1개만 모자란 종목'(대시보드 · 사용자 요청 2026-10-02)
+NEAR_POOL = 150                      # 전날 시총 150위까지 지금 값을 받아 셈(100위 안 판정 · 시장 폭에 넉넉히 · daily_live와 같음)
 ALERTS = HOME / "alerts.json"
 SLOTS = 10
 EMA_A = (5, 20, 60, 120, 180)
@@ -534,6 +536,65 @@ def run_live(now=None):
     return 0
 
 
+def refresh_near(now=None, client=None):
+    """장중 매시: 지금 값(그 시각 현재가를 오늘 종가로 보고) · 전날 수급까지로 1시간봉 후보 조건을 다시 세어
+    '조건이 1개만 모자란 종목'과 '지금 값이면 충족하는 종목'을 판정 시각과 함께 near-now.json에 남김(사용자 요청 2026-10-02
+    "매시간 판정하고 판정된 시각 남겨줘"). 매매 판단(plan.json · 저녁에 정한 후보)은 바꾸지 않음 — 보기용."""
+    import broker_kis
+    import caps
+    import final_group
+    import study
+    now = now or datetime.now(KST)
+    day, hhmm = now.strftime("%Y%m%d"), now.strftime("%H%M")
+    if now.weekday() >= 5 or not ("0900" <= hhmm <= "1600"):
+        print("장중이 아니라 충족 미달 다시 세기는 넘어갑니다.")
+        return 0
+    client = client or broker_kis.market()
+    import collect_kis_intraday as I
+    if not I.market_open_today(client, day):
+        print(f"{day}은 장이 열리지 않은 날로 보여 충족 미달 다시 세기는 넘어갑니다.")
+        return 0
+    prices = study.load_prices()
+    last = max((v["rows"][-1][0] for v in prices.values() if v.get("rows") and v["rows"][-1][0] < day), default=None)
+    if not last:
+        print("어제 일봉이 없어 충족 미달 다시 세기는 넘어갑니다.")
+        return 1
+    yest = [{"code": c, "date": v["rows"][-1][0], "price": v["rows"][-1][1]} for c, v in prices.items()
+            if v.get("rows") and v["rows"][-1][0] == last]
+    caps.tag(yest, NEAR_POOL)
+    pool = sorted(r["code"] for r in yest if (r.get(caps.RANK) or 999) <= NEAR_POOL)
+    quotes = {}
+    for code in pool:
+        try:
+            quotes[code] = client.quote(code)
+        except broker_kis.BrokerError:
+            continue
+    if len(quotes) < len(pool) * 0.8:
+        print(f"지금 값을 너무 적게 받아({len(quotes)}/{len(pool)}) 충족 미달 다시 세기는 넘어갑니다.")
+        return 1
+    live = {c: {"name": prices[c].get("name"), "rows": prices[c]["rows"] + [(day, quotes[c]["price"])]}
+            for c in quotes if c in prices and (quotes[c].get("price") or 0) > 0}
+    calm = (_load(Path("study") / "a_group.json", {}) or {}).get("calm_edge")
+    found = final_group.compute(live, calm=calm)
+    if found.get("date") != day:
+        print("지금 값으로 셈하지 못했습니다.")
+        return 1
+    body = {"date": day, "at": now.strftime("%Y-%m-%d %H:%M"), "breadth": found.get("breadth"),
+            "picks": [{"code": p["code"], "name": p.get("name"), "갈래": p.get("갈래")} for p in found.get("picks", [])],
+            "near": [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")}
+                     for b in found.get("b_group", []) if b.get("모자란 수") == 1]}
+    _save(NEAR_NOW, body)
+    print(f"충족 미달 다시 셈 · {body['at']} · 1개 모자람 {len(body['near'])} · 지금 값이면 충족 {len(body['picks'])}")
+    return 0
+
+
 if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "live"
-    sys.exit(make_plan() if what == "plan" else run_live())
+    if what == "plan":
+        sys.exit(make_plan())
+    code = run_live()
+    try:                       # 보기용이라 실패해도 매매 실행 결과는 그대로
+        refresh_near()
+    except Exception as e:
+        print("충족 미달 다시 세기 실패 ·", type(e).__name__)
+    sys.exit(code)
