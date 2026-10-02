@@ -94,3 +94,28 @@ class Patience(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FullSet(unittest.TestCase):
+    def test_full_set_asks_all_columns_into_its_own_folder(self):
+        import importlib
+        import os
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"INVESTOR_SET": "full"}):
+            F = importlib.reload(C)
+        try:
+            self.assertEqual(F.OUT, Path("investor-full"))
+            self.assertIn("금융투자", F.COLS)
+            self.assertIn("기타법인", F.COLS)
+            seen = []
+
+            class Full:
+                def investor_daily(self, code, day, full=False):
+                    seen.append(full)
+                    return []
+            F._ask(Full(), "005930", "20260925")
+            self.assertEqual(seen, [True])
+        finally:
+            with mock.patch.dict(os.environ, {"INVESTOR_SET": ""}):
+                importlib.reload(C)
+        self.assertEqual(C.OUT, Path("investor-data"), "기본은 지금 그대로")

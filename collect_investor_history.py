@@ -20,11 +20,15 @@ from zoneinfo import ZoneInfo
 
 import broker_kis
 
-OUT = Path("investor-data")
+# INVESTOR_SET=full: 증권사가 주는 모든 투자자 칸(금융투자 · 은행 · 보험 · 기타법인 · 외국인 등록/비등록 …)을
+# 가장 옛날까지 investor-full/에 따로 모읍니다(수급 갈래 연구 · 사용자 2026-10-02). 기본은 지금 그대로입니다.
+FULL = os.getenv("INVESTOR_SET", "").strip() == "full"
+OUT = Path("investor-full" if FULL else "investor-data")
 UNIVERSE = Path("study") / "flow_universe.json"
-START = os.getenv("INVESTOR_START", "20170101")
-COLS = ("date", "개인", "외국인", "기관", "투신", "연기금", "사모", "종가")
-MAX_ASKS = 200          # 한 종목에 물을 수 있는 가장 많은 횟수(서른 해치). 막힌 응답이 끝없이 돌지 않게.
+START = os.getenv("INVESTOR_START", "19900101" if FULL else "20170101")
+COLS = (("date",) + tuple(n for n, _ in broker_kis.KIS.INVESTORS_ALL) + ("종가",) if FULL
+        else ("date", "개인", "외국인", "기관", "투신", "연기금", "사모", "종가"))
+MAX_ASKS = 400 if FULL else 200   # 한 종목에 물을 수 있는 가장 많은 횟수(서른 거래일씩). 막힌 응답이 끝없이 돌지 않게.
 
 
 def codes_to_collect():
@@ -66,6 +70,10 @@ def as_row(got):
     return [got["date"]] + [got.get(name) for name in COLS[1:]]
 
 
+def _ask(client, code, day):
+    return client.investor_daily(code, day, full=True) if FULL else client.investor_daily(code, day)
+
+
 def _before(day):
     d = date(int(day[:4]), int(day[4:6]), int(day[6:8])) - timedelta(days=1)
     return d.strftime("%Y%m%d")
@@ -81,7 +89,7 @@ def fill(client, code, today):
         cursor = today
         newest = max(have)
         while cursor > newest and asks < MAX_ASKS:
-            got = client.investor_daily(code, cursor)
+            got = _ask(client, code, cursor)
             asks += 1
             fresh = [g for g in got if g["date"] not in have]
             for g in fresh:
@@ -93,7 +101,7 @@ def fill(client, code, today):
     # 2) 뒤쪽: 아직 처음까지 닿지 않았으면 가장 옛날 날의 하루 앞을 물어 거슬러 갑니다.
     cursor = _before(min(have)) if have else today
     while not body.get("처음까지") and cursor >= START and asks < MAX_ASKS:
-        got = client.investor_daily(code, cursor)
+        got = _ask(client, code, cursor)
         asks += 1
         fresh = [g for g in got if g["date"] not in have]
         for g in fresh:
