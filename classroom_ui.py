@@ -19,6 +19,7 @@ if not hasattr(kis_module.KIS,'market_flow'):
     kis_module=importlib.reload(kis_module)
 KIS, BrokerError = kis_module.KIS, kis_module.BrokerError
 from predash.classroom import account_settings, connection_form, auto_connect
+import predash.local as local
 from predash.macro import fetch_vix,relative,benchmark,MacroError
 from predash.analysis import review
 from predash.health import status as holding_status
@@ -163,7 +164,16 @@ def watch_fetch(code,provider,today):
     result={'code':code,'name':st.session_state.get('watch_names',{}).get(code,code),'lamp':None,'metrics':None,'flow':None,'krx':None,'report':None,'errors':{},
             'fetched':datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
     try:
-        history=provider.price_history(code,today)
+        history=[]
+        if os.getenv('DATA_GO_KR_SERVICE_KEY','').strip():
+            try:history=[r for r in provider.price_history(code,today) if str(r.get('srtnCd','')).removeprefix('A').zfill(6)==code]
+            except DataError as exc:result['errors']['price_official']=str(exc)
+        if len(history)<20:
+            # 공공데이터 시세가 없거나 모자라면 저장소에 쌓아 둔 한투 일봉으로(전날 장 마감까지)
+            local_rows=local.price_rows(code,today)
+            if len(local_rows)>len(history):
+                history=local_rows;result['price_source']=local.SOURCE
+        if not history:raise DataError('일별 시세가 없습니다(공공데이터 · 저장소 모두).')
         result['lamp']=stock_lamp(history,code,today)
         result['price_chart']=price_trend(history,code,today)
         result['benchmark']=benchmark(history,code)
@@ -188,6 +198,10 @@ def watch_fetch(code,provider,today):
     if all(account_settings()[k] for k in ('key','secret','cano','product')):
         try:result['flow']=kis_client().investor_flow(code)
         except BrokerError as exc:result['errors']['flow']=str(exc)
+    if not result['flow']:
+        result['flow']=local.investor_flow(code,today)      # 저장소 투자자 수급(전날까지)
+        if result['flow']:result['errors'].pop('flow',None);result['flow_source']='저장소 투자자 수급(전날까지)'
+    if result['name']==code:result['name']=local.name_of(code)
     if os.getenv('KRX_AUTH_KEY','').strip():
         try:result['krx']=daily_activity(os.getenv('KRX_AUTH_KEY','').strip(),code,today)
         except KRXError as exc:result['errors']['krx']=str(exc)
@@ -197,11 +211,23 @@ def watch_fetch(code,provider,today):
             cache='relative_index_'+market_code
             cached=st.session_state.get(cache,{})
             if cached.get('date')!=result['fetched']:
-                cached={'date':result['fetched'],'rows':kis_client().index_bars(market_code)}
+                try:rows=kis_client().index_bars(market_code)
+                except (BrokerError,MacroError,KeyError):rows=local.index_rows(market_code)   # 연결 전 · 거절이면 저장소 지수
+                cached={'date':result['fetched'],'rows':rows}
                 st.session_state[cache]=cached
             result['relative']=relative(result['price_rows'],cached['rows'],code,today)
         except (BrokerError,MacroError) as exc:result['errors']['relative']=str(exc)
     return result
+
+
+def practice_price(code,today):
+    """매매 연습 체결 기준 종가: 공공데이터포털 → 안 되면 저장소 한투 종가(전날 장 마감)."""
+    if os.getenv('DATA_GO_KR_SERVICE_KEY','').strip():
+        try:return Official().price(code,today)
+        except DataError:pass
+    got=local.last_price(code)
+    if not got:raise DataError('이 종목의 종가를 찾지 못했습니다(공공데이터 · 저장소 모두).')
+    return got
 
 
 def open_research(code):
@@ -413,20 +439,20 @@ def render_classroom(seed_codes=()):
             else:picked=''
             code=st.text_input('종목코드 6자리',value=picked,key=f'paper_code_{picked}',max_chars=6).strip()
             configured=bool(os.getenv('DATA_GO_KR_SERVICE_KEY','').strip())
-            if st.button('체결 기준 종가 조회',disabled=not configured):
+            if st.button('체결 기준 종가 조회'):
                 try:
                     if not re.fullmatch(r'[0-9]{6}',code):raise DataError('숫자 6자리 종목코드를 입력하세요.')
-                    with st.spinner('공식 종가를 조회합니다…'):
-                        price,day,name=Official().price(code,today)
+                    with st.spinner('종가를 조회합니다…'):
+                        price,day,name=practice_price(code,today)
                     quote={'price':int(price),'date':datetime.strptime(day,'%Y%m%d').date().isoformat(),'name':name}
                     quotes[code]=quote;st.session_state.paper_quotes=quotes
                     st.rerun()
                 except (DataError,ValueError) as exc:st.error(str(exc))
-            if not configured:st.info('공식 종가 조회에는 DATA_GO_KR_SERVICE_KEY 설정이 필요합니다.')
+            if not configured:st.caption('공공데이터포털 키가 없어 저장소 한투 종가(전날 장 마감)로 조회합니다.')
             quote=paper_price(code)
             if quote:
                 st.write(f"{quote['name']} · 종가 {quote['price']:,}원")
-                st.caption(f"기준일 {quote['date']} · 공공데이터포털 · 장중 체결가가 아닙니다.")
+                st.caption(f"기준일 {quote['date']} · 일별 종가 · 장중 체결가가 아닙니다.")
                 with st.form('paper_trade'):
                     side=st.radio('모의 매매 구분',['매수','매도'],horizontal=True)
                     quantity=st.number_input('수량 (주)',min_value=1,max_value=1_000_000,value=1,step=1)
@@ -443,12 +469,12 @@ def render_classroom(seed_codes=()):
             elif code:st.caption('체결 기준 종가를 조회하세요. 기준일이 5일을 초과한 가격은 사용하지 않습니다.')
         with portfolio:
             st.subheader('모의 보유종목')
-            if ledger['positions'] and st.button('보유종목 평가 종가 새로고침',disabled=not bool(os.getenv('DATA_GO_KR_SERVICE_KEY','').strip())):
-                provider=Official();failures=[]
+            if ledger['positions'] and st.button('보유종목 평가 종가 새로고침'):
+                failures=[]
                 with st.spinner('모의 보유종목 종가를 조회합니다…'):
                     for position in ledger['positions']:
                         try:
-                            price,day,name=provider.price(position['code'],today)
+                            price,day,name=practice_price(position['code'],today)
                             quotes[position['code']]={'price':int(price),'date':datetime.strptime(day,'%Y%m%d').date().isoformat(),'name':name}
                         except (DataError,ValueError):failures.append(position['code'])
                 st.session_state.paper_quotes=quotes
@@ -472,14 +498,18 @@ def render_classroom(seed_codes=()):
     elif page=='관심종목':
         st.title('관심종목 점검')
         st.html('<div class="pd-intro">저장한 종목의 추세·실적·수급을 한 화면에서 점검하세요.</div>')
-        st.caption('일별 종가: 공공데이터포털 · 동기 실적: OpenDART · 수급: KIS 연결 시 · 주문 기능 없음')
+        st.caption('일별 종가: 공공데이터포털(없으면 저장소 한투 일봉) · 동기 실적: OpenDART · 수급: KIS(없으면 저장소 수급) · 주문 기능 없음')
         if not os.getenv('DATA_GO_KR_SERVICE_KEY','').strip():
-            st.info('연결 설정의 Streamlit Secrets에 DATA_GO_KR_SERVICE_KEY를 입력하면 관심종목 조회가 열립니다.')
-            st.stop()
+            st.caption('공공데이터포털 키가 없어 일별 종가는 저장소 한투 일봉(전날 장 마감까지)으로 보여 줍니다.')
         # Only public ticker codes are put in the bookmark URL; no account or financial payload.
         raw=st.query_params.get('watch','')
         codes=clean_codes(raw.split(',') if isinstance(raw,str) else [])
-        if 'watch_codes' not in st.session_state:st.session_state.watch_codes=codes or clean_codes(list(seed_codes))   # 처음엔 PlanX 내 종목으로 채움
+        if not st.session_state.get('watch_codes') and not codes and not st.session_state.get('classroom_watch_seeded'):
+            # 처음엔 PlanX 내 종목 + 오늘의 후보(1일봉 · 1시간봉 · 15분봉 후보와 1개 모자란 종목)로 채움
+            st.session_state.classroom_watch_seeded=True
+            codes=clean_codes(list(seed_codes)+local.planx_codes())
+            if codes:st.query_params['watch']=','.join(codes)
+        if 'watch_codes' not in st.session_state:st.session_state.watch_codes=codes
         elif codes and codes!=st.session_state.watch_codes:st.session_state.watch_codes=codes
         codes=st.session_state.watch_codes
         if 'watch_names' not in st.session_state:st.session_state.watch_names={}
@@ -499,7 +529,9 @@ def render_classroom(seed_codes=()):
                 if query.strip():
                     try:
                         with st.spinner('공식 종목 목록을 조회합니다…'):
-                            st.session_state.watch_candidates=Official().search(query.strip())[:20]
+                            try:found=Official().search(query.strip())[:20]
+                            except DataError:found=[]
+                            st.session_state.watch_candidates=found or local.search(query.strip())[:20]
                     except DataError as exc:st.error(str(exc))
                 else:st.warning('종목명 또는 숫자 6자리 종목코드를 입력하세요.')
             candidates=st.session_state.get('watch_candidates',[])
@@ -621,20 +653,18 @@ def render_classroom(seed_codes=()):
         cache_key='decision_'+code+'_'+market_name
         if refresh:
             if not re.fullmatch(r'[0-9]{6}',code):st.warning('숫자 6자리 종목코드를 입력하세요.')
-            elif not os.getenv('DATA_GO_KR_SERVICE_KEY','').strip():st.warning('공공데이터포털 시세 키를 연결 설정에서 확인하세요.')
             else:
                 today=datetime.now(ZoneInfo('Asia/Seoul')).date();provider=Official()
                 with st.spinner('공식 시세·실적·수급과 비교 시장을 조회합니다…'):
                     item=watch_fetch(code,provider,today);chart=[];chart_error=''
                     try:
-                        settings=account_settings()
-                        if not all(settings[k] for k in ('key','secret','cano','product')):
-                            raise EvidenceError('시장 비교 차트는 KIS 시세 연결이 필요합니다.')
                         actual=item.get('benchmark')
                         if actual and actual!=market_name:
                             raise EvidenceError('종목 상장시장은 '+actual+'입니다. 비교 시장을 변경하세요.')
-                        chart=comparison(provider.price_history(code,today),
-                            kis_client().index_bars('0001' if market_name=='코스피' else '1001'),code,today)
+                        market_code='0001' if market_name=='코스피' else '1001'
+                        try:index=kis_client().index_bars(market_code)
+                        except (BrokerError,KeyError):index=local.index_rows(market_code)   # 연결 전 · 거절이면 저장소 지수
+                        chart=comparison(item.get('price_rows') or local.price_rows(code,today),index,code,today)
                     except (BrokerError,DataError,EvidenceError) as exc:chart_error=str(exc)
                 st.session_state[cache_key]={'item':item,'chart':chart,'chart_error':chart_error}
                 if code in saved_codes:
@@ -905,13 +935,20 @@ def render_classroom(seed_codes=()):
                     for name,code in (('코스피','0001'),('코스닥','1001')):
                         try: lamps[name]=index_lamp(client.index_bars(code),name,
                             datetime.now(ZoneInfo('Asia/Seoul')).date())
-                        except (BrokerError,MarketDataError) as exc:failures[name]=str(exc)
+                        except (BrokerError,MarketDataError) as exc:
+                            try:lamps[name]=index_lamp(local.index_rows(code),name,datetime.now(ZoneInfo('Asia/Seoul')).date());lamps[name]['source']='저장소 지수'
+                            except MarketDataError:failures[name]=str(exc)
                         try:flows[name]=client.market_flow(code)
                         except BrokerError as exc:flow_errors[name]=str(exc)
                     st.session_state.market_lamps={'lamps':lamps,'failures':failures,'flows':flows,'flow_errors':flow_errors,'version':2,
                         'fetched':datetime.now(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')}
                 except BrokerError as exc:
-                    st.session_state.market_lamps={'lamps':{},'failures':{'전체':str(exc)},'flows':{},'flow_errors':{},'version':2,'fetched':'조회 실패'}
+                    lamps={};failures={}
+                    for name,code in (('코스피','0001'),('코스닥','1001')):
+                        try:lamps[name]=index_lamp(local.index_rows(code),name,datetime.now(ZoneInfo('Asia/Seoul')).date())
+                        except MarketDataError:failures[name]=str(exc)
+                    st.session_state.market_lamps={'lamps':lamps,'failures':failures or {'전체':str(exc)},'flows':{},'flow_errors':{'전체':str(exc)},'version':2,
+                        'fetched':'저장소 지수(증권사 조회 실패)'}
             market=st.session_state.market_lamps
             pieces=[]
             for name in ('코스피','코스닥'):

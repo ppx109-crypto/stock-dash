@@ -4,12 +4,14 @@ python collect_dart_extra.py events|holders|quarter
 - events  → dart-events/{code}.json : 주요사항보고서(2017~) — 자기주식 취득·처분·신탁, 유상·무상·유무상증자, 전환사채 ·
             신주인수권부사채 · 교환사채, 감자, 타법인주식·영업·유형자산 양수도, 합병 · 분할, 부도 · 영업정지 · 회생, 소송.
 - holders → holder-data/{code}.json : 임원·주요주주 소유보고 · 5% 대량보유 보고. (DART가 최근 약 2년치만 줌 — 과거 검증엔 못 씀)
+- cashflow → cash-data/{code}.json: 전체 재무제표에서 현금흐름 · 재고 · 매출채권 · 설비투자 · 매출 · 영업이익 · 순이익 · 자산(2016~, E9).
 - quarter → quarter-data/{code}.json: 분기마다(1분기 · 반기 · 3분기 · 사업보고서) 주요계정 — 매출 · 영업이익 · 순이익 · 자산 ·
             부채 · 자본(연결 먼저, 없으면 별도)과 접수번호(= 공시 날짜). 2016~.
 대상은 study/flow_universe.json(+ 그날 A·B그룹) — 작업(DART extra history)에서는 1시간봉 종목(hourly-data/universe.json)도 더함. 받은 해·보고서는 다시 묻지 않고 올해 것만 새로 봅니다.
 키는 환경변수 DART_CRTFC_KEY로만 받고, 응답 본문과 키는 찍지 않습니다. 하루 호출 한도(2만)를 넘지 않게 멈춥니다.
 """
 import json
+import re
 import os
 import sys
 import time
@@ -164,11 +166,73 @@ def quarter(d, corp, code, today):
     return sum(1 for v in body["rows"].values() if v)
 
 
+# ── 현금흐름 · 이익의 질(E9, 2026-10-02): 전체 재무제표(fnlttSinglAcntAll)에서 몇 줄만 ──
+# 계정은 표준 이름(account_id)으로 먼저 찾고, 없으면 계정 이름으로 찾습니다.
+# 현금흐름표의 값은 그해 1분기부터 그 분기까지 쌓은 값(누적)이고, 손익은 '석 달'과 '누적'을 둘 다 둡니다.
+CASH_ITEMS = {
+    "영업현금": ("CF", ("ifrs-full_CashFlowsFromUsedInOperatingActivities",), ("영업활동현금흐름", "영업활동으로인한현금흐름", "영업활동으로인한순현금흐름")),
+    "설비투자": ("CF", ("ifrs-full_PurchaseOfPropertyPlantAndEquipment",), ("유형자산의취득",)),
+    "재고": ("BS", ("ifrs-full_Inventories",), ("재고자산",)),
+    "매출채권": ("BS", ("dart_ShortTermTradeReceivable", "ifrs-full_CurrentTradeReceivables", "ifrs-full_TradeAndOtherCurrentReceivables"),
+                ("매출채권", "매출채권및기타채권", "매출채권및기타유동채권")),
+    "자산": ("BS", ("ifrs-full_Assets",), ("자산총계",)),
+    "매출": ("IS", ("ifrs-full_Revenue",), ("매출액", "수익(매출액)", "영업수익", "매출")),
+    "영업이익": ("IS", ("dart_OperatingIncomeLoss",), ("영업이익", "영업이익(손실)")),
+    "순이익": ("IS", ("ifrs-full_ProfitLoss",), ("당기순이익", "당기순이익(손실)", "분기순이익", "반기순이익")),
+}
+
+
+def cash_compact(rows, basis):
+    """전체 재무제표 줄들 → 필요한 몇 칸. 손익(IS · CIS)은 석 달 값과 누적 값, 나머지는 그 값과 작년 값."""
+    if not rows:
+        return None
+    got = {"기준": basis, "접수번호": rows[0].get("rcept_no")}
+    for name, (sheet, ids, names) in CASH_ITEMS.items():
+        sheets = ("IS", "CIS") if sheet == "IS" else (sheet,)
+        pool = [r for r in rows if r.get("sj_div") in sheets]
+        hit = next((r for r in pool if r.get("account_id") in ids), None)
+        if hit is None:
+            flat = lambda x: re.sub(r"\s+", "", str(x or ""))
+            hit = next((r for r in pool if flat(r.get("account_nm")) in names), None)
+        if hit is None:
+            continue
+        got[name] = hit.get("thstrm_amount")
+        got[name + "_작년"] = hit.get("frmtrm_amount")
+        if sheet == "IS":
+            got[name + "_누적"] = hit.get("thstrm_add_amount") or hit.get("thstrm_amount")
+            got[name + "_작년누적"] = hit.get("frmtrm_add_amount") or hit.get("frmtrm_amount")
+    return got
+
+
+def cashflow(d, corp, code, today):
+    path = Path("cash-data") / f"{code}.json"
+    body = load(path) or {"code": code, "rows": {}}
+    this_year = int(today[:4])
+    for year in range(2016, this_year + 1):
+        for rc, label in REPORTS.items():
+            key = f"{year}-{label}"
+            if body["rows"].get(key) or (key in body["rows"] and year < this_year - 1):
+                continue
+            got = None
+            for basis in ("CFS", "OFS"):
+                rows = d.ask("fnlttSinglAcntAll.json", corp_code=corp, bsns_year=str(year), reprt_code=rc, fs_div=basis)
+                if rows:
+                    got = cash_compact(rows, basis)
+                    break
+                if rows is None:
+                    break
+            if got is None and rows is None:
+                continue
+            body["rows"][key] = got
+    save(path, body)
+    return sum(1 for v in body["rows"].values() if v)
+
+
 def main():
     kind = sys.argv[1] if len(sys.argv) > 1 else ""
-    jobs = {"events": events, "holders": holders, "quarter": quarter}
+    jobs = {"events": events, "holders": holders, "quarter": quarter, "cashflow": cashflow}
     if kind not in jobs:
-        print("events · holders · quarter 가운데 하나를 주세요.")
+        print("events · holders · quarter · cashflow 가운데 하나를 주세요.")
         return 1
     d = Dart()
     if not d.key:
