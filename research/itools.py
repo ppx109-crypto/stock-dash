@@ -133,3 +133,23 @@ def line(tag, trades, daily, periods=PERIODS):
         out.append(f"| {name} {j['n']:3d}건 이김 {j['win']:4.1f} 평균 {j['avg']:+5.2f} 연 {j['cagr']:+5.1f} 골 {j['dd']:6.1f} 들고 {j['held']:4.1f}%")
         worst = j["cagr"] if worst is None else min(worst, j["cagr"])
     return " ".join(out), worst
+
+
+def px(code):
+    """아무 상장지수펀드나 날짜판에 맞춘 종가(etf-data에 있어야 함 · 없는 날 nan). 한 번 읽으면 PX에 남김."""
+    if code not in PX:
+        got = _closes(code)
+        PX[code] = np.array([got.get(d, np.nan) for d in DAYS])
+    return PX[code]
+
+
+def stats(daily, lo, hi):
+    """날마다 계좌 수익률 → 그 기간 연 수익 · 골 · 가장 나쁜 달."""
+    idx = [k for k, d in enumerate(DAYS) if lo <= d < hi]
+    if not idx:
+        return None
+    a, b = idx[0], idx[-1]
+    eq = np.cumprod(1 + daily[a:b + 1])
+    dd = float((eq / np.maximum.accumulate(eq) - 1).min()) * 100
+    cagr = (eq[-1] ** (250 / (b - a + 1)) - 1) * 100
+    return cagr, dd
