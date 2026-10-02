@@ -299,7 +299,7 @@ if latest:
 if st.session_state.get("force_nav"):
     st.session_state.nav_choice = st.session_state.pop("force_nav")
 
-NAV_ITEMS = ["오늘의 투자판단", "확률 검증", "계좌 연결", "교육자료", "설정"]
+NAV_ITEMS = ["오늘의 투자판단", "확률 검증", "계좌 연결", "교육자료", "PreDash 교실", "설정"]
 legacy = {"내 종목":"오늘의 투자판단", "통합 분석":"오늘의 투자판단", "홈":"오늘의 투자판단", "AI 인사이트":"오늘의 투자판단", "관심 종목":"오늘의 투자판단", "포트폴리오":"계좌 연결"}
 current = st.session_state.get("nav_choice", "오늘의 투자판단")
 if current not in NAV_ITEMS:
@@ -795,6 +795,10 @@ elif nav == "계좌 연결":
     render_portfolio(store, sample_mode)
 elif nav == "교육자료":
     render_education()
+elif nav == "PreDash 교실":
+    # 수강생 실습 화면(planxs-ai/PreDash-Classroom). 이 메뉴를 열 때만 불러옵니다.
+    from classroom_ui import render_classroom
+    render_classroom()
 else:
     st.header("설정과 추가 도구")
     st.caption("계좌 연결 없이도 내 종목을 추가하고 조사 결과를 확인할 수 있습니다.")
