@@ -1,0 +1,42 @@
+name: Reconcile
+# 장 마감 뒤 견줌(사용자 2026-10-02): 그날 한투 15분봉(1분봉을 묶은 것)으로 1시간봉 · 1일봉을 만들어 같은 규칙을 완성 봉으로 다시 돌리고,
+# 운영 · 모의투자가 실제로 한 것과 견줍니다(reconcile.py). 15분봉 수집 · 일봉 수집(A그룹) 어느 쪽이 끝나도 돌고, 둘 다 들어온 날만 셉니다.
+# 주문은 하지 않습니다(읽기 · 셈만). 결과는 reconcile/에 남기고 디스코드로 짧게 알립니다.
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["A group", "KIS 15-minute bars"]
+    types: [completed]
+permissions:
+  contents: write
+concurrency:
+  group: reconcile
+  cancel-in-progress: false
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy requests
+      - run: python -m unittest tests.test_reconcile -v
+      - name: Reconcile and save
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          status=0; python reconcile.py || status=$?
+          mkdir -p reconcile
+          git add -A reconcile
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Reconcile backtest vs paper"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          exit $status
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

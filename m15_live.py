@@ -32,6 +32,7 @@ UP, MKT = 0.02, -0.01
 HOLD_TREND, STALE_BARS = 240, 28
 COST = 0.30
 NAME = "15분봉 매매"
+ICON = {"매수": "🟢", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "자리 바꾸기": "🔁", "못 삼": "⚫"}
 
 
 def close_at(bar):
@@ -280,6 +281,14 @@ def run_live(now=None):
     todo = [day + b for b in done_bars if day + b > state.get("last_bar", "")]
     try:
         client = broker_kis.market()
+        for attempt in range(3):           # 접근토큰은 1분에 한 번 — 1시간봉 · 수집과 겹치면 잠깐 기다렸다 다시(daily_live와 같음)
+            try:
+                client.authorize()
+                break
+            except broker_kis.BrokerError as e:
+                print("증권사 연결 다시 시도 ·", e)
+                import time
+                time.sleep(65)
         import collect_kis_intraday as I
         if not I.market_open_today(client, day):
             print(f"{day}은 장이 열리지 않은 날로 보여 넘어갑니다.")
@@ -341,7 +350,7 @@ def run_live(now=None):
     at = now.strftime("%Y-%m-%d %H:%M")
     alerts += [{"at": at, "kind": k, "text": t} for k, t, _ in items]
     _save(ALERTS, alerts[-500:])
-    lines = [f"⏱️ **{NAME} · {day[4:6]}-{day[6:]} {now.strftime('%H:%M')}**"] + [f"{A.ICON.get(k, '•') if hasattr(A, 'ICON') else '•'} {k} · {t}" for k, t, _ in items] + paper
+    lines = [f"⏱️ **{NAME} · {day[4:6]}-{day[6:]} {now.strftime('%H:%M')}**"] + [f"{ICON.get(k, '•')} {k} · {t}" for k, t, _ in items] + paper
     if items or paper:
         A.send(lines + [A.NOTE_PAPER])
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")
