@@ -7,12 +7,14 @@
 python collect_kis_m15.py [종목코드,...]   · 환경변수 KIS_HOURLY_MAX_CALLS(한 번에 부를 최대 수, 기본 40000)
 """
 import json
+import os
 import sys
 from pathlib import Path
 
 import collect_kis_hourly as K
 
-HOME = Path("m15-kis")
+# M15_OUT: 연구용 상장지수펀드(etf-m15)처럼 운영 15분봉과 폴더를 나눌 때(운영 엔진이 읽는 m15-kis에 섞이지 않게)
+HOME = Path(os.getenv("M15_OUT", "m15-kis"))
 SIZE = 15
 
 
