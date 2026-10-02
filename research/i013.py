@@ -18,7 +18,8 @@ import itools as I
 SP = "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/"
 D, n = I.DAYS, len(I.DAYS)
 used, d1 = np.zeros(n), np.zeros(n)
-for code, buy, sell, pnl, slots in json.load(open(SP + "x008_d1.json")):
+LEDGER = os.environ.get("I_LEDGER", "x008_d1.json")   # 1시간봉: x008_h1y3.json(야후 3년)
+for code, buy, sell, pnl, slots in json.load(open(SP + LEDGER)):
     a, b = np.searchsorted(D, buy), np.searchsorted(D, sell)
     used[a:b] += slots / 10
     if b < n:
