@@ -1,0 +1,59 @@
+name: DART cash flow (research)
+# 전체 재무제표에서 현금흐름 · 재고 · 매출채권 · 설비투자 · 매출 · 영업이익 · 순이익 · 자산을 분기마다 받습니다(E9 이익의 질 · 2016~).
+# 대상 = quarter-data에 있는 종목(분기 실적을 받는 종목). 받은 보고서는 다시 묻지 않아 날마다 이어 갑니다.
+# DART 하루 한도(2만)를 다른 작업과 나누려고 한도가 새로 차는 새벽(01:40 한국 시각)에 9천 번까지만 씁니다.
+on:
+  schedule:
+    - cron: '40 16 * * *'
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드 (쉼표 구분, 비우면 quarter-data 종목 전체)'
+        required: false
+        default: ''
+permissions:
+  contents: write
+concurrency:
+  group: dart-cashflow
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python -m unittest tests.test_dart_extra -v
+      - name: Collect, saving every 40 stocks
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python - <<'PY' > /tmp/batches.txt
+          import os, re
+          from pathlib import Path
+          picked = [c.strip() for c in os.getenv("PICKED_CODES", "").split(",") if c.strip()]
+          if not picked:
+              picked = sorted(p.stem for p in Path("quarter-data").glob("*.json"))
+          picked = [c for c in picked if re.fullmatch(r"[0-9]{6}", c)]
+          for k in range(0, len(picked), 40):
+              print(",".join(picked[k:k + 40]))
+          PY
+          while read -r batch; do
+            [ -z "$batch" ] && continue
+            status=0; INVESTOR_CODES="$batch" python collect_dart_extra.py cashflow || status=$?
+            mkdir -p cash-data
+            git add -A cash-data
+            if ! git diff --cached --quiet; then
+              git commit -q -m "Collect DART cash flow"
+              for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            fi
+            if [ "$status" = "2" ]; then echo '한도·거절로 멈춥니다. 내일 새벽에 이어 갑니다.'; exit 0; fi
+          done < /tmp/batches.txt
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          PICKED_CODES: ${{ inputs.codes || '' }}
+          DART_BUDGET: '9000'
+          DART_USED_FILE: /tmp/dart-used.txt
