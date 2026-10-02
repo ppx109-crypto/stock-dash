@@ -111,7 +111,7 @@ def step(state, plan, bars, bar_id, next_open, log, market=None):
             log(kind, f"{p['name']}({code}) · {fill_note}에 {n}칸 팔기 · {why}", {"code": code})
     seen = state.setdefault("seen", {})
     today_seen = set(seen.get(day, []))
-    sigs, how = [], {}
+    sigs, how, allsig = [], {}, []
     for code, c in cands.items():
         if code in today_seen:
             continue
@@ -127,6 +127,7 @@ def step(state, plan, bars, bar_id, next_open, log, market=None):
         if (dr is not None and dr > UP) or (market is not None and market < MKT):
             continue                      # 걸러진 신호는 그날 기회를 쓰지 않음(연구 entry3)
         today_seen.add(code)
+        allsig.append(code)
         if code not in pos_all:
             sigs.append(code)
             how[code] = "15분봉 EMA 정배열이 됨" if crossed else "10:45 봉까지 정배열 없음 → 11:00"
@@ -135,7 +136,8 @@ def step(state, plan, bars, bar_id, next_open, log, market=None):
         del seen[old]
     if not sigs:
         return
-    tiers = A.order_tiers({c: cands[c] for c in sigs})
+    # 순서 무리는 연구(q_rule.tiers)처럼 그 봉의 신호 모두(이미 든 종목 포함)로 나눔(재현 시험 x009에서 갈린 까닭)
+    tiers = A.order_tiers({c: cands[c] for c in allsig})
     sigs.sort(key=lambda c: (0 if cands[c].get("추세문") else 1, 0 if cands[c].get("3일연속") else 1, -tiers[c], A.tie(c, bar_id)))
     held = sum(p["칸"] for p in pos_all.values()) + sum(x["칸"] for x in pend if x["type"] == "buy")
     leaving = {x["code"]: x["칸"] for x in pend if x["type"] == "sell"}
