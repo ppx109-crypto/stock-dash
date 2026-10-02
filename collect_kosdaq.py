@@ -24,12 +24,13 @@ SINCE = os.getenv("KOSDAQ_SINCE", "20150101")
 
 
 def parse_master(raw: bytes):
-    """kosdaq_code.mst 줄 → [(코드, 이름)]. 줄 끝 222바이트는 뒷칸(첫 두 글자 = 증권 그룹: ST 주식)."""
+    """kosdaq_code.mst 줄 → [(코드, 이름)]. 줄바꿈을 뺀 줄 끝 221바이트가 뒷칸(첫 두 글자 = 증권 그룹: ST 주식).
+    (한투 예제는 줄바꿈까지 넣어 끝 222자를 자름 — 줄바꿈을 떼면 221.)"""
     found = []
     for line in raw.splitlines():
         if len(line) < 240:
             continue
-        head, tail = line[:-222], line[-222:]
+        head, tail = line[:-221], line[-221:]
         code = head[0:9].decode("cp949", "ignore").strip()
         name = head[21:].decode("cp949", "ignore").strip()
         group = tail[0:2].decode("cp949", "ignore").strip()
@@ -45,6 +46,8 @@ def make_list():
         raw = zf.read(zf.namelist()[0])
     rows = parse_master(raw)
     if len(rows) < 1000:
+        lines = raw.splitlines()
+        print(f"줄 {len(lines)} · 줄 길이 예 {[len(x) for x in lines[:3]]} · 뒷칸 앞 글자 예 {[x[-221:-219] for x in lines[:3]]}")
         raise SystemExit(f"코스닥 종목 목록이 너무 적습니다({len(rows)}) · 파일 꼴이 바뀌었을 수 있음")
     LIST.write_text(json.dumps({"made": datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d %H:%M"),
                                 "codes": [c for c, _ in rows], "names": dict(rows)}, ensure_ascii=False), encoding="utf-8")
