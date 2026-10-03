@@ -72,12 +72,19 @@ def vwap_dev(b):
     return out
 
 
-def market(data):
-    """{시각: 같은 시각 종목들의 day_ret 평균}. 그 시각 봉이 있는 종목만 셈(그 시각에 이미 닫힌 봉)."""
+def market(data, inside=None):
+    """{시각: 같은 시각 종목들의 day_ret 평균}. 그 시각 봉이 있는 종목만 셈(그 시각에 이미 닫힌 봉).
+    inside({code: 봉마다 참/거짓})를 주면 그 봉에 '전 거래일 시총 100위 안'인 종목만 셈 — 운영(m15_live: universe top100)과 같고,
+    '나중에 커질 종목'을 미리 넣지 않음(2026-10-04 m15guard 잘라내기 어긋남의 까닭: 뒷날 150위에 든 종목이 그 전 평균에 끼었음)."""
     acc = {}
-    for b in data.values():
+    for c, b in data.items():
         r = day_ret(b)
-        for s, x in zip(b["t"], r):
+        m = inside.get(c) if inside is not None else None
+        if inside is not None and m is None:
+            continue
+        for k, (s, x) in enumerate(zip(b["t"], r)):
+            if m is not None and not m[k]:
+                continue
             if np.isfinite(x):
                 a = acc.setdefault(s, [0.0, 0])
                 a[0] += x
