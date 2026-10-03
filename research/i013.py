@@ -5,6 +5,7 @@
   · I_COST(기본 0.002) · I_REB(week · mon · day) · I_GUARD(trend · crash · nas20 — 나스닥 빼는 때)
   · I_DOLLAR=2(원 · 달러 20일 +2% · 코스피 < 20일선인 날은 돌리기 대신 달러만)
   · I_CASH=all · idle(엔진이 안 쓰는 비운 돈을 단기채권 153130에)
+  · I_MOOD=80(DART · 한투 시장 분위기 점수 ≥ 값이면 KODEX 200 · 익절 8 손절 3 10일 · 그동안 돌리기 쉼)
   · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
 import json
@@ -95,6 +96,30 @@ if os.environ.get("I_DIP"):
     rot = rot_on
 if os.environ.get("I_QINV"):
     mix = mix + qinv
+if os.environ.get("I_MOOD"):
+    # I48: DART · 한투 '시장 분위기 점수'(i031 · i032 · 전환사채 · 공급계약 공시 물결 + 목표가 올림 몫 + 대차잔고 반대) ≥ I_MOOD → KODEX 200
+    # 익절 8 · 손절 3 · 10일. 엔진이 켜진 날(1일봉 쓴 몫 < 20%) 비운 돈으로. 그동안 돌리기 몫은 쉼(돈 겹치지 않게).
+    _A = dict(np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg.npz"))
+
+    def _rank(a):
+        out = np.full(n, np.nan)
+        for i in range(250, n):
+            h = a[i - 250:i]
+            h = h[np.isfinite(h)]
+            if len(h) > 150 and np.isfinite(a[i]):
+                out[i] = (h < a[i]).mean() * 100
+        return out
+    _R = np.array([_rank(_A["DART 전환사채 20일 수"]), _rank(_A["DART 공급계약 20일 수"]), _rank(_A["한투 목표가 올림 몫(20일)"]), 100 - _rank(_A["한투 대차잔고 20일 변화"])])
+    mood = np.nanmean(_R, axis=0)
+    mood[np.isfinite(_R).sum(axis=0) < 3] = np.nan
+    msig = (np.nan_to_num(mood, nan=-1) >= float(os.environ["I_MOOD"])) & gate
+    mtr, md = I.sim(msig, "069500", -0.03, 0.08, 10, cost=COST)
+    mon = np.zeros(n, bool)
+    madd = np.zeros(n)
+    for a, b, _ in mtr:
+        mon[a + 1:b + 1] = True
+        madd[a:b + 1] += md[a:b + 1] * free[a]
+    mix = mix - np.where(mon, rot * prev_free, 0.0) + madd
 if os.environ.get("I_CASH"):
     # 엔진이 그날 돈을 쓰지 않았으면(rot == 0 · 급락 · 코스닥 인버스도 없음) 비운 몫을 단기채권에. 바꿀 때 비용은 아주 작아 뺌(단기채권 호가 차이 ~0.01%).
     idle_cash = (rot == 0) & (np.abs(mix - d1) < 1e-12)
