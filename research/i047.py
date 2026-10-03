@@ -16,7 +16,7 @@ I.px("251340")
 sig = np.nan_to_num(I.ret(qq, 10), nan=0) >= TH
 first = next(i for i in range(n) if np.isfinite(I.PX["251340"][i]))
 print(f"== RNA 6라운드: 코스닥 과열 인버스만(문턱 {TH:+.1%} · 비용 {COST}) · 251340 첫날 {D[first]} ==")
-sq = I.sigma_n(qq, 60)
+sq = I.sigma_n(qq, int(os.environ.get("I_QSIGN", "60")))
 YEARS = [str(y) for y in range(2016, 2027)]
 
 
@@ -30,7 +30,7 @@ def row(tr, dd, name):
 
 tr, dd = I.sim(sig, "251340", -0.015, 0.015, 10, cost=COST)
 row(tr, dd, "DNA ±1.5%")
-for c in (0.22, 0.25, 0.28, 0.31, 0.34):
+for c in [float(x) for x in os.environ.get("I_QCS", "0.22,0.25,0.28,0.31,0.34").split(",")]:
     s = sq * c * np.sqrt(10)
     tr, dd = I.sim_var(sig, "251340", -s, s, 10, cost=COST)
     row(tr, dd, f"RNA {c:.2f}")
