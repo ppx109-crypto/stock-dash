@@ -303,8 +303,9 @@ if os.environ.get("I_MTM", "1") != "0" and not I.CUT and not I.POISON:
     import a_mtm
     _led = json.load(open(SP + LEDGER))
     _mt = a_mtm.account(D, _led, mix - d1)
+    _mc = a_mtm.account(D, _led, mix - d1, mode="cost")     # 아직 안 판 이익은 세지 않음(번 돈 되돌림 뺀 골 · 사용자 2026-10-04)
     for name, lo, hi in (("B", "20170101", "20210101"), ("C1 21~25", "20210101", "20260101"), ("C2 2026", "20260101", "20991231")):
-        _s = I.stats(_mt, lo, hi)
+        _s, _c = I.stats(_mt, lo, hi), I.stats(_mc, lo, hi)
         if _s:
-            print(f"  {name:9s} 날마다 평가 연 {_s[0]:+6.1f} 골 {_s[1]:6.1f}", flush=True)
+            print(f"  {name:9s} 날마다 평가 연 {_s[0]:+6.1f} 골 {_s[1]:6.1f} · 되돌림 뺀 골 {_c[1]:6.1f}", flush=True)
 print("끝", flush=True)
