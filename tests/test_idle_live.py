@@ -72,6 +72,19 @@ class StepTest(unittest.TestCase):
         self.assertEqual(st2["cool"], L.DIP_COOL + 1)
         self.assertNotIn("069500", st2["positions"])
 
+    def test_dip_buys_even_when_rules_use_money(self):
+        # 2026-10-04(점검 A11 · 사용자 결정): 규칙이 돈을 60% 써도 시장 폭 < 50이면 남은 40%로 급락 되돌림(연구 i013과 같게)
+        px = base_px()
+        px["069500"] = np.r_[flat(55), [100, 99, 97, 96, 95]]
+        orders, st, _ = L.step({}, "20261005", px, breadth=30, used=0.6, total=1e7, cash=4e6, held={},
+                               now_price=dict(PRICE, **{"069500": 95.0}), is_week_end=False)
+        self.assertEqual([(c, s) for c, s, q, _ in orders], [("069500", "buy")])
+        self.assertEqual(orders[0][2], int(1e7 * 0.4 * 0.97 / 95))
+        # 시장 폭 50 이상이면 안 삼
+        orders, _, _ = L.step({}, "20261005", px, breadth=60, used=0.6, total=1e7, cash=4e6, held={},
+                              now_price=dict(PRICE, **{"069500": 95.0}), is_week_end=False)
+        self.assertEqual(orders, [])
+
     def test_dip_take_profit(self):
         state = {"positions": {"069500": {"kind": "급락", "price": 100.0, "day": "20261002", "days": 1}}, "last_day": "20261002"}
         orders, st, _ = L.step(state, "20261005", base_px(), breadth=30, used=0.0, total=1e7, cash=0,

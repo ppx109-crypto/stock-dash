@@ -25,7 +25,7 @@ FINAL = dict(I_DIP="1", I_DOLLAR="2", I_GATE="weakidle20", I_L="20", I_TOP="2", 
 def run_i013(extra, cut=""):
     with tempfile.TemporaryDirectory() as d:
         out = Path(d) / "dump.npz"
-        env = {**os.environ, **FINAL, **extra, "I_DUMP": str(out), "I_CUT": cut if MODE == "cut" else "",
+        env = {**os.environ, **FINAL, **extra, "I_DUMP": str(out), "I_MTM": "0", "I_CUT": cut if MODE == "cut" else "",
                "I_POISON": cut if MODE == "poison" else ""}
         subprocess.run([sys.executable, str(RES / "i013.py")], env=env, check=True, capture_output=True)
         z = np.load(out)

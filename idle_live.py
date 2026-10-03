@@ -2,7 +2,8 @@
 
 최종 규칙(docs/RL-INVERSE.md '최종 판' · 연구 i013 · i040 · lookahead 통과):
   엔진 켬      : 시장 폭 < 50(규칙들이 못 사는 날) · 규칙(1일봉 · 1시간봉 · 15분봉)이 계좌의 20% 미만을 쓰고 있음
-  ① 급락 되돌림: KODEX 200(069500) 5일 수익 ≤ −4.5%(15:10 값) → 069500 · 익절 +3% · 손절 −3% · 20거래일 · 손절 뒤 20거래일 쉼
+  ① 급락 되돌림: 시장 폭 < 50 · KODEX 200(069500) 5일 수익 ≤ −4.5%(15:10 값) → 069500 · 익절 +3% · 손절 −3% · 20거래일 · 손절 뒤 20거래일 쉼
+                 · 규칙이 돈을 얼마나 쓰든 남은 몫으로 삼(2026-10-04 사용자 결정 · 연구 i013과 같게 · ② · ③은 엔진 켤 때만)
   ② 하락 추세  : 달러선물(138230) 20일 > +2% · 코스피200 < 20일선 → 138230
   ③ 돌리기     : 나스닥100(133690) · 달러선물(138230) · 금(132030) · 국고채10년(148070) 중 20일 수익 > 0 인 위 2개 반반
                  · 주 마지막 거래일에 다시 고름 · 모두 − 이면 현금
@@ -109,7 +110,7 @@ def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_en
                 inv_exit = f"코스닥 인버스 {INV_DAYS}일 지남 {r * 100:+.1f}%"
     inv_hold = any(p["kind"] == "인버스" for p in pos.values()) and inv_exit is None
     inv_new = sig["코스닥인버스"] and not any(p["kind"] == "인버스" for p in pos.values())
-    if (inv_hold or inv_new) and sig["엔진"]:
+    if (inv_hold or inv_new) and (sig["엔진"] or sig["급락"]):
         sig = dict(sig, 엔진=False, 급락=False, 하락추세=False, 돌리기={})
         why.append("코스닥 인버스를 들거나 사는 날이라 엔진은 쉼(인버스 먼저)")
     for code, p in pos.items():
@@ -153,12 +154,14 @@ def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_en
     engine_room = max(0.0, room - inv_kept)
     kinds = {p["kind"] for p in keep.values()}
     buys = []
-    if sig["엔진"] and "급락" not in kinds:
-        if sig["급락"] and st["cool"] == 0 and "급락" not in exited:
+    if sig["급락"] and "급락" not in kinds:
+        # 급락 되돌림은 엔진 켬(쓴 몫 < 20%)과 상관없이 시장 폭 < 50이면 남은 몫으로(2026-10-04 · 연구 i013과 같게)
+        if st["cool"] == 0 and "급락" not in exited:
             buys.append((DIP, 1.0, "급락", "급락 되돌림 — 코스피200 5일 급락 뒤 반등"))
-        elif sig["급락"]:
+        else:
             why.append("급락 되돌림 신호지만 " + (f"손절 뒤 쉬는 중(남은 {st['cool']}일)" if st["cool"] else "오늘 판 단계라 내일부터"))
-        elif sig["하락추세"] and "달러" not in kinds:
+    elif sig["엔진"] and "급락" not in kinds:
+        if sig["하락추세"] and "달러" not in kinds:
             buys.append((DOL, 1.0, "달러", "하락 추세 — 달러선물"))
         elif not sig["하락추세"] and (is_week_end or "돌리기" not in kinds):
             picks = sig["돌리기"]
@@ -352,7 +355,7 @@ def run(now=None):
     book["orders"] = book["orders"][-5000:]
     _save(paper_trade.IDLE_BOOK, book)
     _save(STATE, new_state)
-    _save(TODAY, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "breadth": breadth, "used": round(used, 3),
+    _save(TODAY, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "late": late, "breadth": breadth, "used": round(used, 3),
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
     if orders or new_state.get("positions"):

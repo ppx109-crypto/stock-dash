@@ -1,0 +1,27 @@
+name: Bot watch (봇 지킴이)
+# 평일 16:05(한국 시각)에 오늘 1일봉 · 15분봉 · 빈칸 엔진 모의투자 봇이 제대로 돌았는지 보고, 빠졌거나 늦었으면 디스코드로 알림(run_watch.py).
+# 저장소의 봇 장부만 읽음 · 주문 · 키 사용 없음(웹훅만 Secrets).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 7 * * 1-5'           # 한국 시각 16:05(평일)
+permissions:
+  contents: read
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests numpy
+      - run: python -m unittest tests.test_run_watch -v
+      - name: 오늘 봇 확인
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          IDLE_START: '20261005'
+        run: python run_watch.py
