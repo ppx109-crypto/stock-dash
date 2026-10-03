@@ -69,6 +69,11 @@ _CSS = """
 .pxb-meta{text-align:right;font-size:12px;color:#7B7465;line-height:1.9}
 .pxb-headbox{margin-bottom:14px;padding:18px 22px}
 .pxb-top2{display:grid;grid-template-columns:minmax(260px,1fr) minmax(220px,280px) minmax(300px,460px);align-items:center;gap:16px}
+.pxb-fold{margin:0}.pxb-fold>summary{list-style:none;cursor:pointer;position:relative;padding-left:22px}
+.pxb-fold>summary::-webkit-details-marker{display:none}
+.pxb-fold>summary::before{content:"▶";position:absolute;left:2px;top:50%;transform:translateY(-50%);font-size:12px;color:#946E38;transition:transform .15s}
+.pxb-fold[open]>summary::before{transform:translateY(-50%) rotate(90deg)}
+.pxb-fold>summary:hover b{text-decoration:underline}
 .pxb-ledgers{display:flex;flex-direction:column;gap:8px;min-width:300px;flex:0 1 520px}
 .pxb-mid{display:flex;flex-direction:column;gap:8px;min-width:220px;flex:0 1 300px}
 .pxb-kospi{padding:9px 12px;border:1px solid #E7DCC7;border-radius:12px;background:#FFFDF8}
@@ -402,7 +407,7 @@ def section(label: str, note: str = "") -> str:
 
 
 
-GROUP_TITLES = {"A": ("1시간봉 매수 후보", "어제 종가로 조건을 다 채움 → 오늘 장중 1시간봉 신호에 삼 · 들고 있는 종목 포함", "a"),
+GROUP_TITLES = {"A": ("15분봉 매수 후보", "어제 종가로 조건을 다 채움 → 오늘 장중 15분봉 신호에 삼 · 들고 있는 종목 포함", "a"),
                 "B": ("1일봉 매수 후보", "오늘 15:20 1일봉 규칙으로 고른 종목(종가에 삼) · 들고 있는 종목 포함", "b")}
 
 
@@ -734,7 +739,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     group = (grade or {}).get("group")
     tone = STATUS.get(group)
     badge = (f'<span class="pxb-tag" style="color:{tone};background:{tone}1f">'
-             f'{_e({"A": "1시간봉 매수 후보", "B": "조건 1~2개 미달", "밖": "조건 3개 이상 미달"}.get(group, f"{group}그룹"))}</span>') if tone else ""
+             f'{_e({"A": "15분봉 매수 후보", "B": "조건 1~2개 미달", "밖": "조건 3개 이상 미달"}.get(group, f"{group}그룹"))}</span>') if tone else ""
     card_score = _card(
         0, "판단점수",
         f'<div class="pxb-value">{score}<small>/100</small></div>'
@@ -981,9 +986,9 @@ def _settled_cards(book: dict, price: float | None) -> str:
 
 
 # A그룹 · B그룹의 이름(사용자 요청 2026-10-01: 1시간봉으로 사는 종목에 맞는 이름).
-NAME_A = "1시간봉"
+NAME_A = "15분봉"          # 2026-10-03: 같은 후보를 15분봉 규칙이 씀(1시간봉은 모의 주문 보류)
 NAME_B = "1일봉"
-RULE_TEXT = "1시간봉 매매 규칙과 1일봉 매매 규칙으로 고른 종목입니다"
+RULE_TEXT = "15분봉 매매 규칙과 1일봉 매매 규칙으로 고른 종목입니다"
 
 SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
 <div class="pxb-rule"><h4>① 추세 조건<span>어제 일봉으로 판단</span></h4><dl>
@@ -1025,8 +1030,94 @@ SORTIE_RULES = """<div class="pxb"><div class="pxb-rules">
 <div class="pxb-rule-foot"><b>지난 성적</b>(연구 90·94회차, 사고팔 때 비용 0.30% 뺌) · 2023-10~2025-03 해마다 +39.2% · 2025-04~2026-09 해마다 +112.8% · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음</div>
 </div>"""
 
+# 15분봉 규칙(15분봉 22회차 후보 · m15_live.py) — 후보 · 크기 · 팔기는 1시간봉 규칙과 같고, 사는 때 · 거르기 · 봉 수만 다름(사용자 2026-10-03 "1시간봉 칸을 15분봉으로").
+M15_RULES = (SORTIE_RULES
+             .replace("오늘 장중 <b>1시간봉 매수 후보</b>", "오늘 장중 <b>15분봉 매수 후보</b>")
+             .replace("<h4>매수<span>오늘 장중 · 1시간봉</span></h4>", "<h4>매수<span>오늘 장중 · 15분봉</span></h4>")
+             .replace("<dt>언제</dt><dd>후보의 1시간봉 지수이동평균선 5·20·60·120·180개가 정배열로 바뀌면 → 그 봉이 끝난 바로 다음 시각(정시) 시작 가격에 삼</dd>",
+                      "<dt>언제</dt><dd>후보의 15분봉 지수이동평균선 5·20·60·120·180개가 정배열로 바뀌면 → 그 봉이 끝난 바로 다음 15분봉 시작 가격에 삼</dd>")
+             .replace("<dt>없으면</dt><dd>11시 봉(11:00~12:00)이 끝날 때까지 신호가 없어도 12:00 시작 가격에 삼</dd>",
+                      "<dt>없으면</dt><dd>10:45 봉(10:45~11:00)이 끝날 때까지 신호가 없어도 11:00 시작 가격에 삼</dd>"
+                      "<dt>거름</dt><dd>그 봉에서 그날 첫 시가보다 +2% 넘게 올랐거나, 장중 시장 흐름(시총 상위 160종목의 그날 평균)이 −1% 아래면 그때는 사지 않음 · 뒤에 다시 정배열이 되면 삼</dd>")
+             .replace("같은 시각에 여러 종목이면", "같은 봉에 여러 종목이면")
+             .replace("산 지 7시간(약 하루) 넘었는데", "산 지 28봉(7시간 · 약 하루) 넘었는데")
+             .replace("위에 하나도 안 닿고 60시간(약 10거래일)이 지나면 모두 팖", "위에 하나도 안 닿고 240봉(60시간 · 약 10거래일)이 지나면 모두 팖")
+             .replace('<b>지난 성적</b>(연구 90·94회차, 사고팔 때 비용 0.30% 뺌) · 2023-10~2025-03 해마다 +39.2% · 2025-04~2026-09 해마다 +112.8%',
+                      '<b>지난 성적</b>(15분봉 22회차 · 한투 1분봉 1년 · 비용 0.30% 뺌) · 2025-09~2026-08 규칙만 해마다 +208% (가장 크게 빠진 때 −9.8%) · 자료가 1년뿐이고 강세장이 섞인 값')
+             )
+
+# 빈칸 엔진 · 코스닥 과열 인버스(idle_live.py · 2026-10-03 배포) — 규칙들이 안 쓰는 돈을 굴림
+IDLE_RULES = """<div class="pxb"><div class="pxb-rules">
+<div class="pxb-rule x"><h4>언제 켜나<span>매일 15:10 판단</span></h4><dl>
+<dt>엔진</dt><dd>시장 폭 50% 미만(1일봉 · 15분봉 규칙이 못 사는 날) <b>그리고</b> 규칙들이 계좌의 20% 미만을 쓰고 있을 때만</dd>
+<dt>돈</dt><dd>규칙들이 안 쓰는 몫만 씀 · 규칙이 살 돈이 모자라면 엔진이 산 것을 먼저 팔아 자리를 내줌</dd>
+<dt>때</dt><dd>15:10 값으로 판단 → 장중 시장가로 바로 사고팖(1일봉 15:20 판단보다 먼저)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>① 급락 되돌림<span>엔진 첫째</span></h4><dl>
+<dt>신호</dt><dd>KODEX 200(코스피200)이 5거래일 동안 −4.5% 넘게 빠짐</dd>
+<dt>사기</dt><dd>KODEX 200(069500) · 엔진 돈 전부</dd>
+<dt>팔기</dt><dd><span class="up">+3% 익절</span> · <span class="down">−3% 손절</span> · 20거래일 지나면 · 손절했으면 20거래일 쉼</dd>
+</dl></div>
+<div class="pxb-rule"><h4>② 하락 추세 달러<span>엔진 둘째</span></h4><dl>
+<dt>신호</dt><dd>달러선물 ETF가 20일 동안 +2% 넘게 오름 <b>그리고</b> 코스피200이 20일 이동평균선 아래</dd>
+<dt>사기</dt><dd>KOSEF 미국달러선물(138230) · 한국 주식이 빠질 때 오르는 달러에 걸기</dd>
+<dt>팔기</dt><dd>신호가 꺼지거나 엔진이 꺼지면</dd>
+</dl></div>
+<div class="pxb-rule"><h4>③ 돌리기<span>엔진 셋째</span></h4><dl>
+<dt>후보</dt><dd>TIGER 미국나스닥100(133690) · KOSEF 미국달러선물(138230) · KODEX 골드선물(H)(132030) · KOSEF 국고채10년(148070)</dd>
+<dt>사기</dt><dd>20일 수익이 플러스인 위 2개를 반반 · 모두 마이너스면 현금</dd>
+<dt>다시</dt><dd>주 마지막 거래일에 다시 고름 · 엔진이 꺼지면 모두 팖</dd>
+</dl></div>
+<div class="pxb-rule"><h4>코스닥 과열 인버스<span>엔진과 따로 · 먼저</span></h4><dl>
+<dt>신호</dt><dd>KODEX 코스닥150이 10거래일 동안 +9.5% 넘게 오름(과열)</dd>
+<dt>사기</dt><dd>KODEX 코스닥150선물인버스(251340) · 규칙이 안 쓰는 돈 · 들고 있는 동안 엔진은 쉼</dd>
+<dt>팔기</dt><dd><span class="up">+1.5% 익절</span> · <span class="down">−1.5% 손절</span> · 10거래일 지나면</dd>
+</dl></div>
+</div>
+<div class="pxb-rule-foot"><b>지난 성적</b>(1일봉 규칙 + 엔진 + 코스닥 인버스 · 비용 0.2% 뺌 · 계좌 전체) · 2017~2020 해마다 +30.4% (가장 크게 빠진 때 −8.3%) · 2021~2025 +63.8% (−13.6%) · 엔진만 안 본 기간 2012~2016 +6.2% (같은 때 코스피200 +3.0%) · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음</div>
+</div>"""
+
+IDLE_NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
+             "133690": "TIGER 미국나스닥100", "132030": "KODEX 골드선물(H)", "148070": "KOSEF 국고채10년"}
+
+
+def fold(label: str, note: str, inner: str, open_: bool = False) -> str:
+    """화살표를 눌러야 펼쳐지는 칸(사용자 2026-10-03). 제목 줄(section)은 늘 보이고 안쪽은 접힘."""
+    return (f'<details class="pxb-fold"{" open" if open_ else ""}><summary>{section(label, note)}</summary>'
+            f'{inner}</details>')
+
+
+def idle_panel(today: dict | None, state: dict | None, book: dict | None) -> str:
+    """빈칸 엔진 · 코스닥 인버스 오늘의 결과(15:10 판단) · 들고 있는 것 · 끝난 매매 · 최근 주문."""
+    if not today or not today.get("date"):
+        body = ('<div class="pxb-note" style="margin-top:12px;line-height:1.75"><b>오늘의 결과</b> · 아직 판단한 날이 없습니다. '
+                '2026-10-05부터 평일 15:10에 판단하고 한투 모의투자 계좌에만 주문합니다.</div>')
+    else:
+        used = today.get("used")
+        head = (f'<b>오늘의 결과</b> · {_e(as_day(today["date"]))} 15:10 판단 · 시장 폭 {_e(today.get("breadth"))}% · '
+                f'규칙이 쓴 몫 {round((used or 0) * 100)}%<br><small>계산 {_e(today.get("made"))}</small>')
+        body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}</div>'
+        why = today.get("why") or []
+        if why:
+            body += '<ul class="pxb-note" style="margin:6px 0 0 18px">' + "".join(f"<li>{_e(w)}</li>" for w in why) + "</ul>"
+        orders = today.get("orders") or []
+        if orders:
+            body += ('<div class="pxb-note" style="margin-top:6px"><b>그날 주문</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">'
+                     + "".join(f'<li>{"매수" if o.get("side") == "buy" else "매도"} · <b>{_e(IDLE_NAME.get(o.get("code"), o.get("code")))}</b> '
+                               f'({_e(o.get("code"))}) {_e(o.get("qty"))}주 · {_e(o.get("why"))}</li>' for o in orders) + "</ul>")
+        else:
+            body += '<div class="pxb-note" style="margin-top:6px">오늘은 사고판 것이 없습니다.</div>'
+    held = (state or {}).get("positions") or {}
+    if held:
+        rows = "".join(f'<li><b>{_e(IDLE_NAME.get(c, c))}</b> ({_e(c)}) · {_e(p.get("kind"))} · 산 값 {float(p.get("price") or 0):,.0f}원 · '
+                       f'산 날 {_e(as_day(p.get("day")))} · {_e(p.get("days"))}거래일째</li>' for c, p in held.items())
+        body += (f'<div class="pxb-note" style="margin-top:10px"><b>들고 있는 것(모의투자)</b></div>'
+                 f'<ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>')
+    return f'<div class="pxb">{body}</div>' + ledger_panel("빈칸 엔진 · 코스닥 인버스 모의투자", state, book)
+
+
 GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75">
-<b>1시간봉 매수 후보</b> · 어제 종가로 조건을 다 채운 종목(오늘 장중 신호를 기다림)과 이 규칙이 들고 있는 종목<br>
+<b>15분봉 매수 후보</b> · 어제 종가로 조건을 다 채운 종목(오늘 장중 15분봉 신호를 기다림)과 이 규칙이 들고 있는 종목<br>
 <b>1일봉 매수 후보</b> · 오늘 15:20에 고른 종목(오늘 종가에 삼)과 이 규칙이 들고 있는 종목<br>
 두 규칙은 같은 조건(①·② + 공통)에서 출발해 한 종목이 두 칸에 함께 나올 수 있습니다 · 조건을 다 채우지 못한 종목은 싣지 않습니다
 </div></div>"""
@@ -1074,7 +1165,8 @@ def sortie_target(base: str, now=None) -> str:
     return "다음 거래일"
 
 
-def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, alerts: list | None, now=None) -> str:
+def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, alerts: list | None, now=None,
+                 name: str = "1시간봉") -> str:
     """오늘의 결과: 1시간봉 규칙 후보(가장 최근 마감 기준) · 들고 있는 종목(연습 계좌) · 최근 알림.
 
     저녁 계산(hourly-live/plan.json)이 일봉 결과(study/a_group.json)보다 옛것이거나 없으면 일봉 결과로 후보를 적습니다.
@@ -1094,7 +1186,7 @@ def sortie_panel(found: dict | None, plan: dict | None, state: dict | None, aler
                   "칸": 4 if "추세 규칙" in (p.get("갈래") or []) else 2}
                  for p in found.get("picks") or []]
     when = sortie_target(base, now)
-    head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> 1시간봉 매수 후보 {len(cands)}종목 · '
+    head = (f'<b>오늘의 결과</b> · {_e(as_day(base))} 마감 기준 → <b>{when}</b> {_e(name)} 매수 후보 {len(cands)}종목 · '
             f'시장 폭 {_e(breadth)}% (②정배열 조건은 50% 이상일 때만 삼)')
     if made:
         head += f'<br><small>후보 계산 {_e(made)}</small>'
