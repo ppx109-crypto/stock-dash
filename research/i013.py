@@ -42,7 +42,7 @@ gate_weak = R.G.get("시장 폭<50")
 prev_used = np.concatenate([[0.0], used[:-1]])
 gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
         # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
-        "idle20": prev_used < 0.2, "weakidle20": (R.G.get("시장 폭<50") & (prev_used < 0.2)) if R.G.get("시장 폭<50") is not None else prev_used < 0.2, "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
+        "idle20": prev_used < 0.2, "weakidle20": (R.G.get("시장 폭<50") & (prev_used < 0.2)) if R.G.get("시장 폭<50") is not None else prev_used < 0.2, "weakidle25": R.G.get("시장 폭<50") & (prev_used < 0.25), "weakidle30": R.G.get("시장 폭<50") & (prev_used < 0.3), "weakidle40": R.G.get("시장 폭<50") & (prev_used < 0.4), "weakidle50": R.G.get("시장 폭<50") & (prev_used < 0.5), "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
 # 사용자 2026-10-03 "상승장이면 인버스 최소 · 0처럼 유동적으로": 장세 = 어제까지 코스피200이 200일선 위(오름) / 아래
 _up = np.concatenate([[False], (np.nan_to_num(R.k > I.ma(R.k, 200), nan=0) > 0)[:-1]])
 if os.environ.get("I_GREG") == "up_off":       # 오름 장세면 엔진 쉼
