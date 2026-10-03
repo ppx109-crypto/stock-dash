@@ -19,11 +19,29 @@ PERIODS = (("A", "20090916", "20170101"), ("B", "20170101", "20210101"), ("C", "
 # 같은 계산을 자른 자료 · 온 자료로 두 번 돌려 자른 날 앞까지 판단 · 손익이 한 칸도 다르지 않아야 미래를 안 본 것(research/lookahead.py).
 import os as _os
 CUT = _os.environ.get("I_CUT", "")
+# 더럽히기 시험(점검 A3 · 2026-10-04): I_POISON=YYYYMMDD면 그날 뒤 값을 엉터리(씨앗 고정 무작위 걸음)로 바꿈 — 길이는 그대로라
+# '자리(인덱스)로 미리 보기'처럼 자르기로 못 잡는 미래 참조를 잡음. 그날 앞 판단 · 손익은 한 칸도 달라지면 안 됨.
+POISON = _os.environ.get("I_POISON", "")
+
+
+def _poison(got, key):
+    if not POISON:
+        return got
+    import random as _r
+    rng = _r.Random(hash(key) % 100003 + int(POISON))
+    last = None
+    for d in sorted(got):
+        if d <= POISON:
+            last = got[d]
+        elif last is not None and got[d] is not None:
+            last = last * (1 + rng.uniform(-0.08, 0.08))
+            got[d] = last
+    return got
 
 
 def _closes(code):
     body = json.loads((ROOT / f"etf-data/{code}.json").read_text(encoding="utf-8"))
-    return {str(d): float(c) for d, c in body["closes"] if c and (not CUT or str(d) <= CUT)}
+    return _poison({str(d): float(c) for d, c in body["closes"] if c and (not CUT or str(d) <= CUT)}, code)
 
 
 base = _closes("069500")
@@ -68,6 +86,7 @@ def series(path, col):
     """market-data 표 → 날짜판에 맞춘 값(없는 날은 nan)."""
     rows = json.loads((ROOT / path).read_text(encoding="utf-8"))["rows"]
     got = {str(r["date"]): r.get(col) for r in rows if not CUT or str(r["date"]) <= CUT}
+    got = _poison({d: (float(v) if v is not None else None) for d, v in got.items()}, path + col)
     return np.array([float(got[d]) if got.get(d) is not None else np.nan for d in DAYS])
 
 
@@ -77,7 +96,12 @@ def breadth():
     sys.path.insert(0, "/home/user/stock-dash/research")
     sys.path.insert(0, "/home/user/stock-dash")
     import nrl
-    return np.array([nrl.BR.get(d, np.nan) for d in DAYS])   # DAYS가 잘려 있으면 자른 날 뒤 값은 안 씀(시장 폭 자체 계산은 1일봉 엔진 nrl 몫)
+    out = np.array([nrl.BR.get(d, np.nan) for d in DAYS])
+    if POISON:      # 점검 A3: 시장 폭도 그날 뒤를 엉터리로
+        rng = np.random.default_rng(int(POISON))
+        late = np.array([d > POISON for d in DAYS])
+        out[late] = rng.uniform(0, 100, late.sum())
+    return out   # DAYS가 잘려 있으면 자른 날 뒤 값은 안 씀(시장 폭 자체 계산은 1일봉 엔진 nrl 몫)
 
 
 def sim(entry, code="114800", stop=-0.05, take=0.08, maxd=10, exit_sig=None, cost=0.002, weight=1.0, cool=0):
