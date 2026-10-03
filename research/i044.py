@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV", "AV", "AH", "AC", "AO") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV", "AV", "AH", "AC", "AO", "XV", "YV") or var.startswith("RALL"):
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -249,9 +249,57 @@ if var != "DNA":
     rule.holds = holds
 
 
+# 15라운드 D6 ① 추세 팔기(+5% 절반 · +13% 전량 · −5% 손절 · 10일) RNA:
+#  XV{p}[A|T|S|D]: k = (산 날 그 종목 변동성 ÷ V0)^(p/100) · V0 = 앞 기간(고르는 기간) 추세 문 통과 날 변동성 가운데값
+#  A(기본) 다섯 숫자 모두 × k(기간은 ÷ k) · T 익절(+5 · +13)만 · S 손절만 · D 기간만(10 ÷ k)
+EXIT = nrl.BASE_EXIT
+if var.startswith("XV"):
+    import re as _re6
+    m6 = _re6.match(r"XV(\d+)([ATSD]?)", var)
+    _p6, _w6 = int(m6.group(1)) / 100, m6.group(2) or "A"
+    _v0 = float(np.median([r["변동성"] for r in nrl.early if r.get("변동성") is not None and rule.holds(r)]))
+    print(f"  V0 = {_v0:.2f}", flush=True)
+
+    def _rule_exit(lane, start, price, step, peak, row=None):
+        v = (row or {}).get("변동성") or _v0
+        k = (v / _v0) ** _p6
+        fi, tk, st, dy = 5.0, 13.0, 5.0, 10
+        if _w6 in "AT":
+            fi, tk = fi * k, tk * k
+        if _w6 in "AS":
+            st = st * k
+        if _w6 in "AD":
+            dy = max(3, round(10 / k))
+        return nrl.half_rule(first=fi, take=tk, stop=st, days=dy)(lane, start, price, step, peak, row)
+    EXIT = lab.exit_per_tier(nrl.tier, {"규칙": _rule_exit, "정배열": nrl.broken})
+# 16라운드 D7 ② 정배열 팔기(손절 −10% · 한때 +8% 닿은 뒤 +1% 아래면 팜 · 정배열 깨지면 팜) RNA:
+#  YV{p}[A|S|B]: k = (산 날 변동성 ÷ V0)^(p/100) · V0 = 앞 기간 정배열 문 통과 날 변동성 가운데값 · A 모두 × k · S 손절만 · B 본전 지키기(+8 · +1)만
+if var.startswith("YV"):
+    import re as _re7
+    m7 = _re7.match(r"YV(\d+)([ASB]?)", var)
+    _p7, _w7 = int(m7.group(1)) / 100, m7.group(2) or "A"
+    _v7 = float(np.median([r["변동성"] for r in nrl.early[::5] if r.get("변동성") is not None and nrl.aligned(r)]))
+    print(f"  V0 = {_v7:.2f}", flush=True)
+
+    def _broken(lane, start, price, step, peak, row=None):
+        v = (row or {}).get("변동성") or _v7
+        k = (v / _v7) ** _p7
+        st, hi, lo = 10.0, 8.0, 1.0
+        if _w7 in "AS":
+            st *= k
+        if _w7 in "AB":
+            hi, lo = hi * k, lo * k
+        spot = start + step
+        close = lane["closes"][spot]
+        if (close / price - 1) * 100 <= -st:
+            return True
+        if (peak / price - 1) * 100 >= hi and (close / price - 1) * 100 <= lo:
+            return True
+        return not nrl.shape[lane["code"]]["정배열"][spot]
+    EXIT = lab.exit_per_tier(nrl.tier, {"규칙": nrl.RULE_EXIT, "정배열": _broken})
 out, LED = [], []
 for side, since, pool in (("앞 2017 ~ 2020", rule.SINCE, nrl.early), ("뒤 2021 ~", rule.MID, nrl.inside)):
-    g = lab.wobble(pool, nrl.prices, nrl.BASE_HOLD, nrl.BASE_EXIT, tries=8, rank=rule.order,
+    g = lab.wobble(pool, nrl.prices, nrl.BASE_HOLD, EXIT, tries=8, rank=rule.order,
                    slots=nrl.SLOTS, since=since, apart=nrl.kin, realistic=True, cap=130, size=nrl.BASE_SIZE, detail=True)
     if g and os.environ.get("I_DUMP_LEDGER"):      # 계좌 전체(i013) 시험용 매매 목록(x008 꼴 · 씨앗 0)
         LED.extend((t["code"], t["산 날"], t["판 날"], t["손익"], t.get("자리") or 1) for t in g["매매목록"]
