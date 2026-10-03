@@ -255,7 +255,7 @@ if var != "DNA":
 EXIT = nrl.BASE_EXIT
 if var.startswith("XV"):
     import re as _re6
-    m6 = _re6.match(r"XV(\d+)([ATSD]?)", var)
+    m6 = _re6.match(r"XV(\d+)([ATSDWU]?)", var)
     _p6, _w6 = int(m6.group(1)) / 100, m6.group(2) or "A"
     _v0 = float(np.median([r["변동성"] for r in nrl.early if r.get("변동성") is not None and rule.holds(r)]))
     print(f"  V0 = {_v0:.2f}", flush=True)
@@ -270,13 +270,17 @@ if var.startswith("XV"):
             st = st * k
         if _w6 in "AD":
             dy = max(3, round(10 / k))
+        if _w6 == "W":                   # 21라운드: 손절만 '넓히기만'(거칠 때만 · 조용해도 5% 아래로 안 좁힘)
+            st = st * max(1.0, k)
+        if _w6 == "U":                   # 21라운드: 익절만 '넓히기만'
+            fi, tk = fi * max(1.0, k), tk * max(1.0, k)
         return nrl.half_rule(first=fi, take=tk, stop=st, days=dy)(lane, start, price, step, peak, row)
     EXIT = lab.exit_per_tier(nrl.tier, {"규칙": _rule_exit, "정배열": nrl.broken})
 # 16라운드 D7 ② 정배열 팔기(손절 −10% · 한때 +8% 닿은 뒤 +1% 아래면 팜 · 정배열 깨지면 팜) RNA:
 #  YV{p}[A|S|B]: k = (산 날 변동성 ÷ V0)^(p/100) · V0 = 앞 기간 정배열 문 통과 날 변동성 가운데값 · A 모두 × k · S 손절만 · B 본전 지키기(+8 · +1)만
 if var.startswith("YV"):
     import re as _re7
-    m7 = _re7.match(r"YV(\d+)([ASB]?)", var)
+    m7 = _re7.match(r"YV(\d+)([ASBW]?)", var)
     _p7, _w7 = int(m7.group(1)) / 100, m7.group(2) or "A"
     _v7 = float(np.median([r["변동성"] for r in nrl.early[::5] if r.get("변동성") is not None and nrl.aligned(r)]))
     print(f"  V0 = {_v7:.2f}", flush=True)
@@ -289,6 +293,8 @@ if var.startswith("YV"):
             st *= k
         if _w7 in "AB":
             hi, lo = hi * k, lo * k
+        if _w7 == "W":                   # 21라운드: 손절만 '넓히기만'
+            st *= max(1.0, k)
         spot = start + step
         close = lane["closes"][spot]
         if (close / price - 1) * 100 <= -st:
