@@ -38,7 +38,7 @@ gate_weak = R.G.get("시장 폭<50")
 prev_used = np.concatenate([[0.0], used[:-1]])
 gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
         # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
-        "idle20": prev_used < 0.2, "idle50": prev_used < 0.5}[os.environ.get("I_GATE", "weak")]
+        "idle20": prev_used < 0.2, "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
 W, MA_N = float(os.environ.get("I_W", "1")), int(os.environ.get("I_MA", "0"))
 COST, REB, GUARD = float(os.environ.get("I_COST", "0.002")), os.environ.get("I_REB", "week"), os.environ.get("I_GUARD", "")
 kk = I.K200
