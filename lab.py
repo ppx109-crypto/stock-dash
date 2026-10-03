@@ -746,7 +746,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None):
+        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -759,6 +759,9 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     size는 한 종목에 자리를 몇 개 쓸지 돌려주는 함수입니다. 기본은 하나씩
     입니다. 둘을 쓰면 그만큼 자리가 줄고, 손익도 두 몫으로 셉니다. 승률과
     매매당 수익은 자리 수와 상관없는 값이므로 그대로 한 번씩 셉니다.
+
+    stop_run=(n, 날, 쉼, 손실%)을 두면 최근 '날' 거래일 안에 '손실%' 넘게 잃고 판 매매가 n번 쌓인 날부터
+    '쉼' 거래일 동안 새로 담지 않습니다(손절 줄 줄이기 연구 · 2026-10-04). 그날 종가까지 끝난 매매만 봅니다.
 
     brake=(깊이, 남길 몫)을 두면 지갑이 꼭대기에서 그만큼 파인 동안 자리를
     그 몫만큼만 씁니다. 끝난 매매만으로 지갑을 세므로 뒷날을 보지 않습니다.
@@ -813,7 +816,9 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     busy, seen, year_gains = 0, 0, {}
     weighted = []            # 자리 수를 곱한 손익. 연수익은 이것으로 냅니다.
     purse = crest = 1.0      # 끝난 매매만으로 센 지갑. brake가 이것을 봅니다.
+    loss_days, pause_until, day_no = [], -1, -1     # stop_run용(끝난 매매만)
     for day in days:
+        day_no += 1
         for code in list(open_slots):
             spot = open_slots[code]
             closes = lane[code]["closes"]
@@ -873,6 +878,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 held_days.append(step)
                 if cooldown and (cooldown_after != "손실" or gain <= 0):
                     rest[code] = index + cooldown
+                if stop_run and gain <= -stop_run[3]:
+                    loss_days.append(day_no)
                 if detail:
                     ledger.append({"code": code, "산 날": spot["row"]["date"],
                                    "판 날": day, "들고": step, "자리": spot["자리"],
@@ -888,6 +895,13 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             deep, share = brake
             if purse / crest - 1 <= -deep / 100:
                 top = max(1, int(slots * share))
+        if stop_run:
+            n_, w_, p_ = stop_run[0], stop_run[1], stop_run[2]
+            if sum(1 for k in loss_days if day_no - k < w_) >= n_:
+                pause_until = max(pause_until, day_no + p_)
+                loss_days.clear()
+            if day_no < pause_until:
+                top = used
         if busy_cap is not None:
             today = picks.get(day)
             want = (busy_cap(today[0]) if callable(busy_cap) and today

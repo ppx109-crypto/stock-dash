@@ -308,15 +308,99 @@ if var.startswith("YV"):
             return True
         return not nrl.shape[lane["code"]]["정배열"][spot]
     EXIT = lab.exit_per_tier(nrl.tier, {"규칙": nrl.RULE_EXIT, "정배열": _broken})
+# ── 손절 줄 줄이기 연구(docs/RL-STOP.md · 2026-10-04): I_SX="설계+설계" · 모두 그날 종가까지 아는 값만 ──
+#  BR{깊이}_{몫×100}: 끝난 매매로 센 지갑이 꼭대기에서 깊이% 파이면 자리를 몫만큼만(lab brake)
+#  ST{n}_{날}_{쉼}_{손실}: 최근 '날' 안에 '손실'% 넘게 잃고 판 매매 n번 → '쉼'일 새로 안 삼(lab stop_run)
+#  CD{날}: 잃고 판 종목은 그 뒤 '날' 동안 다시 안 삼(lab cooldown · 손실만)
+#  MK{x}: 코스피200 5일 수익 ≤ −x/10%인 날은 새로 안 삼 · MA{n}: 코스피200 < n일선이면 새로 안 삼
+#  GP{y}: 그 종목이 앞 60일(그날 포함) 안에 하루 −y% 넘게 빠진 적 있으면 안 삼 · CH{x}: 산 날 하루 +x% 넘게 올랐으면 안 삼
+#  VL{z}: 그 종목 변동성 > z/100이면 안 삼 · SZ{z}: 변동성 > z/100이면 칸 반으로 · PW{n}: 최근 5거래일 새로 담기 n번까지
+SX = [x for x in os.environ.get("I_SX", "").split("+") if x]
+SX_KW, SX_FILT, SX_SIZE = {}, [], None
+if SX:
+    import re as _rex
+    sys.path.insert(0, "/home/user/stock-dash/research")
+    import itools as _IX
+    _kd = {d: i for i, d in enumerate(_IX.DAYS)}
+    _k = _IX.K200
+    _k5 = {d: (_k[i] / _k[i - 5] - 1) * 100 for d, i in _kd.items() if i >= 5}
+    _kma = {}
+    for x in SX:
+        m = _rex.match(r"([A-Z]+)([\d_]+)", x)
+        key, nums = m.group(1), [int(v) for v in m.group(2).split("_")]
+        if key == "BR":
+            SX_KW["brake"] = (nums[0], nums[1] / 100)
+        elif key == "ST":
+            SX_KW["stop_run"] = tuple(nums)
+        elif key == "CD":
+            SX_KW["cooldown"], SX_KW["cooldown_after"] = nums[0], "손실"
+        elif key == "PW":
+            SX_KW["per_window"] = (nums[0], 5)
+        elif key == "MK":
+            _t = nums[0] / 10
+            SX_FILT.append(lambda r, _t=_t: _k5.get(r["date"], 0) > -_t)
+        elif key == "MA":
+            _n = nums[0]; _ma = _IX.ma(_k, _n)
+            _above = {d: (np.isfinite(_ma[i]) and _k[i] >= _ma[i]) for d, i in _kd.items()}
+            SX_FILT.append(lambda r, _a=_above: _a.get(r["date"], True))
+        elif key == "GP":
+            _y = nums[0]
+            def _gp(r, _y=_y):
+                c = nrl.lanes[r["code"]]["closes"]; i = r["i"]
+                w = c[max(1, i - 59):i + 1]; p = c[max(0, i - 60):i]
+                return not any(b and a and (b / a - 1) * 100 <= -_y for a, b in zip(p, w))
+            SX_FILT.append(_gp)
+        elif key == "CH":
+            _x = nums[0]
+            SX_FILT.append(lambda r, _x=_x: not (r["i"] >= 1 and nrl.lanes[r["code"]]["closes"][r["i"] - 1]
+                                               and (nrl.lanes[r["code"]]["closes"][r["i"]] / nrl.lanes[r["code"]]["closes"][r["i"] - 1] - 1) * 100 >= _x))
+        elif key == "VL":
+            _z = nums[0] / 100
+            SX_FILT.append(lambda r, _z=_z: (r.get("변동성") or 0) <= _z)
+        elif key == "SZ":
+            _z = nums[0] / 100
+            SX_SIZE = lambda r, _z=_z: max(1, nrl.BASE_SIZE(r) // 2) if (r.get("변동성") or 0) > _z else nrl.BASE_SIZE(r)
+    print(f"  손절 줄 설계 {SX} → 엔진 {list(SX_KW)} · 거르기 {len(SX_FILT)}개 · 크기 {'바꿈' if SX_SIZE else '그대로'}", flush=True)
+HOLD = nrl.BASE_HOLD if not SX_FILT else (lambda r: nrl.BASE_HOLD(r) and all(f(r) for f in SX_FILT))
+
+
+def stop_stats(trades, lo, hi):
+    """손절 줄 재기: −4% 넘게 잃고 판 매매(손절 비슷) 수 · 10거래일 안 3번 넘게 몰린 무리 수 · 가장 긴 연속 손실(판 날 차례)."""
+    import bisect as _bs
+    days = sorted({t["판 날"] for t in trades})
+    sold = sorted((t["판 날"], t["손익"]) for t in trades if lo <= t["판 날"] < hi and not t.get("나눠 팜"))
+    stops = [d for d, g in sold if g <= -4]
+    pos = [_bs.bisect_left(days, d) for d in stops]
+    clusters, j = 0, 0
+    while j < len(pos):
+        k = j
+        while k + 1 < len(pos) and pos[k + 1] - pos[j] < 10:
+            k += 1
+        if k - j + 1 >= 3:
+            clusters += 1; j = k + 1
+        else:
+            j += 1
+    run_ = best = 0
+    for d, g in sold:
+        run_ = run_ + 1 if g <= 0 else 0
+        best = max(best, run_)
+    return len(stops), clusters, best
+
+
 out, LED = [], []
 for side, since, pool in (("앞 2017 ~ 2020", rule.SINCE, nrl.early), ("뒤 2021 ~", rule.MID, nrl.inside)):
-    g = lab.wobble(pool, nrl.prices, nrl.BASE_HOLD, EXIT, tries=8, rank=rule.order,
-                   slots=nrl.SLOTS, since=since, apart=nrl.kin, realistic=True, cap=130, size=nrl.BASE_SIZE, detail=True)
+    g = lab.wobble(pool, nrl.prices, HOLD, EXIT, tries=8, rank=rule.order,
+                   slots=nrl.SLOTS, since=since, apart=nrl.kin, realistic=True, cap=130, size=SX_SIZE or nrl.BASE_SIZE, detail=True, **SX_KW)
     if g and os.environ.get("I_DUMP_LEDGER"):      # 계좌 전체(i013) 시험용 매매 목록(x008 꼴 · 씨앗 0)
         LED.extend((t["code"], t["산 날"], t["판 날"], t["손익"], t.get("자리") or 1) for t in g["매매목록"]
                    if (side.startswith("앞") and t["산 날"] < rule.MID) or (side.startswith("뒤") and t["산 날"] >= rule.MID))
     if g and side.startswith("앞") and var == "DNA": print("열쇠", sorted(g.keys()), flush=True)
-    out.append(f"{side} 연 {g['연수익']:+.1f} 골 {g.get('최대낙폭', g.get('골', float('nan')))} 매매 {g.get('매매', '?')}" if g else f"{side} 없음")
+    _ss = ""
+    if g and g.get("매매목록"):
+        _lo, _hi = (rule.SINCE, rule.MID) if side.startswith("앞") else (rule.MID, "20260101")   # 2026은 잠금(손절 줄 연구 · 마지막에만 엶)
+        _n, _c, _b = stop_stats(g["매매목록"], _lo, _hi)
+        _ss = f" 손절 {_n} 무리 {_c} 연속 {_b}"
+    out.append(f"{side} 연 {g['연수익']:+.1f} 골 {g.get('최대낙폭', g.get('골', float('nan')))} 매매 {g.get('매매', '?')}{_ss}" if g else f"{side} 없음")
 if os.environ.get("I_DUMP_LEDGER"):
     import json as _json
     _json.dump(sorted(set(LED), key=lambda x: (x[1], x[0])), open(os.environ["I_DUMP_LEDGER"], "w"))
