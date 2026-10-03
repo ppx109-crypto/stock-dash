@@ -23,6 +23,28 @@ OPEN = os.environ.get("S_OPEN2026") == "1"
 SHOW_C1 = os.environ.get("S_SHOW_C1") == "1"     # 고르는 회차엔 뒤(2021 ~ 25)를 안 보임 · 시험 회차에만 1
 
 
+_D = None
+
+
+def oned(L):
+    """1일봉만 떼어 낸 계좌(날마다 평가 · 실제 비용 장부): 앞(2017 ~ 20) [뒤(2021 ~ 25)] 연 · 되돌림 뺀 골(13 ~ 20회차에 주 잣대로 더함)."""
+    global _D
+    import numpy as np
+    sys.path.insert(0, RES)
+    import a_mtm
+    import itools as I
+    if _D is None:
+        _D = list(I.DAYS)
+    z = np.zeros(len(_D))
+    rc, rm = a_mtm.account(_D, L, z, mode="cost"), a_mtm.account(_D, L, z, mode="mark")
+    out = []
+    for lo, hi in (("20170101", "20210101"),) + ((("20210101", "20260101"),) if SHOW_C1 else ()):
+        m = np.array([lo <= d < hi for d in _D])
+        q, qm = np.cumprod(1 + rc[m]), np.cumprod(1 + rm[m])
+        out.append(((qm[-1] ** (250 / m.sum()) - 1) * 100, (q / np.maximum.accumulate(q) - 1).min() * 100))
+    return out
+
+
 def one(sx):
     tag = re.sub(r"[^A-Za-z0-9_]+", "-", sx) or "base"
     led = f"s_led_{tag}.json"
@@ -34,7 +56,9 @@ def one(sx):
     if not m_front:
         return f"{sx or '바탕':28s} | 실패 {r1.stderr[-300:]}"
     L = json.load(open(SP + led))
-    json.dump([[c, b, s, round(p - 0.2, 4), k] for c, b, s, p, k in L], open(SP + "c_" + led, "w"))
+    Lc = [[c, b, s, round(p - 0.2, 4), k] for c, b, s, p, k in L]
+    json.dump(Lc, open(SP + "c_" + led, "w"))
+    od = oned(Lc)
     env2 = {**os.environ, **ACC, "I_LEDGER": "c_" + led}
     r2 = subprocess.run([sys.executable, os.path.join(RES, "i013.py")], env=env2, capture_output=True, text=True, timeout=3600)
     acc = {}
@@ -46,9 +70,10 @@ def one(sx):
     f = m_front.groups()
     bk = m_back.groups() if m_back else ("?", "?", "?")
     s = (f"{sx or '바탕':28s} | 앞 1일봉 연 {f[0]} 골 {f[1]} 매매 {f[2]} 손절 {f[3]} 무리 {f[4]} 연속 {f[5]}"
+         f" | 1일봉만 앞 연 {od[0][0]:+.1f} 되돌림뺀 {od[0][1]:.1f}"
          f" | 계좌 B 연 {b[0]:+.1f} 골 {b[1]:.1f} 되돌림뺀 {b[2]:.1f}")
     if SHOW_C1:
-        s += (f" | 뒤(21~25) 손절 {bk[0]} 무리 {bk[1]} 연속 {bk[2]}"
+        s += (f" | 뒤(21~25) 손절 {bk[0]} 무리 {bk[1]} 연속 {bk[2]} · 1일봉만 연 {od[1][0]:+.1f} 되돌림뺀 {od[1][1]:.1f}"
               f" | C1 연 {c1[0]:+.1f} 골 {c1[1]:.1f} 되돌림뺀 {c1[2]:.1f}")
     if OPEN and "C2 2026" in acc:
         c2 = acc["C2 2026"]
