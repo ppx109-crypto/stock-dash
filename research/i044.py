@@ -316,7 +316,7 @@ if var.startswith("YV"):
 #  GP{y}: 그 종목이 앞 60일(그날 포함) 안에 하루 −y% 넘게 빠진 적 있으면 안 삼 · CH{x}: 산 날 하루 +x% 넘게 올랐으면 안 삼
 #  VL{z}: 그 종목 변동성 > z/100이면 안 삼 · SZ{z}: 변동성 > z/100이면 칸 반으로 · PW{n}: 최근 5거래일 새로 담기 n번까지
 SX = [x for x in os.environ.get("I_SX", "").split("+") if x]
-SX_KW, SX_FILT, SX_SIZE = {}, [], None
+SX_KW, SX_FILT, SX_SIZE, SX_MX = {}, [], None, None
 if SX:
     import re as _rex
     sys.path.insert(0, "/home/user/stock-dash/research")
@@ -357,6 +357,15 @@ if SX:
         elif key == "VL":
             _z = nums[0] / 100
             SX_FILT.append(lambda r, _z=_z: (r.get("변동성") or 0) <= _z)
+        elif key == "CAP":                                  # 연구자 추가(30회차 · 결과 본 뒤): 함께 쓰는 칸을 n칸까지만
+            SX_KW["busy_cap"] = nums[0]
+        elif key == "BT":                                   # 연구자 추가: 시장 폭 ≥ b(아주 강한 장 · 앞 기간 손절 무리가 폭 83 ~ 87에서 남)면 새로 안 삼
+            _b = nums[0]
+            SX_FILT.append(lambda r, _b=_b: (nrl.BR.get(r["date"]) or 0) < _b)
+        elif key == "MX":                                   # 연구자 추가: 코스피200이 앞 20일 꼭대기보다 x/10% 넘게 빠진 날 종가에 들고 있는 것 모두 팜
+            _x = nums[0] / 10
+            _hi20 = {d: max(_k[max(0, i - 19):i + 1]) for d, i in _kd.items()}
+            SX_MX = {d for d, i in _kd.items() if (_k[i] / _hi20[d] - 1) * 100 <= -_x}
         elif key == "SZ":
             _z = nums[0] / 100
             SX_SIZE = lambda r, _z=_z: max(1, nrl.BASE_SIZE(r) // 2) if (r.get("변동성") or 0) > _z else nrl.BASE_SIZE(r)
@@ -389,6 +398,12 @@ def stop_stats(trades, lo, hi):
     return len(stops), clusters, best
 
 
+if SX_MX:
+    _exit0 = EXIT
+
+    def EXIT(lane, start, price, step, peak, row=None, _e=_exit0):
+        day = lane["날"][start + step] if start + step < len(lane["날"]) else ""
+        return True if day in SX_MX else _e(lane, start, price, step, peak, row)
 out, LED = [], []
 for side, since, pool in (("앞 2017 ~ 2020", rule.SINCE, nrl.early), ("뒤 2021 ~", rule.MID, nrl.inside)):
     g = lab.wobble(pool, nrl.prices, HOLD, EXIT, tries=8, rank=rule.order,
