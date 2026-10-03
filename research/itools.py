@@ -15,9 +15,15 @@ ROOT = Path("/home/user/stock-dash")
 PERIODS = (("A", "20090916", "20170101"), ("B", "20170101", "20210101"), ("C", "20210101", "20991231"))
 
 
+# 미래 참조 자르기 시험(2026-10-03 사용자 "항상 미래 참조는 원천 차단"): I_CUT=YYYYMMDD면 그날 뒤 자료를 처음부터 읽지 않음.
+# 같은 계산을 자른 자료 · 온 자료로 두 번 돌려 자른 날 앞까지 판단 · 손익이 한 칸도 다르지 않아야 미래를 안 본 것(research/lookahead.py).
+import os as _os
+CUT = _os.environ.get("I_CUT", "")
+
+
 def _closes(code):
     body = json.loads((ROOT / f"etf-data/{code}.json").read_text(encoding="utf-8"))
-    return {str(d): float(c) for d, c in body["closes"] if c}
+    return {str(d): float(c) for d, c in body["closes"] if c and (not CUT or str(d) <= CUT)}
 
 
 base = _closes("069500")
@@ -61,7 +67,7 @@ def ret(a, n):
 def series(path, col):
     """market-data 표 → 날짜판에 맞춘 값(없는 날은 nan)."""
     rows = json.loads((ROOT / path).read_text(encoding="utf-8"))["rows"]
-    got = {str(r["date"]): r.get(col) for r in rows}
+    got = {str(r["date"]): r.get(col) for r in rows if not CUT or str(r["date"]) <= CUT}
     return np.array([float(got[d]) if got.get(d) is not None else np.nan for d in DAYS])
 
 
@@ -71,7 +77,7 @@ def breadth():
     sys.path.insert(0, "/home/user/stock-dash/research")
     sys.path.insert(0, "/home/user/stock-dash")
     import nrl
-    return np.array([nrl.BR.get(d, np.nan) for d in DAYS])
+    return np.array([nrl.BR.get(d, np.nan) for d in DAYS])   # DAYS가 잘려 있으면 자른 날 뒤 값은 안 씀(시장 폭 자체 계산은 1일봉 엔진 nrl 몫)
 
 
 def sim(entry, code="114800", stop=-0.05, take=0.08, maxd=10, exit_sig=None, cost=0.002, weight=1.0, cool=0):

@@ -173,8 +173,14 @@ if os.environ.get("I_CASH"):
     idle_cash = (rot == 0) & (np.abs(mix - d1) < 1e-12)
     use = idle_cash if os.environ["I_CASH"] == "all" else idle_cash & np.concatenate([[False], gate[:-1]])
     mix = mix + np.where(use, bond * prev_free, 0.0)
+if os.environ.get("I_DUMP"):
+    # 자르기 시험용: 날마다 판단 · 손익 배열을 남김(research/lookahead.py가 자른 자료 · 온 자료 결과를 견줌)
+    np.savez(os.environ["I_DUMP"], days=np.array(D), d1=d1, mix=mix, rot=rot, used=used,
+             dip=(dip if "dip" in dir() else np.zeros(n)), qinv=(qinv if "qinv" in dir() else np.zeros(n)))
 print(f"== I 13회차: 1일봉 + 약세장 돌리기({','.join(R.NAME.get(c, c) for c in cands)} · {L}일 · 위 {TOP} · {os.environ.get('I_GATE', 'weak')} · 몫 {W} · 이평 {MA_N}{' · 급락 되돌림 먼저' if os.environ.get('I_DIP') else ''} · 비용 {COST} · 고르는 날 {REB} · 거르기 {GUARD or '없음'} · 하락 추세 달러 {os.environ.get('I_DOLLAR', '안 씀')} · 코스닥 과열 인버스 {os.environ.get('I_QINV', '안 씀')}) ==", flush=True)
 for name, lo, hi in (("B", "20170101", "20210101"), ("C", "20210101", "20991231"), ("C1 21~25", "20210101", "20260101"), ("C2 2026", "20260101", "20991231")):
     a, m, c = I.stats(d1, lo, hi), I.stats(rot, lo, hi), I.stats(mix, lo, hi)
+    if a is None:          # 자른 자료(I_CUT)엔 그 기간이 없음
+        continue
     print(f"  {name:9s} 1일봉만 연 {a[0]:+6.1f} 골 {a[1]:6.1f} | 돌리기만(계좌 전부) 연 {m[0]:+5.1f} 골 {m[1]:6.1f} | 함께 연 {c[0]:+6.1f} 골 {c[1]:6.1f}", flush=True)
 print("끝", flush=True)
