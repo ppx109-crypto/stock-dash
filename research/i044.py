@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV", "AV", "AH", "AC", "AO") or var.startswith("RALL"):
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -173,6 +173,60 @@ if var[:2] in ("CQ", "MV", "OV"):
                     _own[(c_, d_)] = min(cap, float(np.partition(w_, int(len(w_) * kk))[int(len(w_) * kk)]))
         row_calm = lambda r: _own.get((r["code"], r["date"]), -1.0)
         edge = lambda d: full
+# 13라운드 D4 정배열 띠(3일선이 200일선보다 LO ~ HI% 위 · nrl.aligned · 시장 폭 50 그대로):
+#  AV{p}: 띠 × (그 종목 변동성 ÷ 2.15)^(p/100) — 흔들림 맞춤 띠(p 0 = DNA)
+#  AC{a}_{b}: 그날 정배열 종목끼리 간격을 줄 세운 a ~ b% 자리 안 — 횡단면 띠
+#  AO{a}_{b}: 그 종목 자기 기록(앞 250일 · 그날 제외) 간격의 a ~ b% 자리 안 — 자기 기록 띠
+if var[:2] in ("AV", "AH", "AC", "AO"):
+    import re as _re5
+    _LO, _HI = nrl.LO, nrl.HI
+    _base_al = nrl.aligned
+    m5 = _re5.match(r"(AV|AH|AC|AO)(\d+)(?:_(\d+))?", var)
+    if m5.group(1) in ("AV", "AH"):
+        _p, _top_only = int(m5.group(2)) / 100, m5.group(1) == "AH"     # 14라운드 AH: 위 끝(HI)만 흔들림 맞춤
+
+        def _al(r):
+            f = nrl.F.form_of(nrl.shape, r)
+            g, v = f.get("간격"), r.get("변동성")
+            if not f.get("정배열") or g is None or v is None or nrl.BR.get(r["date"], 0) < 50:
+                return False
+            k = (v / 2.15) ** _p
+            return (_LO if _top_only else _LO * k) <= g < _HI * k
+    else:
+        _a, _b = int(m5.group(2)) / 100, int(m5.group(3)) / 100
+        if m5.group(1) == "AC":
+            _gd = {}
+            for r in nrl.inside:
+                f = nrl.F.form_of(nrl.shape, r)
+                if f.get("정배열") and f.get("간격") is not None:
+                    _gd.setdefault(r["date"], []).append(f["간격"])
+            _gd = {d: np.sort(np.array(v)) for d, v in _gd.items()}
+
+            def _al(r):
+                f = nrl.F.form_of(nrl.shape, r)
+                g = f.get("간격")
+                if not f.get("정배열") or g is None or nrl.BR.get(r["date"], 0) < 50:
+                    return False
+                v = _gd.get(r["date"])
+                if v is None or len(v) < 5:
+                    return _LO <= g < _HI
+                q = np.searchsorted(v, g) / len(v)
+                return _a <= q < _b
+        else:
+            def _al(r):
+                f = nrl.F.form_of(nrl.shape, r)
+                g = f.get("간격")
+                if not f.get("정배열") or g is None or nrl.BR.get(r["date"], 0) < 50:
+                    return False
+                one, i = nrl.shape[r["code"]]["간격"], r["i"]
+                w = one[max(0, i - 250):i]
+                w = w[np.isfinite(w)]
+                if len(w) < 120:
+                    return False
+                q = np.searchsorted(np.sort(w), g) / len(w)
+                return _a <= q < _b
+    nrl.aligned = _al
+    edge = lambda d: full
 inner = rule.holds
 
 
