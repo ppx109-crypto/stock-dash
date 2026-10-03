@@ -96,6 +96,7 @@ class HourlyNear(unittest.TestCase):
     def run_with(self, files):
         from unittest import mock
         with mock.patch.object(research_ui, "repo_json", side_effect=lambda p: files.get(p)), \
+                mock.patch.object(research_ui, "repo_json_live", side_effect=lambda p: files.get(p)), \
                 mock.patch.object(research_ui, "today_a_group", return_value={}):
             return research_ui.near_lists()
 
@@ -124,6 +125,7 @@ class IntradayFlow(unittest.TestCase):
     def board(self, files):
         from unittest import mock
         with mock.patch.object(research_ui, "repo_json", side_effect=lambda p: files.get(p)), \
+                mock.patch.object(research_ui, "repo_json_live", side_effect=lambda p: files.get(p)), \
                 mock.patch.object(research_ui, "today_a_group", return_value={}):
             return research_ui.near_lists(), research_ui.board_marks()
 
