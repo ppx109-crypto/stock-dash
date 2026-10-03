@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV") or var.startswith("RALL"):
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -140,6 +140,39 @@ if var.startswith("MS"):
     _mk = {d: (_ma[i] / _ma[i - 5] - 1) * 100 for i, d in enumerate(_I.DAYS) if i >= 185 and np.isfinite(_ma[i]) and np.isfinite(_ma[i - 5])}
     slope_of = lambda d: max(ff, _mk.get(d, 0.0) + mm)
     edge = lambda d: full
+# 11라운드 D1 조용함 문턱(변동성 = 20일 하루 등락 표준편차 %):
+#  CQ{q}C{c}: min(천장 c/100, 그날 100위 안 아래 q% 자리) — 횡단면이되 모두 거칠면 천장이 막음
+#  MV{k}[C{c}]: k/100 × 그날 코스피200 20일 하루 등락 표준편차(%) [· 천장 c/100] — 시장 흔들림 대비
+#  OV{q}C{c}: 그 종목 자기 기록(앞 250일 · 그날 제외) 아래 q% 자리와 천장 c/100 중 작은 값 — 평소보다 조용할 때
+row_calm = None
+if var[:2] in ("CQ", "MV", "OV"):
+    import re as _re4
+    m4 = _re4.match(r"(CQ|MV|OV)(\d+)(?:C(\d+))?", var)
+    kk, cap = int(m4.group(2)) / 100, (int(m4.group(3)) / 100 if m4.group(3) else 99.0)
+    if m4.group(1) == "CQ":
+        edge = lambda d: min(cap, cut(d, kk))
+    elif m4.group(1) == "MV":
+        sys.path.insert(0, "/home/user/stock-dash/research")
+        import itools as _I4
+        _k = _I4.K200
+        _r = np.concatenate([[np.nan], (_k[1:] / _k[:-1] - 1) * 100])
+        _sm = {d: float(np.nanstd(_r[i - 19:i + 1], ddof=1)) for i, d in enumerate(_I4.DAYS) if i >= 20}
+        edge = lambda d: min(cap, kk * _sm.get(d, full / kk))
+    else:
+        _seq = {}
+        for r in nrl.inside:
+            if r.get("변동성") is not None:
+                _seq.setdefault(r["code"], []).append((r["date"], r["변동성"]))
+        _own = {}
+        for c_, lst in _seq.items():
+            lst.sort()
+            vals = np.array([v for _, v in lst])
+            for i_, (d_, _) in enumerate(lst):
+                w_ = vals[max(0, i_ - 250):i_]
+                if len(w_) >= 120:
+                    _own[(c_, d_)] = min(cap, float(np.partition(w_, int(len(w_) * kk))[int(len(w_) * kk)]))
+        row_calm = lambda r: _own.get((r["code"], r["date"]), -1.0)
+        edge = lambda d: full
 inner = rule.holds
 
 
@@ -149,6 +182,8 @@ def holds(r):
         rule.SLOPE = row_slope(r)
     if row_sixty:
         rule.SIXTY = row_sixty(r)
+    if row_calm:
+        rule._calm = row_calm(r)
     try:
         return inner(r)
     finally:
