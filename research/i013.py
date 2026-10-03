@@ -38,6 +38,8 @@ for _c in cands:                     # 9라운드: i011 표에 없는 후보(해
         R.P[_c] = I.px(_c)
         R.R[_c] = np.nan_to_num(np.concatenate([[0.0], R.P[_c][1:] / R.P[_c][:-1] - 1]))
 L, TOP = int(os.environ.get("I_L", "60")), int(os.environ.get("I_TOP", "1"))
+if os.environ.get("I_BRLAG") and R.G.get("시장 폭<50") is not None:   # 점검 A5: 엔진 시장 폭을 어제 값으로
+    R.G["시장 폭<50"] = np.concatenate([[False], R.G["시장 폭<50"][:-1]])
 gate_weak = R.G.get("시장 폭<50")
 # 18라운드 RNA 공통: 코스피200 앞 60일 σ ÷ 그날까지 쌓인 σ 기록 가운데값(그날까지 값만)
 _sk60 = I.sigma_n(I.K200, 60)
@@ -130,6 +132,8 @@ if os.environ.get("I_QINV"):
     if os.environ.get("I_QTHRNA"):   # 19라운드: 한쪽으로만 — max(문턱, c × 229200 σ60 × √10)(거칠 때만 더 엄격)
         _qth = np.fmax(_qth, I.sigma_n(qq, 60) * float(os.environ["I_QTHRNA"]) * np.sqrt(10))
     qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= _qth
+    if os.environ.get("I_DELAY"):     # 점검 A4: 인버스 신호를 하루 늦게 실행
+        qsig = np.concatenate([[False], qsig[:-1]])
     if os.environ.get("I_PEEK"):      # 점검 A3 '검사 눈': 일부러 내일 값을 보는 판 — 자르기 · 더럽히기 시험에 반드시 걸려야 함
         qsig = qsig | (np.nan_to_num(np.concatenate([qq[1:] / qq[:-1] - 1, [0.0]]), nan=0) < -0.02)
     if os.environ.get("I_QCR"):
@@ -180,7 +184,9 @@ if os.environ.get("I_DIP"):
     _dth2 = np.full(n, float(os.environ.get("I_DIP_TH", "-0.05")))
     if os.environ.get("I_DIPTHRNA"):  # 19라운드: 한쪽으로만 — min(문턱, −c × 코스피200 σ60 × √5)(거칠 때만 더 엄격)
         _dth2 = np.fmin(_dth2, -I.sigma_n(I.K200, 60) * float(os.environ["I_DIPTHRNA"]) * np.sqrt(5))
-    sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= _dth2) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
+    sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= _dth2) & gate_weak
+    if os.environ.get("I_DELAY"):     # 점검 A4: 급락 되돌림도 하루 늦게
+        sig = np.concatenate([[False], sig[:-1]])     # I39: 운영(15:15 판단)은 −4.5%
     if os.environ.get("I_DIPRNA"):       # RNA 2라운드: 5일 하락이 그 지수 자기 기록(그날 앞까지) 아래 q면
         _r5 = I.ret(I.K200, 5)
         _cut = (I.pct_roll(_r5, float(os.environ["I_DIPRNA"]), int(os.environ["I_DIPWIN"])) if os.environ.get("I_DIPWIN")
