@@ -185,6 +185,8 @@ if os.environ.get("I_DIP"):
     if os.environ.get("I_DIPTHRNA"):  # 19라운드: 한쪽으로만 — min(문턱, −c × 코스피200 σ60 × √5)(거칠 때만 더 엄격)
         _dth2 = np.fmin(_dth2, -I.sigma_n(I.K200, 60) * float(os.environ["I_DIPTHRNA"]) * np.sqrt(5))
     sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= _dth2) & gate_weak
+    if os.environ.get("I_DIPGATE") == "idle20":   # 점검 A11: 운영(idle_signal)처럼 규칙 쓴 몫(어제까지) < 20%일 때만
+        sig = sig & (prev_used < 0.2)
     if os.environ.get("I_DELAY"):     # 점검 A4: 급락 되돌림도 하루 늦게
         sig = np.concatenate([[False], sig[:-1]])     # I39: 운영(15:15 판단)은 −4.5%
     if os.environ.get("I_DIPRNA"):       # RNA 2라운드: 5일 하락이 그 지수 자기 기록(그날 앞까지) 아래 q면
