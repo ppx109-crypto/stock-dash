@@ -47,19 +47,56 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
+elif var[:2] in ("RS", "RX") or var.startswith("RALL"):
+    edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
     qs = {d: rng.uniform(0.30, 0.50) for d in sorted(by_day)}
     edge = lambda d: cut(d, qs.get(d, 0.4))
+# 기울기 · 60일도 RNA로: 그날 100위 안끼리 견준 위 q (지금 DNA가 통과시키는 몫 ≈ 기울기 10% · 60일 17% · 조용함 51%)
+by_s, by_x = {}, {}
+for r in nrl.inside:
+    if r.get("추세 기울기") is not None:
+        by_s.setdefault(r["date"], []).append(r["추세 기울기"])
+    if r.get("60일 전 대비") is not None:
+        by_x.setdefault(r["date"], []).append(r["60일 전 대비"])
+by_s = {d: np.sort(np.array(v)) for d, v in by_s.items()}
+by_x = {d: np.sort(np.array(v)) for d, v in by_x.items()}
+
+
+def top_cut(table, d, q, dflt):
+    v = table.get(d)
+    return float(v[min(len(v) - 1, int(len(v) * (1 - q)))]) if v is not None and len(v) >= 20 else dflt
+
+
+BASE_SLOPE, BASE_SIXTY = rule.SLOPE, rule.SIXTY          # SHK(흔들기)가 바꿨으면 그 값
+slope_of, sixty_of = (lambda d: BASE_SLOPE), (lambda d: BASE_SIXTY)
+if var.startswith("RS"):
+    qs_ = int(var[2:]) / 100
+    slope_of = lambda d: top_cut(by_s, d, qs_, 1.46)
+    edge = lambda d: full
+elif var.startswith("RX"):
+    qx_ = int(var[2:]) / 100
+    sixty_of = lambda d: top_cut(by_x, d, qx_, 20.0)
+    edge = lambda d: full
+elif var.startswith("RALL"):
+    j = var[4:]
+    rng2 = random.Random(200 + int(j[1:])) if j.startswith("J") else None
+    k = (lambda: rng2.uniform(0.8, 1.2)) if rng2 else (lambda: 1.0)
+    qc, qs2, qx2 = 0.51 * k(), 0.10 * k(), 0.17 * k()
+    edge = lambda d: cut(d, qc)
+    slope_of = lambda d: top_cut(by_s, d, qs2, 1.46)
+    sixty_of = lambda d: top_cut(by_x, d, qx2, 20.0)
+    print(f"  RNA 몫: 조용함 아래 {qc * 100:.0f}% · 기울기 위 {qs2 * 100:.0f}% · 60일 위 {qx2 * 100:.0f}%", flush=True)
 inner = rule.holds
 
 
 def holds(r):
-    rule._calm = edge(r["date"])
+    rule._calm, rule.SLOPE, rule.SIXTY = edge(r["date"]), slope_of(r["date"]), sixty_of(r["date"])
     try:
         return inner(r)
     finally:
-        rule._calm = full
+        rule._calm, rule.SLOPE, rule.SIXTY = full, BASE_SLOPE, BASE_SIXTY
 
 
 if var != "DNA":
