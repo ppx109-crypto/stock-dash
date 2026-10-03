@@ -366,6 +366,15 @@ if SX:
             _x = nums[0] / 10
             _hi20 = {d: max(_k[max(0, i - 19):i + 1]) for d, i in _kd.items()}
             SX_MX = {d for d, i in _kd.items() if (_k[i] / _hi20[d] - 1) * 100 <= -_x}
+        elif key == "SR":                                   # 연구자 추가(46회차 · 결과 본 뒤 · 미리 적음): 연속 손절 뒤 쉬지 않고 '쉼' 동안 한 칸씩만
+            SX_KW["stop_run"] = (nums[0], nums[1], nums[2], 4, 1)
+        elif key == "BD":                                   # 연구자 추가: 시장 폭이 5거래일 전보다 x 넘게 떨어졌으면 새로 안 삼(강한 장이 꺾이는 때)
+            _x = nums[0]; _dl = list(_IX.DAYS)
+            _bd = {d: (nrl.BR.get(d) is not None and nrl.BR.get(_dl[i - 5]) is not None and nrl.BR[_dl[i - 5]] - nrl.BR[d] >= _x)
+                   for d, i in _kd.items() if i >= 5}
+            SX_FILT.append(lambda r, _b=_bd: not _b.get(r["date"], False))
+        elif key == "KS":                                   # 연구자 추가(50회차 · 미리 적음): −4% 넘는 손절이 난 날 남은 종목 중 −x/10% 넘게 진 것도 함께 팜
+            SX_KW["cosell"] = (4, nums[0] / 10)
         elif key == "SZ":
             _z = nums[0] / 100
             SX_SIZE = lambda r, _z=_z: max(1, nrl.BASE_SIZE(r) // 2) if (r.get("변동성") or 0) > _z else nrl.BASE_SIZE(r)

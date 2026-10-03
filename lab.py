@@ -746,7 +746,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None):
+        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None, cosell=None):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -762,6 +762,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
 
     stop_run=(n, 날, 쉼, 손실%)을 두면 최근 '날' 거래일 안에 '손실%' 넘게 잃고 판 매매가 n번 쌓인 날부터
     '쉼' 거래일 동안 새로 담지 않습니다(손절 줄 줄이기 연구 · 2026-10-04). 그날 종가까지 끝난 매매만 봅니다.
+    다섯째 값(칸 수)을 주면 쉬지 않고 그동안 새로 담는 매매를 그 칸 수까지만 씁니다(작게 담기).
+
+    cosell=(손실%, x%)를 두면 그날 '손실%' 넘게 잃고 다 판 매매가 하나라도 있으면, 남은 종목 가운데
+    그날 종가가 산 값보다 x% 넘게 아래인 것도 그날 종가에 함께 팝니다(손절 줄 연구 · 기본 꺼짐).
 
     brake=(깊이, 남길 몫)을 두면 지갑이 꼭대기에서 그만큼 파인 동안 자리를
     그 몫만큼만 씁니다. 끝난 매매만으로 지갑을 세므로 뒷날을 보지 않습니다.
@@ -819,6 +823,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     loss_days, pause_until, day_no = [], -1, -1     # stop_run용(끝난 매매만)
     for day in days:
         day_no += 1
+        n_before = len(trades)
         for code in list(open_slots):
             spot = open_slots[code]
             closes = lane[code]["closes"]
@@ -887,6 +892,30 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 del open_slots[code]
             else:
                 spot["step"] = step
+        if cosell and any(t <= -cosell[0] for t in trades[n_before:]):
+            for code in list(open_slots):
+                spot = open_slots[code]
+                closes = lane[code]["closes"]
+                index = spot["i"] + spot["step"]
+                if spot["step"] < 1 or index >= len(closes):
+                    continue
+                if realistic and locked(closes, lane[code]["날"], index, -1):
+                    continue
+                gain = (closes[index] / spot["price"] - 1) * 100 - cost
+                if gain > -cosell[1]:
+                    continue
+                trades.append(gain)
+                weighted.append(gain * spot["자리"])
+                purse *= 1 + gain * spot["자리"] / 100 / slots
+                crest = max(crest, purse)
+                year_gains.setdefault(day[:4], []).append(gain * spot["자리"])
+                held_days.append(spot["step"])
+                if stop_run and gain <= -stop_run[3]:
+                    loss_days.append(day_no)
+                if detail:
+                    ledger.append({"code": code, "산 날": spot["row"]["date"], "판 날": day, "들고": spot["step"],
+                                   "자리": spot["자리"], "손익": round(gain, 2), "행": spot["row"], "함께 팜": True})
+                del open_slots[code]
         seen += 1
         used = sum(spot["자리"] for spot in open_slots.values())
         busy += used
@@ -900,7 +929,7 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             if sum(1 for k in loss_days if day_no - k < w_) >= n_:
                 pause_until = max(pause_until, day_no + p_)
                 loss_days.clear()
-            if day_no < pause_until:
+            if day_no < pause_until and len(stop_run) < 5:
                 top = used
         if busy_cap is not None:
             today = picks.get(day)
@@ -971,6 +1000,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                     continue
             # 자리가 모자라면 그 종목이 원하는 만큼만 줄여 담습니다.
             want = min(max(int(size(row)), 1), top - used, freed if beyond else top)
+            if stop_run and len(stop_run) >= 5 and day_no < pause_until:
+                want = min(want, stop_run[4])
             open_slots[row["code"]] = {"i": spot, "price": one["closes"][spot],
                                        "step": 0, "peak": one["closes"][spot],
                                        "row": row, "자리": want}
