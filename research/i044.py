@@ -367,7 +367,9 @@ HOLD = nrl.BASE_HOLD if not SX_FILT else (lambda r: nrl.BASE_HOLD(r) and all(f(r
 def stop_stats(trades, lo, hi):
     """손절 줄 재기: −4% 넘게 잃고 판 매매(손절 비슷) 수 · 10거래일 안 3번 넘게 몰린 무리 수 · 가장 긴 연속 손실(판 날 차례)."""
     import bisect as _bs
-    days = sorted({t["판 날"] for t in trades})
+    sys.path.insert(0, "/home/user/stock-dash/research")
+    import itools as _IT
+    days = list(_IT.DAYS)          # 거래일 차례(2026-10-04 고침: 처음엔 '판 날'끼리 셌음)
     sold = sorted((t["판 날"], t["손익"]) for t in trades if lo <= t["판 날"] < hi and not t.get("나눠 팜"))
     stops = [d for d, g in sold if g <= -4]
     pos = [_bs.bisect_left(days, d) for d in stops]
