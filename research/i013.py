@@ -39,6 +39,12 @@ prev_used = np.concatenate([[0.0], used[:-1]])
 gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
         # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
         "idle20": prev_used < 0.2, "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
+# 사용자 2026-10-03 "상승장이면 인버스 최소 · 0처럼 유동적으로": 장세 = 어제까지 코스피200이 200일선 위(오름) / 아래
+_up = np.concatenate([[False], (np.nan_to_num(R.k > I.ma(R.k, 200), nan=0) > 0)[:-1]])
+if os.environ.get("I_GREG") == "up_off":       # 오름 장세면 엔진 쉼
+    gate = gate & ~_up
+elif os.environ.get("I_GREG") == "down_off":   # 내림 장세면 엔진 쉼
+    gate = gate & _up
 W, MA_N = float(os.environ.get("I_W", "1")), int(os.environ.get("I_MA", "0"))
 COST, REB, GUARD = float(os.environ.get("I_COST", "0.002")), os.environ.get("I_REB", "week"), os.environ.get("I_GUARD", "")
 kk = I.K200
@@ -87,6 +93,10 @@ if os.environ.get("I_QINV"):
             if len(_h) > 150 and np.isfinite(_a2[_i]):
                 _rk[_i] = (_h < _a2[_i]).mean() * 100
         qsig = qsig | (np.nan_to_num(_rk, nan=-1) >= float(os.environ["I_QCR"]))
+    if os.environ.get("I_QREG") == "up_off":       # 오름 장세면 인버스 안 함
+        qsig = qsig & ~_up
+    elif os.environ.get("I_QREG") == "down_off":   # 내림 장세면 인버스 안 함
+        qsig = qsig & _up
     qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
     _cr = I.series("market-data/funds.json", "신용융자잔고")
     credit20 = np.full(n, np.nan)
@@ -98,6 +108,8 @@ if os.environ.get("I_QINV"):
             wq = 0.3
         elif os.environ["I_QINV"] == "tier":      # 2단 몫(I27): 신용융자 20일 +5% 이상이면 비운 돈 전부, 아니면 절반
             wq = free[a] * (1.0 if credit20[a] >= 0.05 else 0.5)
+        elif os.environ.get("I_QREG") == "up_half":   # 오름 장세면 비운 돈의 절반만
+            wq = free[a] * (0.5 if _up[a] else 1.0)
         else:
             wq = free[a]
         qinv[a:b + 1] += qd[a:b + 1] * wq
