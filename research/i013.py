@@ -102,7 +102,7 @@ if os.environ.get("I_QINV"):
     elif os.environ.get("I_QREG") == "down_off":   # 내림 장세면 인버스 안 함
         qsig = qsig & _up
     if os.environ.get("I_QEXIT"):        # RNA 2라운드: 익절 · 손절 = c × 코스닥150 앞 60일 σ × √10(산 날 값)
-        _sq = I.sigma_n(qq, 60) * float(os.environ["I_QEXIT"]) * np.sqrt(10)
+        _sq = I.sigma_n(qq, int(os.environ.get("I_QSIGN", "60"))) * float(os.environ["I_QEXIT"]) * np.sqrt(10)   # 7라운드: σ 기간
         qtr, qd = I.sim_var(qsig, "251340", -_sq, _sq, 10, cost=COST)
     else:
         qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
