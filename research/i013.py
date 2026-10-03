@@ -42,7 +42,7 @@ gate_weak = R.G.get("시장 폭<50")
 prev_used = np.concatenate([[0.0], used[:-1]])
 gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
         # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
-        "idle20": prev_used < 0.2, "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
+        "idle20": prev_used < 0.2, "weakidle20": (R.G.get("시장 폭<50") & (prev_used < 0.2)) if R.G.get("시장 폭<50") is not None else prev_used < 0.2, "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
 # 사용자 2026-10-03 "상승장이면 인버스 최소 · 0처럼 유동적으로": 장세 = 어제까지 코스피200이 200일선 위(오름) / 아래
 _up = np.concatenate([[False], (np.nan_to_num(R.k > I.ma(R.k, 200), nan=0) > 0)[:-1]])
 if os.environ.get("I_GREG") == "up_off":       # 오름 장세면 엔진 쉼
@@ -151,7 +151,22 @@ if os.environ.get("I_DIP"):
     mix = d1 + rot_on * prev_free + dip
     rot = rot_on
 if os.environ.get("I_QINV"):
-    mix = mix + qinv
+    _qp = os.environ.get("I_QPRI", "")
+    if _qp:
+        # 모의투자(현금 계좌)에선 엔진과 인버스가 같은 돈을 겹쳐 못 씀(연구 기본은 겹침): inv = 인버스 든 날 엔진 쉼 · half = 둘 다 반
+        _qon = np.zeros(n, bool)
+        for a, b, _ in qtr:
+            _qon[a + 1:b + 1] = True
+        _eng = mix - d1
+        if _qp == "inv":
+            mix = d1 + np.where(_qon, 0.0, _eng) + qinv
+        elif _qp == "half":
+            mix = d1 + np.where(_qon, 0.5 * _eng, _eng) + np.where(_qon, 0.5, 1.0) * qinv
+        elif _qp == "eng":       # 엔진이 돈을 쓰는 날엔 인버스 안 함
+            _busy = np.abs(_eng) > 1e-12
+            mix = d1 + _eng + np.where(_busy, 0.0, qinv)
+    else:
+        mix = mix + qinv
 if os.environ.get("I_DHEDGE"):
     # 3라운드: 하락 추세(원 · 달러 20일 +2% · 코스피 < 20일선)인 날은 1일봉이 돈을 쓰고 있어도 계좌의 일부(I_DHEDGE)를 달러선물로 받침
     _hw = float(os.environ["I_DHEDGE"])
