@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV", "AV", "AH", "AC", "AO", "XV", "YV") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS", "CQ", "MV", "OV", "AV", "AH", "AC", "AO", "XV", "YV") or var.startswith("RALL") or var == "BRLAG":
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -226,6 +226,11 @@ if var[:2] in ("AV", "AH", "AC", "AO"):
                 q = np.searchsorted(np.sort(w), g) / len(w)
                 return _a <= q < _b
     nrl.aligned = _al
+    edge = lambda d: full
+# 점검 A5: 1일봉 후보 ②(정배열)의 시장 폭 ≥ 50을 어제 값으로(I_VAR=BRLAG)
+if var == "BRLAG":
+    _bd = sorted(nrl.BR)
+    nrl.BR = {d: nrl.BR[_bd[i - 1]] for i, d in enumerate(_bd) if i > 0}
     edge = lambda d: full
 inner = rule.holds
 
