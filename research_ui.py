@@ -11,7 +11,7 @@ from ui_v2 import hero, card
 from automatic import brief
 from bi_view import theme, overview, detail, peers_chart
 from chat_research import published, parse_bundle, trends, growth, request_text
-from dashboard_ui import (SORTIE_RULES, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, NAME_B, RULE_TEXT, SHOWN_PER_GROUP,
+from dashboard_ui import (SORTIE_RULES, M15_RULES, IDLE_RULES, fold, idle_panel, sortie_panel, GROUP_RULES, GROUP_TITLES, NAME_A, NAME_B, RULE_TEXT, SHOWN_PER_GROUP,
                           CLOSE_RULES, close_panel, ledger_mini, top_bar, kospi_box, lights_box, frame_open, near_panel, as_day,
                           board_basis,
                           chip_label, close_frame, frame, group_buckets, header,
@@ -358,6 +358,18 @@ def daily_live():
             repo_json("daily-live/alerts.json") or [])
 
 
+def m15_live():
+    """15분봉 규칙 후보(1시간봉과 같은 저녁 후보 hourly-live/plan.json) · 연습 계좌 · 알림(m15-live/ · 장중 15분마다)."""
+    return (repo_json("hourly-live/plan.json"), repo_json("m15-live/state.json"),
+            repo_json("m15-live/alerts.json") or [])
+
+
+def idle_live():
+    """빈칸 엔진 · 코스닥 인버스 오늘 판단 · 들고 있는 것 · 주문 장부(idle-live/ · 평일 15:10)."""
+    return (repo_json("idle-live/today.json"), repo_json_live("idle-live/state.json"),
+            repo_json_live("idle-live/paper-orders.json"))
+
+
 def latest_near():
     """장중에 지금 값으로 다시 센 후보 · 충족 미달 가운데 가장 늦게 판정한 것(15분봉 실행 m15-live · 1시간봉 실행 hourly-live)."""
     got = [x for x in (repo_json("m15-live/near-now.json"), repo_json("hourly-live/near-now.json")) if x]
@@ -411,7 +423,7 @@ def board_marks():
     today, dstate, _ = daily_live()
     hourly, daily = {}, {}
     for c in (plan or {}).get("candidates") or []:
-        hourly[c["code"]] = f'{c.get("name")}  ·  1시간봉 매수 후보 · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸'
+        hourly[c["code"]] = f'{c.get("name")}  ·  15분봉 매수 후보 · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸'
     for p in ((hstate or {}).get("positions") or {}).values():
         hourly[p["code"]] = f'{p.get("name")}  ·  1시간봉 규칙 보유 중 · {p.get("칸")}칸'
     for c in (today or {}).get("candidates") or []:
@@ -494,7 +506,7 @@ def group_board_ui(graded):
     """
     buckets, pending = group_buckets(graded, *board_marks())
     h_near, d_near, h_basis, d_basis = near_lists()
-    near = {"A": ("1시간봉 매수 후보(충족 미달)", h_near, h_basis), "B": ("1일봉 매수 후보(충족 미달)", d_near, d_basis)}
+    near = {"A": ("15분봉 매수 후보(충족 미달)", h_near, h_basis), "B": ("1일봉 매수 후보(충족 미달)", d_near, d_basis)}
     columns = st.columns(len(GROUP_TITLES))
     for column, key in zip(columns, GROUP_TITLES):
         klass = GROUP_TITLES[key][2]
@@ -585,18 +597,23 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
                  '없습니다. 아래 <b>＋ 조사된 종목 담기</b>로 자료가 준비된 종목을 한 번에 '
                  '담거나, <b>＋ 시가총액 상위 종목 담기</b>로 코스피·코스닥 상위 종목을 '
                  '담으면 여기에 그룹이 나옵니다.</p>')
-    plan, hstate, halerts = hourly_a()
+    plan, mstate, malerts = m15_live()
     dtoday, dstate, dalerts = daily_live()
+    itoday, istate, ibook = idle_live()
     live_top_bar()
     # 1시간봉 · 1일봉 매수 후보 두 칸을 제목 바로 아래에(사용자 요청 2026-10-01)
     if board is None:
         group_board_ui(graded)
     else:
         st.markdown(board, unsafe_allow_html=True)
-    st.markdown(frame_open() + section('1시간봉 매매 규칙', '조사 대상 507종목 전체에서 · 장중 1시간마다')
-                + SORTIE_RULES + sortie_panel(today_a_group(), plan, hstate, halerts)
-                + section('1일봉 매매 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20')
-                + CLOSE_RULES + close_panel(dtoday, dstate, dalerts)
+    # 화살표를 눌러야 펼쳐짐(사용자 2026-10-03) · 1시간봉 칸은 15분봉으로(1시간봉은 모의 주문 보류) · 빈칸 엔진 칸 더함
+    st.markdown(frame_open()
+                + fold('15분봉 매매 규칙', '조사 대상 507종목 전체에서 · 장중 15분마다 · 모의투자 몫 50%',
+                       M15_RULES + sortie_panel(today_a_group(), plan, mstate, malerts, name='15분봉'))
+                + fold('1일봉 매매 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20 · 모의투자 몫 50%',
+                       CLOSE_RULES + close_panel(dtoday, dstate, dalerts))
+                + fold('빈칸 엔진 · 코스닥 인버스 모의투자', '규칙들이 안 쓰는 돈 · 하루 한 번 15:10 · KODEX 200 · 달러 · 나스닥 · 금 · 국고채 · 코스닥 인버스',
+                       IDLE_RULES + idle_panel(itoday, istate, ibook))
                 + close_frame(), unsafe_allow_html=True)
     named = {g['code']: g['name'] for g in graded}
     code = st.session_state.get('px_pick')
