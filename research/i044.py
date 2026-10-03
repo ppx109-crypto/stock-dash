@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS") or var.startswith("RALL"):
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -109,6 +109,25 @@ if var.startswith("VS"):
 if var.startswith("VX"):
     zx = int(var[2:]) / 100
     row_sixty = lambda r: zx * (r.get("변동성") or 99) * np.sqrt(60)
+    edge = lambda d: full
+# 4라운드 D2: 기울기 = max(바닥 f, 그 종목 자기 기록(앞 250일 · 그날 제외) 위 q 자리) — OS{q}F{f}
+own_cut = {}
+if var.startswith("OS"):
+    import re as _re2
+    mo = _re2.match(r"OS(\d+)F(\d+)", var)
+    qo, fo = int(mo.group(1)) / 100, int(mo.group(2)) / 100
+    seq = {}
+    for r in nrl.inside:
+        if r.get("추세 기울기") is not None:
+            seq.setdefault(r["code"], []).append((r["date"], r["추세 기울기"]))
+    for c_, lst in seq.items():
+        lst.sort()
+        vals = np.array([v for _, v in lst])
+        for i_, (d_, _) in enumerate(lst):
+            w_ = vals[max(0, i_ - 250):i_]
+            if len(w_) >= 120:
+                own_cut[(c_, d_)] = max(fo, float(np.partition(w_, int(len(w_) * (1 - qo)))[int(len(w_) * (1 - qo))]))
+    row_slope = lambda r: own_cut.get((r["code"], r["date"]), 99.0)
     edge = lambda d: full
 inner = rule.holds
 
