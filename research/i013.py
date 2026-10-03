@@ -297,4 +297,14 @@ for name, lo, hi in (("B", "20170101", "20210101"), ("C", "20210101", "20991231"
     if a is None:          # 자른 자료(I_CUT)엔 그 기간이 없음
         continue
     print(f"  {name:9s} 1일봉만 연 {a[0]:+6.1f} 골 {a[1]:6.1f} | 돌리기만(계좌 전부) 연 {m[0]:+5.1f} 골 {m[1]:6.1f} | 함께 연 {c[0]:+6.1f} 골 {c[1]:6.1f}", flush=True)
+if os.environ.get("I_MTM", "1") != "0" and not I.CUT and not I.POISON:
+    # 점검 A18(2026-10-04 · 사용자 "4번 진행"): 위 '함께'는 1일봉 손익을 판 날에만 적어 골이 얕게 나옴 →
+    # 1일봉을 실제 계좌처럼 날마다 평가한 계좌도 함께 보임(research/a_mtm.py · 이게 실제 모의투자 계좌와 같은 잣대). I_MTM=0이면 건너뜀.
+    import a_mtm
+    _led = json.load(open(SP + LEDGER))
+    _mt = a_mtm.account(D, _led, mix - d1)
+    for name, lo, hi in (("B", "20170101", "20210101"), ("C1 21~25", "20210101", "20260101"), ("C2 2026", "20260101", "20991231")):
+        _s = I.stats(_mt, lo, hi)
+        if _s:
+            print(f"  {name:9s} 날마다 평가 연 {_s[0]:+6.1f} 골 {_s[1]:6.1f}", flush=True)
 print("끝", flush=True)
