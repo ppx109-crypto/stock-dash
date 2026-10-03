@@ -1,4 +1,4 @@
-"""통합 매매 규칙 DNA → RNA 검토 ② 빈칸 엔진 · 코스닥 인버스(사용자 2026-10-03).
+"""RNA 1라운드 고원 확인 — i045의 엔진 RNA 후보(급락 자기 기록 백분위 · 코스닥 RNA 익절손절) · 빈칸 엔진 · 코스닥 인버스(사용자 2026-10-03).
 DNA: 급락 = 코스피200 5일 ≤ −5% · 코스닥 과열 = 코스닥150 10일 ≥ +10%.
 RNA: 그 지수의 앞 60일 하루 흔들림(표준편차 · 그날까지만)으로 나눔 → 급락 = 5일 ≤ −k × σ × √5 · 과열 = 10일 ≥ +k × σ × √10.
 k는 DNA와 신호 날 수가 비슷해지는 값 근처를 흔듦. 사고팔기(익절 · 손절 · 기간 · 쉼)는 그대로. 계좌 전부 · A 2012 ~ 2016 · B · C."""
@@ -31,22 +31,8 @@ def show(tag, sig, code, st, tk, days, cool=0):
     print(f"  {tag:26s} 신호 날 {int(np.nansum(sig))} | " + " | ".join(cells), flush=True)
 
 
-k = I.K200
-sk = sigma(k)
-r5 = np.nan_to_num(I.ret(k, 5), nan=0)
-print("== 급락 되돌림(KODEX 200 · 익절 3 · 손절 3 · 20일 · 손절 뒤 20일 쉼) ==")
-show("DNA 5일 ≤ −5%", r5 <= -0.05, "069500", -0.03, 0.03, 20, 20)
-for kk in (2.0, 2.25, 2.5, 2.75, 3.0):
-    show(f"RNA 5일 ≤ −{kk}σ√5", r5 <= -kk * np.nan_to_num(sk, nan=9) * np.sqrt(5), "069500", -0.03, 0.03, 20, 20)
-q = I.px("229200")
-sq = sigma(q)
-r10 = np.nan_to_num(I.ret(q, 10), nan=0)
-print("== 코스닥 과열 인버스(251340 · 익절 1.5 · 손절 1.5 · 10일 · 코스닥150은 2015-10부터라 A는 짧음) ==")
-show("DNA 10일 ≥ +10%", r10 >= 0.10, "251340", -0.015, 0.015, 10)
-for kk in (2.0, 2.25, 2.5, 2.75, 3.0):
-    show(f"RNA 10일 ≥ +{kk}σ√10", r10 >= kk * np.nan_to_num(sq, nan=9) * np.sqrt(10), "251340", -0.015, 0.015, 10)
 
-# ── RNA 1라운드(사용자 "한 번에 실패라 하지 말고 DNA만큼 연구") — 고르기는 B(2017 ~ 2020), 시험은 A(안 본 앞) · C(뒤)
+# (사용자 "한 번에 실패라 하지 말고 DNA만큼 연구") — 고르기는 B(2017 ~ 2020), 시험은 A(안 본 앞) · C(뒤)
 def pct_hist(x, q, start=250):
     """그날까지의 지난 값(자기 기록)에서 아래 q 자리(미래 참조 없음)."""
     out = np.full(len(x), np.nan)
@@ -98,34 +84,20 @@ def show2(tag, tr, dd):
     print(f"  {tag:30s} | " + " | ".join(cells), flush=True)
 
 
-print("\n== RNA 1라운드 · 급락 되돌림 ==")
-for w in (20, 120):
-    s_ = np.nan_to_num(sigma(k, w), nan=9)
-    for kk in (2.0, 2.5, 3.0):
-        show(f"σ{w}일 · 5일 ≤ −{kk}σ√5", r5 <= -kk * s_ * np.sqrt(5), "069500", -0.03, 0.03, 20, 20)
-for fl in (0.03, 0.04):
-    for kk in (1.5, 2.0, 2.5):
-        show(f"바닥 −{fl * 100:.0f}% 그리고 −{kk}σ60√5", (r5 <= -fl) & (r5 <= -kk * np.nan_to_num(sk, nan=9) * np.sqrt(5)), "069500", -0.03, 0.03, 20, 20)
-r5raw = I.ret(k, 5)
-for qq in (0.01, 0.02, 0.03, 0.05):
-    cut_ = pct_hist(r5raw, qq)
-    show(f"자기 기록 아래 {qq * 100:.0f}%", np.nan_to_num(r5raw <= cut_, nan=0).astype(bool), "069500", -0.03, 0.03, 20, 20)
-for c in (0.6, 0.8, 1.0):
-    tr, dd = sim_rna(r5 <= -0.05, "069500", k, np.nan_to_num(sk, nan=np.nan), c, c, 20, 20)
-    show2(f"DNA 신호 + RNA 익절손절 {c}σ√20", tr, dd)
 
-print("\n== RNA 1라운드 · 코스닥 과열 인버스 ==")
-for w in (20, 120):
-    s_ = np.nan_to_num(sigma(q, w), nan=9)
-    for kk in (2.0, 2.5, 3.0):
-        show(f"σ{w}일 · 10일 ≥ +{kk}σ√10", r10 >= kk * s_ * np.sqrt(10), "251340", -0.015, 0.015, 10)
-for fl in (0.07, 0.08):
-    for kk in (1.5, 2.0, 2.5):
-        show(f"바닥 +{fl * 100:.0f}% 그리고 +{kk}σ60√10", (r10 >= fl) & (r10 >= kk * np.nan_to_num(sq, nan=9) * np.sqrt(10)), "251340", -0.015, 0.015, 10)
-r10raw = I.ret(q, 10)
-for qq in (0.95, 0.97, 0.98, 0.99):
-    cut_ = pct_hist(r10raw, qq)
-    show(f"자기 기록 위 {100 - qq * 100:.0f}%", np.nan_to_num(r10raw >= cut_, nan=0).astype(bool), "251340", -0.015, 0.015, 10)
-for c in (0.3, 0.4, 0.5):
+k = I.K200
+r5 = np.nan_to_num(I.ret(k, 5), nan=0)
+r5raw = I.ret(k, 5)
+print("== 고원 · 급락 되돌림 자기 기록 아래 q ==")
+show("DNA 5일 ≤ −5%", r5 <= -0.05, "069500", -0.03, 0.03, 20, 20)
+for qq in (0.025, 0.03, 0.035, 0.04):
+    c = pct_hist(r5raw, qq)
+    show(f"자기 기록 아래 {qq * 100:.1f}%", np.nan_to_num(r5raw <= c, nan=0).astype(bool), "069500", -0.03, 0.03, 20, 20)
+q = I.px("229200")
+sq = sigma(q)
+r10 = np.nan_to_num(I.ret(q, 10), nan=0)
+print("== 고원 · 코스닥 인버스 RNA 익절손절 c ==")
+show("DNA ±1.5%", r10 >= 0.10, "251340", -0.015, 0.015, 10)
+for c in (0.2, 0.25, 0.3, 0.35):
     tr, dd = sim_rna(r10 >= 0.10, "251340", q, np.nan_to_num(sq, nan=np.nan), c, c, 10)
-    show2(f"DNA 신호 + RNA 익절손절 {c}σ√10", tr, dd)
+    show2(f"RNA 익절손절 {c}σ√10", tr, dd)

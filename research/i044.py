@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX") or var.startswith("RALL"):
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -88,11 +88,37 @@ elif var.startswith("RALL"):
     slope_of = lambda d: top_cut(by_s, d, qs2, 1.46)
     sixty_of = lambda d: top_cut(by_x, d, qx2, 20.0)
     print(f"  RNA 몫: 조용함 아래 {qc * 100:.0f}% · 기울기 위 {qs2 * 100:.0f}% · 60일 위 {qx2 * 100:.0f}%", flush=True)
+# RNA 1라운드 설계(사용자 "한 번에 실패라 하지 말고 DNA만큼 연구"):
+#  HS{q}F{f}: 기울기 = max(바닥 f, 그날 100위 안 위 q% 자리) — 상대 순위에 약한 장 거르기(바닥)를 남김
+#  VS{z}: 기울기 ÷ 변동성 ≥ z/100(종목마다 자기 흔들림에 맞춘 문턱) · VX{z}: 60일 오름 ÷ (변동성 × √60) ≥ z/100
+#  HV{q}F{f}Z{z}: HS + VX 함께
+row_slope = row_sixty = None
+if var.startswith("HS") or var.startswith("HV"):
+    import re as _re
+    mt = _re.match(r"H[SV](\d+)F(\d+)(?:Z(\d+))?", var)
+    qh, fh = int(mt.group(1)) / 100, int(mt.group(2)) / 100
+    slope_of = lambda d: max(fh, top_cut(by_s, d, qh, BASE_SLOPE))
+    edge = lambda d: full
+    if mt.group(3):
+        zx = int(mt.group(3)) / 100
+        row_sixty = lambda r: zx * (r.get("변동성") or 99) * np.sqrt(60)
+if var.startswith("VS"):
+    zs = int(var[2:]) / 100
+    row_slope = lambda r: zs * (r.get("변동성") or 99)
+    edge = lambda d: full
+if var.startswith("VX"):
+    zx = int(var[2:]) / 100
+    row_sixty = lambda r: zx * (r.get("변동성") or 99) * np.sqrt(60)
+    edge = lambda d: full
 inner = rule.holds
 
 
 def holds(r):
     rule._calm, rule.SLOPE, rule.SIXTY = edge(r["date"]), slope_of(r["date"]), sixty_of(r["date"])
+    if row_slope:
+        rule.SLOPE = row_slope(r)
+    if row_sixty:
+        rule.SIXTY = row_sixty(r)
     try:
         return inner(r)
     finally:
