@@ -7,6 +7,7 @@
   · I_CASH=all · idle(엔진이 안 쓰는 비운 돈을 단기채권 153130에)
   · I_MOOD=80(DART · 한투 시장 분위기 점수 ≥ 값이면 KODEX 200 · 익절 8 손절 3 10일 · 그동안 돌리기 쉼)
   · I_QCR=95(코스닥 인버스 신호에 '코스닥 종목 신용 급증 순위 ≥ 값'을 더함) · I_MOOD5=1(분위기에 흑자전환 물결 더함)
+  · I_DHEDGE=0.2(하락 추세면 계좌의 그만큼 달러로 받침 · 1일봉이 들고 있어도)
   · I_DIPGUARD=dollar · trend · deep(급락 되돌림 거르기 · 여럿이면 붙여 씀)
   · I_ENS=1(돌리기 10 · 20 · 40일 섞기) · I_VT=0.10(돌리기 변동성 맞추기 · 연율 목표)
   · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
@@ -131,6 +132,15 @@ if os.environ.get("I_DIP"):
     rot = rot_on
 if os.environ.get("I_QINV"):
     mix = mix + qinv
+if os.environ.get("I_DHEDGE"):
+    # 3라운드: 하락 추세(원 · 달러 20일 +2% · 코스피 < 20일선)인 날은 1일봉이 돈을 쓰고 있어도 계좌의 일부(I_DHEDGE)를 달러선물로 받침
+    _hw = float(os.environ["I_DHEDGE"])
+    _dl = R.P["138230"]
+    _dd = np.nan_to_num(_dl / np.concatenate([np.full(20, np.nan), _dl[:-20]]) - 1, nan=0)
+    _c = (_dd > 0.02) & (np.nan_to_num(kk < m20k, nan=0) > 0)
+    _cy = np.concatenate([[False], _c[:-1]])
+    _fl = np.concatenate([[False], _cy[1:] != _cy[:-1]])
+    mix = mix + np.where(_cy, R.R["138230"] * _hw, 0.0) - _fl * COST / 2 * _hw
 if os.environ.get("I_MOOD"):
     # I48: DART · 한투 '시장 분위기 점수'(i031 · i032 · 전환사채 · 공급계약 공시 물결 + 목표가 올림 몫 + 대차잔고 반대) ≥ I_MOOD → KODEX 200
     # 익절 8 · 손절 3 · 10일. 엔진이 켜진 날(1일봉 쓴 몫 < 20%) 비운 돈으로. 그동안 돌리기 몫은 쉼(돈 겹치지 않게).
