@@ -20,7 +20,9 @@ ACC = dict(I_DIP="1", I_DOLLAR="2", I_GATE="weakidle20", I_L="20", I_TOP="2", I_
            I_QINV="free", I_QPRI="inv", I_QTH="0.095", I_DIP_TH="-0.045", I_QEXIT="0.25", I_QSIGN="60", I_QEXIT_SIDE="take",
            I_QEXIT_LO="0.015", I_QEXIT_HI="0.025", I_COST="0.004")
 OPEN = os.environ.get("S_OPEN2026") == "1"
-SHOW_C1 = os.environ.get("S_SHOW_C1") == "1"     # 고르는 회차엔 뒤(2021 ~ 25)를 안 보임 · 시험 회차에만 1
+SHOW_C1 = os.environ.get("S_SHOW_C1") == "1"     # (35회차까지) 고르는 회차엔 뒤(2021 ~ 25)를 안 보임
+SPLIT2 = os.environ.get("S_SPLIT", "2") == "2"   # 36회차부터: 고르기 2017 ~ 2022 · 시험 2023 ~ 2025(S_SHOW_TEST=1) · 2026 잠금
+SHOW_TEST = os.environ.get("S_SHOW_TEST") == "1"
 
 
 _D = None
@@ -45,6 +47,36 @@ def oned(L):
     return out
 
 
+def win_stats(L, base, lo, hi):
+    """그 기간 1일봉만 · 계좌(base = 1일봉 밖 몫) 날마다 평가: 연 · 되돌림 뺀 골 + 손절 무리(10거래일 안 −4% 손실 3번 넘게)."""
+    import numpy as np
+    import a_mtm
+    z = np.zeros(len(_D))
+    m = np.array([lo <= d < hi for d in _D])
+    out = []
+    for b in (z, base):
+        rc, rm = a_mtm.account(_D, L, b, mode="cost"), a_mtm.account(_D, L, b, mode="mark")
+        q, qm = np.cumprod(1 + rc[m]), np.cumprod(1 + rm[m])
+        out.append(((qm[-1] ** (250 / m.sum()) - 1) * 100, (q / np.maximum.accumulate(q) - 1).min() * 100))
+    # 36회차: 여러 하락을 다 보는 잣대 — 1일봉만 되돌림 뺀 곡선의 '하락 평균 깊이'(꼭대기 아래에 있는 날들의 깊이 제곱 평균의 제곱근)
+    rc1 = a_mtm.account(_D, L, z, mode="cost")
+    q1 = np.cumprod(1 + rc1[m]); dd1 = q1 / np.maximum.accumulate(q1) - 1
+    ulcer = float(np.sqrt(np.mean(dd1 ** 2)) * 100)
+    import bisect
+    st = sorted((bisect.bisect_left(_D, s), p * k / 10) for c, b_, s, p, k in L if lo <= s < hi and p <= -4)
+    pos = [x for x, _ in st]
+    cl, j, cl_loss = 0, 0, 0.0
+    while j < len(pos):
+        k = j
+        while k + 1 < len(pos) and pos[k + 1] - pos[j] < 10:
+            k += 1
+        if k - j + 1 >= 3:
+            cl += 1; cl_loss += sum(v for _, v in st[j:k + 1]); j = k + 1
+        else:
+            j += 1
+    return out, (cl, cl_loss, ulcer), len(pos)
+
+
 def one(sx):
     tag = re.sub(r"[^A-Za-z0-9_]+", "-", sx) or "base"
     led = f"s_led_{tag}.json"
@@ -58,14 +90,28 @@ def one(sx):
     L = json.load(open(SP + led))
     Lc = [[c, b, s, round(p - 0.2, 4), k] for c, b, s, p, k in L]
     json.dump(Lc, open(SP + "c_" + led, "w"))
-    od = oned(Lc)
-    env2 = {**os.environ, **ACC, "I_LEDGER": "c_" + led}
+    od = oned(Lc)          # _D도 여기서 채움
+    env2 = {**os.environ, **ACC, "I_LEDGER": "c_" + led, "I_DUMP": SP + "d_" + led.replace(".json", ".npz"), "I_MTM": "0" if SPLIT2 else "1"}
     r2 = subprocess.run([sys.executable, os.path.join(RES, "i013.py")], env=env2, capture_output=True, text=True, timeout=3600)
     acc = {}
     for x in r2.stdout.splitlines():
         m = re.match(r"\s+(B|C1 21~25|C2 2026)\s+날마다 평가 연\s+([+-][\d.]+) 골\s+([-\d.]+) · 되돌림 뺀 골\s+([-\d.]+)", x)
         if m:
             acc[m.group(1)] = (float(m.group(2)), float(m.group(3)), float(m.group(4)))
+    if SPLIT2:
+        import numpy as np
+        zd = np.load(SP + "d_" + led.replace(".json", ".npz"))
+        base = zd["mix"] - zd["d1"]
+        (o1, a1), c1_, n1 = win_stats(Lc, base, "20170101", "20230101")
+        s = (f"{sx or '바탕':28s} | 고르기 17~22: 1일봉만 연 {o1[0]:+.1f} 되돌림뺀 {o1[1]:.1f} 하락평균 {c1_[2]:.2f} · 손절 {n1} 무리 {c1_[0]} 무리손실 {c1_[1]:.1f}"
+             f" · 계좌 연 {a1[0]:+.1f} 되돌림뺀 {a1[1]:.1f}")
+        if SHOW_TEST:
+            (o2, a2), c2_, n2 = win_stats(Lc, base, "20230101", "20260101")
+            s += f" | 시험 23~25: 1일봉만 연 {o2[0]:+.1f} 되돌림뺀 {o2[1]:.1f} 하락평균 {c2_[2]:.2f} · 손절 {n2} 무리 {c2_[0]} 무리손실 {c2_[1]:.1f} · 계좌 연 {a2[0]:+.1f} 되돌림뺀 {a2[1]:.1f}"
+        if OPEN:
+            (o3, a3), c3_, n3 = win_stats(Lc, base, "20260101", "20991231")
+            s += f" | 2026: 1일봉만 연 {o3[0]:+.1f} 되돌림뺀 {o3[1]:.1f} 하락평균 {c3_[2]:.2f} · 무리 {c3_[0]} 무리손실 {c3_[1]:.1f} · 계좌 연 {a3[0]:+.1f} 되돌림뺀 {a3[1]:.1f}"
+        return s
     b, c1 = acc.get("B", (0, 0, 0)), acc.get("C1 21~25", (0, 0, 0))
     f = m_front.groups()
     bk = m_back.groups() if m_back else ("?", "?", "?")
