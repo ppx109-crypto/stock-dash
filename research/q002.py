@@ -15,7 +15,7 @@ DAY = {c: np.array([t[:8] for t in b["t"]]) for c, b in data.items()}
 RV = {c: F.relvol(b) for c, b in data.items()}
 VW = {c: F.vwap_dev(b) for c, b in data.items()}
 GP = {c: F.gap(b) for c, b in data.items()}
-MK = F.market(data)
+MK = F.market(data, IN)          # 2026-10-04: 그 봉에 100위 안인 종목만(운영과 같게 · 미래 참조 없앰)
 MKT = {c: np.array([MK.get(t, np.nan) for t in b["t"]]) for c, b in data.items()}
 SLOTS = [f"{9 + m // 60:02d}{m % 60:02d}" for m in range(0, 26 * 15, 15)]
 

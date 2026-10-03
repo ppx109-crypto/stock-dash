@@ -28,7 +28,7 @@ def peek_sell(c, b, p, k):     # 다음 봉이 내리면 미리 팜(한 봉 엿�
 
 
 import m15feat as F
-MK = F.market(data)
+MK = F.market(data, IN)          # 2026-10-04: 그 봉에 100위 안인 종목만(운영과 같게 · 미래 참조 없앰)
 
 
 def final_entry(c, b):
