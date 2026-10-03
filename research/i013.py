@@ -6,6 +6,7 @@
   · I_DOLLAR=2(원 · 달러 20일 +2% · 코스피 < 20일선인 날은 돌리기 대신 달러만)
   · I_CASH=all · idle(엔진이 안 쓰는 비운 돈을 단기채권 153130에)
   · I_MOOD=80(DART · 한투 시장 분위기 점수 ≥ 값이면 KODEX 200 · 익절 8 손절 3 10일 · 그동안 돌리기 쉼)
+  · I_QCR=95(코스닥 인버스 신호에 '코스닥 종목 신용 급증 순위 ≥ 값'을 더함) · I_MOOD5=1(분위기에 흑자전환 물결 더함)
   · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
 import json
@@ -63,6 +64,16 @@ if os.environ.get("I_QINV"):
     # I_QINV=free(비운 돈) · hedge(계좌의 30%를 늘 — 1일봉이 들고 있어도)
     qq = R.P.get("229200") if "229200" in R.P else I.px("229200")
     qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= 0.10
+    if os.environ.get("I_QCR"):
+        # I49: 또는 코스닥 종목 신용 잔고율 20일 변화가 앞 250일 순위 ≥ I_QCR(코스닥 종목만 · agg2.npz)
+        _a2 = np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg2.npz")["코스닥 신용 잔고율 20일 변화"]
+        _rk = np.full(n, np.nan)
+        for _i in range(250, n):
+            _h = _a2[_i - 250:_i]
+            _h = _h[np.isfinite(_h)]
+            if len(_h) > 150 and np.isfinite(_a2[_i]):
+                _rk[_i] = (_h < _a2[_i]).mean() * 100
+        qsig = qsig | (np.nan_to_num(_rk, nan=-1) >= float(os.environ["I_QCR"]))
     qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
     _cr = I.series("market-data/funds.json", "신용융자잔고")
     credit20 = np.full(n, np.nan)
@@ -109,9 +120,12 @@ if os.environ.get("I_MOOD"):
             if len(h) > 150 and np.isfinite(a[i]):
                 out[i] = (h < a[i]).mean() * 100
         return out
-    _R = np.array([_rank(_A["DART 전환사채 20일 수"]), _rank(_A["DART 공급계약 20일 수"]), _rank(_A["한투 목표가 올림 몫(20일)"]), 100 - _rank(_A["한투 대차잔고 20일 변화"])])
+    _L = [_rank(_A["DART 전환사채 20일 수"]), _rank(_A["DART 공급계약 20일 수"]), _rank(_A["한투 목표가 올림 몫(20일)"]), 100 - _rank(_A["한투 대차잔고 20일 변화"])]
+    if os.environ.get("I_MOOD5"):     # I49: 흑자전환 − 적자전환 물결(DART 분기 실적)도 더함
+        _L.append(_rank(np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg2.npz")["DART 흑자전환 − 적자전환(60일)"]))
+    _R = np.array(_L)
     mood = np.nanmean(_R, axis=0)
-    mood[np.isfinite(_R).sum(axis=0) < 3] = np.nan
+    mood[np.isfinite(_R).sum(axis=0) < len(_L) - 1] = np.nan
     msig = (np.nan_to_num(mood, nan=-1) >= float(os.environ["I_MOOD"])) & gate
     mtr, md = I.sim(msig, "069500", -0.03, 0.08, 10, cost=COST)
     mon = np.zeros(n, bool)
