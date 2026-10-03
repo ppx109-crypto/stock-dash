@@ -8,12 +8,17 @@ sys.path.insert(0, "/home/user/stock-dash/research")
 import hlab as _H
 
 if os.environ.get("Q_VX"):
-    _z = float(os.environ["Q_VX"])
-    _src = inspect.getsource(_H.daily_tables).replace(
-        '(r.get("60일 전 대비") or -99) >= rule.SIXTY',
-        f'(r.get("60일 전 대비") or -99) >= {_z} * (r.get("변동성") or 99) * 60 ** 0.5')
-    assert "60 ** 0.5" in _src
-    exec(_src, _H.__dict__)
+    # hlab.cached_tables(.cache 저장본)를 그대로 두고 추세 문 표만 바꿔 끼움 — 표는 일봉 표 한 번 읽어 DNA · VX를 함께 구운 것
+    #  (scratchpad r22/build.py · DNA 판이 저장본과 474건 모두 같음을 확인)
+    import pickle as _pk
+    from pathlib import Path as _P
+    _orig = _H.cached_tables
+    _tr = _pk.load(open(os.environ.get("Q_TREND_DIR", "") + f"/trend_{os.environ['Q_VX']}.pkl", "rb"))
+
+    def _cached(since="20220101"):
+        saved = _pk.loads((_P(".cache") / "hourly_tables.pkl").read_bytes())
+        return _H._limit_tables(saved["ranks"], _tr)
+    _H.cached_tables = _cached
 exec(open("/home/user/stock-dash/research/q027.py", encoding="utf-8").read().split('\npart = os.environ')[0])
 print(f"== 15분봉 RNA 22라운드: 60일 문턱 {'VX ' + os.environ['Q_VX'] if os.environ.get('Q_VX') else 'DNA +20%'} ({len(data)}종목) ==", flush=True)
 go("22회차 후보")
