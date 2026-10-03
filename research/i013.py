@@ -47,6 +47,15 @@ for _i in range(250, n):
     _h = _h[np.isfinite(_h)]
     if len(_h) and np.isfinite(_sk60[_i]):
         _srel[_i] = _sk60[_i] / np.median(_h)
+if os.environ.get("I_BRRNA") and R.G.get("시장 폭<50") is not None:   # 19라운드 D5: 시장 폭 문턱 RNA
+    _b = np.nan_to_num(I.breadth(), nan=100)
+    _bm = os.environ["I_BRRNA"]
+    if _bm.startswith("q"):           # 시장 폭 자기 기록(그날 앞까지) 아래 q 자리보다 낮으면
+        _bth = np.nan_to_num(I.pct_hist(np.where(_b < 100, _b, np.nan), float(_bm[1:])), nan=50)
+    else:                             # v{p}: 50 × (σ ÷ 가운데)^p
+        _bth = 50 * _srel ** float(_bm[1:])
+    R.G["시장 폭<50"] = _b < _bth
+    gate_weak = R.G["시장 폭<50"]
 prev_used = np.concatenate([[0.0], used[:-1]])
 gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
         # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
@@ -117,7 +126,10 @@ if os.environ.get("I_QINV"):
     # 코스닥 과열 뒤 코스닥150 인버스(I20 · I22): 229200 10일 +10% → 251340 · 익절 1.5 · 손절 1.5 · 10일. 1일봉이 비워 둔 돈으로(사는 날 몫 고정).
     # I_QINV=free(비운 돈) · hedge(계좌의 30%를 늘 — 1일봉이 들고 있어도)
     qq = R.P.get("229200") if "229200" in R.P else I.px("229200")
-    qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= float(os.environ.get("I_QTH", "0.10"))   # 8라운드: 운영 15:15 판은 0.095
+    _qth = np.full(n, float(os.environ.get("I_QTH", "0.10")))   # 8라운드: 운영 15:15 판은 0.095
+    if os.environ.get("I_QTHRNA"):   # 19라운드: 한쪽으로만 — max(문턱, c × 229200 σ60 × √10)(거칠 때만 더 엄격)
+        _qth = np.fmax(_qth, I.sigma_n(qq, 60) * float(os.environ["I_QTHRNA"]) * np.sqrt(10))
+    qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= _qth
     if os.environ.get("I_QCR"):
         # I49: 또는 코스닥 종목 신용 잔고율 20일 변화가 앞 250일 순위 ≥ I_QCR(코스닥 종목만 · agg2.npz)
         _a2 = np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg2.npz")["코스닥 신용 잔고율 20일 변화"]
@@ -159,7 +171,10 @@ prev_free = np.concatenate([[1.0], free[:-1]])
 mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
     # 급락 되돌림(I2b · 시장 폭 < 50일 때만)이 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼(돈이 겹치지 않게)
-    sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= float(os.environ.get("I_DIP_TH", "-0.05"))) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
+    _dth2 = np.full(n, float(os.environ.get("I_DIP_TH", "-0.05")))
+    if os.environ.get("I_DIPTHRNA"):  # 19라운드: 한쪽으로만 — min(문턱, −c × 코스피200 σ60 × √5)(거칠 때만 더 엄격)
+        _dth2 = np.fmin(_dth2, -I.sigma_n(I.K200, 60) * float(os.environ["I_DIPTHRNA"]) * np.sqrt(5))
+    sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= _dth2) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
     if os.environ.get("I_DIPRNA"):       # RNA 2라운드: 5일 하락이 그 지수 자기 기록(그날 앞까지) 아래 q면
         _r5 = I.ret(I.K200, 5)
         _cut = (I.pct_roll(_r5, float(os.environ["I_DIPRNA"]), int(os.environ["I_DIPWIN"])) if os.environ.get("I_DIPWIN")
