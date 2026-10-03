@@ -86,7 +86,7 @@ if os.environ.get("I_QINV"):
     # 코스닥 과열 뒤 코스닥150 인버스(I20 · I22): 229200 10일 +10% → 251340 · 익절 1.5 · 손절 1.5 · 10일. 1일봉이 비워 둔 돈으로(사는 날 몫 고정).
     # I_QINV=free(비운 돈) · hedge(계좌의 30%를 늘 — 1일봉이 들고 있어도)
     qq = R.P.get("229200") if "229200" in R.P else I.px("229200")
-    qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= 0.10
+    qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= float(os.environ.get("I_QTH", "0.10"))   # 8라운드: 운영 15:15 판은 0.095
     if os.environ.get("I_QCR"):
         # I49: 또는 코스닥 종목 신용 잔고율 20일 변화가 앞 250일 순위 ≥ I_QCR(코스닥 종목만 · agg2.npz)
         _a2 = np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg2.npz")["코스닥 신용 잔고율 20일 변화"]
