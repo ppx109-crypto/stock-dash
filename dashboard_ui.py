@@ -581,14 +581,14 @@ def lights_box(rows: list | None, at: str = "") -> str:
             f'{lines or "<small>확인 중</small>"}</div>')
 
 
-def top_bar(hourly_ledger: str, daily_ledger: str, middle: str = "") -> str:
-    """첫 화면 맨 위: 제목 + 가운데(코스피 · 연결 불빛) + 오른쪽 1시간봉 · 1일봉 모의투자 거래 내역. 1분마다 새로 그림."""
+def top_bar(hourly_ledger: str, daily_ledger: str, middle: str = "", more: str = "") -> str:
+    """첫 화면 맨 위: 제목 + 가운데(코스피 · 연결 불빛) + 오른쪽 모의투자 거래 내역(칸 여럿 · more로 더 붙임). 1분마다 새로 그림."""
     return (
         _CSS + '<div class="pxb"><div class="pxb-frame pxb-headbox"><div class="pxb-top2">'
         '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
         f'<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다 · {date.today():%Y년 %m월 %d일}</span></div>'
         + (f'<div class="pxb-mid">{middle}</div>' if middle else "") +
-        f'<div class="pxb-ledgers">{hourly_ledger}{daily_ledger}</div>'
+        f'<div class="pxb-ledgers">{hourly_ledger}{daily_ledger}{more}</div>'
         "</div></div></div>"
     )
 

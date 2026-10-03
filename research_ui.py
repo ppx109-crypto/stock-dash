@@ -310,12 +310,14 @@ def api_lights():
 
 
 def live_top_bar():
-    """맨 위 제목 줄 + 가운데 코스피 · API 연결 불빛 + 1시간봉 · 1일봉 모의투자 거래 내역. 1분마다 이 부분만 새로 그림."""
+    """맨 위 제목 줄 + 가운데 코스피 · API 연결 불빛 + 모의투자 거래 내역. 1분마다 이 부분만 새로 그림.
+    2026-10-03 최종 조합: 1일봉 50 · 15분봉 50 · 빈칸 엔진 · 코스닥 인버스(남는 돈) — 1시간봉은 모의 주문을 쉬어 칸에서 뺌."""
     lights, at = api_lights()
     st.markdown(top_bar(
-        ledger_mini('1시간봉 모의투자', repo_json_live('hourly-live/state.json'), repo_json_live('hourly-live/paper-orders.json')),
         ledger_mini('1일봉 모의투자', repo_json_live('daily-live/state.json'), repo_json_live('daily-live/paper-orders.json')),
-        kospi_box(kospi_last()) + lights_box(lights, at)),
+        ledger_mini('15분봉 모의투자', repo_json_live('m15-live/state.json'), repo_json_live('m15-live/paper-orders.json')),
+        kospi_box(kospi_last()) + lights_box(lights, at),
+        ledger_mini('빈칸 엔진 · 코스닥 인버스 모의투자', repo_json_live('idle-live/state.json'), repo_json_live('idle-live/paper-orders.json'))),
         unsafe_allow_html=True)
 
 
