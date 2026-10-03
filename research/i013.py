@@ -130,6 +130,8 @@ if os.environ.get("I_QINV"):
     if os.environ.get("I_QTHRNA"):   # 19라운드: 한쪽으로만 — max(문턱, c × 229200 σ60 × √10)(거칠 때만 더 엄격)
         _qth = np.fmax(_qth, I.sigma_n(qq, 60) * float(os.environ["I_QTHRNA"]) * np.sqrt(10))
     qsig = np.nan_to_num(I.ret(qq, 10), nan=0) >= _qth
+    if os.environ.get("I_PEEK"):      # 점검 A3 '검사 눈': 일부러 내일 값을 보는 판 — 자르기 · 더럽히기 시험에 반드시 걸려야 함
+        qsig = qsig | (np.nan_to_num(np.concatenate([qq[1:] / qq[:-1] - 1, [0.0]]), nan=0) < -0.02)
     if os.environ.get("I_QCR"):
         # I49: 또는 코스닥 종목 신용 잔고율 20일 변화가 앞 250일 순위 ≥ I_QCR(코스닥 종목만 · agg2.npz)
         _a2 = np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg2.npz")["코스닥 신용 잔고율 20일 변화"]

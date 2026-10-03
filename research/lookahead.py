@@ -14,6 +14,9 @@ import numpy as np
 
 RES = Path(__file__).resolve().parent
 CUTS = ("20181015", "20200320", "20220615", "20240805", "20260701")
+if os.environ.get("LA_CUTS"):       # 점검 A2: 자른 날을 바꿔 넣음(쉼표)
+    CUTS = tuple(os.environ["LA_CUTS"].split(","))
+MODE = os.environ.get("LA_MODE", "cut")   # cut(그날 뒤를 안 읽음) · poison(그날 뒤를 엉터리로 · 점검 A3)
 FINAL = dict(I_DIP="1", I_DOLLAR="2", I_GATE="weakidle20", I_L="20", I_TOP="2", I_CANDS="133690,138230,132030,148070", I_W="1", I_QINV="free", I_QPRI="inv",
              # 2026-10-04 운영 반영(D11b · 사용자 "교체해주고 모의투자에 적용"): 인버스 익절만 RNA · 1.5 ~ 2.5% · 손절 −1.5%
              I_QEXIT="0.25", I_QSIGN="60", I_QEXIT_SIDE="take", I_QEXIT_LO="0.015", I_QEXIT_HI="0.025")
@@ -22,7 +25,8 @@ FINAL = dict(I_DIP="1", I_DOLLAR="2", I_GATE="weakidle20", I_L="20", I_TOP="2", 
 def run_i013(extra, cut=""):
     with tempfile.TemporaryDirectory() as d:
         out = Path(d) / "dump.npz"
-        env = {**os.environ, **FINAL, **extra, "I_DUMP": str(out), "I_CUT": cut}
+        env = {**os.environ, **FINAL, **extra, "I_DUMP": str(out), "I_CUT": cut if MODE == "cut" else "",
+               "I_POISON": cut if MODE == "poison" else ""}
         subprocess.run([sys.executable, str(RES / "i013.py")], env=env, check=True, capture_output=True)
         z = np.load(out)
         return {k: z[k] for k in z.files}
@@ -31,6 +35,10 @@ def run_i013(extra, cut=""):
 def compare(full, cut_res, cut):
     days = list(full["days"])
     k = int(np.searchsorted(full["days"], cut, side="right")) - 1          # 자른 날 위치
+    if MODE == "poison":
+        # 더럽히기는 자료 길이가 그대로라 끝에서 억지로 파는 일이 없음 → 그날(자른 날)까지 넣어 견줌.
+        # (자르기는 그날을 빼야 해서 '하루 앞 보기'를 못 잡음 — 점검 A3에서 찾은 구멍 · 검사 눈 I_PEEK로 확인)
+        k += 1
     bad = []
     for key in ("d1", "used", "rot", "dip", "qinv", "mix"):
         a, b = full[key][:k], cut_res[key][:k]                              # 자른 날 앞날까지
