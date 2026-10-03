@@ -44,8 +44,14 @@ class IdleSignalTest(unittest.TestCase):
         px = self.base()
         for c, g in zip(S.ROT, (0.05, 0.02, -0.01, 0.03)):
             px[c] = np.r_[flat(40), np.linspace(100, 100 * (1 + g), 20)]
-        out = S.decide(px, breadth=80, used=0.0)
+        out = S.decide(px, breadth=40, used=0.0)
         self.assertEqual(set(out["돌리기"]), {"133690", "148070"})
+
+    def test_engine_off_when_breadth_strong(self):
+        # 최종(2026-10-03): 시장 폭 50 이상이면 규칙들이 살 수 있는 날이라 엔진은 쉼
+        out = S.decide(self.base(), breadth=60, used=0.0)
+        self.assertFalse(out["엔진"])
+        self.assertEqual(out["돌리기"], {})
 
     def test_kosdaq_inverse(self):
         px = self.base()
@@ -57,7 +63,7 @@ class IdleSignalTest(unittest.TestCase):
 
 
     def test_mood_candidate(self):
-        self.assertTrue(S.decide(self.base(), breadth=80, used=0.0, mood=75)["분위기사기"])
+        self.assertTrue(S.decide(self.base(), breadth=40, used=0.0, mood=75)["분위기사기"])
         self.assertFalse(S.decide(self.base(), breadth=80, used=0.0, mood=60)["분위기사기"])
         self.assertFalse(S.decide(self.base(), breadth=80, used=0.5, mood=90)["분위기사기"])
         self.assertFalse(S.decide(self.base(), breadth=80, used=0.0)["분위기사기"])

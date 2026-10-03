@@ -103,7 +103,8 @@ class TwoRules(unittest.TestCase):
     def test_three_books_and_shares(self):
         self.assertEqual(len({P.book_path(s) for s in ("1h", "1d", "15m")}), 3)
         self.assertAlmostEqual(sum(P.SHARES.values()), 1.0)
-        self.assertEqual(P.SHARES["15m"], 0.2)
+        self.assertEqual(P.SHARES["15m"], 0.5)          # 2026-10-03 최종: 1일봉 50 · 15분봉 50 · 1시간봉 0
+        self.assertEqual(P.SHARES["1h"], 0.0)
 
 
 class Execute(unittest.TestCase):
@@ -120,12 +121,13 @@ class Execute(unittest.TestCase):
                 return "123"
         with tempfile.TemporaryDirectory() as tmp, \
                 mock.patch.object(P, "BOOK", Path(tmp) / "book.json"), mock.patch.object(P, "OFF", Path(tmp) / "off"), \
-                mock.patch.dict(os.environ, {"PAPER_TRADING": "on", "KIS_PAPER_APP_KEY": "k"}):
+                mock.patch.dict(os.environ, {"PAPER_TRADING": "on", "KIS_PAPER_APP_KEY": "k"}), \
+                mock.patch.dict(P.SHARES, {"1h": 0.4}):        # 주문 셈 자체를 보는 시험(지금 1시간봉 몫은 0 · 모의 주문 끔)
             fake = Fake()
             done = [{"type": "buy", "code": "000001", "칸": 2, "decided": "2026100110", "name": "가"}]
             lines = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=fake)
             again = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=fake)
-            self.assertEqual(fake.sent, [("000001", "buy", 80)], "1시간봉은 계좌의 40%(1일봉 40 · 15분봉 20)")
+            self.assertEqual(fake.sent, [("000001", "buy", 80)], "몫 40%면 계좌의 40% × 2칸 / 10")
             self.assertEqual(len(lines), 1)
             self.assertEqual(again, [])
             book = json.loads((Path(tmp) / "book.json").read_text(encoding="utf-8"))

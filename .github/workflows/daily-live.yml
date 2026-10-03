@@ -24,14 +24,42 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests numpy
-      - run: python -m unittest tests.test_daily_live tests.test_paper_trade -v
+      - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal -v
+      - name: 빈칸 엔진 · 코스닥 과열 인버스(15:10 판단 · 모의투자 주문 · 1일봉보다 먼저)
+        continue-on-error: true
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          status=0; python idle_live.py || status=$?
+          mkdir -p idle-live
+          git add -A idle-live
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Idle engine live"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          exit $status
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.07'
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # 빈칸 엔진 모의투자(사용자 2026-10-03 "최종 규칙 정하고 모의투자 제작") · 2026-10-05부터
+          PAPER_TRADING: 'on'
+          PAPER_START: '20261002'
+          IDLE_START: '20261005'
+          KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
+          KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
+          KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
+          KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
       - name: 종가 출격 판단 · 모의투자 주문 · 연습 계좌 저장
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python daily_live.py || status=$?
           mkdir -p daily-live
-          git add -A daily-live
+          git add -A daily-live idle-live
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily rule live"
             for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
