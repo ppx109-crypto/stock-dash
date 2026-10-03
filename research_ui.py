@@ -608,6 +608,7 @@ def decision_screen(state, research, graded, store=None, sample_mode=True):
         st.markdown(board, unsafe_allow_html=True)
     # 화살표를 눌러야 펼쳐짐(사용자 2026-10-03) · 1시간봉 칸은 15분봉으로(1시간봉은 모의 주문 보류) · 빈칸 엔진 칸 더함
     st.markdown(frame_open()
+                + section('통합 매매 규칙', '1일봉 50% · 15분봉 50% · 남는 돈은 빈칸 엔진 · 코스닥 과열 인버스 · 한투 모의투자(사용자 2026-10-03 이름)')
                 + fold('15분봉 매매 규칙', '조사 대상 507종목 전체에서 · 장중 15분마다 · 모의투자 몫 50%',
                        M15_RULES + sortie_panel(today_a_group(), plan, mstate, malerts, name='15분봉'))
                 + fold('1일봉 매매 규칙', '조사 대상 507종목 전체에서 · 하루 한 번 15:20 · 모의투자 몫 50%',
