@@ -159,3 +159,54 @@ def stats(daily, lo, hi):
     dd = float((eq / np.maximum.accumulate(eq) - 1).min()) * 100
     cagr = (eq[-1] ** (250 / (b - a + 1)) - 1) * 100
     return cagr, dd
+
+def sim_var(entry, code, stop_arr, take_arr, maxd=10, cost=0.002, cool=0):
+    """sim과 같되 익절 · 손절이 날마다 다른 값(RNA) — 산 날 i의 stop_arr[i] · take_arr[i](그날까지 값)로 그 매매 내내."""
+    px = PX[code] if code in PX else globals()['px'](code)
+    daily = np.zeros(len(DAYS))
+    trades = []
+    i, n = 0, len(DAYS)
+    while i < n - 1:
+        if not entry[i] or np.isnan(px[i]) or not np.isfinite(stop_arr[i]) or not np.isfinite(take_arr[i]):
+            i += 1
+            continue
+        stop, take = stop_arr[i], take_arr[i]
+        p0 = px[i]
+        daily[i] -= cost / 2
+        j = i + 1
+        while j < n:
+            if np.isnan(px[j]):
+                j += 1
+                continue
+            daily[j] += (px[j] / px[j - 1] - 1) if not np.isnan(px[j - 1]) else 0.0
+            r = px[j] / p0 - 1
+            if r <= stop or r >= take or j - i >= maxd:
+                break
+            j += 1
+        j = min(j, n - 1)
+        daily[j] -= cost / 2
+        trades.append((i, j, px[j] / p0 - 1 - cost))
+        i = j + 1 + (cool if px[j] / p0 - 1 <= stop else 0)
+    return trades, daily
+
+
+def sigma_n(p, n=60):
+    """앞 n일(그날 포함) 하루 수익 표준편차 — 그날까지 값만."""
+    r = np.concatenate([[np.nan], p[1:] / p[:-1] - 1])
+    out = np.full(len(p), np.nan)
+    for i in range(n, len(p)):
+        out[i] = np.nanstd(r[i - n + 1:i + 1])
+    return out
+
+
+def pct_hist(x, q, start=250):
+    """그날 앞까지의 자기 기록에서 아래 q 자리(그날 값은 그날 판단 뒤에 넣음 · 미래 참조 없음)."""
+    import bisect
+    out = np.full(len(x), np.nan)
+    srt = []
+    for i in range(len(x)):
+        if i >= start and srt:
+            out[i] = srt[min(len(srt) - 1, int(len(srt) * q))]
+        if np.isfinite(x[i]):
+            bisect.insort(srt, x[i])
+    return out

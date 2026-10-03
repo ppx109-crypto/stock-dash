@@ -101,7 +101,11 @@ if os.environ.get("I_QINV"):
         qsig = qsig & ~_up
     elif os.environ.get("I_QREG") == "down_off":   # 내림 장세면 인버스 안 함
         qsig = qsig & _up
-    qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
+    if os.environ.get("I_QEXIT"):        # RNA 2라운드: 익절 · 손절 = c × 코스닥150 앞 60일 σ × √10(산 날 값)
+        _sq = I.sigma_n(qq, 60) * float(os.environ["I_QEXIT"]) * np.sqrt(10)
+        qtr, qd = I.sim_var(qsig, "251340", -_sq, _sq, 10, cost=COST)
+    else:
+        qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
     _cr = I.series("market-data/funds.json", "신용융자잔고")
     credit20 = np.full(n, np.nan)
     credit20[20:] = _cr[20:] / _cr[:-20] - 1
@@ -125,6 +129,9 @@ mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
     # 급락 되돌림(I2b · 시장 폭 < 50일 때만)이 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼(돈이 겹치지 않게)
     sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= float(os.environ.get("I_DIP_TH", "-0.05"))) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
+    if os.environ.get("I_DIPRNA"):       # RNA 2라운드: 5일 하락이 그 지수 자기 기록(그날 앞까지) 아래 q면
+        _r5 = I.ret(I.K200, 5)
+        sig = np.nan_to_num(_r5 <= I.pct_hist(_r5, float(os.environ["I_DIPRNA"])), nan=0).astype(bool) & gate_weak
     _dg = os.environ.get("I_DIPGUARD", "")
     if _dg:
         # 3라운드: 급락 되돌림 거르기(크게 빠진 달 손해의 대부분이 여기서 남) — 그날까지 알려진 값만

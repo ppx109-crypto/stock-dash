@@ -130,11 +130,17 @@ if var != "DNA":
     rule.holds = holds
 
 
-out = []
+out, LED = [], []
 for side, since, pool in (("앞 2017 ~ 2020", rule.SINCE, nrl.early), ("뒤 2021 ~", rule.MID, nrl.inside)):
     g = lab.wobble(pool, nrl.prices, nrl.BASE_HOLD, nrl.BASE_EXIT, tries=8, rank=rule.order,
-                   slots=nrl.SLOTS, since=since, apart=nrl.kin, realistic=True, cap=130, size=nrl.BASE_SIZE)
+                   slots=nrl.SLOTS, since=since, apart=nrl.kin, realistic=True, cap=130, size=nrl.BASE_SIZE, detail=True)
+    if g and os.environ.get("I_DUMP_LEDGER"):      # 계좌 전체(i013) 시험용 매매 목록(x008 꼴 · 씨앗 0)
+        LED.extend((t["code"], t["산 날"], t["판 날"], t["손익"], t.get("자리") or 1) for t in g["매매목록"]
+                   if (side.startswith("앞") and t["산 날"] < rule.MID) or (side.startswith("뒤") and t["산 날"] >= rule.MID))
     if g and side.startswith("앞") and var == "DNA": print("열쇠", sorted(g.keys()), flush=True)
     out.append(f"{side} 연 {g['연수익']:+.1f} 골 {g.get('최대낙폭', g.get('골', float('nan')))} 매매 {g.get('매매', '?')}" if g else f"{side} 없음")
+if os.environ.get("I_DUMP_LEDGER"):
+    import json as _json
+    _json.dump(sorted(set(LED), key=lambda x: (x[1], x[0])), open(os.environ["I_DUMP_LEDGER"], "w"))
 mid = [cut(d, 0.4) for d in sorted(by_day) if d >= "20170101"]
 print(f"[{var}] " + " | ".join(out) + (f" | RNA40 문턱 범위 {min(mid):.2f} ~ {max(mid):.2f} (DNA {full:.2f})" if var == "RNA40" else ""), flush=True)
