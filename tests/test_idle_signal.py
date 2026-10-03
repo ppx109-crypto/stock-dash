@@ -56,5 +56,12 @@ class IdleSignalTest(unittest.TestCase):
         self.assertTrue(S.decide(px, breadth=80, used=0.9, at_1515=True)["코스닥인버스"])
 
 
+    def test_mood_candidate(self):
+        self.assertTrue(S.decide(self.base(), breadth=80, used=0.0, mood=75)["분위기사기"])
+        self.assertFalse(S.decide(self.base(), breadth=80, used=0.0, mood=60)["분위기사기"])
+        self.assertFalse(S.decide(self.base(), breadth=80, used=0.5, mood=90)["분위기사기"])
+        self.assertFalse(S.decide(self.base(), breadth=80, used=0.0)["분위기사기"])
+
+
 if __name__ == "__main__":
     unittest.main()
