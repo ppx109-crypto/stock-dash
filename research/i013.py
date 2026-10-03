@@ -146,7 +146,11 @@ if os.environ.get("I_QINV"):
         qsig = qsig & _up
     if os.environ.get("I_QEXIT"):        # RNA 2라운드: 익절 · 손절 = c × 코스닥150 앞 60일 σ × √10(산 날 값)
         _sq = I.sigma_n(qq, int(os.environ.get("I_QSIGN", "60"))) * float(os.environ["I_QEXIT"]) * np.sqrt(10)   # 7라운드: σ 기간
-        qtr, qd = I.sim_var(qsig, "251340", -_sq, _sq, 10, cost=COST)
+        _sq = np.clip(_sq, float(os.environ.get("I_QEXIT_LO", 0)), float(os.environ.get("I_QEXIT_HI", 9)))   # 25라운드: 바닥 · 천장
+        _side = os.environ.get("I_QEXIT_SIDE", "both")   # 25라운드: stop(손절만 RNA · 익절 1.5%) · take(익절만 RNA · 손절 1.5%)
+        _st = np.full(n, 0.015) if _side == "take" else _sq
+        _tk = np.full(n, 0.015) if _side == "stop" else _sq
+        qtr, qd = I.sim_var(qsig, "251340", -_st, _tk, 10, cost=COST)
     else:
         qtr, qd = I.sim(qsig, "251340", -0.015, 0.015, 10, cost=COST)
     _cr = I.series("market-data/funds.json", "신용융자잔고")
