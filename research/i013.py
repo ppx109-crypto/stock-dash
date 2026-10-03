@@ -78,7 +78,16 @@ if os.environ.get("I_DOLLAR"):
     # 하락 추세(원 · 달러 20일 +I_DOLLAR% · 코스피 < 20일선)인 날은 돌리기 대신 달러(138230)만 — 그날 종가 판단 → 다음 날 수익
     dol = R.P["138230"]
     d20 = np.nan_to_num(dol / np.concatenate([np.full(20, np.nan), dol[:-20]]) - 1, nan=0)
-    cond = (d20 > float(os.environ["I_DOLLAR"]) / 100) & (np.nan_to_num(kk < m20k, nan=0) > 0)
+    _dth = np.full(n, float(os.environ["I_DOLLAR"]) / 100)
+    _drna = os.environ.get("I_DOLRNA", "")          # 17라운드: v{c} = c × 138230 앞 60일 σ × √20 · p{q} = d20 자기 기록 아래 q 자리
+    if _drna.startswith("v"):
+        _dth = I.sigma_n(dol, 60) * float(_drna[1:]) * np.sqrt(20)
+    elif _drna.startswith("p"):
+        _dth = I.pct_hist(d20, float(_drna[1:]))
+    _kb = np.ones(n)
+    if os.environ.get("I_DOLBAND"):                  # 17라운드: 코스피200 < 20일선 × (1 − b × σ60 × √20)
+        _kb = 1 - float(os.environ["I_DOLBAND"]) * I.sigma_n(kk, 60) * np.sqrt(20)
+    cond = (d20 > np.nan_to_num(_dth, nan=9)) & (np.nan_to_num(kk < m20k * _kb, nan=0) > 0)
     cy = np.concatenate([[False], (cond & gate)[:-1]])     # 켜는 때(gate)가 꺼진 날은 달러도 안 듦
     flip = np.concatenate([[False], cy[1:] != cy[:-1]])
     rot = np.where(cy, R.R["138230"] * W, rot) - flip * COST / 2 * W
