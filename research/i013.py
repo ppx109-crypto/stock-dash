@@ -161,6 +161,8 @@ if os.environ.get("I_MOOD"):
     _L = [_rank(_A["DART 전환사채 20일 수"]), _rank(_A["DART 공급계약 20일 수"]), _rank(_A["한투 목표가 올림 몫(20일)"]), 100 - _rank(_A["한투 대차잔고 20일 변화"])]
     if os.environ.get("I_MOOD5"):     # I49: 흑자전환 − 적자전환 물결(DART 분기 실적)도 더함
         _L.append(_rank(np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg2.npz")["DART 흑자전환 − 적자전환(60일)"]))
+    if os.environ.get("I_MOOD6"):     # 5-①: 임원소유 보고 물결(DART 20일 수 · 하루 밀기 · agg3.npz)도 더함
+        _L.append(_rank(np.load("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/agg3.npz")["DART " + os.environ["I_MOOD6"] + " 20일 수"]))
     _R = np.array(_L)
     mood = np.nanmean(_R, axis=0)
     mood[np.isfinite(_R).sum(axis=0) < len(_L) - 1] = np.nan
