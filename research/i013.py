@@ -121,7 +121,11 @@ if os.environ.get("I_DIP"):
             sig = sig & ~(np.nan_to_num(m20k < _m60, nan=0) > 0)
         if "deep" in _dg:        # 20일 −10% 넘게 빠진 상태면(길게 무너지는 중) 건너뜀
             sig = sig & ~(np.nan_to_num(I.ret(I.K200, 20), nan=0) <= -0.10)
-    tr, dd = I.sim(sig, "069500", -0.03, 0.03, 20, cool=20, cost=COST)
+    # 5라운드 ⑥: I_DIPCODE=122630(2배)이면 2배 상품으로 · 손절 · 익절은 I_DIP_ST · I_DIP_TK(기본 −3 · +3%)
+    _dc = os.environ.get("I_DIPCODE", "069500")
+    if _dc not in I.PX:
+        I.px(_dc)
+    tr, dd = I.sim(sig, _dc, float(os.environ.get("I_DIP_ST", "-0.03")), float(os.environ.get("I_DIP_TK", "0.03")), 20, cool=20, cost=COST)
     on = np.zeros(n, bool)
     dip = np.zeros(n)
     for a, b, _ in tr:
