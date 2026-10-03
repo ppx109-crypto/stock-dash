@@ -150,7 +150,11 @@ if os.environ.get("I_DIP"):
     _dc = os.environ.get("I_DIPCODE", "069500")
     if _dc not in I.PX:
         I.px(_dc)
-    if os.environ.get("I_DIPEXIT"):      # RNA 4라운드: 익절 · 손절 = c × 코스피200 앞 60일 σ × √20(산 날 값)
+    if os.environ.get("I_DIPTAKE"):      # RNA 5라운드: 익절만 c × σ60 × √20 · 손절은 −3% 그대로
+        _tk = I.sigma_n(I.K200, 60) * float(os.environ["I_DIPTAKE"]) * np.sqrt(20)
+        _tk = np.clip(_tk, float(os.environ.get("I_DIPTAKE_LO", 0)), float(os.environ.get("I_DIPTAKE_HI", 9)))   # 6라운드: 바닥 · 천장
+        tr, dd = I.sim_var(sig, _dc, np.full(n, -0.03), _tk, 20, cost=COST, cool=20)
+    elif os.environ.get("I_DIPEXIT"):      # RNA 4라운드: 익절 · 손절 = c × 코스피200 앞 60일 σ × √20(산 날 값)
         _sk = I.sigma_n(I.K200, 60) * float(os.environ["I_DIPEXIT"]) * np.sqrt(20)
         tr, dd = I.sim_var(sig, _dc, -_sk, _sk, 20, cost=COST, cool=20)
     else:

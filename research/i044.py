@@ -47,7 +47,7 @@ elif var == "DNA_past":
 elif var.startswith("RNA"):
     q = int(var[3:]) / 100
     edge = lambda d: cut(d, q)
-elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS") or var.startswith("RALL"):
+elif var[:2] in ("RS", "RX", "HS", "HV", "VS", "VX", "OS", "MS") or var.startswith("RALL"):
     edge = lambda d: full                      # 아래에서 다시 정함
 else:
     rng = random.Random(int(var[3:]))
@@ -128,6 +128,17 @@ if var.startswith("OS"):
             if len(w_) >= 120:
                 own_cut[(c_, d_)] = max(fo, float(np.partition(w_, int(len(w_) * (1 - qo)))[int(len(w_) * (1 - qo))]))
     row_slope = lambda r: own_cut.get((r["code"], r["date"]), 99.0)
+    edge = lambda d: full
+# 5라운드 D2: 시장 대비 기울기 — 종목 기울기 ≥ max(바닥 f, 그날 코스피200 180일선 5일 기울기 + m) · MS{m}F{f}
+if var.startswith("MS"):
+    import re as _re3
+    sys.path.insert(0, "/home/user/stock-dash/research")
+    import itools as _I
+    ms = _re3.match(r"MS(\d+)F(\d+)", var)
+    mm, ff = int(ms.group(1)) / 100, int(ms.group(2)) / 100
+    _ma = _I.ma(_I.K200, 180)
+    _mk = {d: (_ma[i] / _ma[i - 5] - 1) * 100 for i, d in enumerate(_I.DAYS) if i >= 185 and np.isfinite(_ma[i]) and np.isfinite(_ma[i - 5])}
+    slope_of = lambda d: max(ff, _mk.get(d, 0.0) + mm)
     edge = lambda d: full
 inner = rule.holds
 
