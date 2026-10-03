@@ -7,6 +7,7 @@
   · I_CASH=all · idle(엔진이 안 쓰는 비운 돈을 단기채권 153130에)
   · I_MOOD=80(DART · 한투 시장 분위기 점수 ≥ 값이면 KODEX 200 · 익절 8 손절 3 10일 · 그동안 돌리기 쉼)
   · I_QCR=95(코스닥 인버스 신호에 '코스닥 종목 신용 급증 순위 ≥ 값'을 더함) · I_MOOD5=1(분위기에 흑자전환 물결 더함)
+  · I_ENS=1(돌리기 10 · 20 · 40일 섞기) · I_VT=0.10(돌리기 변동성 맞추기 · 연율 목표)
   · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
 import json
@@ -50,7 +51,17 @@ GUARDS = {
     # 나스닥이 20일선 아래면 뺌
     "nas20": {"133690": np.nan_to_num(nasp < I.ma(np.nan_to_num(nasp, nan=0), 20), nan=0) > 0},
 }
-rot = R.run(gate, R.momentum(L, TOP, cands, MA_N, GUARDS[GUARD]), cost=COST, reb=REB) * W
+if os.environ.get("I_ENS"):
+    # 2라운드 ②: 여러 기간 섞기 — 10 · 20 · 40일 돌리기 결과를 반의반씩(설정 하나에 기대지 않게)
+    rot = np.mean([R.run(gate, R.momentum(_L, TOP, cands, MA_N, GUARDS[GUARD]), cost=COST, reb=REB) for _L in (10, 20, 40)], axis=0) * W
+else:
+    rot = R.run(gate, R.momentum(L, TOP, cands, MA_N, GUARDS[GUARD]), cost=COST, reb=REB) * W
+if os.environ.get("I_VT"):
+    # 2라운드 ①: 변동성 맞추기 — 돌리기 수익의 앞 20일 흔들림(연율)이 목표보다 크면 그만큼 몫을 줄임(어제까지 값으로)
+    _tv = float(os.environ["I_VT"])
+    _vol = np.array([np.std(rot[max(0, i - 20):i]) * np.sqrt(250) if i >= 5 else 0.0 for i in range(n)])
+    _sc = np.where(_vol > 0, np.minimum(1.0, _tv / np.maximum(_vol, 1e-9)), 1.0)
+    rot = rot * _sc
 if os.environ.get("I_DOLLAR"):
     # 하락 추세(원 · 달러 20일 +I_DOLLAR% · 코스피 < 20일선)인 날은 돌리기 대신 달러(138230)만 — 그날 종가 판단 → 다음 날 수익
     dol = R.P["138230"]
