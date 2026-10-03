@@ -7,6 +7,7 @@
   · I_CASH=all · idle(엔진이 안 쓰는 비운 돈을 단기채권 153130에)
   · I_MOOD=80(DART · 한투 시장 분위기 점수 ≥ 값이면 KODEX 200 · 익절 8 손절 3 10일 · 그동안 돌리기 쉼)
   · I_QCR=95(코스닥 인버스 신호에 '코스닥 종목 신용 급증 순위 ≥ 값'을 더함) · I_MOOD5=1(분위기에 흑자전환 물결 더함)
+  · I_DIPGUARD=dollar · trend · deep(급락 되돌림 거르기 · 여럿이면 붙여 씀)
   · I_ENS=1(돌리기 10 · 20 · 40일 섞기) · I_VT=0.10(돌리기 변동성 맞추기 · 연율 목표)
   · I_QINV=free · hedge · tier(코스닥 10일 +10% → 코스닥150 인버스 · 비운 돈 / 계좌 30%)
   · I_DIP=1(시장 폭 < 50 급락 되돌림 I2b가 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼)."""
@@ -107,6 +108,18 @@ mix = d1 + rot * prev_free     # 어제 비워 둔 몫으로 오늘 수익
 if os.environ.get("I_DIP"):
     # 급락 되돌림(I2b · 시장 폭 < 50일 때만)이 켜진 날은 그 돈을 급락 되돌림에 쓰고 돌리기는 쉼(돈이 겹치지 않게)
     sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= float(os.environ.get("I_DIP_TH", "-0.05"))) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
+    _dg = os.environ.get("I_DIPGUARD", "")
+    if _dg:
+        # 3라운드: 급락 되돌림 거르기(크게 빠진 달 손해의 대부분이 여기서 남) — 그날까지 알려진 값만
+        _dol = R.P["138230"]
+        _d20 = np.nan_to_num(_dol / np.concatenate([np.full(20, np.nan), _dol[:-20]]) - 1, nan=0)
+        _m60 = I.ma(I.K200, 60)
+        if "dollar" in _dg:      # 원 · 달러가 20일 +2% 넘게 오르는 중이면(외국인 돈이 빠지는 중) 건너뜀
+            sig = sig & ~(_d20 > 0.02)
+        if "trend" in _dg:       # 20일선 < 60일선(하락 추세 뚜렷)이면 건너뜀
+            sig = sig & ~(np.nan_to_num(m20k < _m60, nan=0) > 0)
+        if "deep" in _dg:        # 20일 −10% 넘게 빠진 상태면(길게 무너지는 중) 건너뜀
+            sig = sig & ~(np.nan_to_num(I.ret(I.K200, 20), nan=0) <= -0.10)
     tr, dd = I.sim(sig, "069500", -0.03, 0.03, 20, cool=20, cost=COST)
     on = np.zeros(n, bool)
     dip = np.zeros(n)
