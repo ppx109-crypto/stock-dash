@@ -264,6 +264,7 @@ def run_day(day, prices, book):
     filled, log, info1h = backtest_hourly(day, prices, s1h)
     live_1h = _load(Path("hourly-live") / "state.json", {})
     live_1d = _load(Path("daily-live") / "state.json", {})
+    idle_today = _load(Path("idle-live") / "today.json", {})
     out = {
         "date": day,
         "검산(15분봉 종가 vs 일봉 종가)": check_daily(day, prices),
@@ -275,7 +276,12 @@ def run_day(day, prices, book):
                 "운영과 견줌(START부터 누계)": compare(s1d, live_1d, "산 날", "판 날"),
                 "운영 그날 판단": _load(Path("daily-live") / "today.json", {}) if (_load(Path("daily-live") / "today.json", {}) or {}).get("date") == day else None,
                 "모의투자 주문(그날)": paper_orders(Path("daily-live") / "paper-orders.json", day)},
-        "15분봉": "15분봉 규칙(22회차 후보)은 보류라 운영 · 모의투자가 없음 — 연구 엔진으로만 따로 셈(docs/RL-15M-LOG)",
+        # 2026-10-03 최종 조합: 1일봉 50 · 15분봉 50 · 빈칸 엔진 · 코스닥 인버스(남는 돈) — 1시간봉은 모의 주문 쉼
+        "15분봉": {"모의투자 주문(그날)": paper_orders(Path("m15-live") / "paper-orders.json", day),
+                 "메모": "15분봉 완성 봉 백테스트 견줌은 아직 없음(연구 엔진 m15lab으로 따로 셈)"},
+        "빈칸 엔진": {"운영 그날 판단": idle_today if (idle_today or {}).get("date") == day else None,
+                  "모의투자 주문(그날)": paper_orders(Path("idle-live") / "paper-orders.json", day),
+                  "들고 있는 것": (_load(Path("idle-live") / "state.json", {}) or {}).get("positions", {})},
     }
     book["1h"], book["1d"], book["last_day"] = s1h, s1d, day
     return out
@@ -292,7 +298,18 @@ def summary_lines(out):
             f"• 1일봉: 끝난 매매 백테스트 {d['백테스트 끝난 매매']} · 운영 {d['운영 끝난 매매']} · 같은 매매 {d['같은 매매']} · "
             f"계좌 몫 합 {d['계좌 몫 합(백테스트 · 운영 · %)'][0]:+.2f}% vs {d['계좌 몫 합(백테스트 · 운영 · %)'][1]:+.2f}%",
             f"• 들고 있는 종목 — 1시간봉 백테스트 {len(h['들고 있는 종목(백테스트)'])} · 운영 {len(h['들고 있는 종목(운영)'])} / "
-            f"1일봉 백테스트 {len(d['들고 있는 종목(백테스트)'])} · 운영 {len(d['들고 있는 종목(운영)'])}"]
+            f"1일봉 백테스트 {len(d['들고 있는 종목(백테스트)'])} · 운영 {len(d['들고 있는 종목(운영)'])}"] + idle_line(out)
+
+
+def idle_line(out):
+    """빈칸 엔진 한 줄(그날 판단 · 주문 · 들고 있는 것). 옛 결과 파일엔 없으니 없으면 빈 목록."""
+    e = out.get("빈칸 엔진") if isinstance(out.get("빈칸 엔진"), dict) else None
+    if not e:
+        return []
+    t = e.get("운영 그날 판단") or {}
+    held = ", ".join(f"{c}({p.get('kind')})" for c, p in (e.get("들고 있는 것") or {}).items()) or "없음"
+    return [f"• 빈칸 엔진: 시장 폭 {t.get('breadth', '?')} · 규칙 쓴 몫 {round((t.get('used') or 0) * 100)}% · "
+            f"그날 모의 주문 {len(e.get('모의투자 주문(그날)') or [])}건 · 들고 있는 것 {held}"]
 
 
 def main(argv):

@@ -8,6 +8,10 @@ on:
         description: 'check(조회만) 또는 order(1주 매수 · 매도 시험)'
         required: true
         default: 'check'
+      code:
+        description: 'order 때 1주 사고팔 종목코드(빈칸이면 010140 · ETF 확인용 예: 069500 · 251340)'
+        required: false
+        default: ''
 permissions:
   contents: read
 concurrency:
@@ -28,9 +32,15 @@ jobs:
       - name: 모의투자 점검
         run: |
           case "$MODE" in check|order) ;; *) echo "mode는 check 또는 order"; exit 1;; esac
-          python paper_check.py "$MODE"
+          if [ -n "$CODE" ]; then
+            case "$CODE" in [0-9][0-9][0-9][0-9][0-9][0-9]) ;; *) echo "종목코드는 숫자 6자리"; exit 1;; esac
+            python paper_check.py "$MODE" "$CODE"
+          else
+            python paper_check.py "$MODE"
+          fi
         env:
           MODE: ${{ inputs.mode }}
+          CODE: ${{ inputs.code }}
           PAPER_TRADING: 'on'
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}

@@ -313,6 +313,14 @@ def run(now=None):
             if not book["held"][code]:
                 del book["held"][code]
             done.append((code, side))
+            if side == "sell" and code in state.get("positions", {}):     # 끝난 매매(대시보드 거래 내역 · 손익 합)
+                p0 = state["positions"][code]
+                price = now_price.get(code) or p0["price"]
+                new_state.setdefault("closed", []).append({
+                    "판 날": day, "code": code, "name": NAME.get(code, code), "종류": p0.get("kind"), "산 날": p0.get("day"),
+                    "손익": round((price / p0["price"] - 1) * 100, 2), "칸": round(qty * price / total * 10, 1) if total else 0,
+                    "까닭": reason})
+                new_state["closed"] = new_state["closed"][-500:]
         except broker_kis.BrokerError as e:
             no, status = "", f"실패 · {e}"
             if side == "buy":                       # 못 산 것은 상태에서 뺌
