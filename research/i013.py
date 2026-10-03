@@ -131,7 +131,9 @@ if os.environ.get("I_DIP"):
     sig = (np.nan_to_num(I.ret(I.K200, 5), nan=0) <= float(os.environ.get("I_DIP_TH", "-0.05"))) & gate_weak     # I39: 운영(15:15 판단)은 −4.5%
     if os.environ.get("I_DIPRNA"):       # RNA 2라운드: 5일 하락이 그 지수 자기 기록(그날 앞까지) 아래 q면
         _r5 = I.ret(I.K200, 5)
-        sig = np.nan_to_num(_r5 <= I.pct_hist(_r5, float(os.environ["I_DIPRNA"])), nan=0).astype(bool) & gate_weak
+        _cut = (I.pct_roll(_r5, float(os.environ["I_DIPRNA"]), int(os.environ["I_DIPWIN"])) if os.environ.get("I_DIPWIN")
+                else I.pct_hist(_r5, float(os.environ["I_DIPRNA"])))
+        sig = np.nan_to_num(_r5 <= _cut, nan=0).astype(bool) & gate_weak
     _dg = os.environ.get("I_DIPGUARD", "")
     if _dg:
         # 3라운드: 급락 되돌림 거르기(크게 빠진 달 손해의 대부분이 여기서 남) — 그날까지 알려진 값만

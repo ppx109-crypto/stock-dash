@@ -210,3 +210,14 @@ def pct_hist(x, q, start=250):
         if np.isfinite(x[i]):
             bisect.insort(srt, x[i])
     return out
+
+
+def pct_roll(x, q, win=1000, start=250):
+    """그날 앞 win일(그날 제외)의 자기 기록에서 아래 q 자리 — 오래된 폭락에 묶이지 않게(RNA 3라운드)."""
+    out = np.full(len(x), np.nan)
+    for i in range(start, len(x)):
+        w = x[max(0, i - win):i]
+        w = w[np.isfinite(w)]
+        if len(w) >= start:
+            out[i] = np.partition(w, int(len(w) * q))[int(len(w) * q)]
+    return out
