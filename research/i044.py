@@ -375,6 +375,10 @@ if SX:
             SX_FILT.append(lambda r, _b=_bd: not _b.get(r["date"], False))
         elif key == "KS":                                   # 연구자 추가(50회차 · 미리 적음): −4% 넘는 손절이 난 날 남은 종목 중 −x/10% 넘게 진 것도 함께 팜
             SX_KW["cosell"] = (4, nums[0] / 10)
+        elif key == "PK":                                   # 검사 눈(일부러 미래 참조): n일 뒤 종가가 오늘보다 낮으면 안 삼 — s_cut.py가 잡아야 함
+            _n = nums[0]
+            SX_FILT.append(lambda r, _n=_n: not (r["i"] + _n < len(nrl.lanes[r["code"]]["closes"])
+                                               and nrl.lanes[r["code"]]["closes"][r["i"] + _n] < nrl.lanes[r["code"]]["closes"][r["i"]]))
         elif key == "SZ":
             _z = nums[0] / 100
             SX_SIZE = lambda r, _z=_z: max(1, nrl.BASE_SIZE(r) // 2) if (r.get("변동성") or 0) > _z else nrl.BASE_SIZE(r)
@@ -413,6 +417,30 @@ if SX_MX:
     def EXIT(lane, start, price, step, peak, row=None, _e=_exit0):
         day = lane["날"][start + step] if start + step < len(lane["날"]) else ""
         return True if day in SX_MX else _e(lane, start, price, step, peak, row)
+# 미래 참조 자르기 · 더럽히기(손절 줄 연구 마지막 회차 · 2026-10-04): I_CUTDAY=YYYYMMDD
+#  I_CUTMODE=cut   그날 뒤 종가 · 후보를 처음부터 없앰 / poison  그날 뒤 종가를 씨앗 고정 엉터리 걸음으로(길이 그대로)
+#  → 그날까지 판 매매가 바뀌지 않아야 함(research/s_cut.py가 견줌)
+_CUTDAY = os.environ.get("I_CUTDAY")
+if _CUTDAY:
+    import bisect as _bc
+    _mode = os.environ.get("I_CUTMODE", "cut")
+    _rng = np.random.default_rng(7)
+    _sets = [lab.lanes(nrl.prices)] + ([nrl.lanes] if nrl.lanes is not lab.lanes(nrl.prices) else [])   # 엔진 것 · nrl 것 두 벌 모두(캐시에서 읽으면 다른 객체)
+    for _ln in (ln for st in _sets for ln in st.values()):
+        _kk = _bc.bisect_right(_ln["날"], _CUTDAY)
+        if _mode == "cut":
+            for _f in ("closes", "날", "중기선", "변동성"):
+                _ln[_f] = _ln[_f][:_kk]
+        elif _kk < len(_ln["closes"]) and _kk > 0:
+            _rng = np.random.default_rng(abs(hash(_ln["code"])) % (2 ** 32))   # 두 벌에 같은 엉터리 값
+            _x = _ln["closes"][_kk - 1] or 1.0
+            for _j in range(_kk, len(_ln["closes"])):
+                _x = _x * float(np.exp(_rng.normal(0, 0.03)))
+                _ln["closes"][_j] = _x
+    if _mode == "cut":
+        nrl.early = [r for r in nrl.early if r["date"] <= _CUTDAY]
+        nrl.inside = [r for r in nrl.inside if r["date"] <= _CUTDAY]
+    print(f"  자르기 {_mode} {_CUTDAY}", flush=True)
 out, LED = [], []
 for side, since, pool in (("앞 2017 ~ 2020", rule.SINCE, nrl.early), ("뒤 2021 ~", rule.MID, nrl.inside)):
     g = lab.wobble(pool, nrl.prices, HOLD, EXIT, tries=8, rank=rule.order,
