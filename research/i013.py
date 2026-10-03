@@ -150,7 +150,11 @@ if os.environ.get("I_DIP"):
     _dc = os.environ.get("I_DIPCODE", "069500")
     if _dc not in I.PX:
         I.px(_dc)
-    tr, dd = I.sim(sig, _dc, float(os.environ.get("I_DIP_ST", "-0.03")), float(os.environ.get("I_DIP_TK", "0.03")), 20, cool=20, cost=COST)
+    if os.environ.get("I_DIPEXIT"):      # RNA 4라운드: 익절 · 손절 = c × 코스피200 앞 60일 σ × √20(산 날 값)
+        _sk = I.sigma_n(I.K200, 60) * float(os.environ["I_DIPEXIT"]) * np.sqrt(20)
+        tr, dd = I.sim_var(sig, _dc, -_sk, _sk, 20, cost=COST, cool=20)
+    else:
+        tr, dd = I.sim(sig, _dc, float(os.environ.get("I_DIP_ST", "-0.03")), float(os.environ.get("I_DIP_TK", "0.03")), 20, cool=20, cost=COST)
     on = np.zeros(n, bool)
     dip = np.zeros(n)
     for a, b, _ in tr:
