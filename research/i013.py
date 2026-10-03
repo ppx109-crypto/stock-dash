@@ -33,6 +33,10 @@ for code, buy, sell, pnl, slots in json.load(open(SP + LEDGER)):
         d1[b] += pnl * slots / 10 / 100
 free = np.clip(1 - used, 0, 1)
 cands = os.environ.get("I_CANDS", "133690,138230,132030,148070").split(",")
+for _c in cands:                     # 9라운드: i011 표에 없는 후보(해외 지수 등)도 받음
+    if _c not in R.P:
+        R.P[_c] = I.px(_c)
+        R.R[_c] = np.nan_to_num(np.concatenate([[0.0], R.P[_c][1:] / R.P[_c][:-1] - 1]))
 L, TOP = int(os.environ.get("I_L", "60")), int(os.environ.get("I_TOP", "1"))
 gate_weak = R.G.get("시장 폭<50")
 prev_used = np.concatenate([[0.0], used[:-1]])
