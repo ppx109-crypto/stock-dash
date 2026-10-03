@@ -2,7 +2,8 @@ name: Disclosure events
 # 공시 제목을 날짜와 함께 모읍니다. 본문은 받지 않습니다.
 on:
   schedule:
-    - cron: '30 3 * * 6'   # 토 12:30 한국 시각 — 새 종목이 들어와도 공시 목록이 따라가게
+    - cron: '30 3 * * 6'   # 토 12:30 한국 시각 — 새 종목이 들어와도 공시 목록이 따라가게(종목마다 처음부터)
+    - cron: '20 10 * * 1-5' # 평일 19:20 한국 시각 — 최근 5일 시장 전체 공시만 이어 받기(2026-10-03 · 분위기 점수용 · 수십 번 조회)
   workflow_dispatch:
     inputs:
       codes:
@@ -13,6 +14,10 @@ on:
         description: '언제부터'
         required: false
         default: '20150101'
+      recent:
+        description: '최근 며칠만 이어 받기(0 = 종목마다 처음부터)'
+        required: false
+        default: '0'
 permissions:
   contents: write
 concurrency:
@@ -33,6 +38,7 @@ jobs:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           EVENT_CODES: ${{ inputs.codes || '' }}
           EVENT_FIRST: ${{ inputs.first || '20150101' }}
+          EVENT_RECENT_DAYS: ${{ github.event.schedule == '20 10 * * 1-5' && '5' || inputs.recent || '0' }}
       - name: Save when something changed
         if: always()
         run: |

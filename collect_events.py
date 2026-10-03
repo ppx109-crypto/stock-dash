@@ -20,6 +20,8 @@ from providers import Official
 OUT = Path("event-data")
 FIRST = os.getenv("EVENT_FIRST", "20150101")
 PAUSE = float(os.getenv("EVENT_PAUSE", "0.12"))
+# 매일 이어 받기(2026-10-03 사용자 승인 · 분위기 점수를 운영 모양으로): 0이면 예전처럼 종목마다 처음부터.
+RECENT = int(os.getenv("EVENT_RECENT_DAYS", "0") or 0)
 
 # 제목에 이 말이 있으면 그 갈래로 봅니다. 위에 있는 것부터 맞춰 봅니다.
 KINDS = (
@@ -104,12 +106,61 @@ def gather(provider, corp, begin, end):
     return found
 
 
+def recent(provider, codes, days, today=None):
+    """시장 전체 공시 목록(종목 지정 없음)에서 최근 days일 치만 받아 대상 종목 파일에 이어 붙입니다.
+    종목마다 묻지 않아 하루 수십 번 조회로 끝납니다. 'fetched'(전체 수집 날)는 그대로 두고 'recent'만 적습니다."""
+    want = set(codes)
+    end = today or date.today().strftime("%Y%m%d")
+    begin = (date(int(end[:4]), int(end[4:6]), int(end[6:])) - timedelta(days=days)).strftime("%Y%m%d")
+    new, page = {}, 1
+    for _ in range(500):
+        answer = provider.dart("list.json", bgn_de=begin, end_de=end, page_no=page, page_count=100,
+                               sort="date", sort_mth="asc")
+        if not answer:
+            break
+        rows = answer.get("list") or []
+        for row in rows:
+            code = str(row.get("stock_code") or "").strip()
+            kind = kind_of(row.get("report_nm"))
+            if code in want and kind and re.fullmatch(r"[0-9]{8}", str(row.get("rcept_dt", ""))):
+                new.setdefault(code, []).append({"date": str(row["rcept_dt"]), "kind": kind,
+                                                 "title": str(row.get("report_nm", ""))[:60]})
+        total = int(answer.get("total_page") or 1)
+        if page >= total or not rows:
+            break
+        page += 1
+        time.sleep(PAUSE)
+    OUT.mkdir(exist_ok=True)
+    added = 0
+    for code, rows in new.items():
+        path = OUT / f"{code}.json"
+        body = {"code": code, "fetched": "", "rows": []}
+        if path.exists():
+            try:
+                body = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                pass
+        seen = {(r["date"], r["kind"], r["title"]): r for r in body.get("rows", [])}
+        before = len(seen)
+        for r in rows:
+            seen[(r["date"], r["kind"], r["title"])] = r
+        added += len(seen) - before
+        body["rows"] = [seen[k] for k in sorted(seen)]
+        body["recent"] = end
+        path.write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
+    print(f"최근 {days}일 · 시장 전체 {page}쪽 · 대상 종목 {len(new)} · 새 공시 {added}건")
+    return added
+
+
 def main():
     codes = codes_to_collect()
     if not codes:
         print("모을 종목이 없습니다.")
         return 1
     provider = Official()
+    if RECENT > 0:
+        recent(provider, codes, RECENT)
+        return 0
     OUT.mkdir(exist_ok=True)
     today = date.today().strftime("%Y%m%d")
     saved, empty, failed = 0, 0, []
