@@ -39,10 +39,22 @@ for _c in cands:                     # 9라운드: i011 표에 없는 후보(해
         R.R[_c] = np.nan_to_num(np.concatenate([[0.0], R.P[_c][1:] / R.P[_c][:-1] - 1]))
 L, TOP = int(os.environ.get("I_L", "60")), int(os.environ.get("I_TOP", "1"))
 gate_weak = R.G.get("시장 폭<50")
+# 18라운드 RNA 공통: 코스피200 앞 60일 σ ÷ 그날까지 쌓인 σ 기록 가운데값(그날까지 값만)
+_sk60 = I.sigma_n(I.K200, 60)
+_srel = np.full(n, 1.0)
+for _i in range(250, n):
+    _h = _sk60[60:_i + 1]
+    _h = _h[np.isfinite(_h)]
+    if len(_h) and np.isfinite(_sk60[_i]):
+        _srel[_i] = _sk60[_i] / np.median(_h)
 prev_used = np.concatenate([[0.0], used[:-1]])
 gate = {"weak": R.G.get("시장 폭<50"), "always": R.G["언제나"], "ma200": R.G["코스피<200일선"],
         # 1일봉이 거의 쉴 때만(어제까지 쓴 몫 < 20 · 50%) — 반쯤 쓴 달에 엔진이 깎아 먹음(I17)
-        "idle20": prev_used < 0.2, "weakidle20": (R.G.get("시장 폭<50") & (prev_used < 0.2)) if R.G.get("시장 폭<50") is not None else prev_used < 0.2, "weakidle25": R.G.get("시장 폭<50") & (prev_used < 0.25), "weakidle30": R.G.get("시장 폭<50") & (prev_used < 0.3), "weakidle40": R.G.get("시장 폭<50") & (prev_used < 0.4), "weakidle50": R.G.get("시장 폭<50") & (prev_used < 0.5), "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}[os.environ.get("I_GATE", "weak")]
+        "idle20": prev_used < 0.2, "weakidle20": (R.G.get("시장 폭<50") & (prev_used < 0.2)) if R.G.get("시장 폭<50") is not None else prev_used < 0.2, "weakidle25": R.G.get("시장 폭<50") & (prev_used < 0.25), "weakidle30": R.G.get("시장 폭<50") & (prev_used < 0.3), "weakidle40": R.G.get("시장 폭<50") & (prev_used < 0.4), "weakidle50": R.G.get("시장 폭<50") & (prev_used < 0.5), "idle30": prev_used < 0.3, "idle50": prev_used < 0.5, "idle70": prev_used < 0.7}.get(os.environ.get("I_GATE", "weak"))
+if os.environ.get("I_GATE", "").startswith("weakidlev"):     # 18라운드 D12: 켜는 문턱 = 0.2 × (σ ÷ 가운데)^p · 0.1 ~ 0.5
+    _pg = os.environ["I_GATE"][9:]
+    _pg = -int(_pg[1:]) / 100 if _pg.startswith("m") else int(_pg) / 100
+    gate = R.G.get("시장 폭<50") & (prev_used < np.clip(0.2 * _srel ** _pg, 0.1, 0.5))
 # 사용자 2026-10-03 "상승장이면 인버스 최소 · 0처럼 유동적으로": 장세 = 어제까지 코스피200이 200일선 위(오름) / 아래
 _up = np.concatenate([[False], (np.nan_to_num(R.k > I.ma(R.k, 200), nan=0) > 0)[:-1]])
 if os.environ.get("I_GREG") == "up_off":       # 오름 장세면 엔진 쉼
@@ -67,7 +79,17 @@ if os.environ.get("I_ENS"):
     # 2라운드 ②: 여러 기간 섞기 — 10 · 20 · 40일 돌리기 결과를 반의반씩(설정 하나에 기대지 않게)
     rot = np.mean([R.run(gate, R.momentum(_L, TOP, cands, MA_N, GUARDS[GUARD]), cost=COST, reb=REB) for _L in (10, 20, 40)], axis=0) * W
 else:
-    rot = R.run(gate, R.momentum(L, TOP, cands, MA_N, GUARDS[GUARD]), cost=COST, reb=REB) * W
+    if os.environ.get("I_LRNA"):                 # 18라운드 D10: 돌리기 기간 = 20 × (가운데 ÷ σ)^p · 10 ~ 60일(거칠면 짧게)
+        _pl = float(os.environ["I_LRNA"])
+        _Ls = np.clip(np.round(L * _srel ** (-_pl)), 10, 60).astype(int)
+        _picks = {}
+
+        def _mom(i):
+            f = _picks.setdefault(int(_Ls[i]), R.momentum(int(_Ls[i]), TOP, cands, MA_N, GUARDS[GUARD]))
+            return f(i)
+        rot = R.run(gate, _mom, cost=COST, reb=REB) * W
+    else:
+        rot = R.run(gate, R.momentum(L, TOP, cands, MA_N, GUARDS[GUARD]), cost=COST, reb=REB) * W
 if os.environ.get("I_VT"):
     # 2라운드 ①: 변동성 맞추기 — 돌리기 수익의 앞 20일 흔들림(연율)이 목표보다 크면 그만큼 몫을 줄임(어제까지 값으로)
     _tv = float(os.environ["I_VT"])
