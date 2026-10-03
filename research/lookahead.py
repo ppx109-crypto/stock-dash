@@ -14,7 +14,9 @@ import numpy as np
 
 RES = Path(__file__).resolve().parent
 CUTS = ("20181015", "20200320", "20220615", "20240805", "20260701")
-FINAL = dict(I_DIP="1", I_DOLLAR="2", I_GATE="weakidle20", I_L="20", I_TOP="2", I_CANDS="133690,138230,132030,148070", I_W="1", I_QINV="free", I_QPRI="inv")
+FINAL = dict(I_DIP="1", I_DOLLAR="2", I_GATE="weakidle20", I_L="20", I_TOP="2", I_CANDS="133690,138230,132030,148070", I_W="1", I_QINV="free", I_QPRI="inv",
+             # 2026-10-04 운영 반영(D11b · 사용자 "교체해주고 모의투자에 적용"): 인버스 익절만 RNA · 1.5 ~ 2.5% · 손절 −1.5%
+             I_QEXIT="0.25", I_QSIGN="60", I_QEXIT_SIDE="take", I_QEXIT_LO="0.015", I_QEXIT_HI="0.025")
 
 
 def run_i013(extra, cut=""):

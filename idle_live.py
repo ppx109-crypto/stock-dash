@@ -6,7 +6,9 @@
   ② 하락 추세  : 달러선물(138230) 20일 > +2% · 코스피200 < 20일선 → 138230
   ③ 돌리기     : 나스닥100(133690) · 달러선물(138230) · 금(132030) · 국고채10년(148070) 중 20일 수익 > 0 인 위 2개 반반
                  · 주 마지막 거래일에 다시 고름 · 모두 − 이면 현금
-  코스닥 과열 인버스(엔진과 따로): 코스닥150(229200) 10일 ≥ +9.5%(15:10 값) → 251340 · 익절 +1.5% · 손절 −1.5% · 10거래일
+  코스닥 과열 인버스(엔진과 따로): 코스닥150(229200) 10일 ≥ +9.5%(15:10 값) → 251340 · 손절 −1.5% · 10거래일
+                 · 익절 = 코스닥150 앞 60일 하루 등락 표준편차(어제 종가까지) × √10 × 0.25를 1.5 ~ 2.5% 사이로 묶은 값
+                   (산 날 정해 그 매매 내내 씀 · 사용자 2026-10-04 "교체해주고 모의투자에 적용" · docs/RL-RNA-LOG.md D11b)
 돈: 엔진 · 인버스는 '규칙이 안 쓰는 몫'(계좌 × (1 − 규칙 쓴 몫))만 씀. 규칙이 살 돈이 모자라면 paper_trade.make_room이 엔진 것을 먼저 팖.
 때: 15:10 판단(장중 연속 매매 → 시장가 즉시 체결) → 1일봉 봇(15:20 · 마감 동시호가)보다 먼저 현금을 비우거나 채움.
 미래 참조: 지난 날 종가(etf-data · 어제까지) + 오늘 15:10 값만 씀.
@@ -37,7 +39,8 @@ DIP, DOL, INV, K200, Q150 = "069500", "138230", "251340", "069500", "229200"
 ROT = idle_signal.ROT
 CODES = sorted({DIP, DOL, INV, K200, Q150, *ROT})
 DIP_TAKE, DIP_STOP, DIP_DAYS, DIP_COOL = 0.03, -0.03, 20, 20
-INV_TAKE, INV_STOP, INV_DAYS = 0.015, -0.015, 10
+INV_TAKE, INV_STOP, INV_DAYS = 0.015, -0.015, 10          # INV_TAKE = 익절 바닥 · 폭을 못 잴 때 쓰는 값
+INV_TAKE_K, INV_TAKE_HI, INV_SIG_N = 0.25, 0.025, 60     # 익절 = clip(0.25 × σ60 × √10, 1.5%, 2.5%)(RNA 26라운드 D11b)
 NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
         "133690": "TIGER 미국나스닥100", "132030": "KODEX 골드선물(H)", "148070": "KOSEF 국고채10년", "229200": "KODEX 코스닥150"}
 # 주 마지막 거래일을 알려고 쓰는 휴장일(평일만 · 틀려도 그 주 고르기가 하루 늦거나 한 주 밀릴 뿐)
@@ -48,6 +51,16 @@ NOTE = "※ 연구용 자동 알림이에요. 실제 계좌에는 주문하지 �
 
 
 # ───────────────────────── 계산(증권사 없이 시험할 수 있게) ─────────────────────────
+
+def inv_take(q_closes):
+    """코스닥 인버스 익절 폭(D11b): 코스닥150 **어제까지** 종가의 앞 60일 하루 등락 표준편차 × √10 × 0.25를 1.5 ~ 2.5%로 묶음.
+    q_closes = 오래된 → 오늘(마지막 값은 오늘 15:10 현재가라 빼고 잼 · 미래 참조 없음). 자료가 모자라면 1.5%."""
+    c = np.asarray(q_closes, float)[:-1]
+    if len(c) < INV_SIG_N + 1 or not np.all(np.isfinite(c[-(INV_SIG_N + 1):])):
+        return INV_TAKE
+    r = c[-INV_SIG_N:] / c[-(INV_SIG_N + 1):-1] - 1
+    return float(np.clip(np.std(r) * math.sqrt(10) * INV_TAKE_K, INV_TAKE, INV_TAKE_HI))
+
 
 def next_trading_day(day):
     d = date(int(day[:4]), int(day[4:6]), int(day[6:]))
@@ -87,8 +100,9 @@ def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_en
     for code, p in pos.items():
         if p["kind"] == "인버스" and now_price.get(code) and int(held.get(code, 0)) >= 1:
             r = now_price[code] / p["price"] - 1
-            if r >= INV_TAKE:
-                inv_exit = f"코스닥 인버스 익절 {r * 100:+.1f}%"
+            take = float(p.get("take") or INV_TAKE)      # 산 날 정한 익절 폭(D11b) · 예전 장부엔 없으면 1.5%
+            if r >= take:
+                inv_exit = f"코스닥 인버스 익절 {r * 100:+.1f}%(익절 폭 {take * 100:.1f}%)"
             elif r <= INV_STOP:
                 inv_exit = f"코스닥 인버스 손절 {r * 100:+.1f}%"
             elif p["days"] >= INV_DAYS:
@@ -168,8 +182,9 @@ def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_en
         money = min(max(0.0, room - engine_after) * 0.97, avail)
         qty = math.floor(money / price) if price and money > 0 else 0
         if qty >= 1:
-            orders.append((INV, "buy", qty, "코스닥 과열 인버스 — 코스닥150 10일 급등 뒤"))
-            keep[INV] = {"kind": "인버스", "price": price, "day": day, "days": 0}
+            take = inv_take(px[Q150]) if Q150 in px else INV_TAKE
+            orders.append((INV, "buy", qty, f"코스닥 과열 인버스 — 코스닥150 10일 급등 뒤 · 익절 +{take * 100:.1f}% · 손절 −1.5%"))
+            keep[INV] = {"kind": "인버스", "price": price, "day": day, "days": 0, "take": round(take, 5)}
         else:
             why.append("코스닥 인버스 신호지만 비운 돈이 없음")
     st["positions"] = keep

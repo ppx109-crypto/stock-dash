@@ -1071,10 +1071,11 @@ IDLE_RULES = """<div class="pxb"><div class="pxb-rules">
 <div class="pxb-rule"><h4>코스닥 과열 인버스<span>엔진과 따로 · 먼저</span></h4><dl>
 <dt>신호</dt><dd>KODEX 코스닥150이 10거래일 동안 +9.5% 넘게 오름(과열)</dd>
 <dt>사기</dt><dd>KODEX 코스닥150선물인버스(251340) · 규칙이 안 쓰는 돈 · 들고 있는 동안 엔진은 쉼</dd>
-<dt>팔기</dt><dd><span class="up">+1.5% 익절</span> · <span class="down">−1.5% 손절</span> · 10거래일 지나면</dd>
+<dt>팔기</dt><dd><span class="up">익절 +1.5 ~ +2.5%</span>(움직이는 값) · <span class="down">−1.5% 손절</span> · 10거래일 지나면</dd>
+<dt>익절 폭</dt><dd>산 날 정해 그 매매 내내 씀 · 코스닥150이 어제까지 60일 동안 하루에 출렁인 크기 × √10 × 0.25 · 조용하면 1.5%, 거칠면 2.5%까지 넓힘(2026-10-04 RNA 연구 70라운드에서 고른 판 · 손절은 그대로)</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot"><b>지난 성적</b>(1일봉 규칙 + 엔진 + 코스닥 인버스 · 비용 0.2% 뺌 · 계좌 전체) · 2017~2020 해마다 +30.4% (가장 크게 빠진 때 −8.3%) · 2021~2025 +63.8% (−13.6%) · 엔진만 안 본 기간 2012~2016 +6.2% (같은 때 코스피200 +3.0%) · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음</div>
+<div class="pxb-rule-foot"><b>지난 성적</b>(1일봉 규칙 + 엔진 + 코스닥 인버스 · 운영과 같은 15:15 문턱 · 움직이는 익절 · 비용 0.2% 뺌 · 계좌 전체) · 2017~2020 해마다 +28.7% (가장 크게 빠진 때 −8.3%) · 2021~2025 +64.3% (−13.6%) · 익절을 1.5%로 고정했을 때보다 2021~2025 +0.7%p · 2026 +4.8%p · 진 해 없음 · 엔진만 안 본 기간 2012~2016 +6.2% (같은 때 코스피200 +3.0%) · 지난 자료로 계산한 값이라 앞으로도 같다는 보장은 없음</div>
 </div>"""
 
 IDLE_NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
@@ -1110,7 +1111,9 @@ def idle_panel(today: dict | None, state: dict | None, book: dict | None) -> str
     held = (state or {}).get("positions") or {}
     if held:
         rows = "".join(f'<li><b>{_e(IDLE_NAME.get(c, c))}</b> ({_e(c)}) · {_e(p.get("kind"))} · 산 값 {float(p.get("price") or 0):,.0f}원 · '
-                       f'산 날 {_e(as_day(p.get("day")))} · {_e(p.get("days"))}거래일째</li>' for c, p in held.items())
+                       f'산 날 {_e(as_day(p.get("day")))} · {_e(p.get("days"))}거래일째'
+                       + (f' · 익절 +{float(p["take"]) * 100:.1f}% · 손절 −1.5%' if p.get("take") else "") + '</li>'
+                       for c, p in held.items())
         body += (f'<div class="pxb-note" style="margin-top:10px"><b>들고 있는 것(모의투자)</b></div>'
                  f'<ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>')
     return f'<div class="pxb">{body}</div>' + ledger_panel("빈칸 엔진 · 코스닥 인버스 모의투자", state, book)

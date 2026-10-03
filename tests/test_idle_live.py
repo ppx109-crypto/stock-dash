@@ -101,6 +101,54 @@ class StepTest(unittest.TestCase):
         self.assertEqual([(c, s) for c, s, q, _ in orders], [("251340", "sell")])
 
 
+class InverseTakeTest(unittest.TestCase):
+    """D11b(2026-10-04): 익절 = clip(0.25 × 코스닥150 앞 60일 σ(어제까지) × √10, 1.5%, 2.5%) · 산 날 정해 그 매매 내내."""
+
+    def test_take_bounds_and_ignores_today(self):
+        calm = flat(80)
+        self.assertEqual(L.inv_take(calm), L.INV_TAKE)                    # 조용하면 바닥 1.5%
+        wild = 100 * np.cumprod(np.r_[1, np.tile([1.05, 0.95], 40)])
+        self.assertEqual(L.inv_take(wild), L.INV_TAKE_HI)                 # 거칠면 천장 2.5%
+        mid = 100 * np.cumprod(np.r_[1, np.tile([1.012, 0.988], 40)])     # σ ≈ 1.2% → 0.25 × 1.2 × √10 ≈ 0.95% → 바닥
+        self.assertEqual(L.inv_take(mid), L.INV_TAKE)
+        mid2 = 100 * np.cumprod(np.r_[1, np.tile([1.025, 0.975], 40)])   # σ ≈ 2.5% → ≈ 1.98%
+        self.assertAlmostEqual(L.inv_take(mid2), 0.25 * 0.025 * np.sqrt(10), places=3)
+        # 마지막 값(오늘 15:10)은 재지 않음: 오늘 값을 크게 바꿔도 같음
+        self.assertEqual(L.inv_take(np.r_[mid2[:-1], 999.0]), L.inv_take(mid2))
+        self.assertEqual(L.inv_take(flat(30)), L.INV_TAKE)                # 자료 모자라면 1.5%
+
+    def test_take_stored_at_buy_and_used_at_exit(self):
+        px = base_px()
+        wild = 100 * np.cumprod(np.r_[1, np.tile([1.025, 0.975], 40)])
+        px["229200"] = np.r_[wild[:-11], wild[-11] * np.linspace(1.0, 1.11, 11)]
+        orders, st, _ = L.step({}, "20261005", px, breadth=80, used=0.6, total=1e7, cash=4e6, held={},
+                               now_price=PRICE, is_week_end=False)
+        self.assertEqual([(c, s) for c, s, q, _ in orders], [("251340", "buy")])
+        take = st["positions"]["251340"]["take"]
+        self.assertGreater(take, L.INV_TAKE)
+        self.assertLessEqual(take, L.INV_TAKE_HI)
+        qty = orders[0][2]
+        # +1.6%: 예전(1.5%)이면 익절이지만 이 매매의 폭이 더 넓어 들고 감
+        orders, st2, _ = L.step(st, "20261006", px, breadth=80, used=0.6, total=1e7, cash=0, held={"251340": qty},
+                                now_price=dict(PRICE, **{"251340": 101.6}), is_week_end=False)
+        self.assertEqual(orders, [])
+        self.assertEqual(st2["positions"]["251340"]["take"], take)
+        # 폭을 넘으면 익절
+        orders, _, _ = L.step(st2, "20261007", px, breadth=80, used=0.6, total=1e7, cash=0, held={"251340": qty},
+                              now_price=dict(PRICE, **{"251340": 100 * (1 + take) + 0.01}), is_week_end=False)
+        self.assertEqual([(c, s) for c, s, q, _ in orders], [("251340", "sell")])
+        # 손절은 그대로 −1.5%
+        orders, _, _ = L.step(st2, "20261007", px, breadth=80, used=0.6, total=1e7, cash=0, held={"251340": qty},
+                              now_price=dict(PRICE, **{"251340": 98.4}), is_week_end=False)
+        self.assertEqual([(c, s) for c, s, q, _ in orders], [("251340", "sell")])
+
+    def test_old_position_without_take_uses_15(self):
+        state = {"positions": {"251340": {"kind": "인버스", "price": 100.0, "day": "20261002", "days": 1}}, "last_day": "20261002"}
+        orders, _, _ = L.step(state, "20261005", base_px(), breadth=80, used=0.6, total=1e7, cash=0,
+                              held={"251340": 10}, now_price=dict(PRICE, **{"251340": 101.6}), is_week_end=False)
+        self.assertEqual([(c, s) for c, s, q, _ in orders], [("251340", "sell")])
+
+
 class InversePriorityTest(unittest.TestCase):
     def test_inverse_first_engine_rests(self):
         # 엔진이 켜질 날(시장 폭 40)이라도 코스닥 과열이면 인버스가 비운 돈을 먼저 쓰고 엔진(돌리기)은 팖
