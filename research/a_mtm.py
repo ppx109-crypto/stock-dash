@@ -7,7 +7,7 @@ import sys
 import numpy as np
 
 
-def account(days, ledger, base, prices=None):
+def account(days, ledger, base, prices=None, mode="mark"):
     """1일봉 장부(code · 산 날 · 판 날 · 손익% · 칸)를 실제 계좌처럼 날마다 평가한 계좌 수익률(날마다).
     산 날 그날 계좌의 칸 몫만큼 사서 값이 오르내리는 대로 두고(몫이 커지거나 작아짐) 판 날 장부 손익에 맞춤.
     base = 1일봉 밖 몫(엔진 · 인버스 · 돌리기)의 날마다 계좌 수익률(어제 계좌에 곱함)."""
@@ -24,7 +24,9 @@ def account(days, ledger, base, prices=None):
             px[c] = dict(prices.get(c, {}).get("rows") or [])
         buys.setdefault(idx[b], []).append(t)
         sells.setdefault(idx[e], []).append(t)
-    E = np.ones(n); val, last, units = {}, {}, {}
+    # mode="mark": 들고 있는 것을 그날 값으로(꼭대기 대비 골 · 번 돈 되돌림도 셈)
+    # mode="cost": 들고 있는 것의 아직 안 판 이익은 세지 않고 손실만 셈(산 값보다 오르면 산 값으로 봄 · 사용자 2026-10-04 "되돌림은 계산에서 제외")
+    E = np.ones(n); C = np.ones(n); val, last, units = {}, {}, {}
     for i in range(1, n):
         e_prev = E[i - 1]
         cash = e_prev - sum(val.values())
@@ -41,7 +43,9 @@ def account(days, ledger, base, prices=None):
             if v and idx[e] > i:
                 units[t] = eq * k / 10; val[t] = units[t]; last[t] = v
         E[i] = eq
-    return np.concatenate([[0.0], E[1:] / E[:-1] - 1])
+        C[i] = eq - sum(max(0.0, val[t] - units[t]) for t in val)     # 안 판 이익을 뺀 값(계좌 크기 · 사는 몫은 E로)
+    X = C if mode == "cost" else E
+    return np.concatenate([[0.0], X[1:] / X[:-1] - 1])
 
 
 if __name__ == "__main__":
