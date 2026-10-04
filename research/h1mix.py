@@ -18,7 +18,8 @@ D = [d for d in I.DAYS if LO <= d < HI]
 nxt = {d: D[i + 1] for i, d in enumerate(D[:-1])}
 src = {"1일봉": (json.load(open(SP + "d1luck.json")), 0.2), "1시간봉": (json.load(open(SP + H1F)), 0.15),
        "15분봉": (json.load(open(SP + "m15luck.json")), 0.15)}
-COMBOS = [(50, 0, 50), (40, 20, 40), (35, 30, 35), (50, 25, 25), (25, 25, 50), (100, 0, 0), (0, 100, 0), (0, 0, 100)]
+COMBOS = [tuple(int(x) for x in c.split("_")) for c in os.environ["MIX_COMBOS"].split(",")] if os.environ.get("MIX_COMBOS") else \
+    [(50, 0, 50), (40, 20, 40), (35, 30, 35), (50, 25, 25), (25, 25, 50), (100, 0, 0), (0, 100, 0), (0, 0, 100)]
 nd = min(len(v[0]["판"]) for v in src.values())
 
 
@@ -49,10 +50,11 @@ def stat(i, combo):
 print(f"== 3단계 · {LO} ~ {HI} · 무작위 {nd}판 · 1시간봉 {H1F} ==", flush=True)
 R = {cb: np.array([stat(i, cb) for i in range(nd)]) for cb in COMBOS}
 F = {cb: stat(-1, cb) for cb in COMBOS}
-base = R[(50, 0, 50)]
+BASE = tuple(int(x) for x in os.environ.get("MIX_BASE", "50_0_50").split("_"))
+base = R[BASE]
 for cb in COMBOS:
     r = R[cb]
     win = np.mean((r[:, 0] > base[:, 0]) & (r[:, 1] > base[:, 1])) * 100
     print(f"  {'·'.join(map(str, cb)):9s} 온 풀 {F[cb][0]:+6.1f} 골뺌 {F[cb][1]:6.1f} | 무작위 수익 가운데 {np.median(r[:, 0]):+6.1f} 아래10% {np.percentile(r[:, 0], 10):+6.1f}"
           f" · 되돌림 뺀 골 가운데 {np.median(r[:, 1]):6.1f} 나쁜10% {np.percentile(r[:, 1], 10):6.1f} · 되돌림 셈 골 {np.median(r[:, 2]):6.1f}"
-          f" | 지금(50·0·50)보다 수익↑·골↓ {win:4.0f}%", flush=True)
+          f" | 바탕({'·'.join(map(str, BASE))})보다 수익↑·골↓ {win:4.0f}%", flush=True)
