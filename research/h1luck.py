@@ -1,7 +1,7 @@
 """1시간봉 다시 보기 2단계(docs/RL-1HY.md) — 운을 걷어낸 실력: 종목 풀에서 10%를 무작위로 빼고 N번 돌려 성적 분포.
 H1_SRC(research/h1src.py와 같음 · 기본 yahoo) · H1_ALL=1(한투 종목 모두) · H1_LO / H1_HI(YYYYMMDDHH) · H1_N(기본 200) · H1_DROP(기본 0.1).
 같은 규칙(94회차 = 운영) · 같은 엔진 · 규칙 숫자는 안 바꿈. 자료 · 신호는 한 번만 만들고 풀만 바꿔 다시 굴림(신호는 그 종목 자료만 보므로 풀을 빼도 그대로).
-출력: 판마다 칸 반영 합 · 큰 두 건 뺀 합 · 매매 수 → scratchpad h1luck_{이름}.json · 요약 한 줄."""
+출력: 판마다 칸 반영 합 · 큰 두 건 뺀 합 · 매매 수 · 장부(종목 · 산 날 · 판 날 · 손익 · 칸) → scratchpad h1luck_{이름}.json · 요약 한 줄."""
 import json
 import os
 import random
@@ -23,9 +23,9 @@ def one(keep):
     d = {c: data[c] for c in keep}
     s = {c: sigs[c] for c in keep}
     r = H._one_run(d, s, EX, size, LO, HI, 10, 0, None, rk, H.COST, None, None, stale90)
-    T = [(t["code"], t["산 때"], t["손익"], t["칸"]) for t in r["목록"]]
-    w = sorted((t[2] * t[3] / 10 for t in T), reverse=True)
-    return {"합": sum(w), "큰2뺌": sum(w[2:]), "매매": len(T), "가장큰": T and max(T, key=lambda t: t[2] * t[3])[:3]}
+    T = [(t["code"], t["산 때"][:8], t["판 때"].lstrip("끝")[:8], t["손익"], t["칸"]) for t in r["목록"]]
+    w = sorted((t[3] * t[4] / 10 for t in T), reverse=True)
+    return {"합": sum(w), "큰2뺌": sum(w[2:]), "매매": len(T), "장부": T}       # 장부 = 3단계 조합(a_mtm 날마다 평가)에 씀
 
 
 full = one(codes)
