@@ -12,6 +12,7 @@ LO, HI = os.environ.get("H1_LO", "2023100100"), os.environ.get("H1_HI", "2026090
 N, DROP = int(os.environ.get("H1_N", "200")), float(os.environ.get("H1_DROP", "0.1"))
 src = open("/home/user/stock-dash/research/h1src.py", encoding="utf-8").read()
 exec(src.split("r = H._one_run(")[0])
+LO, HI = os.environ.get("H1_LO", "2023100100"), os.environ.get("H1_HI", "2026090100")   # h1src가 덮어쓴 기간을 되돌림(2026-10-04 고침)
 name = f"{os.environ['H1_SRC']}{'_all' if os.environ.get('H1_ALL') == '1' else ''}_{LO[:6]}_{HI[:6]}"
 OUTL = "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/h1luck_" + name + ".json"
 codes = sorted(data)
