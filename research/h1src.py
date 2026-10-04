@@ -5,6 +5,7 @@
   H1_SRC=kis_no15  한투에서 15시 봉을 버림(야후처럼 14시 봉 종가 ≈ 15:00 값) — '동시호가가 빠진 탓'만 따로 봄
   H1_SRC=kis_y09   kis_no15 + 09시 봉 시가만 야후 값으로 — '아침 시가(체결 값) 차이' 몫을 봄
   H1_SRC=y_k09     야후 + 09시 봉 시가만 한투 값으로
+  H1_ALL=1         종목을 야후가 1시간봉을 제대로 주는 종목으로 줄이지 않음(한투 종목 모두 · 운영과 같음)
 매매 목록을 scratchpad h1src_{SRC}.json으로(종목 · 산 때 · 판 때 · 손익 · 칸) · 한 줄 요약."""
 import json
 import os
@@ -92,13 +93,16 @@ KCODES = {f.name for base in (kis1h.HOME, kis1h.M15) if base.is_dir() for f in b
 YCODES = {f.name for f in H.HOME.iterdir() if f.is_dir()}
 COMMON = KCODES & YCODES
 _YOK = set(_yload(sorted(COMMON)))              # 야후가 1시간봉을 제대로 주는 종목(hlab.load 거르기 통과)만
-COMMON = {c for c in COMMON if c in _YOK}
+if os.environ.get("H1_ALL") != "1":             # H1_ALL=1: 한투가 가진 종목 모두(운영과 같음 · 야후 거르기 안 함)
+    COMMON = {c for c in COMMON if c in _YOK}
+else:
+    SRC_TAG = SRC + "_all"
 H.load = load
 exec(open("research/h101.py", encoding="utf-8").read().split('print(f"== 1시간봉 101회차')[0])
 data = {c: b for c, b in data.items() if c in COMMON}
 sigs = {c: np.asarray(entry_f()(c, b), bool) for c, b in data.items()}
 r = H._one_run(data, sigs, EX, size, LO, HI, 10, 0, None, rk_of(tiers(20, 5, 3)), H.COST, None, None, stale90)
 T = [(t["code"], t["산 때"], t["판 때"].lstrip("끝"), t["손익"], t["칸"]) for t in r["목록"]]
-json.dump(T, open(OUT + SRC + ".json", "w"))
+json.dump(T, open(OUT + globals().get("SRC_TAG", SRC) + ".json", "w"))
 p = np.array([t[3] for t in T])
 print(f"{SRC:9s} 종목 {len(data)} · 매매 {len(T)} · 이김 {np.mean(p > 0) * 100:.0f}% · 평균 {p.mean():+.2f}% · 칸 반영 합 {sum(t[3] * t[4] / 10 for t in T):+.1f}%p", flush=True)
