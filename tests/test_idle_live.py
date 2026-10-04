@@ -57,6 +57,7 @@ class StepTest(unittest.TestCase):
         self.assertIn(("133690", "sell", 1000), [(c, s, q) for c, s, q, _ in orders])
         self.assertNotIn("133690", st["positions"])
 
+    @mock.patch.object(L, "DIP_ON", True)       # 2026-10-04 뺀 규칙 · 되살릴 때를 위해 시험은 남김
     def test_dip_buy_then_stop_and_cool(self):
         px = base_px()
         px["069500"] = np.r_[flat(55), [100, 99, 97, 96, 95]]           # 5일 −5%
@@ -72,6 +73,19 @@ class StepTest(unittest.TestCase):
         self.assertEqual(st2["cool"], L.DIP_COOL + 1)
         self.assertNotIn("069500", st2["positions"])
 
+    def test_dip_off_by_default(self):
+        # 2026-10-04 사용자 "급락되돌림만 빼줘": 급락 신호가 떠도 069500을 안 사고, 엔진이 켜졌으면 다른 단계(달러 · 돌리기)로
+        px = base_px()
+        px["069500"] = np.r_[flat(55), [100, 99, 97, 96, 95]]
+        orders, _, why = L.step({}, "20261005", px, breadth=30, used=0.6, total=1e7, cash=4e6, held={},
+                                now_price=dict(PRICE, **{"069500": 95.0}), is_week_end=False)
+        self.assertEqual(orders, [])
+        self.assertTrue(any("급락 되돌림은 2026-10-04부터 안 씀" in w for w in why))
+        orders, _, _ = L.step({}, "20261005", px, breadth=30, used=0.0, total=1e7, cash=1e7, held={},
+                              now_price=dict(PRICE, **{"069500": 95.0}), is_week_end=False)
+        self.assertNotIn(("069500", "buy"), [(c, s) for c, s, q, _ in orders])
+
+    @mock.patch.object(L, "DIP_ON", True)
     def test_dip_buys_even_when_rules_use_money(self):
         # 2026-10-04(점검 A11 · 사용자 결정): 규칙이 돈을 60% 써도 시장 폭 < 50이면 남은 40%로 급락 되돌림(연구 i013과 같게)
         px = base_px()

@@ -2,8 +2,9 @@
 
 최종 규칙(docs/RL-INVERSE.md '최종 판' · 연구 i013 · i040 · lookahead 통과):
   엔진 켬      : 시장 폭 < 50(규칙들이 못 사는 날) · 규칙(1일봉 · 1시간봉 · 15분봉)이 계좌의 20% 미만을 쓰고 있음
-  ① 급락 되돌림: 시장 폭 < 50 · KODEX 200(069500) 5일 수익 ≤ −4.5%(15:10 값) → 069500 · 익절 +3% · 손절 −3% · 20거래일 · 손절 뒤 20거래일 쉼
-                 · 규칙이 돈을 얼마나 쓰든 남은 몫으로 삼(2026-10-04 사용자 결정 · 연구 i013과 같게 · ② · ③은 엔진 켤 때만)
+  ① 급락 되돌림: **뺌**(2026-10-04 사용자 "급락되돌림만 빼줘" · DIP_ON = False · 계좌 낙폭은 그대로이고 2021 ~ 25 몫이 거의 0 ·
+                 docs/AUDIT-UNIFIED-LOG.md '급락 되돌림 · 달러 · 돌리기를 빼면?'). 예전 규칙(시장 폭 < 50 · KODEX 200 5일 ≤ −4.5% → 069500 ·
+                 익절 +3% · 손절 −3% · 20거래일 · 손절 뒤 20거래일 쉼)은 DIP_ON = True로 되살릴 수 있게 남겨 둠 · 들고 있던 것은 그 규칙대로 팖
   ② 하락 추세  : 달러선물(138230) 20일 > +2% · 코스피200 < 20일선 → 138230
   ③ 돌리기     : 나스닥100(133690) · 달러선물(138230) · 금(132030) · 국고채10년(148070) 중 20일 수익 > 0 인 위 2개 반반
                  · 주 마지막 거래일에 다시 고름 · 모두 − 이면 현금
@@ -40,6 +41,7 @@ DIP, DOL, INV, K200, Q150 = "069500", "138230", "251340", "069500", "229200"
 ROT = idle_signal.ROT
 CODES = sorted({DIP, DOL, INV, K200, Q150, *ROT})
 DIP_TAKE, DIP_STOP, DIP_DAYS, DIP_COOL = 0.03, -0.03, 20, 20
+DIP_ON = False          # 급락 되돌림 새로 사기(2026-10-04 사용자 결정으로 끔)
 INV_TAKE, INV_STOP, INV_DAYS = 0.015, -0.015, 10          # INV_TAKE = 익절 바닥 · 폭을 못 잴 때 쓰는 값
 INV_TAKE_K, INV_TAKE_HI, INV_SIG_N = 0.25, 0.025, 60     # 익절 = clip(0.25 × σ60 × √10, 1.5%, 2.5%)(RNA 26라운드 D11b)
 NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
@@ -95,6 +97,9 @@ def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_en
             st["cool"] -= 1
     sig = idle_signal.decide(px, breadth, used, at_1515=True)
     why = list(sig["까닭"])
+    if not DIP_ON:
+        sig = dict(sig, 급락=False)
+        why = [w.split(" → 급락 되돌림")[0] + " (급락 되돌림은 2026-10-04부터 안 씀)" if "→ 급락 되돌림" in w else w for w in why]
     orders, keep, exited = [], {}, set()
     # 인버스 먼저(2026-10-03 · 현금 계좌라 엔진과 같은 돈을 겹쳐 못 씀 → 연구: 인버스 든 날 엔진 쉼이 겹쳐 쓰기와 거의 같음)
     inv_exit = None
