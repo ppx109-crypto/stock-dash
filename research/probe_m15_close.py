@@ -32,7 +32,40 @@ def rows(client, code, day, end, past):
     return sorted(set(out))
 
 
+def outside(code, days):
+    """한투가 아닌 출처(네이버 일봉 · 야후 일봉)의 종가 — 어느 쪽이 진짜 종가인지 가리기용."""
+    import re
+    import requests
+    got = {}
+    try:
+        txt = requests.get("https://fchart.stock.naver.com/sise.nhn", params={
+            "symbol": code, "timeframe": "day", "count": 10, "requestType": 0}, timeout=15).text
+        for d, c in re.findall(r'data="(\d{8})\|[^|]*\|[^|]*\|[^|]*\|([^|]*)\|', txt):
+            if d in days:
+                got[f"네이버 {d}"] = c
+    except Exception as e:  # noqa: BLE001
+        got["네이버"] = f"못 받음 {type(e).__name__}"
+    for sfx in (".KS", ".KQ"):
+        try:
+            r = requests.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{code}{sfx}",
+                             params={"range": "1mo", "interval": "1d"}, headers={"User-Agent": "Mozilla/5.0"}, timeout=15).json()
+            res = (r.get("chart") or {}).get("result") or []
+            if not res:
+                continue
+            from datetime import datetime, timedelta, timezone
+            q = res[0]["indicators"]["quote"][0]
+            for t, c in zip(res[0]["timestamp"], q["close"]):
+                d = (datetime.fromtimestamp(t, timezone.utc) + timedelta(hours=9)).strftime("%Y%m%d")
+                if d in days and c:
+                    got[f"야후 {d}"] = round(c, 1)
+        except Exception as e:  # noqa: BLE001
+            got[f"야후{sfx}"] = f"못 받음 {type(e).__name__}"
+    return got
+
+
 def main():
+    for code in CODES:
+        print(f"-- {code} 다른 출처 종가: {outside(code, DAYS)}", flush=True)
     client = broker_kis.market()
     closes = {}
     for code in CODES:
