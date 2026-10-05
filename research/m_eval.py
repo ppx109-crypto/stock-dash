@@ -3,7 +3,7 @@
 덧씌우기 판단은 그날 종가까지 · 실행은 다음 거래일 종가(팔 때 비용 0.25%) · 2026 잠금(M_OPEN2026=1) · 시험 기간은 M_SHOW_TEST=1.
 설계: CASH(안 쓰는 돈 → 단기채권 153130) · MS{y}(그달 −y% 아래면 다 팔고 그달 새로 안 삼) · ML{x}(그달 +x% 넘으면 그달 새로 안 삼) ·
       MK{x}(그달 +x% 넘은 뒤 그 절반 아래면 다 팔고 그달 새로 안 삼) · SZ{p}(크기 × p/100) · TP{x}(+x%에 절반 팖 · 한 번) · SL{x}(−x%면 다 팖) ·
-      MN{n}(그달 잃고 판 매매 n번이면 그달 새로 안 삼) · WC{c}(한 종목이 계좌 c% 넘으면 넘친 만큼 팖) · HG{p}(어제 코스피200 < 20일선이면 주식 값 p%만큼 인버스 114800)."""
+      MN{n}(그달 잃고 판 매매 n번이면 그달 새로 안 삼) · WC{c}(한 종목이 계좌 c% 넘으면 넘친 만큼 팖) · HX{c}(코스피200 < 20일선이면 c% 넘는 몫만큼 인버스) · MX{g}(코스피200 < 60일선이면 +g% 넘은 종목 절반) · HG{p}(어제 코스피200 < 20일선이면 주식 값 p%만큼 인버스 114800)."""
 import json
 import os
 import re
@@ -21,6 +21,7 @@ n = len(D); idx = {d: i for i, d in enumerate(D)}
 _bp = I.px("153130"); _ai = {d: i for i, d in enumerate(I.DAYS)}
 _ip = I.px("114800"); _K = np.asarray(I.K200, float)
 INV = np.array([(_ip[_ai[d]] / _ip[_ai[d] - 1] - 1) if np.isfinite(_ip[_ai[d]]) and np.isfinite(_ip[_ai[d] - 1]) else 0.0 for d in D])
+BELOW60 = np.array([_K[_ai[d]] < np.nanmean(_K[_ai[d] - 59:_ai[d] + 1]) for d in D])
 BELOW20 = np.array([_K[_ai[d]] < np.nanmean(_K[_ai[d] - 19:_ai[d] + 1]) for d in D])     # 그날 종가가 20일선 아래(다음 날 판단에 씀)
 BOND = np.array([(_bp[_ai[d]] / _bp[_ai[d] - 1] - 1) if np.isfinite(_bp[_ai[d]]) and np.isfinite(_bp[_ai[d] - 1]) else 0.0 for d in D])
 L0 = [t for t in json.load(open(SP + LED)) if t[1] in idx and t[2] in idx]
@@ -52,6 +53,11 @@ def sim(design):
         mon = D[d][:6]
         if D[d - 1][:6] != mon:
             ms = E[d - 1]; mmax = 0.0; losses = 0
+        if "HX" in o:                                   # 큰 몫 지수 덮개: 어제 코스피200 < 20일선이면 c% 넘는 몫만큼 인버스
+            cash += hedge * INV[d]
+            eq0 = E[d - 1]
+            want = sum(max(0.0, v - o["HX"] / 100 * eq0) for v in val.values()) if BELOW20[d - 1] else 0.0
+            cash -= abs(want - hedge) * 0.001; hedge = want
         if "HG" in o:                                   # 어제 정한 덮개(어제 주식 값 × p%)의 오늘 손익
             cash += hedge * INV[d]
             want = o["HG"] / 100 * sum(val.values()) if BELOW20[d - 1] else 0.0
@@ -107,6 +113,8 @@ def sim(design):
             g = val[t] / (units[t] * frac[t]) - 1
             if "SL" in o and g <= -o["SL"] / 100:
                 pend[t] = 1
+            elif "MX" in o and t not in halved and BELOW60[d] and g >= o["MX"] / 100:
+                pend[t] = max(pend.get(t, 0), 0.5); halved.add(t)
             elif "TP" in o and t not in halved and g >= o["TP"] / 100:
                 pend[t] = max(pend.get(t, 0), 0.5); halved.add(t)
     return E, C
