@@ -21,6 +21,7 @@ class WatchTest(unittest.TestCase):
 
     def test_holiday(self):
         self.assertFalse(W.trading_day("20261009"))      # 한글날
+        self.assertFalse(W.trading_day("20261005"))      # 개천절 대체공휴일
         self.assertFalse(W.trading_day("20261010"))      # 토요일
         self.assertTrue(W.trading_day("20261006"))
 
