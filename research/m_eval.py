@@ -3,7 +3,7 @@
 덧씌우기 판단은 그날 종가까지 · 실행은 다음 거래일 종가(팔 때 비용 0.25%) · 2026 잠금(M_OPEN2026=1) · 시험 기간은 M_SHOW_TEST=1.
 설계: CASH(안 쓰는 돈 → 단기채권 153130) · MS{y}(그달 −y% 아래면 다 팔고 그달 새로 안 삼) · ML{x}(그달 +x% 넘으면 그달 새로 안 삼) ·
       MK{x}(그달 +x% 넘은 뒤 그 절반 아래면 다 팔고 그달 새로 안 삼) · SZ{p}(크기 × p/100) · TP{x}(+x%에 절반 팖 · 한 번) · SL{x}(−x%면 다 팖) ·
-      MN{n}(그달 잃고 판 매매 n번이면 그달 새로 안 삼) · HG{p}(어제 코스피200 < 20일선이면 주식 값 p%만큼 인버스 114800)."""
+      MN{n}(그달 잃고 판 매매 n번이면 그달 새로 안 삼) · WC{c}(한 종목이 계좌 c% 넘으면 넘친 만큼 팖) · HG{p}(어제 코스피200 < 20일선이면 주식 값 p%만큼 인버스 114800)."""
 import json
 import os
 import re
@@ -98,12 +98,17 @@ def sim(design):
             block_month = mon
         if "MK" in o and mmax >= o["MK"] / 100 and mtd <= mmax / 2:
             pend_all = True; block_month = mon
+        if "WC" in o and E[d] > 0:                       # 한 종목 몫 덮개: 그날 종가로 넘치면 다음 날 넘친 만큼 팖
+            for t in val:
+                w = val[t] / E[d]
+                if w > o["WC"] / 100:
+                    pend[t] = max(pend.get(t, 0), 1 - (o["WC"] / 100) / w)
         for t in val:
             g = val[t] / (units[t] * frac[t]) - 1
             if "SL" in o and g <= -o["SL"] / 100:
                 pend[t] = 1
             elif "TP" in o and t not in halved and g >= o["TP"] / 100:
-                pend[t] = 0.5; halved.add(t)
+                pend[t] = max(pend.get(t, 0), 0.5); halved.add(t)
     return E, C
 
 
@@ -118,7 +123,9 @@ def stats(E, C, lo, hi):
     ann = ((E[b] / E[a - 1]) ** (250 / len(ii)) - 1) * 100
     q = C[a - 1:b + 1] / C[a - 1]
     dd = (q / np.maximum.accumulate(q) - 1).min() * 100
-    return np.mean(mr > 0) * 100, ann, dd, mr.min(), len(mr)
+    qm = E[a - 1:b + 1] / E[a - 1]
+    ddm = (qm / np.maximum.accumulate(qm) - 1).min() * 100
+    return np.mean(mr > 0) * 100, ann, dd, mr.min(), len(mr), ddm
 
 
 if __name__ == "__main__":
@@ -126,6 +133,6 @@ if __name__ == "__main__":
         E, C = sim(design)
         s = f"{design or '바탕':18s}"
         for name, lo, hi in PERIODS:
-            pp, ann, dd, worst, nm = stats(E, C, lo, hi)
-            s += f" | {name}: 달 플러스 {pp:5.1f}% ({nm}달) · 연 {ann:+6.1f} · 되돌림 뺀 골 {dd:6.1f} · 가장 나쁜 달 {worst:+6.1f}"
+            pp, ann, dd, worst, nm, ddm = stats(E, C, lo, hi)
+            s += f" | {name}: 달 플러스 {pp:5.1f}% ({nm}달) · 연 {ann:+6.1f} · 되돌림 셈 골 {ddm:6.1f} · 되돌림 뺀 골 {dd:6.1f} · 가장 나쁜 달 {worst:+6.1f}"
         print(s, flush=True)
