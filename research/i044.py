@@ -413,6 +413,7 @@ def stop_stats(trades, lo, hi):
 
 # 1일봉 이익확보 · 고점추격 RNA(docs/RL-PX.md · 2026-10-05): I_PX="설계" · 정배열 매매에만 · 그날 종가와 그날까지 꼭대기 종가로만
 #  LDU(10 → 3 · 15 → 5) · LDL(+ 20 → 10 · 30 → 18 · 50 → 32 · 100 → 70) · LF{f}_{s}(꼭대기 이익 s% 뒤 그 f% 아래면 팜) · TR{x}_{s}(꼭대기 이익 s% 뒤 꼭대기보다 x% 빠지면 팜)
+#  TB{x}_{s}(큰 이익만 고점추격 · TR과 같은 셈) · PH{x}(처음 +x%에 닿는 날 절반)
 #  끝에 V{p}를 붙이면 숫자 × (산 날 변동성 ÷ V0)^(p/100) · V0 = 2017 ~ 20 정배열 후보 변동성 가운데
 PX = os.environ.get("I_PX", "")
 if PX:
@@ -422,7 +423,7 @@ if PX:
     _body = PX[:_mv.start()] if _mv else PX
     _v0 = float(np.median([r["변동성"] for r in nrl.early[::5] if r.get("변동성") is not None and nrl.aligned(r)]))
     _LADDER = {"LDU": [(10, 3), (15, 5)], "LDL": [(10, 3), (15, 5), (20, 10), (30, 18), (50, 32), (100, 70)]}
-    _m = _rpx.match(r"(LDU|LDL|LF|TR)(\d*)_?(\d*)", _body)
+    _m = _rpx.match(r"(LDU|LDL|LF|TR|TB|PH)(\d*)_?(\d*)", _body)
     _kind, _a, _b = _m.group(1), int(_m.group(2) or 0), int(_m.group(3) or 0)
     print(f"  이익확보 {PX} → {_kind} {_a} {_b} · RNA p {_pp} · V0 {_v0:.2f}", flush=True)
     _base_al = EXIT
@@ -439,9 +440,12 @@ if PX:
         elif _kind == "LF":
             if pg >= _b * k and g <= pg * _a / 100:
                 return True
-        elif _kind == "TR":
+        elif _kind in ("TR", "TB"):
             if pg >= _b * k and lane["closes"][spot] <= peak * (1 - _a * k / 100):
                 return True
+        elif _kind == "PH" and nrl.first_cross(lane, start, price, step, _a * k):
+            out = nrl.broken(lane, start, price, step, peak, row)
+            return True if out else max(1, nrl.BASE_SIZE(row) // 2)
         return nrl.broken(lane, start, price, step, peak, row)
     EXIT = lab.exit_per_tier(nrl.tier, {"규칙": nrl.RULE_EXIT, "정배열": _px_aligned})
 
