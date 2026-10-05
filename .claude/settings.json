@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api -X POST repos/ppx109-crypto/stock-dash/actions/workflows/paper-check.yml/dispatches *)"
+    ]
+  }
+}
