@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-30",
+  "fetched": "2026-10-05",
   "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20261002",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261002000397"
+    },
     {
       "title": "특수관계인에대한출자",
       "date": "20260930",
@@ -129,11 +134,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260713",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713000452"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260703",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260703000620"
     }
   ]
 }

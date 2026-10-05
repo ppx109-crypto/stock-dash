@@ -1,0 +1,420 @@
+{
+  "code": "093050",
+  "since": 2015,
+  "name": "LF",
+  "halves": [
+    {
+      "period": "2016-06",
+      "revenue": 7668.03697329,
+      "profit": 401.79527769,
+      "receipt": "20160816002046",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 11 기 반기",
+          "used": "cumulative",
+          "add": "766803697329",
+          "amount": "385968736594"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 11 기 반기",
+          "used": "cumulative",
+          "add": "40179527769",
+          "amount": "28416188941"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20160816002046"
+    },
+    {
+      "period": "2017-06",
+      "revenue": 7785.33852962,
+      "profit": 548.81921782,
+      "receipt": "20170811001075",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 12 기 반기",
+          "used": "cumulative",
+          "add": "778533852962",
+          "amount": "397246261169"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 12 기 반기",
+          "used": "cumulative",
+          "add": "54881921782",
+          "amount": "30769735303"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20170811001075"
+    },
+    {
+      "period": "2018-06",
+      "revenue": 8382.11418062,
+      "profit": 639.72520526,
+      "receipt": "20180814002304",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 13 기 반기",
+          "used": "cumulative",
+          "add": "838211418062",
+          "amount": "428781651616"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 13 기 반기",
+          "used": "cumulative",
+          "add": "63972520526",
+          "amount": "34714100164"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20180814002304"
+    },
+    {
+      "period": "2019-06",
+      "revenue": 8927.96547769,
+      "profit": 554.97586422,
+      "receipt": "20190814002335",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 14 기 반기",
+          "used": "cumulative",
+          "add": "892796547769",
+          "amount": "469034534996"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 14 기 반기",
+          "used": "cumulative",
+          "add": "55497586422",
+          "amount": "29472800580"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20190814002335"
+    },
+    {
+      "period": "2020-06",
+      "revenue": 7942.41116646,
+      "profit": 465.54003953,
+      "receipt": "20200813000673",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 15 기 반기",
+          "used": "cumulative",
+          "add": "794241116646",
+          "amount": "422094259750"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 15 기 반기",
+          "used": "cumulative",
+          "add": "46554003953",
+          "amount": "33601722705"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20200813000673"
+    },
+    {
+      "period": "2021-06",
+      "revenue": 8636.29444184,
+      "profit": 785.45638139,
+      "receipt": "20210817001870",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 16 기 반기",
+          "used": "cumulative",
+          "add": "863629444184",
+          "amount": "465335312640"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 16 기 반기",
+          "used": "cumulative",
+          "add": "78545638139",
+          "amount": "51051803296"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210817001870"
+    },
+    {
+      "period": "2022-06",
+      "revenue": 9750.45291339,
+      "profit": 1037.52833711,
+      "receipt": "20220816001747",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 17 기 반기",
+          "used": "cumulative",
+          "add": "975045291339",
+          "amount": "524167284366"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 17 기 반기",
+          "used": "cumulative",
+          "add": "103752833711",
+          "amount": "55834531337"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20220816001747"
+    },
+    {
+      "period": "2023-06",
+      "revenue": 9154.625239,
+      "profit": -25.3489458,
+      "receipt": "20230814002299",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 18 기 반기",
+          "used": "cumulative",
+          "add": "915462523900",
+          "amount": "474067988936"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 18 기 반기",
+          "used": "cumulative",
+          "add": "-2534894580",
+          "amount": "-14381150178"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230814002299"
+    },
+    {
+      "period": "2024-06",
+      "revenue": 9157.88840738,
+      "profit": 462.788207,
+      "receipt": "20240814003380",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 19 기 반기",
+          "used": "cumulative",
+          "add": "915788840738",
+          "amount": "469151469354"
+        },
+        {
+          "account_nm": "영업이익(손실)",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 19 기 반기",
+          "used": "cumulative",
+          "add": "46278820700",
+          "amount": "21659057724"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240814003380"
+    },
+    {
+      "period": "2025-06",
+      "revenue": 8859.95972431,
+      "profit": 743.55998959,
+      "receipt": "20250814001454",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 20 기 반기",
+          "used": "cumulative",
+          "add": "885995972431",
+          "amount": "455745798629"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 20 기 반기",
+          "used": "cumulative",
+          "add": "74355998959",
+          "amount": "44256869160"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250814001454"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 9273.02848021,
+      "profit": 884.8206701,
+      "receipt": "20260814002480",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 21 기 반기",
+          "used": "cumulative",
+          "add": "927302848021",
+          "amount": "465388608265"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 21 기 반기",
+          "used": "cumulative",
+          "add": "88482067010",
+          "amount": "44077822709"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002480"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)LF",
+    "induty_code": "14111",
+    "hm_url": "www.lfcorp.com",
+    "est_dt": "20061103",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2015,
+      "revenue": 15710.47846008,
+      "profit": 740.89220377,
+      "receipt": "20160330003341",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20160330003341"
+    },
+    {
+      "year": 2016,
+      "revenue": 15292.96618527,
+      "profit": 789.87699604,
+      "receipt": "20170329000949",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20170329000949"
+    },
+    {
+      "year": 2017,
+      "revenue": 16020.59905297,
+      "profit": 1101.46015095,
+      "receipt": "20180330003623",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20180330003623"
+    },
+    {
+      "year": 2018,
+      "revenue": 17066.8210031,
+      "profit": 1195.08451194,
+      "receipt": "20190401001974",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20190401001974"
+    },
+    {
+      "year": 2019,
+      "revenue": 18517.16801127,
+      "profit": 875.33142027,
+      "receipt": "20200330003111",
+      "net_income": 676.43422218,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20200330003111"
+    },
+    {
+      "year": 2020,
+      "revenue": 16104.59972097,
+      "profit": 770.67170451,
+      "receipt": "20210318001018",
+      "net_income": 173.0959803,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210318001018"
+    },
+    {
+      "year": 2021,
+      "revenue": 17931.0397972,
+      "profit": 1588.65864141,
+      "receipt": "20220318000553",
+      "net_income": 1186.39793428,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20220318000553"
+    },
+    {
+      "year": 2022,
+      "revenue": 19685.40364635,
+      "profit": 1851.60686386,
+      "receipt": "20230320000688",
+      "net_income": 1522.8214186,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230320000688"
+    },
+    {
+      "year": 2023,
+      "revenue": 19007.25823265,
+      "profit": 573.79138443,
+      "receipt": "20240320001217",
+      "net_income": 825.13768822,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240320001217"
+    },
+    {
+      "year": 2024,
+      "revenue": 19562.68444555,
+      "profit": 1261.39587434,
+      "receipt": "20250318000532",
+      "net_income": 754.71464161,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318000532"
+    },
+    {
+      "year": 2025,
+      "revenue": 18824.30252411,
+      "profit": 1681.11068247,
+      "receipt": "20260601001924",
+      "net_income": 988.92646618,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260601001924"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-10-05",
+  "disclosures": [
+    {
+      "title": "주요사항보고서(자기주식취득결정)",
+      "date": "20260930",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260930000515"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918000451"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20260901",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800698"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814002480"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(약식)",
+      "date": "20260710",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260710000080"
+    }
+  ]
+}
