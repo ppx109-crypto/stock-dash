@@ -1,0 +1,445 @@
+{
+  "code": "023590",
+  "since": 2015,
+  "name": "다우기술",
+  "halves": [
+    {
+      "period": "2016-06",
+      "revenue": 5653.63973812,
+      "profit": 1316.85014113,
+      "receipt": "20160816002158",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 31 기 반기",
+          "used": "cumulative",
+          "add": "565363973812",
+          "amount": "257467429599"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 31 기 반기",
+          "used": "cumulative",
+          "add": "131685014113",
+          "amount": "54381783567"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20160816002158"
+    },
+    {
+      "period": "2017-06",
+      "revenue": 6374.96070556,
+      "profit": 1744.22742352,
+      "receipt": "20170814002130",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 32 기 반기",
+          "used": "cumulative",
+          "add": "637496070556",
+          "amount": "306179402828"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 32 기 반기",
+          "used": "cumulative",
+          "add": "174422742352",
+          "amount": "90353192599"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20170814002130"
+    },
+    {
+      "period": "2018-06",
+      "revenue": 10764.91549484,
+      "profit": 2183.02501137,
+      "receipt": "20180814001670",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 33 기 반기",
+          "used": "cumulative",
+          "add": "1076491549484",
+          "amount": "525273021087"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 33 기 반기",
+          "used": "cumulative",
+          "add": "218302501137",
+          "amount": "94957920655"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20180814001670"
+    },
+    {
+      "period": "2019-06",
+      "revenue": 15266.13480552,
+      "profit": 2863.69069115,
+      "receipt": "20190902000793",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 34 기 반기",
+          "used": "cumulative",
+          "add": "1526613480552",
+          "amount": "748985041049"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 34 기 반기",
+          "used": "cumulative",
+          "add": "286369069115",
+          "amount": "74669280938"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20190902000793"
+    },
+    {
+      "period": "2020-06",
+      "revenue": 29143.77945532,
+      "profit": 3478.356887,
+      "receipt": "20201113001220",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 35 기 반기",
+          "used": "cumulative",
+          "add": "2914377945532",
+          "amount": "888007233294"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 35 기 반기",
+          "used": "cumulative",
+          "add": "347835688700",
+          "amount": "325917316589"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20201113001220"
+    },
+    {
+      "period": "2021-06",
+      "revenue": 25737.98993254,
+      "profit": 6693.0810696,
+      "receipt": "20210817002136",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 36 기 반기",
+          "used": "cumulative",
+          "add": "2573798993254",
+          "amount": "1081601652159"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 36 기 반기",
+          "used": "cumulative",
+          "add": "669308106960",
+          "amount": "306449328338"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210817002136"
+    },
+    {
+      "period": "2022-06",
+      "revenue": 44822.0292927,
+      "profit": 3699.47062468,
+      "receipt": "20220816002444",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 37 기 반기",
+          "used": "cumulative",
+          "add": "4482202929270",
+          "amount": "2477341465929"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 37 기 반기",
+          "used": "cumulative",
+          "add": "369947062468",
+          "amount": "142023879990"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20220816002444"
+    },
+    {
+      "period": "2023-06",
+      "revenue": 54477.81654739,
+      "profit": 6073.63663475,
+      "receipt": "20230814002809",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 38 기 반기",
+          "used": "cumulative",
+          "add": "5447781654739",
+          "amount": "2297131402364"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 38 기 반기",
+          "used": "cumulative",
+          "add": "607363663475",
+          "amount": "201890193689"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230814002809"
+    },
+    {
+      "period": "2024-06",
+      "revenue": 50896.14123927,
+      "profit": 6915.94987932,
+      "receipt": "20240814004311",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 39 기 반기",
+          "used": "cumulative",
+          "add": "5089614123927",
+          "amount": "2366770550497"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 39 기 반기",
+          "used": "cumulative",
+          "add": "691594987932",
+          "amount": "332306504691"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240814004311"
+    },
+    {
+      "period": "2025-06",
+      "revenue": 83428.39494656,
+      "profit": 7739.74055209,
+      "receipt": "20250813001554",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 40 기 반기",
+          "used": "cumulative",
+          "add": "8342839494656",
+          "amount": "4595277807527"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 40 기 반기",
+          "used": "cumulative",
+          "add": "773974055209",
+          "amount": "429534809113"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250813001554"
+    },
+    {
+      "period": "2026-06",
+      "revenue": 256675.42678516,
+      "profit": 14590.97063131,
+      "receipt": "20260814003900",
+      "matched": [
+        {
+          "account_nm": "매출액",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 41 기 반기",
+          "used": "cumulative",
+          "add": "25667542678516",
+          "amount": "16184969595239"
+        },
+        {
+          "account_nm": "영업이익",
+          "sj_div": "CIS",
+          "thstrm_nm": "제 41 기 반기",
+          "used": "cumulative",
+          "add": "1459097063131",
+          "amount": "817754206191"
+        }
+      ],
+      "measure": "cumulative",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003900"
+    }
+  ],
+  "company": {
+    "corp_name": "(주)다우기술",
+    "induty_code": "631",
+    "hm_url": "www.daou.co.kr",
+    "est_dt": "19860109",
+    "acc_mt": "12"
+  },
+  "years": [
+    {
+      "year": 2015,
+      "revenue": 10497.08557902,
+      "profit": 2605.2889874,
+      "receipt": "20210317000959",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210317000959"
+    },
+    {
+      "year": 2016,
+      "revenue": 11534.20151411,
+      "profit": 2534.12926072,
+      "receipt": "20210317000989",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210317000989"
+    },
+    {
+      "year": 2017,
+      "revenue": 13512.13660827,
+      "profit": 3315.03632692,
+      "receipt": "20210317001007",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210317001007"
+    },
+    {
+      "year": 2018,
+      "revenue": 22100.06671982,
+      "profit": 3239.46012068,
+      "receipt": "20210317001023",
+      "net_income": null,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210317001023"
+    },
+    {
+      "year": 2019,
+      "revenue": 29018.3312563,
+      "profit": 5075.3885279,
+      "receipt": "20210317001042",
+      "net_income": 1853.20075859,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20210317001042"
+    },
+    {
+      "year": 2020,
+      "revenue": 51646.95883437,
+      "profit": 10153.86726108,
+      "receipt": "20240226005760",
+      "net_income": 2756.16481173,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240226005760"
+    },
+    {
+      "year": 2021,
+      "revenue": 60869.80401897,
+      "profit": 12572.33834443,
+      "receipt": "20220324000698",
+      "net_income": 3761.14456319,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20220324000698"
+    },
+    {
+      "year": 2022,
+      "revenue": 92106.10313082,
+      "profit": 7186.87487393,
+      "receipt": "20230321001409",
+      "net_income": 3725.64511396,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20230321001409"
+    },
+    {
+      "year": 2023,
+      "revenue": 98551.41797134,
+      "profit": 6398.80017159,
+      "receipt": "20240320001719",
+      "net_income": 2259.75071295,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20240320001719"
+    },
+    {
+      "year": 2024,
+      "revenue": 116257.98455732,
+      "profit": 11746.81942719,
+      "receipt": "20250318001202",
+      "net_income": 3558.35455442,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20250318001202"
+    },
+    {
+      "year": 2025,
+      "revenue": 174950.03836308,
+      "profit": 15592.83728269,
+      "receipt": "20260318001606",
+      "net_income": 5051.82368263,
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260318001606"
+    }
+  ],
+  "basis": "CFS",
+  "business_excerpt": "",
+  "fetched": "2026-10-05",
+  "disclosures": [
+    {
+      "title": "기타경영사항(종속회사의주요경영사항)              ",
+      "date": "20260918",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260918800497"
+    },
+    {
+      "title": "단일판매ㆍ공급계약체결              ",
+      "date": "20260910",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260910800311"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20260828",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001921"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260819",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000364"
+    },
+    {
+      "title": "반기보고서 (2026.06)",
+      "date": "20260814",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260814003900"
+    },
+    {
+      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
+      "date": "20260812",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260812000791"
+    },
+    {
+      "title": "[기재정정]특수관계인과의수익증권거래",
+      "date": "20260812",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260812000783"
+    },
+    {
+      "title": "합병등종료보고서(합병)",
+      "date": "20260812",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260812000475"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20260720",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720000216"
+    },
+    {
+      "title": "계열금융회사를거래상대방으로한단기금융상품거래의분기별공시",
+      "date": "20260713",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713000383"
+    }
+  ]
+}

@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-29",
+  "fetched": "2026-10-05",
   "disclosures": [
+    {
+      "title": "풍문또는보도에대한해명(미확정)              ",
+      "date": "20261002",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261002800172"
+    },
     {
       "title": "특수관계인과의보험거래",
       "date": "20260921",

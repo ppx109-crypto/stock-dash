@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-24",
+  "fetched": "2026-10-05",
   "disclosures": [
+    {
+      "title": "주요사항보고서(상각형조건부자본증권발행결정)",
+      "date": "20261002",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261002000464"
+    },
     {
       "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
       "date": "20260921",
