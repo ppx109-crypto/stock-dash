@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(gh api -X POST repos/ppx109-crypto/stock-dash/actions/workflows/paper-check.yml/dispatches *)"
+      "Bash(gh api -X POST repos/ppx109-crypto/stock-dash/actions/workflows/paper-check.yml/dispatches *)",
+      "Bash(python3 research/drop_m15_day.py 20261002)"
     ]
   }
 }
