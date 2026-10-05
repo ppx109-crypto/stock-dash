@@ -67,6 +67,24 @@ def main():
     for code in CODES:
         print(f"-- {code} 다른 출처 종가: {outside(code, DAYS)}", flush=True)
     client = broker_kis.market()
+    # 지금 한투 일봉(기간별시세)은 10-02를 얼마로 주는지 — 시장 구분 J(거래소) · NX(넥스트레이드) · UN(통합)
+    for code in CODES:
+        line = []
+        for mk in ("J", "NX", "UN"):
+            try:
+                client.authorize()
+                _, data = client.request(
+                    'GET', '/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice',
+                    headers={'authorization': 'Bearer ' + client.token, 'appkey': client.key,
+                             'appsecret': client.secret, 'tr_id': 'FHKST03010100', 'custtype': 'P'},
+                    params={'FID_COND_MRKT_DIV_CODE': mk, 'FID_INPUT_ISCD': code, 'FID_INPUT_DATE_1': min(DAYS),
+                            'FID_INPUT_DATE_2': max(DAYS), 'FID_PERIOD_DIV_CODE': 'D', 'FID_ORG_ADJ_PRC': '0'})
+                got = {r.get('stck_bsop_date'): r.get('stck_clpr') for r in (data.get('output2') or [])
+                       if r.get('stck_bsop_date') in DAYS}
+                line.append(f"{mk}={got}")
+            except Exception as e:  # noqa: BLE001
+                line.append(f"{mk}=못 받음 {type(e).__name__}")
+        print(f"-- {code} 지금 한투 일봉: " + " · ".join(line), flush=True)
     closes = {}
     for code in CODES:
         for name in ("price-data", "etf-data"):
