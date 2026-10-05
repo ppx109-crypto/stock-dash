@@ -1,0 +1,85 @@
+name: Daily close check
+# 장 시작 전 최근 일봉 다시 확인(사용자 2026-10-06 "다시는 이런일 없도록"). 한투는 그날 밤 정리 전까지 '오늘' 종가에
+# 넥스트레이드 값을 줘서(10-02 · 356종목), 저녁에 받은 일봉이 틀릴 수 있음 → 확정된 아침에 최근 5줄을 다시 물어 바로잡고,
+# 바뀐 것이 있으면 A그룹 · 1시간봉(15분봉 봇도 같이 씀) 후보를 다시 셉니다. 조회만(주문 없음).
+on:
+  workflow_dispatch:
+    inputs:
+      replan:
+        description: '바뀐 게 있으면 후보 다시 세기(auto = 08:50 전에만 · yes · no)'
+        required: false
+        default: 'auto'
+      lanes:
+        description: '동시에 묻는 줄 수(장중엔 2처럼 낮게)'
+        required: false
+        default: '4'
+  schedule:
+    - cron: '5 22 * * 0-4'   # 한국 시각 평일 07:05
+permissions:
+  contents: write
+concurrency:
+  group: daily-close-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: ./.github/actions/kis-token-open   # 오늘 받아 둔 한투 토큰을 잠긴 보관함에서 꺼냄(하루 1회 원칙)
+        continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests numpy
+      - run: python -m unittest tests.test_fix_recent_days -v
+      - name: 최근 일봉 다시 확인 · 바로잡기
+        id: fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python fix_recent_days.py
+          git add -A price-data kosdaq-data investor-data fix-recent 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Daily close check: 최근 일봉을 확정 값으로 바로잡음"
+            ok=0
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            [ "$ok" = 1 ] || { echo '바로잡은 일봉을 올리지 못했습니다.'; exit 1; }
+          fi
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.07'
+          FIX_LANES: ${{ inputs.lanes || '4' }}
+      - name: 바뀐 게 있으면 A그룹 · 1시간봉 후보 다시 세기
+        if: steps.fix.outputs.changed == '1'
+        run: |
+          replan='${{ inputs.replan || 'auto' }}'
+          now=$(TZ=Asia/Seoul date +%H%M)
+          if [ "$replan" = no ] || { [ "$replan" = auto ] && [ "$now" -ge 0850 ]; }; then
+            echo "장 시작이 가까워 후보는 그대로 둡니다(오늘 저녁 수집 때 바른 값으로 다시 셈)."; exit 0
+          fi
+          python final_group.py
+          status=0; python hourly_a.py plan || status=$?
+          git add study/a_group.json hourly-live 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Daily close check: 바로잡은 일봉으로 후보 다시 셈"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
+          exit $status
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - if: always()
+        uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
+        continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
