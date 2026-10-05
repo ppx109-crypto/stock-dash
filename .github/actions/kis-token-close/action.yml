@@ -1,0 +1,28 @@
+name: 한투 토큰 넣기
+description: 이 작업이 새로 받은 한투 접근토큰을 잠가 보관함(Actions 캐시)에 넣음 — 바뀐 게 없으면 저장하지 않음
+inputs:
+  real-secret:
+    description: 실전 앱 시크릿(열쇠를 만듦 · 화면에 안 찍힘)
+    required: false
+    default: ''
+  paper-secret:
+    description: 모의투자 앱 시크릿
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - id: day
+      shell: bash
+      run: echo "day=$(TZ=Asia/Seoul date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+    - id: box
+      shell: bash
+      env:
+        REAL_SECRET: ${{ inputs.real-secret }}
+        PAPER_SECRET: ${{ inputs.paper-secret }}
+      run: python3 "$GITHUB_ACTION_PATH/../kis_token_box.py" close
+    - if: steps.box.outputs.changed == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ${{ runner.temp }}/kis-token-box
+        key: kis-token-${{ steps.day.outputs.day }}-${{ github.run_id }}-${{ github.run_attempt }}

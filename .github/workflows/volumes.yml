@@ -30,6 +30,11 @@ jobs:
     timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/kis-token-open   # 오늘 받아 둔 한투 토큰을 잠긴 보관함에서 꺼냄(하루 1회 원칙)
+        continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -56,3 +61,9 @@ jobs:
             git pull --rebase origin main
             git push
           fi
+      - if: always()
+        uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
+        continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}

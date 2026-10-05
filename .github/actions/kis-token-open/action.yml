@@ -1,0 +1,27 @@
+name: 한투 토큰 꺼내기
+description: 오늘 받아 둔 한투 접근토큰을 잠긴 보관함(Actions 캐시)에서 꺼내 풀어 둠 — 작업마다 새로 받지 않게(하루 1회 원칙)
+inputs:
+  real-secret:
+    description: 실전 앱 시크릿(열쇠를 만듦 · 화면에 안 찍힘)
+    required: false
+    default: ''
+  paper-secret:
+    description: 모의투자 앱 시크릿
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - id: day
+      shell: bash
+      run: echo "day=$(TZ=Asia/Seoul date +%Y%m%d)" >> "$GITHUB_OUTPUT"
+    - uses: actions/cache/restore@v4
+      with:
+        path: ${{ runner.temp }}/kis-token-box
+        key: kis-token-${{ steps.day.outputs.day }}-${{ github.run_id }}-${{ github.run_attempt }}
+        restore-keys: kis-token-${{ steps.day.outputs.day }}-
+    - shell: bash
+      env:
+        REAL_SECRET: ${{ inputs.real-secret }}
+        PAPER_SECRET: ${{ inputs.paper-secret }}
+      run: python3 "$GITHUB_ACTION_PATH/../kis_token_box.py" open
