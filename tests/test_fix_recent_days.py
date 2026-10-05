@@ -1,0 +1,40 @@
+"""fix_recent_days — 최근 줄만 확정 값으로 바꾸고, 오래된 날은 건드리지 않는지(2026-10-02 넥스트레이드 종가 사고)."""
+import unittest
+
+import fix_recent_days as F
+
+
+class FixRecentDays(unittest.TestCase):
+    def test_price_recent_row_fixed(self):
+        body = {"closes": [["20260930", 1.0], ["20261001", 199400.0], ["20261002", 210000.0]]}
+        changed, older = F.fix_price(body, {"20261001": {"종가": 199400.0}, "20261002": {"종가": 207000.0}})
+        self.assertEqual(changed, [("20261002", 210000.0, 207000.0)])
+        self.assertFalse(older)
+        self.assertEqual(body["closes"][-1], ["20261002", 207000.0])
+
+    def test_price_older_row_left_for_collector(self):
+        body = {"closes": [["20250101", 5.0]] + [[f"2026100{i}", 1.0] for i in range(1, 8)]}
+        changed, older = F.fix_price(body, {"20250101": {"종가": 6.0}})
+        self.assertEqual(changed, [])
+        self.assertTrue(older)
+        self.assertEqual(body["closes"][0], ["20250101", 5.0])
+
+    def test_tiny_gap_ignored(self):
+        body = {"closes": [["20261002", 100000.0]]}
+        self.assertEqual(F.fix_price(body, {"20261002": {"종가": 100001.0}})[0], [])
+
+    def test_kosdaq_all_columns(self):
+        kq = {"cols": ["date", "시가", "고가", "저가", "종가", "거래량", "거래대금"],
+              "rows": [["20261002", 198000.0, 219500.0, 194300.0, 210000.0, 296279.0, 6.0]]}
+        new = {"시가": 198000.0, "고가": 219500.0, "저가": 194300.0, "종가": 207000.0, "거래량": 281000.0, "거래대금": 5.0}
+        self.assertEqual(F.fix_kosdaq(kq, {"20261002": new}), [("20261002", 210000.0, 207000.0)])
+        self.assertEqual(kq["rows"][0], ["20261002", 198000.0, 219500.0, 194300.0, 207000.0, 281000.0, 5.0])
+
+    def test_flow_close_only(self):
+        fl = {"cols": ["date", "개인", "종가"], "rows": [["20261002", 5.0, 210000.0]]}
+        self.assertEqual(F.fix_flow(fl, {"20261002": {"종가": 207000.0}}), [("20261002", 210000.0, 207000.0)])
+        self.assertEqual(fl["rows"][0], ["20261002", 5.0, 207000.0])
+
+
+if __name__ == "__main__":
+    unittest.main()
