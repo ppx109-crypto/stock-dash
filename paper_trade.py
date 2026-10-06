@@ -196,11 +196,17 @@ def sync_repo():
     if os.getenv("LIVE_GIT_SYNC") != "1":
         return True
     import subprocess
-    for _ in range(3):
-        if subprocess.run("git pull -q --rebase origin main", shell=True, timeout=120).returncode == 0:
-            return True
-        subprocess.run("git rebase --abort", shell=True, stderr=subprocess.DEVNULL)
-        time.sleep(5)
+    for _ in range(2):
+        try:                                       # 멈추거나 실패해도 봇은 있는 기록으로 계속(죽지 않게)
+            if subprocess.run("git pull -q --rebase origin main", shell=True, timeout=60).returncode == 0:
+                return True
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        try:
+            subprocess.run("git rebase --abort", shell=True, stderr=subprocess.DEVNULL, timeout=30)
+        except (subprocess.TimeoutExpired, OSError):
+            pass
+        time.sleep(3)
     print("저장소를 최신으로 맞추지 못함(있는 기록으로 계속)")
     return False
 
@@ -210,18 +216,27 @@ def daily_reserve(day, total, prices, near_files=(Path("m15-live/near-now.json")
     15:20은 마감 동시호가라 그때 엔진을 팔아도 15:30에야 체결돼 1일봉이 살 돈이 안 풀림 → 엔진이 미리 남겨 둠.
     장중 15분마다 그 시각 값으로 다시 센 '1일봉 후보(지금 값이면)'(near-now.json의 picks_daily · 오늘 것 중 가장 늦은 판정)가
     있으면 후보마다 4칸(1일봉 최대 크기)으로 보고, 1일봉 몫 가운데 아직 안 쓴 만큼까지. 판정은 15:10 전 값만 씀(미래 참조 없음)."""
+    try:
+        return _daily_reserve(day, total, prices, near_files)
+    except Exception as e:                          # 파일 모양이 이상해도 엔진이 하루를 통째로 쉬지 않게(비켜 두기만 못 함)
+        print("1일봉 몫 셈 실패 ·", type(e).__name__)
+        return 0.0, ""
+
+
+def _daily_reserve(day, total, prices, near_files):
     got = []
     for f in near_files:
         try:
             body = json.loads(Path(f).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             continue
-        if str(body.get("date")) == day:
+        # 오늘 것 · 14:30 뒤 판정만(그 뒤 실행이 다 실패했으면 아침 판정으로 비켜 두지 않게)
+        if isinstance(body, dict) and str(body.get("date")) == day and str(body.get("at"))[11:16] >= "14:30":
             got.append(body)
     if not got:
         return 0.0, ""
     last = max(got, key=lambda b: str(b.get("at")))
-    picks = last.get("picks_daily") or []
+    picks = [p for p in (last.get("picks_daily") or []) if isinstance(p, dict)]
     if not picks:
         return 0.0, ""
     share = total * SHARES["1d"]

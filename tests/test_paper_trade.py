@@ -264,6 +264,16 @@ class DailyReserve(unittest.TestCase):
                 old = P.daily_reserve("20261007", 1e8, {}, self.files(tmp, picks, day="20261006"))[0]
                 self.assertEqual(old, 0.0, "어제 판정은 쓰지 않음")
 
+    def test_morning_or_broken_files_ignored(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(P, "DAILY_BOOK", Path(tmp) / "none.json"):
+            morning = self.files(tmp, [{"code": "000001"}], at="2026-10-07 09:33")
+            self.assertEqual(P.daily_reserve("20261007", 1e8, {}, morning)[0], 0.0, "14:30 앞 판정은 쓰지 않음")
+            bad = Path(tmp) / "bad.json"
+            bad.write_text("[1, 2]")
+            self.assertEqual(P.daily_reserve("20261007", 1e8, {}, (bad,))[0], 0.0)
+            odd = self.files(tmp, ["000001", {"code": "000002"}])
+            self.assertGreater(P.daily_reserve("20261007", 1e8, {}, odd)[0], 0.0, "모양이 이상한 줄은 빼고 셈")
+
     def test_sync_repo_off_without_switch(self):
         with mock.patch.dict(os.environ, {"LIVE_GIT_SYNC": ""}), mock.patch("subprocess.run") as run:
             self.assertTrue(P.sync_repo())
