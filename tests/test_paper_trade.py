@@ -79,6 +79,15 @@ class Sizing(unittest.TestCase):
         got = P.plan_orders(done, {"positions": {}}, bal(1_000_000, [("000009", 10, 9_000_000)]), {"000001": 10_000}, "b")
         self.assertEqual(got[0][3], 98)                    # 총액 1천만의 40%는 400만이지만 현금 100만의 98%까지만
 
+    def test_sells_in_same_batch_fund_buys(self):
+        """같은 차례에 파는 돈도 살 돈(2026-10-06 검토): 현금 0 · 1천만어치를 팔고 사면 살 수 있어야 함."""
+        done = [{"type": "sell", "code": "000009", "칸": 4, "decided": "d"},
+                {"type": "buy", "code": "000001", "칸": 2, "decided": "d"}]
+        got = P.plan_orders(done, {"positions": {}}, bal(0, [("000009", 1000, 10_000_000)]),
+                            {"000001": 10_000, "000009": 10_000}, "b")
+        buys = [g for g in got if g[2] == "buy"]
+        self.assertEqual(buys[0][3], 200)        # 총액 1천만 × 2/10 = 200만 → 200주(판 돈 980만 안)
+
     def test_sell_all_or_part(self):
         state = {"positions": {"000002": {"칸": 2}}}       # 000001은 다 팔림, 000002는 4칸 가운데 2칸 팔고 2칸 남음
         done = [{"type": "sell", "code": "000001", "칸": 2, "decided": "d", "why": "손절"},

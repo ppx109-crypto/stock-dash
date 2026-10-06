@@ -43,6 +43,8 @@ TR_SELL = os.getenv("KIS_PAPER_TR_SELL", "VTTC0011U")
 # 계좌 돈에 꽉 맞춘 수량은 거절됨(2026-10-06 빈칸 엔진 인버스 45,539주 · 약 9,700만 원 → 40250000). 주문 전에 물어 수량을 맞춤.
 TR_BUYABLE = os.getenv("KIS_PAPER_TR_BUYABLE", "VTTC8908R")
 BUYABLE_PATH = "/uapi/domestic-stock/v1/trading/inquire-psbl-order"
+# 시장가 매수가 묶는 돈 ÷ 실제 값(확인: 1억 → 251340 2,130원 34,608주 = 1.357배). 자리 내주기를 정할 때 씀.
+MKT_MARGIN = float(os.getenv("PAPER_MKT_MARGIN", "1.36"))
 
 
 def account_parts(text):
@@ -190,7 +192,8 @@ def make_room(broker, balance, need, now):
     cash = float(balance.get("cash") or 0)
     book = json.loads(IDLE_BOOK.read_text(encoding="utf-8")) if IDLE_BOOK.exists() else {"orders": [], "held": {}}
     held = {c: int(q) for c, q in (book.get("held") or {}).items() if int(q) > 0}
-    if need <= cash * 0.98 or not held:
+    # 시장가 매수는 실제 값의 약 1.36배를 묶으므로 그만큼 있어야 다 삼(2026-10-06 검토 — 예전엔 1배로 봐서 엔진이 안 비키고 규칙 매수가 잘림)
+    if need * MKT_MARGIN <= cash * 0.98 or not held:
         return balance, []
     account = {p["code"]: int(p["quantity"]) for p in balance.get("positions", [])}
     lines, sold = [], False
@@ -238,7 +241,6 @@ def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
     held = account if held is None else {c: min(int(q), account.get(c, 0)) for c, q in held.items()}
     cash = float(balance.get("cash") or 0)
     total = (cash + float(balance.get("value") or 0)) * share
-    left = cash * 0.98                        # 시장가 체결 값이 조금 높을 때를 위한 여유
     out = []
     for x in done:
         key = f"{bar_id}:{x['type']}:{x['code']}:{x.get('decided', '')}"
@@ -249,6 +251,9 @@ def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
             remain = (state.get("positions", {}).get(x["code"]) or {}).get("칸", 0)
             qty = have if remain <= 0 else max(1, round(have * x["칸"] / (x["칸"] + remain)))
             out.append((key, x["code"], "sell", min(qty, have), x.get("why", "")))
+    # 같은 차례에 먼저 파는 것의 돈도 살 돈에 셈(파는 주문이 먼저 나감 · 2026-10-06 검토). 시장가 체결 값이 조금 높을 때를 위해 98%.
+    freed = sum(q * float(prices.get(c) or 0) for _, c, side, q, _ in out if side == "sell")
+    left = (cash + freed) * 0.98
     for x in done:
         key = f"{bar_id}:{x['type']}:{x['code']}:{x.get('decided', '')}"
         if x["type"] != "buy":

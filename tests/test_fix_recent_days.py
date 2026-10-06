@@ -35,6 +35,22 @@ class FixRecentDays(unittest.TestCase):
         self.assertEqual(F.fix_flow(fl, {"20261002": {"종가": 207000.0}}), [("20261002", 210000.0, 207000.0)])
         self.assertEqual(fl["rows"][0], ["20261002", 5.0, 207000.0])
 
+    def test_adjusted_price_code_untouched(self):
+        """오래된 날까지 다르면(수정주가) 최근 줄도 고치지 않음 — 앞뒤 기준이 섞이지 않게."""
+        rows = [[f"202609{d:02d}", 200.0] for d in range(1, 11)]
+        body = {"closes": [list(r) for r in rows]}
+        fresh = {d: {"종가": c / 2} for d, c in rows}           # 액면분할: 모든 날이 반으로
+        changed, older = F.fix_price(body, fresh)
+        self.assertEqual((changed, older), ([], True))
+        self.assertEqual(body["closes"], rows)
+
+    def test_volume_recent_rows(self):
+        v = {"칸": ["날짜", "거래량", "거래대금", "고가", "저가"], "날": [["20261001", 1.0, 2.0, 3.0, 4.0], ["20261002", 296279.0, 6.0, 219500.0, 194300.0]]}
+        got = F.fix_volume(v, {"20261002": {"거래량": 281000.0, "거래대금": 5.0, "고가": 219500.0, "저가": 194300.0}})
+        self.assertEqual(got, [("20261002", 296279.0, 281000.0)])
+        self.assertEqual(v["날"][1], ["20261002", 281000.0, 5.0, 219500.0, 194300.0])
+        self.assertEqual(v["날"][0], ["20261001", 1.0, 2.0, 3.0, 4.0])
+
 
 if __name__ == "__main__":
     unittest.main()

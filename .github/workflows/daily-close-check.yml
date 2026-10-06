@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       replan:
-        description: '바뀐 게 있으면 후보 다시 세기(auto = 08:50 전에만 · yes · no)'
+        description: '바뀐 게 있으면 후보 다시 세기(auto = 08:30 전에만 · yes · no)'
         required: false
         default: 'auto'
       lanes:
@@ -44,11 +44,11 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           python fix_recent_days.py
-          git add -A price-data kosdaq-data investor-data fix-recent 2>/dev/null || true
+          git add -A price-data volume-data kosdaq-data investor-data fix-recent 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily close check: 최근 일봉을 확정 값으로 바로잡음"
             ok=0
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
             [ "$ok" = 1 ] || { echo '바로잡은 일봉을 올리지 못했습니다.'; exit 1; }
           fi
         env:
@@ -63,7 +63,7 @@ jobs:
         run: |
           replan='${{ inputs.replan || 'auto' }}'
           now=$(TZ=Asia/Seoul date +%H%M)
-          if [ "$replan" = no ] || { [ "$replan" = auto ] && [ "$now" -ge 0850 ]; }; then
+          if [ "$replan" = no ] || { [ "$replan" = auto ] && [ "$now" -ge 0830 ]; }; then
             echo "장 시작이 가까워 후보는 그대로 둡니다(오늘 저녁 수집 때 바른 값으로 다시 셈)."; exit 0
           fi
           python final_group.py
@@ -71,7 +71,9 @@ jobs:
           git add study/a_group.json hourly-live 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily close check: 바로잡은 일봉으로 후보 다시 셈"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            ok=0
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            [ "$ok" = 1 ] || { echo '다시 센 후보를 올리지 못했습니다.'; exit 1; }
           fi
           exit $status
         env:
