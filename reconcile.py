@@ -7,9 +7,14 @@
 - 1일봉: daily_live의 판단(decide · settle · kin_checker)을 그대로 씀. 운영은 15:20 값으로, 여기선 15분봉을 묶은 그날 종가로.
   (재현 시험 research/x007.py: daily_live 판단 = 연구 엔진 lab.run, 9년 매매 하나하나까지 같음.)
 - 검산: 15분봉으로 만든 그날 일봉 종가 vs 일봉 자료(price-data) 종가 — 0.1% 넘게 다른 종목을 적음(사용자 결정: 1일봉은 견줌 · 검산용).
+  저녁 일봉은 아직 넥스트레이드 값이 섞인 임시 값이라(10-06 저녁 338/424 '다름' 잘못 알림), 아침 바로잡기(fix_recent_days)가
+  확정했다고 적은 날(fix-recent/checked.json)까지만 셉니다. 그 뒤 날은 '확정 전'으로 두고 디스코드에도 넣지 않으며,
+  아침 07:05 바로잡기 뒤 `python reconcile.py --recheck`가 다시 셉니다. 그래도 다르면 그 종목 일봉을 한 번 더 물어 고치고,
+  그러고도 많이 다를 때만(진짜 문제) 디스코드로 알립니다(사용자 2026-10-06 "디스코드발송전 알아서 조치해줘").
 백테스트 상태는 reconcile/state.json에 날마다 이어 적고(운영 시작일 START부터), 그날 결과는 reconcile/{날}.json에 둡니다.
 주문은 하지 않습니다(읽기 · 셈만). 그날 15분봉이 덜 모였으면 그 날은 건너뛰고 다음에 다시 셉니다.
 python reconcile.py [YYYYMMDD]  — 날을 주지 않으면 아직 안 센 지난 거래일을 차례로 셈.
+python reconcile.py --recheck   — 확정 전으로 둔 검산을 확정된 일봉으로 다시 셈(아침 07:05 작업이 부름).
 """
 from __future__ import annotations
 
@@ -25,6 +30,9 @@ STATE = HOME / "state.json"
 M15 = Path("m15-kis")
 HOURS = ("09", "10", "11", "12", "13", "14")
 NEED = 0.9                                             # 그날 15분봉이 있어야 할 종목 가운데 이만큼은 있어야 셈
+CHECKED = Path(os.getenv("FIX_CHECKED", "fix-recent/checked.json"))   # 아침 바로잡기가 확정 값으로 확인한 마지막 날
+VERIFY = "검산(15분봉 종가 vs 일봉 종가)"
+ALERT_MIN, ALERT_SHARE = 3, 0.01                       # 확정 뒤에도 이보다 많이(3종목 · 1% 넘게) 다를 때만 알림
 
 
 def _load(path, default):
@@ -90,6 +98,50 @@ def check_daily(day, prices, codes=None):
         if abs(gap) > 0.1:
             bad.append((code, d1[3], daily, round(gap, 2)))
     return {"종목": n, "다름": bad}
+
+
+def confirmed_until():
+    """아침 바로잡기가 확정 값으로 확인한 마지막 날(YYYYMMDD) — 없으면 ""(아무 날도 확정 안 됨)."""
+    return str((_load(CHECKED, {}) or {}).get("checked", ""))
+
+
+def verify(day, prices):
+    """그날 일봉이 확정됐으면 검산 · 아니면 '확정 전'(셈하지 않음 · 아침에 recheck가 셈)."""
+    if day <= confirmed_until():
+        return dict(check_daily(day, prices), 확정뒤=True)
+    return {"종목": 0, "다름": [], "확정 전": True}
+
+
+def serious(v):
+    return len(v["다름"]) > max(ALERT_MIN, v["종목"] * ALERT_SHARE)
+
+
+def recheck(prices, refetch=None, reload=None):
+    """확정 전으로 둔(또는 확정 뒤 검산이 없는) 날을 확정된 일봉으로 다시 셈 → 알릴 줄([] = 문제 없음).
+    다른 종목이 있으면 그 종목 일봉을 한 번 더 물어 고치고(refetch) 다시 셈 — 그래도 많이 다를 때만 알림."""
+    until, alerts = confirmed_until(), []
+    for f in sorted(HOME.glob("2*.json")):
+        day, out = f.stem, _load(f, None)
+        if not isinstance(out, dict) or not day.isdigit() or day > until or (out.get(VERIFY) or {}).get("확정뒤"):
+            continue
+        v = check_daily(day, prices)
+        if v["다름"] and refetch:
+            codes = [c for c, *_ in v["다름"]]
+            print(f"{day} 검산 · 확정 뒤에도 {len(codes)}종목 다름 → 그 종목 일봉을 한 번 더 물어 고침")
+            try:
+                refetch(codes)
+                prices = reload() if reload else prices
+            except Exception as e:                      # 다시 묻기가 안 돼도 검산 결과는 남김
+                print("다시 묻기 실패 ·", type(e).__name__)
+            v = dict(check_daily(day, prices), 다시물음=len(codes))
+        v["확정뒤"] = True
+        out[VERIFY] = v
+        _save(f, out)
+        print(f"{day} 검산(확정 뒤) 다름 {len(v['다름'])}/{v['종목']}")
+        if serious(v):
+            alerts.append(f"⚠️ **검산 {day[4:6]}-{day[6:]}** · 확정 일봉과도 종가 다름 {len(v['다름'])}/{v['종목']}"
+                          f" · {' '.join(c for c, *_ in v['다름'][:5])}")
+    return alerts
 
 
 # ───────────────────────── 1일봉 백테스트(daily_live 판단 · 15분봉 종가) ─────────────────────────
@@ -267,7 +319,7 @@ def run_day(day, prices, book):
     idle_today = _load(Path("idle-live") / "today.json", {})
     out = {
         "date": day,
-        "검산(15분봉 종가 vs 일봉 종가)": check_daily(day, prices),
+        VERIFY: verify(day, prices),
         "1시간봉": {"백테스트 체결": [{k: x.get(k) for k in ("봉", "type", "code", "칸", "값", "why")} for x in filled],
                   "백테스트 알림": log, "정보": info1h,
                   "운영과 견줌(START부터 누계)": compare(s1h, live_1h, "산 때", "판 때"),
@@ -289,11 +341,13 @@ def run_day(day, prices, book):
 
 def summary_lines(out):
     """장 마감 뒤 견줌 디스코드 — 한 줄(사용자 2026-10-06 "거두절미하고 요약버전으로 전부"). 자세한 건 reconcile/{날}.json."""
-    v = out["검산(15분봉 종가 vs 일봉 종가)"]
+    v = out[VERIFY]
     h, d = out["1시간봉"]["운영과 견줌(START부터 누계)"], out["1일봉"]["운영과 견줌(START부터 누계)"]
     day = out["date"]
     e = out.get("빈칸 엔진") if isinstance(out.get("빈칸 엔진"), dict) else {}
-    return [f"🔁 **견줌 {day[4:6]}-{day[6:]}** · 검산 다름 {len(v['다름'])}/{v['종목']}"
+    # 확정 전(저녁) 검산은 넣지 않음 — 아침에 다시 세어 진짜 문제일 때만 따로 알림
+    check = "" if v.get("확정 전") else f" · 검산 다름 {len(v['다름'])}/{v['종목']}"
+    return [f"🔁 **견줌 {day[4:6]}-{day[6:]}**{check}"
             f" · 1시간봉 같은 매매 {h['같은 매매']}/{h['운영 끝난 매매']} · 1일봉 {d['같은 매매']}/{d['운영 끝난 매매']}"
             + (f" · 엔진 주문 {len(e.get('모의투자 주문(그날)') or [])}" if e else "")]
 
@@ -312,6 +366,13 @@ def idle_line(out):
 def main(argv):
     import study
     prices = study.load_prices()
+    if argv[1:2] == ["--recheck"]:
+        import fix_recent_days
+        alerts = recheck(prices, refetch=fix_recent_days.main, reload=study.load_prices)
+        if alerts and os.getenv("DISCORD_WEBHOOK_URL", "").strip():
+            import daily_live as D
+            D.send(alerts)
+        return 0
     days = trading_days(prices)
     book = _load(STATE, {})
     if len(argv) > 1:
