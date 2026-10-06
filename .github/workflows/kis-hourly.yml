@@ -39,7 +39,7 @@ jobs:
           git add -A hourly-kis
           if ! git diff --cached --quiet; then
             git commit -q -m "Collect KIS hourly bars"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
           fi
           if [ "$status" = "3" ]; then echo '이번 몫을 다 불렀습니다. 다시 돌리면 이어 받습니다.'; exit 0; fi
           exit $status

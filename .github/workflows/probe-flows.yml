@@ -1,19 +1,25 @@
-name: KIS intraday after close
-# 한국투자증권 장중(시간대별) 자료는 오늘 것만 줌 → 평일 장이 끝난 뒤 그날 것을 받아 쌓습니다(조회 전용).
-# 종목 투자자 추정(하루 다섯 번) · 코스피 · 코스닥 프로그램매매 분별. 휴일이면 저장하지 않습니다.
+name: Probe flows
+# 수급 숫자에 저녁 넥스트레이드 값이 섞였나(손으로만 실행 · 조회만 · 저장하지 않음). 칸 이름 · 개수만 찍습니다.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 7 * * 1-5'   # 한국 시각 16:15(평일)
+    inputs:
+      codes:
+        description: '종목코드(쉼표)'
+        required: false
+        default: '000250,000080,005930,000270,069500'
+      days:
+        description: '날짜(쉼표)'
+        required: false
+        default: '20261001,20261002'
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: kis-intraday
+  group: probe-flows
   cancel-in-progress: false
 jobs:
-  collect:
+  probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/kis-token-open   # 오늘 받아 둔 한투 토큰을 잠긴 보관함에서 꺼냄(하루 1회 원칙)
@@ -25,25 +31,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests
-      - run: python -m unittest tests.test_collect_kis_intraday -v
-      - name: Collect and save
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          status=0; python collect_kis_intraday.py || status=$?
-          mkdir -p intraday-data
-          git add -A intraday-data
-          if ! git diff --cached --quiet; then
-            git commit -q -m "Collect KIS intraday data"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
-          fi
-          exit $status
+      - run: python research/probe_flows.py
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           KIS_ENV: real
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
-          KIS_CALL_GAP: '0.07'
+          KIS_CALL_GAP: '0.1'
+          PROBE_CODES: ${{ inputs.codes || '000250,000080,005930,000270,069500' }}
+          PROBE_DAYS: ${{ inputs.days || '20261001,20261002' }}
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
         continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)

@@ -66,6 +66,9 @@ def main(mode="check", code=TEST_CODE):
         return 1
     cash = bal.get("cash") or 0
     print(f"✅ 잔고 조회 · 예수금 약 {cash / 1e4:,.0f}만 원 · 보유 {len(bal['positions'])}종목 · 평가 약 {bal['value'] / 1e4:,.0f}만 원")
+    # 현금 세 가지(금액만): 오늘 예수금 · D+2 예수금(주문 몫 셈에 씀) · 총평가 — 사고판 날 서로 어떻게 다른지 확인용
+    fmt = lambda v: "없음" if v is None else f"{v / 1e4:,.0f}만 원"
+    print(f"ℹ️ 오늘 예수금 {fmt(bal.get('cash_today'))} · D+2 예수금 {fmt(bal.get('cash_d2'))} · 총평가 {fmt(bal.get('eval_total'))}")
     can = broker.buyable(code)            # 시장가로 지금 살 수 있는 수량(주문 전 수량 맞추기 · 2026-10-06)
     print(f"{'✅' if can is not None else '❌'} 시장가 매수가능 조회 ({code}) · " + (f"{can:,}주" if can is not None else "답을 못 받음(주문은 원래 수량대로 나감)"))
     if mode != "order":
@@ -108,6 +111,11 @@ def main(mode="check", code=TEST_CODE):
         if after < held:
             break
     print(f"{'✅' if after < held else '⚠️'} 매도 체결 확인 · 보유 {held}주 → {after}주")
+    try:                                   # 사고판 뒤 현금 세 가지가 어떻게 바뀌었나(금액만 · 2026-10-06 확인용)
+        b2 = broker.balance()
+        print(f"ℹ️ 사고판 뒤 · 오늘 예수금 {fmt(b2.get('cash_today'))} · D+2 예수금 {fmt(b2.get('cash_d2'))} · 총평가 {fmt(b2.get('eval_total'))}")
+    except broker_kis.BrokerError:
+        pass
     return 0 if after < held else 1
 
 

@@ -116,6 +116,15 @@ class PaperBroker(broker_kis.KIS):
         # 모의투자는 초당 호출 한도가 낮음(약 2번) → 0.6초 간격
         time.sleep(float(os.getenv("KIS_PAPER_CALL_GAP", "0.6")))
 
+    def balance(self):
+        """모의 계좌 잔고. 'cash'는 D+2 예수금(오늘 사고판 것까지 반영)으로 바꿔 줌 — 오늘 예수금(dnca_tot_amt)은 이틀 뒤에야 바뀌어,
+        산 날엔 같은 돈을 두 번 세고(현금 그대로 + 평가에도) 판 날엔 판 돈이 빠졌음(2026-10-06 검토). 받은 값이 없으면 예전 그대로."""
+        b = super().balance()
+        b["cash_today"] = b.get("cash")
+        if b.get("cash_d2") is not None:
+            b["cash"] = b["cash_d2"]
+        return b
+
     def buyable(self, code):
         """시장가로 지금 살 수 있는 수량(미수 없이). 물어보지 못하면 None(그때는 원래 수량 그대로 주문)."""
         try:
@@ -179,6 +188,52 @@ def enabled(now=None):
     if not os.getenv("KIS_PAPER_APP_KEY", "").strip():
         return False, "모의투자 키가 아직 없어 주문을 넣지 않습니다."
     return True, ""
+
+
+def sync_repo():
+    """작업이 기다리는 동안(14:40 → 15:10 · 15:20) 다른 작업(장중 상주)이 올린 기록을 받아 맞춤 — 낡은 장부로 판단 · 저장하다
+    부딪히지 않게(2026-10-06 감시자 검토). LIVE_GIT_SYNC=1인 작업에서만. 실패하면 합치기를 되돌리고 False."""
+    if os.getenv("LIVE_GIT_SYNC") != "1":
+        return True
+    import subprocess
+    for _ in range(3):
+        if subprocess.run("git pull -q --rebase origin main", shell=True, timeout=120).returncode == 0:
+            return True
+        subprocess.run("git rebase --abort", shell=True, stderr=subprocess.DEVNULL)
+        time.sleep(5)
+    print("저장소를 최신으로 맞추지 못함(있는 기록으로 계속)")
+    return False
+
+
+def daily_reserve(day, total, prices, near_files=(Path("m15-live/near-now.json"), Path("hourly-live/near-now.json"))):
+    """15:20 1일봉이 살 몫(원) — 빈칸 엔진이 15:10에 비켜 둘 돈(2026-10-06 감시자 검토).
+    15:20은 마감 동시호가라 그때 엔진을 팔아도 15:30에야 체결돼 1일봉이 살 돈이 안 풀림 → 엔진이 미리 남겨 둠.
+    장중 15분마다 그 시각 값으로 다시 센 '1일봉 후보(지금 값이면)'(near-now.json의 picks_daily · 오늘 것 중 가장 늦은 판정)가
+    있으면 후보마다 4칸(1일봉 최대 크기)으로 보고, 1일봉 몫 가운데 아직 안 쓴 만큼까지. 판정은 15:10 전 값만 씀(미래 참조 없음)."""
+    got = []
+    for f in near_files:
+        try:
+            body = json.loads(Path(f).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if str(body.get("date")) == day:
+            got.append(body)
+    if not got:
+        return 0.0, ""
+    last = max(got, key=lambda b: str(b.get("at")))
+    picks = last.get("picks_daily") or []
+    if not picks:
+        return 0.0, ""
+    share = total * SHARES["1d"]
+    try:
+        book = json.loads(DAILY_BOOK.read_text(encoding="utf-8")) if DAILY_BOOK.exists() else {}
+    except (OSError, ValueError):
+        book = {}
+    held = sum(int(q) * float(prices.get(c) or 0) for c, q in (book.get("held") or {}).items())
+    want = min(len(picks) * 4 / SLOTS, 1.0) * share
+    reserve = max(0.0, min(want, share - held))
+    names = " · ".join(str(p.get("name") or p.get("code")) for p in picks[:3])
+    return reserve, f"1일봉 후보({names} · {str(last.get('at'))[11:16]} 판정) 몫 약 {reserve / 1e4:,.0f}만 원을 비켜 둠"
 
 
 def book_path(strategy="1h"):

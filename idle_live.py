@@ -272,6 +272,11 @@ def run(now=None):
         print(why_off)
         return 0
     _wait_until(DECIDE_AT)
+    paper_trade.sync_repo()                         # 기다리는 동안 다른 작업이 올린 장부를 받아 맞춤
+    state = _load(STATE, {"positions": {}, "cool": 0})
+    if state.get("last_day") == day:
+        print("오늘은 이미 처리했습니다.")
+        return 0
     client = broker_kis.market()
     for _ in range(3):
         try:
@@ -314,8 +319,16 @@ def run(now=None):
     total = cash + value
     engine_value = sum(q * float(account.get(c, {}).get("price") or now_price.get(c, 0)) for c, q in held.items())
     used = max(0.0, (value - engine_value) / total) if total > 0 else 1.0
+    # 15:20 1일봉이 살 몫은 미리 비켜 둠(동시호가라 그때 엔진을 팔아도 돈이 안 풀림 · 2026-10-06 감시자 검토) — 연구처럼 '규칙 쓴 몫'에 넣음
+    reserve, reserve_note = (paper_trade.daily_reserve(day, total, {**{c: q.get("price") for c, q in account.items()}, **now_price})
+                              if total > 0 else (0.0, ""))
+    if reserve > 0:
+        used = min(1.0, used + reserve / total)
+        cash = max(0.0, cash - reserve * paper_trade.MKT_MARGIN)
     orders, new_state, why = step(state, day, px, breadth if breadth is not None else 100.0, used, total, cash, held,
                                   now_price, week_end(day))
+    if reserve_note:
+        why.insert(0, reserve_note)
     if breadth is None:
         why.insert(0, "⚠️ 시장 폭을 못 세어 엔진을 끈 것으로 봄(팔 것만)")
     late = datetime.now(KST).strftime("%H%M") > LAST_ORDER
