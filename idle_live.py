@@ -409,7 +409,7 @@ def run(now=None):
     if orders or new_state.get("positions"):
         if not orders:
             short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
-        send(short + [NOTE_SHORT])
+        send(short)
     print("\n".join(lines))
     return 0
 

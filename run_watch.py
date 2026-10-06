@@ -61,7 +61,6 @@ def main() -> int:
         print(f"{day} 세 봇 모두 정상")
         return 0
     lines = [f"⚠️ **봇 지킴이 · {day[4:6]}-{day[6:]}** 모의투자 봇 확인 필요"] + ["· " + b for b in bad]
-    lines.append("※ 연구용 자동 알림 · 실전 계좌 주문은 없음")
     print("\n".join(lines))
     url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
     if url:

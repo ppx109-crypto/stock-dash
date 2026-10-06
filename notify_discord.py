@@ -5,6 +5,7 @@
 """
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -21,21 +22,78 @@ def _won(v):
 
 
 def lines(found):
+    """A그룹 알림 — 짧게(사용자 2026-10-06 "거두절미하고 요약버전으로 전부"). 자세한 건 대시보드."""
     day = str(found.get("date") or "")
-    day = f"{day[:4]}-{day[4:6]}-{day[6:8]}" if len(day) == 8 else day or "날짜 모름"
+    day = f"{day[4:6]}-{day[6:8]}" if len(day) == 8 else day or "날짜 모름"
     picks = found.get("picks") or []
-    out = [f"📊 **{day} 장 마감 기준 A그룹**",
-           f"시장 폭 {found.get('breadth', '-')}% (시총 100위 안에서 오르는 추세인 종목 비율) · "
-           f"정배열 갈래 {'열림' if found.get('align_open') else '닫힘(시장 폭 50% 미만)'} · 살펴본 종목 {len(found.get('counted') or [])}개"]
-    if picks:
-        out.append(f"🟢 **A그룹 {len(picks)}종목** (자리 {found.get('slots', 5)}칸)")
-        for one in picks:
-            doors = "·".join(one.get("갈래") or [])
-            out.append(f"• **{one.get('name')}**({one.get('code')}) · {doors} · 종가 {_won(one.get('종가'))} · 시총 {one.get('시총순위', '-')}위")
-            out.append(f"  팔기: {one.get('팔기', '-')}")
-    else:
-        out.append("⚪ 오늘은 A그룹 종목이 없어요.")
-    out.append("※ 연구용 자동 알림이에요. 매매 판단은 직접 확인한 뒤에 하세요.")
+    out = [f"📊 **A그룹 {day}** · {len(picks)}종목 · 폭 {found.get('breadth', '-')}%"]
+    for one in picks:
+        out.append(f"• {one.get('name')} · {'·'.join(one.get('갈래') or [])} · {_won(one.get('종가'))}")
+    return out
+
+
+# ───────── 봇 알림을 짧게(사용자 2026-10-06 "각 시간마다 발송되는 디스코드 내용이 너무 길어 · 거두절미하고 요약버전으로 전부") ─────────
+# 디스코드에는 종목 이름 · 칸(주) · 손익만. 종목코드 · 까닭 설명 · 안내문(※)은 뺌(대시보드 · 기록 파일에는 그대로 남음).
+_CODE = re.compile(r"\(([0-9A-Z]{6})\)")
+_SLOT = re.compile(r"(\d+)칸")
+_GAIN = re.compile(r"([+−-]\d+(?:\.\d+)?%)")
+_QTY = re.compile(r"([\d,]+)주")
+
+
+def _name(text):
+    """'이름(코드) · …' → 이름."""
+    head = text.split(" · ")[0].strip()
+    return _CODE.sub("", head).strip()
+
+
+def short_item(icon, kind, text):
+    """1시간봉 · 15분봉 판단 한 줄: '🟢 매수 삼성전자 4칸' · '🔴 손절 X 2칸 −3.1%' · '🔄 자리 바꾸기 A → B'."""
+    if kind == "자리 바꾸기":
+        to = re.search(r"자리를 ([^(·]+)", text)
+        gain = _GAIN.search(text)
+        return f"{icon} 자리 바꾸기 {_name(text)} → {to.group(1).strip() if to else '?'}" + (f" ({gain.group(1)})" if gain else "")
+    slot, gain = _SLOT.search(text), _GAIN.search(text)
+    return f"{icon} {kind} {_name(text)}" + (f" {slot.group(1)}칸" if slot else "") + (f" {gain.group(1)}" if gain and kind != "매수" else "")
+
+
+def short_line(line):
+    """체결 · 모의 주문 · 그 밖의 줄을 짧게. 모르는 모양이면 종목코드 · 세 번째 마디부터만 뺌."""
+    line = line.strip()
+    if not line or line.startswith("※"):
+        return ""
+    m = re.match(r"✅ (매수|매도) 체결 · (.+)$", line)
+    if m:
+        body = m.group(2)
+        slot, gain = _SLOT.search(body), _GAIN.search(body)
+        price = re.search(r"([\d,]+원)", body)
+        return (f"✅ {m.group(1)} {_name(body)}" + (f" {slot.group(1)}칸" if slot else "")
+                + (f" {gain.group(1)}" if gain and m.group(1) == "매도" else f" {price.group(1)}" if price else ""))
+    m = re.match(r"🧪 모의투자\(([^)]*)\) (매수|매도) · (.+)$", line)
+    if m:
+        seg = m.group(3).split(" · ")
+        qty = _QTY.search(seg[0])
+        name = re.sub(r"\s*[\d,]+주$", "", _CODE.sub("", seg[0])).strip()
+        status = " · ".join(x for x in seg[1:] if x != "시장가")
+        ok = "접수" in status and "실패" not in status
+        if "자리 내줌" in status:
+            name += " (규칙에 자리 내줌)"
+        code = re.search(r"([A-Z0-9]{6,10})\.?$", status)
+        tail = (" ✅" + (" (살 수 있는 만큼으로 줄임)" if "줄임" in status else "")) if ok else (" ❌ 거절" + (f"({code.group(1)})" if code else ""))
+        return f"🧪 {m.group(2)} {name}" + (f" {qty.group(1)}주" if qty else "") + tail
+    m = re.match(r"🧪 모의투자\(([^)]*)\) (매수|매도) 건너뜀 · (.+)$", line)
+    if m:
+        return f"⏭️ {m.group(2)} {_name(m.group(3))} 건너뜀({m.group(3).split(' · ')[-1]})"
+    parts = [_CODE.sub("", x).strip() for x in line.split(" · ")]
+    return " · ".join(parts[:3])
+
+
+def brief(rows):
+    """알림 줄 목록 → 짧은 줄 목록(빈 줄 · 안내문 뺌)."""
+    out = []
+    for r in rows:
+        s = short_line(r) if r else ""
+        if s:
+            out.append(s)
     return out
 
 
