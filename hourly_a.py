@@ -306,7 +306,7 @@ def make_plan():
     print("자료 확인 ·", why)
     if not ready:
         # 자료가 덜 들어온 채 만든 후보는 틀림(2026-10-02 사고). 옛 후보는 내일 장중 실행이 '낡은 후보'로 보고 새로 사지 않음.
-        send([f"⚠️ **1시간봉 후보 만들기 멈춤** · {why}", "자료가 다 들어오면 다시 만듭니다. 그때까지 1시간봉은 새로 사지 않고 들고 있는 종목만 관리해요."])
+        send([f"⚠️ 1시간봉 후보 만들기 멈춤(자료 덜 들어옴 · 들고 있는 종목만 관리)"])
         return 1
     cands = []
     for one in found.get("picks", []):
@@ -319,14 +319,10 @@ def make_plan():
             "near": [{k: b.get(k) for k in ("code", "name", "모자란 수", "가까운 갈래", "모자란 것")} for b in found.get("b_group", []) if b.get("모자란 수") == 1]}
     _save(PLAN, plan)
     state = _load(STATE, {"positions": {}, "pending": []})
-    lines = [f"📋 **1시간봉 매매 · {day[:4]}-{day[4:6]}-{day[6:]} 마감 기준 → 다음 거래일 후보 {len(cands)}종목**",
-             f"시장 폭 {found.get('breadth')}% · 장중 1시간마다 1시간봉 EMA 정배열(없으면 12시)에 사는지 알려 드려요."]
+    # 디스코드는 짧게(사용자 2026-10-06 "거두절미하고 요약버전으로 전부") — 후보 · 까닭 전부는 hourly-live/plan.json(대시보드)
+    lines = [f"📋 **1시간봉 다음 거래일 후보 {len(cands)}** · 폭 {found.get('breadth')}%"]
     for c in sorted(cands, key=lambda c: (not c["추세문"], not c["3일연속"])):
-        size = size_of(c)
-        lines.append(f"• **{c['name']}**({c['code']}) · {'·'.join(c.get('갈래') or [])} · {size}칸({size * 10}%)"
-                     + (" · 3일 연속" if c["3일연속"] else ""))
-    if not cands:
-        lines.append("⚪ 다음 거래일 후보가 없어요.")
+        lines.append(f"• {c['name']} {size_of(c)}칸")
     # 들고 있는 정배열 매매: 오늘 종가로 일봉 정배열이 깨졌으면 내일 09:00 시가 청산
     alerts = []
     for code, p in list(state.get("positions", {}).items()):
@@ -338,13 +334,14 @@ def make_plan():
             state.setdefault("pending", []).append({"type": "sell", "code": code, "칸": p["칸"], "why": "일봉 정배열 깨짐",
                                                      "decided": day + "14"})
             alerts.append(f"⚪ 청산 · {p['name']}({code}) · 내일 09:00 시가에 {p['칸']}칸 팔기 · 일봉 정배열 깨짐")
+            lines.append(f"⚪ 내일 09:00 청산 {p['name']} {p['칸']}칸")
     if alerts:
         _save(STATE, state)
         _log_alerts([("청산", a, {}) for a in alerts])
     held = state.get("positions", {})
     if held:
-        lines.append(f"📦 들고 있는 종목 {len(held)}개 · " + " · ".join(f"{p['name']} {p['칸']}칸" for p in held.values()))
-    send(lines + alerts + [NOTE])
+        lines.append("📦 보유 " + " · ".join(f"{p['name']} {p['칸']}칸" for p in held.values()))
+    send(lines)
     print(f"후보 {len(cands)}종목 · 청산 알림 {len(alerts)}건")
     return 0
 
@@ -467,7 +464,7 @@ def run_live(now=None):
             plan = {**plan, "candidates": []}
             if state.get("자료 멈춤") != day:
                 state["자료 멈춤"] = day
-                send([f"⚠️ **1시간봉 새로 사기 멈춤** · {why}", "들고 있는 종목의 팔기는 그대로 해요."])
+                send([f"⚠️ 1시간봉 새로 사기 멈춤(자료 덜 들어옴 · 팔기는 그대로)"])
         live = {c: today_bars(client, c, day) for c in codes}
     except broker_kis.BrokerError as e:
         print("증권사 조회 실패 ·", e)
@@ -520,18 +517,14 @@ def run_live(now=None):
     except Exception as e:          # 모의투자 주문이 잘못돼도 알림 · 연습 계좌는 그대로 돌아가게
         paper.append(f"🧪 모의투자 주문 중 문제 · {type(e).__name__}")
     fills = fill_lines(filled)
+    from notify_discord import brief, short_item      # 디스코드는 짧게(사용자 2026-10-06) · 자세한 글은 alerts.json(대시보드)
     if (paper or fills) and not items:
-        send([f"✅ **1시간봉 매매 · 체결 · {now.strftime('%m-%d %H:%M')}**"] + fills + paper)
+        send([f"✅ **1시간봉 체결 {now.strftime('%H:%M')}**"] + brief(fills + paper))
     if items:
         _log_alerts(items)
         icon = {"매수": "🟢", "자리 바꾸기": "🔄", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "못 삼": "⚫"}
-        head = f"⏰ **1시간봉 매매 · {now.strftime('%m-%d %H:%M')}** (봉 {', '.join(b[8:] + '시' for b in todo)} 마감)"
-        try:
-            import paper_trade
-            note = NOTE_PAPER if paper_trade.enabled()[0] else NOTE_PLAIN
-        except Exception:
-            note = NOTE_PLAIN
-        send([head] + fills + [f"{icon.get(k, '•')} {k} · {t}" for k, t, _ in items] + paper + [note])
+        head = f"⏰ **1시간봉 {now.strftime('%H:%M')}**"
+        send([head] + brief(fills) + [short_item(icon.get(k, "•"), k, t) for k, t, _ in items] + brief(paper))
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")
     return 0
 
