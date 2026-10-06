@@ -82,9 +82,10 @@ def week_end(day):
     return date(int(n[:4]), int(n[4:6]), int(n[6:])).isocalendar()[:2] != a
 
 
-def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_end):
+def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_end, reserve=0.0):
     """하루 판단. px: {코드: 종가 배열(어제까지 + 오늘 15:10 값)} · used: 규칙이 쓰는 몫(0 ~ 1) ·
-    total: 계좌 총액 · cash: 현금 · held: 엔진 장부가 들고 있는 수량 {코드: 주} · now_price: 오늘 값.
+    total: 계좌 총액 · cash: 현금 · held: 엔진 장부가 들고 있는 수량 {코드: 주} · now_price: 오늘 값 ·
+    reserve: 15:20 1일봉이 살 몫으로 비켜 둘 돈(원) — 엔진 몫(room)에서만 뺌 · 켜고 끄는 판단(used)은 연구 그대로(2026-10-06).
     돌려줌: (주문 [(코드, 'buy'|'sell', 수량, 까닭)], 새 상태, 까닭 줄들). 연구(itools.sim · i011.run · i013)와 같게:
     판 날에는 같은 단계를 다시 사지 않음 · 손절 뒤 20거래일 쉼 · 돌리기는 주 끝에만 다시 고름 · 급락 되돌림이 켜지면 다른 엔진 단계는 쉼."""
     st = json.loads(json.dumps(state or {}))
@@ -154,7 +155,7 @@ def step(state, day, px, breadth, used, total, cash, held, now_price, is_week_en
         else:
             keep[code] = p
     # 돈: 엔진 · 인버스는 계좌 × (1 − 규칙 쓴 몫)만 · 실제로 쓸 수 있는 돈 = 현금 + 오늘 판 돈
-    room = total * (1 - used)
+    room = max(0.0, total * (1 - used) - reserve)
     avail = (cash + sum(q * now_price.get(c, 0) for c, s, q, _ in orders if s == "sell")) * 0.97
     inv_kept = sum(int(held.get(c, 0)) * now_price.get(c, 0) for c, p in keep.items() if p["kind"] == "인버스")
     engine_room = max(0.0, room - inv_kept)
@@ -273,6 +274,10 @@ def run(now=None):
         return 0
     _wait_until(DECIDE_AT)
     paper_trade.sync_repo()                         # 기다리는 동안 다른 작업이 올린 장부를 받아 맞춤
+    ok, why_off = paper_trade.enabled(datetime.now(KST))       # 기다리는 동안 끄기 스위치가 올라왔을 수 있음
+    if not ok:
+        print(why_off)
+        return 0
     state = _load(STATE, {"positions": {}, "cool": 0})
     if state.get("last_day") == day:
         print("오늘은 이미 처리했습니다.")
@@ -319,16 +324,29 @@ def run(now=None):
     total = cash + value
     engine_value = sum(q * float(account.get(c, {}).get("price") or now_price.get(c, 0)) for c, q in held.items())
     used = max(0.0, (value - engine_value) / total) if total > 0 else 1.0
-    # 15:20 1일봉이 살 몫은 미리 비켜 둠(동시호가라 그때 엔진을 팔아도 돈이 안 풀림 · 2026-10-06 감시자 검토) — 연구처럼 '규칙 쓴 몫'에 넣음
+    # 15:20 1일봉이 살 몫은 미리 비켜 둠(15:20은 동시호가라 그때 엔진을 팔아도 15:30에야 돈이 풀림 · 2026-10-06 감시자 검토).
+    # 켜고 끄는 판단(used)은 연구 그대로 두고 돈만 뺌. 현금이 모자라면 지금(연속 매매 중) 엔진 것을 팔아 자리를 냄(규칙이 먼저).
+    room_note = []
     reserve, reserve_note = (paper_trade.daily_reserve(day, total, {**{c: q.get("price") for c, q in account.items()}, **now_price})
                               if total > 0 else (0.0, ""))
-    if reserve > 0:
-        used = min(1.0, used + reserve / total)
-        cash = max(0.0, cash - reserve * paper_trade.MKT_MARGIN)
-    orders, new_state, why = step(state, day, px, breadth if breadth is not None else 100.0, used, total, cash, held,
-                                  now_price, week_end(day))
+    if reserve > 0 and held and reserve * paper_trade.MKT_MARGIN > cash * 0.98:
+        balance, room_note = paper_trade.make_room(broker, balance, reserve, datetime.now(KST))
+        if room_note:
+            state = _load(STATE, {"positions": {}, "cool": 0})          # 자리를 내준 엔진 것은 상태에서 빠짐
+            book = _load(paper_trade.IDLE_BOOK, {"orders": [], "held": {}})
+            book.setdefault("held", {})
+            account = {p["code"]: p for p in balance.get("positions", [])}
+            held = {c: min(int(q), int(account.get(c, {}).get("quantity", 0))) for c, q in book["held"].items()}
+            cash = float(balance.get("cash") or 0)
+            value = float(balance.get("value") or 0)
+            total = cash + value
+            engine_value = sum(q * float(account.get(c, {}).get("price") or now_price.get(c, 0)) for c, q in held.items())
+            used = max(0.0, (value - engine_value) / total) if total > 0 else 1.0
+    cash_for_engine = max(0.0, cash - reserve * paper_trade.MKT_MARGIN)
+    orders, new_state, why = step(state, day, px, breadth if breadth is not None else 100.0, used, total, cash_for_engine, held,
+                                  now_price, week_end(day), reserve=reserve)
     if reserve_note:
-        why.insert(0, reserve_note)
+        why.insert(0, reserve_note + (" · 엔진 것을 팔아 자리를 냄" if room_note else ""))
     if breadth is None:
         why.insert(0, "⚠️ 시장 폭을 못 세어 엔진을 끈 것으로 봄(팔 것만)")
     late = datetime.now(KST).strftime("%H%M") > LAST_ORDER

@@ -47,6 +47,17 @@ class StepTest(unittest.TestCase):
         self.assertEqual(bought["133690"], int(1e7 * 0.9 * 0.5 * 0.97 / 100))
         self.assertEqual(st["positions"]["133690"]["kind"], "돌리기")
 
+    def test_reserve_shrinks_room_but_keeps_engine_on(self):
+        """1일봉 몫을 비켜 둬도 엔진 켜고 끄기(규칙 쓴 몫 < 20%)는 연구 그대로 · 엔진 몫만 줄어듦(2026-10-06 감시자 재확인)."""
+        px = base_px()
+        for c, g in zip(L.ROT, (0.05, 0.02, -0.01, 0.03)):
+            px[c] = np.r_[flat(40), np.linspace(100, 100 * (1 + g), 20)]
+        orders, st, _ = L.step({}, "20261005", px, breadth=40, used=0.1, total=1e7, cash=9e6, held={},
+                               now_price=PRICE, is_week_end=False, reserve=2e6)
+        bought = {c: q for c, s, q, _ in orders if s == "buy"}
+        self.assertEqual(set(bought), {"133690", "148070"}, "1일봉 몫(20%)을 비켜 둬도 엔진은 켜진 채")
+        self.assertEqual(bought["133690"], int((1e7 * 0.9 - 2e6) * 0.5 * 0.97 / 100))
+
     def test_rotation_kept_midweek_and_sold_when_engine_off(self):
         state = {"positions": {"133690": {"kind": "돌리기", "price": 100.0, "day": "20261002", "days": 1}}, "last_day": "20261002"}
         orders, _, _ = L.step(state, "20261005", base_px(), breadth=40, used=0.0, total=1e7, cash=5e6,
