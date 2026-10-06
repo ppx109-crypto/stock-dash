@@ -36,7 +36,6 @@ VOL_BIG, FRESH_DAYS = 2.0, 10
 COST = 0.25                # 연구(lab.COST)와 같은 왕복 비용 어림값(%)
 KIN = 0.6
 NAME = "1일봉 매매"
-NOTE = "※ 연구용 자동 알림이에요. 실제 계좌에는 주문하지 않고, 한투 모의투자 계좌에만 자동 주문해요(🧪). 실제 매매 판단은 직접 확인한 뒤에 하세요."
 
 
 # ───────────────────────── 계산(자료 · 증권사 없이 시험할 수 있게) ─────────────────────────
@@ -270,6 +269,19 @@ def decision_lines(day, breadth, cands, sells, buys, now_price, held):
     return out
 
 
+def brief_decision(day, breadth, sells, buys, held):
+    """15:20 판단 디스코드 — 짧게(사용자 2026-10-06 "거두절미하고 요약버전으로 전부"). 자세한 까닭은 대시보드(daily-live/today.json)."""
+    head = f"🌇 **1일봉 {day[4:6]}-{day[6:]} 15:20** · 폭 {breadth}% · 보유 {len(held)}"
+    out = []
+    for x in sells:
+        kind = ("절반 익절" if "절반" in x["why"] else "익절" if "익절" in x["why"] or "지키기" in x["why"]
+                else "손절" if "손절" in x["why"] else "청산")
+        out.append(f"{ICON[kind]} {kind} {x['name']} {x['칸']}칸")
+    for x in buys:
+        out.append(f"🟢 매수 {x['name']} {x['칸']}칸")
+    return [head] + out if out else [head + " · 할 일 없음"]
+
+
 def _wait_until(hhmm):
     while datetime.now(KST).strftime("%H%M") < hhmm:
         time.sleep(15)
@@ -368,8 +380,8 @@ def run(now=None):
         cands = []           # 자료가 덜 들어왔으면 새로 사지 않음 · 들고 있는 종목 팔기는 그대로(사용자 2026-10-02)
     sells, buys = decide(state, cands, now_price, aligned, rate, kin_ok)
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
-    warn = [] if ready else [f"⚠️ **1일봉 새로 사기 멈춤** · {why}", "들고 있는 종목의 팔기는 그대로 해요."]
-    send(warn + decision_lines(day, found.get("breadth"), cands, sells, buys, now_price, held) + [NOTE])
+    warn = [] if ready else [f"⚠️ 1일봉 새로 사기 멈춤(자료 덜 들어옴 · 팔기는 그대로)"]
+    send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
     paper = []
     if (sells or buys) and not late:
         try:
@@ -404,7 +416,8 @@ def run(now=None):
                for x in sells + buys]
     _save(ALERTS, alerts[-500:])
     if fills or paper:                   # 체결 알림(사고판 것이 있을 때만)
-        send([f"✅ **{NAME} · 체결 · {day[4:6]}-{day[6:]} 종가** (들고 있는 종목 {len(state['positions'])}개)"] + fills + paper)
+        from notify_discord import brief
+        send([f"✅ **1일봉 체결 {day[4:6]}-{day[6:]}** · 보유 {len(state['positions'])}"] + brief(fills + paper))
     print(f"후보 {len(cands)} · 매도 {len(sells)} · 매수 {len(buys)} · 늦음 {late}")
     return 0
 
