@@ -90,7 +90,11 @@ class PaperBroker(broker_kis.KIS):
             kept = json.loads(Path(path).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
-        if kept.get("key") != self.key or not kept.get("token") or time.time() >= float(kept.get("expires", 0)):
+        try:            # 깨진 파일이면 새로 받음
+            if not isinstance(kept, dict) or kept.get("key") != self.key or not kept.get("token") \
+                    or time.time() >= float(kept.get("expires", 0)):
+                return None
+        except (TypeError, ValueError):
             return None
         return kept
 

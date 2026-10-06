@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
-ROOT = Path("/home/user/stock-dash")
+ROOT = Path(__file__).resolve().parents[1]      # 저장소 뿌리(GitHub 작업 서버에서도 맞게 · 2026-10-06 Tests 빨간불 원인)
 PERIODS = (("A", "20090916", "20170101"), ("B", "20170101", "20210101"), ("C", "20210101", "20991231"))
 
 

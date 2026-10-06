@@ -77,7 +77,8 @@ jobs:
               echo '이 묶음에서 바뀐 일봉이 없습니다.'
             else
               git commit -m 'Refresh daily price history'
-              git pull --rebase origin main && git push
+              # 묶음마다 올림 · 부딪히면 다시(최대 5번) — 끝내 못 올려도 다음 묶음 때 함께 올라가니 멈추지 않음(2026-10-06 검토)
+              for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
             fi
           done < /tmp/batches.txt
         env:
@@ -127,8 +128,10 @@ jobs:
             echo '바뀐 것이 없어 커밋하지 않습니다.'
           else
             git commit -m 'Refresh opinions and flows'
-            git pull --rebase origin main
-            git push
+            # 다른 작업과 같은 순간에 올리면 거절됨 → 받아 합친 뒤 다시(최대 5번) · 실패한 합치기는 되돌림(2026-10-06 검토)
+            ok=0
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            [ "$ok" = 1 ] || { echo '저장소에 올리지 못했습니다.'; exit 1; }
           fi
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
