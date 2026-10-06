@@ -334,8 +334,10 @@ def run(now=None):
             short.append(f"⏭️ {'매수' if side == 'buy' else '매도'} {NAME.get(code, code)} 건너뜀(작업이 늦게 돎)")
             continue
         try:
+            want = qty
             no = broker.order(code, side, qty)
-            status = "접수"
+            qty = int(getattr(broker, "last_qty", qty) or qty)       # 매수가능 수량에 맞춰 줄었으면 그 수량(2026-10-06 거절 대책)
+            status = "접수" if qty == want else f"접수 · {want:,}주 중 살 수 있는 {qty:,}주로 줄임"
             book["held"][code] = max(0, int(book["held"].get(code, 0)) + (qty if side == "buy" else -qty))
             if not book["held"][code]:
                 del book["held"][code]
@@ -358,7 +360,10 @@ def run(now=None):
                                "name": NAME.get(code, code), "side": side, "qty": qty, "status": status,
                                "order_no": no, "why": reason, "price": now_price.get(code)})
         lines.append(f"🧪 모의투자(빈칸 엔진) {'매수' if side == 'buy' else '매도'} · {NAME.get(code, code)}({code}) {qty}주 · 시장가 · {reason} · {status}")
-        mark = "✅ 접수" if status == "접수" else "❌ 거절" + (f"({status.rstrip('.').split(' · ')[-1]})" if " · " in status else "")
+        if status.startswith("접수"):
+            mark = "✅ 접수" + (" (살 수 있는 만큼으로 줄임)" if "줄임" in status else "")
+        else:
+            mark = "❌ 거절" + (f"({status.rstrip('.').split(' · ')[-1]})" if " · " in status else "")
         short.append(f"🧪 {'매수' if side == 'buy' else '매도'} {NAME.get(code, code)} {qty:,}주 → {mark}")
         short.append(f"　까닭: {reason.split(' — ')[0]}")
         time.sleep(0.3)
