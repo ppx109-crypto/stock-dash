@@ -54,6 +54,7 @@ def close_box():
         if secret and plain.exists() and _digest(plain) != before:
             if _run(["-salt", "-in", str(plain), "-out", str(BOX / f"{name}.enc")], secret):
                 changed = True
+                (SEEN / name).write_text(_digest(plain))     # 같은 작업에서 다시 넣을 때 바뀐 것만
                 print(f"{name}: 새 토큰을 잠가 보관함에 넣음")
     out = os.environ.get("GITHUB_OUTPUT")
     if out:

@@ -9,6 +9,10 @@ inputs:
     description: 모의투자 앱 시크릿
     required: false
     default: ''
+  tag:
+    description: 한 작업에서 두 번 넣을 때 열쇠를 가르는 꼬리표(예 early)
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -25,4 +29,4 @@ runs:
       uses: actions/cache/save@v4
       with:
         path: ${{ runner.temp }}/kis-token-box
-        key: kis-token-${{ steps.day.outputs.day }}-${{ github.run_id }}-${{ github.run_attempt }}
+        key: kis-token-${{ steps.day.outputs.day }}-${{ github.run_id }}-${{ github.run_attempt }}${{ inputs.tag && format('-{0}', inputs.tag) || '' }}
