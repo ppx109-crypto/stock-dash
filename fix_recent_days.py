@@ -9,6 +9,8 @@
 그건 원래 수집기 몫). 그보다 오래된 날이 다르면 수정주가가 바뀐 것이라 건드리지 않고 셉니다(원래 수집기가 처음부터 다시 받음).
 고치는 곳: price-data(종가) · volume-data(거래량 · 거래대금 · 고가 · 저가) · kosdaq-data(시가 · 고가 · 저가 · 종가 · 거래량 · 거래대금) · investor-data(종가 칸).
 수정주가로 오래된 날까지 다른 종목은 그 종목의 어떤 자료도 고치지 않음(앞뒤 기준이 섞이지 않게).
+다 물으면 fix-recent/checked.json에 '확정 값으로 확인한 마지막 날'(오늘 앞 거래일)을 적습니다 — 장 마감 뒤 검산(reconcile)이
+그날까지만 셈(저녁 검산이 넥스트레이드 값과 견줘 '다름'을 잘못 알리던 것 · 2026-10-06).
 바뀐 것이 있으면 fix-recent/last.json에 적고 종료 코드 0 · 출력 끝에 changed=1을 남깁니다(작업이 A그룹 · 1시간봉 후보를 다시 셈).
 조회 전용(주문 없음) · 응답 본문 · 키는 찍지 않습니다.
 python fix_recent_days.py [종목코드,...]
@@ -30,6 +32,7 @@ MAX_ROWS = int(os.getenv("FIX_MAX_ROWS", "5"))       # 최근 몇 줄까지 고�
 TOL = 0.0005                                         # 이만큼(0.05%) 넘게 다르면 다름
 PRICE, KOSDAQ, FLOW, VOLUME = Path("price-data"), Path("kosdaq-data"), Path("investor-data"), Path("volume-data")
 OUT = Path("fix-recent/last.json")
+CHECKED = Path(os.getenv("FIX_CHECKED", "fix-recent/checked.json"))   # 어느 날까지 확정 값으로 확인했나(검산이 씀)
 KQ_COLS = ("시가", "고가", "저가", "종가", "거래량", "거래대금")
 
 
@@ -147,6 +150,7 @@ def main(codes=None):
         except broker_kis.BrokerError as e:
             return code, e
 
+    seen = set()                                   # 증권사가 준 날(오늘 앞 · 확정된 날)
     report = {"at": now.strftime("%Y-%m-%d %H:%M"), "price-data": {}, "volume-data": {}, "kosdaq-data": {}, "investor-data": {},
               "오래된 날 다름(수정주가 · 원래 수집기 몫)": [], "못 물음": 0}
     lanes = max(1, int(os.getenv("FIX_LANES", "4")))
@@ -155,6 +159,7 @@ def main(codes=None):
             if isinstance(fresh, Exception) or not fresh:
                 report["못 물음"] += 1
                 continue
+            seen.update(d for d in fresh if d < end)
             adjusted = False
             for p in sorted(files[code], key=lambda q: q.parent != PRICE):     # 일봉 먼저 — 수정주가면 이 종목은 다 건너뜀
                 body = _load(p)
@@ -192,7 +197,17 @@ def main(codes=None):
                 f.write("changed=1\n")
     if report["못 물음"] > len(files) * 0.1:        # 고친 것은 그대로 저장(작업이 올림) · 알리기만
         print(f"⚠️ 못 물은 종목이 많음({report['못 물음']}/{len(files)}) — 증권사 쪽 문제일 수 있음")
+    elif not codes and seen and now.hour >= 6:       # 전체를 거의 다 물었고 밤 정리가 끝난 뒤(아침)일 때만 '여기까지 확정'을 당김
+        mark(max(seen), now)
     return 0
+
+
+def mark(day, now):
+    old = str((_load(CHECKED) or {}).get("checked", ""))
+    if day > old:
+        CHECKED.parent.mkdir(parents=True, exist_ok=True)
+        CHECKED.write_text(json.dumps({"checked": day, "at": now.strftime("%Y-%m-%d %H:%M")}, ensure_ascii=False), encoding="utf-8")
+        print(f"확정 값으로 확인한 마지막 날: {day}")
 
 
 if __name__ == "__main__":
