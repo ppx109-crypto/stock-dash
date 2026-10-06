@@ -116,6 +116,15 @@ class PaperBroker(broker_kis.KIS):
         # 모의투자는 초당 호출 한도가 낮음(약 2번) → 0.6초 간격
         time.sleep(float(os.getenv("KIS_PAPER_CALL_GAP", "0.6")))
 
+    def balance(self):
+        """모의 계좌 잔고. 'cash'는 D+2 예수금(오늘 사고판 것까지 반영)으로 바꿔 줌 — 오늘 예수금(dnca_tot_amt)은 이틀 뒤에야 바뀌어,
+        산 날엔 같은 돈을 두 번 세고(현금 그대로 + 평가에도) 판 날엔 판 돈이 빠졌음(2026-10-06 검토). 받은 값이 없으면 예전 그대로."""
+        b = super().balance()
+        b["cash_today"] = b.get("cash")
+        if b.get("cash_d2") is not None:
+            b["cash"] = b["cash_d2"]
+        return b
+
     def buyable(self, code):
         """시장가로 지금 살 수 있는 수량(미수 없이). 물어보지 못하면 None(그때는 원래 수량 그대로 주문)."""
         try:

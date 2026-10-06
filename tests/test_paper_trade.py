@@ -222,5 +222,18 @@ class Buyable(unittest.TestCase):
             self.assertIn("줄임", lines[0])
 
 
+class Cash(unittest.TestCase):
+    """2026-10-06 검토: 모의 주문 몫 셈은 D+2 예수금(오늘 사고판 것까지 반영)을 씀."""
+    def test_cash_is_d2_when_given(self):
+        env = {"KIS_PAPER_APP_KEY": "p", "KIS_PAPER_APP_SECRET": "s", "KIS_PAPER_ACCOUNT": "12345678-01", "KIS_APP_KEY": "r"}
+        with mock.patch.dict(os.environ, env, clear=False):
+            b = P.PaperBroker()
+        with mock.patch.object(broker_kis.KIS, "balance", return_value={"cash": 100.0, "cash_d2": 27.0, "value": 73.0, "positions": []}):
+            got = b.balance()
+        self.assertEqual((got["cash"], got["cash_today"]), (27.0, 100.0))
+        with mock.patch.object(broker_kis.KIS, "balance", return_value={"cash": 100.0, "cash_d2": None, "value": 0, "positions": []}):
+            self.assertEqual(b.balance()["cash"], 100.0)
+
+
 if __name__ == "__main__":
     unittest.main()

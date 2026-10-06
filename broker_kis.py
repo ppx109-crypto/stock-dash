@@ -706,6 +706,9 @@ class KIS:
             position['weight'] = position['value'] / total * 100 if total > 0 else 0
         return {'positions': positions, 'value': total, 'pnl': sum(p['pnl'] for p in positions),
                 'cash': amount(summary['dnca_tot_amt']) if summary.get('dnca_tot_amt') not in (None, '') else None,
+                # D+2 예수금(오늘 사고판 것까지 반영) · 총평가 — 모의 주문 몫 셈은 이걸 씀(2026-10-06 검토: 오늘 예수금은 이틀 뒤에야 바뀜)
+                'cash_d2': amount(summary['prvs_rcdl_excc_amt']) if summary.get('prvs_rcdl_excc_amt') not in (None, '') else None,
+                'eval_total': amount(summary['tot_evlu_amt']) if summary.get('tot_evlu_amt') not in (None, '') else None,
                 'mode': self.mode, 'fetched': datetime.now(ZoneInfo('Asia/Seoul')).isoformat()}
 
 
