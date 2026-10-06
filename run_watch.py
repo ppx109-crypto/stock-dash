@@ -66,7 +66,7 @@ def main() -> int:
     if url:
         import requests
         try:
-            requests.post(url, json={"content": "\n".join(lines)}, timeout=(10, 20))
+            requests.post(url, json={"content": "\n".join(l for l in lines if not l.lstrip().startswith("※"))}, timeout=(10, 20))
         except requests.RequestException:
             print("디스코드 보내기 실패")
     return 0

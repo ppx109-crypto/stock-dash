@@ -98,8 +98,11 @@ def brief(rows):
 
 
 def chunks(rows):
+    """디스코드 한 메시지 글자 수 안으로 나눔. '※'로 시작하는 안내 줄은 늘 뺌(사용자 2026-10-06 "이런거 다 빼")."""
     msg, found = "", []
     for row in rows:
+        if str(row).lstrip().startswith("※"):
+            continue
         if len(msg) + len(row) + 1 > LIMIT:
             found.append(msg)
             msg = ""
