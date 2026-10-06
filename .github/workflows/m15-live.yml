@@ -20,8 +20,16 @@ jobs:
       - id: gate
         name: 장중 상주 작업(Intraday runner)이 돌면 건너뜀 — 이 예약은 뒷받침용
         run: |
-          n=$(gh api "repos/${{ github.repository }}/actions/workflows/intraday.yml/runs?status=in_progress" --jq '.total_count' 2>/dev/null || echo 0)
-          if [ "${{ github.event_name }}" = schedule ] && [ "${n:-0}" -gt 0 ] 2>/dev/null; then
+          [ "${{ github.event_name }}" = schedule ] || exit 0
+          n=""
+          for i in 1 2 3; do
+            n=$(gh api "repos/${{ github.repository }}/actions/workflows/intraday.yml/runs?status=in_progress" --jq '.total_count' 2>/dev/null || true)
+            case "$n" in ''|*[!0-9]*) n=""; sleep 5;; *) break;; esac
+          done
+          if [ -z "$n" ]; then
+            # 상주 작업이 도는지 끝내 모르면 건너뜀(둘이 같은 봉을 처리해 주문이 겹치는 것보다 한 회차 늦는 게 나음 · 봇이 밀린 봉을 처리)
+            echo "상주 작업 확인에 실패해 이번 예약은 건너뜁니다."; echo "skip=1" >> "$GITHUB_OUTPUT"
+          elif [ "$n" -gt 0 ]; then
             echo "장중 상주 작업이 돌고 있어 이번 예약은 건너뜁니다."; echo "skip=1" >> "$GITHUB_OUTPUT"
           fi
         env:

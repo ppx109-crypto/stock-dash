@@ -51,6 +51,7 @@ HOLIDAYS = {"20261005", "20261009", "20261225", "20261231",          # 20261005 
             "20270101", "20270208", "20270209", "20270301", "20270505", "20270513", "20270816",
             "20270914", "20270915", "20270916", "20271004", "20271011", "20271227", "20271231"}
 NOTE = "※ 연구용 자동 알림이에요. 실제 계좌에는 주문하지 않고, 한투 모의투자 계좌에만 자동 주문해요(🧪)."
+NOTE_SHORT = "※ 모의투자 계좌만 · 자세한 까닭은 대시보드"
 
 
 # ───────────────────────── 계산(증권사 없이 시험할 수 있게) ─────────────────────────
@@ -320,6 +321,8 @@ def run(now=None):
     late = datetime.now(KST).strftime("%H%M") > LAST_ORDER
     lines = [f"🧩 **빈칸 엔진 · {day[4:6]}-{day[6:]} 15:10 판단** (규칙 쓴 몫 {used * 100:.0f}% · 시장 폭 {breadth if breadth is not None else '?'}%)"]
     lines += ["· " + w for w in why]
+    # 디스코드는 짧게(사용자 2026-10-06 "너무 길고 복잡하여서 간단하게") — 판단 까닭 전부는 작업 기록 · 대시보드(idle-live/today.json)에
+    short = [f"🧩 **빈칸 엔진 {day[4:6]}-{day[6:]}** · 시장 폭 {breadth if breadth is not None else '?'}% · 규칙 {used * 100:.0f}%"]
     done = []
     seen = {o["key"] for o in book["orders"]}
     for code, side, qty, reason in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저
@@ -328,10 +331,13 @@ def run(now=None):
             continue
         if late:
             lines.append(f"🧪 {NAME.get(code, code)} {'매수' if side == 'buy' else '매도'} 건너뜀 · 작업이 늦게 돎")
+            short.append(f"⏭️ {'매수' if side == 'buy' else '매도'} {NAME.get(code, code)} 건너뜀(작업이 늦게 돎)")
             continue
         try:
+            want = qty
             no = broker.order(code, side, qty)
-            status = "접수"
+            qty = int(getattr(broker, "last_qty", qty) or qty)       # 매수가능 수량에 맞춰 줄었으면 그 수량(2026-10-06 거절 대책)
+            status = "접수" if qty == want else f"접수 · {want:,}주 중 살 수 있는 {qty:,}주로 줄임"
             book["held"][code] = max(0, int(book["held"].get(code, 0)) + (qty if side == "buy" else -qty))
             if not book["held"][code]:
                 del book["held"][code]
@@ -354,6 +360,12 @@ def run(now=None):
                                "name": NAME.get(code, code), "side": side, "qty": qty, "status": status,
                                "order_no": no, "why": reason, "price": now_price.get(code)})
         lines.append(f"🧪 모의투자(빈칸 엔진) {'매수' if side == 'buy' else '매도'} · {NAME.get(code, code)}({code}) {qty}주 · 시장가 · {reason} · {status}")
+        if status.startswith("접수"):
+            mark = "✅ 접수" + (" (살 수 있는 만큼으로 줄임)" if "줄임" in status else "")
+        else:
+            mark = "❌ 거절" + (f"({status.rstrip('.').split(' · ')[-1]})" if " · " in status else "")
+        short.append(f"🧪 {'매수' if side == 'buy' else '매도'} {NAME.get(code, code)} {qty:,}주 → {mark}")
+        short.append(f"　까닭: {reason.split(' — ')[0]}")
         time.sleep(0.3)
     if late:
         new_state = dict(state, last_day=day)
@@ -364,7 +376,9 @@ def run(now=None):
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
     if orders or new_state.get("positions"):
-        send(lines + [NOTE])
+        if not orders:
+            short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
+        send(short + [NOTE_SHORT])
     print("\n".join(lines))
     return 0
 

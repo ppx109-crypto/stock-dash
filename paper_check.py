@@ -66,6 +66,8 @@ def main(mode="check", code=TEST_CODE):
         return 1
     cash = bal.get("cash") or 0
     print(f"✅ 잔고 조회 · 예수금 약 {cash / 1e4:,.0f}만 원 · 보유 {len(bal['positions'])}종목 · 평가 약 {bal['value'] / 1e4:,.0f}만 원")
+    can = broker.buyable(code)            # 시장가로 지금 살 수 있는 수량(주문 전 수량 맞추기 · 2026-10-06)
+    print(f"{'✅' if can is not None else '❌'} 시장가 매수가능 조회 ({code}) · " + (f"{can:,}주" if can is not None else "답을 못 받음(주문은 원래 수량대로 나감)"))
     if mode != "order":
         return 0
 

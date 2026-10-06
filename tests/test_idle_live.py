@@ -221,6 +221,11 @@ class MakeRoomTest(unittest.TestCase):
                 fake2 = Fake()
                 P.make_room(fake2, {"cash": 5e6, "value": 0, "positions": []}, need=1e6, now=datetime(2026, 10, 5, 10, 1))
                 self.assertEqual(fake2.sent, [])
+                # 시장가는 약 1.36배를 묶음 → 현금 500만에 400만을 사려면(544만 필요) 엔진이 비켜야 함(2026-10-06 검토)
+                fake3 = Fake()
+                P.make_room(fake3, {"cash": 5e6, "value": 0, "positions": [{"code": "133690", "quantity": 50}]}, need=4e6,
+                            now=datetime(2026, 10, 5, 10, 1))
+                self.assertEqual(fake3.sent, [("133690", "sell", 50)])
 
 
 if __name__ == "__main__":

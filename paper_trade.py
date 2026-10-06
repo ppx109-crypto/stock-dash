@@ -39,6 +39,12 @@ SLOTS = 10
 # 모의투자 주문 거래 ID(현금 매수 · 매도). 한투가 바꾸면 환경변수로 덮어씀.
 TR_BUY = os.getenv("KIS_PAPER_TR_BUY", "VTTC0012U")
 TR_SELL = os.getenv("KIS_PAPER_TR_SELL", "VTTC0011U")
+# 매수가능조회(시장가로 지금 몇 주까지 살 수 있나) — 시장가 매수는 한투가 상한가 언저리 값으로 돈을 묶어서,
+# 계좌 돈에 꽉 맞춘 수량은 거절됨(2026-10-06 빈칸 엔진 인버스 45,539주 · 약 9,700만 원 → 40250000). 주문 전에 물어 수량을 맞춤.
+TR_BUYABLE = os.getenv("KIS_PAPER_TR_BUYABLE", "VTTC8908R")
+BUYABLE_PATH = "/uapi/domestic-stock/v1/trading/inquire-psbl-order"
+# 시장가 매수가 묶는 돈 ÷ 실제 값(확인: 1억 → 251340 2,130원 34,608주 = 1.357배). 자리 내주기를 정할 때 씀.
+MKT_MARGIN = float(os.getenv("PAPER_MKT_MARGIN", "1.36"))
 
 
 def account_parts(text):
@@ -86,7 +92,11 @@ class PaperBroker(broker_kis.KIS):
             kept = json.loads(Path(path).read_text(encoding="utf-8"))
         except (OSError, ValueError):
             return None
-        if kept.get("key") != self.key or not kept.get("token") or time.time() >= float(kept.get("expires", 0)):
+        try:            # 깨진 파일이면 새로 받음
+            if not isinstance(kept, dict) or kept.get("key") != self.key or not kept.get("token") \
+                    or time.time() >= float(kept.get("expires", 0)):
+                return None
+        except (TypeError, ValueError):
             return None
         return kept
 
@@ -106,12 +116,42 @@ class PaperBroker(broker_kis.KIS):
         # 모의투자는 초당 호출 한도가 낮음(약 2번) → 0.6초 간격
         time.sleep(float(os.getenv("KIS_PAPER_CALL_GAP", "0.6")))
 
+    def buyable(self, code):
+        """시장가로 지금 살 수 있는 수량(미수 없이). 물어보지 못하면 None(그때는 원래 수량 그대로 주문)."""
+        try:
+            self.authorize()
+            _, data = self.request("GET", BUYABLE_PATH, headers={
+                "authorization": "Bearer " + self.token, "appkey": self.key, "appsecret": self.secret,
+                "tr_id": TR_BUYABLE, "custtype": "P"},
+                params={"CANO": self.cano, "ACNT_PRDT_CD": self.product, "PDNO": str(code), "ORD_UNPR": "",
+                        "ORD_DVSN": "01", "CMA_EVLU_AMT_ICLD_YN": "N", "OVRS_ICLD_YN": "N"})
+        except broker_kis.BrokerError:
+            return None
+        if str(data.get("rt_cd")) != "0":
+            return None
+        out = data.get("output") or {}
+        for k in ("nrcvb_buy_qty", "max_buy_qty"):
+            try:
+                return max(0, int(float(str(out.get(k)).replace(",", ""))))
+            except (TypeError, ValueError):
+                continue
+        return None
+
     def order(self, code, side, qty):
-        """시장가 현금 주문. side = 'buy' | 'sell'. 주문 번호를 돌려줌."""
+        """시장가 현금 주문. side = 'buy' | 'sell'. 주문 번호를 돌려줌.
+        살 때는 먼저 매수가능 수량을 물어 그보다 많으면 줄임 — 실제로 넣은 수량은 self.last_qty(부르는 쪽이 장부에 씀)."""
         if self.base != PAPER_BASE or self.mode != "demo":
             raise broker_kis.BrokerError("모의투자 주소가 아니어서 주문하지 않았습니다.")
         if side not in ("buy", "sell") or not re.fullmatch(r"[0-9A-Z]{6}", str(code)) or int(qty) < 1:
             raise broker_kis.BrokerError("주문 내용이 올바르지 않아 넣지 않았습니다.")
+        qty = int(qty)
+        if side == "buy":
+            can = self.buyable(code)
+            if can is not None and can < qty:
+                if can < 1:
+                    raise broker_kis.BrokerError("살 수 있는 수량이 0주라 넣지 않았습니다(시장가 매수가능 조회).")
+                qty = can
+        self.last_qty = qty
         self.authorize()
         _, data = self.request("POST", ORDER_PATH, headers={
             "authorization": "Bearer " + self.token, "appkey": self.key, "appsecret": self.secret,
@@ -152,7 +192,8 @@ def make_room(broker, balance, need, now):
     cash = float(balance.get("cash") or 0)
     book = json.loads(IDLE_BOOK.read_text(encoding="utf-8")) if IDLE_BOOK.exists() else {"orders": [], "held": {}}
     held = {c: int(q) for c, q in (book.get("held") or {}).items() if int(q) > 0}
-    if need <= cash * 0.98 or not held:
+    # 시장가 매수는 실제 값의 약 1.36배를 묶으므로 그만큼 있어야 다 삼(2026-10-06 검토 — 예전엔 1배로 봐서 엔진이 안 비키고 규칙 매수가 잘림)
+    if need * MKT_MARGIN <= cash * 0.98 or not held:
         return balance, []
     account = {p["code"]: int(p["quantity"]) for p in balance.get("positions", [])}
     lines, sold = [], False
@@ -200,7 +241,6 @@ def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
     held = account if held is None else {c: min(int(q), account.get(c, 0)) for c, q in held.items()}
     cash = float(balance.get("cash") or 0)
     total = (cash + float(balance.get("value") or 0)) * share
-    left = cash * 0.98                        # 시장가 체결 값이 조금 높을 때를 위한 여유
     out = []
     for x in done:
         key = f"{bar_id}:{x['type']}:{x['code']}:{x.get('decided', '')}"
@@ -211,6 +251,9 @@ def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
             remain = (state.get("positions", {}).get(x["code"]) or {}).get("칸", 0)
             qty = have if remain <= 0 else max(1, round(have * x["칸"] / (x["칸"] + remain)))
             out.append((key, x["code"], "sell", min(qty, have), x.get("why", "")))
+    # 같은 차례에 먼저 파는 것의 돈도 살 돈에 셈(파는 주문이 먼저 나감 · 2026-10-06 검토). 시장가 체결 값이 조금 높을 때를 위해 98%.
+    freed = sum(q * float(prices.get(c) or 0) for _, c, side, q, _ in out if side == "sell")
+    left = (cash + freed) * 0.98
     for x in done:
         key = f"{bar_id}:{x['type']}:{x['code']}:{x.get('decided', '')}"
         if x["type"] != "buy":
@@ -271,8 +314,10 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
             continue
         name = names.get(code) or next((x.get("name") for x in done if x["code"] == code), code)
         try:
+            want = qty
             no = broker.order(code, side, qty)
-            status = "접수"
+            qty = int(getattr(broker, "last_qty", qty) or qty)       # 매수가능 수량에 맞춰 줄었으면 그 수량
+            status = "접수" if qty == want else f"접수 · {want}주 중 살 수 있는 {qty}주로 줄임"
             book["held"][code] = max(0, book["held"].get(code, 0) + (qty if side == "buy" else -qty))
             if not book["held"][code]:
                 del book["held"][code]

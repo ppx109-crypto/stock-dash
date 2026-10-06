@@ -79,6 +79,15 @@ class Sizing(unittest.TestCase):
         got = P.plan_orders(done, {"positions": {}}, bal(1_000_000, [("000009", 10, 9_000_000)]), {"000001": 10_000}, "b")
         self.assertEqual(got[0][3], 98)                    # 총액 1천만의 40%는 400만이지만 현금 100만의 98%까지만
 
+    def test_sells_in_same_batch_fund_buys(self):
+        """같은 차례에 파는 돈도 살 돈(2026-10-06 검토): 현금 0 · 1천만어치를 팔고 사면 살 수 있어야 함."""
+        done = [{"type": "sell", "code": "000009", "칸": 4, "decided": "d"},
+                {"type": "buy", "code": "000001", "칸": 2, "decided": "d"}]
+        got = P.plan_orders(done, {"positions": {}}, bal(0, [("000009", 1000, 10_000_000)]),
+                            {"000001": 10_000, "000009": 10_000}, "b")
+        buys = [g for g in got if g[2] == "buy"]
+        self.assertEqual(buys[0][3], 200)        # 총액 1천만 × 2/10 = 200만 → 200주(판 돈 980만 안)
+
     def test_sell_all_or_part(self):
         state = {"positions": {"000002": {"칸": 2}}}       # 000001은 다 팔림, 000002는 4칸 가운데 2칸 팔고 2칸 남음
         done = [{"type": "sell", "code": "000001", "칸": 2, "decided": "d", "why": "손절"},
@@ -135,6 +144,82 @@ class Execute(unittest.TestCase):
             self.assertNotIn("12345678", json.dumps(book))
             (Path(tmp) / "off").write_text("")
             self.assertEqual(P.execute([dict(done[0], decided="x")], {"positions": {}}, {"000001": 1}, "b", broker=fake), [])
+
+
+class Buyable(unittest.TestCase):
+    """2026-10-06: 계좌 돈에 꽉 맞춘 시장가 매수가 거절됨(40250000) → 매수가능 수량으로 줄여 넣음."""
+    def broker(self):
+        env = {"KIS_PAPER_APP_KEY": "paperkey", "KIS_PAPER_APP_SECRET": "s", "KIS_PAPER_ACCOUNT": "12345678-01", "KIS_APP_KEY": "realkey"}
+        with mock.patch.dict(os.environ, env, clear=False):
+            b = P.PaperBroker()
+        b.token, b.expires = "t", 9e18
+        return b
+
+    def answers(self, can, ok=True):
+        sent = []
+
+        def request(method, path, headers=None, params=None, json=None):
+            if path == P.BUYABLE_PATH:
+                return None, ({"rt_cd": "0", "output": {"nrcvb_buy_qty": str(can)}} if ok else {"rt_cd": "1", "msg_cd": "X"})
+            sent.append(json)
+            return None, {"rt_cd": "0", "output": {"ODNO": "77"}}
+        return request, sent
+
+    def test_buy_cut_to_buyable(self):
+        b = self.broker()
+        req, sent = self.answers(36_100)
+        with mock.patch.object(b, "request", side_effect=req):
+            self.assertEqual(b.order("251340", "buy", 45_539), "77")
+        self.assertEqual(sent[0]["ORD_QTY"], "36100")
+        self.assertEqual(b.last_qty, 36_100)
+
+    def test_buy_within_buyable_unchanged(self):
+        b = self.broker()
+        req, sent = self.answers(50_000)
+        with mock.patch.object(b, "request", side_effect=req):
+            b.order("251340", "buy", 100)
+        self.assertEqual(sent[0]["ORD_QTY"], "100")
+
+    def test_zero_buyable_refused_before_sending(self):
+        b = self.broker()
+        req, sent = self.answers(0)
+        with mock.patch.object(b, "request", side_effect=req), self.assertRaises(broker_kis.BrokerError):
+            b.order("251340", "buy", 10)
+        self.assertEqual(sent, [])
+
+    def test_query_fails_sends_as_before(self):
+        b = self.broker()
+        req, sent = self.answers(0, ok=False)
+        with mock.patch.object(b, "request", side_effect=req):
+            b.order("251340", "buy", 10)
+        self.assertEqual(sent[0]["ORD_QTY"], "10")
+
+    def test_sell_not_asked(self):
+        b = self.broker()
+        req, sent = self.answers(0)
+        with mock.patch.object(b, "request", side_effect=req):
+            b.order("251340", "sell", 10)
+        self.assertEqual(sent[0]["ORD_QTY"], "10")
+
+    def test_execute_books_what_was_really_sent(self):
+        class Fake:
+            last_qty = None
+
+            def balance(self):
+                return bal(10_000_000)
+
+            def order(self, code, side, qty):
+                self.last_qty = qty - 30
+                return "1"
+        with tempfile.TemporaryDirectory() as tmp, \
+                mock.patch.object(P, "BOOK", Path(tmp) / "book.json"), mock.patch.object(P, "OFF", Path(tmp) / "off"), \
+                mock.patch.dict(os.environ, {"PAPER_TRADING": "on", "KIS_PAPER_APP_KEY": "k"}), \
+                mock.patch.dict(P.SHARES, {"1h": 0.4}):
+            done = [{"type": "buy", "code": "000001", "칸": 2, "decided": "2026100110", "name": "가"}]
+            lines = P.execute(done, {"positions": {}}, {"000001": 10_000}, "2026100111", broker=Fake())
+            book = json.loads((Path(tmp) / "book.json").read_text(encoding="utf-8"))
+            self.assertEqual(book["held"], {"000001": 50})
+            self.assertIn("줄임", lines[0])
 
 
 if __name__ == "__main__":

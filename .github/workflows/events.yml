@@ -50,6 +50,8 @@ jobs:
             echo '바뀐 공시가 없어 커밋하지 않습니다.'
           else
             git commit -m 'Refresh disclosure events'
-            git pull --rebase origin main
-            git push
+            # 다른 작업과 같은 순간에 올리면 거절됨 → 받아 합친 뒤 다시(최대 5번) · 실패한 합치기는 되돌림(2026-10-06 검토)
+            ok=0
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            [ "$ok" = 1 ] || { echo '저장소에 올리지 못했습니다.'; exit 1; }
           fi

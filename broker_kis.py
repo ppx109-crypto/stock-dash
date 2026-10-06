@@ -128,9 +128,12 @@ class KIS:
                 kept = json.load(handle)
         except (OSError, ValueError):
             return None
-        if kept.get('key') != self.key or kept.get('mode') != self.mode:
-            return None
-        if not kept.get('token') or time.time() >= float(kept.get('expires', 0)):
+        try:            # 보관함에서 꺼낸 파일이 깨졌으면(모양이 다르면) 그냥 새로 받음
+            if not isinstance(kept, dict) or kept.get('key') != self.key or kept.get('mode') != self.mode:
+                return None
+            if not kept.get('token') or time.time() >= float(kept.get('expires', 0)):
+                return None
+        except (TypeError, ValueError):
             return None
         return kept
 
@@ -157,7 +160,19 @@ class KIS:
             if kept:
                 self.token, self.expires = kept['token'], float(kept['expires'])
                 return
-            _, data = self.request('POST', '/oauth2/tokenP', json={'grant_type': 'client_credentials', 'appkey': self.key, 'appsecret': self.secret})
+            try:
+                _, data = self.request('POST', '/oauth2/tokenP', json={'grant_type': 'client_credentials', 'appkey': self.key, 'appsecret': self.secret})
+            except BrokerError as error:
+                # 같은 키로 1분 안에 두 번 받으면 거절(EGW00133) — 다른 작업이 막 받은 것일 수 있으니 1분 기다려
+                # 보관 파일부터 다시 보고, 없으면 한 번 더 받음(2026-10-06 검토: 아침 첫 실행 둘이 같은 분에 받는 경우)
+                if self.REFUSALS['EGW00133'] not in str(error):
+                    raise
+                time.sleep(float(os.getenv('KIS_TOKEN_RETRY_WAIT', '61')))
+                kept = self._saved()
+                if kept:
+                    self.token, self.expires = kept['token'], float(kept['expires'])
+                    return
+                _, data = self.request('POST', '/oauth2/tokenP', json={'grant_type': 'client_credentials', 'appkey': self.key, 'appsecret': self.secret})
             if not data.get('access_token'):
                 raise BrokerError('증권사 인증에 실패했습니다. 실전·모의 키가 선택 환경과 같은지 확인하세요.')
             self.token = data['access_token']

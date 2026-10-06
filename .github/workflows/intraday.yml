@@ -1,28 +1,45 @@
 name: Intraday runner
 # 장중 상주 실행기(사용자 2026-10-06 "1번으로 진행"). GitHub 예약은 정각 무렵 10~20분 늦고 15분봉 예약의 1/3이 빠져서,
-# 작업을 장 전에 일찍 띄워 두고 그 안에서 시각을 재며 1시간봉(:01) · 15분봉(:03 · :18 · :33 · :48)을 제때 돌립니다(intraday_runner.py).
-# 오전(08:20 시작 → 09:01~12:48 담당) · 오후(12:00 시작 → 13:01~15:48 담당) 둘로 나눔(작업 하나는 6시간까지).
-# 시작이 늦으면 지난 회차를 봇마다 한 번 따라잡음. 예전 M15 live · Hourly A group live 예약은 이 작업이 도는 동안엔 스스로 건너뜀(뒷받침).
+# 작업을 장 전에 일찍 띄워 두고 그 안에서 시각을 재며 15분봉(:03 · :18 · :33 · :48) · 1시간봉(:03 다음 차례)을 제때 돌립니다(intraday_runner.py).
+# 오전(08:20 시작 → 09:03~11:48 담당) · 오후(11:41 시작 → 12:03~15:48 담당). 두 작업은 같은 줄(concurrency)에 서서 겹치지 않음
+# (오후는 오전이 끝나야 시작 · 오전이 빠진 날은 11:41부터 바로). 예전 M15 live · Hourly A group live 예약은 이 작업이 도는 동안 스스로 건너뜀.
+# 2026-10-06 검토 반영: 창 겹침 · 수동 입력 · 출입증 두 번 받기 · 셈 실패.
 on:
   workflow_dispatch:
     inputs:
       window:
-        description: 'am(09:01~12:48) · pm(13:01~15:48)'
-        required: true
-        default: 'am'
+        description: '오전(am · 09:03~11:48) · 오후(pm · 12:03~15:48)'
+        type: choice
+        options: [am, pm]
+        default: am
   schedule:
     - cron: '20 23 * * 0-4'   # 한국 시각 평일 08:20 — 오전
-    - cron: '0 3 * * 1-5'     # 한국 시각 평일 12:00 — 오후
+    - cron: '41 2 * * 1-5'    # 한국 시각 평일 11:41 — 오후(정각을 피함)
 permissions:
   contents: write
   actions: read
 concurrency:
-  group: intraday-${{ inputs.window || (github.event.schedule == '0 3 * * 1-5' && 'pm' || 'am') }}
+  group: intraday
   cancel-in-progress: false
 jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 350
+    env:
+      WINDOW: ${{ inputs.window || (github.event.schedule == '41 2 * * 1-5' && 'pm' || 'am') }}
+      KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+      KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+      KIS_ENV: real
+      KIS_CALL_GAP: '0.07'
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      # 예전 작업 파일과 같은 값: 1시간봉은 모의 주문 끔(알림 · 연습 계좌만) · 15분봉은 모의 주문
+      HOURLY_PAPER_TRADING: 'off'
+      M15_PAPER_TRADING: 'on'
+      M15_PAPER: 'on'
+      PAPER_START: '20261002'
+      KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
+      KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
+      KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,44 +54,43 @@ jobs:
           python-version: '3.11'
       - run: pip install requests numpy
       - run: python -m unittest tests.test_intraday_runner tests.test_hourly_a tests.test_m15_live tests.test_paper_trade -v
+      - name: 출입증을 지금 받아 두고 바로 보관함에 넣음(오후 작업 · 다른 봇이 같은 날 또 받지 않게)
+        continue-on-error: true
+        run: python -c "import broker_kis, paper_trade; broker_kis.market().authorize(); paper_trade.PaperBroker().authorize(); print('출입증 준비')"
+        env:   # runner 값은 작업 전체 env에서 못 써서 단계마다
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
+      - uses: ./.github/actions/kis-token-close  # 받은 출입증을 바로 넣어 둠
+        continue-on-error: true
+        with:
+          tag: early
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
       - name: 예전 15분봉 · 1시간봉 작업이 마침 돌고 있으면 끝날 때까지 기다림(같은 봉을 둘이 동시에 처리하지 않게 · 최대 15분)
         run: |
           for i in $(seq 1 45); do
             n=0
             for w in m15-live hourly-a-live; do
-              k=$(gh api "repos/${{ github.repository }}/actions/workflows/$w.yml/runs?status=in_progress" --jq '.total_count' 2>/dev/null || echo 0)
-              n=$((n + ${k:-0}))
+              k=$(gh api "repos/${{ github.repository }}/actions/workflows/$w.yml/runs?status=in_progress" --jq '.total_count' 2>/dev/null || true)
+              case "$k" in ''|*[!0-9]*) k=0;; esac
+              n=$((n + k))
             done
             [ "$n" -eq 0 ] && break
             echo "예전 작업 $n개가 돌고 있어 기다립니다."; sleep 20
           done
         env:
           GH_TOKEN: ${{ github.token }}
-      - name: 장중 상주 — 1시간봉 · 15분봉을 제때 돌림
+      - name: 장중 상주 — 15분봉 · 1시간봉을 제때 돌림
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          window='${{ inputs.window || (github.event.schedule == '0 3 * * 1-5' && 'pm' || 'am') }}'
-          if [ "$window" = pm ]; then python intraday_runner.py 1300 1600; else python intraday_runner.py 0855 1300; fi
-        env:
-          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
-          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
-          KIS_ENV: real
+          if [ "$WINDOW" = pm ]; then python intraday_runner.py 1200 1600; else python intraday_runner.py 0855 1200; fi
+        env:   # runner 값은 작업 전체 env에서 못 써서 단계마다
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
-          KIS_CALL_GAP: '0.07'
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          # 예전 작업 파일과 같은 값: 1시간봉은 모의 주문 끔(알림 · 연습 계좌만) · 15분봉은 모의 주문
-          HOURLY_PAPER_TRADING: 'off'
-          M15_PAPER_TRADING: 'on'
-          M15_PAPER: 'on'
-          PAPER_START: '20261002'
-          KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
-          KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
-          KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
           KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
       - if: always()
-        uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
-        continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)
+        uses: ./.github/actions/kis-token-close  # 도중에 새로 받은 출입증이 있으면 넣음(없으면 건너뜀)
+        continue-on-error: true
         with:
           real-secret: ${{ secrets.KIS_APP_SECRET }}
           paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
