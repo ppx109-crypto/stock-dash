@@ -55,7 +55,25 @@ def parse_program(rows):
     return out
 
 
-def market_open_today(client, today):
+# 장 시간이 다른 날(사용자 2026-10-06 "남은것도 확인 후 수정"). 봇들(15분봉 · 1시간봉 · 1일봉 · 빈칸 엔진)은 09:00 ~ 15:30 시각표로만
+# 판단해서, 이런 날 그대로 돌면 틀린 봉 · 틀린 시각으로 사고팖 → 그날은 자동 판단을 쉼(자료 수집은 그대로).
+# 해마다 거래소 공지를 보고 더함(수능날: 10:00 ~ 16:30 · 새해 첫 거래일: 10:00 열림).
+SPECIAL_HOURS = {
+    "20261119": "수능날 · 10:00 ~ 16:30",
+    "20270104": "새해 첫 거래일 · 10:00 열림",
+}
+
+
+def special_hours(day):
+    return SPECIAL_HOURS.get(str(day))
+
+
+def market_open_today(client, today, bots=True):
+    """오늘 장이 열렸나. bots=True(봇이 물을 때)면 장 시간이 다른 날도 '쉼'으로 False."""
+    why = special_hours(today) if bots else None
+    if why:
+        print(f"{today}은 장 시간이 다른 날({why})이라 봇 자동 판단 · 주문을 쉽니다(시각표가 09:00 ~ 15:30 기준).")
+        return False
     rows = client._market_rows(Q + "inquire-time-dailychartprice", "FHKST03010230", {
         "FID_COND_MRKT_DIV_CODE": "J", "FID_INPUT_ISCD": "005930", "FID_INPUT_HOUR_1": "153000",
         "FID_INPUT_DATE_1": today, "FID_PW_DATA_INCU_YN": "N", "FID_FAKE_TICK_INCU_YN": ""}, "분봉", key="output2")
@@ -92,7 +110,7 @@ def main(codes=None):
     codes = codes or uni["codes"]
     try:
         client = broker_kis.market()
-        if not market_open_today(client, today):
+        if not market_open_today(client, today, bots=False):
             print(f"{today}은 장이 열리지 않은 날로 보여 저장하지 않습니다.")
             return 0
     except broker_kis.BrokerError as e:
