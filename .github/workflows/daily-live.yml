@@ -40,7 +40,7 @@ jobs:
           git add -A idle-live
           if ! git diff --cached --quiet; then
             git commit -q -m "Idle engine live"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
           fi
           exit $status
         env:
@@ -54,6 +54,7 @@ jobs:
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'
           IDLE_START: '20261005'
+          LIVE_GIT_SYNC: '1'               # 15:10 판단 직전에 저장소를 최신으로(장중 상주가 올린 장부와 부딪히지 않게)
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
@@ -67,7 +68,7 @@ jobs:
           git add -A daily-live idle-live
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily rule live"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
           fi
           exit $status
         env:
@@ -82,6 +83,7 @@ jobs:
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
           DAILY_START: '20261002'          # 종가 출격도 2026-10-02부터
+          LIVE_GIT_SYNC: '1'               # 15:20 판단 직전에 저장소를 최신으로
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}

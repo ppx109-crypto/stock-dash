@@ -39,7 +39,7 @@ jobs:
           git add -A etf-data
           if ! git diff --cached --quiet; then
             git commit -q -m 'Collect ETF daily prices (research)'
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; sleep $((try * 7)); done
           fi
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}

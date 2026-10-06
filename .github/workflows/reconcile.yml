@@ -34,7 +34,7 @@ jobs:
           git add -A reconcile
           if ! git diff --cached --quiet; then
             git commit -q -m "Reconcile backtest vs paper"
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
           fi
           exit $status
         env:

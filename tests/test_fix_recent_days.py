@@ -51,6 +51,13 @@ class FixRecentDays(unittest.TestCase):
         self.assertEqual(v["날"][1], ["20261002", 281000.0, 5.0, 219500.0, 194300.0])
         self.assertEqual(v["날"][0], ["20261001", 1.0, 2.0, 3.0, 4.0])
 
+    def test_kosdaq_only_adjusted_untouched(self):
+        kq = {"cols": ["date", "시가", "고가", "저가", "종가", "거래량", "거래대금"],
+              "rows": [[f"202609{d:02d}", 1.0, 1.0, 1.0, 200.0, 1.0, 1.0] for d in range(1, 11)]}
+        fresh = {r[0]: {"종가": 100.0} for r in kq["rows"]}
+        self.assertEqual(F.fix_kosdaq(kq, fresh), [])
+        self.assertEqual(kq["rows"][-1][4], 200.0)
+
 
 if __name__ == "__main__":
     unittest.main()

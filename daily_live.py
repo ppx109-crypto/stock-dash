@@ -295,6 +295,12 @@ def run(now=None):
         print("장이 끝난 지 오래되었거나 주말이라 넘어갑니다.")
         return 0
     _wait_until(DECIDE_AT)
+    import paper_trade as _pt
+    _pt.sync_repo()                                 # 기다리는 동안 빈칸 엔진 · 장중 상주가 올린 장부를 받아 맞춤(2026-10-06 감시자 검토)
+    state = _load(STATE, {"positions": {}, "closed": []})
+    if state.get("last_day") == day:
+        print("오늘은 이미 처리했습니다.")
+        return 0
     late = datetime.now(KST).strftime("%H%M") > LAST_ORDER
     client = broker_kis.market()
     for attempt in range(3):           # 접근토큰은 1분에 한 번 — 다른 작업과 겹치면 잠깐 기다렸다 다시

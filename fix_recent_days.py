@@ -77,6 +77,9 @@ def fix_kosdaq(body, fresh):
     idx = {name: cols.index(name) for name in KQ_COLS if name in cols}
     rows = body.get("rows") or []
     tail = {str(r[0]) for r in rows[-MAX_ROWS:]}
+    # 일봉 파일이 없는 코스닥 종목도 수정주가 검사(오래된 날 종가가 다르면 손대지 않음 · 2026-10-06 감시자 검토)
+    if "종가" in idx and any(str(r[0]) not in tail and str(r[0]) in fresh and _diff(r[idx["종가"]], fresh[str(r[0])]["종가"]) for r in rows):
+        return []
     changed = []
     for r in rows:
         d = str(r[0])
@@ -187,9 +190,8 @@ def main(codes=None):
         if gh and (n["price-data"] or n["volume-data"]):
             with open(gh, "a") as f:
                 f.write("changed=1\n")
-    if report["못 물음"] > len(files) * 0.1:
+    if report["못 물음"] > len(files) * 0.1:        # 고친 것은 그대로 저장(작업이 올림) · 알리기만
         print(f"⚠️ 못 물은 종목이 많음({report['못 물음']}/{len(files)}) — 증권사 쪽 문제일 수 있음")
-        return 1
     return 0
 
 

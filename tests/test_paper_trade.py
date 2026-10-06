@@ -235,5 +235,40 @@ class Cash(unittest.TestCase):
             self.assertEqual(b.balance()["cash"], 100.0)
 
 
+class DailyReserve(unittest.TestCase):
+    """15:10 빈칸 엔진이 15:20 1일봉 몫을 비켜 둠(2026-10-06 감시자 검토)."""
+    def files(self, tmp, picks, day="20261007", at="2026-10-07 15:03"):
+        f = Path(tmp) / "near.json"
+        f.write_text(json.dumps({"date": day, "at": at, "picks_daily": picks}), encoding="utf-8")
+        return (f,)
+
+    def test_no_picks_no_reserve(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(P, "DAILY_BOOK", Path(tmp) / "none.json"):
+            self.assertEqual(P.daily_reserve("20261007", 1e8, {}, self.files(tmp, []))[0], 0.0)
+
+    def test_one_pick_reserves_four_slots_of_daily_share(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(P, "DAILY_BOOK", Path(tmp) / "none.json"), \
+                mock.patch.dict(P.SHARES, {"1d": 0.5}):
+            got, note = P.daily_reserve("20261007", 1e8, {}, self.files(tmp, [{"code": "000001", "name": "가"}]))
+        self.assertEqual(got, 2e7)             # 1억 × 0.5 × 4/10
+        self.assertIn("가", note)
+
+    def test_capped_by_unused_daily_share_and_old_file_ignored(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(P.SHARES, {"1d": 0.5}):
+            book = Path(tmp) / "book.json"
+            book.write_text(json.dumps({"held": {"000009": 4500}}))          # 1일봉이 이미 4,500만 들고 있음
+            with mock.patch.object(P, "DAILY_BOOK", book):
+                picks = [{"code": "000001"}, {"code": "000002"}, {"code": "000003"}]
+                got = P.daily_reserve("20261007", 1e8, {"000009": 10_000}, self.files(tmp, picks))[0]
+                self.assertEqual(got, 5e6)                                   # 몫 5천만 − 4,500만
+                old = P.daily_reserve("20261007", 1e8, {}, self.files(tmp, picks, day="20261006"))[0]
+                self.assertEqual(old, 0.0, "어제 판정은 쓰지 않음")
+
+    def test_sync_repo_off_without_switch(self):
+        with mock.patch.dict(os.environ, {"LIVE_GIT_SYNC": ""}), mock.patch("subprocess.run") as run:
+            self.assertTrue(P.sync_repo())
+            run.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main()
