@@ -327,6 +327,23 @@ def api_lights():
     return quick_status(), _dt.now(ZoneInfo('Asia/Seoul')).strftime('%H:%M')
 
 
+def _fresh_ui():
+    """앱 서버가 새 코드를 받아도 이미 읽은 dashboard_ui를 그대로 쓰는 일이 있어(2026-10-07 화면이 안 바뀜),
+    파일이 바뀌었으면 다시 읽음. 다시 읽은 모듈을 돌려줌."""
+    import importlib
+    import dashboard_ui as D
+    try:
+        mt = Path(D.__file__).stat().st_mtime
+        if getattr(D, "_LOADED_MTIME", None) is None:
+            D._LOADED_MTIME = mt
+        elif mt > D._LOADED_MTIME:
+            D = importlib.reload(D)
+            D._LOADED_MTIME = mt
+    except OSError:
+        pass
+    return D
+
+
 @st.fragment(run_every=60)
 def live_top_bar():
     """맨 위 제목 줄 + 가운데 코스피 · API 연결 불빛 + 모의투자 거래 내역. 1분마다 이 부분만 새로 그림.
@@ -336,12 +353,13 @@ def live_top_bar():
     books = {k: (repo_json_live(f'{k}/state.json'), repo_json_live(f'{k}/paper-orders.json'))
              for k in ('daily-live', 'm15-live', 'idle-live', 'basket-live')}
     quotes = held_quotes(*(s for s, _ in books.values()))
-    st.markdown(top_bar(
-        ledger_mini('1일봉 모의투자', *books['daily-live'], quotes=quotes),
-        ledger_mini('15분봉 모의투자', *books['m15-live'], quotes=quotes),
-        kospi_box(kospi_last()) + lights_box(lights, at),
-        ledger_mini('빈칸 엔진 · 코스닥 인버스 모의투자', *books['idle-live'], quotes=quotes)
-        + ledger_mini('사건 바구니 C 모의투자', *books['basket-live'], quotes=quotes)),
+    D = _fresh_ui()
+    st.markdown(D.top_bar(
+        D.ledger_mini('1일봉 모의투자', *books['daily-live'], quotes=quotes),
+        D.ledger_mini('15분봉 모의투자', *books['m15-live'], quotes=quotes),
+        D.kospi_box(kospi_last()) + D.lights_box(lights, at),
+        D.ledger_mini('빈칸 엔진 · 코스닥 인버스 모의투자', *books['idle-live'], quotes=quotes)
+        + D.ledger_mini('사건 바구니 C 모의투자', *books['basket-live'], quotes=quotes)),
         unsafe_allow_html=True)
 
 
