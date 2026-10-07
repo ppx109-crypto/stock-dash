@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "reviewed_pr": 19,
+  "reviewed_head_sha": "1d295ee32e16e05bbed6fe41f60b8efe44106bf6",
+  "review_status": "ACCEPTED_BLOCKED_WITH_PRIVACY_DEFECT",
+  "input_receipt_matches": true,
+  "manifest_files_declared": 11,
+  "manifest_sha256_matches": 11,
+  "coverage_file_chars": 1274213,
+  "coverage_rows": 495,
+  "coverage_rows_complete": 0,
+  "coverage_F04_ok": 0,
+  "coverage_F06_ok": 0,
+  "submitted_tests_all_ok": true,
+  "independent_test_rerun": false,
+  "independent_rerun_reason": "full fixed data repository was not materialized in the reviewer runtime; code, full coverage blob and every declared hash were inspected",
+  "method_caveats": [
+    "git first-add audit does not establish pre-rename history",
+    "operation-module isolation check contains a fixed /home/user/stock-dash path",
+    "495 historical rows cannot be reconstructed without point-in-time inputs"
+  ],
+  "privacy": {
+    "pr_body_private_session_identifier_removed": true,
+    "head_commit_message_private_session_identifier_present": true,
+    "history_rewritten": false,
+    "reason_not_rewritten": "immutable result head and receipt integrity"
+  },
+  "paper_validation_ready": false,
+  "next_task": "DATA-0001"
+}
+

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "input_pr": 19,
+  "input_head_sha": "1d295ee32e16e05bbed6fe41f60b8efe44106bf6",
+  "input_status": "BLOCKED",
+  "input_verdict": "BLOCKED_NEEDS_DATA",
+  "review_status": "ACCEPTED_BLOCKED_WITH_PRIVACY_DEFECT",
+  "task_id": "DATA-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 4,
+  "stage": "RECOVERY-DATA-CONTRACT",
+  "status": "READY",
+  "processed_at_kst": "2026-10-08T08:29:09+09:00",
+  "response_branch": "gpt/data-0001-pit-contract",
+  "response_pr": null
+}
+
