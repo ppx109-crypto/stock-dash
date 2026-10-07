@@ -569,16 +569,17 @@ def holding_rows(state: dict | None, book: dict | None, quotes: dict | None) -> 
         name = p.get("name") or q.get("name") or IDLE_NAME.get(code) or code
         now, buy = q.get("price"), p.get("price")
         line = f'<b>{_e(name)}</b> '
+        n = int(qty.get(code) or 0)
+        if buy:
+            line += f'산 값 {buy:,.0f}원' + (f' × {n:,}주' if n > 0 else '') + ' → '
         if now:
-            line += f'지금 <strong>{now:,.0f}원</strong> · 오늘 {_signed(q.get("change"), "원")} {_signed(q.get("rate"), "%", 2)}'
+            line += f'지금 <strong>{now:,.0f}원</strong> (오늘 {_signed(q.get("change"), "원")} {_signed(q.get("rate"), "%", 2)})'
         else:
             line += '<small>지금 값 받는 중</small>'
         if now and buy:
-            gain = (now / buy - 1) * 100
-            line += f' · 산 값 {buy:,.0f}원 대비 {_signed(gain, "%", 2)}'
-            n = int(qty.get(code) or 0)
+            line += f' · 산 값 대비 {_signed((now / buy - 1) * 100, "%", 2)}'
             if n > 0:
-                line += f' · {n:,}주 평가 {_signed((now - buy) * n, "원")}'
+                line += f' · 평가 손익 {_signed((now - buy) * n, "원")}'
         rows.append(line)
     return rows
 
@@ -598,8 +599,9 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
     now_rows = holding_rows(state, book, quotes)
     rows = []
     for o in reversed(orders[-shown:]):
+        px = f' @ {float(o["price"]):,.0f}원' if o.get("price") else ""
         rows.append(f'{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
-                    f'{_e(o.get("name"))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}')
+                    f'{_e(o.get("name"))} {_e(o.get("qty"))}주{px} · {_e(o.get("status"))}')
     if not rows:
         for t in reversed(closed[-shown:]):
             rows.append(f'{_e(t.get("판 때") or t.get("판 날"))} {_e(t.get("name"))} {float(t.get("손익") or 0):+.1f}%')
