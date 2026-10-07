@@ -1,0 +1,621 @@
+{
+ "task": "REPLAY-0001",
+ "kernel_version": "REPLAY-0001-kernel-v1",
+ "golden_sha256": "647e52200a2f406b57091b85d1b274f334f90f66b73250a377a9ba0abf8c97bd",
+ "kernel_sha256": "38b0227e8ec5403af1be96cb54aaa36dffc6fab9749069eab41816cc2439bbba",
+ "cases_total": 20,
+ "cases_pass": 20,
+ "kernel_verdict": "VERIFIED_SYNTHETIC",
+ "cases": [
+  {
+   "case": "C1",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C1",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C1b",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C2",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C2",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C3",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C3",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C4",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C4",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C5",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C5",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C6",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C6",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C7",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C7",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C8",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C8",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C9",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C9",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C10",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C10",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": false
+     }
+    },
+    {
+     "sub": "C10b",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C11",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C11",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C12",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C12",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C13",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C13",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C14",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C14",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C15",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C15",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C16",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C16a",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C16b",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C16c",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C17",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C17",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C18",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C18a",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C18b",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C18c",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C18d",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C19",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C19",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  },
+  {
+   "case": "C20",
+   "pass": true,
+   "subs": [
+    {
+     "sub": "C20_10M",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    },
+    {
+     "sub": "C20_100M",
+     "pass": true,
+     "mismatches": [],
+     "invariants": {
+      "applicable": true,
+      "cash_nonneg": true,
+      "qty_int_nonneg": true,
+      "cash_conservation": true,
+      "cash_conservation_error_won": "0",
+      "nav_identity": true,
+      "no_hidden_borrow": true,
+      "all": true
+     }
+    }
+   ]
+  }
+ ],
+ "asis_contrast": [
+  {
+   "id": "X8",
+   "pairs_with": "C8",
+   "asis": {
+    "returns": [
+     0.0,
+     0.0,
+     -1.1102230246251565e-16
+    ],
+    "min_cash_rel": -0.19999999999999996,
+    "max_exposure": 1.2,
+    "entered": 12
+   },
+   "kernel": {
+    "min_cash": "1",
+    "max_gross_exposure": "0.9999989990000010009999989990"
+   },
+   "result": "DEFECT_EXPOSED",
+   "note": "원본 as-is 결함 노출 시험. 신규 커널 판정과 따로 셈"
+  },
+  {
+   "id": "X9",
+   "pairs_with": "C9",
+   "asis": {
+    "returns": [
+     0.0,
+     0.0
+    ],
+    "min_cash_rel": 1.0,
+    "max_exposure": 0.0,
+    "entered": 0
+   },
+   "kernel": {
+    "day_return": "0.00797"
+   },
+   "result": "DEFECT_EXPOSED",
+   "note": "원본 as-is 결함 노출 시험. 신규 커널 판정과 따로 셈"
+  },
+  {
+   "id": "X14",
+   "pairs_with": "C14",
+   "asis": {
+    "returns": [
+     0.0,
+     0.0,
+     0.030000000000000027
+    ],
+    "min_cash_rel": 0.0,
+    "max_exposure": 1.0,
+    "entered": 1
+   },
+   "kernel": {
+    "total_return": "0.012955"
+   },
+   "result": "DEFECT_EXPOSED",
+   "note": "원본 as-is 결함 노출 시험. 신규 커널 판정과 따로 셈"
+  }
+ ],
+ "budget": {
+  "seconds": 0.007,
+  "max_rss_mb": 15.8,
+  "limit_seconds": 120,
+  "limit_mb": 256,
+  "within": true
+ },
+ "isolation": {
+  "network": "socket connect blocked",
+  "env_removed": [
+   "KIS*",
+   "DART*",
+   "PAPER*",
+   "DISCORD*"
+  ],
+  "ops_modules_imported": []
+ },
+ "scope_note": "합성 회계 시험만. 전략 수익성 · 모의 준비 · 실전 합격을 뜻하지 않음"
+}

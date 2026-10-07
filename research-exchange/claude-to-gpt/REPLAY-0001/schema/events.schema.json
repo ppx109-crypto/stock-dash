@@ -1,0 +1,746 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "REPLAY-0001 account kernel input",
+ "type": "object",
+ "required": [
+  "config",
+  "events"
+ ],
+ "properties": {
+  "config": {
+   "type": "object",
+   "required": [
+    "source_mode"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "source_mode": {
+     "enum": [
+      "SYNTHETIC",
+      "HISTORICAL_MODEL",
+      "OBSERVED_KIS_PAPER"
+     ]
+    },
+    "cost": {
+     "type": "object",
+     "description": "합성 비용률(시험용). 실제 비용 근거는 null로 따로 표시",
+     "properties": {
+      "buy_fee": {
+       "type": [
+        "integer",
+        "string"
+       ],
+       "description": "Decimal로 읽음(문자열 권장). float 금지"
+      },
+      "sell_fee": {
+       "type": [
+        "integer",
+        "string"
+       ],
+       "description": "Decimal로 읽음(문자열 권장). float 금지"
+      },
+      "sell_tax": {
+       "type": [
+        "integer",
+        "string"
+       ],
+       "description": "Decimal로 읽음(문자열 권장). float 금지"
+      }
+     },
+     "additionalProperties": false
+    },
+    "slippage": {
+     "type": "object",
+     "properties": {
+      "bps": {
+       "type": [
+        "integer",
+        "string"
+       ],
+       "description": "Decimal로 읽음(문자열 권장). float 금지"
+      },
+      "included_in_fill_price": {
+       "const": true
+      }
+     }
+    }
+   }
+  },
+  "events": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "id",
+     "type",
+     "at"
+    ],
+    "properties": {
+     "type": {
+      "enum": [
+       "DEPOSIT",
+       "WITHDRAW",
+       "ORDER_INTENT",
+       "ORDER_ACCEPTED",
+       "ORDER_REJECTED",
+       "ORDER_CANCELLED",
+       "ORDER_EXPIRED",
+       "FILL",
+       "PRICE",
+       "CORP_ACTION",
+       "MARK",
+       "SNAPSHOT"
+      ]
+     }
+    },
+    "not": {
+     "anyOf": [
+      {
+       "required": [
+        "account_no"
+       ]
+      },
+      {
+       "required": [
+        "broker_order_no"
+       ]
+      },
+      {
+       "required": [
+        "raw_response"
+       ]
+      }
+     ]
+    },
+    "allOf": [
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "DEPOSIT"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "amount"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "amount": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "WITHDRAW"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "amount"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "amount": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "ORDER_INTENT"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "order_id",
+        "trade_id",
+        "strategy_id",
+        "security_id",
+        "side",
+        "price"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "order_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "trade_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "strategy_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "security_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "side": {
+         "enum": [
+          "BUY",
+          "SELL"
+         ]
+        },
+        "price": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "qty": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "model_fill": {
+         "type": "boolean"
+        },
+        "alloc_won": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "nav_ref_won": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "sizing": {
+         "enum": [
+          "ALL_HELD"
+         ]
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "ORDER_ACCEPTED"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "order_id"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "order_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "ORDER_REJECTED"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "order_id"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "order_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "ORDER_CANCELLED"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "order_id"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "order_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "ORDER_EXPIRED"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "order_id"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "order_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "FILL"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "fill_id",
+        "order_id",
+        "trade_id",
+        "strategy_id",
+        "security_id",
+        "side",
+        "qty",
+        "price",
+        "evidence"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "fill_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "order_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "trade_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "strategy_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "security_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "side": {
+         "enum": [
+          "BUY",
+          "SELL"
+         ]
+        },
+        "qty": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "price": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "fee": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "tax": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "evidence": {
+         "type": "string",
+         "description": "SYNTHETIC/HISTORICAL_MODEL은 MODEL_FILL"
+        },
+        "evidence_ref": {
+         "type": "string",
+         "description": "OBSERVED_KIS_PAPER에서 필수. 비식별 증거 참조(원문 아님)"
+        },
+        "evidence_version": {
+         "type": "string"
+        },
+        "settle_date": {
+         "type": "string",
+         "format": "date"
+        },
+        "ref_price": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        },
+        "slippage_in_price": {
+         "type": "boolean"
+        },
+        "ledger_pnl_pct": {
+         "type": [
+          "integer",
+          "string"
+         ],
+         "description": "Decimal로 읽음(문자열 권장). float 금지"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "PRICE"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "prices",
+        "as_of",
+        "available_at",
+        "version",
+        "source",
+        "session"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "prices": {
+         "type": "object",
+         "additionalProperties": {
+          "type": [
+           "integer",
+           "string"
+          ],
+          "description": "Decimal로 읽음(문자열 권장). float 금지"
+         }
+        },
+        "as_of": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "available_at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "version": {
+         "type": "integer"
+        },
+        "source": {
+         "type": "string"
+        },
+        "session": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "CORP_ACTION"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "security_id",
+        "kind"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "security_id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "kind": {
+         "type": "string"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "MARK"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at",
+        "date"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        },
+        "date": {
+         "type": "string",
+         "format": "date"
+        }
+       }
+      }
+     },
+     {
+      "if": {
+       "properties": {
+        "type": {
+         "const": "SNAPSHOT"
+        }
+       }
+      },
+      "then": {
+       "required": [
+        "id",
+        "type",
+        "at"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "가명 id. broker 원문 · 계좌 · 원 주문번호 금지"
+        },
+        "type": {
+         "type": "string"
+        },
+        "at": {
+         "type": "string",
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?\\+09:00$"
+        },
+        "seq": {
+         "type": "integer"
+        }
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}

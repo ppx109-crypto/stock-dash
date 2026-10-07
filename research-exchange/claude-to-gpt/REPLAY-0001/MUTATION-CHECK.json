@@ -1,0 +1,122 @@
+{
+ "mutations": [
+  {
+   "mutation": "fee_half_even",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C13"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "no_cost_in_sizing",
+   "verdict": "VERIFIED_SYNTHETIC",
+   "failed_cases": [],
+   "caught": false
+  },
+  {
+   "mutation": "no_cash_check",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C5"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "dup_fill_applied",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C4"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "accept_moves_cash",
+   "verdict": "CRASH:AssertionError: CASH_IDENTITY_BROKEN:c1_m",
+   "failed_cases": [
+    "CRASH"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "ignore_ambiguous",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C10"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "stale_ok",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C18"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "flow_as_pnl",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C15"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "limit_le",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C16"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "no_sell_tax",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C9",
+    "C10",
+    "C11",
+    "C12",
+    "C14",
+    "C19",
+    "C20"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "use_correction",
+   "verdict": "VERIFIED_SYNTHETIC",
+   "failed_cases": [],
+   "caught": false
+  },
+  {
+   "mutation": "ignore_cost_in_sizing",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C6",
+    "C7",
+    "C8",
+    "C20"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "restate_past_nav",
+   "verdict": "NOT_VERIFIED",
+   "failed_cases": [
+    "C17"
+   ],
+   "caught": true
+  },
+  {
+   "mutation": "pooled_oversell",
+   "verdict": "CRASH:decimal.InvalidOperation: [<class 'decimal.DivisionUndefined'>]",
+   "failed_cases": [
+    "CRASH"
+   ],
+   "caught": true
+  }
+ ],
+ "all_caught": false
+}
