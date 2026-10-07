@@ -1,5 +1,13 @@
 {
- "positions": {},
+ "positions": {
+  "251340": {
+   "kind": "인버스",
+   "price": 2180.0,
+   "day": "20261007",
+   "days": 0,
+   "take": 0.025
+  }
+ },
  "cool": 0,
- "last_day": "20261006"
+ "last_day": "20261007"
 }
