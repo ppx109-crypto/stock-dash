@@ -72,6 +72,9 @@ if os.environ.get("I_GREG") == "up_off":       # 오름 장세면 엔진 쉼
     gate = gate & ~_up
 elif os.environ.get("I_GREG") == "down_off":   # 내림 장세면 엔진 쉼
     gate = gate & _up
+elif os.environ.get("I_GREG") == "down60_off":  # N12(2026-10-07): 어제까지 코스피200 < 60일선(좁은 장 연구의 '내림장')이면 엔진 쉼
+    _up60 = np.concatenate([[False], (np.nan_to_num(R.k > I.ma(R.k, 60), nan=0) > 0)[:-1]])
+    gate = gate & _up60
 W, MA_N = float(os.environ.get("I_W", "1")), int(os.environ.get("I_MA", "0"))
 COST, REB, GUARD = float(os.environ.get("I_COST", "0.002")), os.environ.get("I_REB", "week"), os.environ.get("I_GUARD", "")
 kk = I.K200
