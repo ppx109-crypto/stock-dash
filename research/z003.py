@@ -152,5 +152,21 @@ def same(a, b):
     return (a is None and b is None) or (a is not None and b is not None and abs(a - b) <= 1e-12 * max(1.0, abs(a)))
 
 
+def pension_n(r, n):
+    s, v = nrl.flow_sum(r, n, "연기금"), T.vol_avg(r["code"], r["date"], n)
+    return s / (v * n) if s is not None and v else None
+
+
+def run_filter():
+    """Z2 '크게 산 뒤엔 조심': 연기금이 전날까지 n일 동안 거래량의 x% 넘게 순매수한 후보는 안 삼(문턱은 Z2에서 미리 정한 구간 끝 5 · 10%)."""
+    print("== Z3b: 연기금 크게 산 후보 거르기 ==", flush=True)
+    base_got = T.once("지금(새 82)", holds=HOLD)
+    for n in (5, 20):
+        for x in (0.05, 0.10):
+            got = T.once(f"거름: 연기금 {n}일 순매수 > 거래량 {x:.0%}", holds=lambda r, n=n, x=x: HOLD(r) and not ((pension_n(r, n) or 0) > x))
+            T.diff_check(base_got, got)
+
+
 if __name__ == "__main__":
-    sys.exit(check() if os.environ.get("Z_PART") == "check" else run())
+    part = os.environ.get("Z_PART")
+    sys.exit(check() if part == "check" else run_filter() if part == "filter" else run())
