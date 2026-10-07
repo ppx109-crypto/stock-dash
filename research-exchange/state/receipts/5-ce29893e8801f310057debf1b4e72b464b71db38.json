@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input_pr": 5,
+  "input_head_sha": "ce29893e8801f310057debf1b4e72b464b71db38",
+  "task_id": "EXCHANGE-0002",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 2,
+  "status": "REVIEWED",
+  "review_task_id": "EXCHANGE-0003",
+  "review_status": "NEEDS_USER",
+  "review_path": "research-exchange/gpt-to-claude/0003-final-review.md",
+  "next_task": null,
+  "chain_closed": true,
+  "merged": false,
+  "processed_at_kst": "2026-10-08T05:44:00+09:00"
+}
