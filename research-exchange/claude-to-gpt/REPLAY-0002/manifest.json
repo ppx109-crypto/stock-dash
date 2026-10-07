@@ -1,0 +1,155 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-0002",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 3,
+ "stage": "REPLAY-1B",
+ "status": "BLOCKED",
+ "verdict": {
+  "reconstruction": "BLOCKED_NEEDS_DATA",
+  "rows_complete": "0/495",
+  "rows_F04_ok": 0,
+  "rows_F06_ok": 0,
+  "audit_complete": true,
+  "strategy_performance": "NOT_RUN",
+  "paper_validation_ready": false,
+  "live_approval": false
+ },
+ "input_pr": 18,
+ "input_head_sha": "4cc7d101211cd3a74b3624a5106694ceb083863d",
+ "source_pr": 17,
+ "source_head_sha": "63e47a1bc49f183a692e606d0c55191e716e90a2",
+ "prior_results_unmodified": {
+  "pr15": "6c7e1f0f0bbafcca4d8c0e555b7b5711601fe206",
+  "pr17": "63e47a1bc49f183a692e606d0c55191e716e90a2"
+ },
+ "fixed_inputs": {
+  "ledger": {
+   "ref": "a61f033ecd16ba0976c955a93bfec70c7463ad53:research-exchange/claude-to-gpt/RULES-0002/results/d1_ledger_ASIS.csv",
+   "sha256": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+   "rows": 495
+  },
+  "base_code": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "data_commit": "5998f42e9acbb0fd3912ae9ebc63c5e1edfb39dc",
+  "kernel_ref": "63e47a1bc49f183a692e606d0c55191e716e90a2:research-exchange/claude-to-gpt/REPLAY-0001/account_kernel.py"
+ },
+ "prereg_lock": {
+  "commit": "6fb78d559dd21a5f36be0b0c8c176c1db9524c61",
+  "locked_at_kst": "2026-10-08T08:17:14+09:00",
+  "sha256": {
+   "PREREG-LOCK.md": "991a7e17175948392082cb8f72e797243be9859d5f0f3c8b5679576ec1bc355b"
+  }
+ },
+ "classifier_commit": "35baad90",
+ "row_list_sha256": "8786d82edc64f86ef0fba1b9372f98c5d1c062fe3975a408d9ccd53377255a04",
+ "evidence": {
+  "coverage": "COVERAGE.json",
+  "inventory": "INPUT-INVENTORY.json",
+  "inventory_raw": "run1/INPUT-INVENTORY.raw.json",
+  "gaps": "GAPS.md",
+  "model_fill_draft": "MODEL-FILL-CONTRACT-DRAFT.md",
+  "tests": "TEST-RESULT.json",
+  "code_lines": [
+   "nrl.py:23-60(B)",
+   "research/ntools.py:102-125(B)",
+   "lab.py:39 · run spot=row['i']+delay · 1271 locked(B)",
+   "caps.py:54 · 100(B)",
+   "collect_prices.py:104-140(C)",
+   "collect_kosdaq.py:5(C)",
+   "collect_hourly.py:1-10(C)",
+   "RULES-0002/diag/d1_diag.py(a61f033)"
+  ],
+  "prior": [
+   "MEAS-0001/INVENTORY.json@6c7e1f0(nrl-cache 출처 · calm 2.1763)"
+  ]
+ },
+ "environment": {
+  "python": "3.11.15",
+  "network": "socket connect 차단",
+  "reads": "git 객체(cat-file · log · ls-tree)만",
+  "isolation": {
+   "network": "socket connect 차단",
+   "pkl_opened": [],
+   "ops_state_opened": [],
+   "ops_modules_imported": [],
+   "ok": true
+  }
+ },
+ "commands": [
+  "python3 -I tests/run_tests.py <저장소> <REPLAY-0002 폴더>  # 분류 2회 + 누수 · 결정론 시험"
+ ],
+ "budget": {
+  "seconds": 55.3,
+  "max_rss_mb": 406.7,
+  "limit_seconds": 300,
+  "limit_mb": 512,
+  "result_runs": 2,
+  "within": true
+ },
+ "tests_all_ok": true,
+ "files": [
+  {
+   "path": "COVERAGE.json",
+   "sha256": "4c2343c76ab42bb9b70bcf5cb2f0a90d1d6840d104a800f131baa2557d53a50a"
+  },
+  {
+   "path": "GAPS.md",
+   "sha256": "cd7d2b4490da4f339e2a37a86f2545c5e41f7f9d99c44dd4d86adbb092880edc"
+  },
+  {
+   "path": "INPUT-INVENTORY.json",
+   "sha256": "88bf0de5abbd96ac4fa062f698500b2ffd8fb1ba50ce916eaa83b0c3cf94817d"
+  },
+  {
+   "path": "MODEL-FILL-CONTRACT-DRAFT.md",
+   "sha256": "b67608a8e03130e731aa1ea42ae9ae796a7513bc2d16b39953224d1a49c4a478"
+  },
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "991a7e17175948392082cb8f72e797243be9859d5f0f3c8b5679576ec1bc355b"
+  },
+  {
+   "path": "PREREG-LOCK.stamp.json",
+   "sha256": "dfee0976acc1e00bf9b7a3977fb8dca0db139d6cd9695dc6ef9d691d3ad3f64b"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "09b19f178d030b68e3c4309d635dc337c045516abcadc11b5dfffad0f813bdb5"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "aeb3e7c27a7a09ac63532dba3ab081357cd9785d447fc72bd41e359e1e213f66"
+  },
+  {
+   "path": "run1/INPUT-INVENTORY.raw.json",
+   "sha256": "ea7783dd0fef484bae3644d205e33950313c707d101730b1d9ff1705c3b32fae"
+  },
+  {
+   "path": "tests/classify.py",
+   "sha256": "5836ff2db4ba24b0a2ce07f0746a42052b6983988f1cc62ced042391bceea47f"
+  },
+  {
+   "path": "tests/run_tests.py",
+   "sha256": "ce89f406c3c5933c1463455f5e2ea8d25b8ba0333eb35e5618aee2b791bb37b2"
+  }
+ ],
+ "privacy": {
+  "publish_paper_derived": true,
+  "raw_response_public": false,
+  "live_data_public": false,
+  "contains": "공개 종목코드 장부의 행 hash · 상태 · 사유와 저장소 경로 · hash만. 키 · 계좌 · 원 주문번호 · 원문 응답 · 실계좌 · 비공개 세션 주소 없음"
+ },
+ "not_done": [
+  "새 API · 수집",
+  "백테스트 · 성과 계산",
+  "threshold · 전략 탐색",
+  "주문",
+  "운영 변경",
+  "커널 수정",
+  "병합"
+ ],
+ "result_branch": "claude/replay-0002-result",
+ "result_pr": null,
+ "created_at_kst": "2026-10-08T08:25:21+09:00"
+}
