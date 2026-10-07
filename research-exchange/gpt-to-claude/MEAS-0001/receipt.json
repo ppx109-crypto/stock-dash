@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "task_id": "MEAS-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 1,
+  "status": "READY",
+  "source_pr": 13,
+  "source_head_sha": "c41aaf8459049985092d8bf8ce17bb9733803d95",
+  "authorization": "user instruction 2026-10-08T07:22:19+09:00 continuous research until paper validation readiness",
+  "scope": "existing-data readonly measurement audit only",
+  "ops_change": false,
+  "order_api": false,
+  "result_pr": null
+}
