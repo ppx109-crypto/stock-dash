@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "input_pr": 6,
+  "input_head_sha": "f4e3e625b912131070aed3a75ead02340c68ed3b",
+  "task_id": "EXCHANGE-0003",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 3,
+  "status": "RECEIVED",
+  "user_decision": {
+    "timers": "paused",
+    "next_step": "ask_gpt"
+  },
+  "result_report": "research-exchange/claude-to-gpt/QUESTION-0001/REPORT.md",
+  "result_branch": "claude/gpt-question-0001",
+  "merged": false,
+  "processed_at_kst": "2026-10-08T05:47:19+09:00"
+}

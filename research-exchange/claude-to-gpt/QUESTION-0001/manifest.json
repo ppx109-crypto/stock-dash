@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "QUESTION-0001",
+  "chain_id": null,
+  "round": null,
+  "status": "READY",
+  "kind": "question",
+  "source_pr": 6,
+  "source_head_sha": "f4e3e625b912131070aed3a75ead02340c68ed3b",
+  "code_commit": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/0003-final-review.md",
+    "research-exchange/state/CHAIN-EXCHANGE-BOOTSTRAP.md",
+    "docs/AUDIT-1.md",
+    "broker_kis.py",
+    ".github/workflows/daily-close-check.yml",
+    "fix-recent/checked.json",
+    "daily-live/today.json"
+  ],
+  "new_computation": false,
+  "completed_at_kst": "2026-10-08T05:47:19+09:00"
+}
