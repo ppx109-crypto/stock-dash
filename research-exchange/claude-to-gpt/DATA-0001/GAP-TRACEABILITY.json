@@ -1,0 +1,275 @@
+{
+ "task": "DATA-0001",
+ "source": "REPLAY-0002 GAPS.md @1d295ee",
+ "items": [
+  {
+   "gap": "G1",
+   "what": "처음 도착한 버전의 원주가 일봉",
+   "records": [
+    "PRICE_BAR_RAW"
+   ],
+   "rules_or_queries": [
+    "OVERWRITE_REJECTED",
+    "LINEAGE_*",
+    "AVAILABLE_BEFORE_ASOF",
+    "FETCHED_BEFORE_AVAILABLE",
+    "HASH_MISMATCH",
+    "asof 질의"
+   ],
+   "fixtures": [
+    "FX01",
+    "FX02",
+    "FX03",
+    "FX04",
+    "FX07",
+    "FX08",
+    "FX11",
+    "FX12",
+    "FX13",
+    "FX16"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A1 원주가 OHLCV 수집 승인. 과거 구간은 복원 불가"
+  },
+  {
+   "gap": "G2",
+   "what": "다음 거래일 원주가 시가",
+   "records": [
+    "PRICE_BAR_RAW(open, session)"
+   ],
+   "rules_or_queries": [
+    "ADJUSTED_AS_RAW",
+    "BASIS_MIX"
+   ],
+   "fixtures": [
+    "FX14",
+    "FX15",
+    "FX40"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A1"
+  },
+  {
+   "gap": "G3",
+   "what": "신호 원료의 시점별 판",
+   "records": [
+    "SIGNAL(inputs, cutoff_hash, strategy_hash)"
+   ],
+   "rules_or_queries": [
+    "INPUT_AFTER_DECISION",
+    "INPUT_UNKNOWN",
+    "CUTOFF_HASH_MISMATCH",
+    "SIGNAL_TIME_ORDER"
+   ],
+   "fixtures": [
+    "FX09",
+    "FX10",
+    "FX23",
+    "FX24",
+    "FX37",
+    "FX38"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_AUTHORITY",
+   "needs": "운영 신호 기록에 inputs · cutoff_hash를 남기는 변경 승인"
+  },
+  {
+   "gap": "G4",
+   "what": "calm 문턱의 시점별 값",
+   "records": [
+    "SIGNAL.strategy_hash(규칙판 고정만)"
+   ],
+   "rules_or_queries": [],
+   "fixtures": [],
+   "contract_status": "NOT_CONTRACT_SOLVABLE",
+   "data_status": "STILL_NEEDS_AUTHORITY",
+   "needs": "A6 규칙 결정(사용자 · GPT)"
+  },
+  {
+   "gap": "G5",
+   "what": "Universe(t)",
+   "records": [
+    "UNIVERSE_SNAPSHOT",
+    "SECURITY_EVENT"
+   ],
+   "rules_or_queries": [
+    "universe 질의(UNKNOWN:NO_SNAPSHOT · INCOMPLETE)",
+    "BAD_SECURITY_EVENT"
+   ],
+   "fixtures": [
+    "FX17",
+    "FX18",
+    "FX41"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A2 날짜별 상장 목록 출처"
+  },
+  {
+   "gap": "G6",
+   "what": "거래정지 · 신규상장 · 상장폐지",
+   "records": [
+    "TRADING_STATUS",
+    "SECURITY_EVENT"
+   ],
+   "rules_or_queries": [
+    "status 질의(UNKNOWN)",
+    "BAD_SECURITY_EVENT"
+   ],
+   "fixtures": [
+    "FX19",
+    "FX20",
+    "FX41"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A2"
+  },
+  {
+   "gap": "G7",
+   "what": "기업행동 비율 · 기준일",
+   "records": [
+    "CORP_ACTION"
+   ],
+   "rules_or_queries": [
+    "CORP_ACTION_INCOMPLETE",
+    "corp 질의(효력 · 공개 시점)"
+   ],
+   "fixtures": [
+    "FX21",
+    "FX22"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A2 · 커널 분할 지원은 별도 단계"
+  },
+  {
+   "gap": "G8",
+   "what": "수급 · 공시 · 의견의 공개 시각과 첫 판",
+   "records": [
+    "INVESTOR_FLOW",
+    "DART_FILING",
+    "FINANCIAL"
+   ],
+   "rules_or_queries": [
+    "FLOW_TOO_EARLY",
+    "DATE_ONLY_TOO_EARLY",
+    "AVAILABLE_BEFORE_RCEPT",
+    "FINANCIAL_BEFORE_FILING",
+    "정정 lineage"
+   ],
+   "fixtures": [
+    "FX23",
+    "FX24",
+    "FX25",
+    "FX26",
+    "FX35",
+    "FX36"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A3 공시 rcept_no 보존 · 의견(OPINION) 레코드 종류는 다음 판"
+  },
+  {
+   "gap": "G9",
+   "what": "비용 · 세금 · 슬리피지 출처와 기간",
+   "records": [
+    "COST_SCHEDULE"
+   ],
+   "rules_or_queries": [
+    "COST_SOURCE_MISSING",
+    "cost 질의(GAP · OVERLAP · NONE)"
+   ],
+   "fixtures": [
+    "FX31",
+    "FX32"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_EXTERNAL_DATA",
+   "needs": "A5 출처 문서"
+  },
+  {
+   "gap": "G10",
+   "what": "당시 NAV · 현금 · 배분",
+   "records": [
+    "ACCOUNT_STATE"
+   ],
+   "rules_or_queries": [
+    "INPUT_AFTER_ASOF",
+    "INPUT_UNKNOWN"
+   ],
+   "fixtures": [
+    "FX39"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_AUTHORITY",
+   "needs": "운영 장부에 ACCOUNT_STATE 기록 승인"
+  },
+  {
+   "gap": "G11",
+   "what": "trade_id · 부분청산 연결",
+   "records": [
+    "ORDER_EVENT",
+    "FILL(order_id)"
+   ],
+   "rules_or_queries": [
+    "AMBIGUOUS_ORDER_SEQ",
+    "BAD_ORDER_TRANSITION"
+   ],
+   "fixtures": [
+    "FX33",
+    "FX34"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_AUTHORITY",
+   "needs": "앞으로 기록부터. 과거 29묶음은 복구 불가"
+  },
+  {
+   "gap": "G12",
+   "what": "관측 모의체결",
+   "records": [
+    "FILL(OBSERVED_KIS_PAPER, evidence_ref)"
+   ],
+   "rules_or_queries": [
+    "OBSERVED_NO_EVIDENCE",
+    "EVIDENCE_REF_NOT_PSEUDONYMOUS",
+    "SOURCE_MODE_MIX",
+    "MODEL_FILL_INCOMPLETE",
+    "PRIVACY_FIELD"
+   ],
+   "fixtures": [
+    "FX27",
+    "FX28",
+    "FX29",
+    "FX30"
+   ],
+   "contract_status": "CONTRACT_COVERED",
+   "data_status": "STILL_NEEDS_AUTHORITY",
+   "needs": "A4 모의 체결 조회 · 기록 승인. order_no 비공개 처리(검증기 다음 판 키 목록 보완 필요)"
+  }
+ ],
+ "summary": {
+  "contract_covered": 11,
+  "not_contract_solvable": [
+   "G4"
+  ],
+  "still_needs_external_data": [
+   "G1",
+   "G2",
+   "G5",
+   "G6",
+   "G7",
+   "G8",
+   "G9"
+  ],
+  "still_needs_authority": [
+   "G3",
+   "G4",
+   "G10",
+   "G11",
+   "G12"
+  ]
+ }
+}

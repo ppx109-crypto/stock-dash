@@ -3,6 +3,7 @@
 - 파일 열기 기록 훅: 열린 경로가 허용 디렉터리(이 폴더 · 파이썬 표준 라이브러리) 밖이면 위반.
 - 42 fixture 2회(결정론) + 공통 불변식 I1~I7 + 변이 M01~M21."""
 import hashlib, importlib.util, json, os, re, resource, socket, sys, sysconfig, time
+STARTUP_MODS = set(sys.modules)   # 실행기 시작 전 파이썬이 이미 불러온 모듈(사이트 설정 등) — 검사 대상은 그 뒤 새로 불린 것
 
 for k in list(os.environ):
     if any(w in k.upper() for w in ("KIS", "DART", "PAPER", "DISCORD")):
@@ -119,8 +120,9 @@ for m, must in MUTS.items():
 secs = time.time() - t0
 outside = sorted({p for p in OPENED if not any(os.path.realpath(p).startswith(a + os.sep) or os.path.realpath(p) == a
                                                 for a in ALLOWED)})
-mods = sorted(n for n, m in sys.modules.items() if getattr(m, "__file__", None)
-              and not any(os.path.realpath(m.__file__).startswith(a + os.sep) for a in ALLOWED))
+outside_mod = lambda m: getattr(m, "__file__", None) and not any(os.path.realpath(m.__file__).startswith(a + os.sep) for a in ALLOWED)
+mods = sorted(n for n, m in sys.modules.items() if n not in STARTUP_MODS and outside_mod(m))
+startup_outside = sorted(n for n, m in sys.modules.items() if n in STARTUP_MODS and outside_mod(m))
 n_pass = sum(v["pass"] for v in r1.values())
 doc = {"task": "DATA-0001",
        "validator_sha256": hashlib.sha256(open(os.path.join(ROOT, "validator.py"), "rb").read()).hexdigest(),
@@ -134,6 +136,7 @@ doc = {"task": "DATA-0001",
        "determinism": {"run1": canon(r1), "run2": canon(r2), "same": canon(r1) == canon(r2)},
        "mutations": mut, "mutations_all_caught": all(v["caught"] for v in mut.values()),
        "isolation": {"allowed_dirs": ALLOWED, "opened_outside_allowed": outside, "modules_outside_allowed": mods,
+                     "startup_modules_outside_allowed(실행기 전 파이썬 시작 때 불림 · 검사 제외 · 공개)": startup_outside,
                      "network": "socket connect 차단", "ok": not outside and not mods},
        "budget": {"seconds": round(secs, 2), "max_rss_mb": round(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024, 1),
                   "limit_seconds": 300, "limit_mb": 512}}
@@ -142,7 +145,12 @@ doc["status"] = "READY" if (n_pass == len(FX) == 42 and doc["invariants_ok"] and
                             and doc["determinism"]["same"] and doc["isolation"]["ok"]
                             and doc["schema_check"]["ok"] and doc["schema_check"]["probe_ok"]) else "BLOCKED"
 doc["scope_note"] = "합성 fixture 검증만. 실제 수집 · 전략 성과 · 모의 준비 · 실전 승인 아님. PAPER_VALIDATION_READY=false"
-json.dump(doc, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1, default=str)
+# 공개 결과에 로컬 절대 경로를 남기지 않음(허용 디렉터리는 이름표로)
+LABEL = {a: ("<DATA-0001>" if a in (ROOT, os.path.realpath(ROOT)) else "<python-stdlib>") for a in ALLOWED}
+text = json.dumps(doc, ensure_ascii=False, indent=1, default=str)
+for a, lab in sorted(LABEL.items(), key=lambda x: -len(x[0])):
+    text = text.replace(a, lab)
+open(OUT, "w", encoding="utf-8").write(text)
 print(doc["status"], f"{n_pass}/{len(FX)}", "inv_ok", doc["invariants_ok"], "schema", doc["schema_check"]["ok"], doc["schema_check"]["probe_ok"], n_checked, "mut", sum(v["caught"] for v in mut.values()),
       "/", len(mut), "det", doc["determinism"]["same"], "iso", doc["isolation"]["ok"], doc["budget"])
 for k, v in r1.items():
