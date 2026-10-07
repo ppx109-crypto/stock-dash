@@ -544,6 +544,7 @@ def header() -> str:
     )
 
 
+UI_VERSION = "10-07 22:10 · 보유 지금 값"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -637,7 +638,7 @@ def top_bar(hourly_ledger: str, daily_ledger: str, middle: str = "", more: str =
     return (
         _CSS + '<div class="pxb"><div class="pxb-frame pxb-headbox"><div class="pxb-top2">'
         '<div class="pxb-title"><em>오늘의 <i>투자판단</i></em>'
-        f'<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다 · {date.today():%Y년 %m월 %d일}</span></div>'
+        f'<span>공식 자료로 확인한 변화와, 아직 확인이 필요한 것만 담았습니다 · {date.today():%Y년 %m월 %d일} · 화면 판 {UI_VERSION}</span></div>'
         + (f'<div class="pxb-mid">{middle}</div>' if middle else "") +
         f'<div class="pxb-ledgers">{hourly_ledger}{daily_ledger}{more}</div>'
         "</div></div></div>"
