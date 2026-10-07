@@ -171,7 +171,8 @@ def features(C, F, ops, evs, qs):
     tot = (F["매수체결"] + F["매도체결"]).rolling(20, min_periods=15).sum()
     X["매수체결비"] = F["매수체결"].rolling(20, min_periods=15).sum() / tot - 0.5
     # 엿보기 대조(일부러 하루 미래) — 진짜 재료와 견주기용 · 고르기 · 시험에서는 뺌
-    X["엿보기_외국인내일"] = F["외국인"].shift(-1) / F["vol"].shift(-1)
+    # (산 뒤 5일(t+2 ~ t+6) 외국인 수급 = 들고 있는 동안의 미래 → 이걸 쓰면 성적이 얼마나 부풀려지는지 보임)
+    X["엿보기_외국인내일"] = F["외국인"].rolling(5).sum().shift(-(GAP + 5)) / F["vol"].rolling(5).sum().shift(-(GAP + 5))
 
     days = list(C.index)
     di = {d: i for i, d in enumerate(days)}
@@ -298,11 +299,15 @@ def evaluate(X, C, inside):
                 continue
             f, r = F.loc[d][ok], fwd.loc[d][ok]
             r = r - r.median()
-            if f.nunique() < 3:
+            if f.nunique() < 2:
                 continue
             ic = f.rank().corr(r.rank())
-            q = f.rank(pct=True)
-            sp = r[q > 0.8].mean() - r[q <= 0.2].mean() if (q > 0.8).sum() and (q <= 0.2).sum() else np.nan
+            if f.nunique() <= 5:      # 0/1 · 건수 재료: 있음(가장 작은 값보다 큼) − 없음
+                hi, lo = f > f.min(), f == f.min()
+                sp = r[hi].mean() - r[lo].mean() if hi.sum() >= 3 else np.nan
+            else:
+                q = f.rank(pct=True)
+                sp = r[q > 0.8].mean() - r[q <= 0.2].mean()
             ics.setdefault(period(d), []).append(ic)
             spreads.setdefault(period(d), []).append(sp)
             if d >= "20260601":
@@ -314,7 +319,7 @@ def evaluate(X, C, inside):
             a = a[~np.isnan(a)]
             s = np.array(spreads[p], dtype=float)
             s = s[~np.isnan(s)]
-            if len(a) < 3:
+            if len(a) < 3 or len(s) == 0:
                 continue
             # 20일 들고 5일마다 재므로 겹침 4배 → t는 √(n/4)
             t = a.mean() / (a.std(ddof=1) + 1e-12) * math.sqrt(len(a) / (H / STEP))
