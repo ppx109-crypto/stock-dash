@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "input_pr": 2,
+  "input_head_sha": "52411607a5b311211ddf4a152744c1bd9d7d3e27",
+  "task_id": "EXCHANGE-0001",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 1,
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/EXCHANGE-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/EXCHANGE-0001/manifest.json",
+  "result_branch": "claude/exchange-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "processed_at_kst": "2026-10-08T05:15:52+09:00"
+}

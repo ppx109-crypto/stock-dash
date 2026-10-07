@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "EXCHANGE-0001",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 1,
+  "status": "READY",
+  "source_pr": 2,
+  "source_head_sha": "52411607a5b311211ddf4a152744c1bd9d7d3e27",
+  "code_commit": "52411607a5b311211ddf4a152744c1bd9d7d3e27",
+  "evidence_paths": [
+    "research-exchange/INSTRUCTIONS.md",
+    "research-exchange/gpt-to-claude/0001-dispatch.md",
+    "research-exchange/gpt-to-claude/0001-bootstrap.md",
+    "CLAUDE.md",
+    "docs/BEST-RULES.md",
+    "docs/RL-3TRACK.md",
+    "docs/RL-BOTS.md",
+    "docs/DATA-CATALOG.md",
+    "docs/DATA-AUDIT-1D.md",
+    "docs/DATA-INCIDENT-20261002.md",
+    "docs/AUDIT-UNIFIED.md",
+    "docs/PAPER-TRADING.md",
+    "docs/QUANT-REPORT.md",
+    "docs/QUANT-REPORT-2.md",
+    "docs/RL-INVERSE-CARD.md",
+    "research/lookahead.py"
+  ],
+  "completed_at_kst": "2026-10-08T05:15:52+09:00"
+}
