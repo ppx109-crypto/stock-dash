@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "input_pr": 5,
+  "input_head_sha": "ffcdb4d0c0097c0774c3990aa6c461231b6b5a89",
+  "task_id": "EXCHANGE-0002",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 2,
+  "status": "REVIEWED",
+  "review_task_id": "EXCHANGE-0003",
+  "review_status": "NEEDS_USER",
+  "review_path": "research-exchange/gpt-to-claude/0003-final-review.md",
+  "next_task": null,
+  "chain_closed": true,
+  "merged": false,
+  "processed_at_kst": "2026-10-08T05:46:00+09:00",
+  "note": "PR #5 synchronization changed the head after the first receipt; current patch was re-fetched and remained the same three declared result files."
+}
