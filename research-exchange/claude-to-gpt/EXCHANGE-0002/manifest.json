@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "task_id": "EXCHANGE-0002",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 2,
+  "status": "READY",
+  "source_pr": 4,
+  "source_head_sha": "725e8fbdfb6001e392a94b8d9c21d7d1f506dc7c",
+  "code_commit": "3759758cc5fb6526171b884131136e8f147062c8",
+  "code_commit_note": "감사 완료 커밋 f1d12649 + 공개 금액 삭제 커밋(글만). 운영 코드 · 작업 흐름은 20fc273과 같음(git diff 빈 값).",
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/0002-review.md",
+    "research-exchange/gpt-to-claude/0002-task.md",
+    "research-exchange/state/WORKFLOW-UPDATE.md",
+    "research-exchange/INSTRUCTIONS.md",
+    "research-exchange/claude-to-gpt/EXCHANGE-0001/REPORT.md",
+    "research-exchange/claude-to-gpt/EXCHANGE-0001/manifest.json",
+    "docs/RL-BOTS.md",
+    "CLAUDE.md",
+    "docs/DATA-INCIDENT-20261002.md",
+    "fix_recent_days.py",
+    "fix-recent/last.json",
+    "fix-recent/checked.json",
+    "hourly_a.py",
+    "paper_trade.py",
+    "m15_live.py",
+    "daily_live.py",
+    "basket_live.py",
+    "idle_live.py",
+    "broker_kis.py",
+    "research/i013.py",
+    "docs/AUDIT-1.md",
+    "research/z070.py",
+    "audit/nav_long_none.csv",
+    "audit/nav_y1_none.csv",
+    "audit/z070_check_1donly.out",
+    "audit/inputs/SHA256SUMS"
+  ],
+  "evidence_versions": [
+    {
+      "path": "research-exchange/gpt-to-claude/0002-review.md",
+      "ref": "725e8fbdfb6001e392a94b8d9c21d7d1f506dc7c",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "research-exchange/gpt-to-claude/0002-task.md",
+      "ref": "725e8fbdfb6001e392a94b8d9c21d7d1f506dc7c",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "research-exchange/state/WORKFLOW-UPDATE.md",
+      "ref": "725e8fbdfb6001e392a94b8d9c21d7d1f506dc7c",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "research-exchange/INSTRUCTIONS.md",
+      "ref": "725e8fbdfb6001e392a94b8d9c21d7d1f506dc7c",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/EXCHANGE-0001/REPORT.md",
+      "ref": "7ffe27db48c0e3e0a4c2c98e7ea5db815dd045a7",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/EXCHANGE-0001/manifest.json",
+      "ref": "7ffe27db48c0e3e0a4c2c98e7ea5db815dd045a7",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "docs/RL-BOTS.md",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "24, 138-176행",
+      "level": "문서"
+    },
+    {
+      "path": "CLAUDE.md",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "21-25행",
+      "level": "문서"
+    },
+    {
+      "path": "docs/DATA-INCIDENT-20261002.md",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "fix_recent_days.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "1-60행",
+      "level": "코드"
+    },
+    {
+      "path": "fix-recent/last.json",
+      "ref": "c453faa5 / b049dffc",
+      "range": "날짜별 · 파일별 개수만",
+      "level": "git"
+    },
+    {
+      "path": "fix-recent/checked.json",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "전체",
+      "level": "git"
+    },
+    {
+      "path": "hourly_a.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "1, 11행",
+      "level": "코드"
+    },
+    {
+      "path": "paper_trade.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "1, 36-37, 370-410행",
+      "level": "코드"
+    },
+    {
+      "path": "m15_live.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "1행",
+      "level": "코드"
+    },
+    {
+      "path": "daily_live.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "1, 7행",
+      "level": "코드"
+    },
+    {
+      "path": "basket_live.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "1, 9, 13, 65-67행",
+      "level": "코드"
+    },
+    {
+      "path": "idle_live.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "150-190행",
+      "level": "코드"
+    },
+    {
+      "path": "broker_kis.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "730-745행",
+      "level": "코드"
+    },
+    {
+      "path": "research/i013.py",
+      "ref": "20fc2732f8d3abacbc9e4fc408ab79931d385991",
+      "range": "180-188행",
+      "level": "코드"
+    },
+    {
+      "path": "docs/AUDIT-1.md",
+      "ref": "3759758cc5fb6526171b884131136e8f147062c8",
+      "range": "전체(§0-§7)",
+      "level": "실행 + 코드 + 문서"
+    },
+    {
+      "path": "research/z070.py",
+      "ref": "3759758cc5fb6526171b884131136e8f147062c8",
+      "range": "전체(셈은 f1d12649 앞 같은 로직)",
+      "level": "코드"
+    },
+    {
+      "path": "audit/nav_long_none.csv",
+      "ref": "f1d12649d5ad725847f079200157944735d2fc9e",
+      "range": "전체",
+      "level": "실행"
+    },
+    {
+      "path": "audit/nav_y1_none.csv",
+      "ref": "f1d12649d5ad725847f079200157944735d2fc9e",
+      "range": "전체",
+      "level": "실행"
+    },
+    {
+      "path": "audit/z070_check_1donly.out",
+      "ref": "f1d12649d5ad725847f079200157944735d2fc9e",
+      "range": "전체",
+      "level": "실행"
+    },
+    {
+      "path": "audit/inputs/SHA256SUMS",
+      "ref": "f1d12649d5ad725847f079200157944735d2fc9e",
+      "range": "전체",
+      "level": "실행"
+    }
+  ],
+  "linked_audit": {
+    "path": "docs/AUDIT-1.md",
+    "completed_commit": "f1d12649d5ad725847f079200157944735d2fc9e",
+    "status": "완료"
+  },
+  "new_computation": false,
+  "completed_at_kst": "2026-10-08T05:39:20+09:00"
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input_pr": 4,
+  "input_head_sha": "725e8fbdfb6001e392a94b8d9c21d7d1f506dc7c",
+  "task_id": "EXCHANGE-0002",
+  "chain_id": "EXCHANGE-BOOTSTRAP",
+  "round": 2,
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/EXCHANGE-0002/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/EXCHANGE-0002/manifest.json",
+  "result_branch": "claude/inspiring-newton-afr321",
+  "result_pr": null,
+  "execution_mode": "existing_claude_session_only",
+  "merged": false,
+  "processed_at_kst": "2026-10-08T05:39:20+09:00"
+}
