@@ -302,7 +302,7 @@ def evaluate(X, C, inside):
             if f.nunique() < 2:
                 continue
             ic = f.rank().corr(r.rank())
-            if f.nunique() <= 5:      # 0/1 · 건수 재료: 있음(가장 작은 값보다 큼) − 없음
+            if f.nunique() <= 5 or (f == f.min()).mean() > 0.2:   # 0/1 · 건수 재료(0이 많음): 있음 − 없음
                 hi, lo = f > f.min(), f == f.min()
                 sp = r[hi].mean() - r[lo].mean() if hi.sum() >= 3 else np.nan
             else:
@@ -319,11 +319,11 @@ def evaluate(X, C, inside):
             a = a[~np.isnan(a)]
             s = np.array(spreads[p], dtype=float)
             s = s[~np.isnan(s)]
-            if len(a) < 3 or len(s) == 0:
+            if len(a) < 3:
                 continue
             # 20일 들고 5일마다 재므로 겹침 4배 → t는 √(n/4)
             t = a.mean() / (a.std(ddof=1) + 1e-12) * math.sqrt(len(a) / (H / STEP))
-            out[p] = {"IC": round(float(a.mean()), 4), "t": round(float(t), 2), "위-아래(%)": round(float(s.mean()) * 100, 2),
+            out[p] = {"IC": round(float(a.mean()), 4), "t": round(float(t), 2), "위-아래(%)": round(float(s.mean()) * 100, 2) if len(s) else None,
                       "날수": int(len(a))}
         res[name_] = out
     return res
@@ -410,7 +410,7 @@ def show(out):
         cells = []
         for p in ("2017~19", "2020~22", "2023~25", "2026", "요즘(6~9월)"):
             x = o.get(p)
-            cells.append(f"{x['IC']:+.3f}({x['t']:+.1f}) {x['위-아래(%)']:+.1f}%" if x else "-")
+            cells.append(f"{x['IC']:+.3f}({x['t']:+.1f}) " + (f"{x['위-아래(%)']:+.1f}%" if x['위-아래(%)'] is not None else "-") if x else "-")
         print(f"{f:14s} | " + " | ".join(cells))
     print("\n[2017~22로만 고른 재료]")
     for ch in out["고른 재료(2017~22로만)"]:
