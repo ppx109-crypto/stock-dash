@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RNG = np.random.default_rng(23)
 TAX = {2017: .0025, 2018: .0025, 2019: .0025, 2020: .0025, 2021: .0025, 2022: .0025, 2023: .0020, 2024: .0018}
 SCALES = {"BASE": 1.0, "STRESS": 1.5, "EXTREME": 2.0}
+IMPACT_K = float(__import__("os").getenv("IMPACT_K", "0.10"))   # 사후 민감도: 0이면 시장 충격 뺌(사전등록 기본 0.10)
 
 
 def tax(day):
@@ -38,8 +39,8 @@ def impact(code, day, notional):
     if v is None or not np.isfinite(v) or v <= 0:
         v = a[a.index <= day].iloc[-1] if len(a) and (a.index <= day).any() else np.nan
     if not np.isfinite(v) or v <= 0:
-        return 0.002
-    return 0.10 * np.sqrt(notional / v)
+        return 0.002 if IMPACT_K else 0.0
+    return IMPACT_K * np.sqrt(notional / v)
 
 
 def side_costs(code, buy_day, sell_day, notional, scale=1.0):
