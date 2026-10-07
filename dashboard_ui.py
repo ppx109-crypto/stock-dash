@@ -99,6 +99,10 @@ _CSS = """
 .pxb-more[open] summary:before{content:"▲ "}
 .pxb-near-empty{margin-top:6px;font-size:12px;color:#9C9486}
 .pxb-ledger ul{margin:4px 0 0 16px;padding:0;font-size:10.5px;color:#7B7465;line-height:1.5}
+.pxb-held{margin-top:5px;padding:5px 8px;border-radius:8px;background:#F6EFE2;font-size:11.5px;color:#2B2620;line-height:1.65}
+.pxb-held b{display:inline;font-size:11.5px;color:#2B2620}
+.pxb-held strong{font-weight:800}
+.pxb-held small{display:inline;font-size:11px;color:#7B7465}
 .pxb-meta b{display:block;font-size:11px;letter-spacing:.22em;color:#946E38}
 
 .pxb-board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
@@ -540,8 +544,47 @@ def header() -> str:
     )
 
 
-def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 3) -> str:
-    """머리 오른쪽 작은 칸: 모의투자 거래 내역(끝난 매매 · 들고 있는 종목 · 최근 주문)."""
+UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
+
+
+def _signed(value, unit="", digits=0):
+    if value is None:
+        return ""
+    color = UP if value > 0 else DOWN if value < 0 else FLAT
+    mark = "▲" if value > 0 else "▼" if value < 0 else ""
+    num = f"{abs(value):,.{digits}f}"
+    return f'<em style="color:{color};font-style:normal">{mark}{num}{unit}</em>'
+
+
+def holding_rows(state: dict | None, book: dict | None, quotes: dict | None) -> list:
+    """들고 있는 종목마다 한 줄: 지금 값 · 오늘 +/−(원 · %) · 산 값 대비 % · 평가 손익(원, 수량을 알 때).
+    quotes: {코드: broker_kis.quote 결과} — 장중엔 1분마다 새 값(research_ui.live_quote)."""
+    held = (state or {}).get("positions") or {}
+    if isinstance(held, list):
+        held = {p.get("code"): p for p in held if isinstance(p, dict)}
+    qty = (book or {}).get("held") or {}
+    rows = []
+    for code, p in held.items():
+        q = (quotes or {}).get(code) or {}
+        name = p.get("name") or q.get("name") or IDLE_NAME.get(code) or code
+        now, buy = q.get("price"), p.get("price")
+        line = f'<b>{_e(name)}</b> '
+        if now:
+            line += f'지금 <strong>{now:,.0f}원</strong> · 오늘 {_signed(q.get("change"), "원")} {_signed(q.get("rate"), "%", 2)}'
+        else:
+            line += '<small>지금 값 받는 중</small>'
+        if now and buy:
+            gain = (now / buy - 1) * 100
+            line += f' · 산 값 {buy:,.0f}원 대비 {_signed(gain, "%", 2)}'
+            n = int(qty.get(code) or 0)
+            if n > 0:
+                line += f' · {n:,}주 평가 {_signed((now - buy) * n, "원")}'
+        rows.append(line)
+    return rows
+
+
+def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 3, quotes: dict | None = None) -> str:
+    """머리 오른쪽 작은 칸: 모의투자 거래 내역(끝난 매매 · 들고 있는 종목의 지금 값 · 최근 주문)."""
     closed = (state or {}).get("closed") or []
     held = list(((state or {}).get("positions") or {}).values())
     orders = (book or {}).get("orders") or []
@@ -552,6 +595,7 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
     else:
         line = "끝난 매매 없음"
     line += f' · 들고 있는 {len(held)}종목'
+    now_rows = holding_rows(state, book, quotes)
     rows = []
     for o in reversed(orders[-shown:]):
         rows.append(f'{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
@@ -560,21 +604,21 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
         for t in reversed(closed[-shown:]):
             rows.append(f'{_e(t.get("판 때") or t.get("판 날"))} {_e(t.get("name"))} {float(t.get("손익") or 0):+.1f}%')
     body = "".join(f"<li>{r}</li>" for r in rows) or "<li>아직 주문이 없습니다</li>"
+    held_html = ("<div class=\"pxb-held\">" + "".join(f"<div>{r}</div>" for r in now_rows) + "</div>") if now_rows else ""
     return (f'<div class="pxb-ledger"><b>{_e(title)} · 거래 내역</b><small>{line}</small>'
-            f'<ul>{body}</ul></div>')
+            f'{held_html}<ul>{body}</ul></div>')
 
 
 def kospi_box(k: dict | None) -> str:
     """코스피 칸: 마지막 종가(장중이면 지금 값) · 전날보다 · 날짜."""
     if not k or not k.get("close"):
         return '<div class="pxb-kospi"><b>코스피</b><small>지수를 아직 받지 못했습니다</small></div>'
-    chg = k.get("change")
-    color = "#C0392B" if (chg or 0) > 0 else "#1F5FBF" if (chg or 0) < 0 else "#4A4339"
-    tail = f'<em style="color:{color}">{chg:+.2f}%</em>' if chg is not None else ""
+    chg, diff = k.get("change"), k.get("diff")
+    tail = (_signed(diff, "", 2) + " " if diff is not None else "") + (_signed(chg, "%", 2) if chg is not None else "")
     d = str(k.get("date", ""))
     when = f'{d[4:6]}-{d[6:8]}' if len(d) == 8 else _e(d)
     return (f'<div class="pxb-kospi"><b>코스피 · {"장중" if k.get("live") else "장 마감"}</b>'
-            f'<strong>{k["close"]:,.2f}</strong>{tail}<small>{when} 기준 · {_e(k.get("from", ""))}</small></div>')
+            f'<strong>{k["close"]:,.2f}</strong>{tail}<small>{when}{" " + _e(k.get("at")) if k.get("at") else ""} 기준 · {_e(k.get("from", ""))}</small></div>')
 
 
 def lights_box(rows: list | None, at: str = "") -> str:

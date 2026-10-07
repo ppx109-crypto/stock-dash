@@ -277,12 +277,20 @@ def repo_json_live(path):
     return repo_json.__wrapped__(path)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=60, show_spinner=False)
 def kospi_last():
-    """코스피 마지막 값. 한투에서 바로 받고(5분마다), 못 받으면 저장소에 모아 둔 일별 자료를 씁니다."""
+    """코스피 지금 값(1분마다). 한투 지수 현재가(장중 실시간)를 먼저 받고, 못 받으면 일별 시세 · 저장소에 모아 둔 일별 자료를 씀."""
     from datetime import datetime as _dt, timedelta as _td
     from zoneinfo import ZoneInfo
     now = _dt.now(ZoneInfo('Asia/Seoul'))
+    open_now = now.weekday() < 5 and '0900' <= now.strftime('%H%M') < '1530'
+    try:
+        import broker_kis
+        got = broker_kis.market().index_now('0001')
+        return {'date': now.strftime('%Y%m%d'), 'close': float(got['value']), 'change': got.get('rate'), 'diff': got.get('diff'),
+                'live': open_now, 'at': now.strftime('%H:%M'), 'from': '한국투자증권 실시간'}
+    except Exception:
+        pass
     rows, src = [], '한국투자증권'
     try:
         import broker_kis
@@ -295,9 +303,20 @@ def kospi_last():
     if not rows:
         return None
     last = rows[-1]
-    chg = (last['종가'] / rows[-2]['종가'] - 1) * 100 if len(rows) > 1 and rows[-2].get('종가') else None
-    live = last['date'] == now.strftime('%Y%m%d') and now.strftime('%H%M') < '1530'
-    return {'date': last['date'], 'close': float(last['종가']), 'change': chg, 'live': live, 'from': src}
+    prev = rows[-2]['종가'] if len(rows) > 1 and rows[-2].get('종가') else None
+    chg = (last['종가'] / prev - 1) * 100 if prev else None
+    live = last['date'] == now.strftime('%Y%m%d') and open_now
+    return {'date': last['date'], 'close': float(last['종가']), 'change': chg, 'diff': (last['종가'] - prev) if prev else None,
+            'live': live, 'from': src}
+
+
+def held_quotes(*states):
+    """모의투자 장부들이 들고 있는 종목의 지금 값(종목마다 1분 캐시 · live_quote)."""
+    codes = set()
+    for s in states:
+        pos = (s or {}).get('positions') or {}
+        codes |= set(pos) if isinstance(pos, dict) else {p.get('code') for p in pos if isinstance(p, dict)}
+    return {c: q for c in sorted(c for c in codes if c) if (q := live_quote(c))}
 
 
 @st.cache_data(ttl=60, show_spinner=False)
@@ -313,11 +332,16 @@ def live_top_bar():
     """맨 위 제목 줄 + 가운데 코스피 · API 연결 불빛 + 모의투자 거래 내역. 1분마다 이 부분만 새로 그림.
     2026-10-03 최종 조합: 1일봉 50 · 15분봉 50 · 빈칸 엔진 · 코스닥 인버스(남는 돈) — 1시간봉은 모의 주문을 쉬어 칸에서 뺌."""
     lights, at = api_lights()
+    # 들고 있는 종목은 지금 값 · 오늘 +/− · 산 값 대비를 1분마다(사용자 2026-10-07 "코스피 장 마감처럼 내 지금 가격 … 실시간으로")
+    books = {k: (repo_json_live(f'{k}/state.json'), repo_json_live(f'{k}/paper-orders.json'))
+             for k in ('daily-live', 'm15-live', 'idle-live', 'basket-live')}
+    quotes = held_quotes(*(s for s, _ in books.values()))
     st.markdown(top_bar(
-        ledger_mini('1일봉 모의투자', repo_json_live('daily-live/state.json'), repo_json_live('daily-live/paper-orders.json')),
-        ledger_mini('15분봉 모의투자', repo_json_live('m15-live/state.json'), repo_json_live('m15-live/paper-orders.json')),
+        ledger_mini('1일봉 모의투자', *books['daily-live'], quotes=quotes),
+        ledger_mini('15분봉 모의투자', *books['m15-live'], quotes=quotes),
         kospi_box(kospi_last()) + lights_box(lights, at),
-        ledger_mini('빈칸 엔진 · 코스닥 인버스 모의투자', repo_json_live('idle-live/state.json'), repo_json_live('idle-live/paper-orders.json'))),
+        ledger_mini('빈칸 엔진 · 코스닥 인버스 모의투자', *books['idle-live'], quotes=quotes)
+        + ledger_mini('사건 바구니 C 모의투자', *books['basket-live'], quotes=quotes)),
         unsafe_allow_html=True)
 
 

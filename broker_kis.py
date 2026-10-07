@@ -561,6 +561,36 @@ class KIS:
                                  key='output2')
         return self._dated(rows, 'stck_bsop_date', (('매수체결량', 'total_shnu_qty'), ('매도체결량', 'total_seln_qty')))
 
+    def index_now(self, index="0001"):
+        """업종(지수) 지금 값(FHPUP02100000 · 장중 실시간 · 장 마감 뒤엔 그날 종가). 0001 코스피 · 1001 코스닥.
+        돌려줌: {'value', 'diff'(전날보다 포인트), 'rate'(%)}."""
+        if not re.fullmatch(r'[0-9]{4}', str(index)):
+            raise BrokerError('지수 코드는 숫자 4자리여야 합니다.')
+        self.authorize()
+        _, data = self.request(
+            'GET', '/uapi/domestic-stock/v1/quotations/inquire-index-price',
+            headers={'authorization': 'Bearer ' + self.token, 'appkey': self.key,
+                     'appsecret': self.secret, 'tr_id': 'FHPUP02100000', 'custtype': 'P'},
+            params={'FID_COND_MRKT_DIV_CODE': 'U', 'FID_INPUT_ISCD': str(index)})
+        if str(data.get('rt_cd')) != '0':
+            raise BrokerError('지수 현재가 조회가 승인되지 않았습니다. ' + str(data.get('msg1', ''))[:40])
+        row = data.get('output')
+        if not isinstance(row, dict) or not row.get('bstp_nmix_prpr'):
+            raise BrokerError('지수 현재가 응답 형식이 달라 읽지 않았습니다.')
+        value = amount(row.get('bstp_nmix_prpr'))
+        if value <= 0:
+            raise BrokerError('지수 현재가가 0으로 와서 사용하지 않았습니다.')
+        diff, rate = None, None
+        try:
+            diff = amount(row.get('bstp_nmix_prdy_vrss'))
+            rate = amount(row.get('bstp_nmix_prdy_ctrt'))
+        except BrokerError:
+            pass
+        if str(row.get('prdy_vrss_sign', '')) in ('4', '5'):          # 부호는 따로 옴(1·2 오름 · 4·5 내림)
+            diff = -abs(diff) if diff is not None else None
+            rate = -abs(rate) if rate is not None else None
+        return {'value': value, 'diff': diff, 'rate': rate}
+
     def index_daily(self, index, start, end):
         """업종(지수) 기간별 시세(FHKUP03500100). 0001 코스피 · 1001 코스닥. 한 번에 약 50일."""
         self._check(None, start, end)
