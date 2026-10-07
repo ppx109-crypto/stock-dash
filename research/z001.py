@@ -37,7 +37,7 @@ import caps  # noqa: E402
 
 H = int(os.getenv("Z_H", "20"))            # 들고 있는 거래일
 GAP = 1                                     # 판단 t → t+1 종가에 삼
-STEP = 5                                    # 판단일 간격
+STEP = int(os.getenv("Z_STEP", "5"))       # 판단일 간격(N1b: 1 = 날마다)
 TOP = int(os.getenv("Z_TOP", "200"))
 START = "20170301"
 CUT = os.getenv("Z_CUT", "")
