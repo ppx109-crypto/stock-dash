@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task_id": "PRIVACY-0001",
+  "input_pr": 21,
+  "input_head_sha": "118551ea5943d484ba35de4f7c618ab5c8ba02a9",
+  "reviewed_status": {
+    "open": true,
+    "draft": false,
+    "merged": false,
+    "report_status": "READY"
+  },
+  "integrity": {
+    "manifest_files_declared": 28,
+    "sha256_checked": 28,
+    "sha256_matched": 28,
+    "mismatches": []
+  },
+  "claims": {
+    "synthetic_contract_fixtures": "42/42",
+    "mutations": "21/21",
+    "real_data_collected": false,
+    "strategy_performance": "NOT_RUN",
+    "paper_validation_ready": false
+  },
+  "findings": [
+    {
+      "code": "P1",
+      "severity": "HIGH",
+      "fact": "privacy key matching is case-sensitive and omits canonical order number variants",
+      "evidence": "validator.py PRIVACY_KEYS/has_key_deep and REPORT section 5"
+    },
+    {
+      "code": "P2",
+      "severity": "HIGH",
+      "fact": "repository-path ledger may store original broker order id; values were not inspected",
+      "evidence": "COLLECTOR-MAPPING.md and REPORT section 4"
+    },
+    {
+      "code": "D1",
+      "severity": "BLOCKING",
+      "fact": "real PIT market/disclosure/fill/cost/universe evidence remains unavailable",
+      "evidence": "GAP-TRACEABILITY.json"
+    }
+  ],
+  "verdict": "LIMITED_PASS_SYNTHETIC_CONTRACT_ONLY",
+  "next_task": "PRIVACY-0001",
+  "checked_at_kst": "2026-10-08T08:50:00+09:00"
+}
