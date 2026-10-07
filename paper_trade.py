@@ -408,7 +408,7 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
         except broker_kis.BrokerError as e:
             no, status = "", f"실패 · {e}"
         book["orders"].append({"key": key, "at": now.strftime("%Y-%m-%d %H:%M"), "code": code, "name": name,
-                               "side": side, "qty": qty, "status": status, "order_no": no})
+                               "side": side, "qty": qty, "status": status, "order_no": no, "price": prices.get(code)})
         lines.append(f"🧪 모의투자({tag}) {'매수' if side == 'buy' else '매도'} · {name}({code}) {qty}주 · 시장가 · {status}")
     book["orders"] = book["orders"][-5000:]
     path.parent.mkdir(parents=True, exist_ok=True)
