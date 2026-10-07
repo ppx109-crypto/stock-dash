@@ -34,7 +34,9 @@ def equity_frame(C):
         q = json.loads(p.read_text(encoding="utf-8")).get("rows") or {}
         got = []
         for v in q.values():
-            no = str((v or {}).get("접수번호", ""))
+            if not v:
+                continue
+            no = str(v.get("접수번호", ""))
             try:
                 eq = float(str(v.get("자본")).replace(",", ""))
             except (TypeError, ValueError):
