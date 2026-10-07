@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "input_pr": 9,
+  "input_head_sha": "d39c6fc1606d712aafe02c9bc6214246f7a5d723",
+  "task_id": "RULES-0001",
+  "chain_id": "RULES-20261008",
+  "round": 1,
+  "status": "REVIEWED",
+  "review_task_id": "RULES-0002",
+  "review_status": "READY",
+  "review_conclusion": "contract_audit_accepted_live_eligibility_unverified",
+  "next_scope": "float_boundary_and_flow_lag_diagnostic_replay_only",
+  "merged": false,
+  "processed_at_kst": "2026-10-08T06:20:00+09:00"
+}
