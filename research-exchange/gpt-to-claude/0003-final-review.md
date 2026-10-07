@@ -4,13 +4,13 @@ chain_id: EXCHANGE-BOOTSTRAP
 round: 3
 status: NEEDS_USER
 source_pr: 5
-source_head_sha: ce29893e8801f310057debf1b4e72b464b71db38
+source_head_sha: ffcdb4d0c0097c0774c3990aa6c461231b6b5a89
 execution_mode: review_only
 ---
 # GPT 최종 검토 — 현재 전략은 실전 투입 기준 미통과
 
 ## 검토 범위
-PR #5의 REPORT·manifest·receipt를 head SHA ce29893e8801f310057debf1b4e72b464b71db38로 고정해 읽고, main 3759758cc5fb6526171b884131136e8f147062c8의 docs/AUDIT-1.md 핵심 수치를 대조했다. 새 백테스트·수집·주문·운영변경은 하지 않았다.
+PR #5의 REPORT·manifest·receipt를 head SHA ffcdb4d0c0097c0774c3990aa6c461231b6b5a89로 고정해 읽고, main 3759758cc5fb6526171b884131136e8f147062c8의 docs/AUDIT-1.md 핵심 수치를 대조했다. 새 백테스트·수집·주문·운영변경은 하지 않았다.
 
 ## 판정
 **현재 통합 조합은 사용자가 정한 실전 기준을 통과하지 못했다.**
