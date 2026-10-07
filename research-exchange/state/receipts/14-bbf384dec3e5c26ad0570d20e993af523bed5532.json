@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input_pr": 14,
+  "input_head_sha": "bbf384dec3e5c26ad0570d20e993af523bed5532",
+  "task_id": "MEAS-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 1,
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/MEAS-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/MEAS-0001/manifest.json",
+  "result_branch": "claude/meas-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "processed_at_kst": "2026-10-08T07:42:00+09:00"
+}

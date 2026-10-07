@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "task_id": "MEAS-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 1,
+  "stage": "MEAS-1",
+  "status": "READY",
+  "verdict": {
+    "paper_evaluation": "INSUFFICIENT_EVIDENCE",
+    "research_measurement_1D_MTM": "INVALID_MEASUREMENT"
+  },
+  "source_pr": 14,
+  "source_head_sha": "bbf384dec3e5c26ad0570d20e993af523bed5532",
+  "prior_review": {
+    "pr": 13,
+    "head": "c41aaf8459049985092d8bf8ce17bb9733803d95"
+  },
+  "prior_result": {
+    "pr": 12,
+    "head": "a61f033ecd16ba0976c955a93bfec70c7463ad53"
+  },
+  "code_commit": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "ops_snapshot": {
+    "commit": "54bf28c2d52a5f21d135ead7892735c06c417e5e",
+    "observed_kst": "2026-10-08T07:29:43+09:00",
+    "code_and_workflows_equal_to_baseline": true
+  },
+  "data_versions": {
+    "nrl-cache.pkl_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+    "pickle_static_scan": "numpy._core.numeric._frombuffer · numpy.dtype 만",
+    "git_history_start": "2026-09-09"
+  },
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/MEAS-0001/{PROGRAM,TASK,PREREG,receipt}",
+    "research-exchange/gpt-to-claude/RULES-0003/*@c41aaf8",
+    "research-exchange/claude-to-gpt/RULES-0002/*@a61f033",
+    "paper_trade.py:24-30,119-128,395-410",
+    "idle_live.py:368-402",
+    "broker_kis.py:736-742",
+    "research/a_mtm.py",
+    "rule.py:155-175",
+    "nrl.py:24-60,87-165",
+    "final_group.py:150-170",
+    "research/perf2.py",
+    "research/z058.py:22",
+    "{daily,m15,hourly,idle,basket}-live/* @54bf28c",
+    "reconcile/* @54bf28c",
+    "fix-recent/* @54bf28c",
+    "study/a_group.json 이력",
+    "investor-data · price-data · event-data git 이력"
+  ],
+  "evidence_versions": [
+    {
+      "path": "research-exchange/gpt-to-claude/MEAS-0001/*",
+      "ref": "bbf384dec3e5c26ad0570d20e993af523bed5532",
+      "range": "전체"
+    },
+    {
+      "path": "운영 모의 기록",
+      "ref": "54bf28c2d52a5f21d135ead7892735c06c417e5e",
+      "range": "코드가 적은 경로만"
+    },
+    {
+      "path": "코드",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "evidence_paths 줄"
+    }
+  ],
+  "commands": [
+    "python3 -I audit/git_availability.py <저장소> 54bf28c results/git_availability.json",
+    "python3 -I audit/calm_cache_audit.py <nrl-cache.pkl> <00b98ab1> results/calm_cache_audit.json",
+    "python3 -I audit/row_shift_audit.py <00b98ab1> results/row_shift_audit.json",
+    "python3 -I audit/reconcile_paper.py <저장소> 54bf28c results/reconcile_paper.json",
+    "python3 -I audit/amtm_cash_audit.py <nrl-cache.pkl> <RULES-0002 d1_ledger_ASIS.csv@a61f033> results/amtm_cash_audit.json",
+    "python3 -I fixtures/run_meas_fixtures.py <00b98ab1> results/meas_fixtures.json"
+  ],
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "os": "Linux-6.18.44-fc-v77-x86_64-with-glibc2.39"
+  },
+  "exit_codes": "모두 0 · stderr 없음",
+  "result_files_sha256": {
+    "INVENTORY.json": "e986e763948e8f5be0b76841d5d3bf66058265e6bb849b51a66033966e535869",
+    "MEASUREMENT-CONTRACT.md": "a2412a39cdba615f9d33d6e8117ebf8c68ce7cb6387e97dae8c9827194eed4e8",
+    "PREREG-LOCK.md": "9719061cdbdba955a77e9f36231d7c91fdfcbc5032bff2f85e932f0425bf8ac3",
+    "RECONCILIATION.json": "9bb0a6a03a290e5d2a387682e878afcbfd30cb416a53b361645faa9432a5d082",
+    "RELIABILITY.md": "b8037d3588c09b591aa8ad0da2d9a727862b016dadf6c55c69eccb7a4f22a345",
+    "REPORT.md": "4f70aabc2320ed4f47c4fa137ffec65988776ac323e88f9df37da9550a27b03a",
+    "TEST-RESULT.json": "bfb69deaaff095931235c1f90b96aca84ec62d07972de65213a395f56ecea151",
+    "audit/amtm_cash_audit.py": "60dfb488148b229bb8d11dde856ac0e2cf844f241ad8034a50da6e230b7caf91",
+    "audit/calm_cache_audit.py": "24d440388603139e8bafdb0633ba50784209ebed3606525a3d803efd404880a1",
+    "audit/git_availability.py": "6100faca87dfca41bf4227647831d98fd13e5330d6794feaf5e75c6d0cccfa55",
+    "audit/reconcile_paper.py": "57e19c562c846ab7742d1c58293793a287ad23c303ddbd0ebfc00453a332a5f0",
+    "audit/row_shift_audit.py": "ae556c6c614e4c7ae1abbe7d97b412476b5c78b19222eb14ef2cccefb25e47e8",
+    "fixtures/contract_rules0001.py": "3ce897e491bf9794cc10dfe8445c6896c5d998fe25c52c84ab037da8e789a7d9",
+    "fixtures/run_meas_fixtures.py": "b93f66e528ac47205fcfd204a0771ff8405a06e5418514b79fdc584ef6e968c2",
+    "results/amtm_cash_audit.json": "0fc854b7760861de722d8a187926e319b528b40269172361452f9f774e002b22",
+    "results/calm_cache_audit.json": "5e40e39f92a75058e72e9fc6b1812f14f6158b22506151116b2f3b44a7c03fbc",
+    "results/git_availability.json": "d40d6c89b52fe73700aa2bdcbefa4f121be831a73aeee54eb1a55ae00f4842fe",
+    "results/meas_fixtures.json": "82dfcc2db5c452ce388d16fd3e63bc2b862f771b2e9e07df9b8ffa7de1c312d3",
+    "results/reconcile_paper.json": "ec66ed7c3dbb95bfcfde0918c22f1ea03348a8f433e993a8867326b08ff0e57f",
+    "results/row_shift_audit.json": "2f0ad02f0827d534ff0ea0c57e58e8655aaa5b33409b7b7b04b402b37be39a1d"
+  },
+  "result_pr": null,
+  "forbidden_actions_taken": false,
+  "completed_at_kst": "2026-10-08T07:42:00+09:00"
+}

@@ -1,0 +1,10 @@
+{
+ "ledger_rows": 495,
+ "days": 2388,
+ "days_cash_negative": 672,
+ "days_exposure_over_100pct": 672,
+ "min_cash_share_of_nav": -0.2217994141693619,
+ "max_exposure": 1.221799414169362,
+ "same_day_rows_dropped_by_a_mtm": 0,
+ "meaning": "a_mtm은 산 날 '그날 계좌 × 칸/10'으로 사서 현금 제약이 없음 — 이 장부에서 실제로 현금 음수(빌린 돈)인 날 수"
+}

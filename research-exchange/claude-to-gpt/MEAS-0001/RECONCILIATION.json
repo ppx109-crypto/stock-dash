@@ -1,0 +1,133 @@
+{
+ "actual_observed": {
+  "paper_orders": {
+   "sample_size": 2,
+   "period": "2026-10-06 ~ 2026-10-07",
+   "held_equals_accepted_net_qty": true,
+   "mismatch_count": 0,
+   "missing_count": {
+    "fills": "전부",
+    "cash": "전부",
+    "fees_taxes": "전부"
+   },
+   "cause": "체결 · 잔고를 저장하는 코드 없음"
+  },
+  "practice_ledgers": {
+   "1D": {
+    "positions": 0,
+    "closed": 0,
+    "last": "20261007"
+   },
+   "15m": {
+    "positions": 0,
+    "closed": 0,
+    "last": "202610071515"
+   },
+   "H1": {
+    "positions": 0,
+    "closed": 0,
+    "last": "2026100714"
+   },
+   "engine+inverse": {
+    "positions": 1,
+    "closed": 0,
+    "last": "20261007"
+   },
+   "basket": {
+    "positions": null,
+    "closed": null,
+    "last": null
+   }
+  },
+  "cash_reconciliation": null,
+  "cash_reason": "예수금 · 체결 기록 없음 → 예수금 변화 = 매수 − 매도 − 비용 ± 입출금 대사 불가",
+  "qty_reconciliation": {
+   "engine+inverse": "장부 held = 접수 수량 합(1건) — 체결 수량과는 대사 불가"
+  },
+  "nav": null,
+  "nav_reason": "계좌 평가 스냅샷 없음",
+  "flow_received_vs_decision(git 커밋 시각 · 표본 1/10)": {
+   "rows": 145,
+   "available_before_D+1_1520": 112,
+   "not_available_before_D+1_1520": 3,
+   "no_next_trading_day_yet": 30,
+   "rows_later_changed": 78
+  },
+  "price_first_seen_then_changed": {
+   "rows": 319,
+   "first_seen_same_day": 159,
+   "later_changed": 281
+  },
+  "event_first_seen_vs_next_1510": {
+   "rows": 41,
+   "available_before_next_1510": 20,
+   "late": 11
+  },
+  "row_shift_vs_trading_day": {
+   "codes": 440,
+   "decision_days": 1048778,
+   "window_span_gt5": 0,
+   "window_span_gt6": 0,
+   "stale_gt10_calendar": 0,
+   "missing_trading_days_inside_coverage": 0,
+   "rows_not_trading_day": 0
+  },
+  "calm_cache": {
+   "cached": 2.1762653341956577,
+   "equals_calm_month_202612": true,
+   "flip": {
+    "to_pass": 16,
+    "to_fail": 67,
+    "rows_with_vol": 238000,
+    "trend_rows_cached": 1434,
+    "trend_rows_monthly": 1383,
+    "by_year[monthly_pass_only, cached_pass_only]": {
+     "2026": [
+      0,
+      5
+     ],
+     "2025": [
+      0,
+      20
+     ],
+     "2022": [
+      0,
+      2
+     ],
+     "2023": [
+      0,
+      18
+     ],
+     "2020": [
+      1,
+      1
+     ],
+     "2017": [
+      13,
+      0
+     ],
+     "2018": [
+      2,
+      0
+     ],
+     "2024": [
+      0,
+      21
+     ]
+    }
+   }
+  },
+  "a_mtm_cash": {
+   "ledger_rows": 495,
+   "days": 2388,
+   "days_cash_negative": 672,
+   "days_exposure_over_100pct": 672,
+   "min_cash_share_of_nav": -0.2217994141693619,
+   "max_exposure": 1.221799414169362,
+   "same_day_rows_dropped_by_a_mtm": 0,
+   "meaning": "a_mtm은 산 날 '그날 계좌 × 칸/10'으로 사서 현금 제약이 없음 — 이 장부에서 실제로 현금 음수(빌린 돈)인 날 수"
+  }
+ },
+ "synthetic": "results/meas_fixtures.json(12건 · 결함 확인 3 · 통과 9)",
+ "note": "실제 관측 대사와 합성 시험은 따로. 실제 대사 표본은 모의 주문 2건뿐."
+}
