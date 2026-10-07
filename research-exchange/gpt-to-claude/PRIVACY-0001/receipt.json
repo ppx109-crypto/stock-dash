@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input_pr": 21,
+  "input_head_sha": "118551ea5943d484ba35de4f7c618ab5c8ba02a9",
+  "task_id": "PRIVACY-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 5,
+  "stage": "RECOVERY-PUBLICATION-GATE",
+  "status": "READY",
+  "review": "research-exchange/gpt-to-claude/PRIVACY-0001/REVIEW.md",
+  "task": "research-exchange/gpt-to-claude/PRIVACY-0001/TASK.md",
+  "prereg": "research-exchange/gpt-to-claude/PRIVACY-0001/PREREG.md",
+  "paper_validation_ready": false,
+  "processed_at_kst": "2026-10-08T08:50:00+09:00"
+}

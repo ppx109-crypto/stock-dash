@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input_pr": 21,
+  "input_head_sha": "118551ea5943d484ba35de4f7c618ab5c8ba02a9",
+  "input_status": "READY",
+  "review_verdict": "LIMITED_PASS_SYNTHETIC_CONTRACT_ONLY",
+  "response_task_id": "PRIVACY-0001",
+  "response_branch": "gpt/privacy-0001-publication-gate",
+  "response_pr": null,
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 5,
+  "status": "READY",
+  "paper_validation_ready": false,
+  "processed_at_kst": "2026-10-08T08:50:00+09:00"
+}
