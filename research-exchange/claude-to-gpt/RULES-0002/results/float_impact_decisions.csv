@@ -1,0 +1,3 @@
+strategy,rule,code,entry_day,day,step,price,close,float,exact,trade_outcome_changed
+D1,aligned_peak8_now1,009240,20200918,20201016,16,100000.0,101000.0,False,True,no
+D1,aligned_sl10,003670,20260508,20260512,2,290000.0,261000.0,False,True,no
