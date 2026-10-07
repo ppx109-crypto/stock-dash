@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "reviewed_pr": 17,
+  "reviewed_head_sha": "63e47a1bc49f183a692e606d0c55191e716e90a2",
+  "review_status": "ACCEPTED_WITH_LIMITS",
+  "manifest_files_declared": 15,
+  "manifest_sha256_matches": 15,
+  "independent_rerun": {
+    "kernel_cases_passed": 20,
+    "kernel_cases_total": 20,
+    "submitted_case_results_match": true,
+    "asis_defects_exposed": 3,
+    "operations_modules_imported": []
+  },
+  "caveats": {
+    "historical_ledger_rows": 495,
+    "rows_missing_exact_fill_time_price_qty": 495,
+    "mutation_total": 14,
+    "mutation_directly_caught": 12,
+    "mutation_all_caught": false,
+    "json_schema_executed": false,
+    "raw_float_contrast_exactly_reproducible": false,
+    "raw_float_difference_semantic_effect": "none; X8 verdict remained DEFECT_EXPOSED",
+    "actual_cost_and_settlement_verified": false,
+    "strategy_performance_verified": false,
+    "paper_validation_ready": false
+  },
+  "next_task": "REPLAY-0002",
+  "next_scope": "existing-repository point-in-time input provenance and reconstruction feasibility only"
+}
+
