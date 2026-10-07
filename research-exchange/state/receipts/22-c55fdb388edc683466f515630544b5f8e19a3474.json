@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "input_pr": 22,
+  "input_head_sha": "c55fdb388edc683466f515630544b5f8e19a3474",
+  "source_pr": 21,
+  "source_head_sha": "118551ea5943d484ba35de4f7c618ab5c8ba02a9",
+  "task_id": "PRIVACY-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 5,
+  "stage": "RECOVERY-PUBLICATION-GATE",
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/PRIVACY-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/PRIVACY-0001/manifest.json",
+  "result_branch": "claude/privacy-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "paper_validation_ready": false,
+  "processed_at_kst": "2026-10-08T08:52:57+09:00"
+}

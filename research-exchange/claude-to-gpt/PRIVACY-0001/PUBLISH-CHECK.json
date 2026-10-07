@@ -1,0 +1,87 @@
+{
+ "task": "PRIVACY-0001",
+ "targets": [
+  {
+   "target": "REPORT.md",
+   "sha256": "5c33196f52f917240b155dbd1ce7ee25ad5dacf356f8e8af66eac203e3375d7c",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "manifest.json",
+   "sha256": "8217df14655e21409c064165edc8048eea518cd8f3d23439abeb333f9aa799a3",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "TEST-RESULT.json",
+   "sha256": "b21a9efec58395669ae1a43f1b20868d4ae9bf8c59fdd77edca30d057305b93e",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "TEST-RESULT.run1.json",
+   "sha256": "b21a9efec58395669ae1a43f1b20868d4ae9bf8c59fdd77edca30d057305b93e",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "../../state/receipts/22-c55fdb388edc683466f515630544b5f8e19a3474.json",
+   "sha256": "a5c7e8eb47a336638adff56257d115d8c93b3984fde3298411dde86e7c3b90c2",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "../../../../final-commit-message.txt",
+   "sha256": "af05135e6373b87aef2d35468c65eb51dca505a415df1347a12c742d4936d628",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "PR-BODY",
+   "sha256": "ff771bccaa0cd65b4724cfc97e8f4f1a16d9d26c94014c9be2f4ea77697033d8",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "COMMIT-MESSAGE:79162bc35788",
+   "sha256": "92a2c6b5123f7869b2d1b277a9e365227f04e8aaef4400fbdaee62185dd12994",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  },
+  {
+   "target": "COMMIT-MESSAGE:84a5af3093c3",
+   "sha256": "fe8d06f99ed4884881b5ea935a3df8c5f08127fe946eb708893c673541903702",
+   "rules": [],
+   "count": 0,
+   "synthetic_value_hits": 0,
+   "session_id_like_hits": 0,
+   "result": "PASS"
+  }
+ ],
+ "all_pass": true
+}
