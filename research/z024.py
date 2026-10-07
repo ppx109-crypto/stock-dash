@@ -3,7 +3,7 @@
 - 문턱: **앞 반(2017 ~ 20) 후보들**의 변동성 1/3 · 2/3 값(앞 반만으로 정함 · 뒤 반은 시험).
 - 판 V1: 변동 큰 1/3은 칸 −1(최소 1) · V2: 큰 1/3 −1 · 작은 1/3 +1(최대 4) · V3: 칸 × (가운데값 ÷ 변동성)을 반올림 1 ~ 4.
 - 반익절은 칸 // 2 그대로(nrl.half_rule이 BASE_SIZE를 부르므로 그 함수도 바꿔 끼움).
-python research/z024.py
+python research/z024.py · Z_PART=b python research/z024.py(B2b 반대쪽: V4 작은 1/3 −1 · V5 큰 1/3 +1)
 """
 import statistics
 import sys
@@ -47,10 +47,24 @@ def v3(r):
     return b if not v else int(min(4, max(1, round(b * MIDV / v))))
 
 
+def v4(r):
+    v, b = vol(r), BASE(r)
+    return max(1, b - 1) if v is not None and v < LO else b
+
+
+def v5(r):
+    v, b = vol(r), BASE(r)
+    return min(4, b + 1) if v is not None and v > HI else b
+
+
 def main():
     print(f"== B2: 칸 크기 × 변동성 · 앞 반 후보 변동성 1/3 {LO * 100:.2f}% · 가운데 {MIDV * 100:.2f}% · 2/3 {HI * 100:.2f}% ==", flush=True)
     base = T.once("지금(새 82)", holds=HOLD)
-    for tag, fn in (("V1 변동 큰 1/3 칸 −1", v1), ("V2 큰 1/3 −1 · 작은 1/3 +1", v2), ("V3 칸 × 가운데 ÷ 변동성", v3)):
+    import os
+    tests = (("V1 변동 큰 1/3 칸 −1", v1), ("V2 큰 1/3 −1 · 작은 1/3 +1", v2), ("V3 칸 × 가운데 ÷ 변동성", v3))
+    if os.getenv("Z_PART") == "b":           # B2b: 반대쪽(변동 작은 것을 줄이거나 큰 것을 늘림 · 한 종목 최대 4칸 = 40% 그대로)
+        tests = (("V4 변동 작은 1/3 칸 −1", v4), ("V5 변동 큰 1/3 칸 +1(최대 4)", v5))
+    for tag, fn in tests:
         nrl.BASE_SIZE = fn                       # 반익절(half_rule)도 이 칸으로 나눔
         got = T.once(tag, holds=HOLD, size=fn)
         T.diff_check(base, got)
