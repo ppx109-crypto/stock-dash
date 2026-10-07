@@ -29,15 +29,15 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests numpy
-      - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal -v
-      - name: 빈칸 엔진 · 코스닥 과열 인버스(15:10 판단 · 모의투자 주문 · 1일봉보다 먼저)
+      - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal tests.test_basket_live -v
+      - name: 사건 바구니 C · 빈칸 엔진 · 코스닥 과열 인버스(15:10 판단 · 모의투자 주문 · 1일봉보다 먼저)
         continue-on-error: true
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python idle_live.py || status=$?
-          mkdir -p idle-live
-          git add -A idle-live
+          mkdir -p idle-live basket-live
+          git add -A idle-live basket-live
           if ! git diff --cached --quiet; then
             git commit -q -m "Idle engine live"
             ok=0
@@ -67,7 +67,8 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python daily_live.py || status=$?
           mkdir -p daily-live
-          git add -A daily-live idle-live
+          mkdir -p basket-live
+          git add -A daily-live idle-live basket-live
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily rule live"
             ok=0

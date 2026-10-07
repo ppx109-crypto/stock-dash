@@ -61,7 +61,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python hourly_a.py live || status=$?
           mkdir -p hourly-live
-          git add -A hourly-live idle-live          # 규칙이 살 돈이 모자라 빈칸 엔진이 자리를 내준 기록도
+          mkdir -p basket-live && git add -A hourly-live idle-live basket-live          # 규칙이 살 돈이 모자라 빈칸 엔진이 자리를 내준 기록도
           if ! git diff --cached --quiet; then
             git commit -q -m "Hourly A group live"
             for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done

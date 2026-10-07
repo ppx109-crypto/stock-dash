@@ -26,6 +26,8 @@ DAILY_BOOK = Path("daily-live/paper-orders.json")        # 일봉(1일봉 규칙
 M15_BOOK = Path("m15-live/paper-orders.json")            # 15분봉(15분봉 22회차 후보) 주문 장부
 IDLE_BOOK = Path("idle-live/paper-orders.json")          # 빈칸 엔진 · 코스닥 과열 인버스 주문 장부(idle_live.py · 2026-10-03)
 IDLE_STATE = Path("idle-live/state.json")                # 빈칸 엔진이 들고 있는 것(종류 · 산 값 · 지난 날)
+BASKET_BOOK = Path("basket-live/paper-orders.json")      # 사건 바구니 C 주문 장부(basket_live.py · 2026-10-07)
+BASKET_STATE = Path("basket-live/state.json")
 LABEL = {"1h": "1시간봉 매수 후보", "1d": "1일봉 매수 후보", "15m": "15분봉 매수 후보", "idle": "빈칸 엔진"}
 # 모의 계좌 하나를 규칙들이 나눠 씀. 규칙마다 계좌 총액의 그 몫을 제 돈으로 보고 칸을 셈 · 팔 때는 그 규칙이 산 수량(장부의 held)만 팖.
 # 2026-10-03 최종 조합(사용자 "최고의 조합 재검토 후 배포"): 1일봉 50 · 15분봉 50 · 1시간봉 0(알림만) + 빈칸 엔진 · 코스닥 과열 인버스는 남는 돈.
@@ -256,19 +258,31 @@ def book_path(strategy="1h"):
 
 
 def make_room(broker, balance, need, now):
-    """규칙(1일봉 · 1시간봉 · 15분봉)이 살 돈(need)이 현금보다 많고 빈칸 엔진이 무언가 들고 있으면, 엔진 것을 모두 시장가로 팔아 자리를 내줌.
-    엔진은 '규칙이 안 쓰는 돈'만 굴린다는 연구 규칙(규칙이 먼저)을 실제 계좌에서 지키는 장치(2026-10-03).
+    """규칙(1일봉 · 1시간봉 · 15분봉)이 살 돈(need)이 현금보다 많으면 남는 돈을 굴리던 것을 팔아 자리를 내줌.
+    차례: 빈칸 엔진 것을 모두 → 그래도 모자라면 사건 바구니 것을 오래된 것부터 모자란 만큼(2026-10-07 · 연구 P4b: 규칙 > 바구니 > 엔진).
+    '규칙이 안 쓰는 돈'만 굴린다는 연구 규칙(규칙이 먼저)을 실제 계좌에서 지키는 장치(2026-10-03).
     돌려줌: (새 잔고, 알림 줄들). 팔 게 없거나 현금이 넉넉하면 그대로."""
+    balance, lines = _give_room(broker, balance, need, now, IDLE_BOOK, IDLE_STATE, "빈칸 엔진", partial=False)
+    balance, more = _give_room(broker, balance, need, now, BASKET_BOOK, BASKET_STATE, "사건 바구니", partial=True)
+    return balance, lines + more
+
+
+def _give_room(broker, balance, need, now, book_file, state_file, label, partial):
     cash = float(balance.get("cash") or 0)
-    book = json.loads(IDLE_BOOK.read_text(encoding="utf-8")) if IDLE_BOOK.exists() else {"orders": [], "held": {}}
+    book = json.loads(book_file.read_text(encoding="utf-8")) if book_file.exists() else {"orders": [], "held": {}}
     held = {c: int(q) for c, q in (book.get("held") or {}).items() if int(q) > 0}
     # 시장가 매수는 실제 값의 약 1.36배를 묶으므로 그만큼 있어야 다 삼(2026-10-06 검토 — 예전엔 1배로 봐서 엔진이 안 비키고 규칙 매수가 잘림)
     if need * MKT_MARGIN <= cash * 0.98 or not held:
         return balance, []
     account = {p["code"]: int(p["quantity"]) for p in balance.get("positions", [])}
-    lines, sold = [], False
-    for code, qty in sorted(held.items()):
-        qty = min(qty, account.get(code, 0))
+    price = {p["code"]: float(p.get("price") or 0) for p in balance.get("positions", [])}
+    st = json.loads(state_file.read_text(encoding="utf-8")) if state_file.exists() else {}
+    order = sorted(held, key=lambda c: (str((st.get("positions", {}).get(c) or {}).get("day", "")), c))
+    lines, sold, est = [], False, cash
+    for code in order:
+        if partial and sold and need * MKT_MARGIN <= est * 0.98:
+            break
+        qty = min(held[code], account.get(code, 0))
         if qty < 1:
             book["held"].pop(code, None)
             continue
@@ -277,20 +291,20 @@ def make_room(broker, balance, need, now):
             status = "접수"
             book["held"].pop(code, None)
             sold = True
+            est += qty * price.get(code, 0)
         except broker_kis.BrokerError as e:
             no, status = "", f"실패 · {e}"
         book.setdefault("orders", []).append({"key": f"{now.strftime('%Y%m%d%H%M')}:room:{code}", "at": now.strftime("%Y-%m-%d %H:%M"),
                                               "code": code, "side": "sell", "qty": qty, "status": status, "order_no": no,
                                               "why": "규칙이 살 돈이 모자라 자리 내줌"})
-        lines.append(f"🧪 모의투자(빈칸 엔진) 매도 · {code} {qty}주 · 규칙에 자리 내줌 · {status}")
-    IDLE_BOOK.parent.mkdir(parents=True, exist_ok=True)
-    IDLE_BOOK.write_text(json.dumps(book, ensure_ascii=False, indent=1), encoding="utf-8")
-    if sold and IDLE_STATE.exists():
-        st = json.loads(IDLE_STATE.read_text(encoding="utf-8"))
+        lines.append(f"🧪 모의투자({label}) 매도 · {code} {qty}주 · 규칙에 자리 내줌 · {status}")
+    book_file.parent.mkdir(parents=True, exist_ok=True)
+    book_file.write_text(json.dumps(book, ensure_ascii=False, indent=1), encoding="utf-8")
+    if sold and state_file.exists():
         for code in list(st.get("positions", {})):
             if code not in book["held"]:
                 st["positions"].pop(code)
-        IDLE_STATE.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
+        state_file.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
     if sold:
         time.sleep(float(os.getenv("PAPER_ROOM_WAIT", "2")))
         try:
