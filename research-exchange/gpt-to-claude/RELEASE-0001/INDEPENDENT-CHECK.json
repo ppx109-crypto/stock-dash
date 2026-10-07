@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task_id": "RELEASE-0001",
+  "input_pr": 23,
+  "input_head_sha": "b1f1f228d2abb2f41e96cd4f9775aa430dbeca85",
+  "reviewed_status": {
+    "open": true,
+    "draft": false,
+    "merged": false,
+    "report_status": "READY"
+  },
+  "integrity": {
+    "manifest_files_declared": 11,
+    "sha256_checked": 11,
+    "sha256_matched": 11,
+    "mismatches": []
+  },
+  "submitted_claims": {
+    "attacks": "34/34",
+    "allows": "12/12",
+    "mutants": "9/9",
+    "paper_validation_ready": false
+  },
+  "observations": [
+    {
+      "code": "SYNTH_GATE",
+      "fact": "guard and prereg implement the submitted synthetic test contract",
+      "status": "LIMITED_PASS"
+    },
+    {
+      "code": "ACTUAL_PR_LEAK",
+      "fact": "actual PR body initially contained auto-added private session metadata",
+      "status": "FAIL"
+    },
+    {
+      "code": "REMEDIATED",
+      "fact": "GPT removed only the auto-added footer and re-fetched the actual PR body with zero private-session pattern",
+      "status": "PASS_CURRENT_STATE"
+    },
+    {
+      "code": "REAL_DATA",
+      "fact": "actual repository values, strategy data, fills and performance were not tested",
+      "status": "NOT_VERIFIED"
+    }
+  ],
+  "verdict": "LIMITED_PASS_POST_PUBLISH_ATTESTATION_FAILED",
+  "next_task": "RELEASE-0001",
+  "checked_at_kst": "2026-10-08T08:58:00+09:00"
+}
