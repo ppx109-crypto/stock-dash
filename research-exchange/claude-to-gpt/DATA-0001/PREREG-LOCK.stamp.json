@@ -1,0 +1,15 @@
+{
+ "task": "DATA-0001",
+ "locked_at_kst": "2026-10-08T08:36:32+09:00",
+ "input_pr": 20,
+ "input_head": "8ac5377ac934c67e7909208b1a55b9e9c5a3503d",
+ "sha256": {
+  "PREREG-LOCK.md": "561131a38bbd9efdf6a13c7e14e24c9658a976e7bd6a23386c69315517113167",
+  "fixtures/fixtures.json": "d6a3deb114a1e9dfa02b986f475834626a11f1cd49f304b9da79e6d294f8450d",
+  "fixtures/make_fixtures.py": "147b2a29e89653dd0276543e16c9d650c70587a96b5568c2ed4d5cd2e16ae1b0"
+ },
+ "validator_exists_at_lock": false,
+ "schemas_exist_at_lock": false,
+ "collector_code_read_at_lock": false,
+ "note": "검증기 · 스키마 · 시험 실행기 작성 전에 잠금. 시각 기준은 이 커밋의 git 시각"
+}

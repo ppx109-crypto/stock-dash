@@ -1,0 +1,3283 @@
+{
+ "task": "DATA-0001",
+ "note": "비식별 합성 fixture. 기대 판정은 PREREG-LOCK 5장과 같음(손으로 적음).",
+ "fixtures": [
+  {
+   "id": "FX01",
+   "note": "정상 원주가 봉",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "asof",
+     "record_id": "bar",
+     "t": "2026-01-05T15:45:00+09:00",
+     "expect": "bar@1"
+    }
+   ]
+  },
+  {
+   "id": "FX02",
+   "note": "최초판+정정판",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-06T08:00:00+09:00",
+     "fetched_at": "2026-01-06T08:00:00+09:00",
+     "version": 2,
+     "revision_of": "bar@1",
+     "is_correction": true,
+     "raw_payload_sha256": "009af8d640f5b76d442a8fdbdece5198da24ccc37ac8702e821252764596f26c",
+     "normalized_sha256": "7707012fde811097743a1507ea664cd7c092f1180b36392ce57cd616c5752f42",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T08:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 101,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "asof",
+     "record_id": "bar",
+     "t": "2026-01-05T16:00:00+09:00",
+     "expect": "bar@1"
+    },
+    {
+     "q": "asof",
+     "record_id": "bar",
+     "t": "2026-01-06T09:00:00+09:00",
+     "expect": "bar@2"
+    }
+   ]
+  },
+  {
+   "id": "FX03",
+   "note": "덮어쓰기",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "009af8d640f5b76d442a8fdbdece5198da24ccc37ac8702e821252764596f26c",
+     "normalized_sha256": "7707012fde811097743a1507ea664cd7c092f1180b36392ce57cd616c5752f42",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 101,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "OVERWRITE_REJECTED"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "asof",
+     "record_id": "bar",
+     "t": "2026-01-05T16:00:00+09:00",
+     "expect": "bar@1"
+    }
+   ]
+  },
+  {
+   "id": "FX04",
+   "note": "같은 레코드 재전달",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 1
+   },
+   "queries": []
+  },
+  {
+   "id": "FX05",
+   "note": "시간대 없음",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00",
+     "fetched_at": "2026-01-05T15:40:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "NO_TZ"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX06",
+   "note": "KST 아님",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T06:40:00+00:00",
+     "fetched_at": "2026-01-05T06:40:00+00:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T06:40:00+00:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "NOT_KST"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX07",
+   "note": "available<as_of",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:00:00+09:00",
+     "fetched_at": "2026-01-05T15:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "AVAILABLE_BEFORE_ASOF"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX08",
+   "note": "fetched<available",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:35:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:35:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "FETCHED_BEFORE_AVAILABLE"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX09",
+   "note": "결정 뒤 공개 입력",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "sig",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:10:00+09:00",
+     "available_at": "2026-01-05T15:15:00+09:00",
+     "fetched_at": "2026-01-05T15:15:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "08187293e710c7772983f05b906ebd9df511b31c17ee6f610ac94ff5785bbb90",
+     "normalized_sha256": "7330e4333b9c05babb9b022f0703724d42c9ac42a80e98aa1d57ba0d957aafa9",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:15:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig",
+      "signal_at": "2026-01-05T15:10:00+09:00",
+      "decision_at": "2026-01-05T15:15:00+09:00",
+      "earliest_order_at": "2026-01-05T15:20:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "bar@1"
+      ],
+      "cutoff_hash": "fa0cecbd132bd763cbaab2d74c01e138fc9b2701a503417b4903c9a6c00977bf"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX10",
+   "note": "정정판은 결정 뒤 공개",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-06T10:00:00+09:00",
+     "fetched_at": "2026-01-06T10:00:00+09:00",
+     "version": 2,
+     "revision_of": "bar@1",
+     "is_correction": true,
+     "raw_payload_sha256": "009af8d640f5b76d442a8fdbdece5198da24ccc37ac8702e821252764596f26c",
+     "normalized_sha256": "7707012fde811097743a1507ea664cd7c092f1180b36392ce57cd616c5752f42",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T10:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 101,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "sig1",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-06T08:50:00+09:00",
+     "available_at": "2026-01-06T09:00:00+09:00",
+     "fetched_at": "2026-01-06T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "4d1d64a45c2a973dc30b2c6fdeaebc235b4591a01150930672331b268bc0e0bd",
+     "normalized_sha256": "4d387d372f1e33beeabea17b203e33e8b7baeb388dc3dd21dab1a16755e686ea",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig1",
+      "signal_at": "2026-01-06T08:50:00+09:00",
+      "decision_at": "2026-01-06T09:00:00+09:00",
+      "earliest_order_at": "2026-01-06T09:00:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "bar@1"
+      ],
+      "cutoff_hash": "fa0cecbd132bd763cbaab2d74c01e138fc9b2701a503417b4903c9a6c00977bf"
+     }
+    },
+    {
+     "record_id": "sig2",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-06T08:50:00+09:00",
+     "available_at": "2026-01-06T09:00:00+09:00",
+     "fetched_at": "2026-01-06T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "547cf0ce081dc8bca35327cf09cc9d2ed703ece18eefebc8318c218db6f2cb06",
+     "normalized_sha256": "bca393a79bf58e74e7ecd8696d26eda5e388e5904c63184ea4456e6bebaca3ac",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig2",
+      "signal_at": "2026-01-06T08:50:00+09:00",
+      "decision_at": "2026-01-06T09:00:00+09:00",
+      "earliest_order_at": "2026-01-06T09:00:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "bar@2"
+      ],
+      "cutoff_hash": "b98e8482d65ca6eb044844146829bf1b1ff222d769db47dcde200f2cd13b4e0f"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      3,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX11",
+   "note": "v1 없이 v2",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 2,
+     "revision_of": "bar@1",
+     "is_correction": true,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "LINEAGE_BROKEN"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX12",
+   "note": "자기 참조",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-06T08:00:00+09:00",
+     "fetched_at": "2026-01-06T08:00:00+09:00",
+     "version": 2,
+     "revision_of": "bar@2",
+     "is_correction": true,
+     "raw_payload_sha256": "009af8d640f5b76d442a8fdbdece5198da24ccc37ac8702e821252764596f26c",
+     "normalized_sha256": "7707012fde811097743a1507ea664cd7c092f1180b36392ce57cd616c5752f42",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T08:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 101,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "LINEAGE_CYCLE"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX13",
+   "note": "정정 표시 없음",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-06T08:00:00+09:00",
+     "fetched_at": "2026-01-06T08:00:00+09:00",
+     "version": 2,
+     "revision_of": "bar@1",
+     "is_correction": false,
+     "raw_payload_sha256": "009af8d640f5b76d442a8fdbdece5198da24ccc37ac8702e821252764596f26c",
+     "normalized_sha256": "7707012fde811097743a1507ea664cd7c092f1180b36392ce57cd616c5752f42",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T08:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 101,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "LINEAGE_BROKEN"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX14",
+   "note": "수정주가를 원주가로",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "874b9b3548e7398274b47994362ec8fecb193103bdc7888c7715a6f63e71a055",
+     "normalized_sha256": "5aa5494cb0b0c778181a7456cd1fd235201a5d08d7cff613bbf966a7b6011cb4",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": true
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "ADJUSTED_AS_RAW"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX15",
+   "note": "원주가에 조정 필드",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "810c8ba43eda516cfb1bc4f8c5cf5850ea611f2bc58704fafda667817117bbfd",
+     "normalized_sha256": "55073ee16ce76e330989bc3c66ae3fd25248faf5cc6df26cd231cfc1f0b1cef9",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false,
+      "adj_basis": "KIS_ADJ"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "ADJUSTED_AS_RAW"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX16",
+   "note": "hash 틀림",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "HASH_MISMATCH"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX17",
+   "note": "Universe 스냅숏",
+   "records": [
+    {
+     "record_id": "uni",
+     "record_type": "UNIVERSE_SNAPSHOT",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T08:00:00+09:00",
+     "available_at": "2026-01-05T08:30:00+09:00",
+     "fetched_at": "2026-01-05T08:30:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "3bf66109121250d51dcbba81bcb23a42b6feb466b0a4a265e41e1e6b818a97d7",
+     "normalized_sha256": "2dbcd38ef43bdcb248421a8164dc852471712e0ac6786409aa6319924102b6f0",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T08:30:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "market": "KOSPI",
+      "complete": true,
+      "members": [
+       {
+        "security_id": "S002",
+        "status": "LISTED"
+       },
+       {
+        "security_id": "S001",
+        "status": "LISTED"
+       }
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "universe",
+     "date": "2026-01-05",
+     "market": "KOSPI",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": [
+      "S001",
+      "S002"
+     ]
+    },
+    {
+     "q": "universe",
+     "date": "2026-01-06",
+     "market": "KOSPI",
+     "t": "2026-01-06T09:00:00+09:00",
+     "expect": "UNKNOWN:NO_SNAPSHOT"
+    },
+    {
+     "q": "universe",
+     "date": "2026-01-05",
+     "market": "KOSPI",
+     "t": "2026-01-05T08:00:00+09:00",
+     "expect": "UNKNOWN:NO_SNAPSHOT"
+    }
+   ]
+  },
+  {
+   "id": "FX18",
+   "note": "불완전 스냅숏",
+   "records": [
+    {
+     "record_id": "uni",
+     "record_type": "UNIVERSE_SNAPSHOT",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T08:00:00+09:00",
+     "available_at": "2026-01-05T08:30:00+09:00",
+     "fetched_at": "2026-01-05T08:30:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "9b75c70c79829812e2288a66929cd7f85fc4c07b3c9525da6c9cb9519c07d491",
+     "normalized_sha256": "a7a483a6e24c54201fe6d467ac63cb64f83a6c14fdb103f70e945de7ff335c3e",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T08:30:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "market": "KOSPI",
+      "complete": false,
+      "members": [
+       {
+        "security_id": "S002",
+        "status": "LISTED"
+       },
+       {
+        "security_id": "S001",
+        "status": "LISTED"
+       }
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "universe",
+     "date": "2026-01-05",
+     "market": "KOSPI",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": "UNKNOWN:INCOMPLETE"
+    }
+   ]
+  },
+  {
+   "id": "FX19",
+   "note": "거래정지 · 재개",
+   "records": [
+    {
+     "record_id": "st0",
+     "record_type": "TRADING_STATUS",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T08:00:00+09:00",
+     "available_at": "2026-01-05T08:00:00+09:00",
+     "fetched_at": "2026-01-05T08:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ede63d4ce997a6f8dee5e16594cc91b07a50b7c4e2ab84f6f83110ab779dec1d",
+     "normalized_sha256": "8750f3924193113c69588abda7682b7773dd799b29f644462897b37073787bab",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T08:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "status": "TRADING",
+      "effective_at": "2026-01-05T08:00:00+09:00"
+     }
+    },
+    {
+     "record_id": "st1",
+     "record_type": "TRADING_STATUS",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T10:00:00+09:00",
+     "available_at": "2026-01-05T10:00:00+09:00",
+     "fetched_at": "2026-01-05T10:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "77b248b209cfb7e982a6b5405fdbae83dea95d9bc048209eba229279764188d7",
+     "normalized_sha256": "1174efdea7a4c5a52eb8e00ad4bb1aca4505029d3e797d45651149886bdcb11e",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T10:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "status": "HALTED",
+      "effective_at": "2026-01-05T10:00:00+09:00"
+     }
+    },
+    {
+     "record_id": "st2",
+     "record_type": "TRADING_STATUS",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T14:00:00+09:00",
+     "available_at": "2026-01-05T14:00:00+09:00",
+     "fetched_at": "2026-01-05T14:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "69c1f84a21fc839da5bf93bc3b6fb1e8ae03234df9ba27e3820e6c1aa7af8086",
+     "normalized_sha256": "c6ca236262c6a66be7a4186c4c1cda26f182516ad0d97e9708cfb26f451c03b2",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T14:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "status": "TRADING",
+      "effective_at": "2026-01-05T14:00:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "status",
+     "security": "S001",
+     "t": "2026-01-05T09:30:00+09:00",
+     "expect": "TRADING"
+    },
+    {
+     "q": "status",
+     "security": "S001",
+     "t": "2026-01-05T11:00:00+09:00",
+     "expect": "HALTED"
+    },
+    {
+     "q": "status",
+     "security": "S001",
+     "t": "2026-01-05T15:00:00+09:00",
+     "expect": "TRADING"
+    },
+    {
+     "q": "status",
+     "security": "S002",
+     "t": "2026-01-05T11:00:00+09:00",
+     "expect": "UNKNOWN"
+    }
+   ]
+  },
+  {
+   "id": "FX20",
+   "note": "정지 공개가 늦음",
+   "records": [
+    {
+     "record_id": "st0",
+     "record_type": "TRADING_STATUS",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T08:00:00+09:00",
+     "available_at": "2026-01-05T08:00:00+09:00",
+     "fetched_at": "2026-01-05T08:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ede63d4ce997a6f8dee5e16594cc91b07a50b7c4e2ab84f6f83110ab779dec1d",
+     "normalized_sha256": "8750f3924193113c69588abda7682b7773dd799b29f644462897b37073787bab",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T08:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "status": "TRADING",
+      "effective_at": "2026-01-05T08:00:00+09:00"
+     }
+    },
+    {
+     "record_id": "st1",
+     "record_type": "TRADING_STATUS",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T10:00:00+09:00",
+     "available_at": "2026-01-05T10:05:00+09:00",
+     "fetched_at": "2026-01-05T10:05:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "77b248b209cfb7e982a6b5405fdbae83dea95d9bc048209eba229279764188d7",
+     "normalized_sha256": "1174efdea7a4c5a52eb8e00ad4bb1aca4505029d3e797d45651149886bdcb11e",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T10:05:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "status": "HALTED",
+      "effective_at": "2026-01-05T10:00:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "status",
+     "security": "S001",
+     "t": "2026-01-05T10:02:00+09:00",
+     "expect": "TRADING"
+    },
+    {
+     "q": "status",
+     "security": "S001",
+     "t": "2026-01-05T10:06:00+09:00",
+     "expect": "HALTED"
+    }
+   ]
+  },
+  {
+   "id": "FX21",
+   "note": "기업행동 효력시점",
+   "records": [
+    {
+     "record_id": "ca",
+     "record_type": "CORP_ACTION",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T16:10:00+09:00",
+     "available_at": "2026-01-05T16:10:00+09:00",
+     "fetched_at": "2026-01-05T16:10:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "bb0d0b4b9be7ef2f2f5f94a1f31a5db164d6cdb5fdeb881d2879030b192583ce",
+     "normalized_sha256": "1ce1ac5d4e704373b8f3c8e401715efe41f7c4cc712147af4a11b0ef7313c766",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:10:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "kind": "SPLIT",
+      "ratio": "1:5",
+      "record_date": "2026-01-06",
+      "effective_date": "2026-01-08",
+      "rcept_no": "R0001",
+      "rcept_at": "2026-01-05T16:10:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "corp",
+     "security": "S001",
+     "date": "2026-01-08",
+     "t": "2026-01-05T15:00:00+09:00",
+     "expect": "NONE_KNOWN"
+    },
+    {
+     "q": "corp",
+     "security": "S001",
+     "date": "2026-01-08",
+     "t": "2026-01-06T09:00:00+09:00",
+     "expect": [
+      "SPLIT"
+     ]
+    },
+    {
+     "q": "corp",
+     "security": "S001",
+     "date": "2026-01-07",
+     "t": "2026-01-06T09:00:00+09:00",
+     "expect": "NONE_KNOWN"
+    }
+   ]
+  },
+  {
+   "id": "FX22",
+   "note": "기업행동 비율 없음",
+   "records": [
+    {
+     "record_id": "ca",
+     "record_type": "CORP_ACTION",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T16:10:00+09:00",
+     "available_at": "2026-01-05T16:10:00+09:00",
+     "fetched_at": "2026-01-05T16:10:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "cedd2f9942e2dcb18f96649633b4e69538f4afab1718811a21a17663d91cda5d",
+     "normalized_sha256": "30308e07bfa6cc9357c3f8d8c0b3c4bd96f3cb417a106fd1c2af3df0a6fba0cf",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:10:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "kind": "SPLIT",
+      "ratio": null,
+      "record_date": "2026-01-06",
+      "effective_date": "2026-01-08",
+      "rcept_no": "R0001",
+      "rcept_at": "2026-01-05T16:10:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "CORP_ACTION_INCOMPLETE"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX23",
+   "note": "장중 공시",
+   "records": [
+    {
+     "record_id": "f",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T11:20:00+09:00",
+     "available_at": "2026-01-05T11:20:00+09:00",
+     "fetched_at": "2026-01-05T11:20:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ab7891a0e26809d24481d9774eac706db55c09da3a09b153701100b0e576f9ed",
+     "normalized_sha256": "1571c9a111f3c96ca0cd377d202280f2264159d3e48cf4651f1e6fd86401ee0f",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T11:20:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R1",
+      "rcept_dt": "2026-01-05",
+      "rcept_at": "2026-01-05T11:20:00+09:00",
+      "time_known": true,
+      "report_nm": "합성 공시",
+      "original_rcept_no": null
+     }
+    },
+    {
+     "record_id": "sig",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:10:00+09:00",
+     "available_at": "2026-01-05T15:15:00+09:00",
+     "fetched_at": "2026-01-05T15:15:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "704a9a6d06860a9b6a76da5765873b0f379d2b4a48d8be5e0b6bddc57dfb1b2e",
+     "normalized_sha256": "57b19d1d2ba4cdeeeaafc43e2c8ffb7afdee76c17d6af98e959394629e852c64",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:15:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig",
+      "signal_at": "2026-01-05T15:10:00+09:00",
+      "decision_at": "2026-01-05T15:15:00+09:00",
+      "earliest_order_at": "2026-01-05T15:20:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "f@1"
+      ],
+      "cutoff_hash": "e380cbe509ff685a296eaa4387b6194e1995468784ef10b76ce2bca4d551d64d"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX24",
+   "note": "장후 공시",
+   "records": [
+    {
+     "record_id": "f",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T17:30:00+09:00",
+     "available_at": "2026-01-05T17:30:00+09:00",
+     "fetched_at": "2026-01-05T17:30:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "548fcfc74352751c31f73d771f8740e65ff169d0a6c3de4a7654d9bfeae8db30",
+     "normalized_sha256": "b517e7143cb52640b97d18f60946dfc9728efc69eb32a9d7db2bff7a787eb59d",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T17:30:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R1",
+      "rcept_dt": "2026-01-05",
+      "rcept_at": "2026-01-05T17:30:00+09:00",
+      "time_known": true,
+      "report_nm": "합성 공시",
+      "original_rcept_no": null
+     }
+    },
+    {
+     "record_id": "sigA",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:10:00+09:00",
+     "available_at": "2026-01-05T15:15:00+09:00",
+     "fetched_at": "2026-01-05T15:15:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "3778bfc792e536849f221b221246bebd26d7cd454a650ad78fc23cda7e42906e",
+     "normalized_sha256": "d1d3175685bff5d0fc1c1d322bad1b8f611fa6790058a82aa172dbea8ad30b34",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:15:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sigA",
+      "signal_at": "2026-01-05T15:10:00+09:00",
+      "decision_at": "2026-01-05T15:15:00+09:00",
+      "earliest_order_at": "2026-01-05T15:20:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "f@1"
+      ],
+      "cutoff_hash": "e380cbe509ff685a296eaa4387b6194e1995468784ef10b76ce2bca4d551d64d"
+     }
+    },
+    {
+     "record_id": "sigB",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-06T15:10:00+09:00",
+     "available_at": "2026-01-06T15:15:00+09:00",
+     "fetched_at": "2026-01-06T15:15:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "8db198144ea047a670439864af14b3bce8ed10e955a7e165fbd72bf0d61ffb6e",
+     "normalized_sha256": "00febc6ba6151ddb1f2777d709270e5dd70ffa72af6c3251f8b0471e48945419",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T15:15:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sigB",
+      "signal_at": "2026-01-06T15:10:00+09:00",
+      "decision_at": "2026-01-06T15:15:00+09:00",
+      "earliest_order_at": "2026-01-06T15:20:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "f@1"
+      ],
+      "cutoff_hash": "e380cbe509ff685a296eaa4387b6194e1995468784ef10b76ce2bca4d551d64d"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX25",
+   "note": "날짜만 아는 공시",
+   "records": [
+    {
+     "record_id": "f1",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T00:00:00+09:00",
+     "available_at": "2026-01-05T09:00:00+09:00",
+     "fetched_at": "2026-01-05T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "6abff3930cba3c676b78d2c61535b0799a9171cf785cabf083aa5f61eddfea87",
+     "normalized_sha256": "b3de4350fc27d08a61a6ebbda99ece1bbd08c8783657b40dc6fded5587babfa2",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R1",
+      "rcept_dt": "2026-01-05",
+      "rcept_at": null,
+      "time_known": false,
+      "report_nm": "합성 공시",
+      "original_rcept_no": null
+     }
+    },
+    {
+     "record_id": "f2",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T00:00:00+09:00",
+     "available_at": "2026-01-06T00:00:00+09:00",
+     "fetched_at": "2026-01-06T00:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "a757e99e3a66cb07a94de296e5b8d317c16c3315cb4035cadce7df7e3d54dfd9",
+     "normalized_sha256": "d1b63fe74d0392495069196026fde05c2f590c237d8a760b6782d4b4c7a33264",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T00:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R2",
+      "rcept_dt": "2026-01-05",
+      "rcept_at": null,
+      "time_known": false,
+      "report_nm": "합성 공시",
+      "original_rcept_no": null
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "DATE_ONLY_TOO_EARLY"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX26",
+   "note": "정정공시",
+   "records": [
+    {
+     "record_id": "f",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T12:00:00+09:00",
+     "available_at": "2026-01-05T12:00:00+09:00",
+     "fetched_at": "2026-01-05T12:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "3e234ad745ee64ba19c127a2c126dfde9521090ad5ebd65c740d9fa300714a05",
+     "normalized_sha256": "d6c41751d6c917dad7ad3281899f9068badd8ec7fdb7bf2e31e737a7ca251e57",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T12:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R1",
+      "rcept_dt": "2026-01-05",
+      "rcept_at": "2026-01-05T12:00:00+09:00",
+      "time_known": true,
+      "report_nm": "합성 공시",
+      "original_rcept_no": null
+     }
+    },
+    {
+     "record_id": "f",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-06T08:30:00+09:00",
+     "available_at": "2026-01-06T08:30:00+09:00",
+     "fetched_at": "2026-01-06T08:30:00+09:00",
+     "version": 2,
+     "revision_of": "f@1",
+     "is_correction": true,
+     "raw_payload_sha256": "c7952f06716f0da7da423d04a67912e0a5c0fc41299c9449c6ac4605ba6785ed",
+     "normalized_sha256": "ab7c1b408d7a9fa210afd391a3e7cf7221412669a4f90180f9825bc656b2c070",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-06T08:30:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R2",
+      "rcept_dt": "2026-01-06",
+      "rcept_at": "2026-01-06T08:30:00+09:00",
+      "time_known": true,
+      "report_nm": "합성 공시",
+      "original_rcept_no": "R1"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "asof",
+     "record_id": "f",
+     "t": "2026-01-05T13:00:00+09:00",
+     "expect": "f@1"
+    },
+    {
+     "q": "asof",
+     "record_id": "f",
+     "t": "2026-01-06T09:00:00+09:00",
+     "expect": "f@2"
+    }
+   ]
+  },
+  {
+   "id": "FX27",
+   "note": "관측 체결 증거 없음",
+   "records": [
+    {
+     "record_id": "fl",
+     "record_type": "FILL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:01:00+09:00",
+     "available_at": "2026-01-05T09:01:00+09:00",
+     "fetched_at": "2026-01-05T09:01:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "e8bc7cabe8d38c9ecbea0ad12ff787b34468312e43add3ddeaa548cd2060409b",
+     "normalized_sha256": "0dab5ea0981f142d9aa59162bf9222bfef3904d28f80e2f37be906ec39e82329",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:01:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "side": "BUY",
+      "qty": 10,
+      "price": 100
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "OBSERVED_NO_EVIDENCE"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX28",
+   "note": "증거가 주문번호 모양",
+   "records": [
+    {
+     "record_id": "fl1",
+     "record_type": "FILL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:01:00+09:00",
+     "available_at": "2026-01-05T09:01:00+09:00",
+     "fetched_at": "2026-01-05T09:01:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "e8bc7cabe8d38c9ecbea0ad12ff787b34468312e43add3ddeaa548cd2060409b",
+     "normalized_sha256": "0dab5ea0981f142d9aa59162bf9222bfef3904d28f80e2f37be906ec39e82329",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:01:00+09:00",
+     "public_ok": true,
+     "evidence_ref": "0001234567",
+     "payload": {
+      "order_id": "o1",
+      "side": "BUY",
+      "qty": 10,
+      "price": 100
+     }
+    },
+    {
+     "record_id": "fl2",
+     "record_type": "FILL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:01:00+09:00",
+     "available_at": "2026-01-05T09:01:00+09:00",
+     "fetched_at": "2026-01-05T09:01:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "e8bc7cabe8d38c9ecbea0ad12ff787b34468312e43add3ddeaa548cd2060409b",
+     "normalized_sha256": "0dab5ea0981f142d9aa59162bf9222bfef3904d28f80e2f37be906ec39e82329",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:01:00+09:00",
+     "public_ok": true,
+     "evidence_ref": "ev_0123456789abcdef",
+     "payload": {
+      "order_id": "o1",
+      "side": "BUY",
+      "qty": 10,
+      "price": 100
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "EVIDENCE_REF_NOT_PSEUDONYMOUS"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX29",
+   "note": "개인정보 키",
+   "records": [
+    {
+     "record_id": "fl1",
+     "record_type": "FILL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:01:00+09:00",
+     "available_at": "2026-01-05T09:01:00+09:00",
+     "fetched_at": "2026-01-05T09:01:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "5dacc7143c3a56f4f5f3746654ee3ae5379d5341a4585df94b0c5602056e2cd6",
+     "normalized_sha256": "fee22a1e38eda4926e6f1f880d4f6227142a198bd8e53756e66e3328e379f503",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:01:00+09:00",
+     "public_ok": true,
+     "evidence_ref": "ev_0123456789abcdef",
+     "payload": {
+      "order_id": "o1",
+      "side": "BUY",
+      "qty": 1,
+      "price": 100,
+      "broker_order_no": "X"
+     }
+    },
+    {
+     "record_id": "b2",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     },
+     "account_no": "X"
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "PRIVACY_FIELD"
+     ],
+     [
+      1,
+      "PRIVACY_FIELD"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX30",
+   "note": "모형 체결 불완전 · 모드 섞임",
+   "records": [
+    {
+     "record_id": "fl1",
+     "record_type": "FILL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "MODEL",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T09:01:00+09:00",
+     "available_at": "2026-01-05T09:01:00+09:00",
+     "fetched_at": "2026-01-05T09:01:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "55d866922950bce3529670ee2e6959eccb68eb78195d7250aa86db79c5450a64",
+     "normalized_sha256": "dfbb66f2e2edd95fbc1fa187611b0e1524c1b06466cbd3018cc06436daa2b993",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:01:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "side": "BUY",
+      "qty": 10,
+      "price": 100,
+      "model": {
+       "bar": "D+1 REGULAR",
+       "rule_id": "R4",
+       "slippage_in_price": true
+      }
+     }
+    },
+    {
+     "record_id": "fl2",
+     "record_type": "FILL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "MODEL",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T09:01:00+09:00",
+     "available_at": "2026-01-05T09:01:00+09:00",
+     "fetched_at": "2026-01-05T09:01:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "bea43fb905e7abde44454aaae6c37c744553530580731255ca48eb65eb468402",
+     "normalized_sha256": "2eb2096e9b347d5fe66f0a112ec0ff3533aa5f711338ceee8fff715f9b0c1f17",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:01:00+09:00",
+     "public_ok": true,
+     "evidence_ref": "ev_0123456789abcdef",
+     "payload": {
+      "order_id": "o1",
+      "side": "BUY",
+      "qty": 10,
+      "price": 100,
+      "model": {
+       "bar": "D+1 REGULAR",
+       "price_field": "open",
+       "rule_id": "R4",
+       "slippage_in_price": true
+      }
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "MODEL_FILL_INCOMPLETE"
+     ],
+     [
+      1,
+      "SOURCE_MODE_MIX"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX31",
+   "note": "비용 공백",
+   "records": [
+    {
+     "record_id": "feeA",
+     "record_type": "COST_SCHEDULE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "ALL",
+     "source_system": "DOC",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2025-12-31T09:00:00+09:00",
+     "fetched_at": "2025-12-31T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "60bfeec8071e768e5da5af75728c7caf4165dd5f72df148da0a6ddc61f806f6f",
+     "normalized_sha256": "908b9751968d35eb025a8e69bac2f8fbf204bc5f6a983f9184526e0a2c4a148a",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2025-12-31T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "component": "FEE",
+      "rate": "0.00015",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-06-30",
+      "source_ref": "synthetic-schedule-doc-v1"
+     }
+    },
+    {
+     "record_id": "feeB",
+     "record_type": "COST_SCHEDULE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "ALL",
+     "source_system": "DOC",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2025-12-31T09:00:00+09:00",
+     "fetched_at": "2025-12-31T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ff3265a086dc0b2369022181e56d5ba37e66ba50e8389457ed29d6d3a9b971f9",
+     "normalized_sha256": "d1c517233296ea5a5e1ac56b9b0113b14c17df7d541bfa066cbfebc490d8a4eb",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2025-12-31T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "component": "FEE",
+      "rate": "0.00015",
+      "valid_from": "2026-07-02",
+      "valid_to": null,
+      "source_ref": "synthetic-schedule-doc-v1"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "cost",
+     "component": "FEE",
+     "date": "2026-03-02",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": "0.00015"
+    },
+    {
+     "q": "cost",
+     "component": "FEE",
+     "date": "2026-07-01",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": "UNKNOWN:GAP"
+    },
+    {
+     "q": "cost",
+     "component": "TAX",
+     "date": "2026-03-02",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": "UNKNOWN:NONE"
+    }
+   ]
+  },
+  {
+   "id": "FX32",
+   "note": "비용 중첩 · 출처 없음",
+   "records": [
+    {
+     "record_id": "feeA",
+     "record_type": "COST_SCHEDULE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "ALL",
+     "source_system": "DOC",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2025-12-31T09:00:00+09:00",
+     "fetched_at": "2025-12-31T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "60bfeec8071e768e5da5af75728c7caf4165dd5f72df148da0a6ddc61f806f6f",
+     "normalized_sha256": "908b9751968d35eb025a8e69bac2f8fbf204bc5f6a983f9184526e0a2c4a148a",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2025-12-31T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "component": "FEE",
+      "rate": "0.00015",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-06-30",
+      "source_ref": "synthetic-schedule-doc-v1"
+     }
+    },
+    {
+     "record_id": "feeC",
+     "record_type": "COST_SCHEDULE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "ALL",
+     "source_system": "DOC",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2025-12-31T09:00:00+09:00",
+     "fetched_at": "2025-12-31T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "c1e6463962ad432bd8a84ef4efcc4ffc32a0f3058327b703c21411ba44f2c2e3",
+     "normalized_sha256": "ecbb8b092d6d8faa0dff62becc92a0828f6e0bcf36fea40f9c1f4c8303b5c06d",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2025-12-31T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "component": "FEE",
+      "rate": "0.0002",
+      "valid_from": "2026-03-01",
+      "valid_to": "2026-12-31",
+      "source_ref": "synthetic-schedule-doc-v1"
+     }
+    },
+    {
+     "record_id": "feeD",
+     "record_type": "COST_SCHEDULE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "ALL",
+     "source_system": "DOC",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2025-12-31T09:00:00+09:00",
+     "fetched_at": "2025-12-31T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "67e81d58bdbf67605bab4b530c0f5e8003241a59f015eb75144328d9eb8e614f",
+     "normalized_sha256": "7226d6b8156eed49c43b0b1fba98a35cb704d63c541ef6479288773f02df5887",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2025-12-31T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "component": "FEE",
+      "rate": "0.0003",
+      "valid_from": "2027-01-01",
+      "valid_to": null,
+      "source_ref": null
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      2,
+      "COST_SOURCE_MISSING"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": [
+    {
+     "q": "cost",
+     "component": "FEE",
+     "date": "2026-03-02",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": "UNKNOWN:OVERLAP"
+    },
+    {
+     "q": "cost",
+     "component": "FEE",
+     "date": "2026-02-02",
+     "t": "2026-01-05T09:00:00+09:00",
+     "expect": "0.00015"
+    }
+   ]
+  },
+  {
+   "id": "FX33",
+   "note": "같은 시각 순서 충돌",
+   "records": [
+    {
+     "record_id": "e1",
+     "record_type": "ORDER_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:00:00+09:00",
+     "available_at": "2026-01-05T09:00:00+09:00",
+     "fetched_at": "2026-01-05T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "66ae39a4f044dd6d5a7f5e7804006186ddd159771e79897442a28b9b1e5c895d",
+     "normalized_sha256": "392dcb1f6f07de2fe01d647900a127be45ed50041b43a17f248a833510c147a8",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "event": "INTENT",
+      "at": "2026-01-05T09:00:00+09:00",
+      "seq": 1
+     }
+    },
+    {
+     "record_id": "e2",
+     "record_type": "ORDER_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:00:00+09:00",
+     "available_at": "2026-01-05T09:00:00+09:00",
+     "fetched_at": "2026-01-05T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "9d22283ad2a8167397075207ead321bd1776713b7254ee48decba48c96246fec",
+     "normalized_sha256": "49868a55ebfa53f85bd810817f6621b532d496c218abca83ad4025b309628fcb",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "event": "ACCEPTED",
+      "at": "2026-01-05T09:00:00+09:00",
+      "seq": 2
+     }
+    },
+    {
+     "record_id": "e3",
+     "record_type": "ORDER_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:05:00+09:00",
+     "available_at": "2026-01-05T09:05:00+09:00",
+     "fetched_at": "2026-01-05T09:05:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ae78496e058dd1c41d48e0fe5c7fc2ec67a6f7601630732e1b465f5baac3c5b4",
+     "normalized_sha256": "e8c25d684ecae238b97a3981bdc0e3ace5e3b4f7bcb0b8a9772f61475a324495",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:05:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "event": "FILLED",
+      "at": "2026-01-05T09:05:00+09:00"
+     }
+    },
+    {
+     "record_id": "e4",
+     "record_type": "ORDER_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:05:00+09:00",
+     "available_at": "2026-01-05T09:05:00+09:00",
+     "fetched_at": "2026-01-05T09:05:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "464067435f8e5c1d9f0a4211ba036a2c6f1a3fb280822693d1ec17bfef926065",
+     "normalized_sha256": "491e04ccab6fba588b44d9222bc2a3cfc1fe73ad45d2b9e5b5cd239453ccbae3",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:05:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "event": "CANCELLED",
+      "at": "2026-01-05T09:05:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      3,
+      "AMBIGUOUS_ORDER_SEQ"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX34",
+   "note": "접수 없이 체결",
+   "records": [
+    {
+     "record_id": "e1",
+     "record_type": "ORDER_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:00:00+09:00",
+     "available_at": "2026-01-05T09:00:00+09:00",
+     "fetched_at": "2026-01-05T09:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "3da78882f5d5a5e2b1220c9895b19a48b110a1021f1d1d4f62eee027a9aa06e8",
+     "normalized_sha256": "a843efefa9db2634586396aace21dcffb8aee487077c08664f50583c307449b5",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "event": "INTENT",
+      "at": "2026-01-05T09:00:00+09:00"
+     }
+    },
+    {
+     "record_id": "e2",
+     "record_type": "ORDER_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS_PAPER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_KIS_PAPER",
+     "as_of": "2026-01-05T09:05:00+09:00",
+     "available_at": "2026-01-05T09:05:00+09:00",
+     "fetched_at": "2026-01-05T09:05:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ae78496e058dd1c41d48e0fe5c7fc2ec67a6f7601630732e1b465f5baac3c5b4",
+     "normalized_sha256": "e8c25d684ecae238b97a3981bdc0e3ace5e3b4f7bcb0b8a9772f61475a324495",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T09:05:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "order_id": "o1",
+      "event": "FILLED",
+      "at": "2026-01-05T09:05:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "BAD_ORDER_TRANSITION"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX35",
+   "note": "수급 공개 시각",
+   "records": [
+    {
+     "record_id": "fw1",
+     "record_type": "INVESTOR_FLOW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T00:00:00+09:00",
+     "available_at": "2026-01-05T15:00:00+09:00",
+     "fetched_at": "2026-01-05T15:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "34ff5da4fb91a31e7fa3c1257150580b749875e09f4bb296fabc2b1ed7a44da0",
+     "normalized_sha256": "b8b069427dc5314ab3576728e03c782f66459cf4896af6a316b06a1b209718fb",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "trade_date": "2026-01-05",
+      "외국인": 10,
+      "기관": -5,
+      "개인": -5
+     }
+    },
+    {
+     "record_id": "fw2",
+     "record_type": "INVESTOR_FLOW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T00:00:00+09:00",
+     "available_at": "2026-01-05T18:00:00+09:00",
+     "fetched_at": "2026-01-05T18:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "34ff5da4fb91a31e7fa3c1257150580b749875e09f4bb296fabc2b1ed7a44da0",
+     "normalized_sha256": "b8b069427dc5314ab3576728e03c782f66459cf4896af6a316b06a1b209718fb",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T18:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "trade_date": "2026-01-05",
+      "외국인": 10,
+      "기관": -5,
+      "개인": -5
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "FLOW_TOO_EARLY"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX36",
+   "note": "재무가 공시보다 먼저",
+   "records": [
+    {
+     "record_id": "f",
+     "record_type": "DART_FILING",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T16:00:00+09:00",
+     "available_at": "2026-01-05T16:00:00+09:00",
+     "fetched_at": "2026-01-05T16:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "e3bcdd88c16d7803076fd34a72681b1467740279339d889542829c4a3bda3712",
+     "normalized_sha256": "0e46ddf87d1623fe24ea1c66cc78b532bad2c55fb5a45b9d3130083caf224e70",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "rcept_no": "R1",
+      "rcept_dt": "2026-01-05",
+      "rcept_at": "2026-01-05T16:00:00+09:00",
+      "time_known": true,
+      "report_nm": "합성 공시",
+      "original_rcept_no": null
+     }
+    },
+    {
+     "record_id": "fin1",
+     "record_type": "FINANCIAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2026-01-05T15:00:00+09:00",
+     "fetched_at": "2026-01-05T15:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "2c00ef5a16101af38d9778f8b9537c05e1cc8719a07fa6c953f9322f9824e6aa",
+     "normalized_sha256": "939811d3e1022583b894b4e494b8336500f87f5ff15b86f2a0b8e3bc45096814",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "period_end": "2025-12-31",
+      "filing_record": "f@1",
+      "values": {
+       "매출": 1
+      }
+     }
+    },
+    {
+     "record_id": "fin2",
+     "record_type": "FINANCIAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "DART",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2025-12-31T00:00:00+09:00",
+     "available_at": "2026-01-05T16:30:00+09:00",
+     "fetched_at": "2026-01-05T16:30:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "2c00ef5a16101af38d9778f8b9537c05e1cc8719a07fa6c953f9322f9824e6aa",
+     "normalized_sha256": "939811d3e1022583b894b4e494b8336500f87f5ff15b86f2a0b8e3bc45096814",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:30:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "period_end": "2025-12-31",
+      "filing_record": "f@1",
+      "values": {
+       "매출": 1
+      }
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "FINANCIAL_BEFORE_FILING"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX37",
+   "note": "cutoff hash 틀림",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "sig",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:50:00+09:00",
+     "available_at": "2026-01-05T16:00:00+09:00",
+     "fetched_at": "2026-01-05T16:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "e615219fbc89182d32058d82d3ba9a6db550e69d99f3cdda5182924f275e82f6",
+     "normalized_sha256": "eec2c3cd753102b6c0e70c421a9badc627a95d2c411e86f29f28b74de5505b5d",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig",
+      "signal_at": "2026-01-05T15:50:00+09:00",
+      "decision_at": "2026-01-05T16:00:00+09:00",
+      "earliest_order_at": "2026-01-06T09:00:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "bar@1"
+      ],
+      "cutoff_hash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "CUTOFF_HASH_MISMATCH"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX38",
+   "note": "주문 시각이 결정보다 앞",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "sig",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:50:00+09:00",
+     "available_at": "2026-01-05T16:00:00+09:00",
+     "fetched_at": "2026-01-05T16:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "ac52ede6d42d78e70224502941b77063204884859641f44b8e431e348a7d8d5a",
+     "normalized_sha256": "50e6d2d41d4c24f6aad15d1a9839d9061b3f6636b9df6697d3a3b05a85b6bfaf",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig",
+      "signal_at": "2026-01-05T15:50:00+09:00",
+      "decision_at": "2026-01-05T16:00:00+09:00",
+      "earliest_order_at": "2026-01-05T15:55:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "bar@1"
+      ],
+      "cutoff_hash": "fa0cecbd132bd763cbaab2d74c01e138fc9b2701a503417b4903c9a6c00977bf"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "SIGNAL_TIME_ORDER"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX39",
+   "note": "계좌 상태 입력 시각",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    },
+    {
+     "record_id": "ac1",
+     "record_type": "ACCOUNT_STATE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "KOSPI",
+     "source_system": "LEDGER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:35:00+09:00",
+     "available_at": "2026-01-05T15:35:00+09:00",
+     "fetched_at": "2026-01-05T15:35:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "038e527696483dff23a5cbf6c5735b7e65e81cc76b7cb994ac2f2ea7b903e0e9",
+     "normalized_sha256": "e8b23754a532e40830a4705d35955c37eba88fd3d63c41fc61bec7cf4196e8c7",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:35:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "cash": 1000000,
+      "nav": 1000000,
+      "alloc_won": 100000,
+      "inputs": [
+       "bar@1"
+      ]
+     }
+    },
+    {
+     "record_id": "ac2",
+     "record_type": "ACCOUNT_STATE",
+     "schema_version": 1,
+     "security_id": "ALL",
+     "market": "KOSPI",
+     "source_system": "LEDGER",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T16:00:00+09:00",
+     "available_at": "2026-01-05T16:00:00+09:00",
+     "fetched_at": "2026-01-05T16:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "038e527696483dff23a5cbf6c5735b7e65e81cc76b7cb994ac2f2ea7b903e0e9",
+     "normalized_sha256": "e8b23754a532e40830a4705d35955c37eba88fd3d63c41fc61bec7cf4196e8c7",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "cash": 1000000,
+      "nav": 1000000,
+      "alloc_won": 100000,
+      "inputs": [
+       "bar@1"
+      ]
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_ASOF"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX40",
+   "note": "RAW 신호에 ADJ 봉",
+   "records": [
+    {
+     "record_id": "adj",
+     "record_type": "PRICE_BAR_ADJ",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "9f5e6d8d4e9262fd61a855f82f35cd8ef05e97a36d2ad456647852ae2aded7a4",
+     "normalized_sha256": "5ae09b3f8ae9b66ac44362a313e06e9ad044493bcc0630aff8627e49f31977ee",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": true,
+      "adj_basis": "KIS_ADJ"
+     }
+    },
+    {
+     "record_id": "sig",
+     "record_type": "SIGNAL",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "STRATEGY",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "HISTORICAL_MODEL",
+     "as_of": "2026-01-05T15:50:00+09:00",
+     "available_at": "2026-01-05T16:00:00+09:00",
+     "fetched_at": "2026-01-05T16:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "dfd1c77e97bc742aa45a4568f46551e804aef9155702296ab75ab53a4277f58f",
+     "normalized_sha256": "40522202e56b1dae7288255846bea033e717a00fc9ac3831f4d8867d6d7b057a",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T16:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "strategy_id": "SYN_STRAT",
+      "strategy_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "signal_id": "sig",
+      "signal_at": "2026-01-05T15:50:00+09:00",
+      "decision_at": "2026-01-05T16:00:00+09:00",
+      "earliest_order_at": "2026-01-06T09:00:00+09:00",
+      "price_basis": "RAW",
+      "inputs": [
+       "adj@1"
+      ],
+      "cutoff_hash": "aa39385517b1324a69737d5143bcd1c4b46b317dcddd8a8ab3f5a10557f79c6f"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "BASIS_MIX"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX41",
+   "note": "상장 사건",
+   "records": [
+    {
+     "record_id": "se1",
+     "record_type": "SECURITY_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T18:00:00+09:00",
+     "available_at": "2026-01-05T18:00:00+09:00",
+     "fetched_at": "2026-01-05T18:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "47c80fec6dc2e916870a98894d4a0b921bb82dec2cbc1a38e5fd93901b356b8e",
+     "normalized_sha256": "06c8c3cfa918eee3463bfaaa1e384a060366c40227f9fdee3526485a7ae0d1f4",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T18:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "kind": "DELISTING",
+      "effective_at": "2026-01-06T09:00:00+09:00"
+     }
+    },
+    {
+     "record_id": "se2",
+     "record_type": "SECURITY_EVENT",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KRX",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T18:00:00+09:00",
+     "available_at": "2026-01-05T18:00:00+09:00",
+     "fetched_at": "2026-01-05T18:00:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "91be6044904198e3d233fd52124dcc10f0c41773588009baf777245c341f608d",
+     "normalized_sha256": "3150e9e4414b5bad984ebceaeb3b93aa0cf092f0a43a640e38c018a62b119d3f",
+     "ingest_run_id": "run_synth_0001",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T18:00:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "kind": "RENAME_X",
+      "effective_at": "2026-01-06T09:00:00+09:00"
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      1,
+      "BAD_SECURITY_EVENT"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  },
+  {
+   "id": "FX42",
+   "note": "봉투 필드 없음",
+   "records": [
+    {
+     "record_id": "bar",
+     "record_type": "PRICE_BAR_RAW",
+     "schema_version": 1,
+     "security_id": "S001",
+     "market": "KOSPI",
+     "source_system": "KIS",
+     "source_endpoint_or_report": "synthetic-fixture",
+     "source_mode": "OBSERVED_MARKET",
+     "as_of": "2026-01-05T15:30:00+09:00",
+     "available_at": "2026-01-05T15:40:00+09:00",
+     "fetched_at": "2026-01-05T15:40:00+09:00",
+     "version": 1,
+     "revision_of": null,
+     "is_correction": false,
+     "raw_payload_sha256": "df96a30dbf51637484d37e9868431a361becf8fe23c8abf9c52381b522f16bef",
+     "normalized_sha256": "4459a65209643f80b537b59bb06880761d00db540aa9d45b684fa5f6504231c6",
+     "collector_version": "synthetic-1",
+     "created_at": "2026-01-05T15:40:00+09:00",
+     "public_ok": true,
+     "evidence_ref": null,
+     "payload": {
+      "date": "2026-01-05",
+      "session": "REGULAR",
+      "open": 99,
+      "high": 101,
+      "low": 98,
+      "close": 100,
+      "volume": 1000,
+      "adjusted": false
+     }
+    }
+   ],
+   "expect": {
+    "rejected": [
+     [
+      0,
+      "ENVELOPE_MISSING"
+     ]
+    ],
+    "duplicates": 0
+   },
+   "queries": []
+  }
+ ]
+}
