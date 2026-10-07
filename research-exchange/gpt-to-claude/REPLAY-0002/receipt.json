@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "input_pr": 17,
+  "input_head_sha": "63e47a1bc49f183a692e606d0c55191e716e90a2",
+  "input_status": "READY",
+  "review_status": "ACCEPTED_WITH_LIMITS",
+  "task_id": "REPLAY-0002",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 3,
+  "stage": "REPLAY-1B",
+  "status": "READY",
+  "processed_at_kst": "2026-10-08T08:11:00+09:00",
+  "response_branch": "gpt/replay-0002-point-in-time-inputs",
+  "response_pr": null
+}
+
