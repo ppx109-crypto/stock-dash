@@ -1,0 +1,30 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "PRICE_BAR_RAW payload",
+ "type": "object",
+ "required": [
+  "date",
+  "session",
+  "open",
+  "high",
+  "low",
+  "close",
+  "volume",
+  "adjusted"
+ ],
+ "properties": {
+  "date": {
+   "type": "string",
+   "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+  },
+  "adjusted": {
+   "const": false
+  },
+  "open": {
+   "type": "number"
+  },
+  "close": {
+   "type": "number"
+  }
+ }
+}
