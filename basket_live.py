@@ -6,7 +6,8 @@
            · 무상증자 — 반응과 상관없이
            같은 종목 · 같은 갈래는 20거래일 안 다시 안 셈(앞 사건과만 견줌).
   사기   : 공시 다음 날(t0+1) 15:10 판단 → 시장가(종가 근처). 반응은 t0 종가까지 값이라 15:15에 판단해도 같은 결정.
-  칸     : 5칸 · 한 칸 = 바구니 돈 ÷ 5 · 바구니 돈 = 계좌 × (1 − 규칙(1일봉 · 15분봉 · 1시간봉)이 쓴 몫).
+  칸     : 5칸 · 한 칸 = 바구니 돈 ÷ 5 · 바구니 돈 = **1일봉 몫(계좌 × 50%) 가운데 1일봉이 안 쓰는 돈**(연구 P4b와 같게 · 2026-10-07 오푸스 검토:
+           15분봉 몫까지 쓰면 다음 날 15분봉이 살 때 바구니가 20일 전에 강제로 팔림) · 다른 규칙이 든 종목은 안 삼.
            빈 칸이 있을 때만 · 이미 든 종목은 안 삼.
   팔기   : 산 날부터 20거래일째 15:10 시장가. 손절 · 익절 없음.
   돈 차례: 규칙 > 바구니 > 빈칸 엔진(연구 P4b: 쉬는 돈을 바구니가 먼저 · 엔진은 남은 몫).
@@ -66,7 +67,7 @@ def todays_events(events, t0, before):
     return sorted({(c, k) for c, rows in events.items() for d, k in rows if before < d <= t0 and k in KINDS})
 
 
-def step(state, day, t0, days_since, events_t0, react, inside, held, now_price, capital, avail, names=None):
+def step(state, day, t0, days_since, events_t0, react, inside, held, now_price, capital, avail, names=None, others=()):
     """하루 판단(15:10).
     state: {'positions': {코드: {'day', 'price', 'kind', 'react'}}, 'last': {'코드:갈래': t0 위치 열쇠(날)}}
     days_since(buy_day) → 산 날부터 오늘까지 거래일 수(산 날 = 0) · events_t0: [(코드, 갈래)] ·
@@ -110,6 +111,9 @@ def step(state, day, t0, days_since, events_t0, react, inside, held, now_price, 
         if code in pos:
             why.append(f"{names.get(code, code)} {label} — 이미 들고 있음")
             continue
+        if code in others:
+            why.append(f"{names.get(code, code)} {label} — 다른 규칙이 이미 들고 있어 안 삼(한 종목 40% 한도)")
+            continue
         if len(pos) >= SLOTS:
             why.append(f"{names.get(code, code)} {label} — 5칸이 다 참")
             continue
@@ -146,8 +150,9 @@ def held_now(account):
     return {c: min(int(q), int(account.get(c, {}).get("quantity", 0))) for c, q in (book.get("held") or {}).items() if int(q) > 0}
 
 
-def run(client, broker, day, account, total, used, avail, quote, days):
-    """15:10 바구니 하루. account: {코드: 잔고 줄} · used: 규칙이 쓴 몫(엔진 · 바구니 뺌) · avail: 쓸 수 있는 현금 ·
+def run(client, broker, day, account, total, capital, avail, quote, days, others=()):
+    """15:10 바구니 하루. account: {코드: 잔고 줄} · capital: 바구니 돈(원 · 1일봉 몫의 쉬는 돈 — 연구 P4b와 같게) ·
+    avail: 쓸 수 있는 현금 · others: 다른 규칙 · 엔진이 들고 있는 종목(바구니는 안 삼 · 한 종목 40% 한도 지키기) ·
     quote(code) → 지금 값 또는 None · days: 오늘까지 거래일(오래된 → 오늘).
     돌려줌: (디스코드 줄들, 오늘 주문 뒤 바구니 평가액, 오늘 바구니가 쓴 현금(산 것 − 판 것))."""
     import broker_kis
@@ -183,7 +188,7 @@ def run(client, broker, day, account, total, used, avail, quote, days):
         if p:
             now_price[code] = p
     orders, new_state, why = step(state, day, t0, days_since, ev, react, inside, held, now_price,
-                                  capital=max(0.0, total * (1 - used)), avail=avail, names=names)
+                                  capital=max(0.0, capital), avail=avail, names=names, others=set(others))
     book = _load(BOOK, {"orders": [], "held": {}})
     book.setdefault("held", {})
     seen = {o["key"] for o in book["orders"]}
