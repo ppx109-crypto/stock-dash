@@ -357,8 +357,15 @@ def run(now=None):
             except broker_kis.BrokerError:
                 return None
         try:
-            b_short, basket_after, b_spent = basket_live.run(client, broker, day, account, total, used,
-                                                             max(0.0, cash - reserve * paper_trade.MKT_MARGIN), quote, days)
+            # 바구니 돈 = 1일봉 몫 가운데 1일봉이 안 쓰는 돈(연구 P4b · 15분봉 몫은 안 씀 → 15분봉이 살 때 강제 매도 없게)
+            d1_book = _load(paper_trade.DAILY_BOOK, {}) or {}
+            d1_value = sum(int(q) * float(account.get(c, {}).get("price") or 0) for c, q in (d1_book.get("held") or {}).items())
+            b_capital = max(0.0, total * paper_trade.SHARES["1d"] - d1_value)
+            others = set()
+            for bk in (paper_trade.DAILY_BOOK, paper_trade.M15_BOOK, paper_trade.BOOK, paper_trade.IDLE_BOOK):
+                others |= {c for c, q in ((_load(bk, {}) or {}).get("held") or {}).items() if int(q) > 0}
+            b_short, basket_after, b_spent = basket_live.run(client, broker, day, account, total, b_capital,
+                                                             max(0.0, cash - reserve * paper_trade.MKT_MARGIN), quote, days, others)
         except Exception as e:                       # 바구니가 말썽이어도 엔진은 그대로
             print("사건 바구니 실패 ·", type(e).__name__, e)
             b_short = ["⚠️ 사건 바구니 단계 실패(엔진은 그대로 돎)"]

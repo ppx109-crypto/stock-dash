@@ -60,6 +60,12 @@ class StepTest(unittest.TestCase):
         orders, _, _ = run_step(state=st, ev=[("C", "무상증자")], react={"C": 0.0})
         self.assertEqual(len(orders), 1)
 
+    def test_others_holding_skipped(self):
+        orders, _, why = B.step({}, "20261006", "20261005", since("20261006"), [("C", "무상증자")], {"C": 0.0}, {"C"}, {},
+                                {"C": 1000.0}, 1e7, 1e7, others={"C"})
+        self.assertEqual(orders, [])
+        self.assertTrue(any("다른 규칙" in w for w in why))
+
     def test_cash_limits_buy(self):
         orders, _, why = run_step(ev=[("C", "무상증자")], react={"C": 0.0}, avail=500.0)
         self.assertEqual(orders, [])
