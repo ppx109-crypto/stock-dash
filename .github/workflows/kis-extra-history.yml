@@ -3,6 +3,8 @@ name: KIS extra history
 # kind: program(종목별 프로그램매매) · loan(대차거래) · side(매수·매도 체결량) · market(지수·시장 투자자·시장 프로그램·증시자금) · ratio(재무비율) · all
 # 종목 묶음마다 커밋하므로, 제한 시간에 걸려도 다시 돌리면 받은 데서 이어 갑니다.
 on:
+  schedule:
+    - cron: '40 9 * * 1-5'          # 한국 시각 18:40(평일) — 시장 자료(market)만 이어 받기(2026-10-07: 지수가 09-29에 멈춰 연구 국면이 '모름'으로 나옴)
   workflow_dispatch:
     inputs:
       kind:
@@ -70,7 +72,7 @@ jobs:
           KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
           KIS_ENV: real
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
-          KIND: ${{ inputs.kind || 'all' }}
+          KIND: ${{ github.event_name == 'schedule' && 'market' || inputs.kind || 'all' }}
           BATCH: ${{ inputs.batch || '30' }}
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
