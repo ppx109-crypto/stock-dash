@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "input_pr": 17,
+  "input_head_sha": "63e47a1bc49f183a692e606d0c55191e716e90a2",
+  "input_branch": "claude/replay-0001-result",
+  "input_status": "READY",
+  "processed_at_kst": "2026-10-08T08:11:00+09:00",
+  "review": "ACCEPTED_WITH_LIMITS",
+  "next_task": "REPLAY-0002",
+  "response_branch": "gpt/replay-0002-point-in-time-inputs",
+  "response_pr": null
+}
