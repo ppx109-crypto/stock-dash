@@ -1,0 +1,2039 @@
+{
+ "code_baseline": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+ "network": "blocked(socket 막음) · 키 환경변수 지움 · 임시 폴더에서 실행",
+ "suites": {
+  "contract(합성 계약)": {
+   "runner": "fixtures/run_fixtures.py",
+   "network": "blocked",
+   "cases": [
+    {
+     "name": "avail.before_any",
+     "group": "availability",
+     "input": {
+      "versions": [
+       {
+        "value": 100.0,
+        "available_at": "2026-10-02T22:28:00",
+        "version": 1
+       },
+       {
+        "value": 97.0,
+        "available_at": "2026-10-06T08:36:00",
+        "version": 2
+       }
+      ],
+      "decision_at": "2026-10-02T15:20:00"
+     },
+     "expected": [
+      null,
+      null
+     ],
+     "actual": [
+      null,
+      null
+     ],
+     "pass": true
+    },
+    {
+     "name": "avail.evening_provisional",
+     "group": "availability",
+     "input": {
+      "versions": [
+       {
+        "value": 100.0,
+        "available_at": "2026-10-02T22:28:00",
+        "version": 1
+       },
+       {
+        "value": 97.0,
+        "available_at": "2026-10-06T08:36:00",
+        "version": 2
+       }
+      ],
+      "decision_at": "2026-10-05T15:20:00"
+     },
+     "expected": [
+      100.0,
+      1
+     ],
+     "actual": [
+      100.0,
+      1
+     ],
+     "pass": true
+    },
+    {
+     "name": "avail.after_correction_no_overwrite",
+     "group": "availability",
+     "input": {
+      "versions": [
+       {
+        "value": 100.0,
+        "available_at": "2026-10-02T22:28:00",
+        "version": 1
+       },
+       {
+        "value": 97.0,
+        "available_at": "2026-10-06T08:36:00",
+        "version": 2
+       }
+      ],
+      "decision_at": "2026-10-06T15:20:00"
+     },
+     "expected": [
+      97.0,
+      2
+     ],
+     "actual": [
+      97.0,
+      2
+     ],
+     "pass": true
+    },
+    {
+     "name": "avail.equal_time_inclusive",
+     "group": "availability",
+     "input": {
+      "versions": [
+       {
+        "value": 100.0,
+        "available_at": "2026-10-02T22:28:00",
+        "version": 1
+       },
+       {
+        "value": 97.0,
+        "available_at": "2026-10-06T08:36:00",
+        "version": 2
+       }
+      ],
+      "decision_at": "2026-10-06T08:36:00"
+     },
+     "expected": [
+      97.0,
+      2
+     ],
+     "actual": [
+      97.0,
+      2
+     ],
+     "pass": true
+    },
+    {
+     "name": "bar.open_bar_rejected",
+     "group": "future_bar",
+     "input": {
+      "bar_close": "2026-10-07T10:45:00",
+      "observed_at": "2026-10-07T10:44:59"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "bar.closed_bar_ok",
+     "group": "future_bar",
+     "input": {
+      "bar_close": "2026-10-07T10:45:00",
+      "observed_at": "2026-10-07T10:48:00"
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "fill.past_open_forbidden",
+     "group": "future_bar",
+     "input": {
+      "submitted": "2026-10-07T11:03:00",
+      "price_time": "2026-10-07T11:00:00"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "fill.after_submit_ok",
+     "group": "future_bar",
+     "input": {
+      "submitted": "2026-10-07T11:03:00",
+      "price_time": "2026-10-07T11:03:05"
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "dart.date_only_next_session_over_weekend_holiday",
+     "group": "dart",
+     "input": {
+      "rcept_dt": "2026-10-02",
+      "time": null,
+      "holidays": [
+       "2026-10-05"
+      ]
+     },
+     "expected": "2026-10-06T09:00:00",
+     "actual": "2026-10-06T09:00:00",
+     "pass": true
+    },
+    {
+     "name": "dart.with_time",
+     "group": "dart",
+     "input": {
+      "rcept_dt": "2026-10-07",
+      "time": "16:05:00"
+     },
+     "expected": "2026-10-07T16:05:00",
+     "actual": "2026-10-07T16:05:00",
+     "pass": true
+    },
+    {
+     "name": "dart.same_day_reaction_not_post_event",
+     "group": "dart",
+     "input": {
+      "event_available_at": "2026-10-07T16:05:00",
+      "reaction_window_start": "2026-10-07T09:00:00"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "dart.date_only_same_day_reaction_invalid",
+     "group": "dart",
+     "input": {
+      "event_available_at": "2026-10-08T09:00:00",
+      "reaction_window_start": "2026-10-07T09:00:00"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "order.accepted_but_unfilled",
+     "group": "fills",
+     "input": {
+      "order": {
+       "side": "buy",
+       "qty": 100
+      },
+      "fills": []
+     },
+     "expected": [
+      0,
+      1000000.0,
+      "unfilled",
+      100
+     ],
+     "actual": [
+      0,
+      1000000.0,
+      "unfilled",
+      100
+     ],
+     "pass": true
+    },
+    {
+     "name": "order.partial_fill",
+     "group": "fills",
+     "input": {
+      "order": {
+       "side": "buy",
+       "qty": 100
+      },
+      "fills": [
+       {
+        "qty": 40,
+        "price": 1000.0
+       },
+       {
+        "qty": 20,
+        "price": 1010.0
+       }
+      ]
+     },
+     "expected": {
+      "pos": 60,
+      "status": "partial",
+      "unfilled": 40
+     },
+     "actual": {
+      "pos": 60,
+      "status": "partial",
+      "unfilled": 40
+     },
+     "pass": true
+    },
+    {
+     "name": "order.sell_tax_only_on_sell",
+     "group": "fills",
+     "input": {
+      "order": {
+       "side": "sell",
+       "qty": 10
+      },
+      "fills": [
+       {
+        "qty": 10,
+        "price": 1000.0
+       }
+      ],
+      "fee": 0.00015,
+      "tax": 0.0015
+     },
+     "expected": {
+      "cash": 9983.5
+     },
+     "actual": {
+      "cash": 9983.5
+     },
+     "pass": true
+    },
+    {
+     "name": "order.overfill_rejected",
+     "group": "fills",
+     "input": {
+      "order": {
+       "qty": 5
+      },
+      "fills": [
+       {
+        "qty": 6
+       }
+      ]
+     },
+     "expected": {
+      "error": "ValueError: 체결 수량이 주문 수량보다 큼"
+     },
+     "actual": {
+      "error": "ValueError: 체결 수량이 주문 수량보다 큼"
+     },
+     "pass": true
+    },
+    {
+     "name": "order.oversell_rejected",
+     "group": "fills",
+     "input": {
+      "position": 3,
+      "sell": 4
+     },
+     "expected": {
+      "error": "ValueError: 가진 것보다 많이 팖"
+     },
+     "actual": {
+      "error": "ValueError: 가진 것보다 많이 팖"
+     },
+     "pass": true
+    },
+    {
+     "name": "bar.tp_and_sl_same_bar_conservative",
+     "group": "same_bar",
+     "input": {
+      "bar": {
+       "open": 100,
+       "high": 114,
+       "low": 94
+      },
+      "entry": 100,
+      "tp": 0.13,
+      "sl": 0.05
+     },
+     "expected": {
+      "exit": "SL",
+      "ambiguous": true
+     },
+     "actual": {
+      "exit": "SL",
+      "ambiguous": true
+     },
+     "pass": true
+    },
+    {
+     "name": "bar.gap_down_below_sl_fills_at_open",
+     "group": "same_bar",
+     "input": {
+      "bar": {
+       "open": 90,
+       "high": 92,
+       "low": 88
+      },
+      "entry": 100,
+      "sl": 0.05
+     },
+     "expected": 90,
+     "actual": 90,
+     "pass": true
+    },
+    {
+     "name": "bar.tp_only",
+     "group": "same_bar",
+     "input": {
+      "bar": {
+       "open": 101,
+       "high": 114,
+       "low": 99
+      }
+     },
+     "expected": "TP",
+     "actual": "TP",
+     "pass": true
+    },
+    {
+     "name": "slots.partial_assign",
+     "group": "slots",
+     "input": {
+      "requested": 4,
+      "free": 3
+     },
+     "expected": 3,
+     "actual": 3,
+     "pass": true
+    },
+    {
+     "name": "slots.none_free",
+     "group": "slots",
+     "input": {
+      "requested": 2,
+      "free": 0
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "qty.below_one_share",
+     "group": "slots",
+     "input": {
+      "money": 999.0,
+      "price": 1000.0
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "qty.floor",
+     "group": "slots",
+     "input": {
+      "money": 2500.0,
+      "price": 1000.0
+     },
+     "expected": 2,
+     "actual": 2,
+     "pass": true
+    },
+    {
+     "name": "dedup.20_trading_days",
+     "group": "slots",
+     "input": {
+      "events": [
+       [
+        "A",
+        "자사주",
+        0
+       ],
+       [
+        "A",
+        "자사주",
+        19
+       ],
+       [
+        "A",
+        "자사주",
+        20
+       ],
+       [
+        "A",
+        "무상",
+        5
+       ]
+      ],
+      "window": 20
+     },
+     "expected": [
+      [
+       "A",
+       "자사주",
+       0
+      ],
+      [
+       "A",
+       "무상",
+       5
+      ],
+      [
+       "A",
+       "자사주",
+       20
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "자사주",
+       0
+      ],
+      [
+       "A",
+       "무상",
+       5
+      ],
+      [
+       "A",
+       "자사주",
+       20
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "nav.no_double_count_settlement",
+     "group": "nav",
+     "input": {
+      "cash": 1000.0,
+      "pos": {
+       "X": 10
+      },
+      "px": {
+       "X": 50.0
+      },
+      "receivable": 300.0,
+      "cash_includes_settlement": true
+     },
+     "expected": 1500.0,
+     "actual": 1500.0,
+     "pass": true
+    },
+    {
+     "name": "nav.add_settlement_when_not_in_cash",
+     "group": "nav",
+     "input": {
+      "cash": 1000.0,
+      "receivable": 300.0,
+      "payable": 100.0,
+      "cash_includes_settlement": false
+     },
+     "expected": 1700.0,
+     "actual": 1700.0,
+     "pass": true
+    },
+    {
+     "name": "twr.no_flow",
+     "group": "nav",
+     "input": {
+      "segments": [
+       [
+        100.0,
+        90.0
+       ]
+      ]
+     },
+     "expected": -0.1,
+     "actual": -0.09999999999999998,
+     "pass": true
+    },
+    {
+     "name": "twr.deposit_not_counted_as_gain",
+     "group": "nav",
+     "input": {
+      "prev": 100.0,
+      "deposit_midday": 50.0,
+      "segments": [
+       [
+        100.0,
+        95.0
+       ],
+       [
+        145.0,
+        145.0
+       ]
+      ]
+     },
+     "expected": -0.05,
+     "actual": -0.050000000000000044,
+     "pass": true
+    },
+    {
+     "name": "twr.withdrawal_not_counted_as_loss",
+     "group": "nav",
+     "input": {
+      "segments": [
+       [
+        100.0,
+        100.0
+       ],
+       [
+        40.0,
+        40.0
+       ]
+      ],
+      "withdraw": 60.0
+     },
+     "expected": 0.0,
+     "actual": 0.0,
+     "pass": true
+    },
+    {
+     "name": "twr.zero_start_rejected",
+     "group": "nav",
+     "input": {
+      "segments": [
+       [
+        0.0,
+        10.0
+       ]
+      ]
+     },
+     "expected": {
+      "error": "ValueError: 구간 시작 NAV ≤ 0"
+     },
+     "actual": {
+      "error": "ValueError: 구간 시작 NAV ≤ 0"
+     },
+     "pass": true
+    },
+    {
+     "name": "month.calendar_boundary",
+     "group": "nav",
+     "input": {
+      "days": [
+       [
+        "2026-05-29",
+        0.1
+       ],
+       [
+        "2026-06-01",
+        -0.1
+       ],
+       [
+        "2026-06-30",
+        -0.1
+       ],
+       [
+        "2026-07-01",
+        0.05
+       ]
+      ]
+     },
+     "expected": {
+      "2026-05": [
+       0.1,
+       true
+      ],
+      "2026-06": [
+       -0.19,
+       false
+      ],
+      "2026-07": [
+       0.05,
+       false
+      ]
+     },
+     "actual": {
+      "2026-05": [
+       0.1,
+       true
+      ],
+      "2026-06": [
+       -0.19,
+       false
+      ],
+      "2026-07": [
+       0.05,
+       false
+      ]
+     },
+     "pass": true
+    },
+    {
+     "name": "mdd.mtm",
+     "group": "nav",
+     "input": {
+      "r": [
+       0.1,
+       -0.2,
+       0.05,
+       -0.1
+      ]
+     },
+     "expected": -0.244,
+     "actual": -0.244,
+     "pass": true
+    },
+    {
+     "name": "gate.month_limit_blocks_new_risk",
+     "group": "nav",
+     "input": {
+      "day": -0.02,
+      "month": -0.151
+     },
+     "expected": {
+      "block_new_risk": true,
+      "guarantee": false
+     },
+     "actual": {
+      "block_new_risk": true,
+      "guarantee": false
+     },
+     "pass": true
+    },
+    {
+     "name": "gate.exact_limit_inclusive",
+     "group": "nav",
+     "input": {
+      "day": -0.15,
+      "month": 0.0
+     },
+     "expected": {
+      "block_new_risk": true,
+      "guarantee": false
+     },
+     "actual": {
+      "block_new_risk": true,
+      "guarantee": false
+     },
+     "pass": true
+    },
+    {
+     "name": "gate.no_block",
+     "group": "nav",
+     "input": {
+      "day": -0.149,
+      "month": -0.149
+     },
+     "expected": {
+      "block_new_risk": false,
+      "guarantee": false
+     },
+     "actual": {
+      "block_new_risk": false,
+      "guarantee": false
+     },
+     "pass": true
+    },
+    {
+     "name": "attr.sum_matches",
+     "group": "nav",
+     "input": {
+      "strategies": {
+       "1d": 10.0,
+       "15m": -3.0,
+       "engine": 1.0
+      },
+      "account": 8.0
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "attr.double_cost_detected",
+     "group": "nav",
+     "input": {
+      "strategies": {
+       "1d": 10.0,
+       "15m": -3.0
+      },
+      "account": 6.5,
+      "note": "계좌 비용 0.5를 전략에서 안 뺌"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "schema.valid_synthetic",
+     "group": "schema",
+     "input": {
+      "signals": [
+       {
+        "pseudonymous_account_id": "acct-SYN-1",
+        "strategy_id": "1d_new82",
+        "rule_version": "R1D-ASIS@00b98ab1",
+        "data_version": "close@provisional",
+        "signal_id": "s1",
+        "decision_at": "2026-10-07T15:20:00",
+        "max_feature_available_at": "2026-10-07T15:20:00",
+        "signal_quote_at": "2026-10-07T15:20:00",
+        "code": "000001",
+        "side": "buy",
+        "requested_slots": 4,
+        "assigned_slots": 3
+       }
+      ],
+      "daily": [
+       {
+        "date": "2026-10-07",
+        "valuation_at": "2026-10-08T07:30:00",
+        "price_source": "KRX_close_finalized",
+        "cash": 1.0,
+        "positions": [
+         {
+          "code": "000001",
+          "qty": 1,
+          "price": 1.0,
+          "strategy_id": "1d_new82"
+         }
+        ],
+        "nav": 2.0,
+        "external_cashflows": []
+       }
+      ]
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "schema.missing_available_at_rejected",
+     "group": "schema",
+     "input": {
+      "signals": [
+       "SIG without max_feature_available_at"
+      ]
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "schema.unknown_price_source_rejected",
+     "group": "schema",
+     "input": {
+      "daily": [
+       "price_source=naver"
+      ]
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "schema.unknown_strategy_rejected",
+     "group": "schema",
+     "input": {
+      "signals": [
+       "strategy_id=f5"
+      ]
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "sandbox.network_blocked",
+     "group": "sandbox",
+     "input": {},
+     "expected": {
+      "error": "RuntimeError: 네트워크 금지(합성 fixture)"
+     },
+     "actual": {
+      "error": "RuntimeError: 네트워크 금지(합성 fixture)"
+     },
+     "pass": true
+    }
+   ],
+   "summary": {
+    "total": 43,
+    "pass": 43,
+    "fail": 0
+   }
+  },
+  "as-is(운영 순수 함수 · 합성 입력)": {
+   "runner": "fixtures/run_asis.py",
+   "code_base": "base",
+   "network": "blocked",
+   "cases": [
+    {
+     "name": "const.slots_hold_gap_th_top",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {},
+     "expected": [
+      5,
+      20,
+      20,
+      -0.02,
+      200,
+      [
+       "자사주취득",
+       "무상증자"
+      ]
+     ],
+     "actual": [
+      5,
+      20,
+      20,
+      -0.02,
+      200,
+      [
+       "자사주취득",
+       "무상증자"
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "events.kind_only_title_not_seen",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "events": {
+       "A": [
+        [
+         "d029",
+         "자사주취득"
+        ]
+       ],
+       "B": [
+        [
+         "d029",
+         "기타"
+        ]
+       ]
+      },
+      "note": "입력에 제목 칸이 없음 → 정정 · 거래정지 안내도 갈래만 맞으면 사건"
+     },
+     "expected": [
+      [
+       "A",
+       "자사주취득"
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "자사주취득"
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "events.weekend_rollup_before_lt_d_le_t0",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "events": {
+       "A": [
+        [
+         "d027",
+         "무상증자"
+        ],
+        [
+         "d028",
+         "무상증자"
+        ]
+       ]
+      },
+      "t0": "d029",
+      "before": "d027"
+     },
+     "expected": [
+      [
+       "A",
+       "무상증자"
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "무상증자"
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "buy.treasury_react_below_minus2",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "event": [
+       "A",
+       "자사주취득"
+      ],
+      "react": -0.021
+     },
+     "expected": [
+      [
+       "A",
+       "buy",
+       970
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "buy",
+       970
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "skip.treasury_react_exactly_minus2_strict_lt",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "event": [
+       "A",
+       "자사주취득"
+      ],
+      "react": -0.02
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "buy.bonus_issue_any_reaction",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "event": [
+       "A",
+       "무상증자"
+      ],
+      "react": 0.05
+     },
+     "expected": [
+      [
+       "A",
+       "buy",
+       970
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "buy",
+       970
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "skip.no_reaction_value",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "event": [
+       "A",
+       "무상증자"
+      ],
+      "react": "없음(200위 표본 < 40 등)"
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "quirk.last_recorded_even_when_not_bought",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "event": [
+       "A",
+       "자사주취득"
+      ],
+      "react": -0.01,
+      "note": "반응이 −2%에 못 미쳐 안 삼 → 그래도 last에 기록"
+     },
+     "expected": {
+      "orders": [],
+      "last": {
+       "A:자사주취득": "d029"
+      }
+     },
+     "actual": {
+      "orders": [],
+      "last": {
+       "A:자사주취득": "d029"
+      }
+     },
+     "pass": true
+    },
+    {
+     "name": "dedup.blocks_within_20_after_unbought_event",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "state.last": {
+       "A:자사주취득": "d015"
+      },
+      "event": [
+       "A",
+       "자사주취득"
+      ],
+      "react": -0.05,
+      "gap": "14거래일"
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "dedup.allows_at_20",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "state.last": {
+       "A:자사주취득": "d009"
+      },
+      "gap": "20거래일"
+     },
+     "expected": [
+      [
+       "A",
+       "buy",
+       970
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "buy",
+       970
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "exit.hold_20_trading_days_buy_day0",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "pos": {
+       "A": {
+        "day": "d010"
+       }
+      },
+      "days_since": 20
+     },
+     "expected": [
+      [
+       "A",
+       "sell",
+       7
+      ]
+     ],
+     "actual": [
+      [
+       "A",
+       "sell",
+       7
+      ]
+     ],
+     "pass": true
+    },
+    {
+     "name": "exit.not_before_20",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "pos": {
+       "A": {
+        "day": "d011"
+       }
+      },
+      "days_since": 19
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "state.position_dropped_if_ledger_empty",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "pos": {
+       "A": {}
+      },
+      "held": {}
+     },
+     "expected": {
+      "orders": [],
+      "positions": {}
+     },
+     "actual": {
+      "orders": [],
+      "positions": {}
+     },
+     "pass": true
+    },
+    {
+     "name": "slots.five_full_no_buy",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "held": "5종목"
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "others.held_by_other_bot_skip",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "others": [
+       "A"
+      ]
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "money.slot_is_capital_div5_times_0.97",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "capital": 5000000,
+      "avail": 5000000,
+      "price": 1000
+     },
+     "expected": 970,
+     "actual": 970,
+     "pass": true
+    },
+    {
+     "name": "money.avail_limits_qty",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "capital": 5000000,
+      "avail": 300000,
+      "note": "left = avail × 0.97"
+     },
+     "expected": 291,
+     "actual": 291,
+     "pass": true
+    },
+    {
+     "name": "money.below_one_share",
+     "group": "basket",
+     "rule_id": "BASKET-C-ASIS",
+     "input": {
+      "avail": 500
+     },
+     "expected": [],
+     "actual": [],
+     "pass": true
+    },
+    {
+     "name": "kind_of.유무상증자결정",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "유무상증자결정",
+      "note": "제목에 '유상증자' 연속 글자가 없어 무상증자로 잡힘 → 바구니 대상(유상 섞인 공시)"
+     },
+     "expected": "무상증자",
+     "actual": "무상증자",
+     "pass": true
+    },
+    {
+     "name": "kind_of.무상증자결정",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "무상증자결정",
+      "note": "본 공시"
+     },
+     "expected": "무상증자",
+     "actual": "무상증자",
+     "pass": true
+    },
+    {
+     "name": "kind_of.[기재정정]무상증자결정",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "[기재정정]무상증자결정",
+      "note": "정정 공시도 같은 갈래"
+     },
+     "expected": "무상증자",
+     "actual": "무상증자",
+     "pass": true
+    },
+    {
+     "name": "kind_of.주권매매거래정지(무상증자)",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "주권매매거래정지(무상증자)",
+      "note": "거래정지 안내도 같은 갈래"
+     },
+     "expected": "무상증자",
+     "actual": "무상증자",
+     "pass": true
+    },
+    {
+     "name": "kind_of.주요사항보고서(자기주식취득결정)",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "주요사항보고서(자기주식취득결정)",
+      "note": "본 공시"
+     },
+     "expected": "자사주취득",
+     "actual": "자사주취득",
+     "pass": true
+    },
+    {
+     "name": "kind_of.자기주식취득신탁계약체결결정",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "자기주식취득신탁계약체결결정",
+      "note": "신탁 계약도 같은 갈래"
+     },
+     "expected": "자사주취득",
+     "actual": "자사주취득",
+     "pass": true
+    },
+    {
+     "name": "kind_of.[기재정정]주요사항보고서(자기주식취득결정)",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "[기재정정]주요사항보고서(자기주식취득결정)",
+      "note": "정정 공시도 같은 갈래"
+     },
+     "expected": "자사주취득",
+     "actual": "자사주취득",
+     "pass": true
+    },
+    {
+     "name": "kind_of.자기주식처분결정",
+     "group": "event_kind",
+     "rule_id": "EVENT-KIND-ASIS",
+     "input": {
+      "title": "자기주식처분결정",
+      "note": "처분은 다른 갈래"
+     },
+     "expected": "자사주처분",
+     "actual": "자사주처분",
+     "pass": true
+    },
+    {
+     "name": "m15.trend_tp_13_clear",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "price": 1000,
+      "close": 1131
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_tp_13_exact_tick",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "price": 1000,
+      "close": 1130,
+      "spec": "now >= 13",
+      "note": "부동소수점: (1130/1000−1)×100 = 12.99999999999999 → as-is는 안 팖(경계 결함)"
+     },
+     "expected": 4,
+     "actual": 2,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "m15.trend_sl_5_exact",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "price": 1000,
+      "close": 950
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_time_exit",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "bars": 240
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_time_not_yet",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "bars": 239
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_half_first_touch",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "close": 1051,
+      "prevmax": 1040,
+      "slots": 4
+     },
+     "expected": 2,
+     "actual": 2,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_half_not_again",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "close": 1060,
+      "prevmax": 1051
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_half_one_slot_min1",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "slots": 1,
+      "first": 1
+     },
+     "expected": 1,
+     "actual": 1,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_half_skipped_if_already_split",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "slots": 2,
+      "first": 4
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "m15.trend_tp_and_sl_order_close_only",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "close": 1200,
+      "note": "종가로만 판단 → 같은 봉 익절·손절 동시 불가"
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "m15.aligned_sl_10_clear",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "close": 899
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "m15.aligned_sl_10_exact_tick",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "close": 900,
+      "spec": "now <= -10",
+      "note": "부동소수점: −9.999999999999998 → as-is는 안 팖(경계 결함)"
+     },
+     "expected": 4,
+     "actual": 0,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "m15.aligned_breakeven_peak8_now1_exact",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "peak": 1080,
+      "close": 1010,
+      "spec": "peak >= 8 and now <= 1",
+      "note": "부동소수점: now = 1.0000000000000009 → as-is는 안 팖(경계 결함)"
+     },
+     "expected": 4,
+     "actual": 0,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "m15.aligned_breakeven_below1",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "peak": 1081,
+      "close": 1009
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "m15.aligned_no_time_exit",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "bars": 10000
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_tp_13_clear",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "price": 1000,
+      "close": 1131
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_tp_13_exact_tick",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "price": 1000,
+      "close": 1130,
+      "spec": "now >= 13",
+      "note": "부동소수점: (1130/1000−1)×100 = 12.99999999999999 → as-is는 안 팖(경계 결함)"
+     },
+     "expected": 4,
+     "actual": 2,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "h1.trend_sl_5_exact",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "price": 1000,
+      "close": 950
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_time_exit",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "bars": 60
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_time_not_yet",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "bars": 59
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_half_first_touch",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "close": 1051,
+      "prevmax": 1040,
+      "slots": 4
+     },
+     "expected": 2,
+     "actual": 2,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_half_not_again",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "close": 1060,
+      "prevmax": 1051
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_half_one_slot_min1",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "slots": 1,
+      "first": 1
+     },
+     "expected": 1,
+     "actual": 1,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_half_skipped_if_already_split",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "slots": 2,
+      "first": 4
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "h1.trend_tp_and_sl_order_close_only",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "close": 1200,
+      "note": "종가로만 판단 → 같은 봉 익절·손절 동시 불가"
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "h1.aligned_sl_10_clear",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "close": 899
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "h1.aligned_sl_10_exact_tick",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "close": 900,
+      "spec": "now <= -10",
+      "note": "부동소수점: −9.999999999999998 → as-is는 안 팖(경계 결함)"
+     },
+     "expected": 4,
+     "actual": 0,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "h1.aligned_breakeven_peak8_now1_exact",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "peak": 1080,
+      "close": 1010,
+      "spec": "peak >= 8 and now <= 1",
+      "note": "부동소수점: now = 1.0000000000000009 → as-is는 안 팖(경계 결함)"
+     },
+     "expected": 4,
+     "actual": 0,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "h1.aligned_breakeven_below1",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "peak": 1081,
+      "close": 1009
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "h1.aligned_no_time_exit",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "bars": 10000
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "m15.stale_boundary",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "bars": 28,
+      "ret": "3.9%",
+      "breadth": 89.9
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "m15.stale_bars27",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "bars": 27
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "m15.stale_breadth_missing_means_100",
+     "group": "intraday_exit",
+     "rule_id": "M15-ASIS",
+     "input": {
+      "breadth": null
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "h1.stale_7bars",
+     "group": "intraday_exit",
+     "rule_id": "H1-ASIS(실주문 몫 0)",
+     "input": {
+      "bars": 7,
+      "ret": 0,
+      "breadth": 50
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "ema.seed_first_value_none_before_span",
+     "group": "intraday_exit",
+     "rule_id": "EMA-ASIS",
+     "input": {
+      "values": [
+       10,
+       20,
+       30,
+       40
+      ],
+      "span": 2,
+      "k": "2/(span+1)",
+      "note": "씨앗 = 첫 값(SMA 씨앗이면 15 → 25 · 35) · 앞 span개 None"
+     },
+     "expected": [
+      null,
+      null,
+      25.5556,
+      35.1852
+     ],
+     "actual": [
+      null,
+      null,
+      25.5556,
+      35.1852
+     ],
+     "pass": true
+    },
+    {
+     "name": "ema.aligned_strict_equal_false",
+     "group": "intraday_exit",
+     "rule_id": "EMA-ASIS",
+     "input": {
+      "closes": "같은 값 200개",
+      "note": "모든 EMA가 같으면 엄격한 > 라 정배열 아님"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "ema.aligned_rising",
+     "group": "intraday_exit",
+     "rule_id": "EMA-ASIS",
+     "input": {
+      "closes": "꾸준히 오르는 200개"
+     },
+     "expected": true,
+     "actual": true,
+     "pass": true
+    },
+    {
+     "name": "ema.not_enough_bars",
+     "group": "intraday_exit",
+     "rule_id": "EMA-ASIS",
+     "input": {
+      "closes": "180개",
+      "note": "EMA180은 181번째 값부터 → 180개면 판단 못 함"
+     },
+     "expected": false,
+     "actual": false,
+     "pass": true
+    },
+    {
+     "name": "d1.size_trend4",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "추세문": true
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "d1.size_3day4",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "3일연속": true
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "d1.size_fresh3",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "거래량비": 2.0,
+      "정배열일수": 10
+     },
+     "expected": 3,
+     "actual": 3,
+     "pass": true
+    },
+    {
+     "name": "d1.size_age0_quirk",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "거래량비": 3.0,
+      "정배열일수": 0,
+      "spec(의도 추정)": "나이 0 ≤ 10 → 3칸",
+      "note": "as-is: (0 or 999) → 999 > 10 → 2칸(의도와 다름 · 결함 후보)"
+     },
+     "expected": 3,
+     "actual": 2,
+     "pass": false,
+     "finding": "의도 미확인(글자 그대로 읽은 규칙과 다름)"
+    },
+    {
+     "name": "d1.size_default2",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "거래량비": 1.99,
+      "정배열일수": 1
+     },
+     "expected": 2,
+     "actual": 2,
+     "pass": true
+    },
+    {
+     "name": "d1.trend_tp_13_exact_tick",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "price": 1000,
+      "close": 1130,
+      "spec": "now >= 13",
+      "note": "부동소수점 12.99999999999999 → as-is 안 팖"
+     },
+     "expected": 4,
+     "actual": 2,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "d1.trend_tp_13_clear",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "close": 1131
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "d1.trend_sl_5_exact",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "close": 950
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "d1.trend_time_10",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "days": 10
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "d1.trend_half_min2_slots_minus1",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "slots": 3,
+      "first": 3
+     },
+     "expected": 2,
+     "actual": 2,
+     "pass": true
+    },
+    {
+     "name": "d1.trend_half_2slots_gives1",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "slots": 2,
+      "first": 2
+     },
+     "expected": 1,
+     "actual": 1,
+     "pass": true
+    },
+    {
+     "name": "d1.trend_half_1slot_none",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "slots": 1,
+      "first": 1
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "d1.aligned_sl_10_exact_tick",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "close": 900,
+      "spec": "now <= -10",
+      "note": "부동소수점 −9.999999999999998 → as-is 안 팖(다만 정배열 깨짐으로 팔릴 수는 있음)"
+     },
+     "expected": 4,
+     "actual": 0,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "d1.aligned_peak_includes_today",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "peak(어제까지)": 1000,
+      "close": 1005,
+      "note": "오늘 값 포함 고점"
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    },
+    {
+     "name": "d1.aligned_breakeven_exact_1",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "peak": 1080,
+      "close": 1010,
+      "spec": "now <= 1",
+      "note": "부동소수점 1.0000000000000009 → as-is 안 팖"
+     },
+     "expected": 4,
+     "actual": 0,
+     "pass": false,
+     "finding": "as-is 결함 후보(규칙 글과 코드 출력이 다름)"
+    },
+    {
+     "name": "d1.aligned_broken_sells",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "aligned_now": false
+     },
+     "expected": 4,
+     "actual": 4,
+     "pass": true
+    },
+    {
+     "name": "d1.aligned_unknown_none_holds",
+     "group": "intraday_exit",
+     "rule_id": "D1-ASIS",
+     "input": {
+      "aligned_now": null,
+      "note": "함수 자체는 None이면 안 팖 — 부르는 쪽이 None을 False로 바꾸는지는 RULES-LOCK 참고"
+     },
+     "expected": 0,
+     "actual": 0,
+     "pass": true
+    }
+   ],
+   "summary": {
+    "total": 81,
+    "pass": 71,
+    "fail": 10
+   }
+  }
+ },
+ "summary": {
+  "total": 124,
+  "pass": 114,
+  "fail": 10,
+  "fail_names": [
+   "m15.trend_tp_13_exact_tick",
+   "m15.aligned_sl_10_exact_tick",
+   "m15.aligned_breakeven_peak8_now1_exact",
+   "h1.trend_tp_13_exact_tick",
+   "h1.aligned_sl_10_exact_tick",
+   "h1.aligned_breakeven_peak8_now1_exact",
+   "d1.size_age0_quirk",
+   "d1.trend_tp_13_exact_tick",
+   "d1.aligned_sl_10_exact_tick",
+   "d1.aligned_breakeven_exact_1"
+  ],
+  "fail_meaning": "실패는 모두 as-is 시험의 '규칙 글 vs 코드 출력' 차이(경계 부동소수점 9 · 의도 미확인 1) — 시험 장치 오류 아님"
+ }
+}
