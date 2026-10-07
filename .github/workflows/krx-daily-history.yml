@@ -1,0 +1,39 @@
+name: KRX daily history (delisted included)
+# KRX 공식 Open API로 날짜마다 그날 상장 전 종목(뒤에 폐지된 종목 포함) 일별 매매정보를 모읍니다(2차 연구 생존자 편향 · docs/PREREG-2.md).
+# 키 = Secrets KRX_AUTH_KEY(KRX Open API에서 '유가증권 일별매매정보' · '코스닥 일별매매정보' 이용 신청 승인 필요). 이어 받기 · 한 번에 400일.
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: '시작일 YYYYMMDD'
+        required: false
+        default: '20160104'
+permissions:
+  contents: write
+concurrency:
+  group: krx-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect and save
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for round in 1 2 3 4 5 6 7; do
+            python collect_krx_daily.py "$START" || exit $?
+            mkdir -p krx-data && git add -A krx-data
+            if git diff --cached --quiet; then break; fi
+            git commit -q -m "Collect KRX daily history (round $round)"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; sleep $((try * 7)); done
+          done
+        env:
+          KRX_AUTH_KEY: ${{ secrets.KRX_AUTH_KEY }}
+          START: ${{ inputs.start || '20160104' }}
