@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "input_pr": 19,
+  "input_head_sha": "1d295ee32e16e05bbed6fe41f60b8efe44106bf6",
+  "input_branch": "claude/replay-0002-result",
+  "input_status": "BLOCKED",
+  "processed_at_kst": "2026-10-08T08:29:09+09:00",
+  "review": "ACCEPTED_BLOCKED_WITH_PRIVACY_DEFECT",
+  "next_task": "DATA-0001",
+  "response_branch": "gpt/data-0001-pit-contract",
+  "response_pr": null
+}
