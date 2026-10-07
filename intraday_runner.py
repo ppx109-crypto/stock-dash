@@ -28,7 +28,7 @@ M15 = [f"{h:02d}{m:02d}" for h in range(9, 16) for m in (3, 18, 33, 48)]
 HOURLY = ["0903", "1003", "1103", "1203", "1303", "1403", "1533"]
 ORDER = {"m15": 0, "hourly": 1}          # 같은 회차면 15분봉(주문함) 먼저
 RUN_LIMIT = 13 * 60                       # 한 번 돌리기 최대(초)
-DIRS = ("hourly-live", "idle-live", "m15-live")
+DIRS = ("hourly-live", "idle-live", "m15-live", "basket-live")
 
 
 def plan(start, end):

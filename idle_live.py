@@ -14,6 +14,7 @@
 돈: 엔진 · 인버스는 '규칙이 안 쓰는 몫'(계좌 × (1 − 규칙 쓴 몫))만 씀. 규칙이 살 돈이 모자라면 paper_trade.make_room이 엔진 것을 먼저 팖.
 때: 15:10 판단(장중 연속 매매 → 시장가 즉시 체결) → 1일봉 봇(15:20 · 마감 동시호가)보다 먼저 현금을 비우거나 채움.
 미래 참조: 지난 날 종가(etf-data · 어제까지) + 오늘 15:10 값만 씀.
+사건 바구니 C(basket_live.py · 2026-10-07)도 여기서 15:10에 엔진보다 먼저 돎(규칙 > 바구니 > 엔진).
 주문은 모의투자 서버에만(paper_trade.PaperBroker) · 키 · 계좌 · 증권사 응답 본문은 찍지 않음 · 장부는 idle-live/에.
 """
 from __future__ import annotations
@@ -340,9 +341,32 @@ def run(now=None):
             total = cash + value
             engine_value = sum(q * float(account.get(c, {}).get("price") or now_price.get(c, 0)) for c, q in held.items())
             used = max(0.0, (value - engine_value) / total) if total > 0 else 1.0
-    cash_for_engine = max(0.0, cash - reserve * paper_trade.MKT_MARGIN)
+    # 사건 바구니 C(2026-10-07 사용자 "바구니C 좋네 넣어주고" · 연구 P4b): 규칙 > 바구니 > 엔진.
+    # 바구니가 든 것은 '규칙 쓴 몫'에서 빼고(엔진 켜고 끄는 판단은 연구 그대로 1일봉 등 규칙만) · 엔진 몫에서는 바구니 몫을 먼저 뺌.
+    import basket_live
+    b_held = basket_live.held_now(account)
+    basket_value = sum(q * float(account.get(c, {}).get("price") or now_price.get(c, 0)) for c, q in b_held.items())
+    used = max(0.0, used - basket_value / total) if total > 0 else 1.0
+    b_short, basket_after, b_spent = [], basket_value, 0.0
+    if datetime.now(KST).strftime("%H%M") <= LAST_ORDER:
+        days = [str(d) for d, c in _load(Path("etf-data") / f"{K200}.json", {}).get("closes", []) if c and str(d) < day] + [day]
+
+        def quote(code):
+            try:
+                return client.quote(code)["price"]
+            except broker_kis.BrokerError:
+                return None
+        try:
+            b_short, basket_after, b_spent = basket_live.run(client, broker, day, account, total, used,
+                                                             max(0.0, cash - reserve * paper_trade.MKT_MARGIN), quote, days)
+        except Exception as e:                       # 바구니가 말썽이어도 엔진은 그대로
+            print("사건 바구니 실패 ·", type(e).__name__, e)
+            b_short = ["⚠️ 사건 바구니 단계 실패(엔진은 그대로 돎)"]
+    cash_for_engine = max(0.0, cash - (b_spent * paper_trade.MKT_MARGIN if b_spent > 0 else b_spent) - reserve * paper_trade.MKT_MARGIN)
     orders, new_state, why = step(state, day, px, breadth if breadth is not None else 100.0, used, total, cash_for_engine, held,
-                                  now_price, week_end(day), reserve=reserve)
+                                  now_price, week_end(day), reserve=reserve + basket_after)
+    if basket_after > 0 or b_short:
+        why.insert(0, f"사건 바구니가 든 것 약 {basket_after / 1e4:,.0f}만 원(엔진 몫에서 먼저 뺌)")
     if reserve_note:
         why.insert(0, reserve_note + (" · 엔진 것을 팔아 자리를 냄" if room_note else ""))
     if breadth is None:
@@ -352,6 +376,7 @@ def run(now=None):
     lines += ["· " + w for w in why]
     # 디스코드는 짧게(사용자 2026-10-06 "너무 길고 복잡하여서 간단하게") — 판단 까닭 전부는 작업 기록 · 대시보드(idle-live/today.json)에
     short = [f"🧩 **빈칸 엔진 {day[4:6]}-{day[6:]}** · 시장 폭 {breadth if breadth is not None else '?'}% · 규칙 {used * 100:.0f}%"]
+    short += b_short
     done = []
     seen = {o["key"] for o in book["orders"]}
     for code, side, qty, reason in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저
@@ -404,7 +429,7 @@ def run(now=None):
     _save(TODAY, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "late": late, "breadth": breadth, "used": round(used, 3),
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
-    if orders or new_state.get("positions"):
+    if orders or new_state.get("positions") or b_short:
         if not orders:
             short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
         send(short)
