@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "RULES-0001",
+  "chain_id": "RULES-20261008",
+  "round": 1,
+  "status": "READY",
+  "source_pr": 6,
+  "source_head_sha": "46d4b069ad7d2a0513352c0acbf3967d55492c12",
+  "prior_result_pr": 5,
+  "prior_result_head_sha": "ffcdb4d0c0097c0774c3990aa6c461231b6b5a89",
+  "code_commit": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "reason": "explicit_user_request_resume_rule_design",
+  "prior_chain_status": "NEEDS_USER_ENDED",
+  "prior_result_already_reviewed": true,
+  "execution": "design_only_no_new_backtest",
+  "evidence_paths": [
+    "research-exchange/claude-to-gpt/EXCHANGE-0002/REPORT.md",
+    "research-exchange/gpt-to-claude/0003-final-review.md",
+    "docs/AUDIT-1.md"
+  ],
+  "limitations": [
+    "no_actual_fill_NAV_evidence",
+    "survivorship_unresolved",
+    "existing_test_periods_not_new_OOS"
+  ],
+  "created_at_kst": "2026-10-08 05:56:41+09:00",
+  "result_pr": null
+}
