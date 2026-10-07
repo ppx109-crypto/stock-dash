@@ -21,6 +21,7 @@ import rule  # noqa: E402
 import study  # noqa: E402
 
 FROM, TO = os.getenv("Z_FROM", "20250102"), os.getenv("Z_TO", "20260930")
+KEEP = int(os.getenv("Z_KEEP", "600"))
 OUT = Path(os.getenv("Z_OUT", "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z026.json"))
 
 
@@ -54,7 +55,8 @@ def replay():
         pool = {r["code"] for r in yest if (r.get(caps.RANK) or 999) <= DL.POOL} | set(state["positions"])
         live = {}
         for c in pool:
-            rows = [x for x in prices[c]["rows"] if x[0] <= day]
+            k = pos[c].get(day)
+            rows = prices[c]["rows"][max(0, k - KEEP + 1):k + 1] if k is not None else []   # 최근 KEEP일만(200일선 · 250일 고점에 넉넉 · 셈 빠르게)
             if rows and rows[-1][0] == day:
                 live[c] = {"name": prices[c]["name"], "rows": rows}
         found = final_group.compute(live, calm=calm)
@@ -79,7 +81,7 @@ def replay():
         rate = {c: (live[c]["rows"][-1][1] / live[c]["rows"][-2][1] - 1) * 100 if len(live[c]["rows"]) > 1 else 0 for c in live}
         sells, buys = DL.decide(state, cands, close, aligned, rate, kin_ok)
         DL.settle(state, day, sells, buys, close)
-        if n % 20 == 0:
+        if n % 5 == 0:
             print(f"  {day} 들고 있음 {len(state['positions'])} · 끝난 매매 {len(state['closed'])}", flush=True)
     OUT.write_text(json.dumps(state, ensure_ascii=False))
     return state
