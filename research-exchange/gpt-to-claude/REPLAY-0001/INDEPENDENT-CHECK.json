@@ -1,0 +1,280 @@
+{
+  "hashes_verified": 20,
+  "fixture_cases": 12,
+  "fixture_submitted_differences": [],
+  "fixture_summary": {
+    "total": 12,
+    "pass": 9,
+    "fail": 3,
+    "note": "kind='as-is 결함 확인'은 기대값을 '계약'으로 두어 실패로 남김(결함이 실제로 있다는 증거) · 'as-is 동작 고정'은 현재 동작 그대로를 기대값으로"
+  },
+  "availability_derived": {
+    "investor": {
+      "rows": 145,
+      "early": 112,
+      "late": 3,
+      "no_next": 30,
+      "changed": 78
+    },
+    "price": {
+      "rows": 319,
+      "changed": 281
+    },
+    "event": {
+      "rows": 41,
+      "early": 20,
+      "late": 11,
+      "no_next": 10
+    }
+  },
+  "hash_checks": [
+    {
+      "path": "INVENTORY.json",
+      "match": true
+    },
+    {
+      "path": "MEASUREMENT-CONTRACT.md",
+      "match": true
+    },
+    {
+      "path": "PREREG-LOCK.md",
+      "match": true
+    },
+    {
+      "path": "RECONCILIATION.json",
+      "match": true
+    },
+    {
+      "path": "RELIABILITY.md",
+      "match": true
+    },
+    {
+      "path": "REPORT.md",
+      "match": true
+    },
+    {
+      "path": "TEST-RESULT.json",
+      "match": true
+    },
+    {
+      "path": "audit/amtm_cash_audit.py",
+      "match": true
+    },
+    {
+      "path": "audit/calm_cache_audit.py",
+      "match": true
+    },
+    {
+      "path": "audit/git_availability.py",
+      "match": true
+    },
+    {
+      "path": "audit/reconcile_paper.py",
+      "match": true
+    },
+    {
+      "path": "audit/row_shift_audit.py",
+      "match": true
+    },
+    {
+      "path": "fixtures/contract_rules0001.py",
+      "match": true
+    },
+    {
+      "path": "fixtures/run_meas_fixtures.py",
+      "match": true
+    },
+    {
+      "path": "results/amtm_cash_audit.json",
+      "match": true
+    },
+    {
+      "path": "results/calm_cache_audit.json",
+      "match": true
+    },
+    {
+      "path": "results/git_availability.json",
+      "match": true
+    },
+    {
+      "path": "results/meas_fixtures.json",
+      "match": true
+    },
+    {
+      "path": "results/reconcile_paper.json",
+      "match": true
+    },
+    {
+      "path": "results/row_shift_audit.json",
+      "match": true
+    }
+  ],
+  "cases": [
+    {
+      "name": "a_mtm.no_cash_constraint_12_slots",
+      "group": "a_mtm",
+      "kind": "as-is 결함 확인",
+      "input": {
+        "ledger": "같은 날 4칸 × 3건(12칸)",
+        "price": "+10% 다음 날"
+      },
+      "expected": "노출 100% 이하(계약 · 현금 ≥ 0)",
+      "actual": "그날 계좌 +12.0%(노출 120%)",
+      "pass": false
+    },
+    {
+      "name": "a_mtm.sell_day_reconcile_jump",
+      "group": "a_mtm",
+      "kind": "as-is 동작 고정",
+      "input": {
+        "price": "+10% 유지",
+        "ledger_pnl": "+2%",
+        "slots": 10
+      },
+      "expected": "판 날 계좌 -7.3%",
+      "actual": "판 날 계좌 -7.3%",
+      "pass": true
+    },
+    {
+      "name": "a_mtm.same_day_trade_dropped",
+      "group": "a_mtm",
+      "kind": "as-is 결함 확인",
+      "input": {
+        "buy": "20260103",
+        "sell": "20260103",
+        "pnl": "+5%"
+      },
+      "expected": "반영됨",
+      "actual": "반영 안 됨(계좌 수익 합 0)",
+      "pass": false
+    },
+    {
+      "name": "a_mtm.partial_rows_conserve",
+      "group": "a_mtm",
+      "kind": "contract",
+      "input": {
+        "rows": "같은 날 산 2칸 · 2칸 · 따로 팖"
+      },
+      "expected": "+1.00%",
+      "actual": "+1.00%",
+      "pass": true
+    },
+    {
+      "name": "a_mtm.cost_only_at_exit",
+      "group": "a_mtm",
+      "kind": "as-is 동작 고정",
+      "input": {
+        "price": "그대로",
+        "ledger_pnl": "−0.25%(왕복 비용)"
+      },
+      "expected": "산 날 +0.0% · 판 날 -0.25%",
+      "actual": "산 날 +0.0% · 판 날 -0.25%",
+      "pass": true
+    },
+    {
+      "name": "twr.deposit_not_gain",
+      "group": "nav",
+      "kind": "contract",
+      "input": {
+        "segments": [
+          [
+            100,
+            95
+          ],
+          [
+            145,
+            145
+          ]
+        ]
+      },
+      "expected": -0.05,
+      "actual": -0.05,
+      "pass": true
+    },
+    {
+      "name": "twr.a_mtm_has_no_flow_input",
+      "group": "nav",
+      "kind": "contract",
+      "input": {
+        "note": "a_mtm.account 인자에 입출금 없음"
+      },
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "calm.full_period_changes_with_future_rows",
+      "group": "calm",
+      "kind": "as-is 결함 확인",
+      "input": {
+        "past": "2017 변동성 1.0 ~ 3.2",
+        "future": "2018 9.0 × 12"
+      },
+      "expected": "같음(계약: 미래 행이 과거 문턱을 바꾸지 않음)",
+      "actual": "1.8 → 2.8(바뀜)",
+      "pass": false
+    },
+    {
+      "name": "calm.past_decision_flips",
+      "group": "calm",
+      "kind": "as-is 결함 확인",
+      "input": {
+        "row": "2017-06 변동성 2.6"
+      },
+      "expected": [
+        false,
+        true
+      ],
+      "actual": [
+        false,
+        true
+      ],
+      "pass": true
+    },
+    {
+      "name": "calm.month_cutoff_unchanged_by_future",
+      "group": "calm",
+      "kind": "contract",
+      "input": {
+        "month": "201712"
+      },
+      "expected": true,
+      "actual": true,
+      "pass": true
+    },
+    {
+      "name": "dart.after_close_reaction_starts_next_session",
+      "group": "dart",
+      "kind": "contract",
+      "input": {
+        "rcept_dt": "2026-10-07",
+        "time": null,
+        "holidays": [
+          "2026-10-09"
+        ]
+      },
+      "expected": [
+        "2026-10-08T09:00:00",
+        false
+      ],
+      "actual": [
+        "2026-10-08T09:00:00",
+        false
+      ],
+      "pass": true
+    },
+    {
+      "name": "flow.missing_day_row_window_spans_6_trading_days",
+      "group": "flow",
+      "kind": "contract",
+      "input": {
+        "rows": "01-09 결손",
+        "date": "20260114"
+      },
+      "expected": 6,
+      "actual": 6,
+      "pass": true
+    }
+  ],
+  "python": "3.12.14"
+}

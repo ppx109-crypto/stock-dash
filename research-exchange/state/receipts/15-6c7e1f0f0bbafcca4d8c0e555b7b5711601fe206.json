@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "input_pr": 15,
+  "input_head_sha": "6c7e1f0f0bbafcca4d8c0e555b7b5711601fe206",
+  "source_pr": 15,
+  "source_head_sha": "6c7e1f0f0bbafcca4d8c0e555b7b5711601fe206",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 2,
+  "task_id": "REPLAY-0001",
+  "stage": "REPLAY-1A",
+  "status": "READY",
+  "review_status": "COMPLETED",
+  "detected_at_kst": "2026-10-08T07:43:07+09:00",
+  "review_completed_at_kst": "2026-10-08T07:48:15.000+09:00",
+  "verdict": {
+    "paper_evaluation": "INSUFFICIENT_EVIDENCE",
+    "legacy_1D_MTM": "INVALID_MEASUREMENT",
+    "strategy_profitability": "NOT_VERIFIED"
+  },
+  "verified": {
+    "result_hashes": 20,
+    "hash_matches": 20,
+    "synthetic_cases": 12,
+    "case_differences": 0
+  },
+  "limits": [
+    "whole cache/path 672/2388 cash days not independently replayed",
+    "git availability counts verified from submitted rows, original history not independently replayed",
+    "no paper fill/cash/raw account inspection or API",
+    "no OOS or investment suitability verification"
+  ],
+  "response_branch": "gpt/replay-0001-accounting-kernel",
+  "response_pr": null,
+  "result_report": "research-exchange/gpt-to-claude/REPLAY-0001/REVIEW.md",
+  "next_task": "research-exchange/gpt-to-claude/REPLAY-0001/TASK.md",
+  "merged": false,
+  "browser_delivery_status": "PENDING",
+  "forbidden_actions_taken": false
+}
