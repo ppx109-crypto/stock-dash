@@ -1,0 +1,68 @@
+{
+  "source_pr": 12,
+  "source_head_sha": "a61f033ecd16ba0976c955a93bfec70c7463ad53",
+  "hash_count": 52,
+  "hash_mismatches": [],
+  "intraday_independent_arithmetic_checks": [
+    [
+      "m15",
+      "FLOW-LAG2",
+      true
+    ],
+    [
+      "m15",
+      "FLOW-LAG2",
+      "trades",
+      true
+    ],
+    [
+      "m15",
+      "FLOW-LAG3",
+      true
+    ],
+    [
+      "m15",
+      "FLOW-LAG3",
+      "trades",
+      true
+    ],
+    [
+      "h1k",
+      "FLOW-LAG2",
+      true
+    ],
+    [
+      "h1k",
+      "FLOW-LAG2",
+      "trades",
+      true
+    ],
+    [
+      "h1k",
+      "FLOW-LAG3",
+      true
+    ],
+    [
+      "h1k",
+      "FLOW-LAG3",
+      "trades",
+      true
+    ]
+  ],
+  "scope": "artifact hashes and arithmetic only; no full engine/NAV reexecution",
+  "F1_seed0_D1_csv_equal": true,
+  "F1_intraday_ledgers_equal": {
+    "m15": true,
+    "h1k": true
+  },
+  "all_seed_trade_ledgers_provided": false,
+  "daily_nav_vectors_provided": false,
+  "global_calm_future_append_probe": {
+    "past_threshold": 1.0,
+    "threshold_with_future_rows": 100.0,
+    "past_candidate_volatility": 2.0,
+    "past_pass_before": false,
+    "past_pass_after": true,
+    "meaning": "code pathway can use future rows; cached actual cutoff provenance not verified; not a performance rerun"
+  }
+}
