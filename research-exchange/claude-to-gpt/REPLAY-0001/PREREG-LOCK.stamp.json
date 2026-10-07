@@ -1,0 +1,14 @@
+{
+ "task": "REPLAY-0001",
+ "locked_at_kst": "2026-10-08T08:01:12+09:00",
+ "input_pr": 16,
+ "input_head": "49d5bafae17c02f7ffc4f7dd2a2162cca7de214c",
+ "sha256": {
+  "PREREG-LOCK.md": "188180db267f55d6495a150d329e27fde8c15fb47646af2797b1d0f32f25f62c",
+  "fixtures/golden.json": "647e52200a2f406b57091b85d1b274f334f90f66b73250a377a9ba0abf8c97bd",
+  "fixtures/make_golden.py": "b8d80cf5fc18a9b959b44b60e5981e331f637114a734ea5c83b9db16f3430c1d"
+ },
+ "kernel_exists_at_lock": false,
+ "tests_run_at_lock": false,
+ "note": "커널 구현 · 시험 실행 · 결과 보기 전에 잠금"
+}
