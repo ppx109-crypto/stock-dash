@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "WINNER-HOLD-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 5,
+  "status": "READY",
+  "source_pr": 51,
+  "source_head_sha": "a7d1470f1c02bd7804e29455ef3f47d5849574fb",
+  "detected_at_kst": "2026-10-08T17:19:23+09:00",
+  "reviewed_at_kst": "2026-10-08T17:23:00+09:00",
+  "response_pr": null,
+  "result_pr": null,
+  "claude_delivery": "PENDING",
+  "review": {
+    "manifest_files": 29,
+    "manifest_sha256_mismatches": 0,
+    "nav_arithmetic": "MATCH",
+    "engine_rerun_by_gpt": false,
+    "verdict": "I/P 개선 없음·가설 종료"
+  },
+  "scope": "오프라인 연구 복사본 4판만",
+  "orders": 0,
+  "api_calls": 0,
+  "operational_changes": 0
+}
