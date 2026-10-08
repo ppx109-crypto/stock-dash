@@ -1,0 +1,338 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-QUANTITY-MUTATION-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 35,
+ "status": "READY",
+ "source_pr": 112,
+ "source_head_sha": "9e88dba81bc3e702dad2478b4cf3e86e99e691c5",
+ "code_commit": "07955ac7026accee692e76838a8c986f9a8684fc",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/quantity_mutation_gate.py",
+  "evidence/quantity-mutation-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:55:49+09:00",
+ "input": {
+  "pr": 113,
+  "head_sha": "5da3b91dc63e454daebf6a12b14ea4f6aa8f3777",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T02:52:40+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "9e88dba81bc3e702dad2478b4cf3e86e99e691c5"
+   },
+   {
+    "at_kst": "2026-10-09T02:55:49+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "9e88dba81bc3e702dad2478b4cf3e86e99e691c5"
+   }
+  ]
+ },
+ "prereg_commit": "59fee7ee3b7e32281075c9958447082a84cdfd1e",
+ "prereg_committed_at_kst": "2026-10-09T02:54:01+09:00",
+ "verdict": "READY / kind 무관 수량변경 게이트 · bonus_issue·미지 kind 후속 QM BLOCKED_AMBIGUOUS_EVENT_IDENTITY로 배치 전체 중단 · 무관한 B 포함 바뀐 칸 0 · 새 종목 첫 QM 정상 · K1~K3/Q1~Q4 PR112 증거와 다른 칸 0 · 4경로·반복·바이트·자르기 불변 · PR112 I1 185→370 재현 · 실제 적용 0",
+ "status_source": "evidence summary.all_pass",
+ "pr112_fixed": {
+  "code": {
+   "git_blob": "be0dda40db1b1b80280e41da279c3e91f6851025",
+   "sha256": "14317e97ee289279b56a1d6ec10550e41b78fa0234726ecaf531b7f67ed9e553"
+  },
+  "evidence": {
+   "git_blob": "afc6579dcba3237329c382db0586219233a88c2d",
+   "sha256": "b9956807229b579519bcbbc04f6fa503919ad840ce9b1dbf0956c4bdd8122ed8"
+  }
+ },
+ "summary": {
+  "pr112_sha_ok": {
+   "code": true,
+   "evidence": true
+  },
+  "m_fixtures_pass": true,
+  "regression_pass": true,
+  "regression_diff_count": 0,
+  "neg_I1_match": true,
+  "neg_derived_match": true,
+  "m3_false_positive_blocked": true,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "fixtures": {
+  "M1_bonus_issue": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|bonus_issue|2|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+    "B|reverse_split|1/5|2026-02-02": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "75"
+   },
+   "invariant": true,
+   "repeat_identical": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [],
+    []
+   ],
+   "pass": true
+  },
+  "M2_unknown_kind": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|unknown_qty_event|2|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+    "B|reverse_split|1/5|2026-02-02": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "75"
+   },
+   "invariant": true,
+   "repeat_identical": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [],
+    []
+   ],
+   "pass": true
+  },
+  "M3_later_legit_looking_second_qm": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|bonus_issue|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+    "B|reverse_split|1/5|2026-02-03": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "75"
+   },
+   "invariant": true,
+   "repeat_identical": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [],
+    []
+   ],
+   "pass": true
+  },
+  "M4_new_symbol_first_qm": {
+   "verdict": "COMMITTED",
+   "status": {
+    "B|reverse_split|1/5|2026-01-30": "OK",
+    "C|bonus_issue|2|2026-01-30": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "15",
+    "C": "80"
+   },
+   "invariant": true,
+   "repeat_identical": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [
+     "pos.B.0",
+     "pos.B.1",
+     "pos.C.0",
+     "pos.C.1",
+     "applied",
+     "prov"
+    ],
+    [
+     "pos.B.0",
+     "pos.B.1",
+     "pos.C.0",
+     "pos.C.1",
+     "applied",
+     "prov"
+    ]
+   ],
+   "pass": true
+  }
+ },
+ "regression_vs_pr112": {
+  "K1_kind_flip_reverse_split": {
+   "group": "fixtures",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "K2_later_independent_reverse_split": {
+   "group": "fixtures",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "K3_unseen_symbols": {
+   "group": "fixtures",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q1_apply_date_changed": {
+   "group": "q_regression",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q2_m_qty_changed": {
+   "group": "q_regression",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q3_legit_looking_second_split": {
+   "group": "q_regression",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q4_same_key_same_payload": {
+   "group": "q_regression",
+   "diffs": 0,
+   "mutations_same": true,
+   "pass": true
+  }
+ },
+ "pre_fix_negative_control": {
+  "I1_exact_match_pr112_evidence": true,
+  "I1_observed": {
+   "verdict": "COMMITTED",
+   "status": {
+    "A|bonus_issue|2|2026-02-02": "OK"
+   },
+   "A_qty": "370"
+  },
+  "M1_bonus_issue": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "370",
+    "B": "15"
+   },
+   "match": true,
+   "expect_source": "derived"
+  },
+  "M2_unknown_kind": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "370",
+    "B": "15"
+   },
+   "match": true,
+   "expect_source": "derived"
+  },
+  "M3_later_legit_looking_second_qm": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "370",
+    "B": "15"
+   },
+   "match": true,
+   "expect_source": "derived"
+  },
+  "M4_new_symbol_first_qm": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "185",
+    "B": "15",
+    "C": "80"
+   },
+   "match": true,
+   "expect_source": "derived"
+  }
+ },
+ "interpretation_choice": "GPT PREREG 판정식 셋째 줄에 '새 사건도 QM' 조건이 빠짐 → TASK 2항 · H1을 따라 후보도 QM일 때만 격리(사전등록에 실행 전 공개) · 참고 N1/N2로 우회 없음 확인",
+ "informational": {
+  "N1_non_qm_identity_ratio": {
+   "input": {
+    "sym": "A",
+    "kind": "name_change",
+    "m_qty": "1",
+    "m_price": "1",
+    "apply_date": "2026-02-02",
+    "src": "RN"
+   },
+   "verdict": "COMMITTED",
+   "status": {
+    "A|name_change|1|2026-02-02": "OK"
+   },
+   "A_qty": "185"
+  },
+  "N2_bad_ratio_not_qm": {
+   "input": {
+    "sym": "A",
+    "kind": "bonus_issue",
+    "m_qty": "2",
+    "m_price": "1/4",
+    "apply_date": "2026-02-02",
+    "src": "RX"
+   },
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|bonus_issue|2|2026-02-02": "BLOCKED_RATIO_PRODUCT"
+   },
+   "A_qty": "185"
+  }
+ },
+ "needs_data": {
+  "M3_false_positive": "QM 적용 종목의 후속 QM 전부 영구 차단(kind 무관) · 출처 사건 ID/정정 계보/available_at 필요 · 자동 허용 규칙 없음",
+  "contract_limits": "m_qty·m_price가 실제 효과와 맞다고 가정 · 가격만 조정되는 사건은 역수 쌍 모델로 표현 불가"
+ },
+ "note": "수량변경 게이트는 동일성 증명이 아니라 임시 fail-closed",
+ "file_sha256": {
+  "PREREG.md": "99d2b6bfd35ce5321fec020d98a74aaae7e2fcaa4035a8324ef46e5a4adebe51",
+  "REPORT.md": "0b51486759b401a174a9ac71311e9415e07ddcc6cabc250bdd148c5c79ecbc83",
+  "code/quantity_mutation_gate.py": "babf0963aab966cdcb7f37f1f65a202534246af0b17797c3d79ca1d908acee74",
+  "evidence/quantity-mutation-gate.json": "ecfb7a757e8de81a06027c39d2119b2bcf4c46bbaf090f4226df23b0c9fe2ace",
+  "evidence/tables.md": "8a4f8036c693214c7aab508f1862d272b24900b7393e2266426e8db41d119fe3",
+  "evidence/run.log": "d5dca1ea116d003188d6090dd38e35766d580b77f9153d92684e3c7d2810f0a7"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "cap": 2,
+  "failed": 0,
+  "expectation_changed": false,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_symbols": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "kind_list": 0,
+  "exceptions": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}

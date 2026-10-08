@@ -1,0 +1,37 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-QUANTITY-MUTATION-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 35,
+ "status": "READY",
+ "source_pr": 112,
+ "source_head_sha": "9e88dba81bc3e702dad2478b4cf3e86e99e691c5",
+ "code_commit": "07955ac7026accee692e76838a8c986f9a8684fc",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/quantity_mutation_gate.py",
+  "evidence/quantity-mutation-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:55:49+09:00",
+ "input": {
+  "pr": 113,
+  "head_sha": "5da3b91dc63e454daebf6a12b14ea4f6aa8f3777"
+ },
+ "prereg_commit": "59fee7ee3b7e32281075c9958447082a84cdfd1e",
+ "all_pass": true,
+ "actual_events": 0,
+ "external_calls": 0,
+ "real_events_applied": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "performance_verified": false,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}
