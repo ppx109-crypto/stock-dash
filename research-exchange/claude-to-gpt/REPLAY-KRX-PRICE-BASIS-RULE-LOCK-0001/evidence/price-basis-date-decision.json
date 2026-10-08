@@ -1,0 +1,297 @@
+{
+ "cells": [
+  {
+   "market": "KOSPI",
+   "event": "split",
+   "candidate_sources": [
+    "S1",
+    "S2",
+    "S3"
+   ],
+   "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+   "axes": {
+    "rule_name_and_market": {
+     "status": "증거 없음",
+     "why": "패킷 블록 어디에도 lawid ↔ 시장 문구 없음 · 정식 규정명 미확정(S1 · S2 · S4 · S5 currentness)",
+     "claimed_by_packet": "S1~S3이 유가증권시장, S4~S6이 코스닥시장이라는 대응은 이번 과제에서 검증할 주장이지 전제가 아니다."
+    },
+    "lawid_and_article": {
+     "status": "부분",
+     "why": "lawid 000111는 URL 사실 · 조문 번호 · 별표 위치는 패킷에 없음(S1은 조문 표제만)"
+    },
+    "version_or_effective_date": {
+     "status": "증거 없음",
+     "why": "공개일만 있고 시행일 · 현행 여부 없음. Train(2025-09-18~2026-03-31)에 시행 중이던 버전 확인 불가",
+     "pubs": {
+      "S1": "2024-05-23",
+      "S2": null,
+      "S3": "2022-08-26"
+     }
+    },
+    "formula": {
+     "status": "색인 문구 있음(REVISE 상한)",
+     "text": [
+      "“주식분할 또는 주식병합된 종목은 전일종가에 분할 또는 병합의 비율을 곱한 가격으로 한다.”"
+     ],
+     "ratio_direction": "증거 없음 — '분할 비율'이 (뒤 주식 수 ÷ 앞)인지 (앞 액면 ÷ 뒤)인지 문구 없음. PR #92 ratio 후보(주식 수 배율)라면 가격 배수는 그 역수여야 하므로 방향 확정 전 산식 적용 금지"
+    },
+    "same_day_equals_resumption": {
+     "status": "증거 없음",
+     "text": [
+      "검색 색인은 일부 정지사유의 재개일을 다음 매매거래일 또는 거래소가 정하는 날로 표시한다.",
+      "분할·병합되는 날에는 `당일의 기준가격`을 사용한다는 문구가 표시됨.",
+      "장기간 거래정지 뒤 최초 호가일에 분할·병합되는 종목은 `당일의 기준가격`을 사용하는 유형으로 열거됨."
+     ],
+     "why": "'분할·병합되는 날' · '최초 호가일'이 거래 재개일이라는 문구 없음. S3(최초 호가일)는 가장 가깝지만 000111 · 2022 공개본 · 요약 사실(정확 발췌 아님)"
+    },
+    "consistent_with_pr92": {
+     "status": "모순 없음(보조)",
+     "why": "PR #92 예시 3/3 '정지 종료 다음 평일 = 상장예정일' · 효력일은 정지 중 — 산식이 정지 뒤 첫 거래일에 쓰인다는 추론과 충돌 없음(일반 규칙 아님)"
+    }
+   },
+   "rule_identity_verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula_verdict": "REVISE",
+   "formula_note": "색인 정확 발췌(S2 · S4)는 있으나 시장 · 버전 · 비율 방향 미확정 · 직접 원문 아님",
+   "price_basis_date": {
+    "value": null,
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "candidates": {
+     "거래 재개일(정지 뒤 첫 거래일)": "INFERENCE(가장 그럴듯함 · 공식 연결 문구 없음)",
+     "신주권상장예정일": "INFERENCE(사례 3/3에서 재개일과 같음 · 일반 규칙 아님)",
+     "신주의 효력발생일": "사용 금지(PR #92 반증: 정지 중)"
+    }
+   },
+   "needs_data": [
+    "lawid별 정식 규정명과 시장(유가증권시장 업무규정 시행세칙 / 코스닥시장 업무규정 시행세칙 여부)",
+    "기준가격 조항의 조문 번호 · 항 · 호와 Train 기간에 시행 중이던 버전의 시행일",
+    "'분할·병합되는 날'(또는 '최초 호가일')이 매매거래 재개일임을 정하는 조문 직접 문구",
+    "분할 · 병합 비율의 정의(가격에 곱하는 방향)"
+   ]
+  },
+  {
+   "market": "KOSPI",
+   "event": "reverse_split",
+   "candidate_sources": [
+    "S1",
+    "S2",
+    "S3"
+   ],
+   "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+   "axes": {
+    "rule_name_and_market": {
+     "status": "증거 없음",
+     "why": "패킷 블록 어디에도 lawid ↔ 시장 문구 없음 · 정식 규정명 미확정(S1 · S2 · S4 · S5 currentness)",
+     "claimed_by_packet": "S1~S3이 유가증권시장, S4~S6이 코스닥시장이라는 대응은 이번 과제에서 검증할 주장이지 전제가 아니다."
+    },
+    "lawid_and_article": {
+     "status": "부분",
+     "why": "lawid 000111는 URL 사실 · 조문 번호 · 별표 위치는 패킷에 없음(S1은 조문 표제만)"
+    },
+    "version_or_effective_date": {
+     "status": "증거 없음",
+     "why": "공개일만 있고 시행일 · 현행 여부 없음. Train(2025-09-18~2026-03-31)에 시행 중이던 버전 확인 불가",
+     "pubs": {
+      "S1": "2024-05-23",
+      "S2": null,
+      "S3": "2022-08-26"
+     }
+    },
+    "formula": {
+     "status": "색인 문구 있음(REVISE 상한)",
+     "text": [
+      "“주식분할 또는 주식병합된 종목은 전일종가에 분할 또는 병합의 비율을 곱한 가격으로 한다.”"
+     ],
+     "ratio_direction": "증거 없음 — '분할 비율'이 (뒤 주식 수 ÷ 앞)인지 (앞 액면 ÷ 뒤)인지 문구 없음. PR #92 ratio 후보(주식 수 배율)라면 가격 배수는 그 역수여야 하므로 방향 확정 전 산식 적용 금지"
+    },
+    "same_day_equals_resumption": {
+     "status": "증거 없음",
+     "text": [
+      "검색 색인은 일부 정지사유의 재개일을 다음 매매거래일 또는 거래소가 정하는 날로 표시한다.",
+      "분할·병합되는 날에는 `당일의 기준가격`을 사용한다는 문구가 표시됨.",
+      "장기간 거래정지 뒤 최초 호가일에 분할·병합되는 종목은 `당일의 기준가격`을 사용하는 유형으로 열거됨."
+     ],
+     "why": "'분할·병합되는 날' · '최초 호가일'이 거래 재개일이라는 문구 없음. S3(최초 호가일)는 가장 가깝지만 000111 · 2022 공개본 · 요약 사실(정확 발췌 아님)"
+    },
+    "consistent_with_pr92": {
+     "status": "모순 없음(보조)",
+     "why": "PR #92 예시 3/3 '정지 종료 다음 평일 = 상장예정일' · 효력일은 정지 중 — 산식이 정지 뒤 첫 거래일에 쓰인다는 추론과 충돌 없음(일반 규칙 아님)"
+    }
+   },
+   "rule_identity_verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula_verdict": "REVISE",
+   "formula_note": "색인 정확 발췌(S2 · S4)는 있으나 시장 · 버전 · 비율 방향 미확정 · 직접 원문 아님",
+   "price_basis_date": {
+    "value": null,
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "candidates": {
+     "거래 재개일(정지 뒤 첫 거래일)": "INFERENCE(가장 그럴듯함 · 공식 연결 문구 없음)",
+     "신주권상장예정일": "INFERENCE(사례 3/3에서 재개일과 같음 · 일반 규칙 아님)",
+     "신주의 효력발생일": "사용 금지(PR #92 반증: 정지 중)"
+    }
+   },
+   "needs_data": [
+    "lawid별 정식 규정명과 시장(유가증권시장 업무규정 시행세칙 / 코스닥시장 업무규정 시행세칙 여부)",
+    "기준가격 조항의 조문 번호 · 항 · 호와 Train 기간에 시행 중이던 버전의 시행일",
+    "'분할·병합되는 날'(또는 '최초 호가일')이 매매거래 재개일임을 정하는 조문 직접 문구",
+    "분할 · 병합 비율의 정의(가격에 곱하는 방향)"
+   ]
+  },
+  {
+   "market": "KOSDAQ",
+   "event": "split",
+   "candidate_sources": [
+    "S4",
+    "S5",
+    "S6"
+   ],
+   "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+   "axes": {
+    "rule_name_and_market": {
+     "status": "증거 없음",
+     "why": "패킷 블록 어디에도 lawid ↔ 시장 문구 없음 · 정식 규정명 미확정(S1 · S2 · S4 · S5 currentness)",
+     "claimed_by_packet": "S1~S3이 유가증권시장, S4~S6이 코스닥시장이라는 대응은 이번 과제에서 검증할 주장이지 전제가 아니다."
+    },
+    "lawid_and_article": {
+     "status": "부분",
+     "why": "lawid 000212/000210는 URL 사실 · 조문 번호 · 별표 위치는 패킷에 없음(S1은 조문 표제만)"
+    },
+    "version_or_effective_date": {
+     "status": "증거 없음",
+     "why": "공개일만 있고 시행일 · 현행 여부 없음. Train(2025-09-18~2026-03-31)에 시행 중이던 버전 확인 불가",
+     "pubs": {
+      "S4": "2019-04-17",
+      "S5": "2013-09-11/2013-09-13",
+      "S6": "2013-09-11"
+     }
+    },
+    "formula": {
+     "status": "색인 문구 있음(REVISE 상한)",
+     "text": [
+      "“직전 매매거래일 종가에 분할 또는 병합비율을 곱한 가격”",
+      "기준가격은 직전 매매거래일 종가와 분할·병합 비율로 계산한다."
+     ],
+     "ratio_direction": "증거 없음 — '분할 비율'이 (뒤 주식 수 ÷ 앞)인지 (앞 액면 ÷ 뒤)인지 문구 없음. PR #92 ratio 후보(주식 수 배율)라면 가격 배수는 그 역수여야 하므로 방향 확정 전 산식 적용 금지"
+    },
+    "same_day_equals_resumption": {
+     "status": "증거 없음",
+     "text": [
+      "분할·병합되는 날에 `당일의 기준가격`을 사용한다.",
+      "S5의 기준가격 산식·당일 관계를 단일 조문 화면에서도 검색 색인이 표시함."
+     ],
+     "why": "'분할·병합되는 날' · '최초 호가일'이 거래 재개일이라는 문구 없음. S3(최초 호가일)는 가장 가깝지만 000111 · 2022 공개본 · 요약 사실(정확 발췌 아님) · 코스닥 쪽 후보(000212/000210)에는 S3 같은 '최초 호가일' 문구도 없음(2013 · 2019 공개본뿐)"
+    },
+    "consistent_with_pr92": {
+     "status": "모순 없음(보조)",
+     "why": "PR #92 예시 3/3 '정지 종료 다음 평일 = 상장예정일' · 효력일은 정지 중 — 산식이 정지 뒤 첫 거래일에 쓰인다는 추론과 충돌 없음(일반 규칙 아님)"
+    }
+   },
+   "rule_identity_verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula_verdict": "REVISE",
+   "formula_note": "색인 정확 발췌(S2 · S4)는 있으나 시장 · 버전 · 비율 방향 미확정 · 직접 원문 아님",
+   "price_basis_date": {
+    "value": null,
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "candidates": {
+     "거래 재개일(정지 뒤 첫 거래일)": "INFERENCE(가장 그럴듯함 · 공식 연결 문구 없음)",
+     "신주권상장예정일": "INFERENCE(사례 3/3에서 재개일과 같음 · 일반 규칙 아님)",
+     "신주의 효력발생일": "사용 금지(PR #92 반증: 정지 중)"
+    }
+   },
+   "needs_data": [
+    "lawid별 정식 규정명과 시장(유가증권시장 업무규정 시행세칙 / 코스닥시장 업무규정 시행세칙 여부)",
+    "기준가격 조항의 조문 번호 · 항 · 호와 Train 기간에 시행 중이던 버전의 시행일",
+    "'분할·병합되는 날'(또는 '최초 호가일')이 매매거래 재개일임을 정하는 조문 직접 문구",
+    "분할 · 병합 비율의 정의(가격에 곱하는 방향)"
+   ]
+  },
+  {
+   "market": "KOSDAQ",
+   "event": "reverse_split",
+   "candidate_sources": [
+    "S4",
+    "S5",
+    "S6"
+   ],
+   "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+   "axes": {
+    "rule_name_and_market": {
+     "status": "증거 없음",
+     "why": "패킷 블록 어디에도 lawid ↔ 시장 문구 없음 · 정식 규정명 미확정(S1 · S2 · S4 · S5 currentness)",
+     "claimed_by_packet": "S1~S3이 유가증권시장, S4~S6이 코스닥시장이라는 대응은 이번 과제에서 검증할 주장이지 전제가 아니다."
+    },
+    "lawid_and_article": {
+     "status": "부분",
+     "why": "lawid 000212/000210는 URL 사실 · 조문 번호 · 별표 위치는 패킷에 없음(S1은 조문 표제만)"
+    },
+    "version_or_effective_date": {
+     "status": "증거 없음",
+     "why": "공개일만 있고 시행일 · 현행 여부 없음. Train(2025-09-18~2026-03-31)에 시행 중이던 버전 확인 불가",
+     "pubs": {
+      "S4": "2019-04-17",
+      "S5": "2013-09-11/2013-09-13",
+      "S6": "2013-09-11"
+     }
+    },
+    "formula": {
+     "status": "색인 문구 있음(REVISE 상한)",
+     "text": [
+      "“직전 매매거래일 종가에 분할 또는 병합비율을 곱한 가격”",
+      "기준가격은 직전 매매거래일 종가와 분할·병합 비율로 계산한다."
+     ],
+     "ratio_direction": "증거 없음 — '분할 비율'이 (뒤 주식 수 ÷ 앞)인지 (앞 액면 ÷ 뒤)인지 문구 없음. PR #92 ratio 후보(주식 수 배율)라면 가격 배수는 그 역수여야 하므로 방향 확정 전 산식 적용 금지"
+    },
+    "same_day_equals_resumption": {
+     "status": "증거 없음",
+     "text": [
+      "분할·병합되는 날에 `당일의 기준가격`을 사용한다.",
+      "S5의 기준가격 산식·당일 관계를 단일 조문 화면에서도 검색 색인이 표시함."
+     ],
+     "why": "'분할·병합되는 날' · '최초 호가일'이 거래 재개일이라는 문구 없음. S3(최초 호가일)는 가장 가깝지만 000111 · 2022 공개본 · 요약 사실(정확 발췌 아님) · 코스닥 쪽 후보(000212/000210)에는 S3 같은 '최초 호가일' 문구도 없음(2013 · 2019 공개본뿐)"
+    },
+    "consistent_with_pr92": {
+     "status": "모순 없음(보조)",
+     "why": "PR #92 예시 3/3 '정지 종료 다음 평일 = 상장예정일' · 효력일은 정지 중 — 산식이 정지 뒤 첫 거래일에 쓰인다는 추론과 충돌 없음(일반 규칙 아님)"
+    }
+   },
+   "rule_identity_verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula_verdict": "REVISE",
+   "formula_note": "색인 정확 발췌(S2 · S4)는 있으나 시장 · 버전 · 비율 방향 미확정 · 직접 원문 아님",
+   "price_basis_date": {
+    "value": null,
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "candidates": {
+     "거래 재개일(정지 뒤 첫 거래일)": "INFERENCE(가장 그럴듯함 · 공식 연결 문구 없음)",
+     "신주권상장예정일": "INFERENCE(사례 3/3에서 재개일과 같음 · 일반 규칙 아님)",
+     "신주의 효력발생일": "사용 금지(PR #92 반증: 정지 중)"
+    }
+   },
+   "needs_data": [
+    "lawid별 정식 규정명과 시장(유가증권시장 업무규정 시행세칙 / 코스닥시장 업무규정 시행세칙 여부)",
+    "기준가격 조항의 조문 번호 · 항 · 호와 Train 기간에 시행 중이던 버전의 시행일",
+    "'분할·병합되는 날'(또는 '최초 호가일')이 매매거래 재개일임을 정하는 조문 직접 문구",
+    "분할 · 병합 비율의 정의(가격에 곱하는 방향)"
+   ]
+  }
+ ],
+ "pr92_cross": {
+  "split": {
+   "legal_effective_date": "ACCEPT",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "first_sellable_date": "REVISE"
+  },
+  "reverse_split": {
+   "legal_effective_date": "ACCEPT",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "first_sellable_date": "REVISE"
+  }
+ },
+ "keep": [
+  "UNKNOWN_CA_VERSION_PIT",
+  "당일 사용 금지",
+  "분할 · 병합 종목은 정지 시작일부터 NAV 무효",
+  "fail-closed"
+ ],
+ "status": "BLOCKED",
+ "network_calls": 0,
+ "data_calls": 0
+}
