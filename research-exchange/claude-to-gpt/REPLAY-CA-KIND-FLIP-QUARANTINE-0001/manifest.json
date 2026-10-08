@@ -1,0 +1,246 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-KIND-FLIP-QUARANTINE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 34,
+ "status": "READY",
+ "source_pr": 110,
+ "source_head_sha": "2c7c268b6c8b1bfb196bbb343216823046d5df5f",
+ "code_commit": "1e08adb9de6f0eb91ad389e08518ff21e67ac4d5",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/kind_flip_quarantine.py",
+  "evidence/kind-flip-quarantine.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:48:45+09:00",
+ "input": {
+  "pr": 111,
+  "head_sha": "826d4a8aa6df1511ac7ccdc47eb0b49bb1852ac1",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T02:45:01+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "2c7c268b6c8b1bfb196bbb343216823046d5df5f"
+   },
+   {
+    "at_kst": "2026-10-09T02:48:45+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "2c7c268b6c8b1bfb196bbb343216823046d5df5f"
+   }
+  ]
+ },
+ "prereg_commit": "bea43afa8fc95ff463f7a9a41bb1691fb869d44e",
+ "prereg_committed_at_kst": "2026-10-09T02:46:25+09:00",
+ "verdict": "READY / split·reverse_split family anchor · kind 변경 후보 BLOCKED_AMBIGUOUS_EVENT_IDENTITY로 배치 전체 중단 · 무관한 B 포함 바뀐 칸 0 · 다른 종목 정상 · Q1~Q4 PR110 증거와 다른 칸 0 · 4경로·바이트·자르기 불변 · PR110 고정본 K1 185→37 재현 · 실제 적용 0",
+ "status_source": "evidence summary.all_pass",
+ "summary": {
+  "pr110_sha_ok": {
+   "code": true,
+   "evidence": true
+  },
+  "k_fixtures_pass": true,
+  "q_regression_pass": true,
+  "neg_pass": true,
+  "k2_false_positive_blocked": true,
+  "real_events_applied": 0,
+  "all_pass": true
+ },
+ "fixtures": {
+  "K1_kind_flip_reverse_split": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+    "B|reverse_split|1/5|2026-02-02": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "75"
+   },
+   "invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [],
+    []
+   ],
+   "pass": true
+  },
+  "K2_later_independent_reverse_split": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+    "B|reverse_split|1/5|2026-02-03": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "75"
+   },
+   "invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [],
+    []
+   ],
+   "pass": true
+  },
+  "K3_unseen_symbols": {
+   "verdict": "COMMITTED",
+   "status": {
+    "B|reverse_split|1/5|2026-01-30": "OK",
+    "C|split|2|2026-01-30": "OK"
+   },
+   "qty": {
+    "A": "185",
+    "B": "15",
+    "C": "80"
+   },
+   "invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "changed_fields": [
+    [
+     "pos.B.0",
+     "pos.B.1",
+     "pos.C.0",
+     "pos.C.1",
+     "applied",
+     "prov"
+    ],
+    [
+     "pos.B.0",
+     "pos.B.1",
+     "pos.C.0",
+     "pos.C.1",
+     "applied",
+     "prov"
+    ]
+   ],
+   "pass": true
+  }
+ },
+ "q_regression": {
+  "Q1_apply_date_changed": {
+   "diffs_vs_pr110_evidence": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q2_m_qty_changed": {
+   "diffs_vs_pr110_evidence": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q3_legit_looking_second_split": {
+   "diffs_vs_pr110_evidence": 0,
+   "mutations_same": true,
+   "pass": true
+  },
+  "Q4_same_key_same_payload": {
+   "diffs_vs_pr110_evidence": 0,
+   "mutations_same": true,
+   "pass": true
+  }
+ },
+ "pre_fix_negative_control": {
+  "R1_exact_match_pr110_evidence": true,
+  "K1_kind_flip_reverse_split": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "37",
+    "B": "15"
+   },
+   "match": true,
+   "expect_source": "derived"
+  },
+  "K2_later_independent_reverse_split": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "37",
+    "B": "15"
+   },
+   "match": true,
+   "expect_source": "derived"
+  },
+  "K3_unseen_symbols": {
+   "verdict": "COMMITTED",
+   "qty": {
+    "A": "185",
+    "B": "15",
+    "C": "80"
+   },
+   "match": true,
+   "expect_source": "derived"
+  }
+ },
+ "pr110_fixed_sha256": {
+  "code/identity_quarantine.py": "8ac4049d8c3217d8fcf32d3257cf4fdad4d3f29caece3eea8aad938229d45025",
+  "evidence/ambiguous-identity-quarantine.json": "7b33dd012d11314c26e73899ffd3eaeef554dac9de8664be7367c23fc6c2f5a1"
+ },
+ "needs_data": {
+  "K2_false_positive": "나중의 독립 reverse_split도 차단(구조상 확정 · 영구) · 출처 사건 ID/정정 사슬 필요 · 자동 허용 규칙 없음",
+  "source_event_id": "PR90 UNKNOWN_CA_VERSION_PIT"
+ },
+ "residual_risk": {
+  "I1_bonus_issue_outside_family": {
+   "input": {
+    "sym": "A",
+    "kind": "bonus_issue",
+    "m_qty": "2",
+    "m_price": "1/2",
+    "apply_date": "2026-02-02",
+    "src": "RI"
+   },
+   "verdict": "COMMITTED",
+   "status": {
+    "A|bonus_issue|2|2026-02-02": "OK"
+   },
+   "A_qty": "370"
+  }
+ },
+ "note": "family anchor는 동일성 증명이 아니라 임시 fail-closed",
+ "file_sha256": {
+  "PREREG.md": "021b2568d2785f7c1d7cf9f98c4613ec133d87eca87f206b69481239fc61d48d",
+  "REPORT.md": "e936a7f563a23875044ee79914cf1e874c4dc3a9401e04116a54c044b92944d1",
+  "code/kind_flip_quarantine.py": "14317e97ee289279b56a1d6ec10550e41b78fa0234726ecaf531b7f67ed9e553",
+  "evidence/kind-flip-quarantine.json": "b9956807229b579519bcbbc04f6fa503919ad840ce9b1dbf0956c4bdd8122ed8",
+  "evidence/tables.md": "6029ea946e155e6a06995ec69b89ab63c149b0aff85914ee90a6d55217032de4",
+  "evidence/run.log": "ec1d21c912b0056dec8f248ecdf43332f630bf57e7809091bc1e960b8866096f"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "cap": 2,
+  "failed": 0,
+  "expectation_changed": false,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_symbols": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "exceptions": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
