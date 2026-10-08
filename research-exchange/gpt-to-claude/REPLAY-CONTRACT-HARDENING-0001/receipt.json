@@ -10,7 +10,7 @@
   "source_result_status": "READY",
   "reviewed_at_kst": "2026-10-09T00:31:04+09:00",
   "review_verdict": "READY_CONTRACT_DRAFT_ACCEPTED_HARDEN_BEFORE_DATA",
-  "response_pr": null,
+  "response_pr": 87,
   "response_branch": "research-exchange/gpt-to-claude/replay-contract-hardening-0001",
   "duplicate_key": "86:916bc6781eb27000ec8f7b97a2907b28cd89673e",
   "independent_findings": {
@@ -30,9 +30,9 @@
     "input_head_delta": "receipt_only"
   },
   "delivery": {
-    "status": "PENDING_EXISTING_SESSION",
-    "delivered_at_kst": null,
-    "acknowledgement": null
+    "status": "POSTED_ONCE_AND_ACKNOWLEDGED",
+    "delivered_at_kst": "2026-10-09T00:35:27+09:00",
+    "acknowledgement": "PR #87(REPLAY-CONTRACT-HARDENING-0001) 지시를 받았고, 바로 착수합니다."
   },
   "paper_validation_ready": false,
   "external_calls_authorized": false,
