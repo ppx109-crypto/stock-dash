@@ -1,0 +1,211 @@
+{
+ "schema_version": 1,
+ "task_id": "REAL-SLEEVE-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "REAL-SLEEVE-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 9,
+  "status": "READY",
+  "input": {
+   "pr": 61,
+   "head_sha": "efcca99fc0496da74f5d0251593ae5e395347de9",
+   "read_files": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "manifest.json",
+    "receipt.json"
+   ]
+  },
+  "fixed_source": {
+   "pr": 55,
+   "head_sha": "b4166452e95778dd892fce3a793aea652401492a"
+  },
+  "compared_with": {
+   "pr": 60,
+   "head_sha": "24b12632560c7e4c911ce72a20df43fef004cb89"
+  },
+  "base_main_sha": "3c03588d485923dce26d4b063f0b232318899431"
+ },
+ "prereg_commit": "e6575a9e6de085df4bb7c7fd008b00ccd21f1653",
+ "prereg_committed_at_kst": "2026-10-08T18:33:29+09:00",
+ "command": "MR_D1PICKS=<d1_picks.json> python3 -E -P code/rs_m15.py <b3> <출력>",
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "os": "Linux x86_64",
+  "network": "blocked in code",
+  "key_env": "removed in code"
+ },
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "code_change": {
+  "common.py": "CASH = 1e7 → 2.5e6(한 줄)",
+  "rs_m15.py": "fr_m15.py + 보고용 종목별 평가금액 기록 + 8판 실행 묶음",
+  "diff": "evidence/code.diff"
+ },
+ "runs": {
+  "total": 8,
+  "failed": 0
+ },
+ "capital_per_sleeve_won": 2500000,
+ "cost_multiple": 2,
+ "criteria": {
+  "1_eight_runs_and_invariants": true,
+  "2_R4_end_ge_B4": true,
+  "3_R4_no_day_breach": true,
+  "4_R4_no_month_breach": true,
+  "5_R4_max_name_lt_30": false
+ },
+ "verdict": "NO_CANDIDATE",
+ "R4_minus_B4": {
+  "won": 83054.43085314333,
+  "pct": 0.3873706930838642
+ },
+ "key_facts": {
+  "R4_max_single_name_pct": 38.81596208290768,
+  "R4_max_single_name_code": "278470",
+  "R4_max_single_name_at": "20260310",
+  "seed0_equals_seed1": true,
+  "vs_pr60_end_diff_pct": {
+   "B4": 13.330252973433366,
+   "R4": 13.73436165586997
+  }
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/agg_B4_ACTUAL.csv",
+  "evidence/agg_R4_ACTUAL.csv",
+  "evidence/code.diff",
+  "evidence/nav_B_x2_s0_2p5m.csv",
+  "evidence/nav_B_x2_s1_2p5m.csv",
+  "evidence/nav_B_x2_s2_2p5m.csv",
+  "evidence/nav_B_x2_s3_2p5m.csv",
+  "evidence/nav_R_x2_s0_2p5m.csv",
+  "evidence/nav_R_x2_s1_2p5m.csv",
+  "evidence/nav_R_x2_s2_2p5m.csv",
+  "evidence/nav_R_x2_s3_2p5m.csv",
+  "evidence/rs_results.json",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "23eb9dd2b3f0e94a23ab8eaebcda3840541a0653db38f96b859b389dbb6e54a6"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "97badee0880bfe8d264f71b2f8571d65c6b769102ee3e407913ca27ecec6082d"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "622eca9c9a4314ba704bc7f9cbb21cc1f7b0f094b4d70a84789c4ee751a67201"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/orig/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/orig/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/orig/fr_m15.py",
+   "sha256": "0c6582b4cd7a54d03c3e64c6e29a92cb2a86f434d00c3c0040b75d499a84967b"
+  },
+  {
+   "path": "code/orig/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/orig/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/rs_m15.py",
+   "sha256": "fc383cfc357c279f3e38c793bc14a9d635a9c94fb388a8a72baf339bbe1cdc22"
+  },
+  {
+   "path": "evidence/agg_B4_ACTUAL.csv",
+   "sha256": "2dbcbf830528776aad5d93a9be0f3083c400725a6362572f11634f6cd048b9f9"
+  },
+  {
+   "path": "evidence/agg_R4_ACTUAL.csv",
+   "sha256": "0a25b43dcb4457368a53b6eedd0b35870f9d386b1cfb8f6462c0a67188f85fbd"
+  },
+  {
+   "path": "evidence/code.diff",
+   "sha256": "47d7ced142ff9e489c7f97988efa8069def0d7a2ae5f016774bd77f5c78b9a0e"
+  },
+  {
+   "path": "evidence/nav_B_x2_s0_2p5m.csv",
+   "sha256": "aa75c14ba3dcf35d80b9f081654296409d5be9541d40ebdc5fa437e0b4632d9a"
+  },
+  {
+   "path": "evidence/nav_B_x2_s1_2p5m.csv",
+   "sha256": "aa75c14ba3dcf35d80b9f081654296409d5be9541d40ebdc5fa437e0b4632d9a"
+  },
+  {
+   "path": "evidence/nav_B_x2_s2_2p5m.csv",
+   "sha256": "39ffa4db2aaec713dd51925408bcc3a9536cd0ce717f9f9a4a2d51912c3820ad"
+  },
+  {
+   "path": "evidence/nav_B_x2_s3_2p5m.csv",
+   "sha256": "316715d106b21da76f309b9029f089d50fb95a34dd8bf96261cdfcf340021bb5"
+  },
+  {
+   "path": "evidence/nav_R_x2_s0_2p5m.csv",
+   "sha256": "b8d2490ebd1efc9111b0a2ba5eb4bd83c1ef360b8bf6f0e07424f66c44e9eb28"
+  },
+  {
+   "path": "evidence/nav_R_x2_s1_2p5m.csv",
+   "sha256": "b8d2490ebd1efc9111b0a2ba5eb4bd83c1ef360b8bf6f0e07424f66c44e9eb28"
+  },
+  {
+   "path": "evidence/nav_R_x2_s2_2p5m.csv",
+   "sha256": "2a45999662840ad7dbf9da315e4bb2554101c6a77f64022cddb001f5121c7a81"
+  },
+  {
+   "path": "evidence/nav_R_x2_s3_2p5m.csv",
+   "sha256": "24405de0bfb41868b12fe796b4487afd5899fb5be2b1c3b66b773b17b69eb8ca"
+  },
+  {
+   "path": "evidence/rs_results.json",
+   "sha256": "0c169012a295ed95e5bef641ded8517aee18f115b8f1a8569c18f4972a61738f"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "b2c8d32e9ddad83f3b993f88349953c998b70156a847c8330a506cbbe4923bb7"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "4702cbdce7b57986ee4204053a39c9edca6718a07235e026b0d2cf4803e18084"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/real-sleeve-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T18:40:07+09:00"
+}
