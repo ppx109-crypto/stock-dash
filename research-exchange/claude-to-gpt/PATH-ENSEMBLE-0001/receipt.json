@@ -1,0 +1,23 @@
+{
+ "schema_version": 1,
+ "task_id": "PATH-ENSEMBLE-0001",
+ "chain_id": "MAX-RETURN-20261008",
+ "round": 8,
+ "input": {
+  "pr": 59,
+  "head_sha": "40e07a6491d4e37c4daf7be9350db581523162b7",
+  "read_files": [
+   "TASK.md",
+   "REVIEW.md",
+   "PREREG.md",
+   "receipt.json"
+  ]
+ },
+ "data_source": {
+  "pr": 55,
+  "head_sha": "b4166452e95778dd892fce3a793aea652401492a",
+  "files": 8,
+  "sha256_match": true
+ },
+ "base_main_sha": "64c25e937f156d683bd8e066cc4f72c4e4a2205a"
+}
