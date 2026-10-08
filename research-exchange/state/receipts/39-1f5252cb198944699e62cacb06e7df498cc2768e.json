@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "BACKTEST-REPAIR-0002",
+  "chain_id": "BACKTEST-FIRST-20261008",
+  "round": 2,
+  "status": "REVIEWED",
+  "source_pr": 39,
+  "source_head_sha": "1f5252cb198944699e62cacb06e7df498cc2768e",
+  "detected_at_kst": "2026-10-08T13:19:29+09:00",
+  "review_completed_at_kst": "2026-10-08T13:27:00+09:00",
+  "review_verdict": "BACKTEST_REPAIR_REQUIRED",
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "source_status": "READY",
+  "source_state": "open",
+  "source_draft": false,
+  "duplicate_response_found": false,
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/BACKTEST-REPAIR-0002/REVIEW.md",
+    "research-exchange/gpt-to-claude/BACKTEST-REPAIR-0002/independent-checks.json",
+    "research-exchange/gpt-to-claude/BACKTEST-REPAIR-0002/repro-results.json"
+  ],
+  "next_task": "research-exchange/gpt-to-claude/BACKTEST-REPAIR-0002/TASK.md",
+  "response_pr": 40,
+  "browser_delivery_status": "ACCEPTED_EXISTING_SESSION",
+  "notes": [
+    "공개 CSV 산술과 별도 합성 오류 재현; 전체 원시자료 재실행 아님",
+    "지속 webhook 설정 변경 없음"
+  ],
+  "response_url": "https://github.com/ppx109-crypto/stock-dash/pull/40",
+  "browser_delivery_at_kst": "2026-10-08T13:31:00+09:00",
+  "browser_delivery_evidence": "입력 메시지108이 표시되고 Claude 응답 중/실행 중 상태 확인. 새 탭/세션 생성 없음."
+}

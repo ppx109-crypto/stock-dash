@@ -1,0 +1,443 @@
+{
+  "hashes": {
+    "total": 38,
+    "ok": 38,
+    "fail": []
+  },
+  "nav_checks": [
+    {
+      "tag": "BASKET_ASIS_close_x1",
+      "days": 2360,
+      "trades": 173,
+      "initial_nav": 100000000.0,
+      "last_nav": 207829792.84,
+      "cash_min": 607855.2800000012,
+      "sum_closed_pnl": 106947881.87,
+      "reconciliation_gap_if_flat": 881910.97,
+      "last_invested": 161987200.0,
+      "metrics": {
+        "CAGR": 7.9,
+        "MDD_daily": -23.65,
+        "worst_month": -9.15,
+        "worst_day": -6.39,
+        "Sortino_RMS": 0.88
+      },
+      "reported": {
+        "CAGR": 7.9,
+        "MDD_daily": -23.65,
+        "worst_month": -9.15,
+        "worst_day": -6.39
+      },
+      "split_entry_groups": 0,
+      "end_closures": 4
+    },
+    {
+      "tag": "BASKET_FIX_next_x1",
+      "days": 2360,
+      "trades": 158,
+      "initial_nav": 100000000.0,
+      "last_nav": 202704821.71,
+      "cash_min": 697159.5200000107,
+      "sum_closed_pnl": 101988129.27,
+      "reconciliation_gap_if_flat": 716692.44,
+      "last_invested": 120247400.0,
+      "metrics": {
+        "CAGR": 7.62,
+        "MDD_daily": -25.66,
+        "worst_month": -9.65,
+        "worst_day": -7.28,
+        "Sortino_RMS": 0.9
+      },
+      "reported": {
+        "CAGR": 7.62,
+        "MDD_daily": -25.66,
+        "worst_month": -9.65,
+        "worst_day": -7.28
+      },
+      "split_entry_groups": 0,
+      "end_closures": 3
+    },
+    {
+      "tag": "D1_ASIS_close_x1",
+      "days": 2360,
+      "trades": 494,
+      "initial_nav": 100000000.0,
+      "last_nav": 1181339178.85,
+      "cash_min": 39.770000010728836,
+      "sum_closed_pnl": 1081339178.83,
+      "reconciliation_gap_if_flat": 0.02,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 29.26,
+        "MDD_daily": -38.78,
+        "worst_month": -29.07,
+        "worst_day": -13.15,
+        "Sortino_RMS": 1.8
+      },
+      "reported": {
+        "CAGR": 29.26,
+        "MDD_daily": -38.78,
+        "worst_month": -29.07,
+        "worst_day": -13.15
+      },
+      "split_entry_groups": 29,
+      "end_closures": 0
+    },
+    {
+      "tag": "D1_ASIS_next_x1",
+      "days": 2360,
+      "trades": 494,
+      "initial_nav": 100000000.0,
+      "last_nav": 1049118094.66,
+      "cash_min": 1608.5799999833107,
+      "sum_closed_pnl": 949118094.65,
+      "reconciliation_gap_if_flat": 0.01,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 27.68,
+        "MDD_daily": -36.48,
+        "worst_month": -25.73,
+        "worst_day": -12.64,
+        "Sortino_RMS": 1.73
+      },
+      "reported": {
+        "CAGR": 27.68,
+        "MDD_daily": -36.48,
+        "worst_month": -25.73,
+        "worst_day": -12.64
+      },
+      "split_entry_groups": 29,
+      "end_closures": 0
+    },
+    {
+      "tag": "D1_FIX_close_x1",
+      "days": 2360,
+      "trades": 494,
+      "initial_nav": 100000000.0,
+      "last_nav": 751136651.37,
+      "cash_min": 39.56999999284744,
+      "sum_closed_pnl": 651136651.27,
+      "reconciliation_gap_if_flat": 0.1,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 23.32,
+        "MDD_daily": -36.53,
+        "worst_month": -24.14,
+        "worst_day": -14.65,
+        "Sortino_RMS": 1.52
+      },
+      "reported": {
+        "CAGR": 23.32,
+        "MDD_daily": -36.53,
+        "worst_month": -24.14,
+        "worst_day": -14.65
+      },
+      "split_entry_groups": 25,
+      "end_closures": 0
+    },
+    {
+      "tag": "D1_FIX_next_x1",
+      "days": 2360,
+      "trades": 493,
+      "initial_nav": 100000000.0,
+      "last_nav": 719985783.24,
+      "cash_min": 272.21000000834465,
+      "sum_closed_pnl": 619985783.28,
+      "reconciliation_gap_if_flat": -0.04,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 22.78,
+        "MDD_daily": -36.69,
+        "worst_month": -23.05,
+        "worst_day": -14.29,
+        "Sortino_RMS": 1.49
+      },
+      "reported": {
+        "CAGR": 22.78,
+        "MDD_daily": -36.69,
+        "worst_month": -23.05,
+        "worst_day": -14.29
+      },
+      "split_entry_groups": 25,
+      "end_closures": 0
+    },
+    {
+      "tag": "ETF_sleeve_ASIS_close_x1",
+      "days": 2360,
+      "trades": 245,
+      "initial_nav": 99936962.83,
+      "last_nav": 273570688.41,
+      "cash_min": 1455459.5199999958,
+      "sum_closed_pnl": 173570688.39,
+      "reconciliation_gap_if_flat": 0.02,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 11.03,
+        "MDD_daily": -8.67,
+        "worst_month": -4.85,
+        "worst_day": -4.23,
+        "Sortino_RMS": 2.56
+      },
+      "reported": {
+        "CAGR": 11.03,
+        "MDD_daily": -8.67,
+        "worst_month": -4.85,
+        "worst_day": -4.23
+      },
+      "split_entry_groups": 0,
+      "end_closures": 0
+    },
+    {
+      "tag": "ETF_sleeve_FIX_next_x1",
+      "days": 2360,
+      "trades": 232,
+      "initial_nav": 100000000.0,
+      "last_nav": 98729834.36,
+      "cash_min": 2998.4500000029802,
+      "sum_closed_pnl": -1270165.6,
+      "reconciliation_gap_if_flat": -0.04,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": -0.13,
+        "MDD_daily": -18.37,
+        "worst_month": -9.05,
+        "worst_day": -8.44,
+        "Sortino_RMS": 0.04
+      },
+      "reported": {
+        "CAGR": -0.13,
+        "MDD_daily": -18.37,
+        "worst_month": -9.05,
+        "worst_day": -8.44
+      },
+      "split_entry_groups": 0,
+      "end_closures": 0
+    },
+    {
+      "tag": "M15_ASIS_x1",
+      "days": 230,
+      "trades": 104,
+      "initial_nav": 100446489.52,
+      "last_nav": 241216156.07,
+      "cash_min": 498.25,
+      "sum_closed_pnl": 141216156.1,
+      "reconciliation_gap_if_flat": -0.03,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 152.65,
+        "MDD_daily": -26.31,
+        "worst_month": -14.66,
+        "worst_day": -12.52,
+        "Sortino_RMS": 4.1
+      },
+      "reported": {
+        "CAGR": 151.47,
+        "MDD_daily": -26.31,
+        "worst_month": -14.66,
+        "worst_day": -12.52
+      },
+      "split_entry_groups": 5,
+      "end_closures": 0
+    },
+    {
+      "tag": "M15_FLOW-LAG2_x1",
+      "days": 230,
+      "trades": 120,
+      "initial_nav": 100544257.66,
+      "last_nav": 197059909.13,
+      "cash_min": 954.0,
+      "sum_closed_pnl": 97059909.11,
+      "reconciliation_gap_if_flat": 0.02,
+      "last_invested": 0.0,
+      "metrics": {
+        "CAGR": 104.22,
+        "MDD_daily": -29.02,
+        "worst_month": -16.55,
+        "worst_day": -10.99,
+        "Sortino_RMS": 2.96
+      },
+      "reported": {
+        "CAGR": 103.05,
+        "MDD_daily": -29.02,
+        "worst_month": -16.55,
+        "worst_day": -10.99
+      },
+      "split_entry_groups": 5,
+      "end_closures": 0
+    }
+  ],
+  "ledger_groups": {
+    "d1_ledger_ASIS": {
+      "rows": 495,
+      "entry_groups": 466,
+      "split_groups": 29,
+      "examples": [
+        {
+          "code": "011070",
+          "entry": "20170418",
+          "exits": [
+            "20170421",
+            "20170504"
+          ],
+          "slots": [
+            "2",
+            "2"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170607",
+          "exits": [
+            "20170609",
+            "20170621"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170626",
+          "exits": [
+            "20170705",
+            "20170710"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        }
+      ]
+    },
+    "d1_ledger_FIX": {
+      "rows": 495,
+      "entry_groups": 470,
+      "split_groups": 25,
+      "examples": [
+        {
+          "code": "011070",
+          "entry": "20170418",
+          "exits": [
+            "20170421",
+            "20170504"
+          ],
+          "slots": [
+            "2",
+            "2"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170608",
+          "exits": [
+            "20170609",
+            "20170622"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170627",
+          "exits": [
+            "20170629",
+            "20170711"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        }
+      ]
+    },
+    "d1_ledger_K1": {
+      "rows": 507,
+      "entry_groups": 479,
+      "split_groups": 28,
+      "examples": [
+        {
+          "code": "011070",
+          "entry": "20170418",
+          "exits": [
+            "20170421",
+            "20170504"
+          ],
+          "slots": [
+            "2",
+            "2"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170608",
+          "exits": [
+            "20170609",
+            "20170622"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170627",
+          "exits": [
+            "20170629",
+            "20170711"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        }
+      ]
+    },
+    "d1_ledger_K2": {
+      "rows": 492,
+      "entry_groups": 464,
+      "split_groups": 28,
+      "examples": [
+        {
+          "code": "011070",
+          "entry": "20170418",
+          "exits": [
+            "20170421",
+            "20170504"
+          ],
+          "slots": [
+            "2",
+            "2"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170607",
+          "exits": [
+            "20170609",
+            "20170621"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        },
+        {
+          "code": "071050",
+          "entry": "20170626",
+          "exits": [
+            "20170705",
+            "20170710"
+          ],
+          "slots": [
+            "1",
+            "1"
+          ]
+        }
+      ]
+    }
+  }
+}

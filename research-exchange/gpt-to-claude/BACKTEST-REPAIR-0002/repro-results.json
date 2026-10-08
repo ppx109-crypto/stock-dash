@@ -1,0 +1,19 @@
+{
+  "future_exit_split_changes_entry_cost": {
+    "UNSPLIT": {
+      "first_day_nav": 97470177.8718653,
+      "first_day_invested": 40000000.0,
+      "buy_cost": 2529822.13
+    },
+    "FUTURE_SPLIT": {
+      "first_day_nav": 98211145.61800015,
+      "first_day_invested": 40000000.0,
+      "buy_cost": 1788854.38
+    }
+  },
+  "terminal_nav_omits_final_sell_cost": {
+    "recorded_nav_before_liquidation": 100000.0,
+    "cash_after_liquidation": 99000.0,
+    "missing_sell_cost": 1000.0
+  }
+}
