@@ -1,0 +1,50 @@
+{
+ "schema_version": 1,
+ "task_id": "PAPER-MEASURE-0001",
+ "data_status": "WAITING_DATA",
+ "tool_status": "READY",
+ "confirmed_fill_rows": 0,
+ "measured_metrics": 0,
+ "why": "실제 KIS 체결 원문(inquire-daily-ccld)이 저장소 · 이 환경에 없음. 받으려면 API 호출이 필요해 이번 범위 밖. 기존 paper-orders는 ORDER_ACCEPTED_NOT_FILL이라 입력으로 쓰지 않음",
+ "existing_inputs_checked": {
+  "idle-live/paper-orders.json": "ORDER_ACCEPTED_NOT_FILL(주문 2건)",
+  "*-live/state.json": "STRATEGY_STATE",
+  "reconcile/*": "연구 vs 운영 비교",
+  "predash normalize_kis": "메모리 표시용 · 저장 없음"
+ },
+ "missing_inputs": {
+  "fills": [
+   "KIS 체결 원문 행(ord_dt, ord_tmd, sll_buy_dvsn_cd, pdno, tot_ccld_qty, avg_prvs, tot_ccld_amt, odno, ord_gno_brno, cncl_yn)"
+  ],
+  "context": [
+   "instrument_type",
+   "market_at_fill",
+   "strategy_id",
+   "rule_version",
+   "signal_at_kst",
+   "available_at_basis",
+   "reference_price · reference_price_basis",
+   "costs(실제 또는 가정 · 항목별)",
+   "generator_commit"
+  ],
+  "nav": [
+   "start(date · 현금 · 보유)",
+   "prices(측정 거래일 전부의 평가가격)",
+   "flows(외부 입출금)",
+   "corp_actions(분할 · 병합)"
+  ]
+ },
+ "safe_local_commands": [
+  "export PAPER_MEASURE_HMAC_KEY=<16바이트 이상 · 저장소 · 채팅에 넣지 않음>",
+  "python3 -I sanitize_fills.py --kis-rows <저장소 밖>/rows.json --context <저장소 밖>/context.json --out <저장소 밖>/ledger.jsonl --generator-commit <sha> > <저장소 밖>/counts.json",
+  "python3 -I build_daily_measurement.py --fills <저장소 밖>/ledger.jsonl --start <…>/start.json --prices <…>/prices.json --flows <…>/flows.json --corp-actions <…>/ca.json --sanitize-counts <저장소 밖>/counts.json --generator-commit <sha> --out <공개 배치 경로>.json"
+ ],
+ "next_trigger": {
+  "condition": "사용자가 로컬에서 위 순서로 공개 비식별 배치(PUBLIC-OUTPUT-SCHEMA 통과)를 만들어 저장소에 올렸을 때만",
+  "then": "BASELINE 측정 재개",
+  "until_then": "후속 연구 · 감사 · 알파 TASK 자동 생성 안 함"
+ },
+ "capacity_1e7_1e8": "대기 — 비공개 수량 · 호가/ADV · 체결 괴리 필요",
+ "paper_validation_ready": false,
+ "live_approval": false
+}

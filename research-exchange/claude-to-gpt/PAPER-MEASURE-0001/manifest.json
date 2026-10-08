@@ -1,0 +1,104 @@
+{
+ "schema_version": 1,
+ "task_id": "PAPER-MEASURE-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 10,
+ "stage": "MEASUREMENT-BRIDGE",
+ "status": "READY",
+ "tool_status": "READY",
+ "data_status": "WAITING_DATA",
+ "status_meaning": "측정 도구 · 계약 · 합성 시험 준비 완료. 실측 체결 0행 · 실측 지표 0개. PAPER_VALIDATION_READY · 실전 승인 아님",
+ "tests": {
+  "final": "17/17 PASS",
+  "first_run": "15/17 PASS",
+  "mutation": "미실행(예산)"
+ },
+ "privacy_precheck": {
+  "files_pass": 11,
+  "files_flagged": 1,
+  "flagged_file": "tests/test_measure.py",
+  "flagged_count": 5,
+  "flagged_reason": "검사기 시험용 합성 주입 키(값 합성)"
+ },
+ "public_exposure_found": {
+  "path": "idle-live/paper-orders.json",
+  "raw_order_id_cells": 1,
+  "distinct": 1,
+  "first_commit": "6a36a61c",
+  "action": "없음(승인 범위 밖)"
+ },
+ "confirmed_fill_rows": 0,
+ "measured_metrics": 0,
+ "strategy_experiments": 0,
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "input_pr": 32,
+ "input_head_sha": "2e33273ca110225aefb6ca660d190b079a7da049",
+ "source_pr": 31,
+ "source_head_sha": "1e6ed49b9b982ab3ab999082c7455e26cccc0bfd",
+ "repo_commit": "149c8015c7296cc206605de42220f937827436af",
+ "operational_files_read_at": "1e6ed49b9b982ab3ab999082c7455e26cccc0bfd",
+ "prereg_lock": {
+  "commit": "8bfbf30c",
+  "sha256": "7c678b6ea77b8e71ba2c0002046e2710ab560e38520b3b91384be2a9adc2a9a8"
+ },
+ "files": [
+  {
+   "path": "DATA-FLOW.md",
+   "sha256": "0dd53b9b9e6bdc0eb4d6148783d44aec560994fd37b3e0c066c9b8bfeb0e7c00"
+  },
+  {
+   "path": "DATA-STATUS.json",
+   "sha256": "98f80d04df31bb189f2777f67e5570dd96c9936e6b53e9473393de6bef231fc5"
+  },
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "7c678b6ea77b8e71ba2c0002046e2710ab560e38520b3b91384be2a9adc2a9a8"
+  },
+  {
+   "path": "PRIVACY-FINDINGS.md",
+   "sha256": "1ec9b5a166ed754a561e0cd0c3989be0d67e91c3d6758635f4ccf616928945f4"
+  },
+  {
+   "path": "PRIVATE-INPUT-SCHEMA.json",
+   "sha256": "95126c54dcee9fbeb18bbd1a90dc6c8b7c357498c0471987879d5a1bd8310990"
+  },
+  {
+   "path": "PUBLIC-OUTPUT-SCHEMA.json",
+   "sha256": "71bf005cf622d7c50f9ff0a0716ac79e66defc5eac3e2b3ed788e3035de32c08"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "04282501f35e04daa3b833469ff4b3991ea924607ae5213b3c27dc0646534a3c"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "bd38404d91975a438d54a5c163ae77f3aba4698c30862623fee496eeeb9704e6"
+  },
+  {
+   "path": "TEST-RESULT.run1.json",
+   "sha256": "196f64f660683276da4cab3e4cd4498237312c66b610f860b97b08ca3373a09d"
+  },
+  {
+   "path": "build_daily_measurement.py",
+   "sha256": "d1eefdee2d2df5bc9e1f55f2a74e9cc62e398a58c4349cbe30d86e47d729ae3e"
+  },
+  {
+   "path": "sanitize_fills.py",
+   "sha256": "aded9819dafe83003ebebd3e183b5b85bdd91f095cbe818651dd65679bdbadb8"
+  },
+  {
+   "path": "tests/test_measure.py",
+   "sha256": "f86f89418774f7bfe28530356fc6b78fa04d4162321e1167417665bcc70629ad"
+  }
+ ],
+ "receipt": "research-exchange/state/receipts/32-2e33273ca110225aefb6ca660d190b079a7da049.json",
+ "next_trigger": "로컬에서 공개 비식별 배치가 생겼을 때만 BASELINE 재개",
+ "result_branch": "claude/paper-measure-0001-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "created_at_kst": "2026-10-08T11:35:45+09:00"
+}

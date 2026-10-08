@@ -1,0 +1,266 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "PAPER-MEASURE-0001 비공개 정규화 체결 원장(한 줄 = 한 확정 체결)",
+ "x-visibility": "PRIVATE — 저장소 · 공개 출력 금지. sanitize_fills.py가 Git 작업트리 밖에만 씀",
+ "x-confirmed_fill": "취소 아님 AND 체결수량>0 AND 평균체결가>0 AND 날짜 8자리 · 시각 6자리 유효(predash.trades.normalize_kis와 같은 규칙, 날짜 자리 수만 더 엄격)",
+ "x-input": {
+  "kis_rows": "KIS inquire-daily-ccld output1 행 목록(로컬 파일). 필요 필드: ord_dt, ord_tmd, sll_buy_dvsn_cd, pdno, tot_ccld_qty, avg_prvs, tot_ccld_amt(선택), odno, ord_gno_brno, cncl_yn",
+  "context": {
+   "defaults": "모든 체결에 쓸 값",
+   "by_fill": "[{date: YYYYMMDD, code, side: buy|sell, …덮어쓸 값}]",
+   "fields": [
+    "instrument_type",
+    "market_at_fill",
+    "strategy_id",
+    "rule_version",
+    "signal_at_kst",
+    "available_at_basis",
+    "reference_price",
+    "reference_price_basis",
+    "costs"
+   ]
+  },
+  "key_env": "PAPER_MEASURE_HMAC_KEY",
+  "min_key_bytes": 16
+ },
+ "type": "object",
+ "additionalProperties": false,
+ "properties": {
+  "schema_version": {
+   "const": 1
+  },
+  "fill_uid": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$",
+   "description": "HMAC-SHA256(로컬 키, 날짜|지점|주문|종목|side). 원 번호 대신 중복 제거용"
+  },
+  "asset_id": {
+   "type": "string",
+   "pattern": "^(?:[0-9A-Z]{6}|Q[0-9]{6})$"
+  },
+  "instrument_type": {
+   "enum": [
+    "STOCK",
+    "ETF",
+    "ETN",
+    "INVERSE_ETF",
+    "OTHER",
+    null
+   ]
+  },
+  "market_at_fill": {
+   "enum": [
+    "KOSPI",
+    "KOSDAQ",
+    "KONEX",
+    null
+   ],
+   "description": "체결 당시 시장(이전상장 반영)"
+  },
+  "fill_at_kst": {
+   "type": "string",
+   "format": "date-time"
+  },
+  "fill_at_basis": {
+   "const": "ORDER_TIME_LOWER_BOUND",
+   "description": "KIS 행 시각은 주문 시각. 체결은 그 뒤 같은 날"
+  },
+  "side": {
+   "enum": [
+    "buy",
+    "sell"
+   ]
+  },
+  "quantity": {
+   "type": "number",
+   "exclusiveMinimum": 0
+  },
+  "fill_price": {
+   "type": "number",
+   "exclusiveMinimum": 0,
+   "description": "평균체결가(avg_prvs)"
+  },
+  "amount_krw": {
+   "type": "number",
+   "exclusiveMinimum": 0,
+   "description": "tot_ccld_amt, 없으면 수량×평균가"
+  },
+  "costs": {
+   "type": "object",
+   "properties": {
+    "commission": {
+     "type": "object",
+     "properties": {
+      "krw": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0
+      },
+      "kind": {
+       "enum": [
+        "actual",
+        "assumed",
+        "missing"
+       ]
+      }
+     },
+     "required": [
+      "krw",
+      "kind"
+     ]
+    },
+    "sell_tax": {
+     "type": "object",
+     "properties": {
+      "krw": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0
+      },
+      "kind": {
+       "enum": [
+        "actual",
+        "assumed",
+        "missing"
+       ]
+      }
+     },
+     "required": [
+      "krw",
+      "kind"
+     ]
+    },
+    "farm_tax": {
+     "type": "object",
+     "properties": {
+      "krw": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0
+      },
+      "kind": {
+       "enum": [
+        "actual",
+        "assumed",
+        "missing"
+       ]
+      }
+     },
+     "required": [
+      "krw",
+      "kind"
+     ]
+    },
+    "exchange_fees": {
+     "type": "object",
+     "properties": {
+      "krw": {
+       "type": [
+        "number",
+        "null"
+       ],
+       "minimum": 0
+      },
+      "kind": {
+       "enum": [
+        "actual",
+        "assumed",
+        "missing"
+       ]
+      }
+     },
+     "required": [
+      "krw",
+      "kind"
+     ]
+    }
+   },
+   "required": [
+    "commission",
+    "sell_tax",
+    "farm_tax",
+    "exchange_fees"
+   ],
+   "description": "실제(actual) · 가정(assumed) · 없음(missing) 구분"
+  },
+  "strategy_id": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "rule_version": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "signal_at_kst": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "available_at_basis": {
+   "type": [
+    "string",
+    "null"
+   ],
+   "description": "신호 입력이 그 시각에 있었다는 근거"
+  },
+  "reference_price": {
+   "type": [
+    "number",
+    "null"
+   ],
+   "description": "미끄러짐 기준가(판단 가능 시각 값)"
+  },
+  "reference_price_basis": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "generator_commit": {
+   "type": [
+    "string",
+    "null"
+   ]
+  },
+  "source": {
+   "type": "string"
+  }
+ },
+ "required": [
+  "schema_version",
+  "fill_uid",
+  "asset_id",
+  "fill_at_kst",
+  "fill_at_basis",
+  "side",
+  "quantity",
+  "fill_price",
+  "amount_krw",
+  "costs"
+ ],
+ "x-not_stored": [
+  "odno(원 주문번호)",
+  "ord_gno_brno(지점)",
+  "계좌번호",
+  "키 · 토큰",
+  "원본 응답",
+  "원본 응답 sha"
+ ],
+ "x-nav_inputs_separate": {
+  "start": "{date, cash_krw, positions{종목: 수량}}",
+  "prices": "{YYYY-MM-DD: {종목: 평가가격}} — 키 = 측정 거래일 전부",
+  "flows": "[{date, amount_krw}] 외부 입출금",
+  "corp_actions": "[{date, code, qty_ratio}] 분할 · 병합(현금배당 미지원)"
+ }
+}
