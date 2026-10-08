@@ -16,9 +16,10 @@
   "next_task_status": "NEEDS_DATA",
   "automatic_next_calculation": false,
   "response_pr": 44,
-  "delivery_status": "ACCEPTED_IN_EXISTING_SESSION",
+  "delivery_status": "READ_AND_ACKNOWLEDGED_IN_EXISTING_SESSION",
   "cancelled_pr": 42,
   "response_url": "https://github.com/ppx109-crypto/stock-dash/pull/44",
   "delivered_at_kst": "2026-10-08T14:36:42+09:00",
-  "delivery_evidence": "Existing session displayed submitted message 119, PR #44 link, and responding status; sent once."
+  "delivery_evidence": "Existing session message 120 explicitly read PR #44 REVIEW/TASK at 2f490a9c, confirmed retry defect and no observed historical retries, agreed with candidate/WAITING_DATA verdict, and committed no additional calculation/documents/PR.",
+  "acknowledged_at_kst": "2026-10-08T14:37:46.971+09:00"
 }
