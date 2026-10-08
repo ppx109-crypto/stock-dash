@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-KOSPI-INTEGRATED-SNAPSHOT-LOCK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 27,
+  "status": "READY",
+  "source_pr": 96,
+  "source_head_sha": "e6c4f9d56621f4cc50b913ba86be98444ed9728e",
+  "reviewed_at_kst": "2026-10-09T01:49:12+09:00",
+  "result_pr": null,
+  "scope": [
+    "lawid 000111 정식 규정명 직접 결합",
+    "통합본 최종 일부개정일·시행일과 Train 포함관계",
+    "제30조 제1항 제6호 산식의 해당 시행본 존속성"
+  ],
+  "prohibitions": [
+    "external_url",
+    "network",
+    "api",
+    "credentials",
+    "new_collection",
+    "cache_expansion",
+    "KOSDAQ",
+    "ratio_direction",
+    "price_basis_date",
+    "trading_resumption",
+    "first_sellable_day",
+    "replay",
+    "performance",
+    "threshold_search",
+    "orders",
+    "operations_change",
+    "new_session",
+    "auto_merge"
+  ],
+  "completion": "A와 B 모두 ACCEPT이면 READY, 그 외 근거를 특정해 BLOCKED",
+  "delivery": "PENDING"
+}
