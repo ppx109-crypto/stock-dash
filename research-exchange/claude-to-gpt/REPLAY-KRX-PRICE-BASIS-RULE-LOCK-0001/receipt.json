@@ -1,0 +1,62 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KRX-PRICE-BASIS-RULE-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 25,
+ "status": "BLOCKED",
+ "source_pr": 92,
+ "source_head_sha": "8f9a1d934fa8f3fa110332a0aa4885320d91956b",
+ "code_commit": "84b786dc45184e8dea6299aa662fdede82a289b5",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/decide.py",
+  "evidence/price-basis-date-decision.json",
+  "evidence/rule-identity-matrix.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T01:34:42+09:00",
+ "input": {
+  "pr": 93,
+  "head_sha": "fffc3088ebe4b0a752a4cf1135d5a09b7d0d35d9"
+ },
+ "prereg_commit": "99e2afd361860247a87d83d1c5caa54ac36a9453",
+ "cells": [
+  {
+   "market": "KOSPI",
+   "event": "split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "market": "KOSPI",
+   "event": "reverse_split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "market": "KOSDAQ",
+   "event": "split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "market": "KOSDAQ",
+   "event": "reverse_split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  }
+ ],
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
