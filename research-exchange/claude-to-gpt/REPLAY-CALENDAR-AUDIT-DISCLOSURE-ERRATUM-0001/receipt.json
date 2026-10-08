@@ -1,0 +1,34 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CALENDAR-AUDIT-DISCLOSURE-ERRATUM-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 42,
+ "status": "READY",
+ "source_pr": 126,
+ "source_head_sha": "8df510c8e2e001daee31e3d35acc1ce3bcb17b49",
+ "code_commit": "e3c98633dd68b676b852a419e624a44d76996976",
+ "evidence_paths": [
+  "REPORT.md",
+  "evidence/erratum.json"
+ ],
+ "completed_at_kst": "2026-10-09T04:07:47+09:00",
+ "input": {
+  "pr": 127,
+  "head_sha": "1e74f0dbdaa4a170da4501eba3fbbff7dd264597"
+ },
+ "program_state": "WAITING_DATA",
+ "data_readiness": "NEEDS_DATA",
+ "helper_script_executed": "unknown_but_nonzero",
+ "repo_strategy_code_executed": 0,
+ "tests_executed": 0,
+ "workflow_executed": 0,
+ "pre_prereg_exploration": true,
+ "new_searches": 0,
+ "new_code_executions": 0,
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "result_pr": null
+}

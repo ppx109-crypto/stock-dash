@@ -1,0 +1,76 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CALENDAR-AUDIT-DISCLOSURE-ERRATUM-0001",
+ "erratum_for": {"pr": 126, "head_sha": "8df510c8e2e001daee31e3d35acc1ce3bcb17b49", "task_id": "REPLAY-SNAPSHOT-CALENDAR-PROVENANCE-AUDIT-0001"},
+ "inputs_read": {
+  "PREREG.md": {"blob": "46d494504919900ec318dd264e53ff958262fd8d", "sha256": "df83e2880b8ea3aae1b7366fd709fda24d81230728df747159213bae087aed8c"},
+  "REPORT.md": {"blob": "0222699755359ef8745609569283087053d6d86a", "sha256": "5ee09a60778a2907299f0d5e4f7469d0319750e18bf328a3c0c4858ae13139f7"},
+  "manifest.json": {"blob": "782ce8f52b6333d5accc610c75211cb8d70195d1", "sha256": "1c29b4c6ff7440f3fa5886c1a1b96ef35b060ecfd5746c1681eda8fb442197e6"},
+  "receipt.json": {"blob": "3fc1ab96c70e54fc5a9dc810b4bbbce7e6699902", "sha256": "f42300a6db34275ce8581eccfd31cc15782f1cabc420684010ec9fa8486ab74c"},
+  "evidence/search-log.md": {"blob": "633af6019e8f720e448711c5cdb0edf79191df0b", "sha256": "8a7581faff1a81afd30036a07aa783fb93c796e1cffca82edd0bfab6b137d44d"},
+  "evidence/search-counts.json": {"blob": "f67bbc91f64030febbc44ed746c7c39222ccfa05", "sha256": "4e6ba2e180ad76a920612fa62e8a6922c6856d26f9c61950fd14a63018b6188f"},
+  "code/search_counts.py": {"blob": "6bea5c45c359ebaf34810aced6259431fe548a8f", "sha256": "bb3fff6801c0dbbecf8274ce5aa878ea333d705f9dc016640211f8ee0eda3cf5"},
+  "note": "evidence/provenance-table.json은 내용을 읽지 않고 해시만 계산함(blob 67d3ca69 · sha256 b6b62933…) — 허용 목록 7종 밖이라 공개"
+ },
+ "corrections": [
+  {"claim": "code_executions=0",
+   "where": ["manifest.json:142", "receipt.json:27", "REPORT.md:10", "PREREG.md:11"],
+   "was": 0,
+   "now": "unknown_but_nonzero",
+   "why": "저장소 코드 실행 0을 뜻하려던 칸에 코드 실행 0이라는 다른 주장을 적음. 실제로는 제가 쓴 도우미 Python(code/search_counts.py)을 실행했고, 그 안에서 git grep 하위 프로세스가 돌았음"}
+ ],
+ "execution_disclosure": {
+  "helper_script_executed": {
+   "code/search_counts.py": {"count": "unknown_but_nonzero", "minimum": 1,
+    "basis": ["evidence/search-log.md:6 ('실행한 것: … code/search_counts.py')", "REPORT.md:9", "evidence/search-counts.json 존재(이 스크립트의 출력 형식)"],
+    "note": "작성자 기억으로는 1회이나 산출물에 횟수 기록이 없어 숫자를 만들지 않음"},
+   "git_subprocess_inside_helper": {"per_run": 25, "total": "unknown_but_nonzero", "minimum": 25,
+    "basis": "code/search_counts.py:15-17(TERMS 18+2+5=25개) · 20-22(검색어마다 subprocess.run(git grep …) 1회)"}
+  },
+  "direct_commands": {"kinds": ["git grep", "git show", "git rev-parse", "git ls-tree"], "count": "unknown_but_nonzero",
+   "basis": ["REPORT.md:8", "evidence/search-log.md:6", "PREREG.md:12"]},
+  "author_disclosed_not_recorded_in_pr126_artifacts": {
+   "inline_python_used_to_write_evidence_and_manifest": "unknown_but_nonzero",
+   "publication_guard_guard_py": "unknown_but_nonzero",
+   "post_submission_attestation_live_attest_py": "unknown_but_nonzero",
+   "github_api_pr_state_checks": "unknown_but_nonzero",
+   "note": "PR #126 산출물에는 없는 작성자 공개. 저장소 코드 · 외부 자료 호출은 아님. github_api_pr_state_checks는 PR 상태 조회이며 manifest에 2건(source_pr_rechecked)이 기록돼 있음"
+  },
+  "repo_strategy_code_executed": 0,
+  "tests_executed": 0,
+  "workflow_executed": 0,
+  "external_calls": 0,
+  "external_calls_scope": "데이터 · API · 웹 수집 0. GitHub PR 상태 조회 · PR 생성 · 공개 확인 댓글은 위 작성자 공개 칸에 따로 적음"
+ },
+ "pre_prereg_exploration": {
+  "value": true,
+  "window_kst": "2026-10-09T03:54 ~ 03:56",
+  "scope": "일부 검색어의 줄 수 · 파일 수 집계(줄 내용은 읽지 않았다고 PR #126에 적힘)",
+  "basis": ["PREREG.md:14", "REPORT.md:6", "manifest.json:112"],
+  "prereg_commit": {"sha": "6dbe94cb9c09f76040aabe8113d177ae069853f4", "committed_utc": "2026-10-08T18:55:48Z"},
+  "clean_preregistration": false,
+  "impact": "검색어 목록 · 분류 규칙이 일부 집계를 본 뒤 정해졌을 수 있음. 따라서 검색 · 집계 전체를 '사전등록 뒤 독립 수행'으로 주장하지 않음"
+ },
+ "static_findings_preserved": {
+  "label": "기존 정적 발견(새 검증 아님 · 새 검색 · 분류 없음)",
+  "authoritative_calendar_producer": "ABSENT",
+  "expected_date_completeness_gate": "ABSENT",
+  "snapshot_reason_distinction": "PRESENT_UNLINKED",
+  "train_expected_dates": "UNVERIFIABLE",
+  "train_lab_run_link": "연결 단절(lab.run은 일별 MTM 스냅숏을 만들지 않음 — PR #126 REPORT 7절)",
+  "data_readiness": "NEEDS_DATA"
+ },
+ "compliance": {"pr126_original_status": "READY", "review_verdict_accepted": "BLOCKED_EXECUTION_DISCLOSURE_CONFLICT", "after_erratum": "실행 공개 정정 완료"},
+ "this_round_execution": {
+  "new_searches": 0, "git_grep": 0, "helper_script_executed": 0, "repo_strategy_code_executed": 0, "tests_executed": 0, "workflow_executed": 0, "external_calls": 0,
+  "commands_used": ["git fetch", "git show(PR #126 산출물 읽기)", "git rev-parse", "git log(커밋 시각)", "cat -n · sed -n(화면 표시)", "sha256sum", "jq empty(JSON 문법 확인 · 시스템 도구)", "command -v jq", "date", "gh api(PR 상태 조회)", "git checkout · add · commit · push"],
+  "files_written_by_hand": true,
+  "publication_guard": "실행 안 함(이번 회차 helper 실행 금지 준수) · 새 파일은 사람이 검토: 키 · 계좌 · 원본 응답 · 종목 코드 없음",
+  "post_submission_plan": "PR을 연 뒤 공개 확인 도구(live_attest.py correct · comment · check)를 PR 공개 절차로 실행할 예정 — 연구 실행이 아니며 이 수치에 넣지 않음을 미리 밝힘"
+ },
+ "program_state": "WAITING_DATA",
+ "next_step_policy": "권위 거래일 자료(출처 · 공개 시각 · 판 포함)가 들어오기 전 후속 구현 · 실험을 제안하지 않음",
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false
+}

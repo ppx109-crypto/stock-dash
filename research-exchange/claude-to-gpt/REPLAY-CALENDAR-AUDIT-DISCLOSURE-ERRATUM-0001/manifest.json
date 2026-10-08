@@ -1,0 +1,60 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CALENDAR-AUDIT-DISCLOSURE-ERRATUM-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 42,
+ "status": "READY",
+ "source_pr": 126,
+ "source_head_sha": "8df510c8e2e001daee31e3d35acc1ce3bcb17b49",
+ "code_commit": "e3c98633dd68b676b852a419e624a44d76996976",
+ "evidence_paths": [
+  "REPORT.md",
+  "evidence/erratum.json"
+ ],
+ "completed_at_kst": "2026-10-09T04:07:47+09:00",
+ "input": {
+  "pr": 127,
+  "head_sha": "1e74f0dbdaa4a170da4501eba3fbbff7dd264597",
+  "read_files": ["TASK.md", "PREREG.md", "REVIEW.md", "SOURCE_PACKET.md", "receipt.json"],
+  "source_pr_rechecked": [
+   {"at_kst": "2026-10-09T04:04:52+09:00", "state": "open", "draft": false, "head": "8df510c8e2e001daee31e3d35acc1ce3bcb17b49"},
+   {"at_kst": "2026-10-09T04:07:47+09:00", "state": "open", "draft": false, "head": "8df510c8e2e001daee31e3d35acc1ce3bcb17b49"}
+  ]
+ },
+ "verdict": "READY(정정 완료) / PR126 code_executions=0 → unknown_but_nonzero · helper search_counts.py 최소 1회 · 안의 git 하위 프로세스 1회당 25 · repo_strategy_code_executed=0 · tests_executed=0 · workflow_executed=0 · external_calls=0 · pre_prereg_exploration=true · 정적 발견은 기존 관찰로만 보존 · 프로그램 상태 WAITING_DATA",
+ "program_state": "WAITING_DATA",
+ "data_readiness": "NEEDS_DATA",
+ "execution_disclosure_pr126": {
+  "helper_script_executed": "unknown_but_nonzero",
+  "helper_script_minimum": 1,
+  "git_subprocess_inside_helper_per_run": 25,
+  "git_subprocess_inside_helper_total": "unknown_but_nonzero",
+  "direct_git_commands": "unknown_but_nonzero",
+  "repo_strategy_code_executed": 0,
+  "tests_executed": 0,
+  "workflow_executed": 0,
+  "external_calls": 0,
+  "pre_prereg_exploration": true,
+  "clean_preregistration": false
+ },
+ "this_round_execution": {
+  "new_searches": 0,
+  "git_grep": 0,
+  "helper_script_executed": 0,
+  "repo_strategy_code_executed": 0,
+  "tests_executed": 0,
+  "workflow_executed": 0,
+  "external_calls": 0,
+  "publication_guard": "not_run",
+  "post_submission_attestation": "planned_live_attest_py_not_counted_as_research"
+ },
+ "file_sha256": {
+  "REPORT.md": "4b9ea2bbe8eaddd6906d2189463ee0c9e7c708e7aecdd111f3bc2b4d60874f1f",
+  "evidence/erratum.json": "58060082f492f279f6928f430cf1019fb52adceb1defefcddbe5538bd0e3a593"
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false
+}
