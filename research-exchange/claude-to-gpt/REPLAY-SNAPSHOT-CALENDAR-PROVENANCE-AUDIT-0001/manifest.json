@@ -1,0 +1,146 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-SNAPSHOT-CALENDAR-PROVENANCE-AUDIT-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 41,
+ "status": "READY",
+ "source_pr": 124,
+ "source_head_sha": "13e031b32186aca7e1286bb4b9119bcd9cd39700",
+ "code_commit": "f7584168e0c6b40d93b09b0f89001c943d2ab5ad",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/search_counts.py",
+  "evidence/provenance-table.json",
+  "evidence/search-log.md",
+  "evidence/search-counts.json"
+ ],
+ "completed_at_kst": "2026-10-09T04:01:10+09:00",
+ "readiness": "NEEDS_DATA",
+ "input": {
+  "pr": 125,
+  "head_sha": "f4750d2af3bedf0fb1225b7361c4bf9b47eb2173",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T03:54:27+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "13e031b32186aca7e1286bb4b9119bcd9cd39700"
+   },
+   {
+    "at_kst": "2026-10-09T04:01:10+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "13e031b32186aca7e1286bb4b9119bcd9cd39700"
+   }
+  ]
+ },
+ "prereg_commit": "6dbe94cb9c09f76040aabe8113d177ae069853f4",
+ "prereg_committed_at_kst": "2026-10-09T03:55:53+09:00",
+ "verdict": "READY(감사 완료) · readiness NEEDS_DATA / 권위 KRX 거래일 생산자 ABSENT(최초 단절점) · 대용품 6가지 충돌(손 목록·특수 시간·당일 분봉·지수 직전일·대표 종목 일봉·전 종목 합집합) · 기대일 목록·완전성 게이트 ABSENT · 스냅숏 사유 구분은 차단만 · Train 엔진은 일별 MTM 스냅숏 없음",
+ "required_items": {
+  "Q1_authoritative_calendar_producer": {
+   "classification": "ABSENT",
+   "basis": "권위 생산자 0건 · 평일 추정 · 손 목록 · 자료 파생만 있음"
+  },
+  "Q2_kst_holiday_boundary_first_day": {
+   "classification": "CONFLICTING",
+   "basis": "KST는 명시돼 있으나 휴장(손 목록 2026-10~) · 임시휴장(0) · 경계 규칙이 함수마다 다름 · 첫 스냅숏 기대일 규칙 없음"
+  },
+  "Q3_available_at_version_revision": {
+   "classification": "ABSENT",
+   "basis": "어느 달력에도 공개 시각 · 판 · 정정 정책 없음(price-data는 파일당 'fetched' 날짜 하나뿐이며 수정주가 재다운로드로 덮어씀)"
+  },
+  "Q4_snapshot_day_and_reason_distinction": {
+   "classification": "PRESENT_UNLINKED",
+   "basis": "합성 process_day가 스냅숏을 만들지만 차단만 구분 · 누락 · 무보유 · 무시세는 구분 안 됨"
+  },
+  "Q5_expected_dates_to_gate_to_perf": {
+   "classification": "ABSENT",
+   "basis": "기대일 → 완전성 게이트 → perf 연결 없음"
+  },
+  "Q6_reproduce_expected_dates_for_train": {
+   "classification": "UNVERIFIABLE",
+   "basis": "자료 파생 달력은 저장소 자료로 다시 셀 수는 있으나 판 · 시각 근거가 없고 정의가 여러 개"
+  },
+  "Q7_same_purpose_work": {
+   "classification": "ABSENT",
+   "basis": "같은 목적(성과용 거래일 완전성) 연구 · 구현 없음 · 관련 운영 확인(data_guard · reconcile)은 성과와 무관"
+  }
+ },
+ "first_break": {
+  "link": "calendar/session source",
+  "row": 0,
+  "classification": "ABSENT"
+ },
+ "provenance_rows": 20,
+ "additional_breaks": [
+  "perf_gate에 기대일 인자 없음(⑤)",
+  "스냅숏 사유 칸 없음(④)",
+  "Train lab.run은 닫힌 매매 손익 · 스냅숏 사슬과 연결 0"
+ ],
+ "min_additional_data": {
+  "trading_calendar": [
+   "date",
+   "market",
+   "is_open",
+   "session_open",
+   "session_close",
+   "closure_reason",
+   "source_id",
+   "source_published_at",
+   "available_at",
+   "revision_id",
+   "revision_reason",
+   "coverage_start",
+   "coverage_end"
+  ],
+  "snapshot": [
+   "expected_date",
+   "snapshot_reason(TRADED|NO_POSITION|NO_QUOTE|BLOCKED)",
+   "quote_present"
+  ]
+ },
+ "disclosure": {
+  "pre_prereg_exploration": "03:54~03:56 일부 검색어 줄 수 · 파일 수만 셈(줄 내용 안 읽음)",
+  "code_redaction": "경로 6자리 종목 코드 가림 · 줄 본문 저장 안 함"
+ },
+ "file_sha256": {
+  "PREREG.md": "df83e2880b8ea3aae1b7366fd709fda24d81230728df747159213bae087aed8c",
+  "REPORT.md": "5ee09a60778a2907299f0d5e4f7469d0319750e18bf328a3c0c4858ae13139f7",
+  "code/search_counts.py": "bb3fff6801c0dbbecf8274ce5aa878ea333d705f9dc016640211f8ee0eda3cf5",
+  "evidence/provenance-table.json": "b6b62933576bc90cd749780731303c74b257771791c103b581c3fd0f7cffd499",
+  "evidence/search-log.md": "8a7581faff1a81afd30036a07aa783fb93c796e1cffca82edd0bfab6b137d44d",
+  "evidence/search-counts.json": "4e6ba2e180ad76a920612fa62e8a6922c6856d26f9c61950fd14a63018b6188f"
+ },
+ "runs": {
+  "repo_code_executed": 0,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "calendar_created": 0,
+  "operations": 0,
+  "orders": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "code_executions": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false
+}
