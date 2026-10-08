@@ -1,0 +1,95 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-KIS-DART-AUDIT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 19,
+ "status": "BLOCKED",
+ "source_pr": 80,
+ "source_head_sha": "e088c837a33e39b2790d2a61db317e1b96ee8d08",
+ "code_commit": "a0d45902df799ef9551797522603d83b554b6186",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/kd_audit.py",
+  "code/targets.py",
+  "code/tick_check.py",
+  "evidence/api-coverage.json",
+  "evidence/corporate-action-summary.json",
+  "evidence/m15-daily-mismatch-summary.json",
+  "evidence/price-basis-summary.json",
+  "evidence/run.log",
+  "evidence/targets_public.json",
+  "evidence/tick-check.json"
+ ],
+ "completed_at_kst": "2026-10-09T00:00:01+09:00",
+ "input": {
+  "pr": 81,
+  "head_sha": "c0a254fb27cdb60ba787506722cd43ae64d644cd",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "receipt.json"
+  ]
+ },
+ "prereg_commit": "a781313dd82727769f50101663a548ef27f14b34",
+ "prereg_committed_at_kst": "2026-10-08T23:57:34+09:00",
+ "verdict": "BLOCKED / 실행환경에 KIS_APP_KEY · KIS_APP_SECRET · DART_CRTFC_KEY 없음 · 외부 호출 0",
+ "blocked": {
+  "reason": "credentials_absent_in_session_env",
+  "needed": [
+   "KIS_APP_KEY",
+   "KIS_APP_SECRET",
+   "DART_CRTFC_KEY"
+  ],
+  "failed_endpoints": [],
+  "http_codes": [],
+  "calls": {
+   "KIS": 0,
+   "DART": 0,
+   "retries": 0
+  }
+ },
+ "local_additional": {
+  "tick_check": {
+   "denominator_records": 747,
+   "on_tick(UNKNOWN: 원 또는 수정)": 673,
+   "off_tick(원주가 아님 증명)": 74,
+   "codes_with_any_off_tick": 5,
+   "ca_codes_with_off_tick": "2/8"
+  },
+  "preregistered": false
+ },
+ "inputs": {
+  "pr68_control_trades": "880a277bad0fa0eaebd34cdd9dc9c7acab9a4d4c511f97570e488190c5561ad3",
+  "pr76_daily_local": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8",
+  "pr74_signals_old": "0625d2a84c6aac796f2ba9a03f9bd11e55596a4d1261a78990f5c3389c1a7a7d",
+  "old_nrl_cache": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "snapshot": "00b98ab1655c84806357f44f2de6f1509ef1447f"
+ },
+ "code_sha256": {
+  "kd_audit.py": "034737230e12e46e9a3a089eab13cf4b1c9db64277fbf0fa0d0111b9ceec314b",
+  "targets.py": "dd08f1084eb95206a8fb5ac89214b95bd3295a21039b152b7e99789b5fae794e",
+  "tick_check.py": "2be9df1fe2377f45228261f5c626bf5a653035dd23390dd089912e8ebe604dbd"
+ },
+ "commands": [
+  "python3 -E -P code/targets.py <control_trades> <PR76 원장> <옛 캐시> <b2> <b3> <출력>",
+  "python3 -E -P code/kd_audit.py <b2> <b3> <옛 캐시> <targets 폴더> <출력>",
+  "python3 -E -P code/tick_check.py <옛 캐시> <control_trades> <signals_old> <PR76 원장> <targets 폴더> <b3> <출력.json>"
+ ],
+ "runs": {
+  "external_calls": 0,
+  "scripts": 3,
+  "failed": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "주문 · 잔고 · 계좌 API",
+  "secret 값 · 목록",
+  "workflow · 인증 변경",
+  "백테스트 · 성과 재실행",
+  "규칙 · threshold · sizing · OOS",
+  "KRX · 유료 권한",
+  "원가격 · 종목명 · 원시 응답 공개"
+ ]
+}

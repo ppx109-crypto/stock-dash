@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-KIS-DART-AUDIT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 19,
+ "status": "BLOCKED",
+ "source_pr": 80,
+ "source_head_sha": "e088c837a33e39b2790d2a61db317e1b96ee8d08",
+ "code_commit": "a0d45902df799ef9551797522603d83b554b6186",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/kd_audit.py",
+  "code/targets.py",
+  "code/tick_check.py",
+  "evidence/api-coverage.json",
+  "evidence/corporate-action-summary.json",
+  "evidence/m15-daily-mismatch-summary.json",
+  "evidence/price-basis-summary.json",
+  "evidence/run.log",
+  "evidence/targets_public.json",
+  "evidence/tick-check.json"
+ ],
+ "completed_at_kst": "2026-10-09T00:00:01+09:00",
+ "input": {
+  "pr": 81,
+  "head_sha": "c0a254fb27cdb60ba787506722cd43ae64d644cd"
+ },
+ "external_calls": 0,
+ "failed": 0,
+ "result_pr": null
+}
