@@ -1,0 +1,145 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-RAW-PRICE-CONTRACT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 21,
+ "status": "READY",
+ "source_pr": 84,
+ "source_head_sha": "5dc08c38e6403e6df806a5cd1fe26b9631eb5c68",
+ "code_commit": "886d5781bff9ea25f3931c27de539a79648c9ed5",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/collector_interface.py",
+  "code/contract_evidence.py",
+  "code/fixtures_test.py",
+  "code/raw_replay.py",
+  "code/targets148.py",
+  "evidence/data-contract.json",
+  "evidence/fixture-test-report.json",
+  "evidence/plan.json",
+  "evidence/run.log",
+  "evidence/run1/fixture-test-report.run1.json",
+  "evidence/run1/fixture2.diff",
+  "evidence/target-coverage.json",
+  "evidence/unknown-reasons.json",
+  "schema/corporate-action.schema.json",
+  "schema/raw-price-response.schema.json"
+ ],
+ "completed_at_kst": "2026-10-09T00:28:52+09:00",
+ "input": {
+  "pr": 85,
+  "head_sha": "467e3237e8589fec98dc09feea89de7ab2d12418",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "receipt.json"
+  ]
+ },
+ "prereg_commit": "32cb1126455da10fa53e0c477e4aefb4ba76bbc8",
+ "prereg_committed_at_kst": "2026-10-09T00:24:29+09:00",
+ "verdict": "READY / 148 · 23/125 재현 · 스키마 2개 · 불변식 · 합성 fixture 10/10 · 외부 호출 0 · Train 재생 0 · +19.90% 미검증",
+ "inputs": {
+  "pr76_daily_local": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8",
+  "old_nrl_cache": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "salt_sha256": "eb7b7d0859a3a81b83e18f49d78248b697089fc286096655938908408d08e4eb"
+ },
+ "file_sha256": {
+  "PREREG.md": "319def1e6a2f2d4e0c27bea5b488bbd04c0154fd8d5f92f04cb32ff75d44b993",
+  "REPORT.md": "73e6f2517c8af110cac1124b1705766aec1e8056439708b04cf80117728f02e0",
+  "code/collector_interface.py": "6e13f610d13ced427c0621f3e497b61d3143fd141ff6ab8982660671c9efff29",
+  "code/contract_evidence.py": "fe1240e27c57fb25a73df054721fe184aa7a2ba7798973fe67e12f55ea3defbf",
+  "code/fixtures_test.py": "19ee691c875fcbcb165609218e5e4488ad4c90ccdecc652a0f8f08935a951024",
+  "code/raw_replay.py": "0527f42ebe47b0b799e0887c5795ca98949f646f7a4846cd3eb6f83100e5d348",
+  "code/targets148.py": "fc2137e3f0eb0f9a5fb4790dd99aa39add707db1a92198dce1a46cd16adf43e7",
+  "evidence/data-contract.json": "68d6b611f34dc756bff6a0769d70de2e7c02827b04fbf5d679cc3b0e11d46295",
+  "evidence/fixture-test-report.json": "8f75c2761001a6d41a56a98195ecaebc4dba2e1670d7e7d1013aa7f786a9dc58",
+  "evidence/plan.json": "e4c689f1a6c2e3909ebcb237b3ded424aeaf119f889160a49658fa5bf3fadddb",
+  "evidence/run.log": "5732515b2876c846578869fb4d444944885fc197988955da7a48c087507c5e30",
+  "evidence/run1/fixture-test-report.run1.json": "1d2429425e46283a82b212522a070de03ed046e1752cd1e99ebca5c5c06d9a59",
+  "evidence/run1/fixture2.diff": "12da8ac055eddc312a5f086ea05d2f815333e1b626221356225eb2d405640379",
+  "evidence/target-coverage.json": "499b4db4802bf0d06462671efe81dee4bb2d7975d5db6e52faf05c272a842094",
+  "evidence/unknown-reasons.json": "c6c066d1844137e88da9fdaad9242909b1e8af0ad71128ec2a8e6cb88766328e",
+  "schema/corporate-action.schema.json": "e82efc4af6ae15512680e4f51906b096428383f1405e0ee7e6c04e5a89bf8244",
+  "schema/raw-price-response.schema.json": "aae99fb1d753ffc82811d096604fd8adb678fafa24f191ab61ec472dc7cf3e45"
+ },
+ "code_blob_first_vs_final": {
+  "prereg_fixtures_test.py": "c6460e69ae13fb283b4b17c266ed47d5c5ae127e453bd0952354351dbff671e6",
+  "final_fixtures_test.py": "19ee691c875fcbcb165609218e5e4488ad4c90ccdecc652a0f8f08935a951024",
+  "diff": "evidence/run1/fixture2.diff(시험 2번 합성 원주가 103500 → 103600 · 2줄)",
+  "raw_replay.py_unchanged": true
+ },
+ "commands": [
+  "python3 -E -P code/targets148.py <PR76 원장> <옛 nrl-cache.pkl> <salt> <target-coverage.json> <로컬 대상>",
+  "python3 -E -P code/fixtures_test.py <fixture-test-report.json>",
+  "python3 -E -P code/collector_interface.py <로컬 대상> <plan.json>",
+  "python3 -E -P code/contract_evidence.py <target-coverage.json> <plan.json> <출력>"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "os": "Linux x86_64"
+ },
+ "results": {
+  "fills": 148,
+  "by_sleeve_side": {
+   "D1_buy": 52,
+   "D1_sell": 71,
+   "BASKET_buy": 12,
+   "BASKET_sell": 13
+  },
+  "classes": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 125,
+   "IMPOSSIBLE_RAW_FILL": 23
+  },
+  "unique_code_date": 145,
+  "unique_codes": 33,
+  "unique_dates": 77,
+  "off_tick_unique_code_date": 20,
+  "fixtures": {
+   "1_기업행동_없음": true,
+   "2_액면분할": true,
+   "3_감자_병합": true,
+   "4_유무상_칸없음": true,
+   "5_선택_미지원": true,
+   "6_원주가_호가밖": true,
+   "7_정정_사슬": true,
+   "8_비용_항등식": true,
+   "9_한도_음수": true,
+   "10_15분봉_거부": true
+  },
+  "fixtures_pass": true,
+  "plan": {
+   "kis_calls_upper": 133,
+   "kis_cap": 500,
+   "dart_calls_upper": 232,
+   "dart_cap": 250,
+   "credential_names": [
+    "KIS_APP_KEY",
+    "KIS_APP_SECRET",
+    "DART_CRTFC_KEY"
+   ]
+  },
+  "current_148_status": "모두 UNKNOWN_NEEDS_OFFICIAL_RAW(23 우선 · 125 미확인)"
+ },
+ "runs": {
+  "target_runs": 1,
+  "fixture_runs": 2,
+  "failed": 1,
+  "failed_note": "1회차 시험 2번: 합성 103500/5=20700이 50원 배수라 전제 불성립 → 입력값만 103600으로(어댑터 무변경)",
+  "external_calls": 0,
+  "train_replay_runs": 0,
+  "performance_runs": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "외부 API · 네트워크 · Actions · Secrets",
+  "Train 재생 · 성과 · NAV · 수정 수익률 · 영향 금액",
+  "규칙 · threshold · 배분 변경",
+  "주문 · 계좌",
+  "운영 변경",
+  "원가격 · 종목 · 대상표 · salt 공개",
+  "on-tick 125를 원주가로 간주 · off-tick 반올림",
+  "15분봉"
+ ]
+}

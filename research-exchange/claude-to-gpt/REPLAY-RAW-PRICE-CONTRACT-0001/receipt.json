@@ -1,0 +1,40 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-RAW-PRICE-CONTRACT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 21,
+ "status": "READY",
+ "source_pr": 84,
+ "source_head_sha": "5dc08c38e6403e6df806a5cd1fe26b9631eb5c68",
+ "code_commit": "886d5781bff9ea25f3931c27de539a79648c9ed5",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/collector_interface.py",
+  "code/contract_evidence.py",
+  "code/fixtures_test.py",
+  "code/raw_replay.py",
+  "code/targets148.py",
+  "evidence/data-contract.json",
+  "evidence/fixture-test-report.json",
+  "evidence/plan.json",
+  "evidence/run.log",
+  "evidence/run1/fixture-test-report.run1.json",
+  "evidence/run1/fixture2.diff",
+  "evidence/target-coverage.json",
+  "evidence/unknown-reasons.json",
+  "schema/corporate-action.schema.json",
+  "schema/raw-price-response.schema.json"
+ ],
+ "completed_at_kst": "2026-10-09T00:28:52+09:00",
+ "input": {
+  "pr": 85,
+  "head_sha": "467e3237e8589fec98dc09feea89de7ab2d12418"
+ },
+ "fixture_runs": 2,
+ "failed": 1,
+ "external_calls": 0,
+ "train_replay_runs": 0,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
