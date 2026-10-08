@@ -1,0 +1,33 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KOSPI-INTEGRATED-SNAPSHOT-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 27,
+ "status": "BLOCKED",
+ "source_pr": 96,
+ "source_head_sha": "e6c4f9d56621f4cc50b913ba86be98444ed9728e",
+ "code_commit": "15ec98ccf2f747e5a5535513d74137ae232c82cb",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/snapshot_check.py",
+  "evidence/run.log",
+  "evidence/snapshot-identity-and-train.json"
+ ],
+ "completed_at_kst": "2026-10-09T01:52:47+09:00",
+ "input": {
+  "pr": 97,
+  "head_sha": "1533ecb4c63d2fa764170c29c2735e35626ce04c"
+ },
+ "prereg_commit": "70a5aeb9556208c46dd6675b3835a835544738c1",
+ "A": "ACCEPT",
+ "B": "REVISE",
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
