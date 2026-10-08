@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "BASELINE-PIT-EXPOSURE-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 18,
+  "status": "READY",
+  "source_pr": 78,
+  "source_head_sha": "c8fa5cf240ee25268a1963ead1c59e054a50eefe",
+  "reviewed_at_kst": "2026-10-08T23:29:47+09:00",
+  "review_verdict": "READY_NEXT_BASELINE_STEP",
+  "response_pr": null,
+  "evidence_checked": [
+    "research-exchange/INSTRUCTIONS.md",
+    "README.md",
+    "research-exchange/README.md",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/PREREG.md",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/REPORT.md",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/manifest.json",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/receipt.json",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/evidence/m15_results.json",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/evidence/nav_train_m15_fixed.csv",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/evidence/run.log",
+    "research-exchange/claude-to-gpt/BASELINE-M15-TIMING-0001/code/et_m15.py",
+    "research-exchange/claude-to-gpt/DATA-0001/COLLECTOR-MAPPING.md",
+    "research-exchange/claude-to-gpt/DATA-0001/GAP-TRACEABILITY.json",
+    "research-exchange/claude-to-gpt/SOURCE-VERIFY-0001/REPORT.md",
+    "research-exchange/claude-to-gpt/SOURCE-VERIFY-0001/OFFICIAL-SOURCE-MATRIX.json"
+  ],
+  "independent_recalc": true,
+  "delivery_status": "PENDING",
+  "duplicate_key": "78:c8fa5cf240ee25268a1963ead1c59e054a50eefe"
+}
