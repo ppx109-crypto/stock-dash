@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-BLOCKED-DAY-METRIC-GATE-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 39,
+  "status": "READY",
+  "source_pr": 120,
+  "source_head_sha": "8ed1d7d24a7fd564c200f2978bd51659f1af4316",
+  "source_status": "READY",
+  "reviewed_at_kst": "2026-10-09T03:35:17+09:00",
+  "duplicate_check": {
+    "pair": "120:8ed1d7d24a7fd564c200f2978bd51659f1af4316",
+    "existing_response_pr": null
+  },
+  "scope": "offline synthetic blocked-day metric fail-closed gate only",
+  "prohibited": [
+    "external API/data collection",
+    "actual events/prices/positions/NAV",
+    "operations/orders",
+    "strategy/allocation/workflow/auth changes",
+    "price-basis selection",
+    "threshold/alpha search",
+    "auto-merge"
+  ],
+  "completion": [
+    "M1-M8 fixed cases",
+    "blocked_from before all metric calculations",
+    "one official run",
+    "READY/BLOCKED only"
+  ],
+  "result_pr": null
+}
