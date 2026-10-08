@@ -1,0 +1,365 @@
+{
+ "fixtures": {
+  "F1_A_ok+B_ratio_bad": {
+   "expect_verdict": "BATCH_ABORTED",
+   "expect_status": "BLOCKED_RATIO_PRODUCT",
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "BATCH_ABORTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "final_hash": "b444a3975181f72267fd8cd87386ab5f36c5f25e709707957322fe3a07eab8d5",
+    "status": {
+     "A|split|5|2026-01-30": "OK",
+     "B|reverse_split|1/5|2026-01-30": "BLOCKED_RATIO_PRODUCT"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "PERF_BLOCKED",
+     "from": "2026-01-30"
+    },
+    "qty": {
+     "A": "37",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 0
+   },
+   "pass": true
+  },
+  "F2_A_ok+D_fractional": {
+   "expect_verdict": "BATCH_ABORTED",
+   "expect_status": "BLOCKED_FRACTIONAL",
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "BATCH_ABORTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "final_hash": "290d4a4026b4f471678b35fc37f82b93ea1f448319099e71958288300672acd0",
+    "status": {
+     "A|split|5|2026-01-30": "OK",
+     "D|reverse_split|1/10|2026-01-30": "BLOCKED_FRACTIONAL"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "PERF_BLOCKED",
+     "from": "2026-01-30"
+    },
+    "qty": {
+     "A": "37",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 0
+   },
+   "pass": true
+  },
+  "F3_A_ok+X_unknown": {
+   "expect_verdict": "BATCH_ABORTED",
+   "expect_status": "BLOCKED_UNKNOWN_SYMBOL",
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "BATCH_ABORTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "final_hash": "290d4a4026b4f471678b35fc37f82b93ea1f448319099e71958288300672acd0",
+    "status": {
+     "A|split|5|2026-01-30": "OK",
+     "X|split|2|2026-01-30": "BLOCKED_UNKNOWN_SYMBOL"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "PERF_BLOCKED",
+     "from": "2026-01-30"
+    },
+    "qty": {
+     "A": "37",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 0
+   },
+   "pass": true
+  },
+  "F4_A_ok+B_ok": {
+   "expect_verdict": "COMMITTED",
+   "expect_status": null,
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "COMMITTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "614268f266bd7e1e8401320d1e398d3c8fa5aba3b51344f6f7c9c4c6236de4a2",
+    "final_hash": "614268f266bd7e1e8401320d1e398d3c8fa5aba3b51344f6f7c9c4c6236de4a2",
+    "status": {
+     "A|split|5|2026-01-30": "OK",
+     "B|reverse_split|1/5|2026-01-30": "OK"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "OK",
+     "all_zero": true,
+     "mdd": "0"
+    },
+    "qty": {
+     "A": "185",
+     "B": "15",
+     "D": "7"
+    },
+    "applied_n": 2
+   },
+   "pass": true
+  },
+  "F5_A_ok+A_dup": {
+   "expect_verdict": "COMMITTED",
+   "expect_status": null,
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "COMMITTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "e2d62de2f472e6c19fdd48cdf791fbb8a732414e11ee9532b2c7f8d0b306b9e4",
+    "final_hash": "e2d62de2f472e6c19fdd48cdf791fbb8a732414e11ee9532b2c7f8d0b306b9e4",
+    "status": {
+     "A|split|5|2026-01-30": "OK"
+    },
+    "dup_count": {
+     "A|split|5|2026-01-30": 1
+    },
+    "perf": {
+     "status": "OK",
+     "all_zero": true,
+     "mdd": "0"
+    },
+    "qty": {
+     "A": "185",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 1
+   },
+   "pass": true
+  },
+  "F6_same_symbol_two_events": {
+   "expect_verdict": "BATCH_ABORTED",
+   "expect_status": "BLOCKED_SAME_SYMBOL_MULTI_EVENT",
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "BATCH_ABORTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "final_hash": "290d4a4026b4f471678b35fc37f82b93ea1f448319099e71958288300672acd0",
+    "status": {
+     "A|split|2|2026-01-30": "BLOCKED_SAME_SYMBOL_MULTI_EVENT",
+     "A|split|5|2026-01-30": "BLOCKED_SAME_SYMBOL_MULTI_EVENT"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "PERF_BLOCKED",
+     "from": "2026-01-30"
+    },
+    "qty": {
+     "A": "37",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 0
+   },
+   "pass": true
+  },
+  "F7_same_key_payload_conflict": {
+   "expect_verdict": "BATCH_ABORTED",
+   "expect_status": "BLOCKED_KEY_PAYLOAD_CONFLICT",
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "BATCH_ABORTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "final_hash": "290d4a4026b4f471678b35fc37f82b93ea1f448319099e71958288300672acd0",
+    "status": {
+     "A|split|5|2026-01-30": "BLOCKED_KEY_PAYLOAD_CONFLICT"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "PERF_BLOCKED",
+     "from": "2026-01-30"
+    },
+    "qty": {
+     "A": "37",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 0
+   },
+   "pass": true
+  },
+  "F8_A_ok+B_redelivered": {
+   "expect_verdict": "COMMITTED",
+   "expect_status": null,
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "COMMITTED",
+    "hash_before": "b39b82231d15fef21feebbb7db65c76cce76ca9769022b9120e9ced8dab15682",
+    "hash_after_batch": "55c7d8f7859a4db563667e3096f5ae8ab9c4ad4f734bcb6c06091fb188ce186c",
+    "final_hash": "55c7d8f7859a4db563667e3096f5ae8ab9c4ad4f734bcb6c06091fb188ce186c",
+    "status": {
+     "A|split|5|2026-01-30": "OK",
+     "B|reverse_split|1/5|2026-01-29": "DUPLICATE_IGNORED"
+    },
+    "dup_count": {
+     "B|reverse_split|1/5|2026-01-29": 1
+    },
+    "perf": {
+     "status": "OK",
+     "all_zero": true,
+     "mdd": "0"
+    },
+    "qty": {
+     "A": "185",
+     "B": "15",
+     "D": "7"
+    },
+    "applied_n": 2
+   },
+   "pass": true
+  },
+  "F9_A_ok+B_real_flag": {
+   "expect_verdict": "BATCH_ABORTED",
+   "expect_status": "APPLY_BLOCKED_NO_PRICE_BASIS_DATE",
+   "permutations": 2,
+   "permutation_invariant": true,
+   "first_run": {
+    "verdict": "BATCH_ABORTED",
+    "hash_before": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "hash_after_batch": "724f771f5132b15f042ce1c033b854134d3fd7dc183ba3301e2a84b2f82188db",
+    "final_hash": "b444a3975181f72267fd8cd87386ab5f36c5f25e709707957322fe3a07eab8d5",
+    "status": {
+     "A|split|5|2026-01-30": "OK",
+     "B|reverse_split|1/5|2026-01-30": "APPLY_BLOCKED_NO_PRICE_BASIS_DATE"
+    },
+    "dup_count": {},
+    "perf": {
+     "status": "PERF_BLOCKED",
+     "from": "2026-01-30"
+    },
+    "qty": {
+     "A": "37",
+     "B": "75",
+     "D": "7"
+    },
+    "applied_n": 0
+   },
+   "pass": true
+  }
+ },
+ "pre_fix_negative_control": {
+  "F1_A_ok+B_ratio_bad": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "statuses": [
+      "OK",
+      "BLOCKED_RATIO_PRODUCT"
+     ],
+     "hash_changed": true,
+     "A_qty_after": "185",
+     "A_price_after": "10460"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "statuses": [
+      "BLOCKED_RATIO_PRODUCT",
+      "OK"
+     ],
+     "hash_changed": true,
+     "A_qty_after": "185",
+     "A_price_after": "10460"
+    }
+   ],
+   "defect_reproduced": true
+  },
+  "F2_A_ok+D_fractional": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "statuses": [
+      "OK",
+      "BLOCKED_FRACTIONAL"
+     ],
+     "hash_changed": true,
+     "A_qty_after": "185",
+     "A_price_after": "10460"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "statuses": [
+      "BLOCKED_FRACTIONAL",
+      "OK"
+     ],
+     "hash_changed": true,
+     "A_qty_after": "185",
+     "A_price_after": "10460"
+    }
+   ],
+   "defect_reproduced": true
+  },
+  "F3_A_ok+X_unknown": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "statuses": [
+      "OK",
+      "BLOCKED_INPUT"
+     ],
+     "hash_changed": true,
+     "A_qty_after": "185",
+     "A_price_after": "10460"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "statuses": [
+      "BLOCKED_INPUT",
+      "OK"
+     ],
+     "hash_changed": true,
+     "A_qty_after": "185",
+     "A_price_after": "10460"
+    }
+   ],
+   "defect_reproduced": true
+  }
+ },
+ "summary": {
+  "fixtures_pass": true,
+  "n_fixtures": 9,
+  "n_permutation_runs": 18,
+  "prefix_defect_reproduced": true,
+  "real_events_applied": 0,
+  "all_pass": true
+ },
+ "pr104_source_sha256": "cf2c48f6057769edebe1433727ea0e4a76b9c4ecc1b332a0cd8966ddb330273b"
+}
