@@ -1,0 +1,22 @@
+{
+ "codes": 33,
+ "kis_calls_upper": 133,
+ "kis_cap": 500,
+ "dart_calls_upper": 232,
+ "dart_cap": 250,
+ "within_caps": true,
+ "retry_per_request": 2,
+ "credential_names": [
+  "KIS_APP_KEY",
+  "KIS_APP_SECRET",
+  "DART_CRTFC_KEY"
+ ],
+ "forbidden_endpoints": [
+  "주문(order-cash 등)",
+  "잔고(inquire-balance · TTTC8434R)",
+  "주문가능금액",
+  "계좌 조회 전부"
+ ],
+ "cache_policy": "응답 원문 · 실제 종목 · 날짜는 로컬 캐시에만 · 커밋 금지 · 파일 sha256 · 요청 sha256 · fetched_at_kst만 공개",
+ "network_calls_this_task": 0
+}

@@ -30,8 +30,8 @@ hand_cash = 2_000_000 - 20 * 50000 * (1 + RATE) + 20 * 50000 * (1 - RATE)
 case("1_기업행동_없음", ["OK", True, True], [raw["A"][D[0]]["status"], r["identity"]["cash_gap"] < 1e-6 and abs(r["cash"] - hand_cash) < 1e-6, r["identity"]["qty_match"]],
      {"hand_cash_eq_adapter": abs(r["cash"] - hand_cash) < 1e-6})
 # 2. 액면분할 1 → 5(효력일 D[2]): 과거 수정주가 off-tick · 효력일 수량 ×5
-rawc = {D[0]: 103500.0, D[1]: 104000.0, D[2]: 20900.0, D[3]: 21000.0}
-adjc = {D[0]: 103500.0 / 5, D[1]: 104000.0 / 5, D[2]: 20900.0, D[3]: 21000.0}
+rawc = {D[0]: 103600.0, D[1]: 104000.0, D[2]: 20900.0, D[3]: 21000.0}
+adjc = {D[0]: 103600.0 / 5, D[1]: 104000.0 / 5, D[2]: 20900.0, D[3]: 21000.0}
 ca = R.resolve_ca([{"rcept_no": "R1", "code": "A", "kind": "split", "ratio": 5, "effective_date": D[2]}])
 pair = R.check_raw_pair(rawc, adjc, [D[2]])
 f = [{"fill_id": "f1", "sleeve": "D1", "date": D[0], "code": "A", "side": "buy", "intent": {"notional": 1_000_000}}]

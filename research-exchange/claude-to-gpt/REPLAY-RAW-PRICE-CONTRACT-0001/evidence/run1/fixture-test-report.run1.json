@@ -1,0 +1,149 @@
+{
+ "1_기업행동_없음": {
+  "expect": [
+   "OK",
+   true,
+   true
+  ],
+  "got": [
+   "OK",
+   true,
+   true
+  ],
+  "pass": true,
+  "hand_cash_eq_adapter": true
+ },
+ "2_액면분할": {
+  "expect": [
+   "adj_off_tick",
+   45,
+   true
+  ],
+  "got": [
+   "adj_on_tick",
+   45,
+   true
+  ],
+  "pass": false,
+  "buy_qty_raw": 9,
+  "ca_qty_rows": 1,
+  "raw_on_tick": true
+ },
+ "3_감자_병합": {
+  "expect": [
+   2,
+   25000.0,
+   true,
+   true
+  ],
+  "got": [
+   2,
+   25000.0,
+   true,
+   true
+  ],
+  "pass": true,
+  "no_cash_field_qty": 2
+ },
+ "4_유무상_칸없음": {
+  "expect": [
+   "UNKNOWN_CA_FIELDS",
+   "UNKNOWN_CA_FIELDS"
+  ],
+  "got": [
+   "UNKNOWN_CA_FIELDS",
+   "UNKNOWN_CA_FIELDS"
+  ],
+  "pass": true,
+  "missing": [
+   [
+    "record_date"
+   ],
+   [
+    "effective_date"
+   ]
+  ]
+ },
+ "5_선택_미지원": {
+  "expect": [
+   "UNKNOWN_SELECTION_UNSUPPORTED",
+   0
+  ],
+  "got": [
+   "UNKNOWN_SELECTION_UNSUPPORTED",
+   0
+  ],
+  "pass": true
+ },
+ "6_원주가_호가밖": {
+  "expect": [
+   "INVALID_OFFICIAL_RAW"
+  ],
+  "got": [
+   "INVALID_OFFICIAL_RAW"
+  ],
+  "pass": true
+ },
+ "7_정정_사슬": {
+  "expect": [
+   1,
+   5,
+   [
+    "20260101000100",
+    "20260102000200"
+   ],
+   false
+  ],
+  "got": [
+   1,
+   5,
+   [
+    "20260101000100",
+    "20260102000200"
+   ],
+   false
+  ],
+  "pass": true
+ },
+ "8_비용_항등식": {
+  "expect": [
+   true,
+   true,
+   true
+  ],
+  "got": [
+   true,
+   true,
+   true
+  ],
+  "pass": true,
+  "buy_qty": 20,
+  "sell_qty": 10,
+  "cost_total_eq": true
+ },
+ "9_한도_음수": {
+  "expect": [
+   true,
+   true,
+   true,
+   0
+  ],
+  "got": [
+   true,
+   true,
+   true,
+   0
+  ],
+  "pass": true
+ },
+ "10_15분봉_거부": {
+  "expect": [
+   "OUT_OF_SCOPE_15M"
+  ],
+  "got": [
+   "OUT_OF_SCOPE_15M"
+  ],
+  "pass": true
+ },
+ "pass": false
+}
