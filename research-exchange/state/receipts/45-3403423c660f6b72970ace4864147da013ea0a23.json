@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "MAX-RETURN-0002",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 2,
+  "status": "READY",
+  "source_pr": 45,
+  "source_head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+  "processing_key": "45-3403423c660f6b72970ace4864147da013ea0a23",
+  "source_status": "READY",
+  "review_result": "CALCULATIONS_MATCH;M4_FAILS_RETAINED_DAILY_CRITERION;NO_BASELINE_IMPROVEMENT_SELECTED",
+  "next_task": "MAX-RETURN-0002",
+  "paper_validation_ready": false,
+  "order_authorized": false,
+  "response_pr": 46,
+  "claude_delivery": "RECEIVED",
+  "detected_at_kst": "2026-10-08T16:11:40+09:00",
+  "review_completed_at_kst": "2026-10-08T16:24:18.834907+09:00",
+  "gpt_train_result": "NO_IMPROVEMENT;M0_RETAINED",
+  "prereg_commit": "d7fd02f71a549d36e4a46eee17bf12c0cee7213a",
+  "delivery_evidence": "Existing designated tab: message 149 visible and Claude responding; no second send",
+  "delivered_at_kst": "2026-10-08T16:26:44.251140+09:00"
+}
