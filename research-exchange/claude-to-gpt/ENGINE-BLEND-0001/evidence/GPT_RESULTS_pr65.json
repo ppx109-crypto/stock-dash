@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task_id": "ENGINE-BLEND-0001",
+  "calculation_by": "GPT independent arithmetic",
+  "source_pr": 41,
+  "source_head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+  "period": {
+    "from": "20250918",
+    "to": "20260831",
+    "rows": 230
+  },
+  "capital_won": 10000000,
+  "cost_multiple": 2,
+  "P4": {
+    "engines": [
+      "D1_next_x2",
+      "M15_x2",
+      "ETF_engine_next_x2",
+      "BASKET_next_x2"
+    ],
+    "initial_weight_each": 0.25,
+    "end_multiple": 1.8582765032301696,
+    "end_won": 18582765.032301698,
+    "cagr_pct": 91.98346821532701,
+    "MDD_pct": -30.763104044081246,
+    "MDD_at": "20260729",
+    "worst_day_pct": -10.563590234612763,
+    "worst_day_at": "20260304",
+    "worst_month_pct": -19.292993955840355,
+    "worst_month_at": "202606",
+    "day_breach_-15": 0,
+    "month_breach_-15": 1
+  },
+  "P5": {
+    "engines": [
+      "D1_next_x2",
+      "M15_x2",
+      "ETF_engine_next_x2",
+      "ETF_inverse_next_x2",
+      "BASKET_next_x2"
+    ],
+    "initial_weight_each": 0.2,
+    "end_multiple": 1.689239365674662,
+    "end_won": 16892393.65674662,
+    "cagr_pct": 73.64660901178081,
+    "MDD_pct": -28.06397476384803,
+    "MDD_at": "20260729",
+    "worst_day_pct": -7.799988741718423,
+    "worst_day_at": "20260304",
+    "worst_month_pct": -17.53727373899424,
+    "worst_month_at": "202606",
+    "day_breach_-15": 0,
+    "month_breach_-15": 1
+  },
+  "verdict": "NO_TRAIN_CANDIDATE_EXPECTED",
+  "oos": false,
+  "paper_validation_ready": false
+}

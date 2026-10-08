@@ -1,0 +1,143 @@
+{
+ "schema_version": 1,
+ "task_id": "ENGINE-BLEND-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "ENGINE-BLEND-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 11,
+  "status": "READY",
+  "input": {
+   "pr": 65,
+   "head_sha": "65494d6453209b6f7fcbcbebed31cc452a0478b0",
+   "read_files": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "GPT_RESULTS.json",
+    "manifest.json",
+    "receipt.json"
+   ]
+  },
+  "fixed_evidence": {
+   "pr": 41,
+   "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+   "files": 5,
+   "git_blob_match": true
+  },
+  "base_main_sha": "561a647b456c03410d591c330b1ce741f7057604"
+ },
+ "prereg_commit": "b296bb8c8dde81622cf4bdfb67775978fa7be3b7",
+ "prereg_committed_at_kst": "2026-10-08T19:00:38+09:00",
+ "runs": {
+  "arithmetic": 2,
+  "engine_reruns": 0
+ },
+ "all_match_gpt": true,
+ "criteria": {
+  "P4": {
+   "day_ok": true,
+   "month_ok": false,
+   "mdd_ok": false,
+   "end_gt_10m": true
+  },
+  "P5": {
+   "day_ok": true,
+   "month_ok": false,
+   "mdd_ok": false,
+   "end_gt_10m": true
+  }
+ },
+ "verdict": "AXIS_ENDED",
+ "criteria_conflict": {
+  "task": "달 −15% · MDD −15% 실패 조건",
+  "user_rule_2026-10-08": "달 −15%는 탈락 아님 · MDD 비교 항목 · 하루 −15%만 유지",
+  "pass_under_user_rule": [
+   "P4",
+   "P5"
+  ]
+ },
+ "P4_end_won": 18582765.032301694,
+ "P5_end_won": 16892393.656746622,
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/GPT_RESULTS_pr65.json",
+  "evidence/blend_P4.csv",
+  "evidence/blend_P5.csv",
+  "evidence/eb_results.json",
+  "evidence/input/nav_BASKET_next_x2.csv",
+  "evidence/input/nav_D1_next_x2.csv",
+  "evidence/input/nav_ETF_engine_next_x2.csv",
+  "evidence/input/nav_ETF_inverse_next_x2.csv",
+  "evidence/input/nav_M15_x2.csv",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "6ec708e882fe3721def44085ac7787c4aae81fe57db88bed918b0ef1f0739e78"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "b8c62816a2b344789addc5d18650135c5dfea72c022c59cf9b5c178cd985b6af"
+  },
+  {
+   "path": "code/eb_blend.py",
+   "sha256": "6dae15df44ce1977c9a48110e4798715a159d980b1d634ef87edcbf5f945ecb2"
+  },
+  {
+   "path": "evidence/GPT_RESULTS_pr65.json",
+   "sha256": "9312d4c25a84881c866ab1e6cf64fb0030cc1c2f2fbade2b6f690a134061dace"
+  },
+  {
+   "path": "evidence/blend_P4.csv",
+   "sha256": "b66c1e9fae567fb2d9efcdefbbc1b37d18339f7715868a4373c53532d1d42b5a"
+  },
+  {
+   "path": "evidence/blend_P5.csv",
+   "sha256": "4327b225adfebf81594a57a448dcb9135544e2d2b2bfe5c353bab5adc0571b5d"
+  },
+  {
+   "path": "evidence/eb_results.json",
+   "sha256": "12268ddb1c82a24c03a92925a95b1af1847e37374bc8b3d35073ba9a7acc01b7"
+  },
+  {
+   "path": "evidence/input/nav_BASKET_next_x2.csv",
+   "sha256": "bf998f303cc3e33e7e6cfea419300adcbdd7f2d173427eb00359cd871d438260"
+  },
+  {
+   "path": "evidence/input/nav_D1_next_x2.csv",
+   "sha256": "324c3db722629be429f74948ea8351842198e0e8abde8ffaabb0079a1d348a0f"
+  },
+  {
+   "path": "evidence/input/nav_ETF_engine_next_x2.csv",
+   "sha256": "2d770d923022574f25c6f41cb6d52e8426ab7eadc02b20f8404eaf17c9441bf2"
+  },
+  {
+   "path": "evidence/input/nav_ETF_inverse_next_x2.csv",
+   "sha256": "667aa05396db5af1e0d0435a11f0ac6554e1fceb9be790deaa418618e4dd8655"
+  },
+  {
+   "path": "evidence/input/nav_M15_x2.csv",
+   "sha256": "a115c22472b13302db943a3150a04bc2830ab9ef5ed029970c4de7615f4122fe"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "3a7a464f7b4c165fa81192698ce96a7f017dedb25e4e7c0cd872b1f2a91b48d1"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "595cafb48d6607a927fac82b02300bdb6fcb1f74aea9b2a6d60caae6f9cc9bbc"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/engine-blend-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T19:01:54+09:00"
+}
