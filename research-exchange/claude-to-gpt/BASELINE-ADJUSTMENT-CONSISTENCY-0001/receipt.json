@@ -1,0 +1,37 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-ADJUSTMENT-CONSISTENCY-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 20,
+ "status": "READY",
+ "source_pr": 82,
+ "source_head_sha": "c18f10d465816c0c394c44290c945d481dc7b20f",
+ "code_commit": "2a3b084a74e548895105061e9bd7383d2a5b0715",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/cost_contract.py",
+  "code/diff_run1_to_run2.txt",
+  "code/kernel2.py",
+  "code/pa_audit.py",
+  "code/pa_audit_run1.py",
+  "evidence/corporate-action-crossings.json",
+  "evidence/fill-validity.json",
+  "evidence/off-tick-role-coverage.json",
+  "evidence/position-accounting.json",
+  "evidence/run.log",
+  "evidence/run1/corporate-action-crossings.json",
+  "evidence/run1/fill-validity.json",
+  "evidence/run1/off-tick-role-coverage.json",
+  "evidence/run1/position-accounting.json",
+  "evidence/run1/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T00:13:17+09:00",
+ "input": {
+  "pr": 83,
+  "head_sha": "8c13268f36857ae2c8839966b6d4ea7d84376bd5"
+ },
+ "audit_runs": 2,
+ "failed": 1,
+ "result_pr": null
+}

@@ -1,0 +1,110 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-ADJUSTMENT-CONSISTENCY-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 20,
+ "status": "READY",
+ "source_pr": 82,
+ "source_head_sha": "c18f10d465816c0c394c44290c945d481dc7b20f",
+ "code_commit": "2a3b084a74e548895105061e9bd7383d2a5b0715",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/cost_contract.py",
+  "code/diff_run1_to_run2.txt",
+  "code/kernel2.py",
+  "code/pa_audit.py",
+  "code/pa_audit_run1.py",
+  "evidence/corporate-action-crossings.json",
+  "evidence/fill-validity.json",
+  "evidence/off-tick-role-coverage.json",
+  "evidence/position-accounting.json",
+  "evidence/run.log",
+  "evidence/run1/corporate-action-crossings.json",
+  "evidence/run1/fill-validity.json",
+  "evidence/run1/off-tick-role-coverage.json",
+  "evidence/run1/position-accounting.json",
+  "evidence/run1/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T00:13:17+09:00",
+ "input": {
+  "pr": 83,
+  "head_sha": "8c13268f36857ae2c8839966b6d4ea7d84376bd5",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "receipt.json"
+  ]
+ },
+ "prereg_commit": "a378f44cc2a2eb8bf8debf69824b4d89f3ebd5f9",
+ "prereg_committed_at_kst": "2026-10-09T00:10:45+09:00",
+ "verdict": "READY / off-tick 74 중 27레코드가 체결 · 비용에 사용 · IMPOSSIBLE_RAW_FILL 32/250 · 원장 4개 INTERNAL_CONSISTENCY_PASS · 기업행동 8 UNKNOWN",
+ "inputs": {
+  "pr68_control_trades": "880a277bad0fa0eaebd34cdd9dc9c7acab9a4d4c511f97570e488190c5561ad3",
+  "pr74_signals_old": "0625d2a84c6aac796f2ba9a03f9bd11e55596a4d1261a78990f5c3389c1a7a7d",
+  "pr76_daily_local": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8",
+  "old_nrl_cache": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "pr68_nav_csv": "2c3b4bceccf7a5f45fe0f46e0197dac437bca8dbe5c56c6e71e23acfef1577b1",
+  "pr76_nav_csv": "007cebe625b316102df01f31acaf31a363bc60a541ce092871d0afbbc3107137",
+  "pr82_tick_check_py": "2be9df1fe2377f45228261f5c626bf5a653035dd23390dd089912e8ebe604dbd",
+  "pr82_tick_check_json": "6166b3eafd055730aa9b41c93843453e19d36eb727e202b507fc9f5d31aa785b",
+  "salt_sha256": "eb7b7d0859a3a81b83e18f49d78248b697089fc286096655938908408d08e4eb",
+  "snapshot": "00b98ab1655c84806357f44f2de6f1509ef1447f"
+ },
+ "code_sha256": {
+  "cost_contract.py": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae",
+  "kernel2.py": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac",
+  "pa_audit.py": "4617bc8ae6e47674b96e0c42b2ca36766afe94a3991cca8704cb7d98bae84aee",
+  "pa_audit_run1.py": "b7fb8f76133a2ec2e1a091aa046aaed05bbae489aef6e15d563d7af12eef1612"
+ },
+ "code_blob_first_vs_final": {
+  "prereg_pa_audit.py": "b7fb8f76133a2ec2e1a091aa046aaed05bbae489aef6e15d563d7af12eef1612",
+  "final_pa_audit.py": "4617bc8ae6e47674b96e0c42b2ca36766afe94a3991cca8704cb7d98bae84aee",
+  "diff": "code/diff_run1_to_run2.txt(기업행동 종목 범위 한 줄)"
+ },
+ "commands": [
+  "python3 -E -P code/pa_audit.py <옛 nrl-cache.pkl> <control_trades.json> <signals_old.json> <PR76 원장> <PR68 nav csv> <PR76 nav csv> <b2> <저장소> <salt> <출력>"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "os": "Linux x86_64"
+ },
+ "results": {
+  "off_tick_records": 74,
+  "role_counts": {
+   "signal": 50,
+   "entry": 11,
+   "exit": 16,
+   "fee_tax_notional": 27,
+   "open_position_mtm": 33,
+   "ca_window": 0
+  },
+  "exclusive": {
+   "체결에 사용(+다른 역할 가능)": 27,
+   "신호에만": 38,
+   "둘 이상(체결 없음)": 9
+  },
+  "fill_classes": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 218,
+   "IMPOSSIBLE_RAW_FILL": 32
+  },
+  "fills_denominator": 250
+ },
+ "runs": {
+  "audit_runs": 2,
+  "failed": 1,
+  "failed_note": "1회차: 기업행동 종목을 747의 71종목에서 찾아 16 → 체결 39종목 안 8로 고침(evidence/run1)",
+  "external_calls": 0,
+  "performance_runs": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "외부 API · 네트워크 · Actions · Secrets",
+  "백테스트 · 성과 · NAV 재실행 · 수정 수익률",
+  "규칙 · threshold · 배분 변경",
+  "주문 · 계좌",
+  "운영 변경",
+  "원가격 · 원수량 · 종목명 공개"
+ ]
+}
