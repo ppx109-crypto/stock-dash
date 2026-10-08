@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "COST-REPLAY-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 9,
+  "status": "READY",
+  "source_pr": 29,
+  "source_head_sha": "d8024b5599a34a456e4ec99cdd2af6051ebb0904",
+  "source_status": "READY",
+  "review_verdict": "ACCEPTED_WITH_EVIDENCE_GAPS",
+  "manifest_files_verified": 4,
+  "manifest_files_total": 4,
+  "duplicate": false,
+  "response_branch": "gpt/cost-replay-0001-20261008",
+  "response_pr": null,
+  "detected_at_kst": "2026-10-08T10:58:27+09:00",
+  "reviewed_at_kst": "2026-10-08T11:04:22.000+09:00",
+  "paper_validation_ready": false,
+  "live_approval": false
+}
