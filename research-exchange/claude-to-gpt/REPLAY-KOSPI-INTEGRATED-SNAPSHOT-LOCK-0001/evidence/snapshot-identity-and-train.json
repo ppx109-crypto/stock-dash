@@ -1,0 +1,79 @@
+{
+ "A": {
+  "claim": "lawid 000111의 정식 규정명 = 유가증권시장 업무규정 시행세칙",
+  "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+  "url": "https://law.krx.co.kr/las/LawBon.jsp?lawid=000111",
+  "official_index_text": [
+   "유가증권시장 업무규정 시행세칙 [일부개정 2024.10.29 규정 제2256호 <시행일:2024.11.4>]",
+   "제1조(목적) 이 세칙은 「유가증권시장 업무규정」(이하 “규정”이라 한다)의 시행에 관하여 필요한 사항을 규정함을 목적으로 한다."
+  ],
+  "url_has_lawid": true,
+  "name_in_same_result": true,
+  "packet_note": "머리글은 같은 URL의 색인 결과에 직접 표시되었다.",
+  "inference": "제1조가 「유가증권시장 업무규정」의 시행 세칙임을 밝혀 정식명과도 일관",
+  "verdict": "ACCEPT"
+ },
+ "B": {
+  "claim": "Train 기간 시행본에 제30조 제1항 제6호 산식이 있었다",
+  "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+  "conditions": {
+   "①_amend_and_effective_before_train": {
+    "ok": true,
+    "amend": "2024-10-29",
+    "effective": "2024-11-04",
+    "reg_no": "2256",
+    "train_start": "2025-09-18"
+   },
+   "②_crawl_after_train": {
+    "ok": true,
+    "crawl_approx": "2026-08-09",
+    "band": [
+     "2026-07-09",
+     "2026-09-09"
+    ],
+    "train_end": "2026-03-31",
+    "note": "크롤은 시행 근거가 아니라 그 시점 머리글의 관찰 시점"
+   },
+   "③_exact_text_6ho": {
+    "ok": true,
+    "text": "주식분할 또는 주식병합된 종목은 전일종가에 분할 또는 병합의 비율을 곱한 가격으로 한다.",
+    "location": "제30조(기준가격) 제1항 제6호"
+   },
+   "③b_same_snapshot_as_header": {
+    "ok": false,
+    "packet_says": "이번 검색 응답 한 블록에 머리글과 제30조 문장이 동시에 노출된 것은 아니지만 URL은 동일하다.",
+    "why": "같은 URL이지만 다른 응답 블록 · 같은 크롤본이라는 명시 없음 → 사전등록 정의상 연결에 추론 필요"
+   },
+   "④_no_later_amendment_in_header": {
+    "ok": true,
+    "note": "통합본 머리글은 최종 일부개정 하나(2024.10.29)만 표시 → 관찰 시점(약 2026-08)까지 더 늦은 개정 없음"
+   }
+  },
+  "string_compare": {
+   "S2==S3": true,
+   "S2==PR96.P2": true,
+   "S2==PR96.P1": true,
+   "S2==PR96.P2(따옴표 제거)": true,
+   "S2==PR96.P1(따옴표 제거)": true
+  },
+  "quote_only_difference": [],
+  "published_crosscheck": {
+   "published_approx": "2024-11-14",
+   "note": "Published 약 1.9년 전 ≈ 2024-11 — 일부개정 2024-10-29와 어긋나지 않음(시행일 근거로 쓰지 않음)"
+  },
+  "robustness": "두 발췌가 다른 크롤본이라도, 제6호 발췌의 크롤(약 2026-08, PR #95 패킷)이 [2024-11-04, 머리글 크롤] 안이면 결론은 같음. 어긋나는 경우는 머리글 크롤 뒤 제6호가 바뀌었다가 2022 문구로 되돌아간 경우뿐 — 가능성은 낮지만 공식 근거로 배제되지는 않음",
+  "verdict": "REVISE"
+ },
+ "status": "BLOCKED",
+ "excluded": [
+  "KOSDAQ",
+  "비율 방향",
+  "가격 기준일",
+  "거래재개일",
+  "최초 매도가능일",
+  "NAV",
+  "성과"
+ ],
+ "packet_sha256": "d432f4fbe44cd2e72da460a33469fb8792a15826d53d457db1be2862536b50b7",
+ "network_calls": 0
+}
