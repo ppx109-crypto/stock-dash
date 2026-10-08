@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-QUOTE-BASIS-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 38,
+ "status": "READY",
+ "source_pr": 118,
+ "source_head_sha": "c8826304387ae99f92adf09bedc0b1997618d703",
+ "code_commit": "55ccac346dd28fc244974c66ea26547bb3e0dddf",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/quote_basis_gate.py",
+  "evidence/quote-basis-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:32:26+09:00",
+ "input": {
+  "pr": 119,
+  "head_sha": "90ee24c2709b109331e9fd6d89ac5a18293b04dc"
+ },
+ "prereg_commit": "c947393ccc3166255b89009a20643cd892a59908",
+ "all_pass": true,
+ "official_runs": 1,
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
