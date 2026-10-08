@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "task_id": "FRESH-RANK-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 6,
+  "status": "SENT",
+  "source_pr": 53,
+  "source_head_sha": "11c63dcb22ba9c07b7dde22b5f713ec51c0e3167",
+  "source_status": "READY",
+  "source_verdict": "H/RH 개선 없음; 부분청산 축 종료",
+  "dedup_key": "53:11c63dcb22ba9c07b7dde22b5f713ec51c0e3167",
+  "result_pr": null,
+  "delivered_to_existing_session": false,
+  "created_at_kst": "2026-10-08T17:55:00+09:00"
+}
