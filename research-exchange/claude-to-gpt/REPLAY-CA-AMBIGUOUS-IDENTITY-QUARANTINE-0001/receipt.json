@@ -1,0 +1,35 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-AMBIGUOUS-IDENTITY-QUARANTINE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 33,
+ "status": "BLOCKED",
+ "source_pr": 108,
+ "source_head_sha": "ca4408424485157cdeb6fe0fe7366b9bb9e486ff",
+ "code_commit": "0f5775272d2f6faf9bc37d1d6306ac3747e1fc94",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/identity_quarantine.py",
+  "evidence/ambiguous-identity-quarantine.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:41:33+09:00",
+ "input": {
+  "pr": 109,
+  "head_sha": "667c91187932db7f36a40132636091138cb07631"
+ },
+ "prereg_commit": "29b71405099040c7fe5caacd899e95495dda1742",
+ "all_pass": false,
+ "task_required_checks_pass": true,
+ "real_events_applied": 0,
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}
