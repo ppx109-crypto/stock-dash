@@ -1,0 +1,84 @@
+{
+ "denominator_codes": 8,
+ "dart_queried_ok": 0,
+ "query_unavailable": 8,
+ "UNKNOWN": 8,
+ "local_stored_copy(저장 사본 · 판 불명 · 접수 시각 없음)": {
+  "filings": 9,
+  "by_kind": {
+   "감자": 4,
+   "분할": 1,
+   "유상증자": 3,
+   "합병": 1
+  },
+  "per_code": [
+   {
+    "code": "e03acd98fcc17dbb",
+    "filings": 2,
+    "kinds": [
+     "감자",
+     "분할"
+    ],
+    "in_train(≤20260331)": 1
+   },
+   {
+    "code": "7f28a0c0e2631c14",
+    "filings": 1,
+    "kinds": [
+     "감자"
+    ],
+    "in_train(≤20260331)": 0
+   },
+   {
+    "code": "2cc0e03e8bed22a4",
+    "filings": 1,
+    "kinds": [
+     "감자"
+    ],
+    "in_train(≤20260331)": 1
+   },
+   {
+    "code": "80af0011638d7a58",
+    "filings": 1,
+    "kinds": [
+     "유상증자"
+    ],
+    "in_train(≤20260331)": 0
+   },
+   {
+    "code": "22c3296ec137137b",
+    "filings": 1,
+    "kinds": [
+     "유상증자"
+    ],
+    "in_train(≤20260331)": 0
+   },
+   {
+    "code": "75f57fe064574881",
+    "filings": 1,
+    "kinds": [
+     "감자"
+    ],
+    "in_train(≤20260331)": 1
+   },
+   {
+    "code": "86cb8b0c68fb8cfe",
+    "filings": 1,
+    "kinds": [
+     "합병"
+    ],
+    "in_train(≤20260331)": 0
+   },
+   {
+    "code": "43f1a8044371b7f9",
+    "filings": 1,
+    "kinds": [
+     "유상증자"
+    ],
+    "in_train(≤20260331)": 1
+   }
+  ]
+ },
+ "price_link_checked": 0,
+ "note": "효력일 · 정정 연결은 공식 응답 없이 확인 불가. 접수일만으로 같은 날 사용을 PIT로 올리지 않음."
+}

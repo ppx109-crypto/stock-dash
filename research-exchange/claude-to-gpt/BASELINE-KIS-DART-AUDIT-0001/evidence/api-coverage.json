@@ -1,0 +1,24 @@
+{
+ "kis": {
+  "credential_present": false,
+  "auth_calls": 0,
+  "quote_calls": 0,
+  "status": "BLOCKED: KIS_APP_KEY · KIS_APP_SECRET 이 실행환경에 없음"
+ },
+ "dart": {
+  "credential_present": false,
+  "calls": 0,
+  "status": "BLOCKED: DART_CRTFC_KEY 가 실행환경에 없음"
+ },
+ "call_caps": {
+  "KIS(인증 포함)": 500,
+  "DART": 250,
+  "retry_per_request": 2
+ },
+ "calls_used": {
+  "KIS_auth": 0,
+  "KIS_quote": 0,
+  "DART": 0,
+  "retries": 0
+ }
+}
