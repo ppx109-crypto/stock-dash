@@ -1,0 +1,818 @@
+{
+ "task": "SOURCE-0001",
+ "input_pr": 26,
+ "input_head_sha": "9bfc62720e1e89b10552268a997bbb6766c9aa48",
+ "repo_commit": "e9a22eea26871fa2a1d8221b04c304d6a3805382",
+ "checked_at_kst": "2026-10-08T09:21:07+09:00",
+ "network_note": "opendart.fss.or.kr · openapi.krx.co.kr 직접 열람은 이 환경의 네트워크 정책으로 차단 — 공식 페이지 검색 요약(E2s)으로 대신, 한국투자증권 공식 GitHub는 직접 열람(E2)",
+ "data_api_calls": 0,
+ "rows": [
+  {
+   "id": "A1-1",
+   "item": "A1",
+   "sub": "저장소 기존 일봉 · 시간봉",
+   "provider": "KIS · 야후(기존 수집)",
+   "min_fields": [
+    "date",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume",
+    "value"
+   ],
+   "primary_key": "(code, date)",
+   "time_keys": {
+    "event_time": "date",
+    "announced_at": null,
+    "available_at": null,
+    "ingested_at": "파일 단위 fetched(날짜)",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "알 수 없음(받은 시각 기록 없음)",
+   "history_start_and_limits": "price-data 일봉 1996~ 수정주가 · loan-data 원종가 2017~(272종목) · hourly-data 2023-09~ · hourly-kis 2025-09~",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": false,
+    "halt": false,
+    "correction": "덮어씀",
+    "corp_action": "수정주가로 흡수"
+   },
+   "adjustment": "price-data · kosdaq-data 수정주가(broker_kis.py:300-312 FID_ORG_ADJ_PRC='0'), loan-data 원종가, 시간봉 조정 표시 없음",
+   "auth_kind": "KIS 앱키(값 읽지 않음)",
+   "rate_limit": "repo: 한 번 100거래일(collect_prices.py:104-140 주석)",
+   "license_redistribution": "KIS 이용약관 NOT_VERIFIED",
+   "repo_evidence": [
+    "e9a22ee:broker_kis.py:300-312",
+    "e9a22ee:collect_prices.py:104-140",
+    "e9a22ee:collect_kosdaq.py:5",
+    "e9a22ee:collect_hourly.py:1-10",
+    "REPLAY-0002 COVERAGE(495행 F06 0/495)"
+   ],
+   "existing_history": "보유(PIT 조건 불충족)",
+   "obtainable": "—",
+   "verdict": "NOT_VERIFIED",
+   "gap": "available_at · 판 · 원주가 시가 없음, 상장폐지 종목 없음",
+   "minimal_approval": "없음(이 행은 기존 자료 판정)",
+   "evidence": []
+  },
+  {
+   "id": "A1-2",
+   "item": "A1",
+   "sub": "KIS 기간별시세 원주가 OHLCV(앞으로)",
+   "provider": "한국투자증권 Open API",
+   "min_fields": [
+    "stck_bsop_date",
+    "stck_oprc",
+    "stck_hgpr",
+    "stck_lwpr",
+    "stck_clpr",
+    "acml_vol",
+    "acml_tr_pbmn"
+   ],
+   "primary_key": "(code, date)",
+   "time_keys": {
+    "event_time": "영업일",
+    "announced_at": "장 마감",
+    "available_at": "받은 시각(ingested_at)을 기록해야 증명",
+    "ingested_at": "새로 기록 필요",
+    "version": "새로 기록 필요"
+   },
+   "intraday_confirm_and_T0_T1": "일봉은 장 마감 뒤 확정으로 보이나 공식 확정 시각 NOT_VERIFIED → T+1(다음 거래일)부터 사용",
+   "history_start_and_limits": "과거 조회 가능 범위 NOT_VERIFIED, 한 번 최대 100건(공식 예제)",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": "NOT_VERIFIED(저장소 주석: 한투는 상장폐지 종목 일봉을 주지 않음 — E4)",
+    "halt": false,
+    "correction": "NOT_VERIFIED",
+    "corp_action": "수정/원 선택"
+   },
+   "adjustment": "fid_org_adj_prc 0=수정주가 · 1=원주가(공식 예제)",
+   "auth_kind": "API key(앱키 · 시크릿)",
+   "rate_limit": "모의 계좌는 호출 제한이 낮음(공식 README), 정확한 초당 건수 NOT_VERIFIED",
+   "license_redistribution": "NOT_VERIFIED",
+   "repo_evidence": [
+    "e9a22ee:broker_kis.py:300-312(현재 '0' 고정)"
+   ],
+   "existing_history": "없음(원주가 경로 없음)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "원주가 수집 경로 · ingested_at 기록이 없음",
+   "minimal_approval": "원주가(fid_org_adj_prc=1) 일봉을 장 뒤 append-only로 받는 수집 추가 승인",
+   "evidence": [
+    {
+     "grade": "E2",
+     "doc": "한국투자증권 공식 GitHub open-trading-api 예제 inquire_daily_itemchartprice",
+     "url": "https://raw.githubusercontent.com/koreainvestment/open-trading-api/main/examples_llm/domestic_stock/inquire_daily_itemchartprice/inquire_daily_itemchartprice.py",
+     "how": "직접 열람",
+     "ref": "KISGH1"
+    },
+    {
+     "grade": "E2",
+     "doc": "한국투자증권 공식 GitHub open-trading-api README",
+     "url": "https://github.com/koreainvestment/open-trading-api",
+     "how": "직접 열람",
+     "ref": "KISGHR"
+    }
+   ]
+  },
+  {
+   "id": "A1-3",
+   "item": "A1",
+   "sub": "KRX Open API 일별매매정보(전 종목, 원주가)",
+   "provider": "한국거래소 KRX Open API",
+   "min_fields": [
+    "BAS_DD",
+    "ISU_CD",
+    "ISU_NM",
+    "TDD_CLSPRC",
+    "ACC_TRDVOL",
+    "ACC_TRDVAL",
+    "MKTCAP",
+    "LIST_SHRS"
+   ],
+   "primary_key": "(BAS_DD, ISU_CD)",
+   "time_keys": {
+    "event_time": "BAS_DD",
+    "announced_at": "NOT_VERIFIED",
+    "available_at": "NOT_VERIFIED(제공 시각 문서 확인 못 함) → 다음 거래일부터",
+    "ingested_at": "새로 기록 필요",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "NOT_VERIFIED",
+   "history_start_and_limits": "제공 시작일 NOT_VERIFIED · 키 이용기간 1년(연장 가능) · 12개월 미사용 시 삭제 가능",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": "그날 상장 종목 전체(뒤에 폐지된 종목 포함) — 저장소 수집기 설명(E1) · 공식 확인은 NOT_VERIFIED",
+    "halt": false,
+    "correction": null,
+    "corp_action": false
+   },
+   "adjustment": "원주가 그날 값(수집기 설명)",
+   "auth_kind": "인증키(AUTH_KEY 헤더) + API별 활용 신청 · 관리자 승인",
+   "rate_limit": "키당 하루 10,000회(약관, 검색 요약)",
+   "license_redistribution": "KRX 이용약관 · 재배포 조건 NOT_VERIFIED(데이터 분배상품 별도 안내 있음)",
+   "repo_evidence": [
+    "e9a22ee:collect_krx_daily.py:1-12,23,26,58-62",
+    "krx-data/ 파일 0개 · 워크플로 없음"
+   ],
+   "existing_history": "없음(코드만 있고 받은 적 없음)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "시가 · 고가 · 저가는 이 수집기 칸에 없음(COLS) · 제공 시각 · 재배포 조건 확인 필요",
+   "minimal_approval": "사용자가 KRX Open API 키와 '유가증권/코스닥 일별매매정보' 활용 신청 · 승인",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "KRX Open API 서비스 이용방법 · 이용약관 · 주식 API",
+     "url": "https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO003.jsp",
+     "how": "검색 요약(직접 열람 차단)",
+     "ref": "KRXO"
+    }
+   ]
+  },
+  {
+   "id": "A2-1",
+   "item": "A2",
+   "sub": "Universe(t)",
+   "provider": "KRX Open API(A1-3과 같은 자료)",
+   "min_fields": [
+    "BAS_DD",
+    "ISU_CD",
+    "MKT",
+    "LIST_SHRS",
+    "MKTCAP"
+   ],
+   "primary_key": "(BAS_DD, ISU_CD)",
+   "time_keys": {
+    "event_time": "BAS_DD",
+    "announced_at": null,
+    "available_at": "A1-3과 같음",
+    "ingested_at": "새로 기록",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "A1-3과 같음",
+   "history_start_and_limits": "A1-3과 같음",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": "포함(수집기 설명)",
+    "halt": "아님",
+    "correction": null,
+    "corp_action": false
+   },
+   "adjustment": "—",
+   "auth_kind": "A1-3과 같음",
+   "rate_limit": "A1-3과 같음",
+   "license_redistribution": "A1-3과 같음",
+   "repo_evidence": [
+    "e9a22ee:collect_krx_daily.py:1-4"
+   ],
+   "existing_history": "없음(현재 파일 · 현재 목록뿐 — REPLAY-0002 F10 MISSING 495)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "날짜별 전 종목 목록이 저장소에 없음",
+   "minimal_approval": "A1-3 승인과 같음",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "KRX Open API 서비스 이용방법 · 이용약관 · 주식 API",
+     "url": "https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO003.jsp",
+     "how": "검색 요약(직접 열람 차단)",
+     "ref": "KRXO"
+    }
+   ]
+  },
+  {
+   "id": "A2-2",
+   "item": "A2",
+   "sub": "상장폐지 · 관리종목 · 매매거래정지",
+   "provider": "KRX KIND · KRX 정보데이터시스템",
+   "min_fields": [
+    "code",
+    "지정/정지일",
+    "해제일",
+    "사유",
+    "공시 시각"
+   ],
+   "primary_key": "(code, 지정일, 종류)",
+   "time_keys": {
+    "event_time": "효력일",
+    "announced_at": "KIND 공시 시각(NOT_VERIFIED)",
+    "available_at": "공시 시각 이후",
+    "ingested_at": "새로 기록",
+    "version": "정정 공시"
+   },
+   "intraday_confirm_and_T0_T1": "NOT_VERIFIED",
+   "history_start_and_limits": "KIND 상장폐지현황 기간 검색 · 엑셀 내려받기(검색 요약) · 과거 범위 NOT_VERIFIED",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": true,
+    "halt": true,
+    "correction": "NOT_VERIFIED",
+    "corp_action": false
+   },
+   "adjustment": "—",
+   "auth_kind": "웹(정보데이터시스템은 로그인 필요 — 수집기 주석 E4)",
+   "rate_limit": "NOT_VERIFIED",
+   "license_redistribution": "NOT_VERIFIED",
+   "repo_evidence": [
+    "e9a22ee:collect_krx_daily.py:3(로그인 필요 주석)"
+   ],
+   "existing_history": "없음",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL(웹 조회)",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "API · 재배포 조건 확인 안 됨, 저장소에 없음",
+   "minimal_approval": "사용자가 KIND/정보데이터 이용 조건 확인 후 수동 내려받기 또는 허가된 경로 결정",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "KIND 상장폐지현황 · 투자유의사항(관리 · 거래정지)",
+     "url": "https://kind.krx.co.kr/investwarn/delcompany.do?method=searchDelCompanyMain",
+     "how": "검색 요약",
+     "ref": "KIND"
+    }
+   ]
+  },
+  {
+   "id": "A2-3",
+   "item": "A2",
+   "sub": "기업행위(증자 · 감자 · 합병 · 분할 등)",
+   "provider": "DART OpenAPI 주요사항보고서",
+   "min_fields": [
+    "rcept_no",
+    "corp_code",
+    "결정일",
+    "기준일",
+    "비율/배정수"
+   ],
+   "primary_key": "rcept_no",
+   "time_keys": {
+    "event_time": "기준일 · 효력일",
+    "announced_at": "rcept_dt(날짜만)",
+    "available_at": "다음 거래일부터(날짜만 앎)",
+    "ingested_at": "없음",
+    "version": "rcept_no별 덮어씀"
+   },
+   "intraday_confirm_and_T0_T1": "날짜만 → T+1",
+   "history_start_and_limits": "dart-events 2017~(수집기 설명)",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": "정정 공시는 별도 rcept_no로 오지만 원 공시 연결 필드 NOT_VERIFIED",
+    "corp_action": true
+   },
+   "adjustment": "—",
+   "auth_kind": "API key(crtfc_key)",
+   "rate_limit": "하루 20,000회(수집기 주석 E4)",
+   "license_redistribution": "공공 공시정보(조건 NOT_VERIFIED)",
+   "repo_evidence": [
+    "e9a22ee:collect_dart_extra.py:1-13,26,115-119",
+    "dart-events/ 437파일(파일 수만)"
+   ],
+   "existing_history": "일부 보유(rcept_no별 원문 행 · ingested_at 없음)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "정정 계보 · 받은 시각 · 판 보존이 없음, 공식 필드 목록 직접 확인 못 함",
+   "minimal_approval": "기존 수집을 append-only(판 · ingested_at · rm · report_nm 보존)로 바꾸는 승인",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "OpenDART 개발가이드 공시검색(list.json)",
+     "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001",
+     "how": "본문 직접 열람은 네트워크 정책으로 차단 → 공식 페이지 검색 요약",
+     "ref": "OD"
+    }
+   ]
+  },
+  {
+   "id": "A3-1",
+   "item": "A3",
+   "sub": "DART 공시 목록(rcept_no · 정정 계보 · 시각)",
+   "provider": "DART OpenAPI list.json",
+   "min_fields": [
+    "rcept_no",
+    "rcept_dt",
+    "report_nm",
+    "rm",
+    "corp_code",
+    "corp_cls"
+   ],
+   "primary_key": "rcept_no",
+   "time_keys": {
+    "event_time": "보고서 기준일(별도 API)",
+    "announced_at": "rcept_dt(YYYYMMDD, 날짜만)",
+    "available_at": "시각 필드 없음 → 다음 거래일 09:00부터",
+    "ingested_at": "새로 기록",
+    "version": "정정은 새 rcept_no, report_nm의 [기재정정] 등 · rm의 정/철 표시"
+   },
+   "intraday_confirm_and_T0_T1": "접수 시각(시:분)이 list.json에 없음 → T+1",
+   "history_start_and_limits": "corp_code 없이 검색하면 3개월 제한 · 페이지당 최대 100건 · last_reprt_at=N이면 정정 포함 전체",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": "표시는 있으나 원 공시 rcept_no를 가리키는 필드 없음 → 계보는 추정 필요",
+    "corp_action": "유형 코드로 거름"
+   },
+   "adjustment": "—",
+   "auth_kind": "API key(crtfc_key, 40자리)",
+   "rate_limit": "오류코드 020 요청 제한 초과(정확한 한도 NOT_VERIFIED)",
+   "license_redistribution": "NOT_VERIFIED",
+   "repo_evidence": [
+    "e9a22ee:collect_events.py:92-99(rcept_dt만 저장, rcept_no 버림)",
+    "e9a22ee:collect_shares.py:79(rcept_no 앞 8자리만)",
+    "e9a22ee:collect_dart_extra.py:140,189(quarter 접수번호 저장)"
+   ],
+   "existing_history": "일부(날짜 · 종류 · 일부 접수번호)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "공시 시각 없음 · 원 공시 연결 필드 없음 · 과거 시점의 정정 전 상태는 지금 다시 받아도 재현 안 됨",
+   "minimal_approval": "공시 수집이 rcept_no · report_nm · rm · ingested_at을 판으로 남기게 바꾸는 승인",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "OpenDART 개발가이드 공시검색(list.json)",
+     "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001",
+     "how": "본문 직접 열람은 네트워크 정책으로 차단 → 공식 페이지 검색 요약",
+     "ref": "OD"
+    }
+   ]
+  },
+  {
+   "id": "A4-1",
+   "item": "A4",
+   "sub": "모의 체결 · 미체결 · 체결가",
+   "provider": "한국투자증권 Open API 주식일별주문체결조회",
+   "min_fields": [
+    "주문시각",
+    "체결수량",
+    "체결평균가",
+    "미체결수량"
+   ],
+   "primary_key": "(가명 order_id, 체결 순번)",
+   "time_keys": {
+    "event_time": "체결 시각",
+    "announced_at": null,
+    "available_at": "조회 시각",
+    "ingested_at": "새로 기록",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "장중 · 장 뒤 조회 가능(필드 목록 직접 확인 못 함)",
+   "history_start_and_limits": "3개월 이내 VTTC0081R · 이전 VTSC9215R(모의, 공식 예제)",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "API key + 모의 계좌(값 읽지 않음)",
+   "rate_limit": "모의 호출 제한 낮음(공식 README)",
+   "license_redistribution": "계좌 원문 비공개 · 원 주문번호(ODNO) 공개 금지",
+   "repo_evidence": [
+    "e9a22ee:paper_trade.py:405-410(접수만 기록 · order_no 저장)",
+    "체결조회 호출 없음(grep)"
+   ],
+   "existing_history": "없음(접수 2건만, MEAS-0001)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "체결조회 경로가 없고, 원 주문번호 처리 결정이 먼저",
+   "minimal_approval": "모의 봇에 체결조회 기록 추가(가명 evidence_ref, ODNO 비공개 보관) 승인",
+   "evidence": [
+    {
+     "grade": "E2",
+     "doc": "한국투자증권 공식 GitHub open-trading-api 예제 inquire_daily_ccld",
+     "url": "https://raw.githubusercontent.com/koreainvestment/open-trading-api/main/examples_llm/domestic_stock/inquire_daily_ccld/inquire_daily_ccld.py",
+     "how": "직접 열람",
+     "ref": "KISGH2"
+    },
+    {
+     "grade": "E2",
+     "doc": "한국투자증권 공식 GitHub open-trading-api README",
+     "url": "https://github.com/koreainvestment/open-trading-api",
+     "how": "직접 열람",
+     "ref": "KISGHR"
+    }
+   ]
+  },
+  {
+   "id": "A4-2",
+   "item": "A4",
+   "sub": "신호 · 이론가격 기록",
+   "provider": "운영 봇(daily-live 등)",
+   "min_fields": [
+    "signal_id",
+    "decision_at",
+    "inputs id@ver",
+    "이론가"
+   ],
+   "primary_key": "signal_id",
+   "time_keys": {
+    "event_time": "판단 시각",
+    "announced_at": null,
+    "available_at": "decision_at",
+    "ingested_at": "made/at(분)",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "있음(분 단위)",
+   "history_start_and_limits": "2026-10-02~(MEAS-0001)",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "—",
+   "rate_limit": "—",
+   "license_redistribution": "비식별 파생은 공개 허용(PR #11)",
+   "repo_evidence": [
+    "MEAS-0001 INVENTORY SIGNAL_LOG_1D · SIGNAL_LOG_IDLE"
+   ],
+   "existing_history": "일부(입력 판 · cutoff hash 없음)",
+   "obtainable": "—",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "입력 목록 · 판이 없어 DATA-0001 SIGNAL 계약을 못 채움",
+   "minimal_approval": "운영 신호 기록에 inputs · cutoff_hash 추가 승인",
+   "evidence": []
+  },
+  {
+   "id": "A5-1",
+   "item": "A5",
+   "sub": "증권거래세(연도 · 시장별)",
+   "provider": "법령(증권거래세법 시행령 제5조) · 정책브리핑",
+   "min_fields": [
+    "시장",
+    "세율",
+    "적용 시작",
+    "적용 끝",
+    "근거 조문"
+   ],
+   "primary_key": "(시장, 적용 시작)",
+   "time_keys": {
+    "event_time": "시행일",
+    "announced_at": "공포일",
+    "available_at": "공포일",
+    "ingested_at": null,
+    "version": "개정 이력"
+   },
+   "intraday_confirm_and_T0_T1": "—",
+   "history_start_and_limits": "연도별 개정 이력(법령정보센터)",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "없음(공개)",
+   "rate_limit": "—",
+   "license_redistribution": "공공 법령",
+   "repo_evidence": [
+    "e9a22ee:lab.py:39 COST=0.25(어림)"
+   ],
+   "existing_history": "없음(어림 상수뿐)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NOT_VERIFIED",
+   "gap": "법령 본문을 직접 열지 못해 연도별 값 표를 확정 못 함(검색 요약에 코스닥 2026 0.20% 조문 · 2023~24 코스닥 값은 추정)",
+   "minimal_approval": "법령 본문으로 표를 확정하는 읽기 단계(승인 불필요, 열람 경로 필요)",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "국가법령정보센터 증권거래세법 시행령(제5조 탄력세율) · 정책브리핑 세제개편",
+     "url": "https://www.law.go.kr/LSW/lsRvsDocListP.do?lsId=005028&chrClsCd=010102",
+     "how": "검색 요약(법령 본문 직접 열람 못 함)",
+     "ref": "LAW"
+    }
+   ]
+  },
+  {
+   "id": "A5-2",
+   "item": "A5",
+   "sub": "수수료(실전 · 모의)",
+   "provider": "한국투자증권",
+   "min_fields": [
+    "요율",
+    "적용기간",
+    "최소 수수료"
+   ],
+   "primary_key": "(계좌 종류, 적용 시작)",
+   "time_keys": {
+    "event_time": null,
+    "announced_at": null,
+    "available_at": null,
+    "ingested_at": null,
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "—",
+   "history_start_and_limits": "—",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "—",
+   "rate_limit": "—",
+   "license_redistribution": "—",
+   "repo_evidence": [],
+   "existing_history": "없음",
+   "obtainable": "NOT_VERIFIED",
+   "verdict": "NOT_VERIFIED",
+   "gap": "공식 요율 문서를 확인하지 못함",
+   "minimal_approval": "사용자 계좌의 수수료 체계 확인(값은 비식별 요율만)",
+   "evidence": []
+  },
+  {
+   "id": "A5-3",
+   "item": "A5",
+   "sub": "가격제한폭 · 호가단위",
+   "provider": "KRX 규정",
+   "min_fields": [
+    "가격제한폭",
+    "호가가격단위표",
+    "적용 시작"
+   ],
+   "primary_key": "(시장, 적용 시작)",
+   "time_keys": {
+    "event_time": "시행일",
+    "announced_at": null,
+    "available_at": null,
+    "ingested_at": null,
+    "version": "개정"
+   },
+   "intraday_confirm_and_T0_T1": "—",
+   "history_start_and_limits": "—",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "없음(공개)",
+   "rate_limit": "—",
+   "license_redistribution": "공개 규정",
+   "repo_evidence": [
+    "e9a22ee:lab.py:1271 locked(종가 변동폭 어림)"
+   ],
+   "existing_history": "없음",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NOT_VERIFIED",
+   "gap": "±30%와 절사 규칙은 확인, 호가단위표 · 개정일은 확인 못 함",
+   "minimal_approval": "규정 본문 읽기(승인 불필요)",
+   "evidence": [
+    {
+     "grade": "E2s",
+     "doc": "KRX 규정(가격제한폭 ±30%, 호가단위 절사)",
+     "url": "https://regulation.krx.co.kr/contents/RGL/03/03020201/RGL03020201.jsp",
+     "how": "검색 요약",
+     "ref": "REG"
+    }
+   ]
+  },
+  {
+   "id": "A5-4",
+   "item": "A5",
+   "sub": "유동성 · 시장충격",
+   "provider": "KIS 호가 조회(실시간)",
+   "min_fields": [
+    "호가 잔량",
+    "스프레드"
+   ],
+   "primary_key": "(code, 시각)",
+   "time_keys": {
+    "event_time": "시각",
+    "announced_at": null,
+    "available_at": "조회 시각",
+    "ingested_at": "새로 기록",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "실시간만(과거 없음, 저장소 주석 E4)",
+   "history_start_and_limits": "과거 이력 없음",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "API key",
+   "rate_limit": "NOT_VERIFIED",
+   "license_redistribution": "NOT_VERIFIED",
+   "repo_evidence": [],
+   "existing_history": "없음",
+   "obtainable": "NOT_VERIFIED",
+   "verdict": "NOT_VERIFIED",
+   "gap": "과거 호가 이력 출처 없음 → 앞으로 쌓거나 거래대금 비율 규칙으로 대신(새 규칙 결정 필요)",
+   "minimal_approval": "충격 비용 모형 결정(사용자 · GPT)",
+   "evidence": []
+  },
+  {
+   "id": "A6-1",
+   "item": "A6",
+   "sub": "거래일 달력",
+   "provider": "KRX(휴장일)",
+   "min_fields": [
+    "date",
+    "개장 여부"
+   ],
+   "primary_key": "date",
+   "time_keys": {
+    "event_time": "date",
+    "announced_at": "연간 공표",
+    "available_at": "공표일",
+    "ingested_at": null,
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "—",
+   "history_start_and_limits": "NOT_VERIFIED",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "—",
+   "auth_kind": "—",
+   "rate_limit": "—",
+   "license_redistribution": "—",
+   "repo_evidence": [
+    "e9a22ee:idle_live.py:50(직접 적은 휴장일)",
+    "e9a22ee:collect_kis_intraday.py:71(그날 1분봉 유무로 판단)"
+   ],
+   "existing_history": "어림만",
+   "obtainable": "NOT_VERIFIED",
+   "verdict": "NOT_VERIFIED",
+   "gap": "공식 휴장일 출처 미확인 · A1-3을 받으면 날짜 목록이 곧 달력",
+   "minimal_approval": "A1-3 승인으로 해결 가능",
+   "evidence": []
+  },
+  {
+   "id": "A6-2",
+   "item": "A6",
+   "sub": "지수(코스피 · 코스닥) 일별",
+   "provider": "한국투자증권 업종 지수",
+   "min_fields": [
+    "date",
+    "close"
+   ],
+   "primary_key": "(지수, date)",
+   "time_keys": {
+    "event_time": "date",
+    "announced_at": null,
+    "available_at": null,
+    "ingested_at": "없음",
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "알 수 없음",
+   "history_start_and_limits": "2017~(수집기 설명)",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": "덮어씀",
+    "corp_action": null
+   },
+   "adjustment": "지수는 조정 없음",
+   "auth_kind": "API key",
+   "rate_limit": "—",
+   "license_redistribution": "NOT_VERIFIED",
+   "repo_evidence": [
+    "e9a22ee:collect_kis_extra.py:8,145",
+    "e9a22ee:broker_kis.py:565-573"
+   ],
+   "existing_history": "보유(available_at 없음)",
+   "obtainable": "AVAILABLE_PUBLIC_OFFICIAL",
+   "verdict": "NOT_VERIFIED",
+   "gap": "받은 시각 · 판 없음",
+   "minimal_approval": "A1-2와 같은 append-only 기록 승인에 포함",
+   "evidence": []
+  },
+  {
+   "id": "A6-3",
+   "item": "A6",
+   "sub": "calm cutoff · 일/월 TWR · daily MTM MDD 입력",
+   "provider": "A1 원주가 + A4 체결 + REPLAY-0001 커널",
+   "min_fields": [
+    "원주가 종가",
+    "체결",
+    "입출금"
+   ],
+   "primary_key": "—",
+   "time_keys": {
+    "event_time": "date",
+    "announced_at": null,
+    "available_at": "A1 · A4를 따름",
+    "ingested_at": null,
+    "version": null
+   },
+   "intraday_confirm_and_T0_T1": "—",
+   "history_start_and_limits": "—",
+   "includes_delisted_halt_correction_corpaction": {
+    "delisted": null,
+    "halt": null,
+    "correction": null,
+    "corp_action": null
+   },
+   "adjustment": "원주가 필요",
+   "auth_kind": "—",
+   "rate_limit": "—",
+   "license_redistribution": "—",
+   "repo_evidence": [
+    "REPLAY-0001 account_kernel.py(63e47a1)",
+    "REPLAY-0002 GAPS G4"
+   ],
+   "existing_history": "없음",
+   "obtainable": "—",
+   "verdict": "NEEDS_USER_APPROVAL",
+   "gap": "calm 문턱을 지난 자료만으로 정하는 규칙 결정 + A1 · A4 입력",
+   "minimal_approval": "calm 규칙 결정(사용자 · GPT) + A1-2 · A4-1 승인",
+   "evidence": []
+  }
+ ],
+ "kis_dart_gate": {
+  "Q1_DART_PIT": {
+   "answer": "부분적. rcept_no와 접수일은 받을 수 있으나 접수 시각이 list.json에 없고, 정정 공시가 원 공시를 가리키는 필드가 없음. 과거 시점의 '정정 전' 상태는 지금 다시 받아도 재현되지 않음 → 앞으로 판을 남기며 쌓아야 함",
+   "verdict": "NEEDS_USER_APPROVAL"
+  },
+  "Q2_KIS_ALIGN": {
+   "answer": "일 단위로는 같은 규칙(장 마감 → 다음 거래일 사용, 수급 · 공시도 다음 거래일)으로 정렬 가능. 그러나 지금 자료에는 받은 시각 · 판이 없고, 장중 자료는 과거 이력이 없음",
+   "verdict": "NEEDS_USER_APPROVAL"
+  },
+  "Q3_ABLATION_MIN_INPUT": {
+   "answer": "아직 없음. Universe(t)(A2-1)와 상장폐지 종목 가격(A1-3)이 저장소에 0이라 KIS 단독 · DART 단독 · 결합을 같은 표본에서 비교할 수 없음",
+   "verdict": "NEEDS_USER_APPROVAL"
+  },
+  "Q4_WHAT_MISSING": [
+   "KRX Open API 키 · 일별매매정보 활용 승인(A1-3 · A2-1 · A6-1)",
+   "원주가 · 공시 판을 append-only로 남기는 수집 변경 승인(A1-2 · A2-3 · A3-1 · A6-2)",
+   "모의 체결조회 기록 · 원 주문번호 비공개 처리 승인(A4-1)",
+   "calm 규칙 결정(A6-3)",
+   "거래세 · 수수료 · 호가단위 공식 표 확정(A5, 읽기만 필요)",
+   "KIND/정보데이터 이용 조건 확인(A2-2)",
+   "전향적 수집 기간: 위 승인 뒤 최소 몇 달(Universe · 공시 판은 과거로 되돌릴 수 없음)"
+  ]
+ },
+ "summary": {
+  "AVAILABLE_EXISTING_READONLY": [],
+  "AVAILABLE_PUBLIC_OFFICIAL": [],
+  "NEEDS_USER_APPROVAL": [
+   "A1-2",
+   "A1-3",
+   "A2-1",
+   "A2-2",
+   "A2-3",
+   "A3-1",
+   "A4-1",
+   "A4-2",
+   "A6-3"
+  ],
+  "NEEDS_PAID_OR_LICENSED_SOURCE": [],
+  "NOT_VERIFIED": [
+   "A1-1",
+   "A5-1",
+   "A5-2",
+   "A5-3",
+   "A5-4",
+   "A6-1",
+   "A6-2"
+  ]
+ },
+ "paper_validation_ready": false,
+ "live_approval": false
+}

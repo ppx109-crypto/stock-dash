@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "input_pr": 26,
+  "input_head_sha": "9bfc62720e1e89b10552268a997bbb6766c9aa48",
+  "source_pr": 25,
+  "source_head_sha": "bb188d57827341463efc24aec9a05c9cd88329f8",
+  "task_id": "SOURCE-0001",
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/SOURCE-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/SOURCE-0001/manifest.json",
+  "result_branch": "claude/source-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "processed_at_kst": "2026-10-08T09:22:19+09:00"
+}
