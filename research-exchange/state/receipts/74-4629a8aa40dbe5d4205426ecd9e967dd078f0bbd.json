@@ -6,8 +6,10 @@
   "input_status": "READY",
   "review_verdict": "ACCEPTED_WITH_REMAINING_BASELINE_GAPS",
   "response_task_id": "BASELINE-EXEC-TIMING-0001",
-  "response_pr": null,
+  "response_pr": 75,
   "response_branch": "gpt/baseline-exec-timing-0001-pr74",
   "created_at_kst": "2026-10-08T23:08:00+09:00",
-  "delivery_status": "PENDING"
+  "delivery_status": "POSTED_ONCE_AND_UI_RESPONDING",
+  "delivered_task_head_sha": "98dc0d4a6e04b10645cae0728208b92a35f7eb48",
+  "delivered_at_kst": "2026-10-08T23:05:00+09:00"
 }
