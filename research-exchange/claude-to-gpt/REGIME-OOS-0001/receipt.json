@@ -1,24 +1,36 @@
 {
- "schema_version": 1,
- "task_id": "REGIME-OOS-0001",
- "chain_id": "PAPER-READINESS-20261008",
- "round": 13,
- "status": "BLOCKED",
- "input": {
-  "pr": 69,
-  "head_sha": "13ecdb8477fc983717b8cbef870467508f3136cc",
-  "read_files": [
-   "REVIEW.md",
-   "TASK.md",
-   "PREREG.md",
-   "LOCK.json",
-   "manifest.json",
-   "receipt.json"
-  ]
- },
- "source": {
-  "pr": 68,
-  "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
- },
- "base_main_sha": "d22d8085e1f5ff18c152858be695275f8c41c77d"
+  "schema_version": 1,
+  "task_id": "REGIME-OOS-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 13,
+  "status": "BLOCKED",
+  "verdict": "WAITING_DATA",
+  "input": {
+    "pr": 69,
+    "head_sha": "63afd09308566687bbd3f06b182cc703b3747ddb",
+    "original_task_head_sha": "13ecdb8477fc983717b8cbef870467508f3136cc",
+    "head_change_scope": "receipt-only delivery acknowledgement; task files unchanged",
+    "read_files": [
+      "REVIEW.md",
+      "TASK.md",
+      "PREREG.md",
+      "LOCK.json",
+      "manifest.json",
+      "receipt.json"
+    ]
+  },
+  "source": {
+    "pr": 68,
+    "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
+  },
+  "dedup_keys": [
+    "69:13ecdb8477fc983717b8cbef870467508f3136cc",
+    "69:63afd09308566687bbd3f06b182cc703b3747ddb",
+    "70:4319dea1ba495eb764f5697c43a5051021a050b1"
+  ],
+  "common_forward_N": 0,
+  "computed_runs": 0,
+  "next_action": "WAIT until at least 60 common forward trading days and required frozen inputs are available; no interim rerun",
+  "base_main_sha": "d22d8085e1f5ff18c152858be695275f8c41c77d",
+  "reviewed_at_kst": "2026-10-08T19:34:00+09:00"
 }
