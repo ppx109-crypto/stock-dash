@@ -1,0 +1,196 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-RISK-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "REGIME-RISK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 12,
+  "status": "READY",
+  "input": {
+   "pr": 67,
+   "head_sha": "230af27ace32bcff02239110c44ddba43bd9ef7b",
+   "read_files": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "GPT_SCREEN.json",
+    "manifest.json",
+    "receipt.json"
+   ]
+  },
+  "fixed_evidence": {
+   "pr": 41,
+   "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa"
+  },
+  "base_main_sha": "d22d8085e1f5ff18c152858be695275f8c41c77d"
+ },
+ "prereg_commit": "2c1f10c6294a671955fa767816202f45741175d6",
+ "prereg_committed_at_kst": "2026-10-08T19:13:06+09:00",
+ "commands": [
+  "MR_D1PICKS=<d1_picks.json> python3 -E -P code/rr_m15.py <b3> <출력>",
+  "python3 -E -P code/rr_daily.py <b2> <nrl-cache.pkl> <출력> <PR66 blend_P4.csv>"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "os": "Linux x86_64"
+ },
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1",
+  "pr66_blend_P4_sha256": "b66c1e9fae567fb2d9efcdefbbc1b37d18339f7715868a4373c53532d1d42b5a"
+ },
+ "intermediate_not_committed": {
+  "m15_natural.pkl": {
+   "sha256": "61101d86b2032f4a9394830006f69afc48f5c9fdf3dc52da71b42e3550877a02",
+   "bytes": 12117361,
+   "why": "12MB 봉 자료 · 재현 명령 1로 다시 만들 수 있음"
+  }
+ },
+ "runs": {
+  "portfolio_runs": 2,
+  "component_engine_runs": "D1 x1(빈칸 투자비율용) · D1 · 빈칸 · 바구니 · M15 통제 각 1",
+  "failed": 0
+ },
+ "criteria": {
+  "inputs_timing_conservation": true,
+  "day_ok": true,
+  "month_ok": true,
+  "mdd_ok": true,
+  "end_gt_10m": true
+ },
+ "verdict": "TRAIN_CANDIDATE_LOCKED",
+ "weakness": "실효 노출/의도 노출 D1 0.83 · M15 0.69 · 바구니 0.60(정수 0주) · 자르기 시험 미실시 · seed 0 한 경로 · 현금 시작 통제",
+ "candidate": {
+  "end_won": 14891973.12644649,
+  "CAGR_pct": 52.07171204940639,
+  "MDD_pct": -6.186793787034139,
+  "worst_day_pct": -3.7027833211968675,
+  "worst_month_pct": -4.565929566471905,
+  "day_breach_-15": 0,
+  "month_breach_-15": 0
+ },
+ "control": {
+  "end_won": 17476432.673979506,
+  "CAGR_pct": 79.97172020264733,
+  "MDD_pct": -24.390309211255722,
+  "worst_day_pct": -9.882227463575799,
+  "worst_month_pct": -14.890827084512159
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/candidate_trades.json",
+  "evidence/control_trades.json",
+  "evidence/daily.log",
+  "evidence/m15.log",
+  "evidence/nav_control_candidate.csv",
+  "evidence/rr_results.json"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "bce9081f79ee50b92aba41eae05576b3d969f661abe2337394043933acd58bfe"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "1397b51f74fcd489945036da5b66fb739668e68cc328b02a1ebeabb7b59d6a77"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "622eca9c9a4314ba704bc7f9cbb21cc1f7b0f094b4d70a84789c4ee751a67201"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/daily_exec.py",
+   "sha256": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/orig/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/orig/daily_exec.py",
+   "sha256": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9"
+  },
+  {
+   "path": "code/orig/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/orig/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/orig/rs_m15_pr62.py",
+   "sha256": "fc383cfc357c279f3e38c793bc14a9d635a9c94fb388a8a72baf339bbe1cdc22"
+  },
+  {
+   "path": "code/orig/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "code/rr_daily.py",
+   "sha256": "bad2f70617c00d77c414ffa018ded0d98e8916bcde9f4d0a2a174aeee55bf12a"
+  },
+  {
+   "path": "code/rr_m15.py",
+   "sha256": "72d5eb84fd456539f3d3ee116400d4d6befc11498324688b8ed086f97f57ce93"
+  },
+  {
+   "path": "code/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "evidence/candidate_trades.json",
+   "sha256": "1be20f8faa80afb07a5a257031707c8cceb921655be9fd1db6808a2ce455efc3"
+  },
+  {
+   "path": "evidence/control_trades.json",
+   "sha256": "880a277bad0fa0eaebd34cdd9dc9c7acab9a4d4c511f97570e488190c5561ad3"
+  },
+  {
+   "path": "evidence/daily.log",
+   "sha256": "e6b1c106ecebb28ddeffff966b59e349f866703093c7e23e2c734f0ab8986692"
+  },
+  {
+   "path": "evidence/m15.log",
+   "sha256": "420acc67d9fe87eb6db375613cf72763c6b44d21060fb1a6e09addd3e48b361c"
+  },
+  {
+   "path": "evidence/nav_control_candidate.csv",
+   "sha256": "2c3b4bceccf7a5f45fe0f46e0197dac437bca8dbe5c56c6e71e23acfef1577b1"
+  },
+  {
+   "path": "evidence/rr_results.json",
+   "sha256": "8fa8f32bd3627c6c6a484fb35f912eb25eae454f1cb79a92b164d8994af8a2d8"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "485c498ae6e3a7c4edd1d544547d4f9b1478db5666b7e4aeb7d0d56fc594ae13"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/regime-risk-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T19:21:06+09:00"
+}
