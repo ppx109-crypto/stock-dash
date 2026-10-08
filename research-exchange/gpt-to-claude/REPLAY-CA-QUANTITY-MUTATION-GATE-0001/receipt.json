@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-QUANTITY-MUTATION-GATE-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 35,
+  "status": "READY",
+  "source_pr": 112,
+  "source_head_sha": "9e88dba81bc3e702dad2478b4cf3e86e99e691c5",
+  "source_state": "open",
+  "source_draft": false,
+  "source_merged": false,
+  "source_result_status": "READY",
+  "response_branch": "research-exchange/gpt-to-claude/replay-ca-quantity-mutation-gate-0001",
+  "result_pr": null,
+  "detected_at": "2026-10-09T02:49:31+09:00",
+  "reviewed_at": "2026-10-09T02:50:32+09:00",
+  "dedup_key": "112:9e88dba81bc3e702dad2478b4cf3e86e99e691c5",
+  "scope": "synthetic semantic quantity-mutation fail-closed gate independent of kind labels",
+  "actual_events": 0,
+  "performance_verified": false,
+  "paper_validation_ready": false,
+  "delivery": {
+    "target": "existing_designated_session_only",
+    "status": "PENDING",
+    "delivered_at": null,
+    "acknowledged": false
+  }
+}
