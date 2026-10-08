@@ -1,0 +1,193 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-INPUT-PROVENANCE-AUDIT-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 36,
+ "status": "READY",
+ "source_pr": 114,
+ "source_head_sha": "6261e5a100607b36fa033b8a2ce710482cf8ccfa",
+ "code_commit": "9e8aa26f7bfb6cb842633435642c5a9e063c9d67",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "TRACE.md",
+  "GAPS.json",
+  "INVENTORY.json",
+  "code/audit_inventory.py",
+  "code/redact_paths.py",
+  "evidence/search-counts.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:14:03+09:00",
+ "input": {
+  "pr": 115,
+  "head_sha": "9e5187bef4acc7d03114e0d902b6c599860292fc",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T03:01:02+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "6261e5a100607b36fa033b8a2ce710482cf8ccfa"
+   },
+   {
+    "at_kst": "2026-10-09T03:07:16+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "6261e5a100607b36fa033b8a2ce710482cf8ccfa"
+   },
+   {
+    "at_kst": "2026-10-09T03:14:03+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "6261e5a100607b36fa033b8a2ce710482cf8ccfa"
+   }
+  ],
+  "source_blobs_match_gpt_prereg": {
+   "code": "58417375acbef990dfc6726af7090a471a9d7a18",
+   "evidence": "02f65d3c797d988315880cf08cbdbfbc5c72915f",
+   "report": "cd34b51f9ffc8fd6bf759ee510ed76f6f43f3544",
+   "manifest": "cb6b623762c31904aad504b4e0b8b6f937c5c122",
+   "receipt": "c0e6a6ca11ad04ed1bc1a069c56bd9e5bf8f384f"
+  }
+ },
+ "prereg_commit": "e9fcacdf91d4f9c980580e08b77c608cb75d7c8c",
+ "prereg_committed_at_kst": "2026-10-09T03:07:56+09:00",
+ "verdict": "READY(정적 감사 완결) / 고정 14개 3,025행 미분류 0 · 5칸 TRACE 모두 첫 단절점(변환기 없음 또는 생산자 없음) · 9칸 GAPS: PRESENT_VERIFIED 0 · CONFLICTING 4(날짜·m_qty·가격 기준·kind) · 실제 Train 연결 ABSENT · 실제 사건 0",
+ "inventory_summary": {
+  "rows_total": 5586,
+  "rows_fixed14": 3025,
+  "rows_supp9": 2561,
+  "unclassified": 0,
+  "fixed14_by_class": {
+   "doc": 483,
+   "consumer": 477,
+   "test": 514,
+   "data": 1434,
+   "transformer": 90,
+   "producer": 27
+  },
+  "fixed14_by_scope": {
+   "S1": 1234,
+   "S2": 1791
+  },
+  "fixed14_S1_ca_relevant_actual": 9,
+  "files_hashed": 1469,
+  "repo_code_executed": 0,
+  "external_calls": 0
+ },
+ "gaps": {
+  "source_event_id": {
+   "status": "PRESENT_UNLINKED",
+   "flags": [
+    "NEEDS_DATA"
+   ],
+   "first_break": "dart-events 줄의 rcept_no → 게이트 src로 옮기는 변환기 없음(실제 경로 0)"
+  },
+  "revision_lineage": {
+   "status": "PRESENT_UNLINKED",
+   "flags": [
+    "NEEDS_DATA"
+   ],
+   "first_break": "원천 자료에 정정 계보 칸 자체가 없음"
+  },
+  "available_at_and_timezone": {
+   "status": "PRESENT_UNLINKED",
+   "flags": [
+    "NEEDS_DATA"
+   ],
+   "first_break": "원천에 시각이 없음 → 게이트는 받지도 않음"
+  },
+  "apply_effective_date": {
+   "status": "CONFLICTING",
+   "flags": [
+    "NEEDS_DATA"
+   ],
+   "first_break": "어느 원천 날짜가 apply_date인지 정의가 갈림(게이트 1칸 vs 계약 4칸) · 변환기 없음 · PR94 가격 기준일 규칙 BLOCKED"
+  },
+  "m_qty_and_basis": {
+   "status": "CONFLICTING",
+   "flags": [
+    "NO_PRODUCER(split·reverse_split)",
+    "NEEDS_DATA"
+   ],
+   "first_break": "원천 배수 칸 → m_qty 변환기 없음. 계약끼리도 충돌: PR102는 bonus_issue를 거부, PR114는 받음 · PR88 ratio(float)는 게이트가 BLOCKED_INPUT"
+  },
+  "m_price_and_basis": {
+   "status": "PRESENT_UNLINKED",
+   "flags": [
+    "NO_PRODUCER"
+   ],
+   "first_break": "생산자 없음(원천 단계)"
+  },
+  "raw_vs_adjusted_price_basis": {
+   "status": "CONFLICTING",
+   "flags": [],
+   "first_break": "게이트는 원주가 장부를 가정 · 실제 Train 가격은 이미 수정됨 → 그대로 붙이면 이중 조정"
+  },
+  "kind_and_non_reciprocal_effects": {
+   "status": "CONFLICTING",
+   "flags": [
+    "NEEDS_DATA"
+   ],
+   "first_break": "한글 갈래 → 영문 kind 대응표 없음 · 현금 · 신주 · 다른 회사 주식이 생기는 사건은 역수 쌍 모델로 표현 불가"
+  },
+  "train_event_position_nav_link": {
+   "status": "ABSENT",
+   "flags": [
+    "NO_ACTUAL_EVENT"
+   ],
+   "first_break": "게이트를 부르는 실제 Train · 장부 · NAV 경로 없음"
+  }
+ },
+ "next_single_gap": "raw_vs_adjusted_price_basis — 실제 일봉은 수정주가(broker_kis.py:300-312) · 기업행위 장부는 원주가 가정(GATE:123)",
+ "rebuttal": "고정 14개에 rcept_no · FID_ORG_ADJ_PRC · nstk_ascnt가 없어 그것만으로는 m_qty 원천이 없는 것처럼 보임 — 실제로는 원천 · 생산자가 있고 변환기가 없음(보충 검색어는 실행 전 사전등록에 공개)",
+ "disclosure": {
+  "pre_prereg_exploration": "03:01~03:07 검색어 수 · 일부 줄 · dart-events 칸 이름 열람(PREREG 공개)",
+  "post_run_redaction": "경로 6자리 종목 코드 2,661행 가림(redact_paths.py · 감사 재실행 아님)",
+  "pre_run_code_change": "git -c core.quotePath=false 추가(사전등록 뒤 · 공식 실행 전)"
+ },
+ "file_sha256": {
+  "PREREG.md": "39401206835450088ebfc11c5b996bf743b3b385b03e8b2bed71ad9edadde2aa",
+  "REPORT.md": "b1aaccaf654a2e0191f04f6d5b61ae4bdc9c64b266e2bc3af8b180c1ba4b7ece",
+  "TRACE.md": "4d399cabc93b2cd1f4a5df81fa9fe03d11d76918689c0f830ba35b2189848c6c",
+  "GAPS.json": "cb1375ec77925c11b69e897faf31d830537f2f6989299a3704b967351e46a9f5",
+  "INVENTORY.json": "6cf88288e90917e0fd0b7710dae3d012de691a63ab7db0af66562481ecbea6d8",
+  "code/audit_inventory.py": "a7ab80a8efcbdceb89cd354eb4493a5a3f01f8f16cf24f4ba805d648f3ddcb85",
+  "code/redact_paths.py": "9a1ce92a9c3589ef3b34ee7a6aacbdcd9165c06a09690ecfd401559645d90195",
+  "evidence/search-counts.json": "bbbd4f021279828fbd3edd2b1f73da0642575656ce668867b1db50cba3df3ef3",
+  "evidence/run.log": "2c9341c20b91e948ce03b26ee3dbe2b2c6f220c73c809bb3781a24701554b491"
+ },
+ "runs": {
+  "official_runs": 1,
+  "cap": 1,
+  "repo_code_executed": 0,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "code_modification": 0,
+  "orders": 0,
+  "operations": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "code_execution": 0,
+ "performance_verified": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
