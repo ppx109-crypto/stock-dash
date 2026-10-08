@@ -11,7 +11,7 @@
   - 실제 성과 산출 · 가격기준 선택 · KIS · 운영 · 기존 파일 수정 · 주문 · 자동병합도 0입니다.
 
 ## 무엇을 바꿨나(PR #122 복사본 대비 · diff로 확인)
-`perf_gate`에 분기 **한 개(2줄)**만 넣었습니다. 나머지는 PR #122와 글자 그대로 같습니다.
+`perf_gate`에 분기 **한 개(2줄)**만 넣었습니다. 나머지는 PR #122와 같습니다(하네스 조각 끝의 빈 줄 1개 차이만 있음).
 
 - 순서: `blocked_from` → invalid 스냅숏 → **빈 스냅숏** → 정상 지표
 - `ledger.snaps`가 비었으면 `{status: PERF_BLOCKED, from: null, reason: NO_SNAPSHOTS}`를 돌려줍니다. 지표 4칸은 null입니다.
