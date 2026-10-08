@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-QUOTE-BASIS-GATE-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 38,
+  "status": "READY",
+  "source_pr": 118,
+  "source_head_sha": "c8826304387ae99f92adf09bedc0b1997618d703",
+  "source_status": "READY",
+  "reviewed_at_kst": "2026-10-09T03:25:54+09:00",
+  "duplicate_check": {
+    "pair": "118:c8826304387ae99f92adf09bedc0b1997618d703",
+    "existing_response_pr": null
+  },
+  "scope": "offline synthetic day-level quote price-basis fail-closed gate only",
+  "prohibited": [
+    "external API/data collection",
+    "actual events/prices/positions/NAV",
+    "operations/orders",
+    "strategy/allocation/workflow/auth changes",
+    "threshold/alpha search",
+    "auto-merge"
+  ],
+  "completion": [
+    "Q1-Q8 fixed cases",
+    "quote gate before event/quote/snapshot mutation",
+    "one official run",
+    "READY/BLOCKED only"
+  ],
+  "result_pr": null
+}
