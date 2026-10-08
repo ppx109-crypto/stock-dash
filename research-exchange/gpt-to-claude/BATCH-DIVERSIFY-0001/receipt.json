@@ -3,15 +3,21 @@
   "task_id": "BATCH-DIVERSIFY-0001",
   "chain_id": "MAX-RETURN-20261008",
   "round": 7,
-  "status": "QUEUED_ACKNOWLEDGED",
-  "source_pr": 55,
-  "source_head_sha": "b4166452e95778dd892fce3a793aea652401492a",
+  "status": "READY_TO_RUN",
+  "source_pr": 57,
+  "source_head_sha": "144594599a5af59fd7823821e69c3c8dcea22c58",
   "source_status": "READY",
-  "dedup_key": "55:b4166452e95778dd892fce3a793aea652401492a",
+  "source_history": [
+    {"pr": 55, "head_sha": "b4166452e95778dd892fce3a793aea652401492a", "receipt": "QUEUED_ACKNOWLEDGED"},
+    {"pr": 57, "head_sha": "144594599a5af59fd7823821e69c3c8dcea22c58", "verdict": "RL-RULE-0001 개선 없음"}
+  ],
+  "dedup_keys": [
+    "55:b4166452e95778dd892fce3a793aea652401492a",
+    "57:144594599a5af59fd7823821e69c3c8dcea22c58"
+  ],
   "result_pr": 56,
   "delivered_to_existing_session": true,
-  "delivery_note": "기존 지정 세션이 PR #56을 대기열로 접수했다고 확인. 현재 사용자 직접 지시 RL 계산 완료와 GPT 검토 전에는 실행하지 않음.",
+  "delivery_note": "PR #56은 기존 지정 세션에서 대기열 접수됨. PR #57 검토 후 실행 승인으로 갱신.",
   "created_at_kst": "2026-10-08T18:04:00+09:00",
-  "queued_at_kst": "2026-10-08T18:06:00+09:00",
-  "acknowledged_at_kst": "2026-10-08T18:08:00+09:00"
+  "activated_at_kst": "2026-10-08T18:12:00+09:00"
 }
