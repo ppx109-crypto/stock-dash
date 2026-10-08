@@ -1,0 +1,56 @@
+{
+ "A": {
+  "verdict": "ACCEPT",
+  "kept_from_pr98": true,
+  "contradiction_in_pr99_packet": false
+ },
+ "B": {
+  "version_identifiers": {
+   "S1_header": "`유가증권시장 업무규정 시행세칙 [일부개정 2024.10.29 규정 제2256호 <시행일:2024.11.4>]`",
+   "S1_buchik": "`부칙<제2256호, 2024.10.29>`",
+   "S1_buchik_art1": "`제1조(시행일) 이 세칙은 2024년 11월 4일부터 시행한다.`",
+   "S2_list": "`유가증권시장 업무규정 시행세칙 [일부개정, 2024.10.29, 제2256호]`",
+   "S3_recent": "`규정 제2256호 유가증권시장 업무규정 시행세칙 2024.10.29`"
+  },
+  "article_text": "주식분할 또는 주식병합된 종목은 전일종가에 분할 또는 병합의 비율을 곱한 가격으로 한다.",
+  "article_text_present_in_block": {
+   "S1": false,
+   "S2": false,
+   "S3": false,
+   "S4": true
+  },
+  "packet_limits": {
+   "S1": "한계: 이번 고정 응답에서 제30조 제1항 제6호 정확 문장은 머리글과 같은 검색 블록에 노출되지 않았다.",
+   "S2": "한계: 목록 메타이며 제30조 문구 없음.",
+   "S3": "한계: 개정 목록 메타이며 제30조 문구 없음.",
+   "S4": "핵심 한계: S1의 규정 제2256호 머리글/부칙과 S4가 같은 크롤본 또는 같은 시행본이라는 직접 메타가 아직 없다."
+  },
+  "accept_evidence": {
+   "1_text_inside_2256_version": false,
+   "2_header_and_text_same_response": false,
+   "3_same_crawl_meta": false
+  },
+  "date_compare": {
+   "amend": "2024-10-29",
+   "effective": "2024-11-04",
+   "train_start": "2025-09-18",
+   "effective_before_train": true
+  },
+  "new_vs_pr98": "부칙<제2256호> 제1조(시행일 2024-11-04)가 머리글 밖에서 직접 확인 · 공식 목록 2곳(S2 · S3)도 제2256호 = 2024.10.29 · 그러나 제6호 문구와의 결속은 그대로 없음",
+  "verdict": "REVISE",
+  "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX"
+ },
+ "needs_data": "규정 제2256호(시행 2024-11-04) 시행본 또는 그 머리글/부칙과 같은 공식 색인 응답 안에 있는 제30조 제1항 제6호 정확 발췌 1건",
+ "excluded": [
+  "KOSDAQ",
+  "비율 방향",
+  "가격 기준일",
+  "거래재개일",
+  "최초 매도가능일",
+  "NAV",
+  "성과"
+ ],
+ "packet_sha256": "0d7e80fc52f4ecceffbfa84528086ae1cac6cc753c0fc1db2d4139fc3318be2c",
+ "network_calls": 0,
+ "status": "BLOCKED"
+}

@@ -1,0 +1,3 @@
+== 오프라인 결속 판정(bind_check.py) — 네트워크 함수 막음 · 1회(상한 2)
+입력: PR99 SOURCE_PACKET sha256 0d7e80fc52f4ecceffbfa84528086ae1cac6cc753c0fc1db2d4139fc3318be2c · PR98 evidence sha256 1d47e47a4763544dc0fd64c81c5804cd0ff1ebc1104fb6f913d838088f79bedb
+{"A": "ACCEPT", "B": "REVISE", "status": "BLOCKED", "accept_evidence": {"1_text_inside_2256_version": false, "2_header_and_text_same_response": false, "3_same_crawl_meta": false}, "text_in": {"S1": false, "S2": false, "S3": false, "S4": true}, "date_ok": true}
