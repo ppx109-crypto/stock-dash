@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "input_pr": 76,
+  "input_head_sha": "6933fdc57f4e5494be196ba62e7543f38c278e4c",
+  "task_id": "BASELINE-M15-TIMING-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 17,
+  "status": "READY",
+  "reviewed_at_kst": "2026-10-08T23:15:52+09:00",
+  "response_pr": 77,
+  "response_branch": "research-exchange/gpt-to-claude/baseline-m15-timing-0001",
+  "delivery_status": "POSTED_ONCE_AND_ACKNOWLEDGED",
+  "delivered_at_kst": "2026-10-08T23:19:33+09:00"
+}
