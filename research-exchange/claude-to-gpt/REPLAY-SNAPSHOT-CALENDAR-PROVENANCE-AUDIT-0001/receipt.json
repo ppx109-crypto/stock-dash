@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-SNAPSHOT-CALENDAR-PROVENANCE-AUDIT-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 41,
+ "status": "READY",
+ "source_pr": 124,
+ "source_head_sha": "13e031b32186aca7e1286bb4b9119bcd9cd39700",
+ "code_commit": "f7584168e0c6b40d93b09b0f89001c943d2ab5ad",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/search_counts.py",
+  "evidence/provenance-table.json",
+  "evidence/search-log.md",
+  "evidence/search-counts.json"
+ ],
+ "completed_at_kst": "2026-10-09T04:01:10+09:00",
+ "readiness": "NEEDS_DATA",
+ "input": {
+  "pr": 125,
+  "head_sha": "f4750d2af3bedf0fb1225b7361c4bf9b47eb2173"
+ },
+ "prereg_commit": "6dbe94cb9c09f76040aabe8113d177ae069853f4",
+ "actual_events": 0,
+ "external_calls": 0,
+ "code_executions": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
