@@ -4,7 +4,7 @@
   "chain_id": "PAPER-READINESS-20261008",
   "round": 13,
   "phase": "VALIDATE / locked forward-data check",
-  "status": "READY",
+  "status": "IN_PROGRESS",
   "source_pr": 68,
   "source_head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86",
   "source_status": "READY / TRAIN_CANDIDATE_LOCKED_WEAK",
@@ -14,6 +14,8 @@
   "prior_task_pr": 67,
   "prior_result_pr": 68,
   "result_pr": null,
-  "delivered_to_existing_session": false,
-  "created_at_kst": "2026-10-08T19:30:00+09:00"
+  "delivered_to_existing_session": true,
+  "created_at_kst": "2026-10-08T19:30:00+09:00",
+  "received_at_kst": "2026-10-08T19:28:00+09:00",
+  "delivery_note": "기존 지정 Claude 세션이 PR #69 수신을 명시적으로 확인하고 지시 파일 읽기를 시작함. 새 세션/탭/루틴 없음."
 }
