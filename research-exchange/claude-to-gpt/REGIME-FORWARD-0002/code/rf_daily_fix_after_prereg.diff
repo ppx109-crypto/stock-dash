@@ -1,0 +1,56 @@
+--- rf_daily_crashed.py	2026-10-08 13:15:43.386392185 +0000
++++ rf_daily.py	2026-10-08 13:15:52.062813772 +0000
+@@ -285,25 +285,24 @@
+             ZERO["M15"]["code_days"] += 1
+ 
+ 
++by_day = {}
+ for T in sorted(events):
+-    d = T[:8]
+-    if d != day:
+-        if day is not None and day in dix:
+-            close_day(day)
+-        day = d
+-    assert d in dix, T
++    assert T[:8] in dix, T
++    by_day.setdefault(T[:8], []).append(T)
++for d in WIN:                                            # 날마다 마감(그날 봉이 없어도 · 9월 통제 체결 0이면 봉 목록이 비어 있음)
+     i = dix[d]
+-    k = 1.0 if i == 0 else navC["M15"][i - 1] / navN["M15"][i - 1]
+-    for c, s, n in by_t.get(T, []):
+-        qn[c] = qn.get(c, 0) + (n if s == "buy" else -n)
+-    traded = {c for c, _, _ in by_t.get(T, [])}
+-    acts = [(c, o) for c, o, cl, first in events[T] if (c in traded or (first and (qn.get(c, 0) > 0 or rep.held(c) > 0)))]
+-    for side in ("sell", "buy"):
+-        for c, o in sorted(acts):
+-            rep.trade_to(c, math.floor(E[i] * k * qn.get(c, 0)), o, T, WIN[i - 1] if i else "start", side_only=side)
+-    for c, o, cl, first in events[T]:
+-        last_close[c] = cl
+-close_day(day)
++    for T in by_day.get(d, []):
++        k = 1.0 if i == 0 else navC["M15"][i - 1] / navN["M15"][i - 1]
++        for c, s, n in by_t.get(T, []):
++            qn[c] = qn.get(c, 0) + (n if s == "buy" else -n)
++        traded = {c for c, _, _ in by_t.get(T, [])}
++        acts = [(c, o) for c, o, cl, first in events[T] if (c in traded or (first and (qn.get(c, 0) > 0 or rep.held(c) > 0)))]
++        for side in ("sell", "buy"):
++            for c, o in sorted(acts):
++                rep.trade_to(c, math.floor(E[i] * k * qn.get(c, 0)), o, T, WIN[i - 1] if i else "start", side_only=side)
++        for c, o, cl, first in events[T]:
++            last_close[c] = cl
++    close_day(d)
+ REP["M15"] = rep
+ assert len(navC["M15"]) == len(WIN), len(navC["M15"])
+ print("후보 M15", round(navC["M15"][-1]), "매매", len(rep.trades), flush=True)
+@@ -379,6 +378,11 @@
+                      "daily_diff_mean_pp": statistics.mean(dd), "daily_diff_sd_pp": statistics.stdev(dd),
+                      "daily_diff_t": statistics.mean(dd) / (statistics.stdev(dd) / math.sqrt(len(dd))) if statistics.stdev(dd) > 0 else None,
+                      "ctrl_daily_sd_pp": statistics.stdev(rc), "cand_daily_sd_pp": statistics.stdev(rk), "n_days": len(dd)}
++RES["diagnostics"] = {"d1_picks_rows_by_day_sep": {d: len(G["PICKS"].get(d, [])) for d in WIN},
++                      "signal_path_fills_sep": {k: sum(1 for x in (LOG["S:" + k] if k != "M15" else MS["log"]) if str(x[0])[:8] >= "20260901") for k in SL},
++                      "signal_path_sep_return_pct": (P4S[-1] / P4S[SWIN.index("20260831")] - 1) * 100,
++                      "signal_path_sleeve_0831_0930": {k: [navS[k][SWIN.index("20260831")], navS[k][-1]] for k in SL},
++                      "control_E_D1x1_fills": len(LOG["E:D1x1"])}
+ c = RES["candidate"]
+ inv_ok = all(v[0] is not None and v[0] <= 1.0 and v[1] <= 1.0 for v in c["max_gap"].values()) and all((x or 0) > 0 for x in c["checks"].values())
+ RES["criteria_disclosed(완화 없음)"] = {"conservation": inv_ok, "day_ok": c["day_breach_-15"] == 0, "month_ok": c["month_breach_-15"] == 0,

@@ -1,0 +1,271 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-FORWARD-0002",
+ "status": "READY",
+ "verdict": "READY / INTERIM_FORWARD_DIAGNOSTIC",
+ "source": {
+  "schema_version": 1,
+  "task_id": "REGIME-FORWARD-0002",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 14,
+  "status": "READY",
+  "input": {
+   "pr": 71,
+   "head_sha": "9199574f94e5347a2d617ad05d1135e3a587e32f",
+   "read_files": [
+    "TASK.md",
+    "PREREG.md",
+    "receipt.json"
+   ]
+  },
+  "source": {
+   "pr": 70,
+   "head_sha": "5f32f9a31aedb061f2a2c67c963227849ef18ef5"
+  },
+  "fixed_rule": {
+   "pr": 68,
+   "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
+  },
+  "approval": "2026-10-08 20:52 KST user go: existing-data rebuild and September holdout single use",
+  "base_main_sha": "438ade6d017cec576f2bfbb599b7bab22202db13"
+ },
+ "prereg_commit": "85b5fc0d625d3544f06af7091569ea623fcf1a5e",
+ "prereg_committed_at_kst": "2026-10-08T22:09:35+09:00",
+ "commands": [
+  "python3 -E -P code/rf_cache.py <b2> <nrl-cache.pkl> <출력>",
+  "MR_D1PICKS=<d1_picks.json> python3 -E -P code/rf_m15.py <b3> <출력> <PR68 m15_natural.pkl>",
+  "python3 -E -P code/rf_daily.py <b2> <출력>/nrl-cache-rf.pkl <출력> <출력> <PR68 nav_control_candidate.csv>"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "os": "Linux x86_64"
+ },
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "old_nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "new_nrl_cache_rf_sha256": "168e1bde426a247136dbd417ab6d86a50e4fb68792247f39dee4e62703f18bec",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1",
+  "pr68_m15_natural_sha256": "61101d86b2032f4a9394830006f69afc48f5c9fdf3dc52da71b42e3550877a02",
+  "pr68_nav_control_candidate_sha256": "2c3b4bceccf7a5f45fe0f46e0197dac437bca8dbe5c56c6e71e23acfef1577b1"
+ },
+ "code_sha256": {
+  "common.py": "622eca9c9a4314ba704bc7f9cbb21cc1f7b0f094b4d70a84789c4ee751a67201",
+  "cost_contract.py": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae",
+  "daily_exec.py": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9",
+  "kernel2.py": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac",
+  "m15_exec.py": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1",
+  "rf_cache.py": "9ba5513267fb4620392d6174ea20e557f64c2984a5b720ead7be40d314e339ce",
+  "rf_calmscan.py": "953db36ed18109bc40ca46cf5c54ffaca6f34b4167d17555bf5aa350f9e32717",
+  "rf_daily.py": "8c582cee0cb42c07fcf50fc29a161053ed92bf4b90432ee4e3f377006c295a06",
+  "rf_m15.py": "dfacba65269e8ce50c7e552b97fe124fa97bd28e019f3890c8ad6fe61888d98c",
+  "rules.py": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+ },
+ "code_note": "rf_daily.py는 사전등록 뒤 한 번 고침(9c28f74c → 8c582cee): 15분봉 후보 장부를 날마다 마감 · 진단 칸 추가. diff는 code/rf_daily_fix_after_prereg.diff",
+ "intermediate_not_committed": {
+  "nrl-cache-rf.pkl": {
+   "sha256": "168e1bde426a247136dbd417ab6d86a50e4fb68792247f39dee4e62703f18bec",
+   "why": "321MB · 원 가격 포함 · 재현 명령 1로 다시 만듦"
+  },
+  "m15_signal.pkl": {
+   "sha256": "b4653ac386475b64ecb5d6a27bdc14e574459820b21e54ca4fa5eaee33bcd188",
+   "why": "체결 가격 포함 · 재현 명령 2"
+  },
+  "m15_eval.pkl": {
+   "sha256": "ac025547d87755ab997b0eed88b2d67a54d7b05cafface5cd4926f9cc23412a7",
+   "why": "재현 명령 2"
+  },
+  "trades_local_only.json": {
+   "sha256": "fbbda121369d30db2a024fbd44535dd4bafa43889c6fd5cccca7038844595ede",
+   "why": "종목 · 가격 원본 · 비공개"
+  }
+ },
+ "runs": {
+  "portfolio_runs": 2,
+  "component_engine_runs": "신호 경로(D1 x1 · D1 · 빈칸 · 바구니 · M15) 1 · 9월 평가(같은 다섯) 1",
+  "failed": 1,
+  "failed_note": "rf_daily 첫 실행: 15분봉 9월 통제 체결 0건에서 후보 장부 마감 1일치(AssertionError) · evidence/daily_first_crash.log"
+ },
+ "common_days": {
+  "calendar_sep": [
+   "20260901",
+   "20260902",
+   "20260903",
+   "20260904",
+   "20260907",
+   "20260908",
+   "20260909",
+   "20260910",
+   "20260911",
+   "20260914",
+   "20260915",
+   "20260916",
+   "20260917",
+   "20260918",
+   "20260921",
+   "20260922",
+   "20260923",
+   "20260928",
+   "20260929",
+   "20260930"
+  ],
+  "n_calendar": 20,
+  "d1_window": 20,
+  "etf_complete": 20,
+  "m15_days": 20,
+  "common": 20,
+  "missing_by_sleeve": {
+   "D1/BASKET": [],
+   "ETF": [],
+   "M15": []
+  }
+ },
+ "continuity": {
+  "pr68_days": 230,
+  "first_day": "20250918",
+  "last_day": "20260831",
+  "mismatch": [],
+  "identical_to_pr68": true
+ },
+ "results": {
+  "control": {
+   "end_won": 9938874.517861724,
+   "return_pct": -0.6112548213827562,
+   "MDD_pct": -0.9883677125321677,
+   "worst_day_pct": -0.20209757797542416,
+   "worst_month_pct": -0.6112548213827451,
+   "cost_total_won": 9565.482138276277,
+   "trades": {
+    "D1": {
+     "buy": 0,
+     "sell": 0
+    },
+    "M15": {
+     "buy": 0,
+     "sell": 0
+    },
+    "ETF": {
+     "buy": 3,
+     "sell": 2
+    },
+    "BASKET": {
+     "buy": 2,
+     "sell": 0
+    }
+   },
+   "day_breach_-15": 0,
+   "month_breach_-15": 0
+  },
+  "candidate": {
+   "end_won": 9935680.860361723,
+   "return_pct": -0.6431913963827696,
+   "MDD_pct": -0.7373852252915647,
+   "worst_day_pct": -0.16815700566775726,
+   "worst_month_pct": -0.6431913963827696,
+   "cost_total_won": 9294.139638276276,
+   "trades": {
+    "D1": {
+     "buy": 0,
+     "sell": 0
+    },
+    "M15": {
+     "buy": 0,
+     "sell": 0
+    },
+    "ETF": {
+     "buy": 4,
+     "sell": 4
+    },
+    "BASKET": {
+     "buy": 2,
+     "sell": 0
+    }
+   },
+   "day_breach_-15": 0,
+   "month_breach_-15": 0
+  }
+ },
+ "difference": {
+  "end_won_cand_minus_ctrl": -3193.6575000006706,
+  "return_pp": -0.031936575000013345,
+  "MDD_pp": 0.250982487240603,
+  "worst_day_pp": 0.033940572307666894,
+  "cost_won": -271.34250000000065,
+  "daily_diff_mean_pp": -0.001647133267612677,
+  "daily_diff_sd_pp": 0.07004873154094682,
+  "daily_diff_t": -0.1051582769127047,
+  "ctrl_daily_sd_pp": 0.11306806103745115,
+  "cand_daily_sd_pp": 0.06484634467171282,
+  "n_days": 20
+ },
+ "exposure_summary": {
+  "avg_E": 0.7,
+  "min": 0.25,
+  "max": 1.0,
+  "days_at_0.25": 8,
+  "effective": {
+   "D1": {
+    "avg_effective_over_control": null,
+    "days": 0
+   },
+   "M15": {
+    "avg_effective_over_control": null,
+    "days": 0
+   },
+   "ETF": {
+    "avg_effective_over_control": 0.5631388259755472,
+    "days": 14
+   },
+   "BASKET": {
+    "avg_effective_over_control": 1.0,
+    "days": 12
+   },
+   "ALL": {
+    "avg_effective_over_control": 0.6934021043915505,
+    "days": 19
+   }
+  },
+  "zero_share": {
+   "D1": {
+    "days": 0,
+    "code_days": 0
+   },
+   "M15": {
+    "days": 0,
+    "code_days": 0
+   },
+   "ETF": {
+    "days": 0,
+    "code_days": 0
+   },
+   "BASKET": {
+    "days": 0,
+    "code_days": 0
+   }
+  },
+  "zero_share_any_sleeve_days": 0
+ },
+ "criteria_disclosed": {
+  "conservation": true,
+  "day_ok": true,
+  "month_ok": true,
+  "mdd_ok": true,
+  "end_gt_10m": false
+ },
+ "data_status": "2026-09 USED · 10월 holdout 안 엶",
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "재튜닝",
+  "0주 처리 변경",
+  "다른 seed",
+  "새 문턱 판",
+  "10월 holdout",
+  "새 API · 수집 · 주문",
+  "운영 · 워크플로 · 인증 변경",
+  "레버리지",
+  "자동 병합",
+  "비밀 공개"
+ ]
+}
