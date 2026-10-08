@@ -1,0 +1,130 @@
+{
+ "schema_version": 1,
+ "task_id": "ETF-RULE-PACK-0001",
+ "function": "rules.evaluate(snapshot, state)",
+ "snapshot": {
+  "decision_at": "ISO-8601 KST · 원본 판단 시각은 15:10(DECIDE_AT '1510') · 주문 마감 15:18(LAST_ORDER)",
+  "day": "YYYYMMDD · decision_at의 KST 날짜와 같아야 함",
+  "inputs": {
+   "px": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": {
+     "<코드>": {
+      "closes": "오래된 → 오늘 종가 배열(원 단위 가격) · 마지막 값 = 당일 15:10 현재가 · 그 앞 = 어제까지 확정 종가",
+      "last_date": "YYYYMMDD = day"
+     }
+    },
+    "required_codes": [
+     "069500",
+     "229200",
+     "138230"
+    ],
+    "optional_codes": [
+     "133690",
+     "138230",
+     "132030",
+     "148070"
+    ],
+    "notes": "수익률은 소수(0.095 = 9.5%). 수정주가 여부 · 결측 처리는 원본처럼 caller 책임(원본은 nan을 그대로 받음). inv_take는 229200의 마지막 값(당일)을 빼고 앞 61개로 셈 · 원본 run은 과거 종가가 25개 이상인 코드만 px에 넣음(841b657e:307-309)"
+   },
+   "breadth": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": "오늘 시장 폭(%) · 원본 출처: idle_live.live_breadth(841b657e:224-245) = 전날 시총 150위 종목에 당일 현재가를 붙여 final_group.compute로 센 breadth(1일봉 봇과 같은 길). 원본은 계산 실패 시 None → 이 계약에서는 숫자가 아니면 caller가 입력하지 않아야 함(UNKNOWN_DATA)"
+   },
+   "used": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": "0 ~ 1 · 원본 출처: idle_live.run(841b657e:325 · 349) = max(0, (잔고 평가액 − 엔진 보유 평가) ÷ 총액) − 바구니 보유 평가 ÷ 총액 · 총액 0이면 1.0"
+   },
+   "reserve": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": "원 · 15:20 1일봉이 살 몫으로 엔진 room에서만 빼는 돈(선택, 없으면 0)"
+   },
+   "total": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": "원 · 계좌 총액",
+    "measure": "CONFIRMED_BROKER_SNAPSHOT|LEDGER_ASIS_ACCEPTED|RESEARCH_SIMULATION|SYNTHETIC"
+   },
+   "cash": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": "원 · 쓸 수 있는 현금",
+    "measure": "CONFIRMED_BROKER_SNAPSHOT|LEDGER_ASIS_ACCEPTED|RESEARCH_SIMULATION|SYNTHETIC"
+   },
+   "held": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": {
+     "<코드>": "주 수(엔진 장부 기준)"
+    },
+    "measure": "CONFIRMED_BROKER_SNAPSHOT|LEDGER_ASIS_ACCEPTED|RESEARCH_SIMULATION|SYNTHETIC"
+   },
+   "now_price": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": {
+     "<코드>": "당일 15:10 현재가(원)"
+    }
+   },
+   "is_week_end": {
+    "as_of": "ISO-8601 KST(+09:00) · 값이 가리키는 시점",
+    "available_at": "ISO-8601 KST · 판정기에 들어온 시각(≤ decision_at)",
+    "provenance": "출처 · 계산 방법(빈 값 거부)",
+    "value": "bool · 오늘이 이 주의 마지막 거래일인가 — 외부 시장 달력에서(원본 HOLIDAYS 하드코딩은 쓰지 않음)"
+   }
+  }
+ },
+ "state": "원본 idle-live/state.json과 같은 꼴 {positions:{코드:{kind, price, day, days, take?}}, cool, last_day} · 확정 원장이 아니라 직전 proposed_state 또는 caller가 대사한 상태",
+ "rejection": {
+  "status": "UNKNOWN_DATA",
+  "when": [
+   "decision_at · day 없음 · 시간대 없음 · 날짜 불일치",
+   "필수 입력 없음",
+   "provenance 빈 값",
+   "as_of 또는 available_at 없음 · 형식 오류",
+   "available_at > decision_at 또는 as_of > decision_at",
+   "px 필수 코드 없음 · last_date ≠ day",
+   "total · cash · held의 measure 없음"
+  ],
+  "effect": "signal_intents 없음(신규 매수 · 매도 의도 모두 없음) · proposed_state null"
+ },
+ "output": {
+  "status": "OK|UNKNOWN_DATA",
+  "signal_intents": "[{code, side, qty, reason, kind: SIGNAL_INTENT_NOT_ORDER_NOT_FILL}] — 주문도 체결도 아님",
+  "proposed_state": "원본 step의 새 상태(ASIS 제안) · proposed_state_kind = ASIS_PROPOSAL_NOT_FILL_CONFIRMED → 확정 원장에 바로 넣지 않음",
+  "reasons": "원본 까닭 줄",
+  "missing_inputs": "거부 사유 목록",
+  "measures": "total · cash · held 측정 종류"
+ },
+ "constants": {
+  "engine": "used < 0.2 and breadth < 50",
+  "dollar": "138230 20일 > 0.02 and 069500 < 20일 평균(마지막 20개)",
+  "rotation": "ROT 4종목 20일 수익 > 0 위 2개 각 0.5(1개면 0.5) · 주 끝에만 다시 고름",
+  "dip": "DIP_ON = False(신규 없음 · 보유분은 원 규칙대로 정리)",
+  "inverse": "229200 10일 ≥ 0.095(at_1515=True) → 251340",
+  "inv_stop": -0.015,
+  "inv_days": 10,
+  "inv_take": "clip(0.25 × std60(ddof 0, 어제까지 61개 종가의 60개 수익) × √10, 0.015, 0.025) · 자료 부족 · 비유한 값이면 0.015 · 매수 날 고정(round 5)",
+  "sizing": "room = max(0, total × (1 − used) − reserve) · avail = (cash + 오늘 판 돈) × 0.97 · 엔진 주문 = min(engine_room × w × 0.97, avail) · 인버스 = min(max(0, room − 엔진 보유/산 값) × 0.97, avail) · floor"
+ },
+ "not_included": [
+  "run · 증권사 · 키 · 통신 · 파일 저장 · make_room(강제 자리 내주기, paper_trade) · 바구니 C",
+  "mood(분위기 후보)는 decide에만 있고 step은 쓰지 않음"
+ ],
+ "tool_status": "RULE_PACKAGE_READY",
+ "data_status": "WAITING_DATA",
+ "paper_validation_ready": false,
+ "live_approval": false
+}

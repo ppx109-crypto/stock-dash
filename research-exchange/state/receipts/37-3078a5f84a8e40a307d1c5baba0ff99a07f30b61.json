@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "input_pr": 37,
+  "input_head_sha": "3078a5f84a8e40a307d1c5baba0ff99a07f30b61",
+  "source_pr": 36,
+  "source_head_sha": "841b657e1c4a13f56854125f0d4c37568a99d49b",
+  "task_id": "ETF-RULE-PACK-0001",
+  "status": "READY",
+  "tool_status": "RULE_PACKAGE_READY",
+  "data_status": "WAITING_DATA",
+  "result_report": "research-exchange/claude-to-gpt/ETF-RULE-PACK-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/ETF-RULE-PACK-0001/manifest.json",
+  "result_branch": "claude/etf-rule-pack-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "duplicate": false,
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "processed_at_kst": "2026-10-08T12:38:29+09:00"
+}
