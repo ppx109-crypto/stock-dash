@@ -21,10 +21,13 @@
     "research-exchange/gpt-to-claude/BACKTEST-REPAIR-0002/repro-results.json"
   ],
   "next_task": "research-exchange/gpt-to-claude/BACKTEST-REPAIR-0002/TASK.md",
-  "response_pr": null,
-  "browser_delivery_status": "PENDING_AFTER_PUBLICATION",
+  "response_pr": 40,
+  "browser_delivery_status": "ACCEPTED_EXISTING_SESSION",
   "notes": [
     "공개 CSV 산술과 별도 합성 오류 재현; 전체 원시자료 재실행 아님",
     "지속 webhook 설정 변경 없음"
-  ]
+  ],
+  "response_url": "https://github.com/ppx109-crypto/stock-dash/pull/40",
+  "browser_delivery_at_kst": "2026-10-08T13:31:00+09:00",
+  "browser_delivery_evidence": "입력 메시지108이 표시되고 Claude 응답 중/실행 중 상태 확인. 새 탭/세션 생성 없음."
 }
