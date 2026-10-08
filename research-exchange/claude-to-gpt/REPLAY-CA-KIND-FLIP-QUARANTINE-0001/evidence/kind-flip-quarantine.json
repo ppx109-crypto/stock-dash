@@ -1,0 +1,1645 @@
+{
+ "fixtures": {
+  "K1_kind_flip_reverse_split": {
+   "batch_day": "2026-02-02",
+   "start_pos": {
+    "A": [
+     "37",
+     "52300"
+    ],
+    "B": [
+     "75",
+     "905"
+    ]
+   },
+   "inputs": [
+    {
+     "sym": "A",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-02-02",
+     "src": "RK"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-02-02",
+     "src": "RB"
+    }
+   ],
+   "expect_pass": true,
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-02",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-02",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "pass": true
+  },
+  "K2_later_independent_reverse_split": {
+   "batch_day": "2026-02-03",
+   "start_pos": {
+    "A": [
+     "37",
+     "52300"
+    ],
+    "B": [
+     "75",
+     "905"
+    ]
+   },
+   "inputs": [
+    {
+     "sym": "A",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-02-03",
+     "src": "R6"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-02-03",
+     "src": "RB"
+    }
+   ],
+   "expect_pass": true,
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-03",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-03",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "pass": true,
+   "needs_data": true
+  },
+  "K3_unseen_symbols": {
+   "batch_day": "2026-01-30",
+   "start_pos": {
+    "A": [
+     "37",
+     "52300"
+    ],
+    "B": [
+     "75",
+     "905"
+    ],
+    "C": [
+     "40",
+     "1000"
+    ]
+   },
+   "inputs": [
+    {
+     "sym": "C",
+     "kind": "split",
+     "m_qty": "2",
+     "m_price": "1/2",
+     "apply_date": "2026-01-30",
+     "src": "RC"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-01-30",
+     "src": "RB"
+    }
+   ],
+   "expect_pass": true,
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "state_hash_before": "f03cb626c803f16a1395daa0a2da42219e24d708bd757424dc04c325e50e7802",
+     "state_hash_after_batch": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "final_state_hash": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "final_prov_hash": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30",
+      "C|split|2|2026-01-30"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "state_hash_before": "f03cb626c803f16a1395daa0a2da42219e24d708bd757424dc04c325e50e7802",
+     "state_hash_after_batch": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "final_state_hash": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "final_prov_hash": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30",
+      "C|split|2|2026-01-30"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "da471d1d84af219896bd924ccdea61fb5c8a5152ca2f374c833d3111ce849bb6",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "state_hash_before": "f03cb626c803f16a1395daa0a2da42219e24d708bd757424dc04c325e50e7802",
+     "state_hash_after_batch": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "final_state_hash": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "final_prov_hash": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30",
+      "C|split|2|2026-01-30"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "state_hash_before": "f03cb626c803f16a1395daa0a2da42219e24d708bd757424dc04c325e50e7802",
+     "state_hash_after_batch": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "final_state_hash": "c66120c3bd3ab9650e1d5a69e67496c7bb7ba34212e80908f2924e82a3a421b0",
+     "final_prov_hash": "cdc01a26f1c8f80a73dc597a9a72f31721ca46f40b91a4c95a82a6152c9943ab",
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30",
+      "C|split|2|2026-01-30"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "da471d1d84af219896bd924ccdea61fb5c8a5152ca2f374c833d3111ce849bb6",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "changed_fields": [
+      "pos.B.0",
+      "pos.B.1",
+      "pos.C.0",
+      "pos.C.1",
+      "applied",
+      "prov"
+     ],
+     "blocked_from": null,
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "changed_fields": [
+      "pos.B.0",
+      "pos.B.1",
+      "pos.C.0",
+      "pos.C.1",
+      "applied",
+      "prov"
+     ],
+     "blocked_from": null,
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "pass": true
+  }
+ },
+ "q_regression": {
+  "Q1_apply_date_changed": {
+   "batch_day": "2026-02-02",
+   "inputs": [
+    {
+     "sym": "A",
+     "kind": "split",
+     "m_qty": "5",
+     "m_price": "1/5",
+     "apply_date": "2026-02-02",
+     "src": "R9"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-02-02",
+     "src": "RB"
+    }
+   ],
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-02",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-02",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "diffs_vs_pr110_evidence": [],
+   "mutations_same_as_pr110": true,
+   "pass": true
+  },
+  "Q2_m_qty_changed": {
+   "batch_day": "2026-01-30",
+   "inputs": [
+    {
+     "sym": "A",
+     "kind": "split",
+     "m_qty": "10",
+     "m_price": "1/10",
+     "apply_date": "2026-01-29",
+     "src": "R8"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-01-30",
+     "src": "RB"
+    }
+   ],
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-01-30",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-01-30",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "diffs_vs_pr110_evidence": [],
+   "mutations_same_as_pr110": true,
+   "pass": true
+  },
+  "Q3_legit_looking_second_split": {
+   "batch_day": "2026-02-03",
+   "inputs": [
+    {
+     "sym": "A",
+     "kind": "split",
+     "m_qty": "2",
+     "m_price": "1/2",
+     "apply_date": "2026-02-03",
+     "src": "R5"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-02-03",
+     "src": "RB"
+    }
+   ],
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29"
+     ],
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03"
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-03",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "BATCH_ABORTED",
+     "changed_fields": [],
+     "blocked_from": "2026-02-03",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "diffs_vs_pr110_evidence": [],
+   "mutations_same_as_pr110": true,
+   "pass": true
+  },
+  "Q4_same_key_same_payload": {
+   "batch_day": "2026-01-30",
+   "inputs": [
+    {
+     "sym": "A",
+     "kind": "split",
+     "m_qty": "5",
+     "m_price": "1/5",
+     "apply_date": "2026-01-29",
+     "src": "R2"
+    },
+    {
+     "sym": "B",
+     "kind": "reverse_split",
+     "m_qty": "1/5",
+     "m_price": "5",
+     "apply_date": "2026-01-30",
+     "src": "RB"
+    }
+   ],
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30"
+     ],
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30"
+     ],
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30"
+     ],
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "end_bytes_stable": true
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "applied_keys": [
+      "A|split|5|2026-01-29",
+      "B|reverse_split|1/5|2026-01-30"
+     ],
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "cut_test": true,
+     "bytes_equal_after_reload": true,
+     "reload_sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb",
+     "end_bytes_stable": true
+    }
+   ],
+   "batch_field_mutations": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "changed_fields": [
+      "pos.B.0",
+      "pos.B.1",
+      "applied",
+      "prov"
+     ],
+     "blocked_from": null,
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "changed_fields": [
+      "pos.B.0",
+      "pos.B.1",
+      "applied",
+      "prov"
+     ],
+     "blocked_from": null,
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     }
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "bytes_stable": true,
+   "cut_test": true,
+   "diffs_vs_pr110_evidence": [],
+   "mutations_same_as_pr110": true,
+   "pass": true
+  }
+ },
+ "pre_fix_negative_control": {
+  "R1_exact": {
+   "expect_from_pr110_evidence": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|reverse_split|1/5|2026-02-02": "OK"
+    },
+    "A_qty": "37"
+   },
+   "observed": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|reverse_split|1/5|2026-02-02": "OK"
+    },
+    "A_qty": "37"
+   },
+   "match": true
+  },
+  "K1_kind_flip_reverse_split": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "OK",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "qty": {
+      "A": "37",
+      "B": "15"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "OK",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "qty": {
+      "A": "37",
+      "B": "15"
+     }
+    }
+   ],
+   "expect_derived": {
+    "verdict": "COMMITTED",
+    "all_status_OK": true,
+    "qty": {
+     "A": "37",
+     "B": "15"
+    }
+   },
+   "match": true
+  },
+  "K2_later_independent_reverse_split": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "OK",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "qty": {
+      "A": "37",
+      "B": "15"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "OK",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "qty": {
+      "A": "37",
+      "B": "15"
+     }
+    }
+   ],
+   "expect_derived": {
+    "verdict": "COMMITTED",
+    "all_status_OK": true,
+    "qty": {
+     "A": "37",
+     "B": "15"
+    }
+   },
+   "match": true
+  },
+  "K3_unseen_symbols": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     }
+    }
+   ],
+   "expect_derived": {
+    "verdict": "COMMITTED",
+    "all_status_OK": true,
+    "qty": {
+     "A": "185",
+     "B": "15",
+     "C": "80"
+    }
+   },
+   "match": true
+  }
+ },
+ "informational": {
+  "I1_bonus_issue_outside_family": {
+   "input": {
+    "sym": "A",
+    "kind": "bonus_issue",
+    "m_qty": "2",
+    "m_price": "1/2",
+    "apply_date": "2026-02-02",
+    "src": "RI"
+   },
+   "verdict": "COMMITTED",
+   "status": {
+    "A|bonus_issue|2|2026-02-02": "OK"
+   },
+   "A_qty": "370"
+  }
+ },
+ "summary": {
+  "pr110_sha_ok": {
+   "code": true,
+   "evidence": true
+  },
+  "k_fixtures_pass": true,
+  "q_regression_pass": true,
+  "neg_pass": true,
+  "k2_false_positive_blocked": true,
+  "real_events_applied": 0,
+  "all_pass": true
+ },
+ "family": {
+  "split": "capital_reorganization",
+  "reverse_split": "capital_reorganization"
+ }
+}
