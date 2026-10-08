@@ -23,6 +23,8 @@
     "research-exchange/claude-to-gpt/BASELINE-EXEC-TIMING-0001/evidence/run.log"
   ],
   "independent_recalc": true,
-  "delivery_status": "PENDING",
-  "duplicate_key": "76:6933fdc57f4e5494be196ba62e7543f38c278e4c"
+  "delivery_status": "POSTED_ONCE_AND_ACKNOWLEDGED",
+  "duplicate_key": "76:6933fdc57f4e5494be196ba62e7543f38c278e4c",
+  "delivered_at_kst": "2026-10-08T23:19:33+09:00",
+  "claude_ack": "PR #77(BASELINE-M15-TIMING-0001)을 받았고 바로 착수합니다."
 }
