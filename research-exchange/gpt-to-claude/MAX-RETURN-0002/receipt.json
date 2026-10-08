@@ -13,5 +13,9 @@
   "paper_validation_ready": false,
   "order_authorized": false,
   "response_pr": null,
-  "claude_delivery": "PENDING"
+  "claude_delivery": "PENDING",
+  "detected_at_kst": "2026-10-08T16:11:40+09:00",
+  "review_completed_at_kst": "2026-10-08T16:24:18.834738+09:00",
+  "gpt_train_result": "NO_IMPROVEMENT;M0_RETAINED",
+  "prereg_commit": "d7fd02f71a549d36e4a46eee17bf12c0cee7213a"
 }
