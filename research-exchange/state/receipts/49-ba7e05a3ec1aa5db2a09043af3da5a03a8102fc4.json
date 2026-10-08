@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "EMA-FLOW-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 4,
+  "status": "READY",
+  "source_pr": 49,
+  "source_head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4",
+  "input": {
+    "pr": 49,
+    "head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4"
+  },
+  "review_status": "COMPLETE_WEAK_CANDIDATE",
+  "detected_at_kst": "2026-10-08T16:57:24+09:00",
+  "review_completed_at_kst": "2026-10-08T17:03:00+09:00",
+  "checks": {
+    "manifest_sha256_files": 24,
+    "hash_mismatches": 0,
+    "nav_csv_arithmetic": 13,
+    "independent_new_R30_engine_replay": false,
+    "submission_contamination": false
+  },
+  "next_task": "EMA-FLOW-0001",
+  "response_pr": 50,
+  "claude_delivery": "RECEIVED",
+  "prior_result": "R30 weak candidate; no more cap optimization",
+  "latest_authority": "User approved EMA/flow combination research; monthly -15 not elimination; daily -15 remains",
+  "orders": 0,
+  "operational_changes": 0,
+  "delivered_at_kst": "2026-10-08T17:08:55.000+09:00",
+  "delivery_evidence": "Existing designated tab message153 present; Claude responding; single send",
+  "task_read_head_sha": "48ecbfc44f2a2f48f04035402260c5334925e8ab"
+}
