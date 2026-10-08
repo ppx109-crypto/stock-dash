@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "LOSS-CONTROL-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 3,
+  "status": "READY",
+  "source_pr": 47,
+  "source_head_sha": "9ddc8551047ce5b5561d0b7516fa1fae554c2f3e",
+  "processing_key": "47-9ddc8551047ce5b5561d0b7516fa1fae554c2f3e",
+  "source_status": "READY",
+  "review_result": "CALCULATIONS_MATCH;ENTRY_CAP_HYPOTHESIS_CLOSED;LOSS_CONCENTRATION_CONFIRMED",
+  "next_task": "LOSS-CONTROL-0001",
+  "paper_validation_ready": false,
+  "orders_authorized": false,
+  "response_pr": 48,
+  "claude_delivery": "RECEIVED",
+  "detected_at_kst": "2026-10-08T16:35:47+09:00",
+  "review_completed_at_kst": "2026-10-08T16:42:01+09:00",
+  "delivered_at_kst": "2026-10-08T16:44:30+09:00",
+  "delivery_evidence": "Existing designated session, message 151 visible; Claude responding; sent once"
+}
