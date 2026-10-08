@@ -1,0 +1,262 @@
+{
+ "schema_version": 1,
+ "task_id": "SOURCE-VERIFY-0001",
+ "purpose": "연구 입력 후보 표. 운영 변경 승인이 아니며 BASE/STRESS/EXTREME 값을 고르지 않음.",
+ "units": "퍼센트(%) · 매도금액 또는 매매금액 기준",
+ "securities_transaction_tax": [
+  {
+   "market": "KOSPI(유가증권시장 주권)",
+   "from": "2023-01-01",
+   "to": "2023-12-31",
+   "rate_pct": 0.05,
+   "basis": "증권거래세법 시행령 대통령령 제33209호 개정이유",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSPI(유가증권시장 주권)",
+   "from": "2024-01-01",
+   "to": "2024-12-31",
+   "rate_pct": 0.03,
+   "basis": "대통령령 제33209호 개정이유",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSPI(유가증권시장 주권)",
+   "from": "2025-01-01",
+   "to": "2025-12-31",
+   "rate_pct": 0.0,
+   "basis": "대통령령 제33209호(2025년부터 영) · 제36001호 개정이유('영(零)에서 1만분의 5로')",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSPI(유가증권시장 주권)",
+   "from": "2026-01-01",
+   "to": null,
+   "rate_pct": 0.05,
+   "basis": "대통령령 제36001호 개정이유",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSDAQ(코스닥시장 주권)",
+   "from": "2023-01-01",
+   "to": "2023-12-31",
+   "rate_pct": 0.2,
+   "basis": "대통령령 제33209호 개정이유",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSDAQ(코스닥시장 주권)",
+   "from": "2024-01-01",
+   "to": "2024-12-31",
+   "rate_pct": 0.18,
+   "basis": "대통령령 제33209호 개정이유",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSDAQ(코스닥시장 주권)",
+   "from": "2025-01-01",
+   "to": "2025-12-31",
+   "rate_pct": 0.15,
+   "basis": "대통령령 제33209호 · 제36001호 개정이유('1만분의 15에서 1만분의 20으로')",
+   "source": "S12",
+   "verdict": "PROVEN"
+  },
+  {
+   "market": "KOSDAQ(코스닥시장 주권)",
+   "from": "2026-01-01",
+   "to": null,
+   "rate_pct": 0.2,
+   "basis": "대통령령 제36001호 개정이유",
+   "source": "S12",
+   "verdict": "PROVEN"
+  }
+ ],
+ "farm_tax": [
+  {
+   "market": "KOSPI(거래소 주식)",
+   "as_of": "2026-10-08 화면",
+   "rate_pct": 0.15,
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "증권사 현재 안내 화면. 농어촌특별세법 세율 조문 원문 미확보. 2023~2025 기간 값은 증명 안 됨."
+  },
+  {
+   "market": "KOSDAQ",
+   "as_of": "2026-10-08 화면",
+   "rate_pct": 0.0,
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "화면 표에 '-'. 법령 조문 미확보."
+  }
+ ],
+ "sell_side_total_inference": [
+  {
+   "period": "2023",
+   "KOSPI": 0.2,
+   "KOSDAQ": 0.2
+  },
+  {
+   "period": "2024",
+   "KOSPI": 0.18,
+   "KOSDAQ": 0.18
+  },
+  {
+   "period": "2025",
+   "KOSPI": 0.15,
+   "KOSDAQ": 0.15
+  },
+  {
+   "period": "2026-01-01~",
+   "KOSPI": 0.2,
+   "KOSDAQ": 0.2
+  }
+ ],
+ "sell_side_total_class": "inference — 거래세(PROVEN) + 농특세 0.15%가 2023~2025에도 같았다는 가정(미증명). 2026 KOSPI 합계 0.20%는 증권사 현재 화면과 일치.",
+ "brokerage_fee_kis": [
+  {
+   "account_type": "영업점계좌",
+   "channel": "HTS/홈페이지/모바일",
+   "venue": "KRX",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.147,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "영업점계좌",
+   "channel": "HTS/홈페이지/모바일",
+   "venue": "NXT",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.146,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "영업점계좌",
+   "channel": "ARS",
+   "venue": "KRX",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.2471487,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "영업점계좌",
+   "channel": "ARS",
+   "venue": "NXT",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.2461487,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "뱅키스(BanKIS)계좌",
+   "channel": "HTS/홈페이지/모바일",
+   "venue": "KRX",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.0140527,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "뱅키스(BanKIS)계좌",
+   "channel": "HTS/홈페이지/모바일",
+   "venue": "NXT",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.0130527,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "뱅키스(BanKIS)계좌",
+   "channel": "ARS",
+   "venue": "KRX",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.2471487,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "뱅키스(BanKIS)계좌",
+   "channel": "ARS",
+   "venue": "NXT",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.2461487,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "영업점매매(오프라인 일반거래)",
+   "channel": "오프라인",
+   "venue": "KRX",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.491,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  },
+  {
+   "account_type": "영업점매매(오프라인 일반거래)",
+   "channel": "오프라인",
+   "venue": "NXT",
+   "product": "국내주식(코스피/코스닥/코넥스)",
+   "rate_pct_per_side": 0.49,
+   "as_of": "2025-10-27",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "현재 화면 기준. 과거 기간 요율 아님."
+  }
+ ],
+ "exchange_related_fees_kis": [
+  {
+   "item": "유관기관제비용(우대 수수료에 적용)",
+   "venue": "KRX",
+   "rate_pct": 0.0036396,
+   "as_of": "2025-10(화면 '현재')",
+   "source": "S15",
+   "verdict": "PARTIAL"
+  },
+  {
+   "item": "유관기관제비용(우대 수수료에 적용)",
+   "venue": "NXT",
+   "rate_pct": 0.0031833,
+   "as_of": "2025-10(화면 '현재')",
+   "source": "S15",
+   "verdict": "PARTIAL",
+   "note": "NXT는 Taker 기준"
+  }
+ ],
+ "user_account_type": "UNKNOWN",
+ "scenario_choice": null,
+ "not_verified": [
+  "과거 기간(2023-01-01~2025-10-26) 증권사 수수료 요율",
+  "우대 · 협의 수수료",
+  "시장충격 · 미끄러짐",
+  "농특세 법령 조문"
+ ],
+ "paper_validation_ready": false,
+ "live_approval": false
+}
