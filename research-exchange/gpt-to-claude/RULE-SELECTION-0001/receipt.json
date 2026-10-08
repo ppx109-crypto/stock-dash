@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task_id": "RULE-SELECTION-0001",
+  "chain_id": "BACKTEST-FIRST-20261008",
+  "round": 3,
+  "status": "READY",
+  "source_pr": 41,
+  "source_head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+  "reviewed_at_kst": "2026-10-08T14:08:00+09:00",
+  "response_branch": "gpt/rule-selection-0001-pr41",
+  "response_pr": null
+}
