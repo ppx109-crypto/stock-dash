@@ -1,0 +1,3 @@
+== 오프라인 비교(compare.py) — 네트워크 함수 막음 · 1회
+입력: PR95 SOURCE_PACKET sha256 6a000ca5861139e27f2255802e92096ec7697ed725b06a1f1c3f1579140f66db
+{"A": "REVISE", "B": "REVISE", "status": "BLOCKED", "comparable": ["P2", "P1"], "first_diff": "비교 가능한 범위(P2 · P1)에서 없음", "not_comparable": ["P4", "P3"], "clues": {"kosdaq_transfer_listing_in_art30(P1)": true, "kospi_listing_rule_ref(P1)": true, "kospi_listing_rule_ref(P3)": true, "kospi_listing_rule_ref(P4)": true, "etn_6_2(P2)": true, "separate_rules_listed(P5)": true}, "contradiction": false}

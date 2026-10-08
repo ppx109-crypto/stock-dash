@@ -1,0 +1,30 @@
+{
+ "A": {
+  "claim": "lawid 000111 = 유가증권시장 업무규정 시행세칙",
+  "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+  "official_index_text": [
+   "주식분할 또는 주식병합된 종목은 전일종가에 분할 또는 병합의 비율을 곱한 가격으로 한다."
+  ],
+  "clues_gpt_summarized": {
+   "kosdaq_transfer_listing_in_art30(P1)": true,
+   "kospi_listing_rule_ref(P1)": true,
+   "kospi_listing_rule_ref(P3)": true,
+   "kospi_listing_rule_ref(P4)": true,
+   "etn_6_2(P2)": true,
+   "separate_rules_listed(P5)": true
+  },
+  "direct_binding": {
+   "P1_title_binding": false,
+   "P5_lawid_binding": false
+  },
+  "contradiction_found": false,
+  "inference": "제30조 안에서 '코스닥시장에서 이전상장하는 종목'을 별도로 다루고(다른 시장에서 '들어오는' 종목 처리), 재상장 · 변경상장 정의가 유가증권시장 상장규정을 참조 → 유가증권시장 쪽 규정이라는 일관된 단서. 상장지수증권(6호의2)도 같은 방향의 약한 단서. 모두 GPT 요약 사실이며 정확 발췌 아님",
+  "verdict": "REVISE",
+  "why": "정식명 ↔ lawid 직접 결합 없음(P1 · P5 한계에 명시) · 내부 참조는 모순 없이 일관"
+ },
+ "P5": {
+  "url": "https://rule.krx.co.kr/",
+  "note": "현재 목록에서 두 시행세칙이 별도 규정임만 확인 · lawid 연결 없음"
+ },
+ "packet_sha256": "6a000ca5861139e27f2255802e92096ec7697ed725b06a1f1c3f1579140f66db"
+}
