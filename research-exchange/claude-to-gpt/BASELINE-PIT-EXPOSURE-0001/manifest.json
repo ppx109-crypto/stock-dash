@@ -31,7 +31,7 @@
  },
  "prereg_commit": "4395dd3e9e7d92297a9a8908e9a24a717ffcf88d",
  "prereg_committed_at_kst": "2026-10-08T23:39:53+09:00",
- "verdict": "READY / Train 단위 2,587 전부 UNKNOWN_EVIDENCE · VIOLATION 0 · PROVEN 0",
+ "verdict": "READY / Train 단위 전부 UNKNOWN_EVIDENCE(종목 단위 2,587 + 날 단위 잠금 378 = 2,965) · VIOLATION 0 · PROVEN 0",
  "inputs": {
   "pr78_m15_local": "a22098a18c8b5f82534703ef28891ed51b43ceeca5108a15ef60865a981fd703",
   "pr76_daily_local": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8",
