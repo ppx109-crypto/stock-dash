@@ -1,0 +1,71 @@
+{
+ "cases": {
+  "CA_정상": {
+   "expect": true,
+   "got": true,
+   "pass": true
+  },
+  "CA_날짜만_공개": {
+   "expect": true,
+   "got": true,
+   "pass": true
+  },
+  "CA_available_at_없음": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "CA_root_없음": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "CA_무상_상장일_없음": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "CA_시간대_없는_시각": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "CA_분할_원문경로": {
+   "expect": true,
+   "got": true,
+   "pass": true
+  },
+  "KIS_원_정상": {
+   "expect": true,
+   "got": true,
+   "pass": true
+  },
+  "KIS_원인데_플래그0": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "KIS_조회시각_날짜만": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "KIS_요청해시_없음": {
+   "expect": false,
+   "got": false,
+   "pass": true
+  },
+  "로컬_148_의도_스키마": {
+   "expect": [
+    148,
+    0
+   ],
+   "got": [
+    148,
+    0
+   ],
+   "pass": true
+  }
+ },
+ "pass": true
+}

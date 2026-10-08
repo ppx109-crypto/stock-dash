@@ -1,0 +1,82 @@
+{
+ "mutations": {
+  "M1_as_of_무시(미래 정정본 읽음)": {
+   "caught": true,
+   "how": "시험 실패",
+   "failed_tests": {
+    "pit-version-tests": [
+     "N4_효력일_뒤_정정본은_과거_as_of에서_제외",
+     "N4b_재생은_그때_버전으로_수량_뒤_정정은_충돌표시",
+     "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단",
+     "N6c_접수번호_문자열_순서로_최신_추정안함",
+     "E2_자르기_시험_미래_독정정본"
+    ]
+   }
+  },
+  "M2_날짜만_공개를_0시로(당일 사용 허용)": {
+   "caught": true,
+   "how": "시험 실패",
+   "failed_tests": {
+    "pit-version-tests": [
+     "N5_cutoff_전_후_날짜만_시각없음",
+     "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단"
+    ]
+   }
+  },
+  "M3_성과게이트_끔": {
+   "caught": true,
+   "how": "시험 실패",
+   "failed_tests": {
+    "pit-version-tests": [
+     "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단",
+     "N6b_단절_사슬은_수량_안바꾸고_NAV_무효"
+    ],
+    "mtm-gate-tests": [
+     "N9_하루_누락_nav_valid_false_성과차단",
+     "E6_0원_대체는_유효_NAV_아님",
+     "E6b_원주가_없어_체결못한_의도도_NAV_무효",
+     "E7b_합병_보유중이면_수량자동조정_안하고_차단"
+    ]
+   }
+  },
+  "M4_STALE을_유효로": {
+   "caught": true,
+   "how": "시험 실패",
+   "failed_tests": {
+    "mtm-gate-tests": [
+     "N9_하루_누락_nav_valid_false_성과차단"
+    ]
+   }
+  },
+  "M5_출처검사_끔": {
+   "caught": true,
+   "how": "시험 실행 오류",
+   "error_last_line": "KeyError: 'why'"
+  },
+  "M6_팔기먼저_끔": {
+   "caught": true,
+   "how": "시험 실패",
+   "failed_tests": {
+    "intent-mapping-tests": [
+     "N10_같은날_팔기먼저_입력순서_무관"
+    ]
+   }
+  },
+  "M7_잠금창_끔": {
+   "caught": true,
+   "how": "시험 실패",
+   "failed_tests": {
+    "intent-mapping-tests": [
+     "E8_목표수량_환산_분할전후_잠금창_차단"
+    ]
+   }
+  },
+  "M8_기준일_정확일치만(PR86 방식)": {
+   "caught": true,
+   "how": "시험 실행 오류",
+   "error_last_line": "StopIteration"
+  }
+ },
+ "all_caught": true,
+ "note": "사전등록 밖 추가 점검. 원본 raw_replay_v2.py는 그대로이며, 작업 폴더 복사본에서 한 줄씩만 바꿈."
+}
