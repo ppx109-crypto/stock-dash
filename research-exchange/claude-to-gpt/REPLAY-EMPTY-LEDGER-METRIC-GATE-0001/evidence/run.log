@@ -1,0 +1,44 @@
+# 공식 실행 1 / 상한 1 · 시작 2026-10-09T03:49:21+09:00
+# 명령: python3 -I code/empty_ledger_metric_gate.py <PR122 코드 a28cf40e…> <PR122 증거 edee9e29…> <PR120 코드 049342e8…> <PR120 증거 b7308516…> <PR114 증거 ecfb7a75…> evidence
+# exit=0
+{"summary": {"fixed_sha_ok": {"pr122_code": true, "pr122_evidence": true, "pr120_code": true, "pr120_evidence": true, "pr114_evidence": true}, "E1_negative_pr122": true, "E2_empty_ledger": true, "E3_ledger_blocked_priority": true, "E4_invalid_priority": true, "E5_minimal_normal": true, "E6_pr122_regression": true, "E7_serialization": true, "E8_call_boundary": true, "official_runs": 1, "actual_events": 0, "external_calls": 0, "performance_verified": false, "nav_verified": false, "paper_validation_ready": false, "all_pass": true}}
+## E1~E5
+| # | 장부 | 성과 출력 | 지표 호출 | 통과 |
+|---|---|---|---|---|
+| E1 음성(PR122 perf_gate) | 표식 없음 · 스냅숏 0 | 예외 IndexError | — | True |
+| E2_empty_ledger | blocked_from None · 스냅숏 [] | PERF_BLOCKED · from None · NO_SNAPSHOTS · 지표 모두 null | 0 | True |
+| E3_ledger_blocked_priority | blocked_from 2026-01-28 · 스냅숏 [] | PERF_BLOCKED · from 2026-01-28 · LEDGER_BLOCKED · 지표 모두 null | 0 | True |
+| E4_invalid_priority | blocked_from None · 스냅숏 [['2026-01-28', True], ['2026-01-29', False]] | PERF_BLOCKED · from 2026-01-29 · INVALID_SNAPSHOT · 지표 모두 null | 0 | True |
+| E5_minimal_normal | blocked_from None · 스냅숏 [['2026-01-28', True]] | OK · all_zero True · 일별 [] · 월 {} · MDD 0 · 비용후 None(NOT_MODELED) · PR122 출력과 같음 True | 3 | True |
+
+## E6 PR122 회귀(같은 방법으로 다시 만들어 증거와 비교)
+| 항목 | 같음 | 다른 키 |
+|---|---|---|
+| M1 | True | 0 |
+| M2 | True | 0 |
+| M3 | True | 0 |
+| M5 | True | 0 |
+| M4M6_M1_bonus_issue | True | 0 |
+| M4M6_M2_unknown_kind | True | 0 |
+| M4M6_M3_later_legit_looking_second_qm | True | 0 |
+| M4M6_M4_new_symbol_first_qm | True | 0 |
+| M4M6_K1_kind_flip_reverse_split | True | 0 |
+| M4M6_K2_later_independent_reverse_split | True | 0 |
+| M4M6_K3_unseen_symbols | True | 0 |
+| M4M6_Q1_apply_date_changed | True | 0 |
+| M4M6_Q2_m_qty_changed | True | 0 |
+| M4M6_Q3_legit_looking_second_split | True | 0 |
+| M4M6_Q4_same_key_same_payload | True | 0 |
+| M6_Q1_raw | True | 0 |
+| M7 | True | 0 |
+| M8_static_bools | True | 0 |
+
+## E7 직렬화 · 반복
+{"E2_empty_ledger": [true, true, true], "E3_ledger_blocked_priority": [true, true, true], "E4_invalid_priority": [true, true, true], "E5_minimal_normal": [true, true, true]}
+
+## E8 호출 경계
+{"no_perf_function": true, "no_snapshot_only_perf": true, "signature_single_ledger": true, "first_statement_reads_blocked_from": true, "order_ledger_invalid_empty": true, "block_return_lines": [205, 208, 210], "metric_call_lines": [212, 213, 215], "all_calls_single_arg": true, "perf_gate_call_sites": 2, "gate_before_metrics": true, "all_blocks_before_metrics": true, "pass": true}
+차단 케이스 지표 호출 0: True
+
+# 사전등록 뒤 코드 수정: 없음(코드는 사전등록 뒤 처음 작성 · 공식 실행 전 문법 확인만)
+# 판정: 증거 summary.all_pass=true

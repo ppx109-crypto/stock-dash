@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-EMPTY-LEDGER-METRIC-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 40,
+ "status": "READY",
+ "source_pr": 122,
+ "source_head_sha": "2ec2e13b55578290c3bcb822a3b78b30b77c9047",
+ "code_commit": "209afe5126762e974d778d3c46738e827b9cb481",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/empty_ledger_metric_gate.py",
+  "evidence/empty-ledger-metric-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:49:52+09:00",
+ "input": {
+  "pr": 123,
+  "head_sha": "2fbeaac01411ddbe30d491aa50c4db287c6b5076"
+ },
+ "prereg_commit": "1210b318f30b1c368a1a103608397968235aa7d8",
+ "all_pass": true,
+ "official_runs": 1,
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "result_pr": null
+}

@@ -1,0 +1,157 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-EMPTY-LEDGER-METRIC-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 40,
+ "status": "READY",
+ "source_pr": 122,
+ "source_head_sha": "2ec2e13b55578290c3bcb822a3b78b30b77c9047",
+ "code_commit": "209afe5126762e974d778d3c46738e827b9cb481",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/empty_ledger_metric_gate.py",
+  "evidence/empty-ledger-metric-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:49:52+09:00",
+ "input": {
+  "pr": 123,
+  "head_sha": "2fbeaac01411ddbe30d491aa50c4db287c6b5076",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T03:46:37+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "2ec2e13b55578290c3bcb822a3b78b30b77c9047"
+   },
+   {
+    "at_kst": "2026-10-09T03:49:52+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "2ec2e13b55578290c3bcb822a3b78b30b77c9047"
+   }
+  ]
+ },
+ "prereg_commit": "1210b318f30b1c368a1a103608397968235aa7d8",
+ "prereg_committed_at_kst": "2026-10-09T03:47:39+09:00",
+ "verdict": "READY(합성 빈 원장 지표 게이트) / E1 PR122 IndexError 재현 · E2 NO_SNAPSHOTS·from null·지표 null·호출 0 · E3·E4 우선순위 유지 · E5 PR122 출력과 동일 · E6 M1~M8 18항목 다른 키 0 · E7 reload·바이트·반복 동일 · E8 차단 return 205/208/210 < 지표 212",
+ "status_source": "evidence summary.all_pass",
+ "summary": {
+  "fixed_sha_ok": {
+   "pr122_code": true,
+   "pr122_evidence": true,
+   "pr120_code": true,
+   "pr120_evidence": true,
+   "pr114_evidence": true
+  },
+  "E1_negative_pr122": true,
+  "E2_empty_ledger": true,
+  "E3_ledger_blocked_priority": true,
+  "E4_invalid_priority": true,
+  "E5_minimal_normal": true,
+  "E6_pr122_regression": true,
+  "E7_serialization": true,
+  "E8_call_boundary": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "e8_static": {
+  "no_perf_function": true,
+  "no_snapshot_only_perf": true,
+  "signature_single_ledger": true,
+  "first_statement_reads_blocked_from": true,
+  "order_ledger_invalid_empty": true,
+  "block_return_lines": [
+   205,
+   208,
+   210
+  ],
+  "metric_call_lines": [
+   212,
+   213,
+   215
+  ],
+  "all_calls_single_arg": true,
+  "perf_gate_call_sites": 2,
+  "gate_before_metrics": true,
+  "all_blocks_before_metrics": true,
+  "pass": true
+ },
+ "e1_negative": {
+  "output": null,
+  "exception": "IndexError",
+  "pass": true
+ },
+ "e6_diff_count": 0,
+ "fixed_inputs": {
+  "pr122_code": {
+   "git_blob": "66ef2652e9dbefe3e01751f5bdcb8b7c390d57aa",
+   "sha256": "a28cf40e73462fa546772ae7ab9f1dd1c40c0397fdf2c1f3dbe7be7c46eead64"
+  },
+  "pr122_evidence": {
+   "git_blob": "32f563a1678f0b800c314308753fe2575f48ddc8",
+   "sha256": "edee9e29a5a844b744211e31325ca89be43cbf005444138e107a86c06cd6fec9"
+  },
+  "pr120_code_sha256": "049342e8fa545f5092498eba8d19bc90cf1d850962f805bd0df61ba439384e93",
+  "pr120_evidence_sha256": "b7308516c2036cbcbc5f50cac3959f7713ea046e364d943eb39b90bae8945f70",
+  "pr114_evidence_sha256": "ecfb7a757e8de81a06027c39d2119b2bcf4c46bbaf090f4226df23b0c9fe2ace"
+ },
+ "disclosure": {
+  "post_prereg_code_change": "없음",
+  "report_fix_before_pr": "diff 설명에 빈 줄 1개 차이 명시(PR 열기 전 커밋)"
+ },
+ "findings": {
+  "vacuous_all_zero": "스냅숏 1개면 일별 [] · all_zero true(빈 목록) — 0 수익 확인으로 읽으면 안 됨 · 정상 경로 불변이라 그대로",
+  "missing_days": "스냅숏 개수만 봄 · 거래일 사이 빠진 날은 막지 않음(GPT PREREG 경계와 같음)",
+  "from_null": "NO_SNAPSHOTS는 from null · 소비자는 status를 먼저 읽어야 함"
+ },
+ "next_single_gap": "거래일 달력과 스냅숏 날짜 완전성(빠진 날 검출)",
+ "file_sha256": {
+  "PREREG.md": "66bc9336a4ec23952a9ca8fe3a68301534b1584e12f3d6080e2aa48b5f890189",
+  "REPORT.md": "2daebbc6e3f108a24b959aa5c83e4bc908505dfa38125cd9904bf87c30d980de",
+  "code/empty_ledger_metric_gate.py": "4eaaf5c42c43912a26bd01e251a77a97f08207393cd89d3b588be19190becafc",
+  "evidence/empty-ledger-metric-gate.json": "9026ea32ec24c16939be2b84bf0a1573c8134b955009ba6b537ccb9d0691b109",
+  "evidence/tables.md": "8326ee58a028966c12848932e719861443fcf081ae9ecf704d14f08745f24f91",
+  "evidence/run.log": "13cbd3eb14d7aadb4b692edd06b008e928e4ed815da926640eeabb2cb07d94a1"
+ },
+ "runs": {
+  "official_runs": 1,
+  "cap": 1,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "real_events_applied": 0,
+  "real_quotes": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "kis_param_change": 0,
+  "existing_file_modification": 0,
+  "orders": 0,
+  "operations": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "oos": false
+}
