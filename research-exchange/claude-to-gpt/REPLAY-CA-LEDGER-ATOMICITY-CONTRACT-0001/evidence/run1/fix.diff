@@ -1,0 +1,18 @@
+46a47,48
+>         if self.key(ev) in applied:                                      # 1회차 결함 수정: 중복을 날짜 · 순서 검사보다 먼저
+>             return "BLOCKED_DUPLICATE_EVENT"
+55,56d56
+<         if self.key(ev) in applied:
+<             return "BLOCKED_DUPLICATE_EVENT"
+170c170,173
+<     out["idempotency"].append({"case": case[0], "second_apply": st_same, "other_src_apply": st_src, "hash_after_first": h1,
+---
+>     # 회귀 시험(1회차 결함): 이미 적용된 사건이 뒤 날짜(2026-02-02)에 다시 들어와도 중복으로 막히고 NAV를 무효로 만들지 않아야 함
+>     L3, _, _ = run(case, events_extra=lambda d: ([{"sym": "SYN", "kind": case[1], "m_qty": case[4], "m_price": 1 / case[4], "apply_date": EV_DAY, "src": "R3-재전송"}] if d == "2026-02-02" else []))
+>     redeliver = {"status": L3.snaps[3]["events"][0]["status"], "perf_all_zero": perf(L3.snaps).get("all_zero")}
+>     out["idempotency"].append({"case": case[0], "second_apply": st_same, "redelivered_later_day": redeliver, "other_src_apply": st_src, "hash_after_first": h1,
+174c177,178
+<                                and [e["status"] for e in L2.snaps[2]["events"]] == ["OK", "BLOCKED_DUPLICATE_EVENT"] and perf(L2.snaps).get("all_zero") is True})
+---
+>                                and [e["status"] for e in L2.snaps[2]["events"]] == ["OK", "BLOCKED_DUPLICATE_EVENT"] and perf(L2.snaps).get("all_zero") is True
+>                                and redeliver == {"status": "BLOCKED_DUPLICATE_EVENT", "perf_all_zero": True}})

@@ -1,0 +1,134 @@
+{
+ "scope": [
+  [
+   "origin/pr86",
+   "research-exchange/claude-to-gpt/REPLAY-RAW-PRICE-CONTRACT-0001/code/raw_replay.py"
+  ],
+  [
+   "origin/pr88",
+   "research-exchange/claude-to-gpt/REPLAY-CONTRACT-HARDENING-0001/code/raw_replay_v2.py"
+  ],
+  [
+   "origin/main",
+   "paper_trade.py"
+  ],
+  [
+   "origin/main",
+   "paper_check.py"
+  ],
+  [
+   "origin/main",
+   "predash/paper.py"
+  ],
+  [
+   "origin/main",
+   "portfolio_ui.py"
+  ]
+ ],
+ "pattern": "ratio|CA_QTY|applied|분할|병합|split\\(|reverse_split|rcept",
+ "raw": [
+  {
+   "ref": "origin/pr86",
+   "path": "research-exchange/claude-to-gpt/REPLAY-RAW-PRICE-CONTRACT-0001/code/raw_replay.py",
+   "hits": 14,
+   "lines": [
+    "67:REQ = {\"split\": (\"ratio\", \"effective_date\"), \"reverse_split\": (\"ratio\", \"effective_date\"), \"capital_reduction\": (\"ratio\", \"effective_date\"),",
+    "68:       \"bonus_issue\": (\"ratio\", \"record_date\", \"effective_date\"), \"rights_issue\": (\"ratio\", \"record_date\", \"effective_date\"),",
+    "69:       \"merger\": (\"ratio\", \"effective_date\"), \"spinoff\": (\"ratio\", \"effective_date\")}",
+    "70:QTY_CHANGING = {\"split\", \"reverse_split\", \"capital_reduction\", \"bonus_issue\"}       # 보유 주식 수가 바뀌는 사건(유상 · 합병 · 분할은 계약상 수량 자동 조정 안 함 → 표시)",
+    "74:    \"\"\"정정공시는 원 접수(original_rcept_no)로 묶고 가장 늦은 접수(rcept_no)를 씀. 사슬은 보존.\"\"\"",
+    "77:        chains[r.get(\"original_rcept_no\") or r[\"rcept_no\"]].append(r)",
+    "80:        rs = sorted(rs, key=lambda x: x[\"rcept_no\"])",
+    "82:        last[\"chain\"] = [x[\"rcept_no\"] for x in rs]",
+    "83:        last[\"root_rcept_no\"] = root",
+    "84:        missing = [f for f in REQ.get(last[\"kind\"], (\"ratio\", \"effective_date\")) if last.get(f) in (None, \"\")]",
+    "113:            new = q[c] * e[\"ratio\"]",
+    "119:            rows.append({\"type\": \"CA_QTY\", \"date\": d, \"code\": c, \"dq\": dq, \"rcept\": e[\"rcept_no\"]})",
+    "127:                    rows.append({\"type\": \"CA_CASH\", \"date\": d, \"code\": c, \"amount\": amt, \"rcept\": e[\"rcept_no\"]})",
+    "192:        if r[\"type\"] in (\"BUY\", \"SELL\", \"CA_QTY\"):"
+   ]
+  },
+  {
+   "ref": "origin/pr88",
+   "path": "research-exchange/claude-to-gpt/REPLAY-CONTRACT-HARDENING-0001/code/raw_replay_v2.py",
+   "hits": 27,
+   "lines": [
+    "36:    \"CA_NO_AUTO_QTY\": \"유상 · 합병 · 분할 — 수량 자동 조정 안 함(보유 중이면 NAV 무효)\",",
+    "94:REQ = {\"split\": (\"ratio\", \"effective_date\", \"price_basis_date\", \"listing_date\"),",
+    "95:       \"reverse_split\": (\"ratio\", \"effective_date\", \"price_basis_date\", \"listing_date\"),",
+    "96:       \"capital_reduction\": (\"ratio\", \"effective_date\", \"price_basis_date\", \"listing_date\"),",
+    "97:       \"bonus_issue\": (\"ratio\", \"record_date\", \"effective_date\", \"price_basis_date\", \"listing_date\"),",
+    "98:       \"rights_issue\": (\"ratio\", \"record_date\", \"effective_date\"), \"rights_bonus_issue\": (\"ratio\", \"record_date\", \"effective_date\"),",
+    "99:       \"merger\": (\"ratio\", \"effective_date\"), \"spinoff\": (\"ratio\", \"effective_date\"), \"spinoff_merger\": (\"ratio\", \"effective_date\")}",
+    "100:QTY_CHANGING = {\"split\", \"reverse_split\", \"capital_reduction\", \"bonus_issue\"}",
+    "101:ACCOUNTING = (\"ratio\", \"price_basis_date\", \"listing_date\", \"cash_in_lieu_per_share\")",
+    "108:        chains[r.get(\"root_rcept_no\")].append(r)",
+    "112:        ids = {x.get(\"rcept_no\") for x in rs}",
+    "114:            out.append({\"root_rcept_no\": root, \"code\": code, \"status\": \"UNKNOWN_CA_VERSION_PIT\", \"why\": \"ROOT_MISSING\"})",
+    "117:            out.append({\"root_rcept_no\": root, \"code\": code, \"status\": \"UNKNOWN_CA_VERSION_PIT\", \"why\": \"AVAILABLE_AT_MISSING\"})",
+    "122:            out.append({\"root_rcept_no\": root, \"code\": code, \"status\": \"NOT_YET_AVAILABLE\"})",
+    "125:            out.append({\"root_rcept_no\": root, \"code\": code, \"status\": \"UNKNOWN_CA_VERSION_PIT\", \"why\": \"SAME_TIME_VERSIONS\"})",
+    "128:        v[\"chain_known\"] = [x[\"rcept_no\"] for _, x in known]",
+    "131:        v[\"missing\"] = [f for f in REQ.get(v.get(\"kind\"), (\"ratio\", \"effective_date\")) if v.get(f) in (None, \"\")]",
+    "226:    lastp, applied, bad_code = {}, {}, defaultdict(set)                   # applied[root] = 적용한 버전 회계 칸",
+    "239:            c, root = e.get(\"code\"), e.get(\"root_rcept_no\")",
+    "240:            if root in applied:                                           # 이미 적용 → 뒤 정정본이 회계 칸을 바꿨는지(수량을 실제로 바꾼 사건만)",
+    "241:                acct, touched = applied[root]",
+    "257:            applied[root] = (tuple(e.get(k) for k in ACCOUNTING), False)",
+    "266:            new = Fraction(q[c]) * Fraction(str(e[\"ratio\"]))",
+    "272:            applied[root] = (applied[root][0], True)",
+    "277:            rows.append({\"type\": \"CA_QTY\", \"date\": d, \"code\": c, \"dq\": dq, \"rcept\": e[\"rcept_no\"], \"late\": anchor < d})",
+    "286:                    rows.append({\"type\": \"CA_CASH\", \"date\": d, \"code\": c, \"amount\": amt, \"rcept\": e[\"rcept_no\"]})",
+    "378:        if r[\"type\"] in (\"OPEN\", \"BUY\", \"SELL\", \"CA_QTY\"):"
+   ]
+  },
+  {
+   "ref": "origin/main",
+   "path": "paper_trade.py",
+   "hits": 0,
+   "lines": []
+  },
+  {
+   "ref": "origin/main",
+   "path": "paper_check.py",
+   "hits": 0,
+   "lines": []
+  },
+  {
+   "ref": "origin/main",
+   "path": "predash/paper.py",
+   "hits": 0,
+   "lines": []
+  },
+  {
+   "ref": "origin/main",
+   "path": "portfolio_ui.py",
+   "hits": 0,
+   "lines": []
+  }
+ ],
+ "classified": [
+  {
+   "where": "PR #86 raw_replay.py:77 · 106~119",
+   "text": "chains[r.get(\"original_rcept_no\") or r[\"rcept_no\"]] · 적용 조건 effective_date == d",
+   "risk": "사건 키 = 원 접수번호. 원 접수 연결이 없는 정정(DART는 원 접수 칸이 없음 · PR #90)은 별개 사슬이 되어 같은 분할이 두 번 적용될 수 있음. 적용 기록 집합 없음"
+  },
+  {
+   "where": "PR #88 raw_replay_v2.py applied[root]",
+   "text": "applied[root] = (회계 칸, touched) · root = root_rcept_no",
+   "risk": "적용 기록은 있으나 키가 root_rcept_no. 수집기가 원 접수를 모를 때 root=자기 접수번호로 넣으면 같은 사건이 두 root로 두 번 적용될 수 있음(PR #88은 root 없으면 UNKNOWN으로 막지만, root=self는 막지 못함)"
+  },
+  {
+   "where": "origin/main paper_trade.py · paper_check.py · predash/paper.py · portfolio_ui.py",
+   "text": "기업행동 수량/가격 조정 코드 없음(검색 일치 0 또는 무관)",
+   "risk": "운영 모의 장부는 분할 · 병합을 스스로 반영하지 않음 → 이중 적용 경로는 없지만, 반영 자체가 없으므로 실제 분할 종목 보유 시 수량 · 가격 불일치가 날 수 있음(이번 범위 밖 · 관찰만)"
+  }
+ ],
+ "fix_proposal": "event_key를 출처 번호가 아닌 의미 키(종목, 종류, m_qty, apply_date)로 두고, 같은 키 두 번째는 BLOCKED_DUPLICATE_EVENT(이 계약)",
+ "may_miss": [
+  "간접 호출(다른 모듈에서 수량을 바꾸는 함수)",
+  "동적 키 · 문자열 조립",
+  "브로커 잔고 동기화로 수량이 바뀌는 경로(paper_trade가 증권사 잔고를 다시 읽는 경우)",
+  "정규식에 없는 이름(예: adjust, rebase)"
+ ]
+}
