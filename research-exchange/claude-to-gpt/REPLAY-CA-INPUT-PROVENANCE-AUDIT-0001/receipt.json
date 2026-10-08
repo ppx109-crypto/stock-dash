@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-INPUT-PROVENANCE-AUDIT-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 36,
+ "status": "READY",
+ "source_pr": 114,
+ "source_head_sha": "6261e5a100607b36fa033b8a2ce710482cf8ccfa",
+ "code_commit": "9e8aa26f7bfb6cb842633435642c5a9e063c9d67",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "TRACE.md",
+  "GAPS.json",
+  "INVENTORY.json",
+  "code/audit_inventory.py",
+  "code/redact_paths.py",
+  "evidence/search-counts.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:14:03+09:00",
+ "input": {
+  "pr": 115,
+  "head_sha": "9e5187bef4acc7d03114e0d902b6c599860292fc"
+ },
+ "prereg_commit": "e9fcacdf91d4f9c980580e08b77c608cb75d7c8c",
+ "unclassified": 0,
+ "present_verified_fields": 0,
+ "actual_events": 0,
+ "external_calls": 0,
+ "code_execution": 0,
+ "performance_verified": false,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}
