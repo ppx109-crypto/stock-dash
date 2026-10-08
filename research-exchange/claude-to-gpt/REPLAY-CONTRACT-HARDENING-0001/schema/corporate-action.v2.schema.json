@@ -1,0 +1,265 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "corporate-action.v2",
+ "title": "DART 기업행동 버전 레코드 v2(REPLAY-CONTRACT-HARDENING-0001)",
+ "description": "버전(접수) 하나가 레코드 하나. 정정은 root_rcept_no로 원 접수에 묶음. resolver는 as_of까지 공개된 버전만, 공개 시각 순으로 고름(접수번호 문자열 순 아님). 원 접수 없음 · available_at 없음 · 같은 시각 두 버전 → UNKNOWN_CA_VERSION_PIT. 실제 종목 · 보고서명은 로컬 전용.",
+ "type": "object",
+ "required": [
+  "rcept_no",
+  "root_rcept_no",
+  "available_at_kst",
+  "code",
+  "kind",
+  "source_endpoint",
+  "source_cache_sha256"
+ ],
+ "properties": {
+  "rcept_no": {
+   "type": "string",
+   "pattern": "^[0-9]{14}$",
+   "description": "이 버전의 접수번호(version_id)"
+  },
+  "root_rcept_no": {
+   "type": "string",
+   "pattern": "^[0-9]{14}$",
+   "description": "원 접수번호. 원본이면 자기 자신. 레코드 묶음 안에 반드시 있어야 함"
+  },
+  "is_correction": {
+   "type": "boolean"
+  },
+  "available_at_kst": {
+   "type": "string",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(T[0-9]{2}:[0-9]{2}(:[0-9]{2})?\\+09:00)?$",
+   "description": "KST 시각(+09:00) 또는 날짜만. 날짜만이면 그날 23:59:59로 보아 당일 사용 금지(다음 거래일부터). 공식 접수 시각 근거가 없으면 날짜만 넣음 · 비우면 사용 불가."
+  },
+  "available_precision": {
+   "enum": [
+    "time",
+    "date"
+   ]
+  },
+  "rcept_dt": {
+   "type": "string",
+   "pattern": "^[0-9]{8}$"
+  },
+  "code": {
+   "type": "string",
+   "description": "로컬 전용"
+  },
+  "corp_code": {
+   "type": "string"
+  },
+  "report_nm": {
+   "type": "string",
+   "description": "로컬 전용"
+  },
+  "kind": {
+   "enum": [
+    "split",
+    "reverse_split",
+    "capital_reduction",
+    "bonus_issue",
+    "rights_issue",
+    "rights_bonus_issue",
+    "merger",
+    "spinoff",
+    "spinoff_merger"
+   ]
+  },
+  "ratio": {
+   "type": "number",
+   "exclusiveMinimum": 0,
+   "description": "1주당 바뀐 뒤 주식 수(분할 5 · 감자 0.1 · 무상 1.5)"
+  },
+  "record_date": {
+   "type": "string",
+   "pattern": "^[0-9]{8}$"
+  },
+  "effective_date": {
+   "type": "string",
+   "pattern": "^[0-9]{8}$"
+  },
+  "price_basis_date": {
+   "type": "string",
+   "pattern": "^[0-9]{8}$",
+   "description": "원주가 기준이 바뀌는 첫 거래일(권리락일 · 변경상장 뒤 거래 재개일). 수량 조정 기준일. 휴장일이면 그 뒤 첫 거래일에 적용"
+  },
+  "listing_date": {
+   "type": "string",
+   "pattern": "^[0-9]{8}$",
+   "description": "신주 상장일. 이 날 전에는 늘어난 수량을 평가에만 넣고 팔 수 없음"
+  },
+  "cash_in_lieu_per_share": {
+   "type": [
+    "number",
+    "null"
+   ]
+  },
+  "source_endpoint": {
+   "enum": [
+    "piicDecsn",
+    "fricDecsn",
+    "pifricDecsn",
+    "crDecsn",
+    "cmpMgDecsn",
+    "cmpDvDecsn",
+    "cmpDvmgDecsn",
+    "document"
+   ],
+   "description": "분할 · 병합은 7개 구조화 API에 없을 수 있어 document(공시 원문) — 실제 실행 TASK에서 공식 문서로 확인"
+  },
+  "source_cache_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "split"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "effective_date",
+     "price_basis_date",
+     "listing_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "reverse_split"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "effective_date",
+     "price_basis_date",
+     "listing_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "capital_reduction"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "effective_date",
+     "price_basis_date",
+     "listing_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "bonus_issue"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "record_date",
+     "effective_date",
+     "price_basis_date",
+     "listing_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "rights_issue"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "record_date",
+     "effective_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "rights_bonus_issue"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "record_date",
+     "effective_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "merger"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "effective_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "spinoff"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "effective_date"
+    ]
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "kind": {
+      "const": "spinoff_merger"
+     }
+    }
+   },
+   "then": {
+    "required": [
+     "ratio",
+     "effective_date"
+    ]
+   }
+  }
+ ],
+ "additionalProperties": true
+}

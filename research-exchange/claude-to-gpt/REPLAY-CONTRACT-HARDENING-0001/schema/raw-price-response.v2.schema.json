@@ -1,0 +1,153 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "raw-price-response.v2",
+ "title": "KIS 일봉 원/수정 응답 한 쪽 v2",
+ "description": "원(FID_ORG_ADJ_PRC='1') · 수정('0') 두 응답이 한 쌍. 짝 검사: basis 칸과 플래그 일치 · 플래그 말고 요청 칸 전부 같음 · 요청 해시 = sha256(정렬 JSON(request)) · 캐시 해시 = 캐시 파일 sha256 · 조회 시각은 +09:00 시각. 하나라도 어긋나면 UNKNOWN_PROVENANCE. on-tick은 원주가 증거가 아님.",
+ "type": "object",
+ "required": [
+  "request",
+  "basis",
+  "request_param_sha256",
+  "cache_file_sha256",
+  "fetched_at_kst",
+  "rows"
+ ],
+ "properties": {
+  "request": {
+   "type": "object",
+   "required": [
+    "endpoint",
+    "tr_id",
+    "params"
+   ],
+   "properties": {
+    "endpoint": {
+     "const": "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
+    },
+    "tr_id": {
+     "const": "FHKST03010100"
+    },
+    "params": {
+     "type": "object",
+     "required": [
+      "FID_COND_MRKT_DIV_CODE",
+      "FID_INPUT_ISCD",
+      "FID_INPUT_DATE_1",
+      "FID_INPUT_DATE_2",
+      "FID_PERIOD_DIV_CODE",
+      "FID_ORG_ADJ_PRC"
+     ],
+     "properties": {
+      "FID_PERIOD_DIV_CODE": {
+       "const": "D"
+      },
+      "FID_ORG_ADJ_PRC": {
+       "enum": [
+        "0",
+        "1"
+       ]
+      },
+      "FID_INPUT_DATE_1": {
+       "type": "string",
+       "pattern": "^[0-9]{8}$"
+      },
+      "FID_INPUT_DATE_2": {
+       "type": "string",
+       "pattern": "^[0-9]{8}$"
+      }
+     }
+    }
+   }
+  },
+  "basis": {
+   "enum": [
+    "RAW",
+    "ADJUSTED"
+   ]
+  },
+  "request_param_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "cache_file_sha256": {
+   "type": "string",
+   "pattern": "^[0-9a-f]{64}$"
+  },
+  "fetched_at_kst": {
+   "type": "string",
+   "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}(:[0-9]{2})?\\+09:00$"
+  },
+  "rows": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "stck_bsop_date",
+     "stck_clpr"
+    ],
+    "properties": {
+     "stck_bsop_date": {
+      "type": "string",
+      "pattern": "^[0-9]{8}$"
+     },
+     "stck_clpr": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    }
+   }
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "basis": {
+      "const": "RAW"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "request": {
+      "properties": {
+       "params": {
+        "properties": {
+         "FID_ORG_ADJ_PRC": {
+          "const": "1"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "if": {
+    "properties": {
+     "basis": {
+      "const": "ADJUSTED"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "request": {
+      "properties": {
+       "params": {
+        "properties": {
+         "FID_ORG_ADJ_PRC": {
+          "const": "0"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ ]
+}

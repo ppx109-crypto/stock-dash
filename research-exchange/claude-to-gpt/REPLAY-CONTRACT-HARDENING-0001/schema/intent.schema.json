@@ -1,0 +1,94 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "intent.v1",
+ "title": "148체결 의도(로컬 전용 레코드의 형식)",
+ "description": "PR #76 판단일 목표 수량을 그대로 잠금. 원주가 재생 때 target_raw = floor(target_adj × 저장 수정종가_t ÷ 공식 원주가_t). 공개는 개수 · 해시만.",
+ "type": "object",
+ "required": [
+  "fill_id",
+  "sleeve",
+  "date",
+  "side",
+  "status"
+ ],
+ "properties": {
+  "fill_id": {
+   "type": "string",
+   "pattern": "^(D1|BASKET)-[0-9]{4}$"
+  },
+  "sleeve": {
+   "enum": [
+    "D1",
+    "BASKET"
+   ]
+  },
+  "date": {
+   "type": "string",
+   "pattern": "^[0-9]{8}$"
+  },
+  "side": {
+   "enum": [
+    "buy",
+    "sell"
+   ]
+  },
+  "status": {
+   "enum": [
+    "MAPPED_PENDING_OFFICIAL_RAW",
+    "BLOCKED_DUP_INTENT",
+    "BLOCKED_NO_DECISION",
+    "BLOCKED_NO_TARGET_FOR_CODE",
+    "BLOCKED_SIDE_OR_QTY_MISMATCH",
+    "BLOCKED_NO_ADJ_AT_DECISION",
+    "BLOCKED_DECISION_NOT_BEFORE_FILL"
+   ]
+  },
+  "intent": {
+   "type": [
+    "object",
+    "null"
+   ],
+   "required": [
+    "kind",
+    "decided_at",
+    "target_adj",
+    "adj_close_decided"
+   ],
+   "properties": {
+    "kind": {
+     "const": "target_adj"
+    },
+    "decided_at": {
+     "type": "string",
+     "pattern": "^[0-9]{8}$"
+    },
+    "target_adj": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "adj_close_decided": {
+     "type": "number",
+     "exclusiveMinimum": 0
+    }
+   }
+  }
+ },
+ "allOf": [
+  {
+   "if": {
+    "properties": {
+     "status": {
+      "const": "MAPPED_PENDING_OFFICIAL_RAW"
+     }
+    }
+   },
+   "then": {
+    "properties": {
+     "intent": {
+      "type": "object"
+     }
+    }
+   }
+  }
+ ]
+}
