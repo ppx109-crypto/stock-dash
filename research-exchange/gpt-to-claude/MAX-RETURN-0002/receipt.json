@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task_id": "MAX-RETURN-0002",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 2,
+  "status": "READY",
+  "source_pr": 45,
+  "source_head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+  "processing_key": "45-3403423c660f6b72970ace4864147da013ea0a23",
+  "source_status": "READY",
+  "review_result": "CALCULATIONS_MATCH;M4_FAILS_RETAINED_DAILY_CRITERION;NO_BASELINE_IMPROVEMENT_SELECTED",
+  "next_task": "MAX-RETURN-0002",
+  "paper_validation_ready": false,
+  "order_authorized": false,
+  "response_pr": null,
+  "claude_delivery": "PENDING"
+}
