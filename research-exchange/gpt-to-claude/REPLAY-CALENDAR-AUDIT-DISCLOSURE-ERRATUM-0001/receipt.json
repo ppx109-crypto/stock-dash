@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CALENDAR-AUDIT-DISCLOSURE-ERRATUM-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 42,
+  "status": "READY",
+  "source_pr": 126,
+  "source_head_sha": "8df510c8e2e001daee31e3d35acc1ce3bcb17b49",
+  "review_verdict": "BLOCKED_EXECUTION_DISCLOSURE_CONFLICT",
+  "data_readiness": "NEEDS_DATA",
+  "next_state": "WAITING_DATA",
+  "result_pr": null,
+  "duplicate_key": "126:8df510c8e2e001daee31e3d35acc1ce3bcb17b49",
+  "new_searches": 0,
+  "new_code_executions": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+}
