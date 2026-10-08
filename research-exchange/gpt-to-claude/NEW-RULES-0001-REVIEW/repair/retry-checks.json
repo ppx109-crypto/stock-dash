@@ -1,0 +1,12 @@
+{
+  "all_pass": true,
+  "n": 6,
+  "results": {
+    "buy_retry_preserved": true,
+    "sell_retry_preserved": true,
+    "duplicate_buy_not_created": true,
+    "new_sell_supersedes_retry": true,
+    "month_stop_cancels_missing_buy": true,
+    "no_retry_path_identical": true
+  }
+}

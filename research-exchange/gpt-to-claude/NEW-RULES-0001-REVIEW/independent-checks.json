@@ -1,0 +1,500 @@
+{
+  "manifest_files": 54,
+  "manifest_hashes_ok": true,
+  "metrics": [
+    {
+      "dataset": "full_B3_x1_1e7",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 2.5055,
+      "MDD_daily": -4.6921,
+      "worst_day": -1.2296,
+      "worst_month": -1.8892,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 58.705
+    },
+    {
+      "dataset": "full_B3_x1_1e7",
+      "period": "Validation 2019-01~2022-12",
+      "CAGR": 2.7668,
+      "MDD_daily": -5.6228,
+      "worst_day": -2.6845,
+      "worst_month": -2.0258,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 65.9012
+    },
+    {
+      "dataset": "full_B3_x1_1e7",
+      "period": "진단 2023-01~2026-09(이미 봄)",
+      "CAGR": 7.6757,
+      "MDD_daily": -6.6047,
+      "worst_day": -4.156,
+      "worst_month": -5.2443,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 60.571
+    },
+    {
+      "dataset": "full_B3_x1_1e7",
+      "period": "전체",
+      "CAGR": 3.8612,
+      "MDD_daily": -6.6047,
+      "worst_day": -4.156,
+      "worst_month": -5.2443,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 61.1383
+    },
+    {
+      "dataset": "full_B3_x1_1e8",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 2.6131,
+      "MDD_daily": -4.7321,
+      "worst_day": -1.2328,
+      "worst_month": -1.9059,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 58.2426
+    },
+    {
+      "dataset": "full_B3_x1_1e8",
+      "period": "Validation 2019-01~2022-12",
+      "CAGR": 2.9087,
+      "MDD_daily": -5.6189,
+      "worst_day": -2.6865,
+      "worst_month": -1.9506,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 65.7143
+    },
+    {
+      "dataset": "full_B3_x1_1e8",
+      "period": "진단 2023-01~2026-09(이미 봄)",
+      "CAGR": 7.8059,
+      "MDD_daily": -6.7456,
+      "worst_day": -4.2453,
+      "worst_month": -5.3556,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 60.2297
+    },
+    {
+      "dataset": "full_B3_x1_1e8",
+      "period": "전체",
+      "CAGR": 3.9836,
+      "MDD_daily": -6.7456,
+      "worst_day": -4.2453,
+      "worst_month": -5.3556,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 60.7816
+    },
+    {
+      "dataset": "full_B3_x2_1e7",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.72,
+      "MDD_daily": -5.5602,
+      "worst_day": -1.1885,
+      "worst_month": -2.003,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 60.3427
+    },
+    {
+      "dataset": "full_B3_x2_1e7",
+      "period": "Validation 2019-01~2022-12",
+      "CAGR": 1.819,
+      "MDD_daily": -5.839,
+      "worst_day": -2.6981,
+      "worst_month": -2.1032,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 66.7188
+    },
+    {
+      "dataset": "full_B3_x2_1e7",
+      "period": "진단 2023-01~2026-09(이미 봄)",
+      "CAGR": 4.3532,
+      "MDD_daily": -6.6623,
+      "worst_day": -4.1912,
+      "worst_month": -5.3208,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 71.4526
+    },
+    {
+      "dataset": "full_B3_x2_1e7",
+      "period": "전체",
+      "CAGR": 2.4061,
+      "MDD_daily": -6.6623,
+      "worst_day": -4.1912,
+      "worst_month": -5.3208,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 64.8824
+    },
+    {
+      "dataset": "full_B3_x2_1e8",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.6515,
+      "MDD_daily": -5.5301,
+      "worst_day": -1.2336,
+      "worst_month": -2.013,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 59.8245
+    },
+    {
+      "dataset": "full_B3_x2_1e8",
+      "period": "Validation 2019-01~2022-12",
+      "CAGR": 2.3125,
+      "MDD_daily": -5.8229,
+      "worst_day": -2.6956,
+      "worst_month": -2.0136,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 65.9251
+    },
+    {
+      "dataset": "full_B3_x2_1e8",
+      "period": "진단 2023-01~2026-09(이미 봄)",
+      "CAGR": 4.8378,
+      "MDD_daily": -6.7692,
+      "worst_day": -4.2636,
+      "worst_month": -5.3811,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 68.048
+    },
+    {
+      "dataset": "full_B3_x2_1e8",
+      "period": "전체",
+      "CAGR": 2.6281,
+      "MDD_daily": -6.814,
+      "worst_day": -4.2636,
+      "worst_month": -5.3811,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 63.5615
+    },
+    {
+      "dataset": "train_A1_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.3388,
+      "MDD_daily": -9.9937,
+      "worst_day": -2.4412,
+      "worst_month": -4.0933,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 62.5931
+    },
+    {
+      "dataset": "train_A1_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.7196,
+      "MDD_daily": -10.3507,
+      "worst_day": -2.1889,
+      "worst_month": -4.1799,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 67.2943
+    },
+    {
+      "dataset": "train_A2_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.7247,
+      "MDD_daily": -12.6098,
+      "worst_day": -2.0394,
+      "worst_month": -4.7897,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 72.8595
+    },
+    {
+      "dataset": "train_A2_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -1.172,
+      "MDD_daily": -13.2232,
+      "worst_day": -2.0417,
+      "worst_month": -4.042,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 76.3276
+    },
+    {
+      "dataset": "train_A3_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.2969,
+      "MDD_daily": -8.3041,
+      "worst_day": -3.5135,
+      "worst_month": -5.6832,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 52.5848
+    },
+    {
+      "dataset": "train_A3_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.1187,
+      "MDD_daily": -8.4066,
+      "worst_day": -3.5183,
+      "worst_month": -5.7685,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 53.8282
+    },
+    {
+      "dataset": "train_A4_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.6111,
+      "MDD_daily": -8.4363,
+      "worst_day": -3.6343,
+      "worst_month": -6.0133,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 50.879
+    },
+    {
+      "dataset": "train_A4_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.2424,
+      "MDD_daily": -8.473,
+      "worst_day": -3.6366,
+      "worst_month": -6.1131,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 53.1086
+    },
+    {
+      "dataset": "train_B1_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.6556,
+      "MDD_daily": -6.1005,
+      "worst_day": -1.2067,
+      "worst_month": -2.1675,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 54.2097
+    },
+    {
+      "dataset": "train_B1_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.424,
+      "MDD_daily": -7.5515,
+      "worst_day": -0.981,
+      "worst_month": -2.2931,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 64.1789
+    },
+    {
+      "dataset": "train_B2_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.0499,
+      "MDD_daily": -7.947,
+      "worst_day": -1.6049,
+      "worst_month": -2.8738,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 62.608
+    },
+    {
+      "dataset": "train_B2_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.0116,
+      "MDD_daily": -10.2887,
+      "worst_day": -1.3482,
+      "worst_month": -2.9555,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 68.0193
+    },
+    {
+      "dataset": "train_B3_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 2.5055,
+      "MDD_daily": -4.6921,
+      "worst_day": -1.2296,
+      "worst_month": -1.8892,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 58.705
+    },
+    {
+      "dataset": "train_B3_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 1.72,
+      "MDD_daily": -5.5602,
+      "worst_day": -1.1885,
+      "worst_month": -2.003,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 60.3427
+    },
+    {
+      "dataset": "train_B4_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 3.0459,
+      "MDD_daily": -6.3643,
+      "worst_day": -1.6284,
+      "worst_month": -2.2427,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 55.73
+    },
+    {
+      "dataset": "train_B4_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.9135,
+      "MDD_daily": -7.6311,
+      "worst_day": -1.6523,
+      "worst_month": -2.3485,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 62.558
+    },
+    {
+      "dataset": "train_C1_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.1437,
+      "MDD_daily": -8.7838,
+      "worst_day": -2.9202,
+      "worst_month": -2.5584,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 90.6785
+    },
+    {
+      "dataset": "train_C1_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.6927,
+      "MDD_daily": -11.0178,
+      "worst_day": -1.9107,
+      "worst_month": -2.2289,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 90.9945
+    },
+    {
+      "dataset": "train_C2_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.0262,
+      "MDD_daily": -9.5551,
+      "worst_day": -3.8125,
+      "worst_month": -4.5178,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 90.0806
+    },
+    {
+      "dataset": "train_C2_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.5801,
+      "MDD_daily": -10.1793,
+      "worst_day": -1.9246,
+      "worst_month": -1.7711,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 90.7697
+    },
+    {
+      "dataset": "train_C3_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.7401,
+      "MDD_daily": -5.7316,
+      "worst_day": -1.76,
+      "worst_month": -2.1172,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 93.4966
+    },
+    {
+      "dataset": "train_C3_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.2771,
+      "MDD_daily": -6.5801,
+      "worst_day": -1.4404,
+      "worst_month": -1.3617,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 94.8915
+    },
+    {
+      "dataset": "train_C4_x1",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": 0.7401,
+      "MDD_daily": -5.7316,
+      "worst_day": -1.76,
+      "worst_month": -2.1172,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 93.4966
+    },
+    {
+      "dataset": "train_C4_x2",
+      "period": "Train 2012-01~2018-12",
+      "CAGR": -0.2771,
+      "MDD_daily": -6.5801,
+      "worst_day": -1.4404,
+      "worst_month": -1.3617,
+      "day_breach_-15": 0,
+      "month_breach_-15": 0,
+      "cash_ratio_avg_pct": 94.8915
+    }
+  ],
+  "mismatches": [],
+  "fill_checks": [
+    {
+      "file": "fills_full_B3_x1_1e7.csv",
+      "rows": 1556,
+      "not_after_decision": 0,
+      "unexpected_cost_bp": 0,
+      "statuses": [
+        "FILLED"
+      ]
+    },
+    {
+      "file": "fills_full_B3_x1_1e8.csv",
+      "rows": 1560,
+      "not_after_decision": 0,
+      "unexpected_cost_bp": 0,
+      "statuses": [
+        "FILLED",
+        "REDUCED"
+      ]
+    },
+    {
+      "file": "fills_full_B3_x2_1e7.csv",
+      "rows": 1646,
+      "not_after_decision": 0,
+      "unexpected_cost_bp": 0,
+      "statuses": [
+        "FILLED",
+        "REDUCED"
+      ]
+    },
+    {
+      "file": "fills_full_B3_x2_1e8.csv",
+      "rows": 1619,
+      "not_after_decision": 0,
+      "unexpected_cost_bp": 0,
+      "statuses": [
+        "FILLED",
+        "REDUCED"
+      ]
+    }
+  ],
+  "missing_price_fixture": {
+    "retry_count": 1,
+    "pending_after_missing": 0,
+    "fills_when_price_returns": 0,
+    "contract_holds": false,
+    "historical_B3_retry_counts": {
+      "full_B3_x1_1e7": {},
+      "full_B3_x1_1e8": {},
+      "full_B3_x2_1e7": {},
+      "full_B3_x2_1e8": {}
+    }
+  }
+}

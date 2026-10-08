@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "NEW-RULES-0001-REVIEW",
+  "chain_id": "NEW-RULES-20261008",
+  "round": 2,
+  "status": "REVIEWED",
+  "source_pr": 43,
+  "source_head_sha": "c75af98844de51d3b3149b057513d668f2a20b1a",
+  "detected_at_kst": "2026-10-08T14:25:55+09:00",
+  "review_completed_at_kst": "2026-10-08T14:31:25+09:00",
+  "result": "RESEARCH_CANDIDATE",
+  "candidate": "B3",
+  "independent_validation": "WAITING_DATA",
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "next_task_status": "NEEDS_DATA",
+  "automatic_next_calculation": false,
+  "response_pr": null,
+  "delivery_status": "PENDING_EXISTING_SESSION",
+  "cancelled_pr": 42
+}
