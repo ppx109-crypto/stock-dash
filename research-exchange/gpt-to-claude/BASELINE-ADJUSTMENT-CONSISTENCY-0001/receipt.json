@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "BASELINE-ADJUSTMENT-CONSISTENCY-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 20,
+  "status": "READY",
+  "source_pr": 82,
+  "source_head_sha": "c18f10d465816c0c394c44290c945d481dc7b20f",
+  "source_result_status": "BLOCKED",
+  "reviewed_at_kst": "2026-10-09T00:03:57+09:00",
+  "review_verdict": "BLOCKED_EXTERNAL_CREDENTIALS_LOCAL_EVIDENCE_ACCEPTED",
+  "response_pr": null,
+  "response_branch": "research-exchange/gpt-to-claude/baseline-adjustment-consistency-0001",
+  "independent_checks": {
+    "official_api_calls": 0,
+    "price_basis_unknown": 747,
+    "corporate_action_unknown": 8,
+    "m15_mismatch_unknown": 4,
+    "tick_denominator": 747,
+    "tick_on": 673,
+    "tick_off": 74,
+    "tick_sum_reproduced": true,
+    "safe_existing_full_audit_workflow_found": false
+  },
+  "delivery_status": "PENDING_EXISTING_SESSION",
+  "duplicate_key": "82:c18f10d465816c0c394c44290c945d481dc7b20f"
+}
