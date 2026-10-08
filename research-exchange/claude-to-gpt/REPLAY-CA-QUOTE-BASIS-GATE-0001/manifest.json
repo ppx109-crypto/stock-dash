@@ -1,0 +1,170 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-QUOTE-BASIS-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 38,
+ "status": "READY",
+ "source_pr": 118,
+ "source_head_sha": "c8826304387ae99f92adf09bedc0b1997618d703",
+ "code_commit": "55ccac346dd28fc244974c66ea26547bb3e0dddf",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/quote_basis_gate.py",
+  "evidence/quote-basis-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:32:26+09:00",
+ "input": {
+  "pr": 119,
+  "head_sha": "90ee24c2709b109331e9fd6d89ac5a18293b04dc",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T03:27:48+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "c8826304387ae99f92adf09bedc0b1997618d703"
+   },
+   {
+    "at_kst": "2026-10-09T03:32:26+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "c8826304387ae99f92adf09bedc0b1997618d703"
+   }
+  ]
+ },
+ "prereg_commit": "c947393ccc3166255b89009a20643cd892a59908",
+ "prereg_committed_at_kst": "2026-10-09T03:29:36+09:00",
+ "verdict": "READY(합성 시세 가격기준 게이트) / process_day 첫 문장에서 시세 배치 기준 검사 · ADJUSTED·누락·빈 값·다른 문자열·혼합은 DAY_BLOCKED(apply_batch 0·대입 0·가격 변경 0·스냅숏 0·해시 불변) · Q2 음성 NAV 387,020→1,935,100 · Q7 PR118 P1·PR114 11 fixture 다른 칸 0 · Q8 결정성 True",
+ "status_source": "evidence summary.all_pass",
+ "summary": {
+  "fixed_sha_ok": {
+   "pr118_code": true,
+   "pr118_evidence": true,
+   "pr114_evidence": true
+  },
+  "code_order_gate_before_all": true,
+  "Q1": true,
+  "Q2_negative": true,
+  "Q3": true,
+  "Q4": true,
+  "Q5": true,
+  "Q6": true,
+  "Q7": true,
+  "Q8": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "code_order": {
+  "gate_is_first_two_statements": true,
+  "gate_return_line": 147,
+  "apply_batch_lines": [
+   148
+  ],
+  "quote_assign_lines": [
+   150
+  ],
+  "snapshot_append_lines": [
+   151
+  ],
+  "gate_before_all": true
+ },
+ "q2_q3": {
+  "negative_control_pr118": {
+   "day_result": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|split|5|2026-01-29": "OK"
+    }
+   },
+   "nav_d0": "387020",
+   "nav_d1": "1935100"
+  },
+  "new_gate_q3": {
+   "day_result": {
+    "verdict": "DAY_BLOCKED",
+    "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+    "bad_quote_syms": [
+     "A"
+    ]
+   },
+   "apply_batch_calls": 0,
+   "snaps_delta": 0,
+   "nav_d1": "387020"
+  }
+ },
+ "q7_diff_count": 0,
+ "fixed_inputs": {
+  "pr118_code": {
+   "git_blob": "eea9be862257dd4257d853d6967a475af0533135",
+   "sha256": "e819ab86121564bef751c2ab5b767d2815b52caa938bdaad39492ed11c04676e"
+  },
+  "pr118_evidence": {
+   "git_blob": "4b11cadb450c207534020024b343a65809fc6453",
+   "sha256": "7ba23f09aae5184ff56ca765e6591a26d94ce5fd0bcdec0f1987f192705de420"
+  },
+  "pr114_evidence": {
+   "git_blob": "02f65d3c797d988315880cf08cbdbfbc5c72915f",
+   "sha256": "ecfb7a757e8de81a06027c39d2119b2bcf4c46bbaf090f4226df23b0c9fe2ace"
+  }
+ },
+ "disclosure": {
+  "pre_run_code_change": "시험 도우미 이름 q→qi(사전등록 뒤 · 공식 실행 전 · 동작 같음)",
+  "q5_values": "A 52,400 · B 910 사전등록에서 정한 합성 값",
+  "empty_quote_batch": "계약 3번 문구대로 허용 안 함 · 시험 안 함 · 새 정책 아님",
+  "audit_field": "blocked_from 한 칸만 바뀜"
+ },
+ "residual_risk": {
+  "label_provenance": "RAW로 잘못 붙은 수정 시세는 통과(NEEDS_DATA)",
+  "perf_reads_snapshots_only": "차단된 날은 스냅숏이 없어 마지막 날 차단을 perf가 놓칠 수 있음 · blocked_from 함께 읽어야 함",
+  "price_only_monitor": "Q2에서 가격 칸은 전후 같고 수량만 5배 · q×p/NAV 감시 필요"
+ },
+ "next_decision": "실제 Train 재생 가격기준 선택(원주가+기업행위 vs 수정주가) — GPT·사용자 결정",
+ "file_sha256": {
+  "PREREG.md": "318c0ae3a167a8c6ad2a7f4a27a0cda03ce154160926dfdbfa26226de288c627",
+  "REPORT.md": "55b9e77e471ccc108682e42c5178784f211d4e9f6fb1af287fc7fa01d8725889",
+  "code/quote_basis_gate.py": "049342e8fa545f5092498eba8d19bc90cf1d850962f805bd0df61ba439384e93",
+  "evidence/quote-basis-gate.json": "b7308516c2036cbcbc5f50cac3959f7713ea046e364d943eb39b90bae8945f70",
+  "evidence/tables.md": "b141acec3132df65b36d92f38dacc888639109616ebe991e073d067c186501b3",
+  "evidence/run.log": "48f9debe0bf45056b63da55415ea6a876133a5b01ff30c4926de2e5ec2bdae47"
+ },
+ "runs": {
+  "official_runs": 1,
+  "cap": 1,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "real_events_applied": 0,
+  "real_quotes": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "kis_param_change": 0,
+  "existing_file_modification": 0,
+  "orders": 0,
+  "operations": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "oos": false
+}
