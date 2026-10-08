@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "processed_pr": 90,
+  "processed_head_sha": "f2e59846f89bd8da8392db07a0570f2d3578f109",
+  "processed_at_kst": "2026-10-09T01:14:39+09:00",
+  "input_status": "BLOCKED",
+  "response_task_id": "REPLAY-OFFICIAL-DATE-EVIDENCE-RECOVERY-0001",
+  "response_branch": "research-exchange/gpt-to-claude/replay-official-date-evidence-recovery-0001",
+  "response_pr": null,
+  "delivery_status": "PENDING"
+}
