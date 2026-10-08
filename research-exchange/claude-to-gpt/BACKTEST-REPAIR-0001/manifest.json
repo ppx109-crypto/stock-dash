@@ -1,0 +1,270 @@
+{
+ "schema_version": 1,
+ "task_id": "BACKTEST-REPAIR-0001",
+ "chain_id": "BACKTEST-FIRST-20261008",
+ "round": 1,
+ "status": "READY",
+ "status_meaning": "기존 백테스트 결함 K1~K9를 연구 사본에서 고쳐 다시 잰 결과. 문턱 · 배분 변경 없음. 이미 본 기간이라 OOS 아님. 운영 · 모의 반영 아님",
+ "source_pr": 38,
+ "source_head_sha": "f103323df19b5d63ea279d393f74b10ee15ad6ac",
+ "prereg_commit": "f7276caa",
+ "code_ref": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "cost_contract": "1e6ed49b9b982ab3ab999082c7455e26cccc0bfd",
+  "etf_rules": "f103323df19b5d63ea279d393f74b10ee15ad6ac",
+  "changed_only": [
+   "nrl.teacher / nrl.steady (K1 수급 끝 하루 앞으로)",
+   "rule.holds (K2 달별 calm 문턱)",
+   "basket 공시 제목 정제 (K3)",
+   "새 장부 kernel.py (K5 · K6 · K7 · K8 · K9)"
+  ]
+ },
+ "data_ref": {
+  "engine_data": "00b98ab1 같은 커밋의 etf-data · event-data · m15-kis · volume-data",
+  "nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "m15_ledgers": {
+   "commit": "a61f033ecd16ba0976c955a93bfec70c7463ad53",
+   "research-exchange/claude-to-gpt/RULES-0002/results/m15_ASIS.json": "6c564cb41911519efdf58418cf2f05b883436ee039bc0deedd708ef483dc38ce",
+   "research-exchange/claude-to-gpt/RULES-0002/results/m15_FLOW-LAG2.json": "dec65bb287b0e87d07d7ce797a2308547c4af0b95dd4c574f8e97bbeef8e27aa"
+  },
+  "raw_data_published": false
+ },
+ "periods": {
+  "Train": "2017-02~2020-12",
+  "Validation": "2021~2022",
+  "다시 본": "2023-01~2026-09",
+  "oos": false
+ },
+ "execution": {
+  "close": "종가 근사(원래 15:10 체결은 정확 재현 못 함 · 15:10 값을 종가로 대신하지 않음)",
+  "next": "보수 판 · 다음 거래일 종가 체결",
+  "m15": "바 시가 체결(정확 재현)"
+ },
+ "cost_stress": [
+  1,
+  2
+ ],
+ "loss_standard": "하루 TWR −15% · 달력월 TWR −15% (MDD는 따로 평가)",
+ "verdicts": {
+  "1일봉 새82": {
+   "verdict": "보완 후보",
+   "why": "CAGR 22.78% > 0이나 못 지킴: 달력월 기준"
+  },
+  "15분봉": {
+   "verdict": "증거 부족",
+   "why": "자료 1년 이하 또는 거래 120건"
+  },
+  "빈칸 엔진": {
+   "verdict": "보완 후보",
+   "why": "CAGR 3.86% > 0이나 못 지킴: CI 하한 > 0"
+  },
+  "코스닥 인버스": {
+   "verdict": "폐기 후보",
+   "why": "보수 · 기본 비용 CAGR -3.22% · CI [-2.144, 0.017]"
+  },
+  "엔진 + 인버스 소매": {
+   "verdict": "폐기 후보",
+   "why": "보수 · 기본 비용 CAGR -0.13% · CI [-0.313, 0.458]"
+  },
+  "바구니 C": {
+   "verdict": "유지",
+   "why": "CAGR 7.62% · CI [0.374, 5.619] · 기준 안 넘음 · 2배 비용 CAGR 4.01%"
+  }
+ },
+ "evidence_paths": [
+  "evidence/d1_ledger_ASIS.csv",
+  "evidence/d1_ledger_FIX.csv",
+  "evidence/d1_ledger_K1.csv",
+  "evidence/d1_ledger_K2.csv",
+  "evidence/d1_signals.log",
+  "evidence/d1_signals_summary.json",
+  "evidence/nav_BASKET_ASIS_close_x1.csv",
+  "evidence/nav_BASKET_FIX_next_x1.csv",
+  "evidence/nav_D1_ASIS_close_x1.csv",
+  "evidence/nav_D1_ASIS_next_x1.csv",
+  "evidence/nav_D1_FIX_close_x1.csv",
+  "evidence/nav_D1_FIX_next_x1.csv",
+  "evidence/nav_ETF_sleeve_ASIS_close_x1.csv",
+  "evidence/nav_ETF_sleeve_FIX_next_x1.csv",
+  "evidence/nav_M15_ASIS_x1.csv",
+  "evidence/nav_M15_FLOW-LAG2_x1.csv",
+  "evidence/results.json",
+  "evidence/run.log",
+  "evidence/tables.md",
+  "evidence/trades_BASKET_ASIS_close_x1.csv",
+  "evidence/trades_BASKET_FIX_next_x1.csv",
+  "evidence/trades_D1_ASIS_close_x1.csv",
+  "evidence/trades_D1_ASIS_next_x1.csv",
+  "evidence/trades_D1_FIX_close_x1.csv",
+  "evidence/trades_D1_FIX_next_x1.csv",
+  "evidence/trades_ETF_sleeve_ASIS_close_x1.csv",
+  "evidence/trades_ETF_sleeve_FIX_next_x1.csv",
+  "evidence/trades_M15_ASIS_x1.csv",
+  "evidence/trades_M15_FLOW-LAG2_x1.csv",
+  "evidence/verdicts.json"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "cd36fe3707a25e655cd36ca42cde4bc96c7a5b3456a395c5eda2951853671a9d"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "cb935016edf7a9381a5603fda53e9e4ab5d736b4a2865493c931776d1c5f8c7a"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/d1_signals.py",
+   "sha256": "64e69153a6a54462f8879a7f979e0cc2cbdef0acb920a73db4d2031431aaea88"
+  },
+  {
+   "path": "code/kernel.py",
+   "sha256": "2924f988f69cab56b8f9373d6586efd560d3ac455144fe56c8c13fd777d634a3"
+  },
+  {
+   "path": "code/make_tables.py",
+   "sha256": "d870ad606b754e855990dcf648948c9f08c0f123ba26e95ef72cd927db3a8123"
+  },
+  {
+   "path": "code/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "code/run_all.py",
+   "sha256": "18a9107c08f0a6d0edd0935c5d228a8eda96fec66638d5bca50bea97141aab4b"
+  },
+  {
+   "path": "evidence/d1_ledger_ASIS.csv",
+   "sha256": "0756966bee1ed27372b99588c3dd0be5f59c4c029e99c41503c55aed82657f91"
+  },
+  {
+   "path": "evidence/d1_ledger_FIX.csv",
+   "sha256": "236413aea6e9029286b4cf6891008f11f729e2d79334afdaead0b92a8fa2f1fc"
+  },
+  {
+   "path": "evidence/d1_ledger_K1.csv",
+   "sha256": "c70fcf0c9b6924792e8570157bdf62b4155c108767092c99fe53bf2b2a3c66ca"
+  },
+  {
+   "path": "evidence/d1_ledger_K2.csv",
+   "sha256": "70724091c396829d10a4e10bcac8e10229e7f372470e8b05597df6e3d215c197"
+  },
+  {
+   "path": "evidence/d1_signals.log",
+   "sha256": "14efb4a2fa13104c1b452826d199308b8bd8a89c486f9fce7b4e653fa48e735d"
+  },
+  {
+   "path": "evidence/d1_signals_summary.json",
+   "sha256": "57b0c1074919d3eb7ff7edd4e1bf6ca0ca0633994ed1a9407b6ce52e1e4740fe"
+  },
+  {
+   "path": "evidence/nav_BASKET_ASIS_close_x1.csv",
+   "sha256": "2cb2a53eb229843814c711251e708d0739d3302d2cc83241c05b774978bf6ce2"
+  },
+  {
+   "path": "evidence/nav_BASKET_FIX_next_x1.csv",
+   "sha256": "a928fc36bac5a9459d9d279301d6e465e0865cd3f3c6231953763166c850dd49"
+  },
+  {
+   "path": "evidence/nav_D1_ASIS_close_x1.csv",
+   "sha256": "ea0b361b04a2e04108c8604d4515d13db08894f2ff92d6f757ff7f8061fc28bd"
+  },
+  {
+   "path": "evidence/nav_D1_ASIS_next_x1.csv",
+   "sha256": "3f71333a0b1c5a1faf26865289c4853cb7923d47eea225011c959262c24bb871"
+  },
+  {
+   "path": "evidence/nav_D1_FIX_close_x1.csv",
+   "sha256": "62d87d0c01549049c4efefe7ef5a10a0f0a29e573bf0753043dcac3aabb56f53"
+  },
+  {
+   "path": "evidence/nav_D1_FIX_next_x1.csv",
+   "sha256": "3074d128c0fc6f04da7d960729cb148364fe294b1a8e9955e0faf8fc0732b178"
+  },
+  {
+   "path": "evidence/nav_ETF_sleeve_ASIS_close_x1.csv",
+   "sha256": "3556d4cc517ccb7f60bde2ed0b288dfd0f68a1987d63c70cf031f43a505a514d"
+  },
+  {
+   "path": "evidence/nav_ETF_sleeve_FIX_next_x1.csv",
+   "sha256": "969bed1f62669ff46205e33e05b200bc757bbe36fc118676a60fc125b725d41c"
+  },
+  {
+   "path": "evidence/nav_M15_ASIS_x1.csv",
+   "sha256": "ef24a79beeac4546a87d70ad7a3acbbb177fba82d3dcf07a2079e20d99cdbf3a"
+  },
+  {
+   "path": "evidence/nav_M15_FLOW-LAG2_x1.csv",
+   "sha256": "03a5da485910b2d93b9ccba5d88268097364fe2a6d8e25fb19e40dce4ce26d97"
+  },
+  {
+   "path": "evidence/results.json",
+   "sha256": "8260c0571284164b0d9756f6bb34a5080835512cc81deef603699b12b1dc6630"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "4c6f9e75135dd47207509be0b152caff589be0a7bffdd04b36f24259ffabab3e"
+  },
+  {
+   "path": "evidence/tables.md",
+   "sha256": "029dc1f219c00523122e258bb86beb305b6f7e32546295055066e54a446eb893"
+  },
+  {
+   "path": "evidence/trades_BASKET_ASIS_close_x1.csv",
+   "sha256": "ed1a8bea3f6392cba43a0cf2603924c95dbca13c781e33d0a820644ac9652370"
+  },
+  {
+   "path": "evidence/trades_BASKET_FIX_next_x1.csv",
+   "sha256": "63d64cba1b72f0ac32da0c433381a2dd0d4ed3389205f38efc428b7427581bd1"
+  },
+  {
+   "path": "evidence/trades_D1_ASIS_close_x1.csv",
+   "sha256": "7b71dad5ea4adb477d55b29bd484c389c1ca322d49315a52ed3db557f6a09760"
+  },
+  {
+   "path": "evidence/trades_D1_ASIS_next_x1.csv",
+   "sha256": "c4b36af3b95dca5a727941dc7cbe84d8413fa1bd4ca5be3e43157885e42291f1"
+  },
+  {
+   "path": "evidence/trades_D1_FIX_close_x1.csv",
+   "sha256": "22e10b77c21f0e5ce12916987e823eb6de51a305fd13135a1ff211dcb6be075a"
+  },
+  {
+   "path": "evidence/trades_D1_FIX_next_x1.csv",
+   "sha256": "8ce5e7f39916aff0794c74b56624bcc3d6ef7f14fc083f34e7fd1d9fb9bb4590"
+  },
+  {
+   "path": "evidence/trades_ETF_sleeve_ASIS_close_x1.csv",
+   "sha256": "eb5bc680a6cdd5543703b8588330c1b41c5ce45cf605e6306880368c775d53ba"
+  },
+  {
+   "path": "evidence/trades_ETF_sleeve_FIX_next_x1.csv",
+   "sha256": "0a30cca340a3c322ff0e624b95b9e772eb48d7a5b1c4330f6a3b6d5a8e015212"
+  },
+  {
+   "path": "evidence/trades_M15_ASIS_x1.csv",
+   "sha256": "bbd7bc0833bac1fc7969ec3cf20e78b34532ba33af150eb016308afe67f8a13f"
+  },
+  {
+   "path": "evidence/trades_M15_FLOW-LAG2_x1.csv",
+   "sha256": "ebcdffc4afd74347d48f0177999926a97dd2c3e2a88d6292c80b59e532ebc02c"
+  },
+  {
+   "path": "evidence/verdicts.json",
+   "sha256": "7c29d6d32263cbcebf1f35fa4a75be49cb0f6826bc64ae016aeabf1218fef5c4"
+  }
+ ],
+ "api_calls": 0,
+ "account_queries": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "new_threshold_optimization": 0,
+ "result_branch": "claude/backtest-repair-0001-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "completed_at_kst": "2026-10-08T13:18:29+09:00"
+}
