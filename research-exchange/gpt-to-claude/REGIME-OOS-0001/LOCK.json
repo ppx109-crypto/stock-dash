@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-OOS-0001",
+  "source": {
+    "pr": 68,
+    "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86",
+    "dedup_key": "68:2142e181245cacfca669ba3bdae8b41154cc1c86"
+  },
+  "train_end": "2026-08-31",
+  "forward_start": "2026-09-01",
+  "capital_won": 10000000,
+  "sleeves": {
+    "D1": 2500000,
+    "M15": 2500000,
+    "ETF": 2500000,
+    "BASKET": 2500000
+  },
+  "rule": {
+    "realized_vol_window": 20,
+    "annualized_vol_target": 0.2,
+    "exposure_min": 0.25,
+    "exposure_max": 1.0,
+    "trend_window": 60,
+    "trend_below_cap": 0.25,
+    "signal_lag_days": 1,
+    "leverage": false,
+    "integer_rounding": "floor"
+  },
+  "execution": {
+    "daily": "next feasible daily close per PR68 implementation",
+    "m15": "first bar open per PR68 implementation",
+    "costs": "unchanged PR68 doubled-cost contract",
+    "starting_state": "cash"
+  },
+  "locked_files": {
+    "code/rr_daily.py": "bad2f70617c00d77c414ffa018ded0d98e8916bcde9f4d0a2a174aeee55bf12a",
+    "code/rr_m15.py": "72d5eb84fd456539f3d3ee116400d4d6befc11498324688b8ed086f97f57ce93",
+    "evidence/rr_results.json": "8fa8f32bd3627c6c6a484fb35f912eb25eae454f1cb79a92b164d8994af8a2d8",
+    "evidence/nav_control_candidate.csv": "2c3b4bceccf7a5f45fe0f46e0197dac437bca8dbe5c56c6e71e23acfef1577b1"
+  },
+  "train_candidate": {
+    "end_won": 14891973.12644649,
+    "mdd_pct": -6.186793787034139,
+    "worst_day_pct": -3.7027833211968675,
+    "worst_month_pct": -4.565929566471905
+  },
+  "status": "LOCKED_WEAK",
+  "live_approval": false,
+  "paper_validation_ready": false
+}

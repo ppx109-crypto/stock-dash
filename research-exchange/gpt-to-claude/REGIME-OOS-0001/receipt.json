@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-OOS-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 13,
+  "phase": "VALIDATE / locked forward-data check",
+  "status": "COMPLETED",
+  "result_status": "BLOCKED / WAITING_DATA",
+  "source_pr": 68,
+  "source_head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86",
+  "source_status": "READY / TRAIN_CANDIDATE_LOCKED_WEAK",
+  "dedup_keys": [
+    "68:2142e181245cacfca669ba3bdae8b41154cc1c86",
+    "70:4319dea1ba495eb764f5697c43a5051021a050b1",
+    "70:5f32f9a31aedb061f2a2c67c963227849ef18ef5"
+  ],
+  "prior_task_pr": 67,
+  "prior_result_pr": 68,
+  "result_pr": 70,
+  "result_head_sha": "5f32f9a31aedb061f2a2c67c963227849ef18ef5",
+  "common_forward_N": 0,
+  "computed_runs": 0,
+  "next_action": "WAIT for at least 60 common forward trading days and required frozen inputs; no interim task issued",
+  "delivered_to_existing_session": true,
+  "created_at_kst": "2026-10-08T19:30:00+09:00",
+  "received_at_kst": "2026-10-08T19:28:00+09:00",
+  "completed_at_kst": "2026-10-08T19:34:00+09:00",
+  "delivery_note": "기존 지정 Claude 세션이 PR #69를 실행해 PR #70 BLOCKED/WAITING_DATA로 완료. 새 세션/탭/루틴 없음."
+}

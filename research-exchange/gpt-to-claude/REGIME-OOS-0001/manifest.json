@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-OOS-0001",
+  "status": "READY",
+  "source": {
+    "pr": 68,
+    "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
+  },
+  "files": [
+    {
+      "path": "REVIEW.md",
+      "sha256": "7feffe5a87ad65300d4f49635e8ae8f526faebd9f14d3941e8d35fb79af0fa4d"
+    },
+    {
+      "path": "TASK.md",
+      "sha256": "8758c163f2315dea0b0127fcd5ec77b93a8999cdf2a272029e2c91838951eda1"
+    },
+    {
+      "path": "PREREG.md",
+      "sha256": "174a9f2787893e7d86326d6bee3607ffdb493a4f875cd77799db20bdaddfe8eb"
+    },
+    {
+      "path": "LOCK.json",
+      "sha256": "259610b1188931fdade8dbfe7c73346f910b59e34f7d7eed53672a2d7da169de"
+    },
+    {
+      "path": "receipt.json",
+      "sha256": "e802442b105b683ff5d21389eaa777fa147ce980a51e075734edee948a6f7a16"
+    }
+  ],
+  "api_calls": 0,
+  "orders": 0,
+  "operational_changes": 0,
+  "live_approval": false,
+  "auto_merge": false,
+  "created_at_kst": "2026-10-08T19:30:00+09:00"
+}
