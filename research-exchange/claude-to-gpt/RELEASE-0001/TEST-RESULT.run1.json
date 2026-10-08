@@ -1,0 +1,473 @@
+{
+ "task": "RELEASE-0001",
+ "kind": "SYNTHETIC_PRECHECK_ONLY",
+ "attest_sha256": "7fb766ab20f11cbb9799e1a9f38df32349a27ab154c3033f230064d322a00593",
+ "fixtures_sha256": "09d42f17d1c2afdade3c67f158befefd11aa86b3ff71b57e5acf1bf4221709ad",
+ "attack_pass": 18,
+ "attack_total": 18,
+ "allow_pass": 9,
+ "allow_total": 9,
+ "fixtures": {
+  "X01": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "X02": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "X03": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "X04": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "X05": {
+   "group": "attack",
+   "got": {
+    "count": 2
+   },
+   "expected": {
+    "count": 2
+   },
+   "pass": true
+  },
+  "X06": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "X07": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "X08": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "PRIVATE_SESSION_METADATA:body"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "PRIVATE_SESSION_METADATA:body"
+    ]
+   },
+   "pass": true
+  },
+  "X09": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "IMMUTABILITY_FAIL:head"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "IMMUTABILITY_FAIL:head"
+    ]
+   },
+   "pass": true
+  },
+  "X10": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "IMMUTABILITY_FAIL:commit_after_open"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "IMMUTABILITY_FAIL:commit_after_open"
+    ]
+   },
+   "pass": true
+  },
+  "X11": {
+   "group": "attack",
+   "got": {
+    "changed": false,
+    "after_count": 1,
+    "correctable": false
+   },
+   "expected": {
+    "changed": false,
+    "after_count": 1,
+    "correctable": false
+   },
+   "pass": true
+  },
+  "X12": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "POSTCHECK_NOT_GITHUB"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "POSTCHECK_NOT_GITHUB"
+    ]
+   },
+   "pass": true
+  },
+  "X13": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "POSTCHECK_MISSING"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "POSTCHECK_MISSING"
+    ]
+   },
+   "pass": true
+  },
+  "X14": {
+   "group": "attack",
+   "got": {
+    "valid": false,
+    "codes": [
+     "RECEIPT_EXTRA_FIELD",
+     "RECEIPT_LEAK"
+    ]
+   },
+   "expected": {
+    "valid": false,
+    "codes": [
+     "RECEIPT_EXTRA_FIELD",
+     "RECEIPT_LEAK"
+    ]
+   },
+   "pass": true
+  },
+  "X15": {
+   "group": "attack",
+   "got": {
+    "valid": false,
+    "codes": [
+     "RECEIPT_EXTRA_FIELD"
+    ]
+   },
+   "expected": {
+    "valid": false,
+    "codes": [
+     "RECEIPT_EXTRA_FIELD"
+    ]
+   },
+   "pass": true
+  },
+  "X16": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "COMMENT_NOT_CONFIRMED"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "COMMENT_NOT_CONFIRMED"
+    ]
+   },
+   "pass": true
+  },
+  "X17": {
+   "group": "attack",
+   "got": {
+    "status": "BLOCKED",
+    "codes": [
+     "PRIVATE_SESSION_METADATA:commit"
+    ]
+   },
+   "expected": {
+    "status": "BLOCKED",
+    "codes": [
+     "PRIVATE_SESSION_METADATA:commit"
+    ]
+   },
+   "pass": true
+  },
+  "X18": {
+   "group": "attack",
+   "got": {
+    "count": 1
+   },
+   "expected": {
+    "count": 1
+   },
+   "pass": true
+  },
+  "Y01": {
+   "group": "allow",
+   "got": {
+    "count": 0
+   },
+   "expected": {
+    "count": 0
+   },
+   "pass": true
+  },
+  "Y02": {
+   "group": "allow",
+   "got": {
+    "count": 0
+   },
+   "expected": {
+    "count": 0
+   },
+   "pass": true
+  },
+  "Y03": {
+   "group": "allow",
+   "got": {
+    "count": 0
+   },
+   "expected": {
+    "count": 0
+   },
+   "pass": true
+  },
+  "Y04": {
+   "group": "allow",
+   "got": {
+    "status": "READY",
+    "codes": []
+   },
+   "expected": {
+    "status": "READY",
+    "codes": []
+   },
+   "pass": true
+  },
+  "Y05": {
+   "group": "allow",
+   "got": {
+    "status": "READY",
+    "codes": []
+   },
+   "expected": {
+    "status": "READY",
+    "codes": []
+   },
+   "pass": true
+  },
+  "Y06": {
+   "group": "allow",
+   "got": {
+    "valid": true,
+    "codes": []
+   },
+   "expected": {
+    "valid": true,
+    "codes": []
+   },
+   "pass": true
+  },
+  "Y07": {
+   "group": "allow",
+   "got": {
+    "changed": false,
+    "after_count": 0,
+    "correctable": true
+   },
+   "expected": {
+    "changed": false,
+    "after_count": 0,
+    "correctable": true
+   },
+   "pass": true
+  },
+  "Y08": {
+   "group": "allow",
+   "got": {
+    "first_changed": true,
+    "second_changed": false,
+    "after_count": 0,
+    "rest_unchanged": true
+   },
+   "expected": {
+    "first_changed": true,
+    "second_changed": false,
+    "after_count": 0,
+    "rest_unchanged": true
+   },
+   "pass": true
+  },
+  "Y09": {
+   "group": "allow",
+   "got": {
+    "count": 0
+   },
+   "expected": {
+    "count": 0
+   },
+   "pass": true
+  }
+ },
+ "redaction_leaks_baseline": 0,
+ "determinism": {
+  "run1": "54f2629c1af473a42b91a5286ca8fe5c4652dfeeff992dc517cdc949379d0a7f",
+  "run2": "54f2629c1af473a42b91a5286ca8fe5c4652dfeeff992dc517cdc949379d0a7f",
+  "same": true
+ },
+ "mutants": {
+  "N1": {
+   "expected_catchers": [
+    "X08"
+   ],
+   "caught_by": [
+    "X08"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "X08"
+   ],
+   "redaction_leaks": 0
+  },
+  "N2": {
+   "expected_catchers": [
+    "X17"
+   ],
+   "caught_by": [
+    "X17"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "X17"
+   ],
+   "redaction_leaks": 0
+  },
+  "N3": {
+   "expected_catchers": [
+    "X09"
+   ],
+   "caught_by": [
+    "X09"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "X09"
+   ],
+   "redaction_leaks": 0
+  },
+  "N4": {
+   "expected_catchers": [
+    "X12"
+   ],
+   "caught_by": [
+    "X12"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "X12"
+   ],
+   "redaction_leaks": 0
+  },
+  "N5": {
+   "expected_catchers": [
+    "REDACTION"
+   ],
+   "caught_by": [],
+   "caught": false,
+   "failed_fixtures": [],
+   "redaction_leaks": 0
+  },
+  "N6": {
+   "expected_catchers": [
+    "X16"
+   ],
+   "caught_by": [
+    "X16"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "X16"
+   ],
+   "redaction_leaks": 0
+  },
+  "N7": {
+   "expected_catchers": [
+    "X18"
+   ],
+   "caught_by": [
+    "X18"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "X18"
+   ],
+   "redaction_leaks": 0
+  }
+ },
+ "mutants_caught": 6,
+ "mutants_total": 7,
+ "isolation": {
+  "allowed_dirs": [
+   "<RELEASE-0001>",
+   "<python-stdlib>"
+  ],
+  "reads_outside_allowed": 0,
+  "writes_outside_folder": 0,
+  "new_modules_outside_allowed": [],
+  "env_cleared": true,
+  "network": "socket connect 차단",
+  "ok": true
+ },
+ "budget": {
+  "seconds": 0.005,
+  "max_rss_mb": 15.4
+ },
+ "github_postcheck": "이 파일에 없음 — PR을 연 뒤 PR comment receipt로만 남김",
+ "synthetic_status": "BLOCKED"
+}

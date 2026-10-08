@@ -1,0 +1,116 @@
+{
+ "schema_version": 1,
+ "task_id": "RELEASE-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 6,
+ "stage": "RECOVERY-POST-PUBLISH-ATTESTATION",
+ "status_synthetic": "READY",
+ "status_actual": "PR comment receipt에 기록(이 파일은 PR 전에 완성)",
+ "verdict": {
+  "attack": "18/18",
+  "allow": "9/9",
+  "mutants": "7/7",
+  "determinism_same": true,
+  "isolation_ok": true,
+  "local_precheck": "PR 전 실행(채팅 · PR 본문에 개수만)",
+  "github_postcheck": "PR 뒤 comment receipt",
+  "paper_validation_ready": false,
+  "live_approval": false
+ },
+ "input_pr": 24,
+ "input_head_sha": "3e3f739fd0f385e506aceb6a90ee094d7aa88d1d",
+ "source_pr": 23,
+ "source_head_sha": "b1f1f228d2abb2f41e96cd4f9775aa430dbeca85",
+ "prereg_lock": {
+  "commit": "4f087a25",
+  "locked_at_kst": "2026-10-08T08:59:46+09:00",
+  "sha256": {
+   "PREREG-LOCK.md": "8691a8c7ed3d37ff2e89e9366bb7bf771c67fd88cf9284530201b79036f9bdc9",
+   "fixtures/fixtures.json": "09d42f17d1c2afdade3c67f158befefd11aa86b3ff71b57e5acf1bf4221709ad",
+   "fixtures/make_fixtures.py": "d306a45987b897b3bbfdd3b2ec48e07a4d9ba17a6adde2c00d02bcf2b8403a42",
+   "tests/materialize.py": "a61daf035daba03ada81454b881fa49c44591f300d61b5d034cd47c1a954a26f"
+  }
+ },
+ "helper_commit": "7bdb2878",
+ "attest_sha256": "7fb766ab20f11cbb9799e1a9f38df32349a27ab154c3033f230064d322a00593",
+ "fixtures_sha256": "09d42f17d1c2afdade3c67f158befefd11aa86b3ff71b57e5acf1bf4221709ad",
+ "result_runs": [
+  {
+   "n": 1,
+   "file": "TEST-RESULT.run1.json",
+   "status": "BLOCKED",
+   "why": "독립 노출 검사가 좁아 N5 못 잡음"
+  },
+  {
+   "n": 2,
+   "file": "TEST-RESULT.json",
+   "status": "READY",
+   "change": "노출 검사에 식별자 부분 · 모양 추가(실행기만)"
+  }
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "deps": "표준 라이브러리만"
+ },
+ "commands": [
+  "python3 -I tests/run_tests.py . TEST-RESULT.json",
+  "python3 -I live_attest.py check <pr> <연 때 head> <연 때 커밋 수> [comment_id]  # PR 뒤"
+ ],
+ "budget": {
+  "seconds": 0.006,
+  "max_rss_mb": 15.4
+ },
+ "files": [
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "8691a8c7ed3d37ff2e89e9366bb7bf771c67fd88cf9284530201b79036f9bdc9"
+  },
+  {
+   "path": "PREREG-LOCK.stamp.json",
+   "sha256": "3ef5ce3059ea49cb22b6245456654e1c7d157e619a4218cf48ef13efce491234"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "a1d9bc922e33ab0e92ae274e5310719267162304fdbed8ff4276d763e2eecc5a"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "234e4b373c168844174bc43d118758789168e71513821b51d16378c24bbda6ad"
+  },
+  {
+   "path": "TEST-RESULT.run1.json",
+   "sha256": "10d3d9760041c4170348a466fa6d24e193a6de86b5f35d15b1e9a2e9c3bca2f4"
+  },
+  {
+   "path": "attest.py",
+   "sha256": "7fb766ab20f11cbb9799e1a9f38df32349a27ab154c3033f230064d322a00593"
+  },
+  {
+   "path": "fixtures/fixtures.json",
+   "sha256": "09d42f17d1c2afdade3c67f158befefd11aa86b3ff71b57e5acf1bf4221709ad"
+  },
+  {
+   "path": "fixtures/make_fixtures.py",
+   "sha256": "d306a45987b897b3bbfdd3b2ec48e07a4d9ba17a6adde2c00d02bcf2b8403a42"
+  },
+  {
+   "path": "live_attest.py",
+   "sha256": "a8e0864a988533479fe2bed6d791afee25e33660c8208629013dcea39e452558"
+  },
+  {
+   "path": "tests/materialize.py",
+   "sha256": "a61daf035daba03ada81454b881fa49c44591f300d61b5d034cd47c1a954a26f"
+  },
+  {
+   "path": "tests/run_tests.py",
+   "sha256": "85ebb41c2c9aa0ced3ac7174d694e3d9433cf27d0be8b685a1e80b1a0dd66381"
+  }
+ ],
+ "privacy": {
+  "contains": "자리표시자 fixture · 코드 · 개수 · hash만. 합성 값 · 실제 세션 식별자 없음"
+ },
+ "result_branch": "claude/release-0001-result",
+ "result_pr": null,
+ "created_at_kst": "2026-10-08T09:01:49+09:00"
+}

@@ -44,9 +44,13 @@ def suite(mut=()):
 def view(res):
     return {k: {kk: v[kk] for kk in ("group", "got", "expected", "pass")} for k, v in res.items()}
 
+import re as _re
+SID_PARTS = sorted({x.split("_", 1)[1] for x in SECRETS if "_" in x and x.split("_", 1)[1][:3] == "SYN"})
+SID_SHAPE = _re.compile(r"session_[A-Za-z0-9]{10,}")
 def leaks(res):
+    """독립 노출 검사: 합성 값 전체 · 식별자 부분 · session_ 뒤 영숫자 10자 이상 모양 중 하나라도 있으면 셈."""
     blob = json.dumps(res, ensure_ascii=False)
-    return sum(1 for s in SECRETS if s in blob)
+    return sum(1 for s in SECRETS if s in blob) + sum(1 for s in SID_PARTS if s in blob) + len(SID_SHAPE.findall(blob))
 
 def canon(res):
     return hashlib.sha256(json.dumps(view(res), sort_keys=True, ensure_ascii=False).encode()).hexdigest()
@@ -81,7 +85,7 @@ doc = {"task": "RELEASE-0001", "kind": "SYNTHETIC_PRECHECK_ONLY",
 doc["synthetic_status"] = "READY" if (doc["attack_pass"] == len(atk) and doc["allow_pass"] == len(alw)
     and doc["mutants_caught"] == len(mut) and doc["determinism"]["same"] and doc["redaction_leaks_baseline"] == 0 and iso["ok"]) else "BLOCKED"
 text = json.dumps(doc, ensure_ascii=False, indent=1).replace(ROOT, "<RELEASE-0001>")
-assert not any(s in text for s in SECRETS)
+assert not any(s in text for s in SECRETS) and not any(s in text for s in SID_PARTS) and not SID_SHAPE.search(text)
 open(OUT, "w", encoding="utf-8").write(text)
 print(doc["synthetic_status"], "attack", doc["attack_pass"], "/", len(atk), "allow", doc["allow_pass"], "/", len(alw),
       "mut", doc["mutants_caught"], "/", len(mut), "det", doc["determinism"]["same"], "iso", iso["ok"], doc["budget"])
