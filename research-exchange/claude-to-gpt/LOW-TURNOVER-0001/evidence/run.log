@@ -1,0 +1,13 @@
+준비 27 초 {'days': ['20170201', '20260916'], 'n_days': 2360, 'picks_days': 1116, 'picks_rows': 3712, 'row_i_date_mismatch': 0, 'br_days_equal': True}
+Train L1 1.0 -1.07 -17.79 -2.95 2.37 009150 None {'decisions': 204, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 81, 'exit_stop': 0}
+Train L1 2.0 -2.25 -20.32 -3.37 2.36 009150 None {'decisions': 204, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 81, 'exit_stop': 0}
+Train L2 1.0 1.37 -9.86 -1.67 1.78 009150 45.5 {'decisions': 204, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 101, 'exit_stop': 0}
+Train L2 2.0 0.5 -11.71 -1.94 1.8 009150 119.2 {'decisions': 204, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 101, 'exit_stop': 0}
+Train L3 1.0 1.48 -10.67 -3.8 1.42 204320 62.6 {'decisions': 101, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 48, 'exit_stop': 0}
+Train L3 2.0 0.75 -11.88 -4.08 1.43 204320 119.0 {'decisions': 101, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 48, 'exit_stop': 0}
+Train L4 1.0 1.73 -6.44 -2.09 1.0 204320 32.9 {'decisions': 101, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 57, 'exit_stop': 0}
+Train L4 2.0 1.23 -7.24 -2.23 1.01 204320 46.3 {'decisions': 101, 'month_stop': 0, 'buy_skip_cap': 0, 'exit_trend': 57, 'exit_stop': 0}
+통과 ['L4'] 고정 L4
+기준선 원래 1일봉(1천만) {'Train 2017-02~2020-12': 3.99, 'Validation 2021~2022': -0.65, '진단 2023-01~2026-09(이미 봄)': 69.33, '전체': 24.28} 회전율 7.51
+판정 {'chosen': 'L4', 'conditions': {'risk': True, 'cagr2_pos': False, 'concentration': True}, 'verdict': 'NO_CANDIDATE'} 회귀 {'cut_L1': {'x': '20190628', 'fills_equal': True, 'nav_equal': True}, 'train_only_equals_full_prefix': True}
+끝
