@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-PRICE-BASIS-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 37,
+ "status": "READY",
+ "source_pr": 116,
+ "source_head_sha": "dc4335554b45ba8f257596acab44a0f6d2e985ff",
+ "code_commit": "a8910f468f42b3f38c718ee798240f5b85ac224e",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/price_basis_gate.py",
+  "evidence/price-basis-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:23:58+09:00",
+ "input": {
+  "pr": 117,
+  "head_sha": "dbafc8aae4923bd8d7dab8114a4ea5f064a58f59"
+ },
+ "prereg_commit": "6986cb3f7d878c95286de36de6f984a83a387b3e",
+ "all_pass": true,
+ "official_runs": 1,
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "result_pr": null
+}

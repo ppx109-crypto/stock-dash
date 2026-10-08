@@ -1,0 +1,152 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-PRICE-BASIS-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 37,
+ "status": "READY",
+ "source_pr": 116,
+ "source_head_sha": "dc4335554b45ba8f257596acab44a0f6d2e985ff",
+ "code_commit": "a8910f468f42b3f38c718ee798240f5b85ac224e",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/price_basis_gate.py",
+  "evidence/price-basis-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:23:58+09:00",
+ "input": {
+  "pr": 117,
+  "head_sha": "dbafc8aae4923bd8d7dab8114a4ea5f064a58f59",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T03:19:35+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "dc4335554b45ba8f257596acab44a0f6d2e985ff"
+   },
+   {
+    "at_kst": "2026-10-09T03:23:58+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "dc4335554b45ba8f257596acab44a0f6d2e985ff"
+   }
+  ]
+ },
+ "prereg_commit": "6986cb3f7d878c95286de36de6f984a83a387b3e",
+ "prereg_committed_at_kst": "2026-10-09T03:21:22+09:00",
+ "verdict": "READY(합성 가격기준 게이트) / RAW_UNADJUSTED만 PR114 경로 · ADJUSTED·누락·빈 값·다른 문자열은 apply_batch 첫 문장에서 BLOCKED_PRICE_BASIS 배치 전체 중단 · 차단 7건 대입 0·바뀐 칸 0·해시 불변 · P2 음성 NAV 387,020→1,935,100 기록 · P5 PR114 11 fixture 다른 칸 0",
+ "status_source": "evidence summary.all_pass",
+ "summary": {
+  "pr114_sha_ok": {
+   "code": true,
+   "evidence": true
+  },
+  "code_order_gate_before_mutation": true,
+  "P1_raw_commit": true,
+  "P2_adjusted": true,
+  "P3_unknown": true,
+  "P4_mixed_atomic": true,
+  "P5_raw_regression": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "code_order": {
+  "gate_is_first_statement": true,
+  "gate_return_line": 89,
+  "first_watch_assign_line": 138,
+  "watch_assign_lines": [
+   138
+  ],
+  "gate_before_all_mutation": true
+ },
+ "p2": {
+  "negative_control_pr114": {
+   "verdict": "COMMITTED",
+   "after_batch_pos": {
+    "A": [
+     "185",
+     "2092"
+    ]
+   },
+   "nav_d0": "387020",
+   "nav_d1_after_adjusted_quote": "1935100"
+  },
+  "new_gate": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|split|5|2026-01-29": "BLOCKED_PRICE_BASIS"
+   },
+   "changed_fields": [],
+   "watch_assignments": 0,
+   "nav_d1": "387020"
+  }
+ },
+ "p5_diff_count": 0,
+ "pr114_fixed": {
+  "code": {
+   "git_blob": "58417375acbef990dfc6726af7090a471a9d7a18",
+   "sha256": "babf0963aab966cdcb7f37f1f65a202534246af0b17797c3d79ca1d908acee74"
+  },
+  "evidence": {
+   "git_blob": "02f65d3c797d988315880cf08cbdbfbc5c72915f",
+   "sha256": "ecfb7a757e8de81a06027c39d2119b2bcf4c46bbaf090f4226df23b0c9fe2ace"
+  }
+ },
+ "disclosure": {
+  "pre_run_code_fix": "하네스 공통 첫 사건 A1에 RAW_UNADJUSTED 라벨 추가(사전등록 뒤 · 공식 실행 전 · 의미키·해시 무관)",
+  "m_price_decimal": "TASK의 0.2를 Fraction('0.2')=1/5로 입력(float는 PR114 게이트가 BLOCKED_INPUT)",
+  "blocked_from": "중단 시 성과 차단 표시만 바뀜(앞선 계약과 같음)"
+ },
+ "residual_risk": {
+  "quote_feed_basis": "배치 뒤 수정 시세가 원주가 장부를 덮는 왜곡은 사건 라벨 게이트로 못 막음",
+  "label_provenance": "라벨 원천 미검증 · 잘못 붙은 RAW는 통과(NEEDS_DATA)"
+ },
+ "next_single_gap": "장부·시세 공급 가격기준 일치(시세 덮기에도 RAW_UNADJUSTED 게이트)",
+ "file_sha256": {
+  "PREREG.md": "8c7527c1af429a8172181c639d94f1b07261423517299bc0cc6e55ff0a573a0f",
+  "REPORT.md": "b8b6e32d70ebbb4a2d74baac8f0bea5053d20a91fc13f42f82c3769b8a9bfa11",
+  "code/price_basis_gate.py": "e819ab86121564bef751c2ab5b767d2815b52caa938bdaad39492ed11c04676e",
+  "evidence/price-basis-gate.json": "7ba23f09aae5184ff56ca765e6591a26d94ce5fd0bcdec0f1987f192705de420",
+  "evidence/tables.md": "7350cf9582cfdae3082b291f466bfb978b2c3da86990ddbd3c3f70707de34564",
+  "evidence/run.log": "fc80f48ffec00b95e38c32b29ede69255c398396e60c869071f2849dfcbece91"
+ },
+ "runs": {
+  "official_runs": 1,
+  "cap": 1,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "real_events_applied": 0,
+  "real_prices": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "existing_file_modification": 0,
+  "orders": 0,
+  "operations": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "oos": false
+}
