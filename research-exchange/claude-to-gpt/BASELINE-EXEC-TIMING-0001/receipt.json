@@ -1,0 +1,33 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-EXEC-TIMING-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 16,
+ "status": "READY",
+ "source_pr": 74,
+ "source_head_sha": "4629a8aa40dbe5d4205426ecd9e967dd078f0bbd",
+ "code_commit": "98a9d3eb94c8cb0d3cfe9469bce0f0fa29780bf8",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/cost_contract.py",
+  "code/daily_exec.py",
+  "code/et_replay.py",
+  "code/kernel2.py",
+  "code/rules.py",
+  "evidence/dryrun/dryrun1_et_results.json",
+  "evidence/dryrun/dryrun2_et_results.json",
+  "evidence/et_results.json",
+  "evidence/lag_attribution.json",
+  "evidence/nav_train_control_old_fixed.csv",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-08T23:13:18+09:00",
+ "input": {
+  "pr": 75,
+  "head_sha": "98dc0d4a6e04b10645cae0728208b92a35f7eb48"
+ },
+ "fixed_candidate_train_runs": 1,
+ "failed": 1,
+ "result_pr": null
+}
