@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "task_id": "BATCH-DIVERSIFY-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 7,
+  "status": "SENT",
+  "source_pr": 55,
+  "source_head_sha": "b4166452e95778dd892fce3a793aea652401492a",
+  "source_status": "READY",
+  "dedup_key": "55:b4166452e95778dd892fce3a793aea652401492a",
+  "result_pr": null,
+  "delivered_to_existing_session": false,
+  "created_at_kst": "2026-10-08T18:04:00+09:00"
+}
