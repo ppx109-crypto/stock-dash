@@ -29,7 +29,7 @@
 | 15분봉 후보 잠금 / 체결 | 725 / 189 | 46 / 41 | 126 / 77 |
 | 일봉 후보 잠금 사건(날 단위 · D1 · ETF · BASKET 각 126) | 378 | — | 126 |
 
-- 종목 단위 합은 2,587이고, 날 단위 잠금 사건 378을 더하면 2,965입니다( classification_per_unit 합).
+- 종목 단위 합은 2,587이고, 날 단위 잠금 사건 378을 더하면 2,965입니다(`PIT-COVERAGE.json`의 classification_per_unit 합).
 
 ## 2. 판정(단위마다 하나 · 가장 나쁜 입력을 따름)
 | 단위 | PROVEN_PIT | CONSERVATIVE | UNKNOWN_EVIDENCE | VIOLATION |
