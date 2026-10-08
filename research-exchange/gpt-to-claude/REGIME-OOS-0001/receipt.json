@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-OOS-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 13,
+  "phase": "VALIDATE / locked forward-data check",
+  "status": "READY",
+  "source_pr": 68,
+  "source_head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86",
+  "source_status": "READY / TRAIN_CANDIDATE_LOCKED_WEAK",
+  "dedup_keys": [
+    "68:2142e181245cacfca669ba3bdae8b41154cc1c86"
+  ],
+  "prior_task_pr": 67,
+  "prior_result_pr": 68,
+  "result_pr": null,
+  "delivered_to_existing_session": false,
+  "created_at_kst": "2026-10-08T19:30:00+09:00"
+}
