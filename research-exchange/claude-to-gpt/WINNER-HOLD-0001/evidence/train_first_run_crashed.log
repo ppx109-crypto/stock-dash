@@ -1,0 +1,15 @@
+자료 준비 249 초 · 430 종목
+Train B 1.0 237.59 -19.32 -14.63 20260331 0 포지션 66 체결 138 H 0 0
+Train B 2.0 213.46 -19.49 -15.09 20260331 1 포지션 66 체결 138 H 0 0
+기준 맞춤 B 같음
+Train R 1.0 247.47 -19.35 -12.58 20260304 0 포지션 66 체결 151 H 0 0
+Train R 2.0 220.87 -19.45 -12.64 20260304 0 포지션 66 체결 151 H 0 0
+기준 맞춤 R 같음
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/lc/research-exchange/claude-to-gpt/WINNER-HOLD-0001/code/wh_m15.py", line 291, in <module>
+    r = TR[(cfg, m)] = run(cfg, m, *TRAIN)
+                       ^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/lc/research-exchange/claude-to-gpt/WINNER-HOLD-0001/code/wh_m15.py", line 181, in run
+    notes["h_checked"] += 1
+    ~~~~~^^^^^^^^^^^^^
+KeyError: 'h_checked'

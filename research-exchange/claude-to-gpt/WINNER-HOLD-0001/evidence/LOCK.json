@@ -1,0 +1,91 @@
+{
+ "task_id": "WINNER-HOLD-0001",
+ "chosen": "RH",
+ "passed": [
+  "R",
+  "H",
+  "RH"
+ ],
+ "selection_rows": [
+  {
+   "cfg": "B",
+   "day_ok": false,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 237.58703884294002,
+   "CAGR_x2": 213.4633414930696,
+   "turnover_x2": 22.173195451876868,
+   "MDD_x2": -19.488177010865105,
+   "top": "000250",
+   "CAGR_ex_top": 112.08,
+   "ex_source": "PR #49"
+  },
+  {
+   "cfg": "R",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 247.4739383755188,
+   "CAGR_x2": 220.86546501017796,
+   "turnover_x2": 23.15939399487678,
+   "MDD_x2": -19.45322693765239,
+   "top": "000250",
+   "CAGR_ex_top": 112.99,
+   "ex_source": "PR #49"
+  },
+  {
+   "cfg": "H",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 306.3336827470513,
+   "CAGR_x2": 253.7595962282256,
+   "turnover_x2": 21.879318428700273,
+   "MDD_x2": -19.409639871638028,
+   "top": "000250",
+   "CAGR_ex_top": 153.83358580186712,
+   "ex_source": "이번 계산"
+  },
+  {
+   "cfg": "RH",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 319.7003836252356,
+   "CAGR_x2": 274.50103745156196,
+   "turnover_x2": 22.855854378029303,
+   "MDD_x2": -19.37035541576757,
+   "top": "000250",
+   "CAGR_ex_top": 159.51483730113733,
+   "ex_source": "이번 계산"
+  }
+ ],
+ "cut_test": {
+  "H_20260102": {
+   "nav_days": 68,
+   "nav_same": true,
+   "fills_same": true,
+   "fills": 73
+  },
+  "H_20260303": {
+   "nav_days": 106,
+   "nav_same": true,
+   "fills_same": true,
+   "fills": 107
+  },
+  "RH_20260102": {
+   "nav_days": 68,
+   "nav_same": true,
+   "fills_same": true,
+   "fills": 82
+  },
+  "RH_20260303": {
+   "nav_days": 106,
+   "nav_same": true,
+   "fills_same": true,
+   "fills": 117
+  }
+ },
+ "baseline_same": true,
+ "note": "Train만 보고 고른 판. 원격 커밋 뒤에 진단을 돌림."
+}
