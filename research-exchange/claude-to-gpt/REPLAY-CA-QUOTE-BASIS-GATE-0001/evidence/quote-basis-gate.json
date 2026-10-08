@@ -1,0 +1,1028 @@
+{
+ "day_cases": {
+  "Q1_raw": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "10460",
+     "price_basis": "RAW_UNADJUSTED"
+    }
+   ],
+   "input_events": 1,
+   "result": {
+    "day_result": {
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "OK"
+     }
+    },
+    "before": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "2d250da706c127cc838c49c2d04e1228af087873a3c900b99c69ad6daf08de53",
+     "prov_hash": "eb7c68504895f57af9327b97bf203d1a33e0c1e64a8f4941e77eda568e7d9a5e",
+     "snaps_hash": "6ad9dacd5fa633ee5d325fc122c689013f977174a3a335380485810c99dfcf3a",
+     "applied_n": 1,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "185",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 1,
+     "prov_n": 1
+    },
+    "changed_fields": [
+     "pos",
+     "applied",
+     "prov",
+     "snaps"
+    ],
+    "apply_batch_calls": 1,
+    "watch_assignments": 3,
+    "price_fields_changed": 1,
+    "snaps_delta": 1,
+    "blocked_from": null,
+    "nav_d0": "1935100",
+    "nav_d1": "1935100",
+    "bytes_sha256": "d5c1f77a90c6fc4c8e3480dc4234dcf0e0a592b30accc878c89b55307aa07834",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q3_adjusted_quote": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "10460",
+     "price_basis": "ADJUSTED"
+    }
+   ],
+   "input_events": 1,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "A"
+     ]
+    },
+    "before": {
+     "state_hash": "c9a0c59fef1ec3e37a73f13542267fde3b9a0eca8574a9d18e038a400bbd0cda",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "387020"
+     },
+     "nav": "387020",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "c9a0c59fef1ec3e37a73f13542267fde3b9a0eca8574a9d18e038a400bbd0cda",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "387020"
+     },
+     "nav": "387020",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "387020",
+    "nav_d1": "387020",
+    "bytes_sha256": "1da594e0240c1271c9c340251be010f7fe9e6fc7ee9385fec66727869f596dad",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q4a_missing": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "10460"
+    }
+   ],
+   "input_events": 1,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "A"
+     ]
+    },
+    "before": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "1935100",
+    "nav_d1": "1935100",
+    "bytes_sha256": "7a3bb1d8d2a958b46b53ee195e4b7bbe178df8fc7b7c1c48318ed65f64554bf9",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q4b_empty": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "10460",
+     "price_basis": ""
+    }
+   ],
+   "input_events": 1,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "A"
+     ]
+    },
+    "before": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "1935100",
+    "nav_d1": "1935100",
+    "bytes_sha256": "7a3bb1d8d2a958b46b53ee195e4b7bbe178df8fc7b7c1c48318ed65f64554bf9",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q4c_other_string": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "10460",
+     "price_basis": "raw_unadjusted"
+    }
+   ],
+   "input_events": 1,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "A"
+     ]
+    },
+    "before": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "1935100",
+    "nav_d1": "1935100",
+    "bytes_sha256": "7a3bb1d8d2a958b46b53ee195e4b7bbe178df8fc7b7c1c48318ed65f64554bf9",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q5_mixed_order_AB": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "52400",
+     "price_basis": "RAW_UNADJUSTED"
+    },
+    {
+     "sym": "B",
+     "price": "910",
+     "price_basis": "ADJUSTED"
+    }
+   ],
+   "input_events": 0,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "B"
+     ]
+    },
+    "before": {
+     "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ],
+      "B": [
+       "75",
+       "905"
+      ]
+     },
+     "qp": {
+      "A": "1935100",
+      "B": "67875"
+     },
+     "nav": "2002975",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ],
+      "B": [
+       "75",
+       "905"
+      ]
+     },
+     "qp": {
+      "A": "1935100",
+      "B": "67875"
+     },
+     "nav": "2002975",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "2002975",
+    "nav_d1": "2002975",
+    "bytes_sha256": "2704dd542551769799c09c5196c56adf32039268721d23c3f90d17cf1af8231e",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q5_mixed_order_BA": {
+   "input_quotes": [
+    {
+     "sym": "B",
+     "price": "910",
+     "price_basis": "ADJUSTED"
+    },
+    {
+     "sym": "A",
+     "price": "52400",
+     "price_basis": "RAW_UNADJUSTED"
+    }
+   ],
+   "input_events": 0,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "B"
+     ]
+    },
+    "before": {
+     "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ],
+      "B": [
+       "75",
+       "905"
+      ]
+     },
+     "qp": {
+      "A": "1935100",
+      "B": "67875"
+     },
+     "nav": "2002975",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ],
+      "B": [
+       "75",
+       "905"
+      ]
+     },
+     "qp": {
+      "A": "1935100",
+      "B": "67875"
+     },
+     "nav": "2002975",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "2002975",
+    "nav_d1": "2002975",
+    "bytes_sha256": "2704dd542551769799c09c5196c56adf32039268721d23c3f90d17cf1af8231e",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  },
+  "Q6_valid_event_bad_quote": {
+   "input_quotes": [
+    {
+     "sym": "A",
+     "price": "10460",
+     "price_basis": "RAW_UNADJUSTED"
+    },
+    {
+     "sym": "B",
+     "price": "905",
+     "price_basis": "ADJUSTED"
+    }
+   ],
+   "input_events": 1,
+   "result": {
+    "day_result": {
+     "verdict": "DAY_BLOCKED",
+     "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+     "bad_quote_syms": [
+      "B"
+     ]
+    },
+    "before": {
+     "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ],
+      "B": [
+       "75",
+       "905"
+      ]
+     },
+     "qp": {
+      "A": "1935100",
+      "B": "67875"
+     },
+     "nav": "2002975",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "after": {
+     "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ],
+      "B": [
+       "75",
+       "905"
+      ]
+     },
+     "qp": {
+      "A": "1935100",
+      "B": "67875"
+     },
+     "nav": "2002975",
+     "snaps_n": 0,
+     "prov_n": 0
+    },
+    "changed_fields": [],
+    "apply_batch_calls": 0,
+    "watch_assignments": 0,
+    "price_fields_changed": 0,
+    "snaps_delta": 0,
+    "blocked_from": "2026-01-29",
+    "nav_d0": "2002975",
+    "nav_d1": "2002975",
+    "bytes_sha256": "2704dd542551769799c09c5196c56adf32039268721d23c3f90d17cf1af8231e",
+    "reload_bytes_equal": null
+   },
+   "determinism": {
+    "reload_and_repeat_identical": true
+   },
+   "expect_pass": true,
+   "pass": true
+  }
+ },
+ "Q2_negative_control_pr118": {
+  "intended_quote_label": "ADJUSTED",
+  "result": {
+   "day_result": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|split|5|2026-01-29": "OK"
+    }
+   },
+   "before": {
+    "state_hash": "c9a0c59fef1ec3e37a73f13542267fde3b9a0eca8574a9d18e038a400bbd0cda",
+    "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "snaps_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "applied_n": 0,
+    "cash": "0",
+    "pos": {
+     "A": [
+      "37",
+      "10460"
+     ]
+    },
+    "qp": {
+     "A": "387020"
+    },
+    "nav": "387020",
+    "snaps_n": 0,
+    "prov_n": 0
+   },
+   "after": {
+    "state_hash": "2d250da706c127cc838c49c2d04e1228af087873a3c900b99c69ad6daf08de53",
+    "prov_hash": "eb7c68504895f57af9327b97bf203d1a33e0c1e64a8f4941e77eda568e7d9a5e",
+    "snaps_hash": "6ad9dacd5fa633ee5d325fc122c689013f977174a3a335380485810c99dfcf3a",
+    "applied_n": 1,
+    "cash": "0",
+    "pos": {
+     "A": [
+      "185",
+      "10460"
+     ]
+    },
+    "qp": {
+     "A": "1935100"
+    },
+    "nav": "1935100",
+    "snaps_n": 1,
+    "prov_n": 1
+   },
+   "changed_fields": [
+    "pos",
+    "applied",
+    "prov",
+    "snaps"
+   ],
+   "apply_batch_calls": null,
+   "watch_assignments": null,
+   "price_fields_changed": 0,
+   "snaps_delta": 1,
+   "blocked_from": null,
+   "nav_d0": "387020",
+   "nav_d1": "1935100",
+   "bytes_sha256": "d5c1f77a90c6fc4c8e3480dc4234dcf0e0a592b30accc878c89b55307aa07834",
+   "reload_bytes_equal": null
+  },
+  "nav_before": "387020",
+  "nav_d1": "1935100",
+  "pass": true
+ },
+ "Q7_raw_regression": {
+  "pr118_P1": {
+   "now": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|split|5|2026-01-29": "OK"
+    },
+    "before_batch": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100"
+    },
+    "after_batch": {
+     "state_hash": "2d250da706c127cc838c49c2d04e1228af087873a3c900b99c69ad6daf08de53",
+     "prov_hash": "eb7c68504895f57af9327b97bf203d1a33e0c1e64a8f4941e77eda568e7d9a5e",
+     "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+     "applied_n": 1,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "185",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100"
+    },
+    "changed_fields": [
+     "pos",
+     "applied",
+     "prov"
+    ],
+    "d0_nav": "1935100",
+    "d1_nav": "1935100"
+   },
+   "diff_fields": [],
+   "pass": true
+  },
+  "pr114_fixtures": {
+   "M1_bonus_issue": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "M2_unknown_kind": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "M3_later_legit_looking_second_qm": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "M4_new_symbol_first_qm": {
+    "verdict": "COMMITTED",
+    "qty": {
+     "A": "185",
+     "B": "15",
+     "C": "80"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "K1_kind_flip_reverse_split": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "K2_later_independent_reverse_split": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "K3_unseen_symbols": {
+    "verdict": "COMMITTED",
+    "qty": {
+     "A": "185",
+     "B": "15",
+     "C": "80"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "Q1_apply_date_changed": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "Q2_m_qty_changed": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "Q3_legit_looking_second_split": {
+    "verdict": "BATCH_ABORTED",
+    "qty": {
+     "A": "185",
+     "B": "75"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   },
+   "Q4_same_key_same_payload": {
+    "verdict": "COMMITTED",
+    "qty": {
+     "A": "185",
+     "B": "15"
+    },
+    "diffs_vs_pr114_evidence": [],
+    "mutations_same": true,
+    "invariant": true,
+    "bytes_stable": true,
+    "cut_test": true,
+    "repeat_identical": true,
+    "pass": true
+   }
+  },
+  "diff_count": 0,
+  "pass": true
+ },
+ "Q8_determinism": {
+  "day_cases_reload_repeat": {
+   "Q1_raw": true,
+   "Q3_adjusted_quote": true,
+   "Q4a_missing": true,
+   "Q4b_empty": true,
+   "Q4c_other_string": true,
+   "Q5_mixed_order_AB": true,
+   "Q5_mixed_order_BA": true,
+   "Q6_valid_event_bad_quote": true
+  },
+  "q5_order_independent": true,
+  "q7_fixture_invariants": {
+   "M1_bonus_issue": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "M2_unknown_kind": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "M3_later_legit_looking_second_qm": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "M4_new_symbol_first_qm": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "K1_kind_flip_reverse_split": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "K2_later_independent_reverse_split": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "K3_unseen_symbols": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "Q1_apply_date_changed": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "Q2_m_qty_changed": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "Q3_legit_looking_second_split": [
+    true,
+    true,
+    true,
+    true
+   ],
+   "Q4_same_key_same_payload": [
+    true,
+    true,
+    true,
+    true
+   ]
+  },
+  "pass": true
+ },
+ "code_order": {
+  "gate_is_first_two_statements": true,
+  "gate_return_line": 147,
+  "apply_batch_lines": [
+   148
+  ],
+  "quote_assign_lines": [
+   150
+  ],
+  "snapshot_append_lines": [
+   151
+  ],
+  "gate_before_all": true
+ },
+ "summary": {
+  "fixed_sha_ok": {
+   "pr118_code": true,
+   "pr118_evidence": true,
+   "pr114_evidence": true
+  },
+  "code_order_gate_before_all": true,
+  "Q1": true,
+  "Q2_negative": true,
+  "Q3": true,
+  "Q4": true,
+  "Q5": true,
+  "Q6": true,
+  "Q7": true,
+  "Q8": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "ledger_price_basis": "RAW_UNADJUSTED"
+}
