@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CONTRACT-HARDENING-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 22,
+  "status": "READY",
+  "stage": "REPLAY",
+  "source_pr": 86,
+  "source_head_sha": "916bc6781eb27000ec8f7b97a2907b28cd89673e",
+  "source_result_status": "READY",
+  "reviewed_at_kst": "2026-10-09T00:31:04+09:00",
+  "review_verdict": "READY_CONTRACT_DRAFT_ACCEPTED_HARDEN_BEFORE_DATA",
+  "response_pr": null,
+  "response_branch": "research-exchange/gpt-to-claude/replay-contract-hardening-0001",
+  "duplicate_key": "86:916bc6781eb27000ec8f7b97a2907b28cd89673e",
+  "independent_findings": {
+    "target_fills": 148,
+    "impossible_raw_fill": 23,
+    "unknown_raw_or_adjusted": 125,
+    "declared_dart_detail_endpoints": 7,
+    "reported_dart_upper": 232,
+    "exhaustive_dart_upper": 265,
+    "dart_cap": 250,
+    "pit_future_correction_gate_missing": true,
+    "same_day_cutoff_not_enforced_in_replay": true,
+    "stale_mtm_performance_gate_missing": true,
+    "intent_mapping_not_frozen": true,
+    "input_pr85_read_head": "467e3237e8589fec98dc09feea89de7ab2d12418",
+    "input_pr85_current_head": "68823bfffeee624fe339606f0c0734b6e40b8b5d",
+    "input_head_delta": "receipt_only"
+  },
+  "delivery": {
+    "status": "PENDING_EXISTING_SESSION",
+    "delivered_at_kst": null,
+    "acknowledgement": null
+  },
+  "paper_validation_ready": false,
+  "external_calls_authorized": false,
+  "performance_runs_authorized": false
+}
