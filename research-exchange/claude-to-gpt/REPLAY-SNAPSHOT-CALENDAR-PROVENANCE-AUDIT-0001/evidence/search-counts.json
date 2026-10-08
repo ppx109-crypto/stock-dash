@@ -1,0 +1,2998 @@
+{
+ "source_head": "13e031b32186aca7e1286bb4b9119bcd9cd39700",
+ "terms": [
+  {
+   "axis": "calendar_session",
+   "term": "휴장",
+   "git_grep_exit": 0,
+   "lines": 8,
+   "files": 8,
+   "by_file": {
+    "collect_caps.py": [
+     130
+    ],
+    "dashboard_ui.py": [
+     710
+    ],
+    "docs/AUDIT-UNIFIED-LOG.md": [
+     52
+    ],
+    "idle_live.py": [
+     50
+    ],
+    "public-data/Cc41a3fb4.json": [
+     289
+    ],
+    "public-data/Cc5608887.json": [
+     391
+    ],
+    "run_watch.py": [
+     57
+    ],
+    "tests/test_idle_live.py": [
+     30
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "holiday",
+   "git_grep_exit": 0,
+   "lines": 4,
+   "files": 4,
+   "by_file": {
+    "tests/test_collect_caps.py": [
+     44
+    ],
+    "tests/test_data_guard.py": [
+     41
+    ],
+    "tests/test_idle_live.py": [
+     27
+    ],
+    "tests/test_run_watch.py": [
+     22
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "거래일",
+   "git_grep_exit": 0,
+   "lines": 707,
+   "files": 281,
+   "by_file": {
+    ".github/workflows/a-group.yml": [
+     53
+    ],
+    ".github/workflows/hourly-history.yml": [
+     2
+    ],
+    "CHAT-RESEARCH.md": [
+     38
+    ],
+    "CLAUDE.md": [
+     16
+    ],
+    "ai-handoff/prompts/001-claude-handoff.md": [
+     17
+    ],
+    "audit/z070_check_1donly.out": [
+     7
+    ],
+    "audit/z070_long_15m.out": [
+     7
+    ],
+    "audit/z070_long_1d.out": [
+     7
+    ],
+    "audit/z070_long_basket.out": [
+     7
+    ],
+    "audit/z070_long_engine.out": [
+     7
+    ],
+    "audit/z070_long_inverse.out": [
+     7
+    ],
+    "audit/z070_long_margin10.out": [
+     7
+    ],
+    "audit/z070_long_none.out": [
+     7
+    ],
+    "audit/z070_y1_15m.out": [
+     5
+    ],
+    "audit/z070_y1_1d.out": [
+     5
+    ],
+    "audit/z070_y1_basket.out": [
+     5
+    ],
+    "audit/z070_y1_engine.out": [
+     5
+    ],
+    "audit/z070_y1_inverse.out": [
+     5
+    ],
+    "audit/z070_y1_margin10.out": [
+     5
+    ],
+    "audit/z070_y1_none.out": [
+     5
+    ],
+    "basket_live.py": [
+     7,
+     12,
+     73,
+     90,
+     98,
+     99,
+     128,
+     156,
+     176
+    ],
+    "bi_view.py": [
+     101,
+     122
+    ],
+    "broker_kis.py": [
+     294,
+     430,
+     442,
+     535,
+     607,
+     633,
+     674
+    ],
+    "caps.py": [
+     71
+    ],
+    "classroom_ui.py": [
+     140,
+     145,
+     201,
+     645,
+     728,
+     930,
+     951,
+     996,
+     1056,
+     1059,
+     1191
+    ],
+    "collect_caps.py": [
+     36,
+     104
+    ],
+    "collect_hourly.py": [
+     3
+    ],
+    "collect_investor_history.py": [
+     4,
+     31
+    ],
+    "collect_kis_extra.py": [
+     4
+    ],
+    "collect_kis_intraday.py": [
+     60,
+     63
+    ],
+    "collect_prices.py": [
+     120,
+     210
+    ],
+    "collect_short_credit.py": [
+     6
+    ],
+    "collect_volumes.py": [
+     140
+    ],
+    "daily_live.py": [
+     12,
+     13,
+     56,
+     65,
+     202,
+     330
+    ],
+    "dart-events/C0081fb2a.json": [
+     1
+    ],
+    "dart-events/C033b114c.json": [
+     1
+    ],
+    "dart-events/C0ddd875d.json": [
+     1
+    ],
+    "dart-events/C104ed1c1.json": [
+     1
+    ],
+    "dart-events/C177b2946.json": [
+     1
+    ],
+    "dart-events/C180b70cc.json": [
+     1
+    ],
+    "dart-events/C20326bd7.json": [
+     1
+    ],
+    "dart-events/C26720a03.json": [
+     1
+    ],
+    "dart-events/C2dfe2460.json": [
+     1
+    ],
+    "dart-events/C30448cc0.json": [
+     1
+    ],
+    "dart-events/C3975c103.json": [
+     1
+    ],
+    "dart-events/C3b3b4d89.json": [
+     1
+    ],
+    "dart-events/C3e1ba914.json": [
+     1
+    ],
+    "dart-events/C4025e088.json": [
+     1
+    ],
+    "dart-events/C40f29d69.json": [
+     1
+    ],
+    "dart-events/C46d277cd.json": [
+     1
+    ],
+    "dart-events/C4ae7df10.json": [
+     1
+    ],
+    "dart-events/C5e52a921.json": [
+     1
+    ],
+    "dart-events/C5fd842ac.json": [
+     1
+    ],
+    "dart-events/C6237e396.json": [
+     1
+    ],
+    "dart-events/C690ffa1c.json": [
+     1
+    ],
+    "dart-events/C6b322170.json": [
+     1
+    ],
+    "dart-events/C73f3ca20.json": [
+     1
+    ],
+    "dart-events/C747efec8.json": [
+     1
+    ],
+    "dart-events/C74cb6115.json": [
+     1
+    ],
+    "dart-events/C7535f5c9.json": [
+     1
+    ],
+    "dart-events/C76f699d6.json": [
+     1
+    ],
+    "dart-events/C795b862b.json": [
+     1
+    ],
+    "dart-events/C80a27b29.json": [
+     1
+    ],
+    "dart-events/C86bb1216.json": [
+     1
+    ],
+    "dart-events/C87be68fe.json": [
+     1
+    ],
+    "dart-events/C94292557.json": [
+     1
+    ],
+    "dart-events/C9e7616b3.json": [
+     1
+    ],
+    "dart-events/Ca5107c01.json": [
+     1
+    ],
+    "dart-events/Ca721d217.json": [
+     1
+    ],
+    "dart-events/Caf114888.json": [
+     1
+    ],
+    "dart-events/Cafbd3710.json": [
+     1
+    ],
+    "dart-events/Cb72255d6.json": [
+     1
+    ],
+    "dart-events/Cba1d2c50.json": [
+     1
+    ],
+    "dart-events/Cce11a604.json": [
+     1
+    ],
+    "dart-events/Cd42365d4.json": [
+     1
+    ],
+    "dart-events/Cd424fe0b.json": [
+     1
+    ],
+    "dart-events/Cd5d145d2.json": [
+     1
+    ],
+    "dart-events/Cd96dc206.json": [
+     1
+    ],
+    "dart-events/Ce8db8f85.json": [
+     1
+    ],
+    "dart-events/Ce9833a2a.json": [
+     1
+    ],
+    "dart-events/Cf4525942.json": [
+     1
+    ],
+    "dart-events/Cfa84db84.json": [
+     1
+    ],
+    "dashboard_ui.py": [
+     701,
+     710,
+     712,
+     723,
+     834,
+     835,
+     847,
+     908,
+     967,
+     1044,
+     1045,
+     1054,
+     1068,
+     1091,
+     1105,
+     1115,
+     1118,
+     1120,
+     1160,
+     1182,
+     1190,
+     1209,
+     1214
+    ],
+    "data_guard.py": [
+     5,
+     6,
+     7,
+     20,
+     35,
+     53,
+     58
+    ],
+    "dguard.py": [
+     14,
+     141,
+     511
+    ],
+    "docs/1D-GUARD.md": [
+     53
+    ],
+    "docs/AUDIT-1.md": [
+     160,
+     168,
+     172,
+     180
+    ],
+    "docs/AUDIT-UNIFIED-LOG.md": [
+     52,
+     124,
+     147,
+     278
+    ],
+    "docs/BEST-RULES.md": [
+     11,
+     13,
+     17,
+     21,
+     38,
+     43,
+     44,
+     51,
+     62
+    ],
+    "docs/DATA-AUDIT-15M.md": [
+     4,
+     12,
+     26,
+     44
+    ],
+    "docs/DATA-CATALOG.md": [
+     35
+    ],
+    "docs/IMPROVEMENT-LOG.md": [
+     79,
+     184,
+     187,
+     190,
+     191
+    ],
+    "docs/PREREG-2.md": [
+     31,
+     36,
+     56,
+     79
+    ],
+    "docs/PRO-PLAYBOOK.md": [
+     27,
+     30
+    ],
+    "docs/QUANT-REPORT-2.md": [
+     59,
+     74,
+     76,
+     154,
+     184,
+     223,
+     294
+    ],
+    "docs/QUANT-REPORT.md": [
+     35,
+     39,
+     96,
+     131,
+     132,
+     157,
+     158,
+     159,
+     226,
+     271,
+     292,
+     293,
+     302,
+     327,
+     347,
+     352,
+     358,
+     365,
+     370,
+     378,
+     393,
+     481,
+     509,
+     510,
+     591
+    ],
+    "docs/RL-15M-LOG.md": [
+     9,
+     10,
+     66,
+     374,
+     375,
+     506,
+     584
+    ],
+    "docs/RL-15M-PLAN.md": [
+     13,
+     27
+    ],
+    "docs/RL-1H-LOG.md": [
+     5,
+     9,
+     48,
+     49,
+     83,
+     164,
+     315,
+     343,
+     379,
+     466,
+     576,
+     592,
+     652,
+     780,
+     821,
+     858,
+     865,
+     870,
+     997,
+     1044,
+     1254,
+     1260
+    ],
+    "docs/RL-1H-PLAN.md": [
+     34
+    ],
+    "docs/RL-3TRACK.md": [
+     23,
+     215,
+     220
+    ],
+    "docs/RL-BOTS.md": [
+     135
+    ],
+    "docs/RL-FLOW.md": [
+     15
+    ],
+    "docs/RL-INVERSE-LOG.md": [
+     27,
+     458,
+     595,
+     607,
+     660,
+     710,
+     720
+    ],
+    "docs/RL-INVERSE.md": [
+     9
+    ],
+    "docs/RL-LOG.md": [
+     3,
+     394,
+     424,
+     485,
+     486,
+     591,
+     622,
+     634,
+     693,
+     694,
+     736,
+     742,
+     880,
+     1382,
+     1383,
+     1414,
+     1415,
+     1416,
+     1836,
+     1928,
+     2067,
+     2087,
+     2106,
+     2195,
+     2196,
+     2372,
+     2422,
+     2434,
+     2624,
+     2781,
+     2813,
+     2891,
+     7097,
+     7098,
+     7105,
+     7154,
+     7165,
+     7380,
+     7424,
+     7439,
+     7462,
+     7464,
+     7474,
+     7537,
+     7635,
+     7871,
+     7953,
+     8190,
+     8478,
+     8700,
+     8917,
+     8918,
+     8919,
+     8920,
+     8925,
+     9052,
+     9068
+    ],
+    "docs/RL-MIX-RNA.md": [
+     7,
+     18
+    ],
+    "docs/RL-MONTH.md": [
+     8
+    ],
+    "docs/RL-NARROW.md": [
+     5,
+     12,
+     47,
+     120,
+     181
+    ],
+    "docs/RL-PRO.md": [
+     22,
+     70,
+     124
+    ],
+    "docs/RL-RECENT-EDGES.md": [
+     6,
+     9,
+     34,
+     59
+    ],
+    "docs/RL-STOP-LOG.md": [
+     4,
+     10
+    ],
+    "docs/RL-STOP.md": [
+     4,
+     26,
+     51,
+     60
+    ],
+    "docs/RL-TUSIN.md": [
+     198,
+     252,
+     277
+    ],
+    "docs/RL-WEAK.md": [
+     5
+    ],
+    "docs/RULESET-1H.md": [
+     3,
+     9,
+     23,
+     69,
+     74,
+     80,
+     85,
+     91
+    ],
+    "docs/RULESET.md": [
+     13,
+     14,
+     23,
+     27,
+     28,
+     32,
+     33
+    ],
+    "docs/SIGNAL-STUDY.md": [
+     25
+    ],
+    "final_group.py": [
+     7,
+     11,
+     12,
+     17,
+     148,
+     170,
+     198,
+     199,
+     231
+    ],
+    "final_study.py": [
+     6,
+     90
+    ],
+    "fix_recent_days.py": [
+     12
+    ],
+    "flow_study.py": [
+     4
+    ],
+    "hguard.py": [
+     17
+    ],
+    "hlab.py": [
+     5,
+     112,
+     198,
+     209,
+     212,
+     298,
+     304,
+     316,
+     324
+    ],
+    "hourly_a.py": [
+     12,
+     16,
+     106,
+     120,
+     320
+    ],
+    "idle_live.py": [
+     7,
+     10,
+     11,
+     50,
+     78,
+     89
+    ],
+    "lab.py": [
+     37,
+     241,
+     567,
+     655,
+     763,
+     764,
+     807,
+     808,
+     810
+    ],
+    "m15_live.py": [
+     60,
+     205
+    ],
+    "m15feat.py": [
+     4,
+     5,
+     77
+    ],
+    "m15lab.py": [
+     8,
+     89
+    ],
+    "market.py": [
+     57,
+     130,
+     141
+    ],
+    "nrl.py": [
+     88,
+     132,
+     149
+    ],
+    "predash/decision.py": [
+     24
+    ],
+    "predash/visuals.py": [
+     88,
+     89
+    ],
+    "probe_investor_daily.py": [
+     3
+    ],
+    "probe_krx.py": [
+     3
+    ],
+    "public-data/C45ae95ab.json": [
+     391
+    ],
+    "public-data/C6b322170.json": [
+     323
+    ],
+    "public-data/Cc6bf895c.json": [
+     323
+    ],
+    "public-data/Ccc6e9ece.json": [
+     391
+    ],
+    "quotes.py": [
+     148
+    ],
+    "reconcile.py": [
+     16,
+     201
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/PREREG.md": [
+     67
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/REPORT.md": [
+     77,
+     81
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/manifest.json": [
+     119,
+     122
+    ],
+    "research/a_drawdown.py": [
+     23,
+     24
+    ],
+    "research/e002.py": [
+     161,
+     201,
+     227
+    ],
+    "research/e005.py": [
+     13,
+     50,
+     95
+    ],
+    "research/f005.py": [
+     49
+    ],
+    "research/flowvar.py": [
+     1,
+     2
+    ],
+    "research/ftools.py": [
+     67
+    ],
+    "research/h001.py": [
+     2,
+     27
+    ],
+    "research/h002.py": [
+     1
+    ],
+    "research/h003.py": [
+     3,
+     29
+    ],
+    "research/h010.py": [
+     1,
+     3,
+     32
+    ],
+    "research/h011.py": [
+     2
+    ],
+    "research/h013.py": [
+     2
+    ],
+    "research/h015.py": [
+     2
+    ],
+    "research/h022.py": [
+     2,
+     5
+    ],
+    "research/h024.py": [
+     2
+    ],
+    "research/h026.py": [
+     4,
+     13
+    ],
+    "research/h030.py": [
+     2,
+     3,
+     27,
+     41
+    ],
+    "research/h033.py": [
+     2
+    ],
+    "research/h035.py": [
+     3,
+     5
+    ],
+    "research/h040.py": [
+     1
+    ],
+    "research/h041.py": [
+     3
+    ],
+    "research/h042.py": [
+     2
+    ],
+    "research/h052.py": [
+     1,
+     3
+    ],
+    "research/h053.py": [
+     2
+    ],
+    "research/h054.py": [
+     2,
+     87
+    ],
+    "research/h055.py": [
+     53
+    ],
+    "research/h059.py": [
+     2
+    ],
+    "research/h063.py": [
+     2
+    ],
+    "research/h064.py": [
+     3,
+     71,
+     91
+    ],
+    "research/h066.py": [
+     4
+    ],
+    "research/h067.py": [
+     2
+    ],
+    "research/h072.py": [
+     1,
+     2
+    ],
+    "research/h075.py": [
+     2,
+     25
+    ],
+    "research/h080.py": [
+     6,
+     7,
+     32,
+     82
+    ],
+    "research/h081.py": [
+     2
+    ],
+    "research/h084.py": [
+     5
+    ],
+    "research/h086.py": [
+     3
+    ],
+    "research/h087.py": [
+     4
+    ],
+    "research/h088.py": [
+     4
+    ],
+    "research/h091.py": [
+     6
+    ],
+    "research/h094.py": [
+     3
+    ],
+    "research/h095.py": [
+     2,
+     54
+    ],
+    "research/h100.py": [
+     2,
+     31
+    ],
+    "research/h112.py": [
+     58
+    ],
+    "research/h113.py": [
+     3
+    ],
+    "research/h115.py": [
+     4
+    ],
+    "research/h116.py": [
+     1
+    ],
+    "research/h123.py": [
+     1
+    ],
+    "research/h1mix.py": [
+     3
+    ],
+    "research/hguard_world.py": [
+     20,
+     24,
+     39
+    ],
+    "research/i004.py": [
+     27
+    ],
+    "research/i008.py": [
+     6
+    ],
+    "research/i010.py": [
+     2
+    ],
+    "research/i025.py": [
+     3
+    ],
+    "research/i026.py": [
+     2,
+     27,
+     28,
+     88
+    ],
+    "research/i031.py": [
+     2,
+     3,
+     44
+    ],
+    "research/i033.py": [
+     3,
+     4,
+     33
+    ],
+    "research/i039.py": [
+     3,
+     5,
+     6,
+     7,
+     85,
+     108
+    ],
+    "research/i044.py": [
+     317,
+     371,
+     390,
+     394
+    ],
+    "research/idle_signal.py": [
+     9
+    ],
+    "research/itools.py": [
+     5,
+     108,
+     134
+    ],
+    "research/k002.py": [
+     3
+    ],
+    "research/kinpatch.py": [
+     3,
+     42
+    ],
+    "research/m15y.py": [
+     5
+    ],
+    "research/m_eval.py": [
+     3
+    ],
+    "research/mixpick.py": [
+     3
+    ],
+    "research/mixrna.py": [
+     1
+    ],
+    "research/mood.py": [
+     2,
+     3,
+     36,
+     73
+    ],
+    "research/n063.py": [
+     3,
+     4
+    ],
+    "research/n085.py": [
+     3,
+     43
+    ],
+    "research/public-issuers-2026-09-18.json": [
+     190,
+     381,
+     572,
+     763,
+     957,
+     1148,
+     1339,
+     1530,
+     1721,
+     1912,
+     2103,
+     2222,
+     2341,
+     2532,
+     2546,
+     2575,
+     2766,
+     2885,
+     2899,
+     2913,
+     3032,
+     3151,
+     3342,
+     3461,
+     3580,
+     3699,
+     3818,
+     4009,
+     4200,
+     4391
+    ],
+    "research/q004.py": [
+     1,
+     2,
+     4,
+     49,
+     111
+    ],
+    "research/q028.py": [
+     2
+    ],
+    "research/q029.py": [
+     2,
+     3,
+     64,
+     65,
+     68
+    ],
+    "research/q034.py": [
+     3,
+     47
+    ],
+    "research/q036.py": [
+     1,
+     2,
+     35
+    ],
+    "research/q048.py": [
+     1
+    ],
+    "research/q058.py": [
+     1
+    ],
+    "research/q059.py": [
+     2
+    ],
+    "research/q_rule.py": [
+     4,
+     8
+    ],
+    "research/rnabr.py": [
+     2
+    ],
+    "research/s_eval.py": [
+     51
+    ],
+    "research/volstop.py": [
+     2,
+     3
+    ],
+    "research/x001.py": [
+     3,
+     43,
+     44
+    ],
+    "research/x008.py": [
+     3,
+     81
+    ],
+    "research/x011.py": [
+     5
+    ],
+    "research/x013.py": [
+     2
+    ],
+    "research/z001.py": [
+     6,
+     38,
+     333
+    ],
+    "research/z003.py": [
+     4
+    ],
+    "research/z007.py": [
+     4,
+     7,
+     37
+    ],
+    "research/z008.py": [
+     5
+    ],
+    "research/z009.py": [
+     2,
+     4,
+     35
+    ],
+    "research/z011.py": [
+     5,
+     7,
+     45
+    ],
+    "research/z012.py": [
+     3
+    ],
+    "research/z014.py": [
+     2,
+     4
+    ],
+    "research/z015.py": [
+     2,
+     3,
+     106
+    ],
+    "research/z018.py": [
+     3,
+     36
+    ],
+    "research/z021.py": [
+     2,
+     4
+    ],
+    "research/z022.py": [
+     2
+    ],
+    "research/z024.py": [
+     2
+    ],
+    "research/z029.py": [
+     4
+    ],
+    "research/z030.py": [
+     2,
+     3,
+     16,
+     25
+    ],
+    "research/z035.py": [
+     2
+    ],
+    "research/z036.py": [
+     3,
+     32,
+     48
+    ],
+    "research/z040.py": [
+     2,
+     7
+    ],
+    "research/z045.py": [
+     2
+    ],
+    "research/z046.py": [
+     2,
+     3
+    ],
+    "research/z047.py": [
+     2
+    ],
+    "research/z054.py": [
+     4,
+     31,
+     74
+    ],
+    "research/z056.py": [
+     2,
+     3,
+     50
+    ],
+    "research/z057.py": [
+     2,
+     3,
+     7
+    ],
+    "research/z059.py": [
+     2
+    ],
+    "research/z062.py": [
+     3
+    ],
+    "research/z063.py": [
+     2
+    ],
+    "research/z067.py": [
+     3,
+     4
+    ],
+    "research/z068.py": [
+     2,
+     3
+    ],
+    "research/z070.py": [
+     6,
+     168,
+     286
+    ],
+    "research/z071.py": [
+     2,
+     3
+    ],
+    "research/z074.py": [
+     2
+    ],
+    "research/z075.py": [
+     2
+    ],
+    "research_ui.py": [
+     139,
+     202,
+     432,
+     449,
+     935
+    ],
+    "rule.py": [
+     101
+    ],
+    "run_study.py": [
+     183,
+     192
+    ],
+    "study.py": [
+     4
+    ],
+    "study_ui.py": [
+     15,
+     17,
+     18,
+     41,
+     61,
+     98,
+     109
+    ],
+    "tests/test_basket_live.py": [
+     42,
+     45
+    ],
+    "tests/test_daily_live.py": [
+     98
+    ],
+    "tests/test_data_guard.py": [
+     57
+    ],
+    "tests/test_final_group.py": [
+     182
+    ],
+    "tests/test_fresh_tabs.py": [
+     172
+    ],
+    "tests/test_hourly_a.py": [
+     156
+    ],
+    "tests/test_investor_history.py": [
+     20
+    ],
+    "tests/test_notify_discord.py": [
+     10
+    ],
+    "tests/test_special_hours.py": [
+     1
+    ],
+    "tests/test_study.py": [
+     204
+    ],
+    "trend.py": [
+     90
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "trading_day",
+   "git_grep_exit": 0,
+   "lines": 43,
+   "files": 22,
+   "by_file": {
+    "basket_live.py": [
+     169
+    ],
+    "collect_caps.py": [
+     35,
+     103
+    ],
+    "collect_kis_hourly.py": [
+     95,
+     119
+    ],
+    "collect_public_daily.py": [
+     34,
+     77
+    ],
+    "daily_live.py": [
+     332
+    ],
+    "data_guard.py": [
+     19
+    ],
+    "docs/QUANT-REPORT.md": [
+     349
+    ],
+    "docs/RL-LOG.md": [
+     7106,
+     7154
+    ],
+    "hourly_a.py": [
+     457
+    ],
+    "idle_live.py": [
+     68,
+     80,
+     231
+    ],
+    "lab.py": [
+     566,
+     812
+    ],
+    "m15_live.py": [
+     296
+    ],
+    "reconcile.py": [
+     294,
+     376
+    ],
+    "research/x007.py": [
+     30
+    ],
+    "run_watch.py": [
+     30,
+     56
+    ],
+    "tests/test_collect_kis_hourly.py": [
+     41
+    ],
+    "tests/test_data_guard.py": [
+     41,
+     43,
+     44,
+     47,
+     48
+    ],
+    "tests/test_hourly_a.py": [
+     167
+    ],
+    "tests/test_idle_live.py": [
+     31
+    ],
+    "tests/test_investor_history.py": [
+     10,
+     44,
+     56,
+     64
+    ],
+    "tests/test_run_watch.py": [
+     23,
+     24,
+     25,
+     26
+    ],
+    "tests/test_short_credit.py": [
+     8,
+     39,
+     46
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "market_open",
+   "git_grep_exit": 0,
+   "lines": 13,
+   "files": 7,
+   "by_file": {
+    "collect_kis_intraday.py": [
+     71,
+     113
+    ],
+    "daily_live.py": [
+     326
+    ],
+    "hourly_a.py": [
+     453,
+     544
+    ],
+    "idle_live.py": [
+     293
+    ],
+    "m15_live.py": [
+     293
+    ],
+    "tests/test_hourly_a.py": [
+     134,
+     288,
+     320
+    ],
+    "tests/test_special_hours.py": [
+     11,
+     17,
+     22
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "개장",
+   "git_grep_exit": 0,
+   "lines": 11,
+   "files": 11,
+   "by_file": {
+    "public-data/C497d48fa.json": [
+     255
+    ],
+    "public-data/C83123cee.json": [
+     391
+    ],
+    "public-data/C9c2f5cec.json": [
+     221
+    ],
+    "public-data/C9e7616b3.json": [
+     255
+    ],
+    "public-data/Caeeb2dd4.json": [
+     254
+    ],
+    "public-data/Cb0739f45.json": [
+     391
+    ],
+    "public-data/Cc41a3fb4.json": [
+     289
+    ],
+    "public-data/Cc5608887.json": [
+     391
+    ],
+    "public-data/Ccb2b0da1.json": [
+     255
+    ],
+    "public-data/Cd96dc206.json": [
+     281
+    ],
+    "public-data/Cf93ec5a1.json": [
+     273
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "임시휴장",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "calendar",
+   "git_grep_exit": 0,
+   "lines": 40,
+   "files": 19,
+   "by_file": {
+    ".github/workflows/weekly-review.yml": [
+     5,
+     28,
+     31
+    ],
+    "README.md": [
+     104,
+     105,
+     122,
+     130
+    ],
+    "calendar_sync.py": [
+     27,
+     28,
+     31,
+     35,
+     40
+    ],
+    "chat_research.py": [
+     5,
+     53
+    ],
+    "idle_live.py": [
+     79,
+     81
+    ],
+    "research/i005.py": [
+     51
+    ],
+    "research/i008.py": [
+     45
+    ],
+    "research/i011.py": [
+     29
+    ],
+    "research/i014.py": [
+     34
+    ],
+    "research/i026.py": [
+     85
+    ],
+    "research/i036.py": [
+     36
+    ],
+    "research/w006.py": [
+     51
+    ],
+    "research/w010.py": [
+     62
+    ],
+    "research/wtools.py": [
+     30
+    ],
+    "research/x004.py": [
+     59
+    ],
+    "research/x008.py": [
+     72
+    ],
+    "research/z070.py": [
+     211
+    ],
+    "tests/test_core.py": [
+     9,
+     27,
+     35,
+     41,
+     51,
+     53
+    ],
+    "weekly_review.py": [
+     8,
+     13,
+     32,
+     55,
+     56,
+     58
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "달력",
+   "git_grep_exit": 0,
+   "lines": 40,
+   "files": 30,
+   "by_file": {
+    ".github/workflows/weekly-review.yml": [
+     6
+    ],
+    "README.md": [
+     3,
+     105
+    ],
+    "START-HERE.md": [
+     413
+    ],
+    "ai-handoff/prompts/001-claude-handoff.md": [
+     17
+    ],
+    "collect_caps.py": [
+     36
+    ],
+    "data_guard.py": [
+     12
+    ],
+    "docs/AUDIT-1.md": [
+     104,
+     105,
+     150,
+     160
+    ],
+    "docs/AUDIT-UNIFIED-LOG.md": [
+     242
+    ],
+    "docs/QUANT-REPORT.md": [
+     307
+    ],
+    "docs/RL-INVERSE-LOG.md": [
+     372
+    ],
+    "docs/RL-INVERSE.md": [
+     100
+    ],
+    "docs/RL-LOG.md": [
+     7097,
+     7099,
+     7105
+    ],
+    "docs/RL-TUSIN.md": [
+     15
+    ],
+    "events.py": [
+     19
+    ],
+    "final_group.py": [
+     43
+    ],
+    "lab.py": [
+     567,
+     807,
+     809
+    ],
+    "market.py": [
+     57
+    ],
+    "public-data/C26cb076f.json": [
+     391
+    ],
+    "research-exchange/INSTRUCTIONS.md": [
+     5
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/REPORT.md": [
+     77,
+     81
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/manifest.json": [
+     122
+    ],
+    "research/h010.py": [
+     64
+    ],
+    "research/i026.py": [
+     2
+    ],
+    "research/n071.py": [
+     3
+    ],
+    "research/ntools.py": [
+     291
+    ],
+    "research/z001.py": [
+     192
+    ],
+    "research/z009.py": [
+     1,
+     7
+    ],
+    "research/z070.py": [
+     168
+    ],
+    "rule.py": [
+     131
+    ],
+    "tests/test_lab.py": [
+     762
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "weekday()",
+   "git_grep_exit": 0,
+   "lines": 17,
+   "files": 15,
+   "by_file": {
+    "calendar_sync.py": [
+     11
+    ],
+    "collect_krx_daily.py": [
+     93
+    ],
+    "daily_live.py": [
+     306
+    ],
+    "dashboard_ui.py": [
+     709,
+     1212
+    ],
+    "hourly_a.py": [
+     539
+    ],
+    "idle_live.py": [
+     73,
+     267
+    ],
+    "predash/krx.py": [
+     16
+    ],
+    "research/h064.py": [
+     90
+    ],
+    "research/i026.py": [
+     84
+    ],
+    "research/x005.py": [
+     14
+    ],
+    "research/z009.py": [
+     25
+    ],
+    "research_ui.py": [
+     286
+    ],
+    "run_watch.py": [
+     33
+    ],
+    "tests/test_investor_history.py": [
+     13
+    ],
+    "tests/test_kis_extra.py": [
+     11
+    ]
+   }
+  },
+  {
+   "axis": "calendar_session",
+   "term": "chk-holiday",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "CTCA0903R",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "bzdy_yn",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "opnd_yn",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "XKRX",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "exchange_calendars",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "pandas_market_calendars",
+   "git_grep_exit": 1,
+   "lines": 0,
+   "files": 0,
+   "by_file": {}
+  },
+  {
+   "axis": "calendar_session",
+   "term": "session",
+   "git_grep_exit": 0,
+   "lines": 225,
+   "files": 15,
+   "by_file": {
+    "app.py": [
+     55,
+     79,
+     143,
+     145,
+     147,
+     148,
+     152,
+     156,
+     159,
+     169,
+     189,
+     197,
+     202,
+     220,
+     223,
+     225,
+     226,
+     227,
+     228,
+     229,
+     248,
+     276,
+     278,
+     280,
+     281,
+     282,
+     283,
+     292,
+     296,
+     297,
+     303,
+     305,
+     307,
+     315,
+     325,
+     331,
+     339,
+     340,
+     363,
+     364,
+     366,
+     374,
+     494,
+     495,
+     626,
+     688,
+     739,
+     741,
+     799,
+     800
+    ],
+    "classroom_ui.py": [
+     93,
+     94,
+     95,
+     101,
+     108,
+     111,
+     114,
+     140,
+     181,
+     232,
+     237,
+     254,
+     255,
+     256,
+     269,
+     270,
+     339,
+     343,
+     364,
+     365,
+     367,
+     394,
+     396,
+     415,
+     416,
+     421,
+     422,
+     426,
+     431,
+     432,
+     436,
+     456,
+     468,
+     483,
+     486,
+     500,
+     501,
+     503,
+     527,
+     529,
+     532,
+     533,
+     534,
+     535,
+     536,
+     537,
+     539,
+     540,
+     541,
+     542,
+     548,
+     554,
+     557,
+     566,
+     569,
+     575,
+     577,
+     584,
+     585,
+     595,
+     596,
+     598,
+     599,
+     600,
+     608,
+     610,
+     615,
+     645,
+     649,
+     663,
+     664,
+     672,
+     691,
+     693,
+     694,
+     695,
+     696,
+     697,
+     698,
+     699,
+     700,
+     707,
+     747,
+     750,
+     765,
+     774,
+     784,
+     814,
+     832,
+     834,
+     845,
+     847,
+     848,
+     901,
+     902,
+     907,
+     945,
+     946,
+     977,
+     978,
+     983,
+     984,
+     985,
+     986,
+     987,
+     993,
+     995,
+     998,
+     1006,
+     1008,
+     1010,
+     1017,
+     1020,
+     1021,
+     1026,
+     1038,
+     1045,
+     1047,
+     1089,
+     1097,
+     1098,
+     1135,
+     1136,
+     1149,
+     1152,
+     1185,
+     1190
+    ],
+    "docs/IMPROVEMENT-LOG.md": [
+     212
+    ],
+    "portfolio_ui.py": [
+     1,
+     31,
+     32,
+     33,
+     35,
+     36,
+     37,
+     60,
+     64,
+     78
+    ],
+    "predash/classroom.py": [
+     1,
+     20,
+     24,
+     46,
+     51,
+     52,
+     55,
+     65,
+     66,
+     67,
+     68,
+     75,
+     77,
+     80,
+     82,
+     85,
+     86,
+     87
+    ],
+    "predash/flow.py": [
+     26
+    ],
+    "predash/kis.py": [
+     154
+    ],
+    "predash/macro.py": [
+     47
+    ],
+    "predash/official.py": [
+     193
+    ],
+    "predash/trades.py": [
+     77,
+     104
+    ],
+    "research_ui.py": [
+     532,
+     534,
+     539,
+     670,
+     699,
+     730,
+     822,
+     865
+    ],
+    "tests/test_predash_flow.py": [
+     9,
+     15
+    ],
+    "tests/test_predash_macro.py": [
+     9
+    ],
+    "tests/test_predash_market_flow.py": [
+     24
+    ],
+    "tests/test_predash_token_share.py": [
+     25
+    ]
+   }
+  },
+  {
+   "axis": "timezone",
+   "term": "Asia/Seoul",
+   "git_grep_exit": 0,
+   "lines": 84,
+   "files": 43,
+   "by_file": {
+    ".github/actions/kis-token-close/action.yml": [
+     21
+    ],
+    ".github/actions/kis-token-open/action.yml": [
+     17
+    ],
+    ".github/workflows/daily-close-check.yml": [
+     65
+    ],
+    "app.py": [
+     234,
+     621
+    ],
+    "basket_live.py": [
+     163
+    ],
+    "broker_kis.py": [
+     188,
+     291,
+     365,
+     742
+    ],
+    "calendar_sync.py": [
+     9,
+     10,
+     13,
+     17,
+     18
+    ],
+    "classroom_ui.py": [
+     182,
+     369,
+     437,
+     485,
+     588,
+     679,
+     740,
+     747,
+     1014,
+     1032,
+     1034,
+     1039,
+     1043,
+     1104,
+     1155
+    ],
+    "collect_flows.py": [
+     78
+    ],
+    "collect_investor_history.py": [
+     150
+    ],
+    "collect_kis_extra.py": [
+     179
+    ],
+    "collect_kis_hourly.py": [
+     29
+    ],
+    "collect_kis_intraday.py": [
+     23
+    ],
+    "collect_kosdaq.py": [
+     52,
+     69,
+     78,
+     82
+    ],
+    "collect_opinion_history.py": [
+     82,
+     98
+    ],
+    "collect_opinions.py": [
+     91
+    ],
+    "collect_prices.py": [
+     70,
+     88,
+     118,
+     163
+    ],
+    "collect_shares.py": [
+     61,
+     93
+    ],
+    "collect_short_credit.py": [
+     147
+    ],
+    "collect_volumes.py": [
+     39,
+     77,
+     112
+    ],
+    "daily_live.py": [
+     27
+    ],
+    "dashboard_ui.py": [
+     1205
+    ],
+    "data_registry.py": [
+     72
+    ],
+    "final_group.py": [
+     217
+    ],
+    "final_study.py": [
+     190
+    ],
+    "fix_recent_days.py": [
+     30
+    ],
+    "hourly_a.py": [
+     31
+    ],
+    "idle_live.py": [
+     36
+    ],
+    "intraday_runner.py": [
+     26
+    ],
+    "live_check.py": [
+     11
+    ],
+    "m15_live.py": [
+     23
+    ],
+    "paper_trade.py": [
+     21
+    ],
+    "pick_universe.py": [
+     62
+    ],
+    "portfolio_ui.py": [
+     53,
+     111
+    ],
+    "predash/kis.py": [
+     151,
+     164,
+     171,
+     195,
+     200,
+     240
+    ],
+    "quotes.py": [
+     111,
+     169,
+     179
+    ],
+    "research_ui.py": [
+     285,
+     327
+    ],
+    "rule.py": [
+     407
+    ],
+    "run_study.py": [
+     147
+    ],
+    "run_watch.py": [
+     19
+    ],
+    "tests/test_collect_prices.py": [
+     22
+    ],
+    "tests/test_core.py": [
+     28
+    ],
+    "weekly_review.py": [
+     16
+    ]
+   }
+  },
+  {
+   "axis": "timezone",
+   "term": "KST",
+   "git_grep_exit": 0,
+   "lines": 124,
+   "files": 39,
+   "by_file": {
+    "broker_kis.py": [
+     207,
+     248,
+     309,
+     400,
+     556,
+     558,
+     633,
+     635,
+     642,
+     644
+    ],
+    "collect_hourly.py": [
+     21,
+     43,
+     52
+    ],
+    "collect_kis_hourly.py": [
+     3,
+     29,
+     108,
+     114
+    ],
+    "collect_kis_intraday.py": [
+     23,
+     77,
+     104
+    ],
+    "collect_kis_m15.py": [
+     3
+    ],
+    "course/index.html": [
+     774,
+     924
+    ],
+    "daily_live.py": [
+     27,
+     286,
+     296,
+     316,
+     391,
+     406,
+     414
+    ],
+    "docs/DATA-AUDIT-15M.md": [
+     9
+    ],
+    "docs/DATA-CATALOG.md": [
+     26,
+     30,
+     31,
+     39,
+     40,
+     50,
+     62
+    ],
+    "docs/DATA-INCIDENT-20261002.md": [
+     19
+    ],
+    "docs/IMPROVEMENT-LOG.md": [
+     108,
+     129,
+     145,
+     164,
+     180,
+     198,
+     219
+    ],
+    "docs/QUANT-REPORT.md": [
+     404,
+     405,
+     406,
+     411,
+     414,
+     415,
+     419
+    ],
+    "docs/RL-15M-LOG.md": [
+     7
+    ],
+    "fix_recent_days.py": [
+     3,
+     30,
+     134
+    ],
+    "hourly_a.py": [
+     31,
+     313,
+     347,
+     434,
+     537
+    ],
+    "idle_live.py": [
+     36,
+     249,
+     257,
+     276,
+     332,
+     351,
+     381,
+     420,
+     436
+    ],
+    "intraday_runner.py": [
+     26,
+     128
+    ],
+    "live_check.py": [
+     11,
+     18
+    ],
+    "m15_live.py": [
+     23,
+     273
+    ],
+    "paper_trade.py": [
+     21,
+     185,
+     365
+    ],
+    "predash/kis.py": [
+     159,
+     226
+    ],
+    "probe_catalog.py": [
+     113,
+     116,
+     117,
+     123,
+     136
+    ],
+    "probe_minute.py": [
+     4,
+     25,
+     73,
+     78,
+     85,
+     137
+    ],
+    "probe_opinion_history.py": [
+     3,
+     19
+    ],
+    "public-data/C58024199.json": [
+     315
+    ],
+    "public-data/Ce76b4b4b.json": [
+     323
+    ],
+    "research-exchange/INSTRUCTIONS.md": [
+     6
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/PREREG.md": [
+     9
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/REPORT.md": [
+     7,
+     8
+    ],
+    "research-exchange/state/CONNECTION-STATUS.md": [
+     1
+    ],
+    "research/probe_m15_close.py": [
+     3,
+     22,
+     79
+    ],
+    "run_watch.py": [
+     19,
+     55
+    ],
+    "tests/test_collect_hourly.py": [
+     17,
+     28,
+     32
+    ],
+    "tests/test_fix_recent_days.py": [
+     78,
+     88
+    ],
+    "tests/test_hourly_a.py": [
+     130,
+     259,
+     260,
+     290,
+     324
+    ],
+    "tests/test_intraday_runner.py": [
+     36,
+     66
+    ],
+    "tests/test_opinions.py": [
+     65,
+     107
+    ],
+    "tests/test_paper_trade.py": [
+     66,
+     67
+    ],
+    "tests/test_predash_flow.py": [
+     30
+    ]
+   }
+  },
+  {
+   "axis": "snapshot_consumer",
+   "term": "snaps.append",
+   "git_grep_exit": 0,
+   "lines": 1,
+   "files": 1,
+   "by_file": {
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/code/empty_ledger_metric_gate.py": [
+     153
+    ]
+   }
+  },
+  {
+   "axis": "snapshot_consumer",
+   "term": "process_day",
+   "git_grep_exit": 0,
+   "lines": 15,
+   "files": 1,
+   "by_file": {
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/code/empty_ledger_metric_gate.py": [
+     145,
+     253,
+     273,
+     321,
+     331,
+     336,
+     365,
+     461,
+     468,
+     469,
+     477,
+     483,
+     484,
+     521,
+     564
+    ]
+   }
+  },
+  {
+   "axis": "snapshot_consumer",
+   "term": "perf_gate",
+   "git_grep_exit": 0,
+   "lines": 48,
+   "files": 7,
+   "by_file": {
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/PREREG.md": [
+     19,
+     32,
+     33,
+     36,
+     44,
+     45,
+     46,
+     57,
+     61
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/REPORT.md": [
+     14,
+     24,
+     56,
+     60
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/code/empty_ledger_metric_gate.py": [
+     1,
+     202,
+     297,
+     392,
+     394,
+     410,
+     413,
+     432,
+     443,
+     500,
+     506,
+     518,
+     519,
+     527,
+     528,
+     531,
+     532,
+     554,
+     556,
+     566,
+     567,
+     571,
+     597,
+     601
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/evidence/empty-ledger-metric-gate.json": [
+     11,
+     32,
+     62,
+     87,
+     96,
+     245
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/evidence/run.log": [
+     8,
+     40
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/evidence/tables.md": [
+     4,
+     36
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/manifest.json": [
+     89
+    ]
+   }
+  },
+  {
+   "axis": "snapshot_consumer",
+   "term": "missing",
+   "git_grep_exit": 0,
+   "lines": 57,
+   "files": 33,
+   "by_file": {
+    ".github/actions/kis_token_box.py": [
+     42
+    ],
+    "classroom_ui.py": [
+     600,
+     601,
+     604
+    ],
+    "collect_dart_extra.py": [
+     248,
+     252,
+     263
+    ],
+    "data_registry.py": [
+     270
+    ],
+    "final_group.py": [
+     194,
+     195,
+     201,
+     202,
+     203,
+     207
+    ],
+    "final_study.py": [
+     98,
+     100,
+     103
+    ],
+    "guard.py": [
+     411,
+     422,
+     423,
+     429
+    ],
+    "paper_trade.py": [
+     71,
+     73,
+     74
+    ],
+    "predash/market.py": [
+     71
+    ],
+    "research-exchange/claude-to-gpt/REPLAY-EMPTY-LEDGER-METRIC-GATE-0001/manifest.json": [
+     119
+    ],
+    "research_ui.py": [
+     606,
+     710
+    ],
+    "tests/test_basket_live.py": [
+     35
+    ],
+    "tests/test_collect_prices.py": [
+     103
+    ],
+    "tests/test_core.py": [
+     23
+    ],
+    "tests/test_dart_daily.py": [
+     70
+    ],
+    "tests/test_data_guard.py": [
+     31
+    ],
+    "tests/test_final_group.py": [
+     66,
+     119,
+     167
+    ],
+    "tests/test_flow_study.py": [
+     29
+    ],
+    "tests/test_fresh_tabs.py": [
+     24
+    ],
+    "tests/test_lab.py": [
+     679
+    ],
+    "tests/test_predash_customs.py": [
+     17
+    ],
+    "tests/test_predash_decision.py": [
+     25,
+     31
+    ],
+    "tests/test_predash_macro.py": [
+     19
+    ],
+    "tests/test_predash_market_flow.py": [
+     18
+    ],
+    "tests/test_predash_metrics.py": [
+     45
+    ],
+    "tests/test_predash_price.py": [
+     18
+    ],
+    "tests/test_predash_visuals.py": [
+     12
+    ],
+    "tests/test_resume.py": [
+     48
+    ],
+    "tests/test_rule.py": [
+     54,
+     220,
+     222,
+     223
+    ],
+    "tests/test_run_watch.py": [
+     11
+    ],
+    "tests/test_targets.py": [
+     68
+    ],
+    "trend.py": [
+     126,
+     128
+    ],
+    "weekly_review.py": [
+     57
+    ]
+   }
+  },
+  {
+   "axis": "snapshot_consumer",
+   "term": "누락",
+   "git_grep_exit": 0,
+   "lines": 91,
+   "files": 88,
+   "by_file": {
+    "CHAT-RESEARCH.md": [
+     36,
+     38
+    ],
+    "ai-handoff/README.md": [
+     23
+    ],
+    "ai-handoff/prompts/001-claude-handoff.md": [
+     34
+    ],
+    "ai-handoff/reports/README.md": [
+     13
+    ],
+    "classroom_ui.py": [
+     759,
+     906
+    ],
+    "dart-events/C00caff42.json": [
+     1
+    ],
+    "dart-events/C033b114c.json": [
+     1
+    ],
+    "dart-events/C04b6c448.json": [
+     1
+    ],
+    "dart-events/C050f1e13.json": [
+     1
+    ],
+    "dart-events/C068ffe9f.json": [
+     1
+    ],
+    "dart-events/C0c006390.json": [
+     1
+    ],
+    "dart-events/C0d534797.json": [
+     1
+    ],
+    "dart-events/C0f872f14.json": [
+     1
+    ],
+    "dart-events/C1384437e.json": [
+     1
+    ],
+    "dart-events/C16d35320.json": [
+     1
+    ],
+    "dart-events/C177b2946.json": [
+     1
+    ],
+    "dart-events/C20326bd7.json": [
+     1
+    ],
+    "dart-events/C236d9048.json": [
+     1
+    ],
+    "dart-events/C23dc1de7.json": [
+     1
+    ],
+    "dart-events/C24ac9883.json": [
+     1
+    ],
+    "dart-events/C26cb076f.json": [
+     1
+    ],
+    "dart-events/C2b749209.json": [
+     1
+    ],
+    "dart-events/C2e1782fe.json": [
+     1
+    ],
+    "dart-events/C30e14f15.json": [
+     1
+    ],
+    "dart-events/C3292793c.json": [
+     1
+    ],
+    "dart-events/C3423fa80.json": [
+     1
+    ],
+    "dart-events/C3b3b4d89.json": [
+     1
+    ],
+    "dart-events/C3c1e95c7.json": [
+     1
+    ],
+    "dart-events/C3ed067c5.json": [
+     1
+    ],
+    "dart-events/C3fde657b.json": [
+     1
+    ],
+    "dart-events/C3ff56111.json": [
+     1
+    ],
+    "dart-events/C4025e088.json": [
+     1
+    ],
+    "dart-events/C458e46bc.json": [
+     1
+    ],
+    "dart-events/C47169d09.json": [
+     1
+    ],
+    "dart-events/C51f3ff89.json": [
+     1
+    ],
+    "dart-events/C53707b9d.json": [
+     1
+    ],
+    "dart-events/C54786cfd.json": [
+     1
+    ],
+    "dart-events/C54f8a5b5.json": [
+     1
+    ],
+    "dart-events/C56c9cead.json": [
+     1
+    ],
+    "dart-events/C5dc01c59.json": [
+     1
+    ],
+    "dart-events/C67da1ab1.json": [
+     1
+    ],
+    "dart-events/C6901d13f.json": [
+     1
+    ],
+    "dart-events/C6cb0d43d.json": [
+     1
+    ],
+    "dart-events/C70d5b4eb.json": [
+     1
+    ],
+    "dart-events/C75655d09.json": [
+     1
+    ],
+    "dart-events/C75b39742.json": [
+     1
+    ],
+    "dart-events/C780ee7c7.json": [
+     1
+    ],
+    "dart-events/C7a9514f2.json": [
+     1
+    ],
+    "dart-events/C82e21f43.json": [
+     1
+    ],
+    "dart-events/C83d3b788.json": [
+     1
+    ],
+    "dart-events/C8ebd272b.json": [
+     1
+    ],
+    "dart-events/C8efc5b7d.json": [
+     1
+    ],
+    "dart-events/C94292557.json": [
+     1
+    ],
+    "dart-events/C9caebeaa.json": [
+     1
+    ],
+    "dart-events/C9f4ff19b.json": [
+     1
+    ],
+    "dart-events/Ca16dd6a1.json": [
+     1
+    ],
+    "dart-events/Ca721d217.json": [
+     1
+    ],
+    "dart-events/Ca8e2cd76.json": [
+     1
+    ],
+    "dart-events/Cacef7af6.json": [
+     1
+    ],
+    "dart-events/Cae6283c6.json": [
+     1
+    ],
+    "dart-events/Caeeb2dd4.json": [
+     1
+    ],
+    "dart-events/Caf114888.json": [
+     1
+    ],
+    "dart-events/Cafbd3710.json": [
+     1
+    ],
+    "dart-events/Cb05ada1e.json": [
+     1
+    ],
+    "dart-events/Cba1d2c50.json": [
+     1
+    ],
+    "dart-events/Cbf285f98.json": [
+     1
+    ],
+    "dart-events/Cc09c53c4.json": [
+     1
+    ],
+    "dart-events/Ccb46ac8e.json": [
+     1
+    ],
+    "dart-events/Cd18ba442.json": [
+     1
+    ],
+    "dart-events/Cd2a8a964.json": [
+     1
+    ],
+    "dart-events/Cd39830a5.json": [
+     1
+    ],
+    "dart-events/Cd3fe122b.json": [
+     1
+    ],
+    "dart-events/Cdec3b6aa.json": [
+     1
+    ],
+    "dart-events/Cdfc85867.json": [
+     1
+    ],
+    "dart-events/Ce218c1a4.json": [
+     1
+    ],
+    "dart-events/Ce29c7c28.json": [
+     1
+    ],
+    "dart-events/Ce7774074.json": [
+     1
+    ],
+    "dart-events/Cf2559e57.json": [
+     1
+    ],
+    "dart-events/Cf57bef2a.json": [
+     1
+    ],
+    "dart-events/Cfa84db84.json": [
+     1
+    ],
+    "dart-events/Cfe19e595.json": [
+     1
+    ],
+    "event-data/Cdbdbf700.json": [
+     1
+    ],
+    "predash/customs.py": [
+     40
+    ],
+    "public-data/Ca0175808.json": [
+     255
+    ],
+    "public-data/Ca229d3f5.json": [
+     40
+    ],
+    "research-exchange/CLAUDE-ROUTINE.md": [
+     16
+    ],
+    "research-exchange/INSTRUCTIONS.md": [
+     13
+    ],
+    "research-exchange/gpt-to-claude/0001-bootstrap.md": [
+     18,
+     21
+    ]
+   }
+  }
+ ]
+}
