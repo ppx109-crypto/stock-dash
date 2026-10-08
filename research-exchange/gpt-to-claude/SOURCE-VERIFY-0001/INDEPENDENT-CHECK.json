@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "SOURCE-VERIFY-0001",
+  "source_pr": 27,
+  "source_head_sha": "e048b35f925f2bd20d21bbed3ed6d6eb35051830",
+  "source_pr_state": "open",
+  "source_pr_draft": false,
+  "source_pr_merged": false,
+  "source_head_commits": 2,
+  "manifest_files_verified": 3,
+  "manifest_files_total": 3,
+  "source_status": "READY",
+  "review_verdict": "ACCEPTED_WITH_EVIDENCE_GAPS",
+  "material_gaps": [
+    "KRX delisted/halt coverage not proven by official source",
+    "Universe(t) completeness overclaimed",
+    "DART historical pre-correction reconstruction claim too categorical",
+    "official KIS fee and current tax sources were available but not verified"
+  ],
+  "private_session_pattern_count": 0,
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "checked_at_kst": "2026-10-08T09:24:00+09:00"
+}
