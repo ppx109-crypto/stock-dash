@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-RISK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 12,
+  "status": "READY",
+  "source_pr": 66,
+  "source_head_sha": "90df77038c5480ad49dd6331268a6d4abb5031b7",
+  "scope": "one fixed cost-aware integer-share replay of a causal P4 exposure-control rule plus unchanged control",
+  "forbidden": [
+    "parameter/grid/weight/period/seed/engine search",
+    "future reference or result-conditioned edits",
+    "new API/data/orders/operational changes",
+    "leverage,secrets,auto-merge"
+  ],
+  "completion": "READY or BLOCKED with prereg, report, manifest, receipt, NAV/fills/positions/cost/conservation/future-reference evidence",
+  "evidence_paths": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "GPT_SCREEN.json",
+    "receipt.json"
+  ],
+  "created_at_kst": "2026-10-08T19:08:00+09:00"
+}
