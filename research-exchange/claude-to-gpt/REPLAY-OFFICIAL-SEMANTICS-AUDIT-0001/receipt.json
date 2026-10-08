@@ -1,0 +1,44 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-OFFICIAL-SEMANTICS-AUDIT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 23,
+ "status": "BLOCKED",
+ "source_pr": 88,
+ "source_head_sha": "a5891f5b91d7c206e5afb26049907f426e253c89",
+ "code_commit": "b9927547c8ebc41b43f13a1b68fe572e4448a69e",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/build_evidence.py",
+  "code/get.sh",
+  "code/tables.py",
+  "code/verdicts.py",
+  "evidence/dart-event-source-map.json",
+  "evidence/date-semantics-verdict.json",
+  "evidence/dynamic-call-budget-contract.json",
+  "evidence/kis-basis-contract.json",
+  "evidence/official-facts.json",
+  "evidence/official-source-matrix.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T01:12:01+09:00",
+ "input": {
+  "pr": 89,
+  "head_sha": "1b9491a143e9918e950859a12873e8e1ad52102c"
+ },
+ "prereg_commit": "7a9e1039c19be87f3183b4a0969da2fd5f81479b",
+ "blocked_reasons": [
+  "KRX 규정(law.krx.co.kr)·www.krx.co.kr·apiportal.koreainvestment.com·dart.fss.or.kr: 환경 네트워크 정책 차단(CONNECT 403)",
+  "kind.krx.co.kr: 서버 403 2회",
+  "주식분할·병합의 DART 공시목록 보고서명 공식 근거 없음",
+  "사건별 가격기준일·법적발생일·매도가능일 정의 원문 없음",
+  "DART list에 원 접수번호 칸 없음 → 정정 사슬 미확정"
+ ],
+ "data_api_calls": 0,
+ "credentials": 0,
+ "train_replay_runs": 0,
+ "performance_runs": 0,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
