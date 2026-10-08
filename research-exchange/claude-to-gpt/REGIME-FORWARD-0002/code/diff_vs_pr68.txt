@@ -1,0 +1,568 @@
+### rr_m15.py(PR #68) → rf_m15.py
+--- rr_m15.py	2026-10-08 12:01:50.487396663 +0000
++++ rf_m15.py	2026-10-08 12:10:29.283427501 +0000
+@@ -1,6 +1,7 @@
+-"""REGIME-RISK-0001 · 15분봉 통제 소계정(M0 = PR #41 M15 · seed 0 · 비용 2배 · 250만 원 · 현금 시작) 실행과 체결 기록.
+-MR_D1PICKS=<d1_picks.json> python3 -E -P rr_m15.py <b3> <출력>   → <출력>/m15_natural.pkl
+-PR #62 rs_m15.py 계좌 루프 그대로(CFG에 M0 = {} 한 줄 추가). 체결 기록은 kernel2.Account 하위 클래스로만 함."""
++"""REGIME-FORWARD-0002 · 15분봉 통제 소계정(M0 · seed 0 · 비용 2배 · 250만 원) — 신호 경로(2025-09-17 ~ 2026-09-30 한 번) · 9월 평가(09-01 현금 새 시작).
++MR_D1PICKS=<d1_picks.json> python3 -E -P rf_m15.py <b3> <출력> <PR #68 m15_natural.pkl>   → <출력>/m15_signal.pkl · m15_eval.pkl
++PR #68 rr_m15.py 그대로에 두 가지만 바꿈: ① 9월 시험지 1회 열기(M15_OPEN_OOS=1 · HLAB_OPEN_HOLDOUT=1 · HLAB_CUT=2026093023 → 2026-09-30 봉까지, 10월은 잘라 냄)
++② 실행 창 두 개 · 신호 경로의 2026-08-31까지가 PR #68과 한 칸도 다르지 않을 때만 9월 평가를 돌림."""
+ import bisect
+ import json
+ import math
+@@ -11,7 +12,10 @@
+ HERE = Path(__file__).resolve().parent
+ _src = (HERE / "m15_exec.py").read_text(encoding="utf-8").split("\ndef run(mult):")[0]
+ P = {"__name__": "mr_m15", "__file__": str(HERE / "m15_exec.py")}
+-exec(compile(_src, "m15_exec(앞부분 · PR #41 그대로)", "exec"), P)
++ENV_OLD = 'if CUT:\n    os.environ["HLAB_CUT"] = CUT\n'
++assert _src.count(ENV_OLD) == 1
++_src = _src.replace(ENV_OLD, ENV_OLD + 'os.environ["M15_OPEN_OOS"] = "1"\nos.environ["HLAB_OPEN_HOLDOUT"] = "1"\nos.environ["HLAB_CUT"] = "2026093023"\n')
++exec(compile(_src, "m15_exec(앞부분 · PR #41 그대로 + 9월 열기 세 줄)", "exec"), P)
+ sys.path.insert(0, str(HERE))
+ import common as CM  # noqa: E402
+ 
+@@ -227,6 +231,7 @@
+             "tot": dict(acc.tot), "notes": notes, "cal": [x[0] for x in navs], "snap": snap, "hold": hold}
+ 
+ 
++import hashlib  # noqa: E402
+ import pickle  # noqa: E402
+ 
+ LOG = []
+@@ -249,17 +254,54 @@
+ 
+ KN.Account = LogAccount
+ assert CM.CASH == 2.5e6
++assert os.environ.get("HLAB_CUT") == "2026093023" and os.environ.get("M15_OPEN_OOS") == "1"
+ OUT.mkdir(parents=True, exist_ok=True)
+-r = run("M0", 2.0, *FULLW, seed=0)
+-codes = sorted({x[1] for x in LOG})
+-bars = {}
+-for c in codes:
+-    t = data[c]["t"]
+-    k0, k1 = bisect.bisect_left(t, FULLW[0]), bisect.bisect_left(t, FULLW[1])
+-    bars[c] = [(t[k], float(data[c]["o"][k]), float(data[c]["c"][k])) for k in range(k0, k1)]
+-out = {"nav": [(d, float(n), float(i)) for d, n, i in r["nav"]], "log": LOG, "bars": bars, "tot": dict(r["tot"]), "counts": dict(r["counts"]),
+-       "notes": {k: v for k, v in r["notes"].items() if not isinstance(v, (list, set))}, "window": FULLW}
+-with open(OUT / "m15_natural.pkl", "wb") as f:
+-    pickle.dump(out, f)
+-print("M15 통제", len(r["nav"]), r["nav"][0][0], r["nav"][-1][0], round(r["nav"][-1][1]), "체결", len(LOG), "종목", len(codes), "보존", r["tot"].get("max_gap_cash"), r["tot"].get("max_gap_nav"), flush=True)
++PR68 = Path(sys.argv[3])
++assert hashlib.sha256(PR68.read_bytes()).hexdigest() == "61101d86b2032f4a9394830006f69afc48f5c9fdf3dc52da71b42e3550877a02"
++OLDM = pickle.load(open(PR68, "rb"))
++maxT = max(data[c]["t"][-1] for c in data)
++print("봉 마지막 시각", maxT, "· 9월 봉 있는 종목", sum(1 for c in SG if any("20260901" <= t[:8] <= "20260930" for t in data[c]["t"][-400:])), flush=True)
++assert maxT < "202610010000"
++SIGW = ("202509170000", "202610010000")
++EVALW = ("202609010000", "202610010000")
++
++
++def pack(r, win):
++    codes = sorted({x[1] for x in LOG})
++    bars = {}
++    for c in codes:
++        t = data[c]["t"]
++        k0, k1 = bisect.bisect_left(t, win[0]), bisect.bisect_left(t, win[1])
++        bars[c] = [(t[k], float(data[c]["o"][k]), float(data[c]["c"][k])) for k in range(k0, k1)]
++    return {"nav": [(d, float(n), float(i)) for d, n, i in r["nav"]], "log": list(LOG), "bars": bars, "tot": dict(r["tot"]),
++            "counts": dict(r["counts"]), "notes": {k: v for k, v in r["notes"].items() if not isinstance(v, (list, set))}, "window": win}
++
++
++# ① 신호 경로(한 번에 이어서)
++r = run("M0", 2.0, *SIGW, seed=0)
++sig = pack(r, SIGW)
++with open(OUT / "m15_signal.pkl", "wb") as f:
++    pickle.dump({k: v for k, v in sig.items() if k != "bars"}, f)
++old_nav = [(d, round(n, 6), round(i, 6)) for d, n, i in OLDM["nav"]]
++new_nav = [(d, round(n, 6), round(i, 6)) for d, n, i in sig["nav"] if d <= "20260831"]
++old_log = [tuple(x) for x in OLDM["log"]]
++new_log = [tuple(x) for x in sig["log"] if x[0][:8] <= "20260831"]
++cont = {"nav_days_old_new": [len(old_nav), len(new_nav)], "nav_equal": old_nav == new_nav, "log_equal": old_log == new_log,
++        "first_nav_diff": next((a[0] for a, b in zip(old_nav, new_nav) if a != b), None),
++        "first_log_diff": next((a for a, b in zip(old_log, new_log) if a != b), None),
++        "sig_sep_days": [d for d, _, _ in sig["nav"] if d >= "20260901"]}
++print("M15 신호 경로", len(sig["nav"]), sig["nav"][0][0], sig["nav"][-1][0], round(sig["nav"][-1][1]), "· 연속성", cont, flush=True)
++(OUT / "m15_continuity.json").write_text(json.dumps(cont, ensure_ascii=False, indent=1), encoding="utf-8")
++if not (cont["nav_equal"] and cont["log_equal"]):
++    print("BLOCKED: 15분봉 신호 경로가 2026-08-31까지 PR #68과 다름 → 9월 평가 안 함", flush=True)
++    raise SystemExit(3)
++
++# ② 9월 평가(현금 새 시작)
++LOG.clear()
++r = run("M0", 2.0, *EVALW, seed=0)
++ev = pack(r, EVALW)
++with open(OUT / "m15_eval.pkl", "wb") as f:
++    pickle.dump(ev, f)
++print("M15 9월 평가", len(ev["nav"]), ev["nav"][0][0], ev["nav"][-1][0], round(ev["nav"][-1][1]), "체결", len(ev["log"]), "보존",
++      ev["tot"].get("max_gap_cash"), ev["tot"].get("max_gap_nav"), flush=True)
+ print("끝", flush=True)
+
+### rr_daily.py(PR #68) → rf_daily.py
+--- rr_daily.py	2026-10-08 12:01:50.495396663 +0000
++++ rf_daily.py	2026-10-08 12:12:21.707434184 +0000
+@@ -1,6 +1,10 @@
+-"""REGIME-RISK-0001 · 통제 P4(현금 시작 · 정수 · 250만 원 × 4) · 후보(20일 변동성 목표 20% · 25~100% · 60일 SMA 아래 25%) 2판.
+-python3 -E -P rr_daily.py <b2> <nrl-cache.pkl> <출력(m15_natural.pkl 있음)> <PR66 blend_P4.csv>
+-PR #41 daily_exec.py 앞부분을 그대로 불러 D1 · 빈칸 · 바구니 통제 소계정을 돌리고(창 · 250만 원), 후보는 통제 소계정 보유의 정수 비례 복제."""
++"""REGIME-FORWARD-0002 · 9월 고정규칙 1회 비교 — 통제 P4(현금 1천만 원 새 시작 · 250만 원 × 4) · PR #68 고정 후보.
++python3 -E -P rf_daily.py <b2> <nrl-cache-rf.pkl> <출력> <rf_m15 출력(m15_signal.pkl · m15_eval.pkl)> <PR #68 nav_control_candidate.csv>
++
++PR #68 rr_daily.py와 같은 엔진 · 같은 복제 규칙. 바꾼 것은 창뿐:
++① 신호 경로: 2025-09-18 ~ 2026-09-30 한 번 이어 돈 통제 P4(PR #68 통제와 같은 시작 · 같은 입력) → E_t(t−1 마감까지 값만).
++   2026-08-31까지 소계정 NAV · E가 PR #68 기록과 한 칸도 다르지 않을 때만 ②를 돌림(연속성 증명). 이 경로는 신호에만 쓰고 평가에 안 넣음.
++② 9월 평가: 2026-09-01 현금 새 시작 통제 P4 · 그 보유를 E_t · k로 정수 비례 복제한 후보. 성과 · 거래 · 비용 집계는 9월만."""
+ import bisect
+ import csv
+ import json
+@@ -8,25 +12,31 @@
+ import pickle
+ import statistics
+ import sys
+-from datetime import date
+ from pathlib import Path
+ 
+ HERE = Path(__file__).resolve().parent
+ _src = (HERE / "daily_exec.py").read_text(encoding="utf-8").split("RUNS, CUTS = {}, {}")[0]
+-G = {"__name__": "rr_base", "__file__": str(HERE / "daily_exec.py")}
++G = {"__name__": "rf_base", "__file__": str(HERE / "daily_exec.py")}
+ exec(compile(_src, "daily_exec(앞부분 · PR #41 그대로)", "exec"), G)
+ KN, CC, lab = G["KN"], G["CC"], G["lab"]
+-OUT, BLEND = Path(sys.argv[3]), Path(sys.argv[4])
++OUT, M15DIR, PR68 = Path(sys.argv[3]), Path(sys.argv[4]), Path(sys.argv[5])
+ SLEEVE = 2_500_000.0
+ TOTAL = 4 * SLEEVE
+-LO, HI = "20250918", "20260831"
++SL = ("D1", "M15", "ETF", "BASKET")
+ DAYS_ALL = list(G["DAYS"])
+-WIN = [d for d in DAYS_ALL if LO <= d <= HI]
+-i0 = DAYS_ALL.index(WIN[0])
+-G["DAYS"] = WIN
+-G["DIDX"] = {d: i - i0 for i, d in enumerate(DAYS_ALL)}      # 창 기준 상대 번호(창 앞은 음수)
+-LOG = {}
+-CUR = {"name": None}
++print("달력", DAYS_ALL[0], DAYS_ALL[-1], len(DAYS_ALL), flush=True)
++assert DAYS_ALL[-1] == "20260930", DAYS_ALL[-1]
++assert "ahead" not in G["nrl"].inside[0]
++LOG, CUR = {}, {"name": None}
++RES = {}
++
++
++def window(lo, hi):
++    win = [d for d in DAYS_ALL if lo <= d <= hi]
++    i0 = DAYS_ALL.index(win[0])
++    G["DAYS"] = win
++    G["DIDX"] = {d: i - i0 for i, d in enumerate(DAYS_ALL)}      # 창 기준 상대 번호(창 앞은 음수)
++    return win
+ 
+ 
+ class LogAccount(KN.Account):
+@@ -48,7 +58,6 @@
+ 
+ 
+ BaseAccount = KN.Account
+-KN.Account = LogAccount
+ 
+ 
+ def natural(name, fn):
+@@ -59,29 +68,32 @@
+     return r
+ 
+ 
+-NAT = {}
+-NAT["D1x1"] = natural("D1x1", lambda: G["run_d1"]("next", 1.0))
+-NAT["D1"] = natural("D1", lambda: G["run_d1"]("next", 2.0))
+-d1r = {d: (inv / nav if nav > 0 else 0.0) for d, nav, inv in NAT["D1x1"]["nav"]}
+-used = lambda d: 0.5 * d1r.get(WIN[G["DIDX"][d] - 1], 0.0) if G["DIDX"].get(d, 0) > 0 else 0.0   # 원 used_series와 같은 식
+-NAT["ETF"] = natural("ETF", lambda: G["run_etf"]("next", 2.0, used, "engine"))
+-NAT["BASKET"] = natural("BASKET", lambda: G["run_basket"]("next", 2.0))
+-KN.Account = BaseAccount
+-M = pickle.load(open(OUT / "m15_natural.pkl", "rb"))
+-for k in ("D1", "ETF", "BASKET"):
+-    days = [d for d, _, _ in NAT[k]["nav"]]
+-    assert days == WIN, (k, days[:2], len(days))
+-m15days = [d for d, _, _ in M["nav"]]
+-if m15days != WIN:
+-    raise SystemExit(f"BLOCKED: 15분봉 날짜행 다름 {m15days[:2]} {len(m15days)} vs {WIN[:2]} {len(WIN)}")
+-navN = {k: [n for _, n, _ in NAT[k]["nav"]] for k in ("D1", "ETF", "BASKET")}
+-navN["M15"] = [n for _, n, _ in M["nav"]]
+-SL = ("D1", "M15", "ETF", "BASKET")
+-P4 = [sum(navN[k][i] for k in SL) for i in range(len(WIN))]
+-print("통제 P4", round(P4[-1]), {k: round(navN[k][-1]) for k in SL}, flush=True)
++def control(tag, win, m15):
++    """통제 소계정 넷(현금 250만 원씩 · 창 첫날 시작)."""
++    KN.Account = LogAccount
++    nat = {}
++    nat["D1x1"] = natural(tag + "D1x1", lambda: G["run_d1"]("next", 1.0))
++    nat["D1"] = natural(tag + "D1", lambda: G["run_d1"]("next", 2.0))
++    d1r = {d: (inv / nav if nav > 0 else 0.0) for d, nav, inv in nat["D1x1"]["nav"]}
++    used = lambda d: 0.5 * d1r.get(win[G["DIDX"][d] - 1], 0.0) if G["DIDX"].get(d, 0) > 0 else 0.0   # 원 used_series와 같은 식
++    nat["ETF"] = natural(tag + "ETF", lambda: G["run_etf"]("next", 2.0, used, "engine"))
++    nat["BASKET"] = natural(tag + "BASKET", lambda: G["run_basket"]("next", 2.0))
++    KN.Account = BaseAccount
++    for k in ("D1", "ETF", "BASKET"):
++        days = [d for d, _, _ in nat[k]["nav"]]
++        assert days == win, (tag, k, days[:2], len(days))
++    m15days = [d for d, _, _ in m15["nav"]]
++    if m15days != win:
++        raise SystemExit(f"BLOCKED: 15분봉 날짜행 다름 {tag} {m15days[:2]} {len(m15days)} vs {win[:2]} {len(win)}")
++    navN = {k: [n for _, n, _ in nat[k]["nav"]] for k in ("D1", "ETF", "BASKET")}
++    invN = {k: [x for _, _, x in nat[k]["nav"]] for k in ("D1", "ETF", "BASKET")}
++    navN["M15"] = [n for _, n, _ in m15["nav"]]
++    invN["M15"] = [x for _, _, x in m15["nav"]]
++    p4 = [sum(navN[k][i] for k in SL) for i in range(len(win))]
++    return nat, navN, invN, p4
+ 
+ 
+-# ── 노출 E_t: 통제 P4의 t−1 마감까지만 ──
++# ── 노출 E_t: 통제 P4의 t−1 마감까지만(PR #68 그대로) ──
+ def exposure(navs):
+     seg = [TOTAL] + navs
+     r = [seg[i] / seg[i - 1] - 1 for i in range(1, len(seg))]
+@@ -95,12 +107,63 @@
+     return E
+ 
+ 
+-E = exposure(P4)
++# ═════════ ① 신호 경로 ═════════
++SWIN = window("20250918", "20260930")
++MS = pickle.load(open(M15DIR / "m15_signal.pkl", "rb"))
++NAT_S, navS, invS, P4S = control("S:", SWIN, MS)
++ES = exposure(P4S)
++print("신호 경로 P4", SWIN[0], SWIN[-1], len(SWIN), round(P4S[-1]), flush=True)
++old = list(csv.DictReader(open(PR68, encoding="utf-8")))
++cont = {"pr68_days": len(old), "first_day": old[0]["date"], "last_day": old[-1]["date"], "mismatch": []}
++for i, row in enumerate(old):
++    d = row["date"]
++    if SWIN[i] != d:
++        cont["mismatch"].append([d, "date", SWIN[i]])
++        break
++    mine = {"exposure": f"{ES[i]:.10f}", "control_nav": f"{P4S[i]:.2f}", **{f"control_{k}": f"{navS[k][i]:.2f}" for k in SL}}
++    for k, v in mine.items():
++        if row[k] != v:
++            cont["mismatch"].append([d, k, row[k], v])
++cont["identical_to_pr68"] = not cont["mismatch"]
++cont["mismatch"] = cont["mismatch"][:20]
++RES["continuity"] = cont
++print("연속성", {k: v for k, v in cont.items() if k != "mismatch"}, cont["mismatch"][:3], flush=True)
++OUT.mkdir(parents=True, exist_ok=True)
++with open(OUT / "nav_signal_path.csv", "w", encoding="utf-8") as f:
++    f.write("date,exposure_E_t,signal_P4," + ",".join(f"signal_{k}" for k in SL) + "\n")
++    for i, d in enumerate(SWIN):
++        f.write(f"{d},{ES[i]:.10f},{P4S[i]:.2f}," + ",".join(f"{navS[k][i]:.2f}" for k in SL) + "\n")
++if not cont["identical_to_pr68"]:
++    RES["verdict"] = "BLOCKED"
++    RES["why"] = "신호 경로가 2026-08-31까지 PR #68 통제와 다름(연속성 증명 실패) → 9월 평가 안 함"
++    (OUT / "rf_results.json").write_text(json.dumps(RES, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
++    print("BLOCKED", RES["why"], flush=True)
++    raise SystemExit(3)
++ESIG = dict(zip(SWIN, ES))
++
++# ═════════ ② 9월 평가(현금 새 시작) ═════════
++WIN = window("20260901", "20260930")
++cal = sorted(d for d in G["CL"]["005930"] if "20260901" <= d <= "20260930")
++etf_ok = [d for d in WIN if all(G["ETF"].get(c, {}).get(d) for c in ("069500", "229200", "138230"))]
++ME = pickle.load(open(M15DIR / "m15_eval.pkl", "rb"))
++m15_days = [d for d, _, _ in ME["nav"]]
++common = [d for d in cal if d in WIN and d in etf_ok and d in m15_days]
++RES["common_days"] = {"calendar_sep": cal, "n_calendar": len(cal), "d1_window": len(WIN), "etf_complete": len(etf_ok), "m15_days": len(m15_days),
++                      "common": len(common), "missing_by_sleeve": {"D1/BASKET": sorted(set(cal) - set(WIN)), "ETF": sorted(set(cal) - set(etf_ok)),
++                                                                  "M15": sorted(set(cal) - set(m15_days))}}
++print("9월 공통", RES["common_days"], flush=True)
++if len(common) < 20 or common != cal:
++    RES["verdict"] = "BLOCKED"
++    RES["why"] = "NEEDS_DATA: 9월 공통 완전 거래일 20일 미만"
++    (OUT / "rf_results.json").write_text(json.dumps(RES, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
++    raise SystemExit(4)
++NAT, navN, invN, P4 = control("E:", WIN, ME)
++E = [ESIG[d] for d in WIN]
++print("통제 P4(9월)", round(P4[-1]), {k: round(navN[k][-1]) for k in SL}, "· E", [round(x, 4) for x in E], flush=True)
+ 
+ 
+-# ── 후보: 통제 소계정 보유의 정수 비례 복제 ──
++# ── 후보: 통제 소계정 보유의 정수 비례 복제(PR #68 그대로) ──
+ def qty_path(log, keyday):
+-    """통제 소계정의 시각별 종목 수량 변화 → 날(또는 봉) 끝 수량."""
+     q, out = {}, {}
+     for t, c, s, n, _ in sorted(log, key=lambda x: x[0]):
+         q[c] = q.get(c, 0) + (n if s == "buy" else -n)
+@@ -139,10 +202,21 @@
+         return None
+ 
+ 
++def last_px(c, d, prices):
++    for x in reversed(WIN[:WIN.index(d) + 1]):
++        p = prices(c, x)
++        if p:
++            return p
++    return 0.0
++
++
++ZERO = {k: {"days": set(), "code_days": 0} for k in SL}      # 통제는 들고 있는데 후보 목표가 0주인 날
++
++
+ def daily_sleeve(name, kind, prices, lockable):
+     rep = Rep(kind)
+-    qn = qty_path(LOG[name], lambda t: t[:8])
+-    cur, navC = {}, []
++    qn = qty_path(LOG["E:" + name], lambda t: t[:8])
++    cur, navC, invC = {}, [], []
+     notes = {"locked": 0, "no_price": 0}
+     for i, d in enumerate(WIN):
+         if d in qn:
+@@ -151,6 +225,10 @@
+         dec = WIN[i - 1] if i else "start"
+         codes = set(c for c, v in cur.items() if v > 0) | {p["code"] for p in rep.acc.pos.values()}
+         tg = {c: math.floor(E[i] * k * cur.get(c, 0)) for c in codes}
++        for c in codes:
++            if cur.get(c, 0) > 0 and tg[c] == 0:
++                ZERO[name]["days"].add(d)
++                ZERO[name]["code_days"] += 1
+         for side in ("sell", "buy"):
+             for c in sorted(codes):
+                 px = prices(c, d)
+@@ -167,38 +245,31 @@
+         nav, inv = rep.acc.mtm(pf)
+         rep.acc.check(pf)
+         navC.append(nav)
+-    return rep, navC, notes
+-
+-
+-def last_px(c, d, prices):
+-    for x in reversed(WIN[:WIN.index(d) + 1]):
+-        p = prices(c, x)
+-        if p:
+-            return p
+-    return 0.0
++        invC.append(inv)
++    return rep, navC, invC, notes
+ 
+ 
+ stockp = lambda c, d: G["CL"].get(c, {}).get(d)
+ etfp = lambda c, d: G["ETF"].get(c, {}).get(d)
+-REP, navC, RN = {}, {}, {}
++REP, navC, invC, RN = {}, {}, {}, {}
+ for name, kind, pr, lk in (("D1", "stock", stockp, True), ("ETF", "etf", etfp, False), ("BASKET", "stock", stockp, False)):
+-    REP[name], navC[name], RN[name] = daily_sleeve(name, kind, pr, lk)
++    REP[name], navC[name], invC[name], RN[name] = daily_sleeve(name, kind, pr, lk)
+     print("후보", name, round(navC[name][-1]), "매매", len(REP[name].trades), RN[name], flush=True)
+ 
+-# ── 15분봉 후보: 통제 체결 봉 · 그날 그 종목 첫 봉 시가 ──
++# ── 15분봉 후보: 통제 체결 봉 · 그날 그 종목 첫 봉 시가(PR #68 그대로) ──
+ rep = Rep("stock")
+-nlog = sorted(M["log"], key=lambda x: x[0])
++nlog = sorted(ME["log"], key=lambda x: x[0])
+ by_t = {}
+ for t, c, s, n, p in nlog:
+     by_t.setdefault(t, []).append((c, s, n))
+ events = {}
+-for c, bl in M["bars"].items():
++for c, bl in ME["bars"].items():
+     seen = set()
+     for T, o, cl in bl:
+         first = T[:8] not in seen
+         seen.add(T[:8])
+         events.setdefault(T, []).append((c, o, cl, first))
+-qn, last_close, navC["M15"], day = {}, {}, [], None
++qn, last_close, navC["M15"], invC["M15"], day = {}, {}, [], [], None
+ dix = {d: i for i, d in enumerate(WIN)}
+ 
+ 
+@@ -207,6 +278,11 @@
+     nav, inv = rep.acc.mtm(pf)
+     rep.acc.check(pf)
+     navC["M15"].append(nav)
++    invC["M15"].append(inv)
++    for c, v in qn.items():
++        if v > 0 and rep.held(c) == 0:
++            ZERO["M15"]["days"].add(dd)
++            ZERO["M15"]["code_days"] += 1
+ 
+ 
+ for T in sorted(events):
+@@ -215,11 +291,7 @@
+         if day is not None and day in dix:
+             close_day(day)
+         day = d
+-    if d not in dix:                                     # 창 앞 2025-09-17 봉: 통제 엔진도 체결 없음(첫 NAV 날 09-18)
+-        for c, o, cl, first in events[T]:
+-            last_close[c] = cl
+-        assert T not in by_t
+-        continue
++    assert d in dix, T
+     i = dix[d]
+     k = 1.0 if i == 0 else navC["M15"][i - 1] / navN["M15"][i - 1]
+     for c, s, n in by_t.get(T, []):
+@@ -238,7 +310,7 @@
+ CAND = [sum(navC[k][i] for k in SL) for i in range(len(WIN))]
+ 
+ 
+-# ── 지표 ──
++# ── 지표(9월만 · 시작 1천만 원) ──
+ def metrics(nav):
+     seg = [TOTAL] + nav
+     r = [seg[i] / seg[i - 1] - 1 for i in range(1, len(seg))]
+@@ -252,94 +324,83 @@
+     for d, x in zip(WIN, r):
+         mo[d[:6]] = mo.get(d[:6], 1.0) * (1 + x)
+     wm = min(mo, key=mo.get)
+-    D = lambda x: date(int(x[:4]), int(x[4:6]), int(x[6:]))
+-    yrs = (D(WIN[-1]) - D(WIN[0])).days / 365.25
+-    return {"end_won": nav[-1], "CAGR_pct": ((nav[-1] / TOTAL) ** (1 / yrs) - 1) * 100, "MDD_pct": mdd * 100, "MDD_at": mdd_at,
+-            "worst_day_pct": r[wd] * 100, "worst_day_at": WIN[wd], "worst_month_pct": (mo[wm] - 1) * 100, "worst_month_at": wm,
++    return {"end_won": nav[-1], "return_pct": (nav[-1] / TOTAL - 1) * 100, "MDD_pct": mdd * 100, "MDD_at": mdd_at,
++            "worst_day_pct": r[wd] * 100, "worst_day_at": WIN[wd], "best_day_pct": max(r) * 100, "worst_month_pct": (mo[wm] - 1) * 100, "worst_month_at": wm,
+             "day_breach_-15": sum(1 for x in r if x < -0.15 - 1e-12), "month_breach_-15": sum(1 for v in mo.values() if v - 1 < -0.15 - 1e-12),
+-            "months_pct": {k: (v - 1) * 100 for k, v in mo.items()}}
++            "daily_returns_pct": [x * 100 for x in r]}
+ 
+ 
+-def cost_turn(accs, navs):
+-    cost = sum(a.tot["buy_cost"] + a.tot["sell_cost"] for a in accs)
+-    notional = sum(a.tot["buy_notional"] + a.tot["sell_notional"] for a in accs)
+-    D = lambda x: date(int(x[:4]), int(x[4:6]), int(x[6:]))
+-    return cost, notional / 2 / (sum(navs) / len(navs)) / ((D(WIN[-1]) - D(WIN[0])).days / 365.25)
+-
+-
+-RES = {"window": [WIN[0], WIN[-1], len(WIN)], "control": metrics(P4), "candidate": metrics(CAND)}
+-nat_cost = sum(NAT[k]["tot"]["buy_cost"] + NAT[k]["tot"]["sell_cost"] for k in ("D1", "ETF", "BASKET")) + M["tot"]["buy_cost"] + M["tot"]["sell_cost"]
+-RES["control"]["cost_total_won"] = nat_cost
+-RES["control"]["sleeve_end"] = {k: navN[k][-1] for k in SL}
+-cc, ct = cost_turn([REP[k].acc for k in SL], CAND)
+-RES["candidate"].update({"cost_total_won": cc, "turnover_per_year": ct, "sleeve_end": {k: navC[k][-1] for k in SL},
++def costs(accs):
++    return {"cost_won": sum(a.tot["buy_cost"] + a.tot["sell_cost"] for a in accs),
++            "notional_won": sum(a.tot["buy_notional"] + a.tot["sell_notional"] for a in accs)}
++
++
++RES["window"] = [WIN[0], WIN[-1], len(WIN)]
++RES["control"] = metrics(P4)
++RES["candidate"] = metrics(CAND)
++nat_accs_cost = sum(NAT[k]["tot"]["buy_cost"] + NAT[k]["tot"]["sell_cost"] for k in ("D1", "ETF", "BASKET")) + ME["tot"]["buy_cost"] + ME["tot"]["sell_cost"]
++nat_notional = sum(NAT[k]["tot"]["buy_notional"] + NAT[k]["tot"]["sell_notional"] for k in ("D1", "ETF", "BASKET")) + ME["tot"]["buy_notional"] + ME["tot"]["sell_notional"]
++ctrl_log = {k: LOG["E:" + k] if k != "M15" else ME["log"] for k in SL}
++RES["control"].update({"cost_total_won": nat_accs_cost, "notional_won": nat_notional, "sleeve_end": {k: navN[k][-1] for k in SL},
++                       "trades": {k: {"buy": sum(1 for x in ctrl_log[k] if x[2] == "buy"), "sell": sum(1 for x in ctrl_log[k] if x[2] == "sell")} for k in SL},
++                       "max_gap": {k: [NAT[k]["tot"].get("max_gap_cash"), NAT[k]["tot"].get("max_gap_nav")] for k in ("D1", "ETF", "BASKET")}
++                       | {"M15": [ME["tot"].get("max_gap_cash"), ME["tot"].get("max_gap_nav")]},
++                       "checks": {k: NAT[k]["counts"].get("checks") for k in ("D1", "ETF", "BASKET")} | {"M15": ME["counts"].get("checks")}})
++cc = costs([REP[k].acc for k in SL])
++RES["candidate"].update({"cost_total_won": cc["cost_won"], "notional_won": cc["notional_won"], "sleeve_end": {k: navC[k][-1] for k in SL},
+                          "trades": {k: {"buy": sum(1 for x in REP[k].trades if x[2] == "buy"), "sell": sum(1 for x in REP[k].trades if x[2] == "sell")} for k in SL},
+                          "max_gap": {k: [REP[k].acc.tot.get("max_gap_cash"), REP[k].acc.tot.get("max_gap_nav")] for k in SL},
+                          "checks": {k: REP[k].acc.counts.get("checks") for k in SL}, "notes": RN,
+                          "unfilled": {k: {kk: v for kk, v in REP[k].acc.counts.items() if "unfilled" in kk or "reduced" in kk} for k in SL}})
+-chg = [i for i in range(1, len(E)) if abs(E[i] - E[i - 1]) > 1e-12]
+-RES["exposure"] = {"avg": sum(E) / len(E), "min": min(E), "max": max(E), "changes": len(chg), "sum_abs_delta": sum(abs(E[i] - E[i - 1]) for i in range(1, len(E))),
+-                   "days_at_0.25": sum(1 for x in E if abs(x - 0.25) < 1e-12)}
+-
+-
+-# ── GPT 선별값과 비교 ──
+-def screen(base_navs, base0):
+-    seg = [base0] + base_navs
+-    r = [seg[i] / seg[i - 1] - 1 for i in range(1, len(seg))]
+-    e = exposure_from(base_navs, base0)
+-    out, v = [], 1.0
+-    for x, ee in zip(r, e):
+-        v *= 1 + ee * x
+-        out.append(v)
+-    return out, e
+-
+-
+-def exposure_from(navs, base0):
+-    seg = [base0] + navs
+-    r = [seg[i] / seg[i - 1] - 1 for i in range(1, len(seg))]
+-    E2 = []
+-    for t in range(len(navs)):
+-        ev = 1.0 if t < 20 else min(1.0, max(0.25, 0.20 / (statistics.stdev(r[t - 20:t]) * math.sqrt(252))))
+-        tc = 1.0 if t < 60 else (1.0 if navs[t - 1] >= sum(navs[t - 60:t]) / 60 else 0.25)
+-        E2.append(min(ev, tc))
+-    return E2
+-
+-
+-b66 = {r["date"]: float(r["nav_multiple"]) for r in csv.DictReader(open(BLEND, encoding="utf-8"))}
+-assert sorted(b66) == WIN
+-s66, e66 = screen([b66[d] for d in WIN], 1.0)
+-sF, eF = screen([x / TOTAL for x in P4], 1.0)
+-assert all(abs(a - b) < 1e-12 for a, b in zip(eF, E))
+-cand_n = [x / TOTAL for x in CAND]
+-first = lambda a, b, tol: next((WIN[i] for i in range(len(WIN)) if abs(a[i] - b[i]) > tol), None)
+-RES["vs_gpt_screen"] = {"gpt_screen_end_multiple(PR66 P4 기반)": s66[-1], "gpt_screen_json": 1.6161818289727041,
+-                        "screen_matches_gpt_json": abs(s66[-1] - 1.6161818289727041) < 1e-9,
+-                        "candidate_end_multiple": cand_n[-1], "diff_vs_pr66_screen": cand_n[-1] - s66[-1],
+-                        "first_diff_date_vs_pr66_screen(1e-6)": first(cand_n, s66, 1e-6),
+-                        "screen_on_cash_start_P4_end_multiple": sF[-1], "diff_vs_cash_start_screen": cand_n[-1] - sF[-1],
+-                        "first_diff_date_vs_cash_start_screen(1e-6)": first(cand_n, sF, 1e-6),
+-                        "exposure_same_days_pr66_vs_cash_start": sum(1 for a, b in zip(e66, E) if abs(a - b) < 1e-12)}
+-RES["pr66_P4_end_multiple"] = b66[WIN[-1]]
++# 실효 노출: (후보 투자액 ÷ 후보 NAV) ÷ (통제 투자액 ÷ 통제 NAV) — 통제 투자 > 0인 날 평균
++eff = {}
++for k in SL + ("ALL",):
++    num, den, n = 0.0, 0.0, 0
++    vals = []
++    for i in range(len(WIN)):
++        if k == "ALL":
++            ci, cn = sum(invN[x][i] for x in SL), sum(navN[x][i] for x in SL)
++            ki, kn = sum(invC[x][i] for x in SL), sum(navC[x][i] for x in SL)
++        else:
++            ci, cn, ki, kn = invN[k][i], navN[k][i], invC[k][i], navC[k][i]
++        if ci > 0 and cn > 0 and kn > 0:
++            vals.append((ki / kn) / (ci / cn))
++    eff[k] = {"avg_effective_over_control": sum(vals) / len(vals) if vals else None, "days": len(vals)}
++RES["exposure"] = {"E_sep": dict(zip(WIN, E)), "avg_E": sum(E) / len(E), "min": min(E), "max": max(E), "days_at_0.25": sum(1 for x in E if abs(x - 0.25) < 1e-12),
++                   "E_on_0901_from_signal_path_to_0831": E[0], "effective": eff,
++                   "zero_share": {k: {"days": len(ZERO[k]["days"]), "code_days": ZERO[k]["code_days"]} for k in SL},
++                   "zero_share_any_sleeve_days": len(set().union(*(ZERO[k]["days"] for k in SL)))}
++rc, rk = RES["control"]["daily_returns_pct"], RES["candidate"]["daily_returns_pct"]
++dd = [b - a for a, b in zip(rc, rk)]
++RES["difference"] = {"end_won_cand_minus_ctrl": CAND[-1] - P4[-1], "return_pp": RES["candidate"]["return_pct"] - RES["control"]["return_pct"],
++                     "MDD_pp": RES["candidate"]["MDD_pct"] - RES["control"]["MDD_pct"],
++                     "worst_day_pp": RES["candidate"]["worst_day_pct"] - RES["control"]["worst_day_pct"],
++                     "cost_won": RES["candidate"]["cost_total_won"] - RES["control"]["cost_total_won"],
++                     "daily_diff_mean_pp": statistics.mean(dd), "daily_diff_sd_pp": statistics.stdev(dd),
++                     "daily_diff_t": statistics.mean(dd) / (statistics.stdev(dd) / math.sqrt(len(dd))) if statistics.stdev(dd) > 0 else None,
++                     "ctrl_daily_sd_pp": statistics.stdev(rc), "cand_daily_sd_pp": statistics.stdev(rk), "n_days": len(dd)}
+ c = RES["candidate"]
+ inv_ok = all(v[0] is not None and v[0] <= 1.0 and v[1] <= 1.0 for v in c["max_gap"].values()) and all((x or 0) > 0 for x in c["checks"].values())
+-crit = {"inputs_timing_conservation": inv_ok, "day_ok": c["day_breach_-15"] == 0, "month_ok": c["month_breach_-15"] == 0, "mdd_ok": c["MDD_pct"] >= -15.0,
+-        "end_gt_10m": c["end_won"] > TOTAL}
+-RES["criteria"] = crit
+-RES["verdict"] = "TRAIN_CANDIDATE_LOCKED" if all(crit.values()) else "AXIS_ENDED"
+-with open(OUT / "nav_control_candidate.csv", "w", encoding="utf-8") as f:
+-    f.write("date,exposure,control_nav," + ",".join(f"control_{k}" for k in SL) + ",candidate_nav," + ",".join(f"cand_{k}" for k in SL) +
+-            ",screen_pr66,screen_cash_start\n")
++RES["criteria_disclosed(완화 없음)"] = {"conservation": inv_ok, "day_ok": c["day_breach_-15"] == 0, "month_ok": c["month_breach_-15"] == 0,
++                                       "mdd_ok": c["MDD_pct"] >= -15.0, "end_gt_10m": c["end_won"] > TOTAL}
++RES["verdict"] = "READY"
++RES["label"] = "INTERIM_FORWARD_DIAGNOSTIC(9월 USED · 수익성 확정 아님 · PAPER_VALIDATION_READY 아님)"
++with open(OUT / "nav_sep_control_candidate.csv", "w", encoding="utf-8") as f:
++    f.write("date,exposure_E_t,control_nav," + ",".join(f"control_{k}" for k in SL) + ",candidate_nav," + ",".join(f"cand_{k}" for k in SL) + "\n")
+     for i, d in enumerate(WIN):
+         f.write(f"{d},{E[i]:.10f},{P4[i]:.2f}," + ",".join(f"{navN[k][i]:.2f}" for k in SL) + f",{CAND[i]:.2f}," +
+-                ",".join(f"{navC[k][i]:.2f}" for k in SL) + f",{s66[i]:.10f},{sF[i]:.10f}\n")
+-json.dump({k: [list(x) for x in REP[k].trades] for k in SL}, open(OUT / "candidate_trades.json", "w", encoding="utf-8"), ensure_ascii=False)
+-json.dump({k: [list(x) for x in (LOG[k] if k != "M15" else M["log"])] for k in SL}, open(OUT / "control_trades.json", "w", encoding="utf-8"), ensure_ascii=False)
++                ",".join(f"{navC[k][i]:.2f}" for k in SL) + "\n")
++full = {"control": {k: [list(x) for x in ctrl_log[k]] for k in SL}, "candidate": {k: [list(x) for x in REP[k].trades] for k in SL}}
++raw = json.dumps(full, ensure_ascii=False, sort_keys=True).encode("utf-8")
++(OUT / "trades_local_only.json").write_bytes(raw)
++import hashlib  # noqa: E402
++RES["trades_local_only_sha256"] = hashlib.sha256(raw).hexdigest()
+ for k in ("control", "candidate"):
+-    RES[k]["months_pct"] = RES[k].pop("months_pct")
+-(OUT / "rr_results.json").write_text(json.dumps(RES, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
+-print("통제", {k: v for k, v in RES["control"].items() if k != "months_pct"}, flush=True)
+-print("후보", {k: v for k, v in RES["candidate"].items() if k not in ("months_pct", "notes", "unfilled")}, flush=True)
+-print("노출", RES["exposure"], flush=True)
+-print("GPT 대조", RES["vs_gpt_screen"], flush=True)
+-print("판정", crit, RES["verdict"], flush=True)
++    RES[k]["daily_returns_pct"] = RES[k].pop("daily_returns_pct")
++(OUT / "rf_results.json").write_text(json.dumps(RES, ensure_ascii=False, indent=1, default=str), encoding="utf-8")
++print("통제", {k: v for k, v in RES["control"].items() if k != "daily_returns_pct"}, flush=True)
++print("후보", {k: v for k, v in RES["candidate"].items() if k not in ("daily_returns_pct", "notes", "unfilled")}, flush=True)
++print("노출", {k: v for k, v in RES["exposure"].items() if k != "E_sep"}, flush=True)
++print("차이", RES["difference"], flush=True)
++print("판정", RES["criteria_disclosed(완화 없음)"], RES["verdict"], flush=True)
+ print("끝", flush=True)
