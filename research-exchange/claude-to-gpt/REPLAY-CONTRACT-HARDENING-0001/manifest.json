@@ -1,0 +1,193 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CONTRACT-HARDENING-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 22,
+ "status": "READY",
+ "source_pr": 86,
+ "source_head_sha": "916bc6781eb27000ec8f7b97a2907b28cd89673e",
+ "code_commit": "66a5c74d73b7a5ecfba1701a82cc3c7369a20d98",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/call_budget.py",
+  "code/fixtures_v2.py",
+  "code/intent_map.py",
+  "code/mutation_check.py",
+  "code/pr86/fixtures_test.py",
+  "code/pr86/raw_replay.py",
+  "code/raw_replay_v2.py",
+  "code/schema_check.py",
+  "code/targets148.py",
+  "evidence/call-budget.json",
+  "evidence/intent-mapping-148.json",
+  "evidence/intent-mapping-tests.json",
+  "evidence/mtm-gate-tests.json",
+  "evidence/mutation-check.json",
+  "evidence/pit-version-tests.json",
+  "evidence/ported-fixtures-v2.json",
+  "evidence/pr86-fixtures-rerun.json",
+  "evidence/raw-pair-tests.json",
+  "evidence/run.log",
+  "evidence/schema-check.json",
+  "evidence/target-coverage.json",
+  "schema/corporate-action.v2.schema.json",
+  "schema/intent.schema.json",
+  "schema/raw-price-response.v2.schema.json"
+ ],
+ "completed_at_kst": "2026-10-09T00:54:33+09:00",
+ "input": {
+  "pr": 87,
+  "head_sha": "fd37b8b99071a7444abbacaf0255ac2be8aabf6a",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "receipt.json"
+  ],
+  "pr85_heads": {
+   "read": "467e3237e8589fec98dc09feea89de7ab2d12418",
+   "current": "68823bfffeee624fe339606f0c0734b6e40b8b5d",
+   "delta": "receipt.json만(8줄)"
+  }
+ },
+ "prereg_commit": "473b9931251721f74090c67dba17f6bf218c019e",
+ "prereg_committed_at_kst": "2026-10-09T00:51:12+09:00",
+ "verdict": "READY / A~F 구현 · 신규+이식 42/42 · 스키마 12/12 · PR86 10/10 보존 · 148 의도 결정적(차단 0) · 변이 8/8 · 외부 호출 0 · Train 재생 0 · 성과 0 · +19.90% 미검증",
+ "gpt_findings": {
+  "1_dart_232_miscount": "CONFIRMED",
+  "2_future_correction": "CONFIRMED",
+  "3_same_day_cutoff": "CONFIRMED",
+  "4_stale_nav_gate": "CONFIRMED",
+  "5_intent_not_frozen": "CONFIRMED",
+  "6_pr85_receipt_only": "CONFIRMED",
+  "rebuttal": "의도 변환은 금액/비율이 아니라 PR76 판단일 목표 수량(et_replay.py 7·8·91줄)"
+ },
+ "additional_findings": {
+  "X1": "PR86 raw_replay.py 106~108줄: 기준일이 휴장일이면 기업행동 영구 누락",
+  "X2": "수량 조정이 효력일 기준 — 권리락일/상장일 불일치",
+  "X3": "collect_dart_extra.py 33~41줄 23개 endpoint에 분할·병합 전용 API 없음(공식 확인 필요)"
+ },
+ "inputs": {
+  "pr86_report": "73e6f2517c8af110cac1124b1705766aec1e8056439708b04cf80117728f02e0",
+  "pr86_manifest": "ba9fd9f973c3f29c04fd8ee19e3c2d6175abab4b35bd36dbcec988706eb5645e",
+  "pr86_target_coverage": "499b4db4802bf0d06462671efe81dee4bb2d7975d5db6e52faf05c272a842094",
+  "pr86_collector_interface": "6e13f610d13ced427c0621f3e497b61d3143fd141ff6ab8982660671c9efff29",
+  "pr76_daily_local": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8",
+  "old_nrl_cache": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "salt_sha256": "eb7b7d0859a3a81b83e18f49d78248b697089fc286096655938908408d08e4eb"
+ },
+ "file_sha256": {
+  "PREREG.md": "c173341bfa697134052d5dae5d632bac0ed52013116ed177ef1d020cc47bfcff",
+  "REPORT.md": "4f3ee924292e7a3f9f0143e7627bffeae58f836cd2244d3877c20833cd26e8e6",
+  "code/call_budget.py": "5f07185b9907b4df001c7e6218bbc049413c89fcb31f521c2211ba67e7f4aa84",
+  "code/fixtures_v2.py": "19f525a888d46573f53796075247af76ac5a96e5ebf5d84ac03e241e534e1b20",
+  "code/intent_map.py": "afd997dfb633be9a9c066b46bfa5ddfcb27cb2923f3776b81daadeeaa8becdbf",
+  "code/mutation_check.py": "1068df72d71a9a7753585447966a730d00d7b0ea9a6ad75aa8219a054501f1c4",
+  "code/pr86/fixtures_test.py": "19ee691c875fcbcb165609218e5e4488ad4c90ccdecc652a0f8f08935a951024",
+  "code/pr86/raw_replay.py": "0527f42ebe47b0b799e0887c5795ca98949f646f7a4846cd3eb6f83100e5d348",
+  "code/raw_replay_v2.py": "46dbf95beb2ffaa2106956fb6b96904d9c6c0233bc1f7a1c7d366ac14904976c",
+  "code/schema_check.py": "1ed27b407db649433e94dda88a1975a0c17109091ac890600de456d48d32caeb",
+  "code/targets148.py": "fc2137e3f0eb0f9a5fb4790dd99aa39add707db1a92198dce1a46cd16adf43e7",
+  "evidence/call-budget.json": "cc08465273ac8693ff9707cf9337ad0b74a43dae809831ef0d59d01c54908553",
+  "evidence/intent-mapping-148.json": "8bb359b826d1685c59b57270adbb4683bfc9c62bde529d12e5231793432e0f3b",
+  "evidence/intent-mapping-tests.json": "2ff1c5e2e54ca4660f2a3435e964c9b042d4ceb96b1b562861ac87ce97a8b315",
+  "evidence/mtm-gate-tests.json": "2e25154913ba4f793f62f3ed22d2b1ef387e839243a79734132cee75a62fd05b",
+  "evidence/mutation-check.json": "ef7a1fabc5850a2648dd2c69ec4956bdb0277ab2483c8043eb9b4aebe969afe5",
+  "evidence/pit-version-tests.json": "688e361bc809e5d91b57639b9c0dc3d674ed56d226989c4bc467241fbd065918",
+  "evidence/ported-fixtures-v2.json": "d99fe1d57dfc92aefd04d1185608564113f4a3d79fddae5daf27f9c8a62ba218",
+  "evidence/pr86-fixtures-rerun.json": "8f75c2761001a6d41a56a98195ecaebc4dba2e1670d7e7d1013aa7f786a9dc58",
+  "evidence/raw-pair-tests.json": "0bd88686245fb7226c567b346044c1ab5414d320a9b6b5e2610d039c68d029c0",
+  "evidence/run.log": "92e03f9fdaa37623d2d2e535fa2c58e34b1e105c58f596ca8b6badbae02c0028",
+  "evidence/schema-check.json": "2d9a64f8132ef9a8f7d051ef023786cf3b69b01b21b3e5ea25f9e6670903008d",
+  "evidence/target-coverage.json": "499b4db4802bf0d06462671efe81dee4bb2d7975d5db6e52faf05c272a842094",
+  "schema/corporate-action.v2.schema.json": "6777bfde81349b4bdc89267274eeb9c943feb8265f2226cd1eb1aa55547948ba",
+  "schema/intent.schema.json": "5813e73de396be33a15e526ee13e460fdf911bdf9386d8c8162d9758a9c2e217",
+  "schema/raw-price-response.v2.schema.json": "0dd99f506021d3b23761d7c39c57f09c1bfffb841e81e3090b007745320ed928"
+ },
+ "commands": [
+  "python3 -E -P code/targets148.py <PR76 원장> <옛 nrl-cache.pkl> <salt> <target-coverage.json> <로컬 대상>",
+  "cd code/pr86 && python3 -E -P fixtures_test.py <pr86-fixtures-rerun.json>",
+  "python3 -E -P code/call_budget.py <target-coverage.json> <계획.json>",
+  "python3 -E -P code/intent_map.py <PR76 원장> <옛 nrl-cache.pkl> <salt> <로컬 대상> <intent-mapping-148.json> <로컬 의도>",
+  "python3 -E -P code/fixtures_v2.py <계획.json> <출력 폴더>",
+  "python3 -E -P code/schema_check.py schema <로컬 의도> <schema-check.json>",
+  "python3 -E -P code/mutation_check.py <계획.json> <작업 폴더> <mutation-check.json>  (사전등록 밖 추가)"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "jsonschema": "4.26.0",
+  "os": "Linux x86_64"
+ },
+ "results": {
+  "denominator": {
+   "fills": 148,
+   "D1": "52/71",
+   "BASKET": "12/13",
+   "off_tick": 23,
+   "unknown": 125,
+   "codes": 33,
+   "dates": 77,
+   "same_bytes_as_pr86": true
+  },
+  "pr86_fixtures_rerun": "10/10",
+  "fixture_groups": {
+   "call-budget": "6/6",
+   "pit-version-tests": "10/10",
+   "raw-pair-tests": "7/7",
+   "mtm-gate-tests": "5/5",
+   "intent-mapping-tests": "4/4",
+   "ported-fixtures-v2": "10/10"
+  },
+  "schema_check": "12/12",
+  "mutation_check": "8/8",
+  "mutation_caught_by_error": [
+   "M5",
+   "M8"
+  ],
+  "call_budget": {
+   "dart_exhaustive_declared_7": 265,
+   "pr86_reported": 232,
+   "dart_cap": 250,
+   "stage1_base": 34,
+   "stage1_worst": 102,
+   "stage2_max_base_after_stage1": 72,
+   "kis_base": 133,
+   "kis_worst": 399,
+   "cap_includes_auth_and_retry": true
+  },
+  "intent_148": {
+   "status": {
+    "MAPPED_PENDING_OFFICIAL_RAW": 148
+   },
+   "mapped_plus_blocked": 148,
+   "deterministic_under_shuffled_input": true,
+   "same_day_order_rule_matches_pr76_storage": {
+    "same": 90
+   },
+   "buy_reduced_in_pr76": 0,
+   "decision_targets_total": {
+    "D1": 542,
+    "BASKET": 154
+   }
+  }
+ },
+ "runs": {
+  "prereg_runs": 1,
+  "failed": 0,
+  "extra_runs": 1,
+  "extra_note": "변이 점검(사전등록 밖 · 실행 뒤 작성)",
+  "external_calls": 0,
+  "train_replay_runs": 0,
+  "performance_runs": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "외부 API · 웹 · 네트워크 · Actions · Secrets · 자격 요구",
+  "Train 148 재생 · NAV · 수익률 · MDD · TWR · 영향 금액",
+  "새 alpha · threshold · OOS",
+  "주문 · 계좌",
+  "운영 · 워크플로 · 인증 변경 · 15분봉 · 자동병합",
+  "원가격 · 종목 · 목표 수량 · salt 공개"
+ ]
+}
