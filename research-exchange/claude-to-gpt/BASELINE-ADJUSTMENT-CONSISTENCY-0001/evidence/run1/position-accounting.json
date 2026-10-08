@@ -1,0 +1,66 @@
+{
+ "ledgers": {
+  "control_D1": {
+   "days": 127,
+   "max_nav_gap_won(경로A 재구성 대 경로B 저장 NAV)": 0.0047407737001776695,
+   "days_gap_gt_1won": 0,
+   "cash_identity_gap_won(기말 = 기초 − 매수 + 매도 − 비용)": 1.5133991837501526e-09,
+   "qty_identity_ok(기말 = 기초 + 매수 − 매도 · 음수 0)": true,
+   "position_days": 512,
+   "position_days_off_tick_mtm": 53,
+   "position_days_stale_price": 0,
+   "explicit_ca_adjust_records": 0,
+   "non_trade_qty_changes": 0,
+   "verdict": "INTERNAL_CONSISTENCY_PASS",
+   "qty_fields_removed": "원수량 합계는 공개하지 않음(로컬 계산에서 기말 = 기초 + 매수 − 매도 확인만 공개)"
+  },
+  "control_BASKET": {
+   "days": 127,
+   "max_nav_gap_won(경로A 재구성 대 경로B 저장 NAV)": 0.004610988777130842,
+   "days_gap_gt_1won": 0,
+   "cash_identity_gap_won(기말 = 기초 − 매수 + 매도 − 비용)": 2.3283064365386963e-10,
+   "qty_identity_ok(기말 = 기초 + 매수 − 매도 · 음수 0)": true,
+   "position_days": 153,
+   "position_days_off_tick_mtm": 27,
+   "position_days_stale_price": 0,
+   "explicit_ca_adjust_records": 0,
+   "non_trade_qty_changes": 0,
+   "verdict": "INTERNAL_CONSISTENCY_PASS",
+   "qty_fields_removed": "원수량 합계는 공개하지 않음(로컬 계산에서 기말 = 기초 + 매수 − 매도 확인만 공개)"
+  },
+  "fixed76_D1": {
+   "days": 127,
+   "max_nav_gap_won(경로A 재구성 대 경로B 저장 NAV)": 0.004962979815900326,
+   "days_gap_gt_1won": 0,
+   "cash_identity_gap_won(기말 = 기초 − 매수 + 매도 − 비용)": 4.656612873077393e-10,
+   "qty_identity_ok(기말 = 기초 + 매수 − 매도 · 음수 0)": true,
+   "position_days": 449,
+   "position_days_off_tick_mtm": 48,
+   "position_days_stale_price": 0,
+   "explicit_ca_adjust_records": 0,
+   "non_trade_qty_changes": 0,
+   "verdict": "INTERNAL_CONSISTENCY_PASS",
+   "qty_fields_removed": "원수량 합계는 공개하지 않음(로컬 계산에서 기말 = 기초 + 매수 − 매도 확인만 공개)"
+  },
+  "fixed76_BASKET": {
+   "days": 127,
+   "max_nav_gap_won(경로A 재구성 대 경로B 저장 NAV)": 0.004802126437425613,
+   "days_gap_gt_1won": 0,
+   "cash_identity_gap_won(기말 = 기초 − 매수 + 매도 − 비용)": 0.0,
+   "qty_identity_ok(기말 = 기초 + 매수 − 매도 · 음수 0)": true,
+   "position_days": 108,
+   "position_days_off_tick_mtm": 26,
+   "position_days_stale_price": 0,
+   "explicit_ca_adjust_records": 0,
+   "non_trade_qty_changes": 0,
+   "verdict": "INTERNAL_CONSISTENCY_PASS",
+   "qty_fields_removed": "원수량 합계는 공개하지 않음(로컬 계산에서 기말 = 기초 + 매수 − 매도 확인만 공개)"
+  }
+ },
+ "record_kinds_in_ledgers": {
+  "buy": 118,
+  "sell": 132
+ },
+ "explicit_corporate_action_adjustment_records": 0,
+ "note": "원장에는 buy/sell 밖의 수량 · 현금 조정 레코드가 없음(기업행동 조정을 명시적으로 다루지 않음). 수정주가 계열 위에서 수량 · 현금이 서로 맞는다는 뜻이지, 실제 체결 가능 수량 · notional이 검증됐다는 뜻은 아님."
+}

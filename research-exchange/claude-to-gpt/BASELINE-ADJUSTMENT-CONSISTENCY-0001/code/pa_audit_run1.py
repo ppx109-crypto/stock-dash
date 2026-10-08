@@ -91,7 +91,7 @@ HOLD = {(L, k): qty_paths(L, k) for L in ("control", "fixed76") for k in ("D1", 
 # 기업행동 8종목 · 저장 공시일(Train 안) ±5 거래일
 CA = ("감자", "분할", "합병", "무상증자", "유상증자", "유무상증자")
 ca_days = {}
-for c in sorted({f[3] for f in FILLS}):                   # PR #80/#82 기준: 체결 종목 39개 안의 기업행동 종목(1회차는 신호 종목까지 넣어 16개 → 고침)
+for c in sorted({c for c, _ in need}):
     p = Path(B2, "dart-events", f"{c}.json")
     if not p.exists():
         continue
