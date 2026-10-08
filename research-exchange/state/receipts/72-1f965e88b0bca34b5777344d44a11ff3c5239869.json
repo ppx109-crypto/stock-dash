@@ -81,7 +81,12 @@
   },
   "code_hashes_matched": 10,
   "result_pr": null,
-  "delivered_to_existing_session": false,
+  "delivered_to_existing_session": true,
   "next_task_path": "research-exchange/gpt-to-claude/REPLAY-ROWMASK-0001/",
-  "receipt_path": "research-exchange/gpt-to-claude/REPLAY-ROWMASK-0001/receipt.json"
+  "receipt_path": "research-exchange/gpt-to-claude/REPLAY-ROWMASK-0001/receipt.json",
+  "response_pr": 73,
+  "delivery_status": "POSTED_ONCE_AND_UI_RESPONDING",
+  "delivered_task_head_sha": "b8ddedf1a00eefb04a72e438fdf29efed3e3a4ca",
+  "delivered_at_kst": "2026-10-08T22:28:20+09:00",
+  "delivery_private_identifier_recorded": false
 }
