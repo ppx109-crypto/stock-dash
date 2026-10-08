@@ -1,0 +1,91 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-OFFICIAL-DATE-EVIDENCE-RECOVERY-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 24,
+ "status": "BLOCKED",
+ "source_pr": 90,
+ "source_head_sha": "f2e59846f89bd8da8392db07a0570f2d3578f109",
+ "code_commit": "c7424d40ba3d5752284ea192e0ef090298952813",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/build_contract.py",
+  "evidence/run.log",
+  "evidence/source-access-log.json",
+  "evidence/split-reverse-split-date-contract.json"
+ ],
+ "completed_at_kst": "2026-10-09T01:21:16+09:00",
+ "input": {
+  "pr": 91,
+  "head_sha": "c463763d8efbcbec49f0fa571a1843dd3cd13a60",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ]
+ },
+ "prereg_commit": "b06b17822e935a4007d443b8d991f91ce34ceb14",
+ "prereg_committed_at_kst": "2026-10-09T01:19:01+09:00",
+ "verdict": "BLOCKED / 70128·70129 서식·효력발생일 ACCEPT(색인 등급) · price_basis_date BLOCKED_NO_OFFICIAL_EVIDENCE · first_sellable_date REVISE(예시 3/3 일치·일반 규칙 없음) · DART report_nm 대응 BLOCKED",
+ "verdicts": {
+  "split": {
+   "report_form_code": "ACCEPT",
+   "report_name": "ACCEPT",
+   "dart_report_nm": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "legal_effective_date": "ACCEPT",
+   "halt_period": "ACCEPT",
+   "listing_date": "ACCEPT",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "first_sellable_date": "REVISE"
+  },
+  "reverse_split": {
+   "report_form_code": "ACCEPT",
+   "report_name": "ACCEPT",
+   "dart_report_nm": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "legal_effective_date": "ACCEPT",
+   "halt_period": "ACCEPT",
+   "listing_date": "ACCEPT",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "first_sellable_date": "REVISE"
+  }
+ },
+ "direct_access": {
+  "urls": 5,
+  "attempts": 5,
+  "succeeded": 0,
+  "retries": 0,
+  "kind_server_403": 3,
+  "law_krx_policy_block": 2,
+  "new_network_allow_requested": false
+ },
+ "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+ "keep_pr90": {
+  "UNKNOWN_CA_VERSION_PIT": "유지(원 접수 연결 공식 칸 없음 · KIND 원문 대조 실패)",
+  "same_day_ban": "유지(접수 시각 근거 없음)",
+  "fail_closed": "유지"
+ },
+ "file_sha256": {
+  "PREREG.md": "87e1dff82283c0f9c65efa6f57281d804772c9a05d626a7b8d80fd571455f1ae",
+  "REPORT.md": "ecc2c505c75c2bc49771aeb6ea5205b60daaf9379f4ee8fcd81f9c9f43be7c2b",
+  "code/build_contract.py": "76133f142f34b02add96d89d5cb8013ac154a313f3ada5137b8b6314ace02cc6",
+  "evidence/run.log": "7a3e5c7a3d2b8cd938ec2556f757b6540e72dffeb2d0392e2f74d911a362f36b",
+  "evidence/source-access-log.json": "b0dc0edf22f1601383f41b6938a8eb6b5c3816e30738e9da7caa9140c6c2f43c",
+  "evidence/split-reverse-split-date-contract.json": "80f473163304fc72cb9d50b760ff91570ee0121f2e160bf048d96287cc0bf75b"
+ },
+ "runs": {
+  "doc_access_runs": 1,
+  "failed_access": 5,
+  "data_api_calls": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "replay": 0,
+  "performance": 0,
+  "new_session": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false
+}
