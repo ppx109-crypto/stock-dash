@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-APPLIED-PAYLOAD-PROVENANCE-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 32,
+  "status": "READY",
+  "source_pr": 106,
+  "source_head_sha": "dacbcb096bbb07e0d176065872fad551e12927b0",
+  "input_detected_at_kst": "2026-10-09T02:25:38+09:00",
+  "reviewed_at_kst": "2026-10-09T02:26:53+09:00",
+  "duplicate_check": {
+    "source_pr_head_existing_response": false,
+    "task_existing_pr": false
+  },
+  "source_state": {
+    "state": "open",
+    "draft": false,
+    "merged": false,
+    "head_sha": "dacbcb096bbb07e0d176065872fad551e12927b0",
+    "branch_commit_after_open": 0
+  },
+  "result_pr": null,
+  "delivered": false,
+  "paper_validation_ready": false,
+  "nav_verified": false,
+  "real_events_applied": 0
+}
