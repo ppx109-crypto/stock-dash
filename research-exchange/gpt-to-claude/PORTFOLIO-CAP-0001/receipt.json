@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "PORTFOLIO-CAP-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 10,
+  "phase": "ALPHA",
+  "status": "READY",
+  "source_pr": 62,
+  "source_head_sha": "f68eab60c9e8949dbf58ec6d1528e710bb0cadc0",
+  "source_status": "READY / NO_CANDIDATE",
+  "dedup_keys": [
+    "62:f68eab60c9e8949dbf58ec6d1528e710bb0cadc0"
+  ],
+  "prior_task_pr": 61,
+  "prior_result_pr": 62,
+  "result_pr": null,
+  "delivered_to_existing_session": false,
+  "created_at_kst": "2026-10-08T18:43:00+09:00"
+}
