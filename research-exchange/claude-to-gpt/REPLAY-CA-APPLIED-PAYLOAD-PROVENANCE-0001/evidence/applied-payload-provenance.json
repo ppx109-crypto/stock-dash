@@ -1,0 +1,466 @@
+{
+ "fixtures": {
+  "P1_same_payload_other_src": {
+   "expect": "COMMITTED",
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     }
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "bytes_equal_after_reload": true,
+     "sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "final_state_hash": "de057314ebbb47fab8620b591510bc565214c58d855f0438f717587b35d4fb1f",
+     "final_prov_hash": "0265553c485adea0235298300b2791a538bc495f12754f0fb645507dbf2379fa",
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "prov_A": [
+      "R1",
+      "R2"
+     ],
+     "perf": {
+      "status": "OK",
+      "all_zero": true
+     },
+     "bytes_equal_after_reload": true,
+     "sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb"
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "reload_bytes_stable": true,
+   "pass": true
+  },
+  "P2_changed_m_price": {
+   "expect": "BATCH_ABORTED",
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     }
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "bytes_equal_after_reload": true,
+     "sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "bytes_equal_after_reload": true,
+     "sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb"
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "reload_bytes_stable": true,
+   "pass": true
+  },
+  "P3_changed_real": {
+   "expect": "BATCH_ABORTED",
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     }
+    },
+    {
+     "order": [
+      0,
+      1
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "bytes_equal_after_reload": true,
+     "sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": false,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     }
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "reload": true,
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-01-29": "BLOCKED_APPLIED_PAYLOAD_CONFLICT",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "state_hash_before": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "state_hash_after_batch": "333182e9c148a540ffe47824ae11cfe4eb2fdedd827c3d8ba049fbea8e2d6bf4",
+     "prov_hash_before": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "prov_hash_after_batch": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "final_state_hash": "5380d178cb2144294a93081a2dc43b6185a2fe3ef98e7438f0a24169bfabe619",
+     "final_prov_hash": "3561a9c474dd7c0261df0f66d1199d150d8deb8df4dbb6f46bb1e29bca35271f",
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "prov_A": [
+      "R1"
+     ],
+     "perf": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30"
+     },
+     "bytes_equal_after_reload": true,
+     "sha256": "857a24774b2aff4454300b45fd6fdd8485ea5315987e469699900f770aafa3bb"
+    }
+   ],
+   "order_and_reload_invariant": true,
+   "reload_bytes_stable": true,
+   "pass": true
+  }
+ },
+ "pre_fix_negative_control": {
+  "P2_changed_m_price": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "A_status": "DUPLICATE_IGNORED",
+     "B_qty": "15"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "A_status": "DUPLICATE_IGNORED",
+     "B_qty": "15"
+    }
+   ],
+   "defect_reproduced": true
+  },
+  "P3_changed_real": {
+   "runs": [
+    {
+     "order": [
+      0,
+      1
+     ],
+     "verdict": "COMMITTED",
+     "A_status": "DUPLICATE_IGNORED",
+     "B_qty": "15"
+    },
+    {
+     "order": [
+      1,
+      0
+     ],
+     "verdict": "COMMITTED",
+     "A_status": "DUPLICATE_IGNORED",
+     "B_qty": "15"
+    }
+   ],
+   "defect_reproduced": true
+  }
+ },
+ "informational_gaps": {
+  "G1_apply_date_changed": {
+   "verdict": "COMMITTED",
+   "status": {
+    "A|split|5|2026-02-02": "OK"
+   },
+   "A_qty": "925",
+   "note": "의미키에 apply_date가 있어 새 사건으로 보임 → 두 번 적용(남은 위험)"
+  },
+  "G2_m_qty_changed": {
+   "verdict": "BATCH_ABORTED",
+   "status": {
+    "A|split|10|2026-01-29": "BLOCKED_APPLY_DATE_MISMATCH"
+   },
+   "A_qty": "185",
+   "note": "새 키지만 지난 날짜라 BLOCKED_ORDER로 우연히 막힘"
+  }
+ },
+ "summary": {
+  "fixtures_pass": true,
+  "neg_defect_reproduced": true,
+  "real_events_applied": 0,
+  "gap_G1_double_applied": true,
+  "all_pass": true
+ },
+ "pr106_source_sha256": "db4403a70299b733356c401f061e3cf1b650bffa8bb650b77126329c6e050ba2"
+}
