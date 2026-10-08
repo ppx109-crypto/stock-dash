@@ -1,0 +1,114 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-APPLIED-PAYLOAD-PROVENANCE-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 32,
+ "status": "READY",
+ "source_pr": 106,
+ "source_head_sha": "dacbcb096bbb07e0d176065872fad551e12927b0",
+ "code_commit": "07b4fcc6af7ee4fe67db82ad66ade198aa3284b1",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/payload_registry.py",
+  "evidence/applied-payload-provenance.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:31:41+09:00",
+ "input": {
+  "pr": 107,
+  "head_sha": "4d8f4f1df5ee67c55fca86298b95e67c3bce0123",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T02:28:41+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "dacbcb096bbb07e0d176065872fad551e12927b0"
+   },
+   {
+    "at_kst": "2026-10-09T02:31:14+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "dacbcb096bbb07e0d176065872fad551e12927b0"
+   }
+  ]
+ },
+ "prereg_commit": "c708501eab25171cf9d13af31582ab69de3f935b",
+ "prereg_committed_at_kst": "2026-10-09T02:29:34+09:00",
+ "verdict": "READY / key→payload 레지스트리 · 변경 내용 재전송은 BLOCKED_APPLIED_PAYLOAD_CONFLICT로 배치 전체 중단 · state/provenance 해시 불변 · 4경로(순서×reload) 불변 · PR106 결함 재현 · 남은 위험 G1(적용일 정정 이중 적용) 공개 · 실제 적용 0",
+ "admission": "PR106 64줄 applied 키 집합 · 내용 비교 없음 인정",
+ "summary": {
+  "fixtures_pass": true,
+  "neg_defect_reproduced": true,
+  "real_events_applied": 0,
+  "gap_G1_double_applied": true,
+  "all_pass": true
+ },
+ "fixtures": {
+  "P1_same_payload_other_src": {
+   "verdict": "COMMITTED",
+   "invariant": true,
+   "reload_bytes": true,
+   "pass": true
+  },
+  "P2_changed_m_price": {
+   "verdict": "BATCH_ABORTED",
+   "invariant": true,
+   "reload_bytes": true,
+   "pass": true
+  },
+  "P3_changed_real": {
+   "verdict": "BATCH_ABORTED",
+   "invariant": true,
+   "reload_bytes": true,
+   "pass": true
+  }
+ },
+ "pre_fix_defect": {
+  "P2_changed_m_price": true,
+  "P3_changed_real": true
+ },
+ "pr106_source_sha256": "db4403a70299b733356c401f061e3cf1b650bffa8bb650b77126329c6e050ba2",
+ "residual_risk": {
+  "G1_apply_date_changed": "COMMITTED · A 925",
+  "G2_m_qty_changed": "BATCH_ABORTED",
+  "needs_data": "출처 사건 식별자(정정 사슬) — PR90 UNKNOWN_CA_VERSION_PIT"
+ },
+ "file_sha256": {
+  "PREREG.md": "5655f3c886694eb8c6fd5596b186492e3ea26c13bb9b3d7222503f2a879ffa53",
+  "REPORT.md": "24d376469eb97e427aac1c957fba05909c2350817fbf56884c8897f4cafb53a8",
+  "code/payload_registry.py": "adb5ceccb7d5bd536c18d3f3069550b6b6c5205245f54e1c66b51ee05d18d2c0",
+  "evidence/applied-payload-provenance.json": "d34e33419658d3176522e8957de3202d9a9b69d0847c0b21d63d26346c99e2ff",
+  "evidence/run.log": "24012a89129b18707c539020b89792d488dfe81476da6d644e2845afb236f5a0"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "cap": 2,
+  "failed": 0,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_symbols": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
