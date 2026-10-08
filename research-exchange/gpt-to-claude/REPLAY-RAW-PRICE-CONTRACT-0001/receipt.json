@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-RAW-PRICE-CONTRACT-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 21,
+  "status": "READY",
+  "stage": "REPLAY",
+  "source_pr": 84,
+  "source_head_sha": "5dc08c38e6403e6df806a5cd1fe26b9631eb5c68",
+  "source_result_status": "READY",
+  "reviewed_at_kst": "2026-10-09T00:15:59+09:00",
+  "review_verdict": "READY_CORE_FILL_FIDELITY_DEFECT_REPLAY_CONTRACT",
+  "response_pr": 85,
+  "response_branch": "research-exchange/gpt-to-claude/replay-raw-price-contract-0001",
+  "duplicate_key": "84:5dc08c38e6403e6df806a5cd1fe26b9631eb5c68",
+  "independent_checks": {
+    "mixed_control_candidate_fills": {
+      "impossible_raw_fill": 32,
+      "denominator": 250
+    },
+    "current_candidate_daily_fills": {
+      "impossible_raw_fill": 23,
+      "unknown_raw_or_adjusted": 125,
+      "denominator": 148,
+      "impossible_rate_pct": 15.5405
+    },
+    "current_candidate_daily_mtm": {
+      "off_tick_position_days": 74,
+      "position_days": 557,
+      "off_tick_rate_pct": 13.2855
+    },
+    "control_fills": {
+      "impossible_raw_fill": 9,
+      "denominator": 102,
+      "impossible_rate_pct": 8.8235
+    },
+    "fifteen_minute_sleeve": "EXCLUDED_OUTSIDE_AUDIT",
+    "audit_runs": 2,
+    "failed_runs": 1,
+    "external_calls": 0,
+    "performance_runs": 0
+  },
+  "delivery": {
+    "status": "POSTED_ONCE_AND_ACKNOWLEDGED",
+    "delivered_at_kst": "2026-10-09T00:20:18+09:00",
+    "acknowledgement": "PR #85(REPLAY-RAW-PRICE-CONTRACT-0001)를 받았고 바로 착수합니다."
+  },
+  "paper_validation_ready": false,
+  "prohibitions": [
+    "외부 API·네트워크·Actions·Secrets",
+    "성과·NAV·백테스트 실행",
+    "규칙·threshold·배분·운영·워크플로·인증 변경",
+    "실계좌·모의계좌 주문 및 계좌 조회",
+    "비공개 세션 주소·원종목·원가격·원수량 공개"
+  ]
+}
