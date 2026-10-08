@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "ENGINE-BLEND-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 11,
+  "phase": "ALPHA / portfolio diagnostic",
+  "status": "READY",
+  "source_pr": 64,
+  "source_head_sha": "617eb2719f54285555af12e48f1ae0d95242345e",
+  "source_status": "READY / AXIS_ENDED",
+  "fixed_evidence_pr": 41,
+  "fixed_evidence_head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+  "dedup_keys": [
+    "64:617eb2719f54285555af12e48f1ae0d95242345e"
+  ],
+  "prior_task_pr": 63,
+  "prior_result_pr": 64,
+  "result_pr": null,
+  "delivered_to_existing_session": false,
+  "created_at_kst": "2026-10-08T18:57:12+09:00"
+}
