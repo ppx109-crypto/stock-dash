@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-LEDGER-ATOMICITY-CONTRACT-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 30,
+  "status": "READY",
+  "source_pr": 102,
+  "source_head_sha": "b940b28347c10bc4ca13b995dd49daca505dc5e7",
+  "reviewed_at_kst": "2026-10-09T02:09:43+09:00",
+  "processed_input": {
+    "pr": 102,
+    "head_sha": "b940b28347c10bc4ca13b995dd49daca505dc5e7"
+  },
+  "dedup": {
+    "existing_response_pr": null,
+    "exact_input_receipt_found": false
+  },
+  "scope": "offline synthetic ledger atomicity/idempotence audit only",
+  "prohibitions": [
+    "external API or collection",
+    "real event application",
+    "replay/backtest/performance/NAV claim",
+    "new threshold or tolerance",
+    "operations/orders/strategy/allocation/workflow/auth changes",
+    "auto-merge"
+  ],
+  "completion": [
+    "preregister before calculation",
+    "4 normal synthetic cases preserve NAV/TWR/MDD",
+    "duplicate event is idempotently blocked",
+    "partial update negative control detected",
+    "fail-closed invalid cases",
+    "READY or BLOCKED report with evidence"
+  ],
+  "result_pr": null
+}
