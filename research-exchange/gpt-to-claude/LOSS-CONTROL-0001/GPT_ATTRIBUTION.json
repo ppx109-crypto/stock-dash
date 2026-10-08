@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "source_pr": 47,
+  "source_head_sha": "9ddc8551047ce5b5561d0b7516fa1fae554c2f3e",
+  "method": "difference of cumulative realized plus open MTM PnL by code between daily NAV 20260330 and 20260331; same reviewed shared engine, not independent engine",
+  "rule": "M4",
+  "cost_multiple": 2,
+  "day": "20260331",
+  "nav_previous": 21607601.105125062,
+  "nav_end": 18346201.105125062,
+  "nav_change_won": -3261400,
+  "return_pct": -15.093762533530086,
+  "fills_on_day": 0,
+  "contributions": [
+    {
+      "code": "000250",
+      "won": -2840000,
+      "share_pct": 87.08
+    },
+    {
+      "code": "047050",
+      "won": -218400,
+      "share_pct": 6.7
+    },
+    {
+      "code": "011070",
+      "won": -203000,
+      "share_pct": 6.22
+    }
+  ],
+  "sum_attribution_won": -3261400,
+  "reconciles": true
+}
