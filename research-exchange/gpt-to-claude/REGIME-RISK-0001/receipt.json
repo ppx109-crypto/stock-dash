@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-RISK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 12,
+  "phase": "ALPHA / fixed portfolio exposure control",
+  "status": "COMPLETED",
+  "source_pr": 66,
+  "source_head_sha": "90df77038c5480ad49dd6331268a6d4abb5031b7",
+  "source_status": "READY / AXIS_ENDED",
+  "dedup_keys": [
+    "66:90df77038c5480ad49dd6331268a6d4abb5031b7",
+    "68:2142e181245cacfca669ba3bdae8b41154cc1c86"
+  ],
+  "prior_task_pr": 65,
+  "prior_result_pr": 66,
+  "result_pr": 68,
+  "result_head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86",
+  "result_status": "READY / TRAIN_CANDIDATE_LOCKED_WEAK",
+  "manifest_verified": "23/23",
+  "independent_recalculation": "PASS",
+  "delivered_to_existing_session": true,
+  "created_at_kst": "2026-10-08T19:08:00+09:00",
+  "received_at_kst": "2026-10-08T19:10:00+09:00",
+  "completed_at_kst": "2026-10-08T19:28:00+09:00",
+  "delivery_note": "기존 지정 Claude 세션이 PR #67을 수신해 실행했고 PR #68로 완료. 새 세션/탭/루틴 없음."
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "task_id": "REGIME-RISK-0001",
+  "calculation_by": "GPT independent composite-NAV screening",
+  "source_pr": 66,
+  "source_head_sha": "90df77038c5480ad49dd6331268a6d4abb5031b7",
+  "input": "research-exchange/claude-to-gpt/ENGINE-BLEND-0001/evidence/blend_P4.csv",
+  "period": {
+    "from": "20250918",
+    "to": "20260831",
+    "rows": 230
+  },
+  "rule": {
+    "lag": "previous close only",
+    "vol_window": 20,
+    "annual_vol_target": 0.2,
+    "min_exposure": 0.25,
+    "max_exposure": 1,
+    "trend_window": 60,
+    "below_sma_cap": 0.25,
+    "cash_return": 0,
+    "leverage": false
+  },
+  "base": {
+    "end_multiple": 1.8582765032300022,
+    "MDD_pct": -30.763104044083768,
+    "worst_day_pct": -10.563590234559728,
+    "worst_month_pct": -19.2929939558637,
+    "month_breach_minus15": 1
+  },
+  "no_extra_cost": {
+    "end_multiple": 1.6161818289727041,
+    "end_won": 16161818.289727041,
+    "MDD_pct": -12.234481371465279,
+    "worst_day_pct": -3.857409134638934,
+    "worst_month_pct": -5.873866449704213,
+    "month_breach_minus15": 0,
+    "avg_exposure": 0.6274305935756749,
+    "total_abs_delta_exposure": 3.9470706601228396
+  },
+  "cost_stress_one_way": [
+    {
+      "rate": 0.001,
+      "end_won": 16098463.019904202,
+      "MDD_pct": -12.370952101609822
+    },
+    {
+      "rate": 0.002,
+      "end_won": 16035341.657508893,
+      "MDD_pct": -12.507270036029594
+    },
+    {
+      "rate": 0.005,
+      "end_won": 15847372.839632383,
+      "MDD_pct": -12.915308366867828
+    },
+    {
+      "rate": 0.01,
+      "end_won": 15538693.730194217,
+      "MDD_pct": -13.592328475639404
+    }
+  ],
+  "caveat": "screening on composite NAV; no integer-share or synchronized underlying-engine execution; not a candidate verdict"
+}
