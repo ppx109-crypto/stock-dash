@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "REAL-SLEEVE-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 9,
+  "status": "READY",
+  "source_pr": 60,
+  "source_head_sha": "24b12632560c7e4c911ce72a20df43fef004cb89",
+  "scope": "fixed 8-run actual 2.5m sleeve implementation verification",
+  "forbidden": [
+    "parameter or rule search",
+    "new data/API collection",
+    "orders or operational changes",
+    "leverage, secrets, auto-merge"
+  ],
+  "completion": "READY or BLOCKED result with REPORT, manifest, receipt, 8 NAVs, aggregate NAVs, hashes and invariants",
+  "paths": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "receipt.json"
+  ],
+  "created_at_kst": "2026-10-08T18:30:23+09:00"
+}
