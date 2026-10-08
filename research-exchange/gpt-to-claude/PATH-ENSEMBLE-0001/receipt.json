@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "PATH-ENSEMBLE-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 8,
+  "status": "COMPLETED",
+  "source_pr": 58,
+  "source_head_sha": "95f2219205a78cc2b77db0ebb8c370866af8dae7",
+  "source_status": "READY",
+  "dedup_keys": [
+    "58:95f2219205a78cc2b77db0ebb8c370866af8dae7"
+  ],
+  "prior_task_pr": 56,
+  "prior_result_pr": 58,
+  "prior_task_execution_head_sha": "8feafeeace53e9d0297a5b56ac6bd816f1212fb8",
+  "prior_task_receipt_only_head_sha": "28c7d04e6346d8d611435dc4a3c16b02938ace0d",
+  "result_pr": 60,
+  "result_head_sha": "24b12632560c7e4c911ce72a20df43fef004cb89",
+  "result_status": "SHADOW_SPEC_READY",
+  "delivered_to_existing_session": true,
+  "delivery_note": "기존 지정 세션이 PR #59 수신 및 지시 파일 검산 시작을 명시적으로 확인함.",
+  "created_at_kst": "2026-10-08T18:23:55+09:00",
+  "received_at_kst": "2026-10-08T18:24:55+09:00",
+  "completed_at_kst": "2026-10-08T18:27:12+09:00"
+}
