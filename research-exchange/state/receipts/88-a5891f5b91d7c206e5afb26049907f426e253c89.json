@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-OFFICIAL-SEMANTICS-AUDIT-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 23,
+  "status": "READY",
+  "stage": "REPLAY",
+  "source_pr": 88,
+  "source_head_sha": "a5891f5b91d7c206e5afb26049907f426e253c89",
+  "source_result_status": "READY",
+  "reviewed_at_kst": "2026-10-09T00:57:33+09:00",
+  "review_verdict": "READY_SYNTHETIC_CONTRACT_ACCEPTED_OFFICIAL_SEMANTICS_REQUIRED",
+  "response_pr": null,
+  "response_branch": "research-exchange/gpt-to-claude/replay-official-semantics-audit-0001",
+  "duplicate_key": "88:a5891f5b91d7c206e5afb26049907f426e253c89",
+  "input_task_pr": 87,
+  "input_task_read_head_sha": "fd37b8b99071a7444abbacaf0255ac2be8aabf6a",
+  "input_task_current_head_sha": "24df3f414cf3ee4eb7d4f23bf25ea2bb0dc686ed",
+  "input_task_head_delta": "receipt_only_delivery_acknowledgement",
+  "accepted": {
+    "dart_exhaustive_calls": 265,
+    "dart_cap": 250,
+    "pit_asof_gate": true,
+    "same_day_cutoff_gate": true,
+    "raw_adjusted_provenance_gate": true,
+    "mtm_performance_gate": true,
+    "existing_fill_intent_mapping": 148
+  },
+  "unresolved": {
+    "corporate_action_date_semantics": true,
+    "stock_split_reverse_split_official_source": true,
+    "kis_basis_value_direction": true,
+    "kis_page_and_row_limit": true,
+    "dart_available_at_precision": true,
+    "full_decision_ledger_replay": true
+  },
+  "delivery": {
+    "status": "PENDING_EXISTING_SESSION",
+    "delivered_at_kst": null,
+    "acknowledgement": null
+  },
+  "official_public_docs_only": true,
+  "data_api_calls_authorized": false,
+  "credentials_authorized": false,
+  "train_replay_authorized": false,
+  "performance_runs_authorized": false,
+  "paper_validation_ready": false
+}
