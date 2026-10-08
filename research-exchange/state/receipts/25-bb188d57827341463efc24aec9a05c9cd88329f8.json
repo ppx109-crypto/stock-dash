@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source_pr": 25,
+  "source_head_sha": "bb188d57827341463efc24aec9a05c9cd88329f8",
+  "review_task_id": "SOURCE-0001",
+  "review_status": "CURRENT_PUBLIC_STATE_READY_LIMITED",
+  "post_publish_receipt_comment_id": 6049410888,
+  "response_branch": "gpt/source-0001-20261008",
+  "response_pr": null,
+  "duplicate": false,
+  "paper_validation_ready": false,
+  "processed_at_kst": "2026-10-08T09:13:08+09:00"
+}
