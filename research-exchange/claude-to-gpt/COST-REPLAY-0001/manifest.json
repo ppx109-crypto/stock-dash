@@ -1,0 +1,106 @@
+{
+ "schema_version": 1,
+ "task_id": "COST-REPLAY-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 9,
+ "stage": "REPLAY-COST-CORRECTION",
+ "status": "READY",
+ "status_meaning": "비용 계약 교정 · 시험 PASS · 고정 원장 수익률 단위 진단 완료. 금액 · NAV 지표는 NEEDS_DATA. 전략 검증 아님",
+ "tests": {
+  "unit": "7/7 PASS",
+  "mutation": "5/5 caught",
+  "perf2_copy_max_abs_diff": 0.0,
+  "rerun_identical": true
+ },
+ "ledger": {
+  "source": "a61f033ecd16ba0976c955a93bfec70c7463ad53:research-exchange/claude-to-gpt/RULES-0002/results/d1_ledger_ASIS.csv",
+  "sha256": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+  "rows": 495,
+  "codes": 136
+ },
+ "computable_rows": {
+  "STRICT": 86,
+  "S_KOSPI_FARM015": 495
+ },
+ "needs_data": [
+  "원 단위 비용 차액 · 금액 PF(수량 · 체결가 없음)",
+  "일별 NAV · TWR · 일별 MTM MDD · 월별 · CAGR(입출금 · 일별 평가 · 체결 시각 · 수량 없음)",
+  "1천만 / 1억 용량(주문 크기 · 유동성 없음)",
+  "현금 보존 · 불가능 체결(현금 흐름 없음)"
+ ],
+ "strategy_experiments": 0,
+ "data_api_calls": 0,
+ "new_collection": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "input_pr": 30,
+ "input_head_sha": "5c8e30599107f967ddb5549cb0950c0e5fcc7f64",
+ "source_pr": 29,
+ "source_head_sha": "d8024b5599a34a456e4ec99cdd2af6051ebb0904",
+ "repo_commit": "bcfeefbc27da6b9fb85f8536bb5d989b220ad8f4",
+ "prereg_lock": {
+  "commit": "342ba6c3",
+  "sha256": "c6df9aab9c84b6f5841760420b2a58ac41f069d1b8327bb537834cd8e06ca66a"
+ },
+ "files": [
+  {
+   "path": "BLOCKERS.md",
+   "sha256": "cd4504cea9aeb9a283fa8af515291752c91c1e572323dadbca9cb9e7b863b7c1"
+  },
+  {
+   "path": "COST-CONTRACT.json",
+   "sha256": "85d7a9913e483a67dfa1ac4c47c663f7bd1f0f5e543597af26df8475ce6b5fd1"
+  },
+  {
+   "path": "MUTATION-CHECK.json",
+   "sha256": "a6fca701316f723858af8f982c71654acd68fc0237dbdb061bc510500e4276b7"
+  },
+  {
+   "path": "NEEDS-DATA.json",
+   "sha256": "233c8f31a5a71e8b195a5d12303919d6b0603aea95f2a0890ae4f27e8ed12c9d"
+  },
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "c6df9aab9c84b6f5841760420b2a58ac41f069d1b8327bb537834cd8e06ca66a"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "7aa84a7ca328153344266ac9049fb1f30646813b6b411b71b7e2f6cffd39c7cd"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "bc50999f4de07523277c63057a817575f5a3c110ccb6b47f27766842fb8edb91"
+  },
+  {
+   "path": "cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "results/DELTA-ROWS.csv",
+   "sha256": "9e39380939dac7df4aac432bd495d12c3ff4964a0218a601fe51f6098562db68"
+  },
+  {
+   "path": "results/DELTA-SUMMARY.json",
+   "sha256": "ca5c20ff3322e913ceab2625192d6bc45f7b9c12daf560a74bccd38a290ccde4"
+  },
+  {
+   "path": "run_replay.py",
+   "sha256": "c1e99d7669b3cb9721e96cc920c15e8d17c9dfe52f7b563ba0b5eaf6abdc5670"
+  },
+  {
+   "path": "tests/mutation_check.py",
+   "sha256": "3789ebfed061ab5c48b53ab135c0cadf7da23e1acd3824d9bf288d6d835f361f"
+  },
+  {
+   "path": "tests/test_cost_contract.py",
+   "sha256": "30ee3b49b0090aad2ec775c35a3e05122017b8850cabd239a4c30578e97247a9"
+  }
+ ],
+ "receipt": "research-exchange/state/receipts/30-5c8e30599107f967ddb5549cb0950c0e5fcc7f64.json",
+ "result_branch": "claude/cost-replay-0001-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "created_at_kst": "2026-10-08T11:16:28+09:00"
+}

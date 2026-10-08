@@ -1,0 +1,35 @@
+{
+ "kind": "synthetic_unit_test(실측 아님)",
+ "cases": [
+  {
+   "case": "날짜 경계",
+   "result": "PASS"
+  },
+  {
+   "case": "매수 비과세 · 배율",
+   "result": "PASS"
+  },
+  {
+   "case": "부분체결",
+   "result": "PASS"
+  },
+  {
+   "case": "UNKNOWN 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "상품 구분",
+   "result": "PASS"
+  },
+  {
+   "case": "가정 시나리오",
+   "result": "PASS"
+  },
+  {
+   "case": "old 재현 · 2026 차",
+   "result": "PASS"
+  }
+ ],
+ "passed": 7,
+ "total": 7
+}

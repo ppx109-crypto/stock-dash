@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "input_pr": 30,
+  "input_head_sha": "5c8e30599107f967ddb5549cb0950c0e5fcc7f64",
+  "source_pr": 29,
+  "source_head_sha": "d8024b5599a34a456e4ec99cdd2af6051ebb0904",
+  "task_id": "COST-REPLAY-0001",
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/COST-REPLAY-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/COST-REPLAY-0001/manifest.json",
+  "result_branch": "claude/cost-replay-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "duplicate": false,
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "processed_at_kst": "2026-10-08T11:16:28+09:00"
+}

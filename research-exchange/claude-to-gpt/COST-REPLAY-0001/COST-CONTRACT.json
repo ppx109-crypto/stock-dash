@@ -1,0 +1,145 @@
+{
+ "schema_version": 1,
+ "task_id": "COST-REPLAY-0001",
+ "module": "cost_contract.py",
+ "scope": "일반 주식 · 일반 시장매도 · 매도금액 대비. 매수 0. 자동 기본값 없음(모르면 UnknownTax).",
+ "contracts": [
+  {
+   "instrument_type": "STOCK",
+   "market": "KOSDAQ",
+   "status": "LOCKED",
+   "evidence": "official_fact — 증권거래세법 시행령 개정이유 제29788 · 31290 · 33209 · 36001호(TASK 고정값)",
+   "periods": [
+    {
+     "from": "2017-01-01",
+     "to": "2019-06-02",
+     "sell_rate": 0.003
+    },
+    {
+     "from": "2019-06-03",
+     "to": "2020-12-31",
+     "sell_rate": 0.0025
+    },
+    {
+     "from": "2021-01-01",
+     "to": "2022-12-31",
+     "sell_rate": 0.0023
+    },
+    {
+     "from": "2023-01-01",
+     "to": "2023-12-31",
+     "sell_rate": 0.002
+    },
+    {
+     "from": "2024-01-01",
+     "to": "2024-12-31",
+     "sell_rate": 0.0018
+    },
+    {
+     "from": "2025-01-01",
+     "to": "2025-12-31",
+     "sell_rate": 0.0015
+    },
+    {
+     "from": "2026-01-01",
+     "to": "2026-10-08",
+     "sell_rate": 0.002
+    }
+   ]
+  },
+  {
+   "instrument_type": "STOCK",
+   "market": "KOSPI",
+   "status": "LOCKED_2026_ONLY",
+   "evidence": "한국투자증권 현재 세금표(거래세 0.05% + 농특세 0.15%) · 2026-01-01 시행령 개정이유",
+   "periods": [
+    {
+     "from": "2026-01-01",
+     "to": "2026-10-08",
+     "sell_rate": 0.002
+    }
+   ],
+   "other_periods": "UNKNOWN(과거 농특세 미확인) — STRICT에서 계산 거부"
+  },
+  {
+   "instrument_type": "ETF/ETN/INVERSE/OTHER",
+   "market": "*",
+   "status": "UNKNOWN",
+   "evidence": "이 표 적용 금지(TASK)"
+  },
+  {
+   "instrument_type": "STOCK",
+   "market": "KONEX/기타/모름",
+   "status": "UNKNOWN"
+  }
+ ],
+ "assumption_scenarios": [
+  {
+   "id": "S_KOSPI_FARM015",
+   "status": "ASSUMPTION(공식 사실 아님)",
+   "rule": "KOSPI 거래세(시행령 개정이유) + 농특세 0.0015 가정",
+   "stt_periods": [
+    {
+     "from": "2017-01-01",
+     "to": "2019-06-02",
+     "sell_rate": 0.0015
+    },
+    {
+     "from": "2019-06-03",
+     "to": "2020-12-31",
+     "sell_rate": 0.001
+    },
+    {
+     "from": "2021-01-01",
+     "to": "2022-12-31",
+     "sell_rate": 0.0008
+    },
+    {
+     "from": "2023-01-01",
+     "to": "2023-12-31",
+     "sell_rate": 0.0005
+    },
+    {
+     "from": "2024-01-01",
+     "to": "2024-12-31",
+     "sell_rate": 0.0003
+    },
+    {
+     "from": "2025-01-01",
+     "to": "2025-12-31",
+     "sell_rate": 0.0
+    },
+    {
+     "from": "2026-01-01",
+     "to": "2026-10-08",
+     "sell_rate": 0.0005
+    }
+   ],
+   "farm_tax_assumed": 0.0015
+  }
+ ],
+ "unchanged_assumptions": {
+  "fee_per_side": 0.00015,
+  "slippage_per_side": 0.0005,
+  "impact": "0.10 × √(주문 ÷ 앞 20일 평균 거래대금) · 자료 없으면 0.002",
+  "scales": {
+   "BASE": 1.0,
+   "STRESS": 1.5,
+   "EXTREME": 2.0
+  },
+  "scale_note": "배율은 기존 계약 재현용. 세금에 곱하는 배율은 법정세율 변화가 아닌 가상 스트레스"
+ },
+ "old_defect": {
+  "file": "research/perf2.py:16-22",
+  "rule": "2017~2022 일괄 0.0025 · 2023 0.0020 · 2024 0.0018 · 그 밖의 해 0.0015 기본값",
+  "differences_vs_KOSDAQ_contract": [
+   "2017-01-01~2019-06-02: old 0.0025 < 0.0030",
+   "2021~2022: old 0.0025 > 0.0023",
+   "2026: old 0.0015 < 0.0020",
+   "2027 이후: old 0.0015 자동 · new UNKNOWN"
+  ]
+ },
+ "rounding": "원 미만 처리 · 세금 절사 규칙은 검증하지 못함(소수 그대로)",
+ "paper_validation_ready": false,
+ "live_approval": false
+}
