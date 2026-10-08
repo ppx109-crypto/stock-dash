@@ -1,0 +1,18 @@
+{
+ "schema_version": 1,
+ "task_id": "NEW-RULES-0001",
+ "input": "사용자 지시 2026-10-08T14:09:00+09:00(기존 흐름 중단 · 새 규칙)",
+ "cancelled_input": {
+  "pr": 42,
+  "head_sha": "b4e5f93d63c53fb803d79fb11a5abcad04c405cd",
+  "task_id": "RULE-SELECTION-0001",
+  "state": "CANCELLED · 재개 안 함"
+ },
+ "prior_result": {
+  "pr": 41,
+  "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+  "reused": "kernel2.py(장부)만"
+ },
+ "base_main_sha": "bf248dc55281fc21d3d3cae9ab4bda20a0914d72",
+ "received_at_kst": "2026-10-08T14:15:00+09:00"
+}

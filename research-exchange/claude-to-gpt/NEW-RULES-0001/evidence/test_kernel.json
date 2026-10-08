@@ -1,0 +1,90 @@
+{
+ "all_pass": true,
+ "n": 11,
+ "results": {
+  "partial_exit_entry_cost_independent_of_future_split": {
+   "pass": true,
+   "detail": {
+    "buy_cost_unsplit": 383770.88,
+    "buy_cost_split": 383770.88,
+    "qty": 4000
+   }
+  },
+  "cash_and_nav_identity_after_partial": {
+   "pass": true,
+   "detail": {
+    "gaps": [
+     [
+      0.0,
+      7.450580596923828e-09
+     ],
+     [
+      0.0,
+      0.0
+     ]
+    ]
+   }
+  },
+  "position_grouped_once": {
+   "pass": true,
+   "detail": {
+    "closed_rows": 1
+   }
+  },
+  "unfilled_buy_no_ghost": {
+   "pass": true,
+   "detail": "체결 시각 값 없음"
+  },
+  "cash_reduced_exact_solve": {
+   "pass": true,
+   "detail": {
+    "want": 714,
+    "got": 142,
+    "cash_left": 3952.3952
+   }
+  },
+  "end_open_mtm_and_liquidation": {
+   "pass": true,
+   "detail": {
+    "nav": 101860508.89,
+    "liq_nav": 101656277.4,
+    "liq_cost": 204231.49,
+    "open_rows": 1
+   }
+  },
+  "unknown_adv_tax_counted": {
+   "pass": true,
+   "detail": {
+    "adv_missing_fills": 2,
+    "buy_filled": 1,
+    "tax_unknown_fills": 1
+   }
+  },
+  "loss_boundary_strict": {
+   "pass": true,
+   "detail": {
+    "day_breach": 1,
+    "worst_day": -15.0
+   }
+  },
+  "first_day_included": {
+   "pass": true,
+   "detail": {
+    "worst_day": -1.0,
+    "CAGR": -6.34
+   }
+  },
+  "sortino_rms_target0": {
+   "pass": true,
+   "detail": {
+    "sortino": -5.0199601592044525
+   }
+  },
+  "month_breach_strict": {
+   "pass": true,
+   "detail": {
+    "worst_month": -16.0
+   }
+  }
+ }
+}

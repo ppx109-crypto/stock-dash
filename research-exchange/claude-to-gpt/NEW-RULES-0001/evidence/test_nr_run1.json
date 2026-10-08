@@ -1,0 +1,37 @@
+{
+ "all_pass": false,
+ "n": 5,
+ "results": {
+  "month_stop_liquidate_next_day_and_block": {
+   "pass": false,
+   "detail": {
+    "stop": []
+   }
+  },
+  "drawdown_scale_down_half_next_day": {
+   "pass": false,
+   "detail": {
+    "event": [],
+    "month_stops": 0
+   }
+  },
+  "attribution_sums_to_nav_change_B_synthetic": {
+   "pass": true,
+   "detail": {
+    "gap_won": 0.0
+   }
+  },
+  "attribution_sums_to_nav_change_A_synthetic": {
+   "pass": true,
+   "detail": {
+    "gap_won": 0.0
+   }
+  },
+  "fills_strictly_after_decision": {
+   "pass": true,
+   "detail": {
+    "violations": 0
+   }
+  }
+ }
+}

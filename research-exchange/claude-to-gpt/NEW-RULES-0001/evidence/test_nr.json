@@ -1,0 +1,52 @@
+{
+ "all_pass": true,
+ "n": 5,
+ "results": {
+  "month_stop_liquidate_next_day_and_block": {
+   "pass": true,
+   "detail": {
+    "stop": [
+     [
+      "20130307",
+      "달력월 정지",
+      -0.0762
+     ]
+    ]
+   }
+  },
+  "drawdown_scale_down_half_next_day": {
+   "pass": true,
+   "detail": {
+    "event": [
+     [
+      "20130902",
+      "노출 줄이기",
+      1.0,
+      0.5,
+      -0.0533
+     ]
+    ],
+    "qty_ratio_after": 0.5028,
+    "month_stops": 0
+   }
+  },
+  "attribution_sums_to_nav_change_B_synthetic": {
+   "pass": true,
+   "detail": {
+    "gap_won": 0.0
+   }
+  },
+  "attribution_sums_to_nav_change_A_synthetic": {
+   "pass": true,
+   "detail": {
+    "gap_won": 0.0
+   }
+  },
+  "fills_strictly_after_decision": {
+   "pass": true,
+   "detail": {
+    "violations": 0
+   }
+  }
+ }
+}
