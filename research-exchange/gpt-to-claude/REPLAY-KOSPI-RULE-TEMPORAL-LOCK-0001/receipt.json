@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-KOSPI-RULE-TEMPORAL-LOCK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 26,
+  "status": "READY",
+  "source_pr": 94,
+  "source_head_sha": "63942ef7e9bc6820739e19331cdd7e44aeda5b5a",
+  "reviewed_at_kst": "2026-10-09T01:37:43+09:00",
+  "result_pr": null,
+  "delivery": {
+    "session": "existing-private-session-only",
+    "status": "PENDING"
+  },
+  "scope": [
+    "lawid_000111_identity",
+    "article_30_1_6",
+    "train_window_temporal_persistence",
+    "kospi_only"
+  ],
+  "prohibited": [
+    "network",
+    "data_api",
+    "credentials",
+    "collection",
+    "cache_expansion",
+    "replay",
+    "performance",
+    "kosdaq",
+    "ratio_direction",
+    "price_basis_date",
+    "threshold_search",
+    "operations",
+    "new_session",
+    "auto_merge"
+  ],
+  "completion": [
+    "source_pr_and_head_rechecked_twice",
+    "prereg_before_results",
+    "identity_and_temporal_axes_decided_separately",
+    "first_text_difference_disclosed",
+    "network_api_collection_replay_performance_zero",
+    "status_ready_or_blocked_only"
+  ]
+}
