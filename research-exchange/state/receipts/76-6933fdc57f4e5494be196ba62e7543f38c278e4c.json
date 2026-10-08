@@ -7,7 +7,7 @@
   "round": 17,
   "status": "READY",
   "reviewed_at_kst": "2026-10-08T23:15:52+09:00",
-  "response_pr": null,
+  "response_pr": 77,
   "response_branch": "research-exchange/gpt-to-claude/baseline-m15-timing-0001",
   "delivery_status": "PENDING"
 }
