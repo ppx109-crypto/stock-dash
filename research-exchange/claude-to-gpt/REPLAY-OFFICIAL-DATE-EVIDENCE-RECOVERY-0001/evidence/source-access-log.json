@@ -1,0 +1,55 @@
+{
+ "attempts": [
+  {
+   "id": "S1",
+   "url": "https://kind.krx.co.kr/external/2026/06/29/001277/20260629001631/70128.htm",
+   "attempt": 1,
+   "retrieved_at_kst": "2026-10-09T01:19:12+09:00",
+   "http": "403",
+   "bytes": 451,
+   "sha256": "59b2ca0ffa92bf3fbb2e2f5f168250083ce9fc35bc90d5ccaa88daf55d9f73a6",
+   "err": ""
+  },
+  {
+   "id": "S1b",
+   "url": "https://kind.krx.co.kr/external/2025/01/23/000727/20250123000999/70128.htm",
+   "attempt": 1,
+   "retrieved_at_kst": "2026-10-09T01:19:13+09:00",
+   "http": "403",
+   "bytes": 451,
+   "sha256": "c7a558abce771c9f7eb50963d9b6f3d24e0132ad1b5f3bb0cc6f6b7c1b905a5d",
+   "err": ""
+  },
+  {
+   "id": "S2",
+   "url": "https://kind.krx.co.kr/external/2026/07/30/000564/20260730001211/70129.htm",
+   "attempt": 1,
+   "retrieved_at_kst": "2026-10-09T01:19:13+09:00",
+   "http": "403",
+   "bytes": 451,
+   "sha256": "6ec5e8d23b5259ef2509f342703d41a240d9dff41f1280442e9fff3e6df6033b",
+   "err": ""
+  },
+  {
+   "id": "S3",
+   "url": "https://law.krx.co.kr/las/LawBon.jsp?lawid=000111",
+   "attempt": 1,
+   "retrieved_at_kst": "2026-10-09T01:19:14+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "id": "S4",
+   "url": "https://law.krx.co.kr/las/RefBon.jsp?lawid=000111&lawkd=B&pubdt=20240523&pubno=0000022310&reflinkchk=Y",
+   "attempt": 1,
+   "retrieved_at_kst": "2026-10-09T01:19:14+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  }
+ ],
+ "rule": "URL마다 1회 · 재시도 없음 · 새 네트워크 허용 요청 없음 · 원문 본문은 403 안내문뿐이라 근거로 안 씀"
+}
