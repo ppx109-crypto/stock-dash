@@ -7,7 +7,7 @@
   "round": 18,
   "status": "READY",
   "reviewed_at_kst": "2026-10-08T23:29:47+09:00",
-  "response_pr": null,
+  "response_pr": 79,
   "response_branch": "research-exchange/gpt-to-claude/baseline-pit-exposure-0001",
   "delivery_status": "PENDING"
 }
