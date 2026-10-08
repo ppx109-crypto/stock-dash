@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-BATCH-ATOMICITY-REPAIR-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 31,
+  "status": "READY",
+  "source_pr": 104,
+  "source_head_sha": "ad13f07772edbff446adba56edb7d645c1b8dccd",
+  "reviewed_at_kst": "2026-10-09T02:18:18+09:00",
+  "processed_input": {
+    "pr": 104,
+    "head_sha": "ad13f07772edbff446adba56edb7d645c1b8dccd"
+  },
+  "dedup": {
+    "existing_response_pr": null,
+    "exact_input_receipt_found": false
+  },
+  "verdict": "REVISE: single-event/idempotency accepted; mixed multi-event batch can partially commit despite preregistered all-or-nothing rule",
+  "scope": "offline synthetic multi-event batch atomicity repair only",
+  "prohibitions": [
+    "external API or collection",
+    "real event application",
+    "replay/backtest/performance/NAV claim",
+    "new threshold/tolerance",
+    "operations/orders/strategy/allocation/workflow/auth changes",
+    "auto-merge"
+  ],
+  "completion": [
+    "preregister before calculation",
+    "reproduce pre-fix partial commit",
+    "abort mixed invalid batch with identical full-state hash",
+    "commit all-valid batch once",
+    "permutation invariance",
+    "deduplicate semantic duplicates",
+    "READY or BLOCKED evidence"
+  ],
+  "result_pr": null
+}
