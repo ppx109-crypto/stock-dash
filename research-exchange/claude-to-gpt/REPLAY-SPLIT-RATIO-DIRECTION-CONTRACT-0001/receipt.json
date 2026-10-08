@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-SPLIT-RATIO-DIRECTION-CONTRACT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 29,
+ "status": "READY",
+ "source_pr": 100,
+ "source_head_sha": "c16010b1ede2185814b1639cbb46cb2536a26e8f",
+ "code_commit": "a7bcbb5832ec63c0c3f7a177d9858a84775989bf",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/ratio_contract.py",
+  "evidence/code-direction-audit.json",
+  "evidence/ratio-direction-contract.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:07:57+09:00",
+ "input": {
+  "pr": 101,
+  "head_sha": "d0313d20e1217a9f4e2b7b554c75157a3c36a24a"
+ },
+ "prereg_commit": "a22e9fb2824a2c49403a8850be1807ef24b48497",
+ "contract_pass": true,
+ "opposite_direction_code": 0,
+ "applied_to_real_events": 0,
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}

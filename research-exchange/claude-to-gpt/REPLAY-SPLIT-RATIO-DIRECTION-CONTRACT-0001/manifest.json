@@ -1,0 +1,112 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-SPLIT-RATIO-DIRECTION-CONTRACT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 29,
+ "status": "READY",
+ "source_pr": 100,
+ "source_head_sha": "c16010b1ede2185814b1639cbb46cb2536a26e8f",
+ "code_commit": "a7bcbb5832ec63c0c3f7a177d9858a84775989bf",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/ratio_contract.py",
+  "evidence/code-direction-audit.json",
+  "evidence/ratio-direction-contract.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:07:57+09:00",
+ "input": {
+  "pr": 101,
+  "head_sha": "d0313d20e1217a9f4e2b7b554c75157a3c36a24a",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T02:04:12+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "c16010b1ede2185814b1639cbb46cb2536a26e8f"
+   },
+   {
+    "at_kst": "2026-10-09T02:07:39+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "c16010b1ede2185814b1639cbb46cb2536a26e8f"
+   }
+  ]
+ },
+ "prereg_commit": "a22e9fb2824a2c49403a8850be1807ef24b48497",
+ "prereg_committed_at_kst": "2026-10-09T02:04:57+09:00",
+ "verdict": "READY / 비율 방향 회계 계약 준비만 — m_qty=q1/q0=f0/f1 정확 일치 · m_price=1/m_qty · 합성 15/15 · 가치 보존 · 반대 방향 코드 0 · 적용일 BLOCKED라 실제 적용 0",
+ "contract_pass": true,
+ "synthetic_cases": {
+  "split_1to5": true,
+  "split_1to10": true,
+  "reverse_10to1": true,
+  "reverse_5to1": true,
+  "fail_mismatch": true,
+  "fail_reverse_rounding_1share": true,
+  "fail_zero_f1": true,
+  "fail_negative_q0": true,
+  "fail_missing_q1": true,
+  "fail_nan": true,
+  "fail_float_input": true,
+  "fail_no_change": true,
+  "fail_direction_split_label": true,
+  "fail_direction_reverse_label": true,
+  "fail_fractional_holding": true
+ },
+ "wrong_direction_inflation": "25",
+ "apply_gate": {
+  "ACCEPT_contract_with_price_basis_BLOCKED": "APPLY_BLOCKED_NO_PRICE_BASIS_DATE",
+  "current_price_basis_date_status(PR94)": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+ },
+ "opposite_direction_code": 0,
+ "coverage_cost": "병합 뒤 발행주식총수가 회사 단위 단주 처리로 1주라도 어긋나면(fail_reverse_rounding_1share) 정확 비교 규칙이 UNKNOWN으로 막음 — 실제 병합 공시 상당수가 이 경로로 UNKNOWN이 될 수 있음(허용 오차는 이번에 정하지 않음)",
+ "kept_unknown": {
+  "pr84_ca_candidates": "8 UNKNOWN_NEEDS_OFFICIAL_RAW_AND_CA_EFFECTIVE_DATE",
+  "price_basis_date": "BLOCKED",
+  "rule2256_binding": "NEEDS_DATA(재시도 안 함)"
+ },
+ "evidence_tier": {
+  "fields": "GPT_CAPTURED_OFFICIAL_INDEX(KIND 70128/70129 필드명)",
+  "formula": "DERIVATION",
+  "real_events": "UNVERIFIED"
+ },
+ "file_sha256": {
+  "PREREG.md": "33a6ae0f33d9145adad03e8cd0ae94dcac45a45df1b17daffc9b12dc02dd32e9",
+  "REPORT.md": "43ad404ea6547f4c08a3d02d5f3f6bff368272ecc3114bb9809f77b52e0d6cf2",
+  "code/ratio_contract.py": "ed5548d24f19593d84aaa2785aac687a26ba4b774b3cd82edfd6e7d9027f84fc",
+  "evidence/code-direction-audit.json": "50eb6c69a2ae2c8e27638bc22365a67470252d036ab2418e0243e3f435c8c9c8",
+  "evidence/ratio-direction-contract.json": "db1528f4f334ac866e77820c1e65f5a7282e670da2fc8a2cccca3e30eb4e15d7",
+  "evidence/run.log": "6bff0c32f310e220be2b8f581aa706723bfe657e2a6f305bc858075370ad5f84"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "failed": 0,
+  "external_url": 0,
+  "network": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_symbols_read": 0,
+  "replay": 0,
+  "backtest": 0,
+  "threshold": 0,
+  "performance": 0,
+  "nav": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
