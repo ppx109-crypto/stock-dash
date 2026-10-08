@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-OFFICIAL-DATE-EVIDENCE-RECOVERY-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 24,
+  "status": "READY",
+  "source_pr": 90,
+  "source_head_sha": "f2e59846f89bd8da8392db07a0570f2d3578f109",
+  "reviewed_at_kst": "2026-10-09T01:14:39+09:00",
+  "result_pr": null,
+  "delivery": {
+    "session": "existing-private-session-only",
+    "status": "PENDING"
+  },
+  "scope": [
+    "split",
+    "reverse_split",
+    "report_name",
+    "price_basis_date",
+    "legal_effective_date",
+    "first_sellable_date"
+  ],
+  "prohibited": [
+    "data_api",
+    "credentials",
+    "collection",
+    "replay",
+    "performance",
+    "operations",
+    "new_session",
+    "auto_merge"
+  ]
+}
