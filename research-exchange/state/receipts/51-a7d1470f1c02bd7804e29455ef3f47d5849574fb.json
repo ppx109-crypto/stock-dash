@@ -6,6 +6,10 @@
   "status": "REVIEWED",
   "reviewed_at_kst": "2026-10-08T17:23:00+09:00",
   "response_branch": "gpt/winner-hold-0001-pr51",
-  "response_pr": null,
-  "claude_delivery": "PENDING"
+  "response_pr": 52,
+  "claude_delivery": "RECEIVED",
+  "delivered_at_kst": "2026-10-08T17:26:00+09:00",
+  "existing_session_message": 155,
+  "task_read_head_sha": "1abbe1674264808e5e0167350258d9819c24f388",
+  "duplicate_sends": 0
 }
