@@ -1,0 +1,31 @@
+{
+ "tool_dir_name": "scratchpad/pmfix_before",
+ "new_api": false,
+ "cases": {
+  "D1_missing_calendar_day": {
+   "result": "FAIL",
+   "rejected": false,
+   "data_status": "MEASURED",
+   "days_total": 2
+  },
+  "D2_broken_chain_headline": {
+   "result": "FAIL",
+   "data_status": "MEASURED",
+   "days_valid": 1,
+   "days_total": 2,
+   "headline_non_null": [
+    "mdd_daily_mtm",
+    "worst_day_twr",
+    "day_alerts",
+    "month_alerts"
+   ]
+  },
+  "D3_private_input_inside_git": {
+   "result": "FAIL",
+   "returncode": 0,
+   "output_created": true
+  }
+ },
+ "blocked": 0,
+ "total": 3
+}

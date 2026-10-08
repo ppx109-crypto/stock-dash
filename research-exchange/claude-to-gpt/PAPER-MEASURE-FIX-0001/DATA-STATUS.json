@@ -1,0 +1,23 @@
+{
+ "schema_version": 1,
+ "task_id": "PAPER-MEASURE-FIX-0001",
+ "tool_status": "READY_AFTER_FIX",
+ "data_status": "WAITING_DATA",
+ "confirmed_fill_rows": 0,
+ "measured_metrics": 0,
+ "why": "실제 KIS 체결 원문 · 공개 비식별 배치가 저장소 · 이 환경에 없음(받으려면 API 호출 필요 · 범위 밖)",
+ "new_required_input": "expected_days.json(거래일 목록 · calendar · generated_at · provenance) — 저장소 밖 로컬 파일",
+ "safe_local_commands": [
+  "export PAPER_MEASURE_HMAC_KEY=<16바이트 이상 · 저장소 · 채팅에 넣지 않음>",
+  "python3 -I sanitize_fills.py --kis-rows <저장소 밖>/rows.json --context <저장소 밖>/context.json --out <저장소 밖>/ledger.jsonl --generator-commit <sha> > <저장소 밖>/counts.json",
+  "python3 -I build_daily_measurement.py --fills <저장소 밖>/ledger.jsonl --start <…>/start.json --prices <…>/prices.json --expected-days <…>/expected_days.json --flows <…>/flows.json --corp-actions <…>/ca.json --sanitize-counts <…>/counts.json --generator-commit <sha> --out <공개 배치 경로>.json",
+  "공개 배치는 data_status=MEASURED_COMPLETE일 때만 채택용으로 씀(INCOMPLETE · INVALID는 진단용)"
+ ],
+ "next_trigger": {
+  "condition": "사용자가 로컬에서 공개 비식별 배치(PUBLIC-OUTPUT-SCHEMA 통과)를 만들어 올렸을 때만",
+  "then": "BASELINE 측정 재개",
+  "until_then": "후속 연구 · 감사 · 알파 TASK 자동 생성 안 함"
+ },
+ "paper_validation_ready": false,
+ "live_approval": false
+}

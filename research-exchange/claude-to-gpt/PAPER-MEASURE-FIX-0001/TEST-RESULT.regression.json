@@ -1,0 +1,51 @@
+{
+ "kind": "synthetic_regression_test(실측 아님)",
+ "cases": [
+  {
+   "case": "D1 중간 거래일 누락 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "D1 기대보다 많은 · 범위 밖 가격일 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "D1 같은 날 다른 표기 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "D1 expected_days 계약(중복 · 순서 · 필드 · 필수)",
+   "result": "PASS"
+  },
+  {
+   "case": "D1 JSON 같은 키 두 번 거부(CLI)",
+   "result": "PASS"
+  },
+  {
+   "case": "D2 첫날 유효 · 다음날 평가 누락 → INCOMPLETE · headline null",
+   "result": "PASS"
+  },
+  {
+   "case": "D2 전부 무효 → INVALID · headline null",
+   "result": "PASS"
+  },
+  {
+   "case": "완전한 합성 3일 → MEASURED_COMPLETE",
+   "result": "PASS"
+  },
+  {
+   "case": "D3 비공개 입력 10개 각각 작업트리 안 → 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "D3 symlink 두 방향 · '..' 상대경로 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "공개 출력은 작업트리 안 허용(검사 통과)",
+   "result": "PASS"
+  }
+ ],
+ "passed": 11,
+ "total": 11
+}

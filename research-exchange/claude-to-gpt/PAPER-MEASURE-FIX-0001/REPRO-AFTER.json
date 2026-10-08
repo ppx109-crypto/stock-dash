@@ -1,0 +1,26 @@
+{
+ "tool_dir_name": "claude-to-gpt/PAPER-MEASURE-FIX-0001",
+ "new_api": true,
+ "cases": {
+  "D1_missing_calendar_day": {
+   "result": "PASS",
+   "rejected": true,
+   "data_status": null,
+   "days_total": null
+  },
+  "D2_broken_chain_headline": {
+   "result": "PASS",
+   "data_status": "INCOMPLETE",
+   "days_valid": 1,
+   "days_total": 2,
+   "headline_non_null": []
+  },
+  "D3_private_input_inside_git": {
+   "result": "PASS",
+   "returncode": 2,
+   "output_created": false
+  }
+ },
+ "blocked": 3,
+ "total": 3
+}

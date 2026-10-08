@@ -1,0 +1,120 @@
+{
+ "schema_version": 1,
+ "task_id": "PAPER-MEASURE-FIX-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 11,
+ "stage": "MEASUREMENT-BRIDGE-FIX",
+ "status": "READY",
+ "tool_status": "READY_AFTER_FIX",
+ "data_status": "WAITING_DATA",
+ "status_meaning": "결함 3개 교정 · 시험 완료. 실측 체결 0행 · 실측 지표 0개. PAPER_VALIDATION_READY · 실전 승인 아님",
+ "defects": {
+  "D1_missing_calendar_day": {
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  "D2_broken_chain_headline": {
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  "D3_private_input_inside_git": {
+   "before": "FAIL",
+   "after": "PASS"
+  }
+ },
+ "tests": {
+  "existing": "17/17 PASS",
+  "regression": "11/11 PASS"
+ },
+ "confirmed_fill_rows": 0,
+ "measured_metrics": 0,
+ "strategy_experiments": 0,
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "input_pr": 34,
+ "input_head_sha": "60cbd3eb72dcb1e3558d66a3df3696d459fa98bf",
+ "source_pr": 33,
+ "source_head_sha": "f8cfa8f08f95f164971e007aa526ab57a8077cc1",
+ "repo_commit": "6f9f9c4e",
+ "prereg_lock": {
+  "commit": "2f8f35ba",
+  "sha256": "c5af54073e5f5903b5d8cffc0024d11b012b1164e64329280e6bf96f4b42ea74"
+ },
+ "files": [
+  {
+   "path": "DATA-STATUS.json",
+   "sha256": "78fe52fb2f5e5323662d57cd804975e6cfcf6cb3c08a5e3df10f26734c9620f5"
+  },
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "c5af54073e5f5903b5d8cffc0024d11b012b1164e64329280e6bf96f4b42ea74"
+  },
+  {
+   "path": "PRIVATE-INPUT-SCHEMA.json",
+   "sha256": "198086101af1e73cbd9b93f137009e7a896983c35c8e2c09270c1853b987b92d"
+  },
+  {
+   "path": "PUBLIC-OUTPUT-SCHEMA.json",
+   "sha256": "d9790db8ed0f6fddd1ba23c09d171c1c32ba493c541f7c994931905e05f93e03"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "ce59368df5a0cf3163bba066765359e570733ad62aff56b605bdb4db8811eab1"
+  },
+  {
+   "path": "REPRO-AFTER.json",
+   "sha256": "e2c1d88aabae1533f6a5d17747625d1030630adc50394bb8ac4b55cf60fc0666"
+  },
+  {
+   "path": "REPRO-BEFORE.json",
+   "sha256": "8961e2c801d9ecd2e656ef90d929ece9e998a2ac192bccca03c1473f1372cb8f"
+  },
+  {
+   "path": "TEST-RESULT.existing17.json",
+   "sha256": "bd38404d91975a438d54a5c163ae77f3aba4698c30862623fee496eeeb9704e6"
+  },
+  {
+   "path": "TEST-RESULT.regression.json",
+   "sha256": "6a11f8e9aec920aa84d70afd7aeb73748d2a54446b8b456aeea684ff0be55e8b"
+  },
+  {
+   "path": "build_daily_measurement.py",
+   "sha256": "4e6200357e4a4b2b40359d60ee63bf9b57e6f2940fe4831cb5e1669b996bb05b"
+  },
+  {
+   "path": "sanitize_fills.py",
+   "sha256": "33ac9b71a4c9e3b77361cd6b615af5e132bb5e2744246b8275a3534f845e9a7d"
+  },
+  {
+   "path": "tests/repro_defects.py",
+   "sha256": "7215bc43cf160f67c13fe487496b4b630e3cb2764caeee3c0a2c3f4f87f7d883"
+  },
+  {
+   "path": "tests/test_measure.py",
+   "sha256": "5d7bb82ac1ba3f9998fda7e96ff5b8676da5a3ff9917d6551ef458535a588cc4"
+  },
+  {
+   "path": "tests/test_regression.py",
+   "sha256": "182fb02b38e494a5e1e4915455988f89a0ce307507ee5f7c0c8fcc8ccb33c3dc"
+  }
+ ],
+ "receipt": "research-exchange/state/receipts/34-60cbd3eb72dcb1e3558d66a3df3696d459fa98bf.json",
+ "next_trigger": "공개 비식별 실제 배치가 생겼을 때만 BASELINE 재개 · 그 전 자동 후속 TASK 없음",
+ "result_branch": "claude/paper-measure-fix-0001-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "created_at_kst": "2026-10-08T11:51:17+09:00",
+ "privacy_precheck": {
+  "files_checked": 15,
+  "flagged_files": [
+   "tests/test_measure.py",
+   "tests/test_regression.py",
+   "tests/repro_defects.py"
+  ],
+  "flagged_count": 8,
+  "reason": "합성 시험 키(값은 시험값)"
+ }
+}
