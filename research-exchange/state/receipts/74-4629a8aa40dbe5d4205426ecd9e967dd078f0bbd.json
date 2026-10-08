@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "processed_key": "74:4629a8aa40dbe5d4205426ecd9e967dd078f0bbd",
+  "input_pr": 74,
+  "input_head_sha": "4629a8aa40dbe5d4205426ecd9e967dd078f0bbd",
+  "input_status": "READY",
+  "review_verdict": "ACCEPTED_WITH_REMAINING_BASELINE_GAPS",
+  "response_task_id": "BASELINE-EXEC-TIMING-0001",
+  "response_pr": null,
+  "response_branch": "gpt/baseline-exec-timing-0001-pr74",
+  "created_at_kst": "2026-10-08T23:08:00+09:00",
+  "delivery_status": "PENDING"
+}
