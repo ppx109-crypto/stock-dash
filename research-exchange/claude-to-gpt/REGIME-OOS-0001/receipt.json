@@ -1,0 +1,24 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-OOS-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 13,
+ "status": "BLOCKED",
+ "input": {
+  "pr": 69,
+  "head_sha": "13ecdb8477fc983717b8cbef870467508f3136cc",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "LOCK.json",
+   "manifest.json",
+   "receipt.json"
+  ]
+ },
+ "source": {
+  "pr": 68,
+  "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
+ },
+ "base_main_sha": "d22d8085e1f5ff18c152858be695275f8c41c77d"
+}
