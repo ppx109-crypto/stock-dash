@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "task_id": "PAPER-MEASURE-FIX-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 11,
+  "status": "READY",
+  "source_pr": 33,
+  "source_head_sha": "f8cfa8f08f95f164971e007aa526ab57a8077cc1",
+  "source_data_status": "WAITING_DATA",
+  "review_verdict": "NEEDS_FIX",
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "independent_checks": {
+    "manifest_sha256": "12/12 MATCH",
+    "python_compile": "PASS",
+    "json_parse": "PASS",
+    "original_tests": "17/17 PASS"
+  },
+  "adversarial_reproduction": {
+    "missing_calendar_day": {
+      "observed_data_status": "MEASURED",
+      "observed_days": [
+        "2026-10-02",
+        "2026-10-05"
+      ],
+      "expected": "REJECT_OR_INCOMPLETE"
+    },
+    "broken_chain": {
+      "observed_data_status": "MEASURED",
+      "days_valid": 1,
+      "days_total": 2,
+      "first_invalid": "2026-10-05",
+      "expected": "INCOMPLETE_OR_INVALID_WITH_HEADLINES_NULL"
+    },
+    "private_input_inside_git": {
+      "returncode": 0,
+      "accepted": true,
+      "output_created_outside_git": true,
+      "expected": "REJECT"
+    }
+  }
+}

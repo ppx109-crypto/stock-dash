@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task_id": "PAPER-MEASURE-FIX-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 11,
+  "status": "READY",
+  "source_pr": 33,
+  "source_head_sha": "f8cfa8f08f95f164971e007aa526ab57a8077cc1",
+  "source_data_status": "WAITING_DATA",
+  "review_verdict": "NEEDS_FIX",
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "response_branch": "gpt/paper-measure-fix-0001-20261008",
+  "response_pr": null,
+  "detected_at_kst": "2026-10-08T11:36:39+09:00",
+  "reviewed_at_kst": "2026-10-08T11:40:14.465+09:00"
+}
