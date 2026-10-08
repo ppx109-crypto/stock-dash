@@ -1,0 +1,35 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-KIND-FLIP-QUARANTINE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 34,
+ "status": "READY",
+ "source_pr": 110,
+ "source_head_sha": "2c7c268b6c8b1bfb196bbb343216823046d5df5f",
+ "code_commit": "1e08adb9de6f0eb91ad389e08518ff21e67ac4d5",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/kind_flip_quarantine.py",
+  "evidence/kind-flip-quarantine.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:48:45+09:00",
+ "input": {
+  "pr": 111,
+  "head_sha": "826d4a8aa6df1511ac7ccdc47eb0b49bb1852ac1"
+ },
+ "prereg_commit": "bea43afa8fc95ff463f7a9a41bb1691fb869d44e",
+ "all_pass": true,
+ "real_events_applied": 0,
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}
