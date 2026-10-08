@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-KOSPI-RULE2256-ARTICLE30-LOCK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 28,
+  "status": "READY",
+  "source_pr": 98,
+  "source_head_sha": "c5abe6943aefa031109a23aec12311dd7342e5e9",
+  "issued_at_kst": "2026-10-09T01:55:06+09:00",
+  "source_result_status": "BLOCKED",
+  "source_result_verdict": {
+    "A": "ACCEPT",
+    "B": "REVISE"
+  },
+  "input": {
+    "pr": null,
+    "head_sha": null
+  },
+  "output": {
+    "result_pr": null
+  },
+  "delivery": {
+    "session": "existing-designated-session",
+    "status": "PENDING",
+    "sent_at_kst": null,
+    "acknowledged_at_kst": null
+  },
+  "prohibitions": [
+    "external_url",
+    "network",
+    "api",
+    "credentials",
+    "collection",
+    "cache",
+    "replay",
+    "backtest",
+    "threshold_search",
+    "performance",
+    "operations",
+    "new_session",
+    "auto_merge"
+  ],
+  "paper_validation_ready": false,
+  "nav_verified": false
+}
