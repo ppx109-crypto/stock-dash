@@ -1,0 +1,665 @@
+{
+ "symbols": {
+  "q0,q1": "전/후 발행주식총수",
+  "f0,f1": "전/후 1주당 가액",
+  "m_qty": "q1/q0",
+  "m_face": "f0/f1",
+  "m_price": "1/m_qty = q0/q1 = f1/f0"
+ },
+ "accept_rule": "양수 · 정수/유리수 · 누락 없음 · m_qty == m_face(정확) · m_qty ≠ 1 · 사건명과 방향 일치",
+ "truth_table": {
+  "split": {
+   "m_qty": "> 1",
+   "m_price": "0 < m_price < 1",
+   "qty": "증가",
+   "price": "감소"
+  },
+  "reverse_split": {
+   "m_qty": "0 < m_qty < 1",
+   "m_price": "> 1",
+   "qty": "감소",
+   "price": "증가"
+  },
+  "m_qty == 1": "UNKNOWN_NO_CHANGE(분할 · 병합으로 ACCEPT 안 함)",
+  "사건명 ↔ 방향 모순": "UNKNOWN_DIRECTION_CONTRADICTION(값을 뒤집어 맞추지 않음)"
+ },
+ "truth_check": {
+  "split_1to5": true,
+  "split_1to10": true,
+  "reverse_10to1": true,
+  "reverse_5to1": true,
+  "fail_fractional_holding": true
+ },
+ "value_preservation_proof": "qty_after × price_after = (qty × m_qty) × (price × m_price) = qty × price × (m_qty × m_price) = qty × price × 1 (m_price = 1/m_qty, 유리수 등식 · 단주 · 비용 · 현금보상 전)",
+ "synthetic_cases": [
+  {
+   "case": "split_1to5",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "5000000",
+    "f0": "5000",
+    "f1": "1000",
+    "kind": "split",
+    "hold_qty": 37,
+    "hold_price": 52300
+   },
+   "expect": [
+    "ACCEPT",
+    "5",
+    "1/5",
+    [
+     "OK",
+     185,
+     "10460"
+    ]
+   ],
+   "got": [
+    "ACCEPT",
+    "5",
+    "1/5",
+    [
+     "OK",
+     185,
+     "10460"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "ACCEPT",
+    "m_qty": "5",
+    "m_price": "1/5"
+   },
+   "conversion": {
+    "status": "OK",
+    "qty_after": 185,
+    "price_after": "10460",
+    "value_before": "1935100",
+    "value_after": "1935100",
+    "value_preserved": true
+   }
+  },
+  {
+   "case": "split_1to10",
+   "inputs": {
+    "q0": "2400000",
+    "q1": "24000000",
+    "f0": "500",
+    "f1": "50",
+    "kind": "split",
+    "hold_qty": 3,
+    "hold_price": 812000
+   },
+   "expect": [
+    "ACCEPT",
+    "10",
+    "1/10",
+    [
+     "OK",
+     30,
+     "81200"
+    ]
+   ],
+   "got": [
+    "ACCEPT",
+    "10",
+    "1/10",
+    [
+     "OK",
+     30,
+     "81200"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "ACCEPT",
+    "m_qty": "10",
+    "m_price": "1/10"
+   },
+   "conversion": {
+    "status": "OK",
+    "qty_after": 30,
+    "price_after": "81200",
+    "value_before": "2436000",
+    "value_after": "2436000",
+    "value_preserved": true
+   }
+  },
+  {
+   "case": "reverse_10to1",
+   "inputs": {
+    "q0": "12345670",
+    "q1": "1234567",
+    "f0": "100",
+    "f1": "1000",
+    "kind": "reverse_split",
+    "hold_qty": 120,
+    "hold_price": 1234
+   },
+   "expect": [
+    "ACCEPT",
+    "1/10",
+    "10",
+    [
+     "OK",
+     12,
+     "12340"
+    ]
+   ],
+   "got": [
+    "ACCEPT",
+    "1/10",
+    "10",
+    [
+     "OK",
+     12,
+     "12340"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "ACCEPT",
+    "m_qty": "1/10",
+    "m_price": "10"
+   },
+   "conversion": {
+    "status": "OK",
+    "qty_after": 12,
+    "price_after": "12340",
+    "value_before": "148080",
+    "value_after": "148080",
+    "value_preserved": true
+   }
+  },
+  {
+   "case": "reverse_5to1",
+   "inputs": {
+    "q0": "50000000",
+    "q1": "10000000",
+    "f0": "200",
+    "f1": "1000",
+    "kind": "reverse_split",
+    "hold_qty": 75,
+    "hold_price": 905
+   },
+   "expect": [
+    "ACCEPT",
+    "1/5",
+    "5",
+    [
+     "OK",
+     15,
+     "4525"
+    ]
+   ],
+   "got": [
+    "ACCEPT",
+    "1/5",
+    "5",
+    [
+     "OK",
+     15,
+     "4525"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "ACCEPT",
+    "m_qty": "1/5",
+    "m_price": "5"
+   },
+   "conversion": {
+    "status": "OK",
+    "qty_after": 15,
+    "price_after": "4525",
+    "value_before": "67875",
+    "value_after": "67875",
+    "value_preserved": true
+   }
+  },
+  {
+   "case": "fail_mismatch",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "5000000",
+    "f0": "5000",
+    "f1": "500",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_RATIO_MISMATCH",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_RATIO_MISMATCH",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_RATIO_MISMATCH",
+    "m_qty": "5",
+    "m_face": "10"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_RATIO_MISMATCH"
+   }
+  },
+  {
+   "case": "fail_reverse_rounding_1share",
+   "inputs": {
+    "q0": "12345678",
+    "q1": "1234567",
+    "f0": "100",
+    "f1": "1000",
+    "kind": "reverse_split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_RATIO_MISMATCH",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_RATIO_MISMATCH",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_RATIO_MISMATCH",
+    "m_qty": "1234567/12345678",
+    "m_face": "1/10"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_RATIO_MISMATCH"
+   }
+  },
+  {
+   "case": "fail_zero_f1",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "5000000",
+    "f0": "5000",
+    "f1": "0",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_ZERO",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_ZERO",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_ZERO",
+    "field": "f1"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_ZERO"
+   }
+  },
+  {
+   "case": "fail_negative_q0",
+   "inputs": {
+    "q0": "-1000000",
+    "q1": "5000000",
+    "f0": "5000",
+    "f1": "1000",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_NEGATIVE",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_NEGATIVE",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_NEGATIVE",
+    "field": "q0"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_NEGATIVE"
+   }
+  },
+  {
+   "case": "fail_missing_q1",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "None",
+    "f0": "5000",
+    "f1": "1000",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_MISSING",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_MISSING",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_MISSING",
+    "field": "q1"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_MISSING"
+   }
+  },
+  {
+   "case": "fail_nan",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "nan",
+    "f0": "5000",
+    "f1": "1000",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_NONFINITE",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_NONFINITE",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_NONFINITE",
+    "field": "q1"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_NONFINITE"
+   }
+  },
+  {
+   "case": "fail_float_input",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "5000000.0",
+    "f0": "5000",
+    "f1": "1000",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_FLOAT_INPUT",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_FLOAT_INPUT",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_FLOAT_INPUT",
+    "field": "q1"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_FLOAT_INPUT"
+   }
+  },
+  {
+   "case": "fail_no_change",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "1000000",
+    "f0": "5000",
+    "f1": "5000",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_NO_CHANGE",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_NO_CHANGE",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_NO_CHANGE",
+    "m_qty": "1"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_NO_CHANGE"
+   }
+  },
+  {
+   "case": "fail_direction_split_label",
+   "inputs": {
+    "q0": "5000000",
+    "q1": "1000000",
+    "f0": "1000",
+    "f1": "5000",
+    "kind": "split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_DIRECTION_CONTRADICTION",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_DIRECTION_CONTRADICTION",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_DIRECTION_CONTRADICTION",
+    "kind": "split",
+    "m_qty": "1/5"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_DIRECTION_CONTRADICTION"
+   }
+  },
+  {
+   "case": "fail_direction_reverse_label",
+   "inputs": {
+    "q0": "1000000",
+    "q1": "5000000",
+    "f0": "5000",
+    "f1": "1000",
+    "kind": "reverse_split",
+    "hold_qty": 10,
+    "hold_price": 1000
+   },
+   "expect": [
+    "UNKNOWN_DIRECTION_CONTRADICTION",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "got": [
+    "UNKNOWN_DIRECTION_CONTRADICTION",
+    null,
+    null,
+    [
+     "NOT_APPLIED"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "UNKNOWN_DIRECTION_CONTRADICTION",
+    "kind": "reverse_split",
+    "m_qty": "5"
+   },
+   "conversion": {
+    "status": "NOT_APPLIED",
+    "why": "UNKNOWN_DIRECTION_CONTRADICTION"
+   }
+  },
+  {
+   "case": "fail_fractional_holding",
+   "inputs": {
+    "q0": "50000000",
+    "q1": "5000000",
+    "f0": "500",
+    "f1": "5000",
+    "kind": "reverse_split",
+    "hold_qty": 7,
+    "hold_price": 1000
+   },
+   "expect": [
+    "ACCEPT",
+    "1/10",
+    "10",
+    [
+     "UNKNOWN_CASH_IN_LIEU"
+    ]
+   ],
+   "got": [
+    "ACCEPT",
+    "1/10",
+    "10",
+    [
+     "UNKNOWN_CASH_IN_LIEU"
+    ]
+   ],
+   "pass": true,
+   "detail": {
+    "status": "ACCEPT",
+    "m_qty": "1/10",
+    "m_price": "10"
+   },
+   "conversion": {
+    "status": "UNKNOWN_CASH_IN_LIEU",
+    "qty_after_exact": "7/10",
+    "why": "단주 발생 — 처리 규칙 추정 안 함 · 회계/NAV 미적용"
+   }
+  }
+ ],
+ "wrong_direction_demo": {
+  "case": "WRONG_price_times_m_qty(PR94 경고)",
+  "qty_after": 185,
+  "price_after_wrong": "261500",
+  "value_before": 1935100,
+  "value_after_wrong": "48377500",
+  "inflation_factor": "25"
+ },
+ "apply_gate": {
+  "ACCEPT_contract_with_price_basis_BLOCKED": "APPLY_BLOCKED_NO_PRICE_BASIS_DATE",
+  "current_price_basis_date_status(PR94)": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+ },
+ "fail_closed": [
+  "UNKNOWN_MISSING",
+  "UNKNOWN_ZERO",
+  "UNKNOWN_NEGATIVE",
+  "UNKNOWN_NONFINITE",
+  "UNKNOWN_FLOAT_INPUT",
+  "UNKNOWN_TYPE",
+  "UNKNOWN_RATIO_MISMATCH",
+  "UNKNOWN_NO_CHANGE",
+  "UNKNOWN_DIRECTION_CONTRADICTION",
+  "UNKNOWN_CASH_IN_LIEU",
+  "APPLY_BLOCKED_NO_PRICE_BASIS_DATE"
+ ],
+ "coverage_cost": "병합 뒤 발행주식총수가 회사 단위 단주 처리로 1주라도 어긋나면(fail_reverse_rounding_1share) 정확 비교 규칙이 UNKNOWN으로 막음 — 실제 병합 공시 상당수가 이 경로로 UNKNOWN이 될 수 있음(허용 오차는 이번에 정하지 않음)",
+ "pass": true,
+ "evidence_tier": {
+  "fields": "GPT_CAPTURED_OFFICIAL_INDEX(KIND 70128/70129 필드명)",
+  "formula": "DERIVATION",
+  "real_events": "UNVERIFIED"
+ }
+}
