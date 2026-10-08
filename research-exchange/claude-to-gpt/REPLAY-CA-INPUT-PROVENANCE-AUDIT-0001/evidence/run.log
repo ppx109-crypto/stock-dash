@@ -1,0 +1,7 @@
+# 공식 실행 1 / 상한 1 · run1 시작 2026-10-09T03:09:16+09:00
+# 명령: python3 -I code/audit_inventory.py <저장소> <결과 폴더>  (git ls-tree · grep -n -I -F · show · rev-parse만 · 저장소 코드 실행 0)
+# exit=0
+{"rows_total": 5586, "rows_fixed14": 3025, "rows_supp9": 2561, "unclassified": 0, "fixed14_by_class": {"doc": 483, "consumer": 477, "test": 514, "data": 1434, "transformer": 90, "producer": 27}, "fixed14_by_scope": {"S1": 1234, "S2": 1791}, "fixed14_S1_ca_relevant_actual": 9, "files_hashed": 1469, "repo_code_executed": 0, "external_calls": 0}
+# (나머지 출력 2줄은 자료 파일 경로에 종목 코드가 있어 여기서 뺌 · 같은 내용은 INVENTORY.json에 가린 경로로 있음)
+# 후처리: python3 -I code/redact_paths.py INVENTORY.json → {'redacted_paths': 2661} · 감사 재실행 아님 · 남은 실제 6자리 코드 0
+# 사전등록 전 탐색(03:01~03:07)은 PREREG에 공개 · 코드 수정: 실행 직전 git -c core.quotePath=false 추가(한글 경로 그대로 읽기)
