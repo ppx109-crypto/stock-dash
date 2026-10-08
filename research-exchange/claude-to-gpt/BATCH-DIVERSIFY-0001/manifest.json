@@ -1,0 +1,189 @@
+{
+ "schema_version": 1,
+ "task_id": "BATCH-DIVERSIFY-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "BATCH-DIVERSIFY-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 7,
+  "input": {
+   "pr": 56,
+   "head_sha": "8feafeeace53e9d0297a5b56ac6bd816f1212fb8",
+   "read_files": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "receipt.json"
+   ]
+  },
+  "prior": {
+   "pr": 49,
+   "head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4",
+   "reused": "m15_exec.py · kernel2.py · cost_contract.py · common.py(바이트 동일) · lc_m15.py ②단계만 바꿔 bd_m15.py"
+  },
+  "benchmarks_reused": {
+   "pr55": "b4166452 fr_results.json",
+   "pr53": "11c63dcb wh_diag.json"
+  },
+  "base_main_sha": "64c25e937f156d683bd8e066cc4f72c4e4a2205a"
+ },
+ "prereg_commit": "03a34aba3378098a8fb9195df31e629bcdf7e5c4",
+ "prereg_committed_at_kst": "2026-10-08T18:10:39+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "runs": {
+  "train": 4,
+  "full": 4,
+  "cut_test": 4,
+  "total": 12,
+  "failed": 0
+ },
+ "capital_won": 10000000,
+ "judgement": {
+  "D": {
+   "vs": "B",
+   "train_x2_end": 17469656.05208216,
+   "train_x2_vs_median_pct": -4.604730480357078,
+   "full_x2_cagr": 196.9160225250477,
+   "bench_full_x2_cagr": 219.9011,
+   "breaches": {
+    "train_x1": 1,
+    "train_x2": 1,
+    "full_x1": 1,
+    "full_x2": 1
+   },
+   "criteria": {
+    "1_train_x2_ge_median_plus5": false,
+    "2_no_day_breach": false,
+    "3_cagr_x2_pos": true,
+    "4_full_x2_cagr_gt_bench": false,
+    "6_invariance_and_cut": true
+   },
+   "5_concentration": "1~4 · 6 실패로 판단 불필요",
+   "verdict": "실패"
+  },
+  "DR": {
+   "vs": "R",
+   "train_x2_end": 17352273.767810196,
+   "train_x2_vs_median_pct": -6.351780931116425,
+   "full_x2_cagr": 194.2055765263931,
+   "bench_full_x2_cagr": 223.4248,
+   "breaches": {
+    "train_x1": 0,
+    "train_x2": 0,
+    "full_x1": 0,
+    "full_x2": 0
+   },
+   "criteria": {
+    "1_train_x2_ge_median_plus5": false,
+    "2_no_day_breach": true,
+    "3_cagr_x2_pos": true,
+    "4_full_x2_cagr_gt_bench": false,
+    "6_invariance_and_cut": true
+   },
+   "5_concentration": "1~4 · 6 실패로 판단 불필요",
+   "verdict": "실패"
+  }
+ },
+ "verdict": "D · DR 실패 · D 축 종료",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/bd_results.json",
+  "evidence/nav_full_DR_x1.csv",
+  "evidence/nav_full_DR_x2.csv",
+  "evidence/nav_full_D_x1.csv",
+  "evidence/nav_full_D_x2.csv",
+  "evidence/nav_train_DR_x1.csv",
+  "evidence/nav_train_DR_x2.csv",
+  "evidence/nav_train_D_x1.csv",
+  "evidence/nav_train_D_x2.csv",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "88dd1dc75061f27d5f0e5c147ee531a2f8ee9a1129f637b2ab31179a573c8a2d"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "8fbcc4d71451ea60267399143f189ca5313936bf932ac36860265e1ee2aaf2ae"
+  },
+  {
+   "path": "code/bd_m15.py",
+   "sha256": "ed98c13b72877bc69e19e50c15af2b52d9d722fb5d68ce7e1782456959b3f6d9"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "evidence/bd_results.json",
+   "sha256": "3bd31d7678a2ee3bb3384d3d43bad8715d2fa2efc34fec07596a0d63cedcc0d3"
+  },
+  {
+   "path": "evidence/nav_full_DR_x1.csv",
+   "sha256": "016abde80005d9c92785deb2c1ca49168ea547b2b900be96dcd7776db83582aa"
+  },
+  {
+   "path": "evidence/nav_full_DR_x2.csv",
+   "sha256": "7f633d0bcee94707222a890cb51437056fd06c035219f087a9b2f57276605e1d"
+  },
+  {
+   "path": "evidence/nav_full_D_x1.csv",
+   "sha256": "024066fd38418f3dcb1032c1c6ee2fc61ddde6bc9d9ffb685a324b975567ee41"
+  },
+  {
+   "path": "evidence/nav_full_D_x2.csv",
+   "sha256": "45241e9345abe48300a691363634541c1455286a28f16ac120ffa28207ba9585"
+  },
+  {
+   "path": "evidence/nav_train_DR_x1.csv",
+   "sha256": "3adee544071914686f83b5cb45cd586ffecc0d9b34ceeb9116d7f993396220b8"
+  },
+  {
+   "path": "evidence/nav_train_DR_x2.csv",
+   "sha256": "f7c6f7df51ff10f3a7f117c7f0a6b91b3adb3df76f841c53c04148b3666b3d39"
+  },
+  {
+   "path": "evidence/nav_train_D_x1.csv",
+   "sha256": "0acc784bcf706b5d3d4217c4b2f2aa9c802a94e3889ff9c536445112d043c61e"
+  },
+  {
+   "path": "evidence/nav_train_D_x2.csv",
+   "sha256": "d80c35fcd8120d962676ce8a8b1560edd4468db7328aae36bcb73e876a3f5d2c"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "46d2c52747eac97fba21a537c3848f11c39d33d50e770ac8ed2e785fcb60f17e"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "1b7d84646dad063688984808168e3007e6b961f9654b86dede087877d9504514"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/batch-diversify-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T18:17:40+09:00"
+}
