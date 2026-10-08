@@ -1,0 +1,85 @@
+{
+ "mine": {
+  "nav_previous": 21607601.105125062,
+  "nav_end": 18346201.105125062,
+  "nav_change_won": -3261400.0,
+  "return_pct": -15.093762533530086,
+  "fills_on_day": 0,
+  "request_records_on_day": 0,
+  "contributions": [
+   {
+    "code": "000250",
+    "won": -2840000.0,
+    "share_pct": 87.08
+   },
+   {
+    "code": "047050",
+    "won": -218400.0,
+    "share_pct": 6.7
+   },
+   {
+    "code": "011070",
+    "won": -202999.99999999953,
+    "share_pct": 6.22
+   }
+  ],
+  "sum_attribution_won": -3261399.9999999995
+ },
+ "check": [
+  {
+   "item": "nav_previous",
+   "gpt": 21607601.105125062,
+   "claude": 21607601.105125062,
+   "same": "True"
+  },
+  {
+   "item": "nav_end",
+   "gpt": 18346201.105125062,
+   "claude": 18346201.105125062,
+   "same": "True"
+  },
+  {
+   "item": "nav_change_won",
+   "gpt": -3261400,
+   "claude": -3261400.0,
+   "same": "True"
+  },
+  {
+   "item": "sum_attribution_won",
+   "gpt": -3261400,
+   "claude": -3261399.9999999995,
+   "same": "True"
+  },
+  {
+   "item": "return_pct",
+   "gpt": -15.093762533530086,
+   "claude": -15.093762533530086,
+   "same": "True"
+  },
+  {
+   "item": "fills_on_day",
+   "gpt": 0,
+   "claude": 0,
+   "same": true
+  },
+  {
+   "item": "상위1",
+   "gpt": "000250 -2840000 87.08",
+   "claude": "000250 -2840000.0 87.08",
+   "same": "True"
+  },
+  {
+   "item": "상위2",
+   "gpt": "047050 -218400 6.7",
+   "claude": "047050 -218400.0 6.7",
+   "same": "True"
+  },
+  {
+   "item": "상위3",
+   "gpt": "011070 -203000 6.22",
+   "claude": "011070 -202999.99999999953 6.22",
+   "same": "True"
+  }
+ ],
+ "all_same": true
+}
