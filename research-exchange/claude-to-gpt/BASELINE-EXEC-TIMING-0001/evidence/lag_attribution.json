@@ -1,0 +1,30 @@
+{
+ "D1_buy": {
+  "n": 45,
+  "mean_next_day_pct": 1.05,
+  "median": 0.75,
+  "value_weighted": 0.403,
+  "pos_share": 0.533
+ },
+ "D1_sell": {
+  "n": 42,
+  "mean_next_day_pct": -0.027,
+  "median": -0.227,
+  "value_weighted": -0.197,
+  "pos_share": 0.405
+ },
+ "BASKET_buy": {
+  "n": 9,
+  "mean_next_day_pct": 1.748,
+  "median": -0.386,
+  "value_weighted": 1.578,
+  "pos_share": 0.444
+ },
+ "BASKET_sell": {
+  "n": 6,
+  "mean_next_day_pct": 0.237,
+  "median": -2.345,
+  "value_weighted": 1.724,
+  "pos_share": 0.333
+ }
+}
