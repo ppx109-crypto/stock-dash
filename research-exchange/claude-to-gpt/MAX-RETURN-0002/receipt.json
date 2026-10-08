@@ -1,0 +1,26 @@
+{
+ "schema_version": 1,
+ "task_id": "MAX-RETURN-0002",
+ "chain_id": "MAX-RETURN-20261008",
+ "round": 2,
+ "input": {
+  "pr": 46,
+  "head_sha": "5308ae74ce0d01096158c3005699d0945b025570",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "GPT_RESULTS.json",
+   "GPT_PATCH.md",
+   "receipt.json"
+  ],
+  "gpt_prereg_commit": "d7fd02f71a549d36e4a46eee17bf12c0cee7213a"
+ },
+ "prior": {
+  "pr": 45,
+  "head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+  "reused": "kernel2.py · m15_exec.py · cost_contract.py · common.py(바이트 동일) · mr_m15.py에서 매수 금액 한 줄만 변경"
+ },
+ "base_main_sha": "ec44c4dd703cd2e547b0749cc805faca95340da0",
+ "received_at_kst": "2026-10-08T16:25:29+09:00 이후(입력 head 커밋 시각) · 16:27:27 PREREG 커밋 전"
+}
