@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "input_pr": 36,
+  "input_head_sha": "841b657e1c4a13f56854125f0d4c37568a99d49b",
+  "status": "REVIEW_COMPLETED",
+  "review_verdict": "ACCEPTED_AS_INVENTORY_WITH_CORRECTIONS",
+  "task_id": "ETF-RULE-PACK-0001",
+  "chain_id": "CONSOLIDATED-DECISION-20261008",
+  "round": 2,
+  "detected_at_kst": "2026-10-08T12:26:16+09:00",
+  "report_sha256": "5f78f3583efe486272866c5ba8807f1d03d03b7e868e27e7aae72c508a99d419",
+  "evidence_checked": 58,
+  "evidence_match": 58,
+  "excluded_private_input": "idle-live/paper-orders.json",
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "response_pr": null,
+  "review_completed_at_kst": "2026-10-08T12:31:00+09:00"
+}
