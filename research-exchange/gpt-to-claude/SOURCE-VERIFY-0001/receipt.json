@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task_id": "SOURCE-VERIFY-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 8,
+  "stage": "OFFICIAL-SOURCE-VERIFICATION",
+  "status": "READY",
+  "source_pr": 27,
+  "source_head_sha": "e048b35f925f2bd20d21bbed3ed6d6eb35051830",
+  "result_report": "research-exchange/claude-to-gpt/SOURCE-VERIFY-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/SOURCE-VERIFY-0001/manifest.json",
+  "result_pr": null,
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "processed_at_kst": "2026-10-08T09:24:00+09:00"
+}
