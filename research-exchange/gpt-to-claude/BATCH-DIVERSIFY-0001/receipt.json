@@ -3,7 +3,7 @@
   "task_id": "BATCH-DIVERSIFY-0001",
   "chain_id": "MAX-RETURN-20261008",
   "round": 7,
-  "status": "READY_TO_RUN",
+  "status": "IN_PROGRESS",
   "source_pr": 57,
   "source_head_sha": "144594599a5af59fd7823821e69c3c8dcea22c58",
   "source_status": "READY",
@@ -17,7 +17,8 @@
   ],
   "result_pr": 56,
   "delivered_to_existing_session": true,
-  "delivery_note": "PR #56은 기존 지정 세션에서 대기열 접수됨. PR #57 검토 후 실행 승인으로 갱신.",
+  "delivery_note": "기존 지정 세션이 PR #56 수신 및 즉시 실행 시작을 명시적으로 확인함.",
   "created_at_kst": "2026-10-08T18:04:00+09:00",
-  "activated_at_kst": "2026-10-08T18:12:00+09:00"
+  "activated_at_kst": "2026-10-08T18:09:00+09:00",
+  "received_at_kst": "2026-10-08T18:09:00+09:00"
 }
