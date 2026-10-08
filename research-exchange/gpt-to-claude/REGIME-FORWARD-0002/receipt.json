@@ -11,5 +11,8 @@
   ],
   "approval": "2026-10-08 20:52 KST user go: existing-data rebuild and September holdout single use",
   "result_pr": null,
-  "delivered_to_existing_session": false
+  "response_pr": 71,
+  "delivered_to_existing_session": true,
+  "delivery_evidence": "UI shows posted PR71 instruction and Claude responding; sent once. No private session identifier recorded.",
+  "delivered_task_head_sha": "9199574f94e5347a2d617ad05d1135e3a587e32f"
 }
