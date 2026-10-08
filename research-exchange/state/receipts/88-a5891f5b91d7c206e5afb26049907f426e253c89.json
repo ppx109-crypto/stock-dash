@@ -10,7 +10,7 @@
   "source_result_status": "READY",
   "reviewed_at_kst": "2026-10-09T00:57:33+09:00",
   "review_verdict": "READY_SYNTHETIC_CONTRACT_ACCEPTED_OFFICIAL_SEMANTICS_REQUIRED",
-  "response_pr": null,
+  "response_pr": 89,
   "response_branch": "research-exchange/gpt-to-claude/replay-official-semantics-audit-0001",
   "duplicate_key": "88:a5891f5b91d7c206e5afb26049907f426e253c89",
   "input_task_pr": 87,
@@ -35,9 +35,9 @@
     "full_decision_ledger_replay": true
   },
   "delivery": {
-    "status": "PENDING_EXISTING_SESSION",
-    "delivered_at_kst": null,
-    "acknowledgement": null
+    "status": "POSTED_ONCE_AND_ACKNOWLEDGED",
+    "delivered_at_kst": "2026-10-09T01:01:08+09:00",
+    "acknowledgement": "PR #89(REPLAY-OFFICIAL-SEMANTICS-AUDIT-0001) 지시를 받았고, 바로 시작합니다."
   },
   "official_public_docs_only": true,
   "data_api_calls_authorized": false,
