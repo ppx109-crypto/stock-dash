@@ -1,0 +1,688 @@
+{
+ "cases": {
+  "P1_raw_commit": {
+   "result": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|split|5|2026-01-29": "OK"
+    },
+    "before_batch": {
+     "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "52300"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100"
+    },
+    "after_batch": {
+     "state_hash": "2d250da706c127cc838c49c2d04e1228af087873a3c900b99c69ad6daf08de53",
+     "prov_hash": "eb7c68504895f57af9327b97bf203d1a33e0c1e64a8f4941e77eda568e7d9a5e",
+     "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+     "applied_n": 1,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "185",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "1935100"
+     },
+     "nav": "1935100"
+    },
+    "changed_fields": [
+     "pos",
+     "applied",
+     "prov"
+    ],
+    "watch_assignments": 3,
+    "blocked_from": null,
+    "d1_nav": "1935100",
+    "d0_nav": "1935100"
+   },
+   "pass": true
+  },
+  "P2_adjusted": {
+   "negative_control_pr114": {
+    "verdict": "COMMITTED",
+    "status": {
+     "A|split|5|2026-01-29": "OK"
+    },
+    "before_batch": {
+     "state_hash": "c9a0c59fef1ec3e37a73f13542267fde3b9a0eca8574a9d18e038a400bbd0cda",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "0633de6b48f863253e820fbbbd00de9439c2f1826ba3a77bd27c27994a6a6226",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "387020"
+     },
+     "nav": "387020"
+    },
+    "after_batch": {
+     "state_hash": "e0c5cf80ab4427b909652431848c15c57872fe31ac7f2e40f3ae0601cb16fc03",
+     "prov_hash": "eb7c68504895f57af9327b97bf203d1a33e0c1e64a8f4941e77eda568e7d9a5e",
+     "snaps_hash": "0633de6b48f863253e820fbbbd00de9439c2f1826ba3a77bd27c27994a6a6226",
+     "applied_n": 1,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "185",
+       "2092"
+      ]
+     },
+     "qp": {
+      "A": "387020"
+     },
+     "nav": "387020"
+    },
+    "changed_fields": [
+     "pos",
+     "applied",
+     "prov"
+    ],
+    "watch_assignments": null,
+    "blocked_from": null,
+    "d1_nav": "1935100",
+    "d0_nav": "387020"
+   },
+   "new_gate": {
+    "verdict": "BATCH_ABORTED",
+    "status": {
+     "A|split|5|2026-01-29": "BLOCKED_PRICE_BASIS"
+    },
+    "before_batch": {
+     "state_hash": "c9a0c59fef1ec3e37a73f13542267fde3b9a0eca8574a9d18e038a400bbd0cda",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "0633de6b48f863253e820fbbbd00de9439c2f1826ba3a77bd27c27994a6a6226",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "387020"
+     },
+     "nav": "387020"
+    },
+    "after_batch": {
+     "state_hash": "c9a0c59fef1ec3e37a73f13542267fde3b9a0eca8574a9d18e038a400bbd0cda",
+     "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+     "snaps_hash": "0633de6b48f863253e820fbbbd00de9439c2f1826ba3a77bd27c27994a6a6226",
+     "applied_n": 0,
+     "cash": "0",
+     "pos": {
+      "A": [
+       "37",
+       "10460"
+      ]
+     },
+     "qp": {
+      "A": "387020"
+     },
+     "nav": "387020"
+    },
+    "changed_fields": [],
+    "watch_assignments": 0,
+    "blocked_from": "2026-01-29",
+    "d1_nav": "387020",
+    "d0_nav": "387020"
+   },
+   "negative_distortion": {
+    "nav_before": "387020",
+    "nav_after_adjusted_quote": "1935100"
+   },
+   "pass": true
+  },
+  "P3_unknown": {
+   "cases": {
+    "P3a_missing": {
+     "result": {
+      "verdict": "BATCH_ABORTED",
+      "status": {
+       "A|split|5|2026-01-29": "BLOCKED_PRICE_BASIS"
+      },
+      "before_batch": {
+       "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ]
+       },
+       "qp": {
+        "A": "1935100"
+       },
+       "nav": "1935100"
+      },
+      "after_batch": {
+       "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ]
+       },
+       "qp": {
+        "A": "1935100"
+       },
+       "nav": "1935100"
+      },
+      "changed_fields": [],
+      "watch_assignments": 0,
+      "blocked_from": "2026-01-29",
+      "d1_nav": "1935100",
+      "d0_nav": "1935100"
+     },
+     "pass": true
+    },
+    "P3b_empty": {
+     "result": {
+      "verdict": "BATCH_ABORTED",
+      "status": {
+       "A|split|5|2026-01-29": "BLOCKED_PRICE_BASIS"
+      },
+      "before_batch": {
+       "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ]
+       },
+       "qp": {
+        "A": "1935100"
+       },
+       "nav": "1935100"
+      },
+      "after_batch": {
+       "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ]
+       },
+       "qp": {
+        "A": "1935100"
+       },
+       "nav": "1935100"
+      },
+      "changed_fields": [],
+      "watch_assignments": 0,
+      "blocked_from": "2026-01-29",
+      "d1_nav": "1935100",
+      "d0_nav": "1935100"
+     },
+     "pass": true
+    },
+    "P3c_other_string": {
+     "result": {
+      "verdict": "BATCH_ABORTED",
+      "status": {
+       "A|split|5|2026-01-29": "BLOCKED_PRICE_BASIS"
+      },
+      "before_batch": {
+       "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ]
+       },
+       "qp": {
+        "A": "1935100"
+       },
+       "nav": "1935100"
+      },
+      "after_batch": {
+       "state_hash": "472b9bf0007e29363c13d80941bbb2d7ac127a65571eb0cbb90cc55bd5c6dc05",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "8213911f4021b6d6f5fec7f8de8cb941fdf983512dabae6240af0b0d52b77add",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ]
+       },
+       "qp": {
+        "A": "1935100"
+       },
+       "nav": "1935100"
+      },
+      "changed_fields": [],
+      "watch_assignments": 0,
+      "blocked_from": "2026-01-29",
+      "d1_nav": "1935100",
+      "d0_nav": "1935100"
+     },
+     "pass": true
+    }
+   },
+   "pass": true
+  },
+  "P4_mixed_atomic": {
+   "orders": {
+    "[0, 1]": {
+     "result": {
+      "verdict": "BATCH_ABORTED",
+      "status": {
+       "A|split|5|2026-01-29": "NOT_EVALUATED",
+       "B|reverse_split|1/5|2026-01-29": "BLOCKED_PRICE_BASIS"
+      },
+      "before_batch": {
+       "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "31e76b425c05c8eb3c7df7fdc8e542529f0daeaf1e781d864ff7a8bfb1d6bbf0",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ],
+        "B": [
+         "75",
+         "905"
+        ]
+       },
+       "qp": {
+        "A": "1935100",
+        "B": "67875"
+       },
+       "nav": "2002975"
+      },
+      "after_batch": {
+       "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "31e76b425c05c8eb3c7df7fdc8e542529f0daeaf1e781d864ff7a8bfb1d6bbf0",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ],
+        "B": [
+         "75",
+         "905"
+        ]
+       },
+       "qp": {
+        "A": "1935100",
+        "B": "67875"
+       },
+       "nav": "2002975"
+      },
+      "changed_fields": [],
+      "watch_assignments": 0,
+      "blocked_from": "2026-01-29",
+      "d1_nav": "2002975",
+      "d0_nav": "2002975"
+     },
+     "pass": true
+    },
+    "[1, 0]": {
+     "result": {
+      "verdict": "BATCH_ABORTED",
+      "status": {
+       "A|split|5|2026-01-29": "NOT_EVALUATED",
+       "B|reverse_split|1/5|2026-01-29": "BLOCKED_PRICE_BASIS"
+      },
+      "before_batch": {
+       "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "31e76b425c05c8eb3c7df7fdc8e542529f0daeaf1e781d864ff7a8bfb1d6bbf0",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ],
+        "B": [
+         "75",
+         "905"
+        ]
+       },
+       "qp": {
+        "A": "1935100",
+        "B": "67875"
+       },
+       "nav": "2002975"
+      },
+      "after_batch": {
+       "state_hash": "ebf3ac60f47a12aae76567e755583802e0205d104c9b363618d73fb0ab383810",
+       "prov_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "snaps_hash": "31e76b425c05c8eb3c7df7fdc8e542529f0daeaf1e781d864ff7a8bfb1d6bbf0",
+       "applied_n": 0,
+       "cash": "0",
+       "pos": {
+        "A": [
+         "37",
+         "52300"
+        ],
+        "B": [
+         "75",
+         "905"
+        ]
+       },
+       "qp": {
+        "A": "1935100",
+        "B": "67875"
+       },
+       "nav": "2002975"
+      },
+      "changed_fields": [],
+      "watch_assignments": 0,
+      "blocked_from": "2026-01-29",
+      "d1_nav": "2002975",
+      "d0_nav": "2002975"
+     },
+     "pass": true
+    }
+   },
+   "pass": true
+  },
+  "P5_raw_regression": {
+   "fixtures": {
+    "M1_bonus_issue": {
+     "pr114_group": "fixtures",
+     "batch_day": "2026-02-02",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|bonus_issue|2|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "M2_unknown_kind": {
+     "pr114_group": "fixtures",
+     "batch_day": "2026-02-02",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|unknown_qty_event|2|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "M3_later_legit_looking_second_qm": {
+     "pr114_group": "fixtures",
+     "batch_day": "2026-02-03",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|bonus_issue|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "M4_new_symbol_first_qm": {
+     "pr114_group": "fixtures",
+     "batch_day": "2026-01-30",
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|bonus_issue|2|2026-01-30": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "K1_kind_flip_reverse_split": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-02-02",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "K2_later_independent_reverse_split": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-02-03",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|reverse_split|1/5|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "K3_unseen_symbols": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-01-30",
+     "verdict": "COMMITTED",
+     "status": {
+      "B|reverse_split|1/5|2026-01-30": "OK",
+      "C|split|2|2026-01-30": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "15",
+      "C": "80"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q1_apply_date_changed": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-02-02",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|5|2026-02-02": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-02": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q2_m_qty_changed": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-01-30",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|10|2026-01-29": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q3_legit_looking_second_split": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-02-03",
+     "verdict": "BATCH_ABORTED",
+     "status": {
+      "A|split|2|2026-02-03": "BLOCKED_AMBIGUOUS_EVENT_IDENTITY",
+      "B|reverse_split|1/5|2026-02-03": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "75"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q4_same_key_same_payload": {
+     "pr114_group": "regression_vs_pr112",
+     "batch_day": "2026-01-30",
+     "verdict": "COMMITTED",
+     "status": {
+      "A|split|5|2026-01-29": "DUPLICATE_IGNORED",
+      "B|reverse_split|1/5|2026-01-30": "OK"
+     },
+     "qty": {
+      "A": "185",
+      "B": "15"
+     },
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same_as_pr114": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    }
+   },
+   "diff_count": 0,
+   "pass": true
+  }
+ },
+ "code_order": {
+  "gate_is_first_statement": true,
+  "gate_return_line": 89,
+  "first_watch_assign_line": 138,
+  "watch_assign_lines": [
+   138
+  ],
+  "gate_before_all_mutation": true
+ },
+ "summary": {
+  "pr114_sha_ok": {
+   "code": true,
+   "evidence": true
+  },
+  "code_order_gate_before_mutation": true,
+  "P1_raw_commit": true,
+  "P2_adjusted": true,
+  "P3_unknown": true,
+  "P4_mixed_atomic": true,
+  "P5_raw_regression": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "price_basis_allowed": [
+  "RAW_UNADJUSTED"
+ ]
+}

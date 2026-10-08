@@ -1,0 +1,29 @@
+## P1~P4(D1 배치)
+| # | 판정 | 키별 status | 배치 직후 수량@가격 | 배치 전후 state·prov·snap 해시 | 바뀐 칸 | 대입 횟수 | NAV D0 → D1 | 통과 |
+|---|---|---|---|---|---|---|---|---|
+| P1 | COMMITTED | `A|split|5|2026-01-29` OK | A 185@10460 | 바뀜 | pos,applied,prov | 3 | 1935100 → 1935100 | True |
+| P2 음성(PR114) | COMMITTED | `A|split|5|2026-01-29` OK | A 185@2092 | 바뀜 | pos,applied,prov | None | 387020 → 1935100 | True |
+| P2 새 게이트 | BATCH_ABORTED | `A|split|5|2026-01-29` BLOCKED_PRICE_BASIS | A 37@10460 | 같음 | 0 | 0 | 387020 → 387020 | True |
+| P3a_missing | BATCH_ABORTED | `A|split|5|2026-01-29` BLOCKED_PRICE_BASIS | A 37@52300 | 같음 | 0 | 0 | 1935100 → 1935100 | True |
+| P3b_empty | BATCH_ABORTED | `A|split|5|2026-01-29` BLOCKED_PRICE_BASIS | A 37@52300 | 같음 | 0 | 0 | 1935100 → 1935100 | True |
+| P3c_other_string | BATCH_ABORTED | `A|split|5|2026-01-29` BLOCKED_PRICE_BASIS | A 37@52300 | 같음 | 0 | 0 | 1935100 → 1935100 | True |
+| P4 순서 [0, 1] | BATCH_ABORTED | `A|split|5|2026-01-29` NOT_EVALUATED · `B|reverse_split|1/5|2026-01-29` BLOCKED_PRICE_BASIS | A 37@52300 · B 75@905 | 같음 | 0 | 0 | 2002975 → 2002975 | True |
+| P4 순서 [1, 0] | BATCH_ABORTED | `A|split|5|2026-01-29` NOT_EVALUATED · `B|reverse_split|1/5|2026-01-29` BLOCKED_PRICE_BASIS | A 37@52300 · B 75@905 | 같음 | 0 | 0 | 2002975 → 2002975 | True |
+
+## P5 RAW 회귀(PR114 증거와 칸별 비교)
+| fixture | 판정 | 수량 | 다른 칸 | 바뀐 칸 목록 같음 | 4경로 · 바이트 · 자르기 · 반복 | 통과 |
+|---|---|---|---|---|---|---|
+| M1_bonus_issue | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| M2_unknown_kind | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| M3_later_legit_looking_second_qm | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| M4_new_symbol_first_qm | COMMITTED | A 185 · B 15 · C 80 | 0 | True | True · True · True · True | True |
+| K1_kind_flip_reverse_split | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| K2_later_independent_reverse_split | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| K3_unseen_symbols | COMMITTED | A 185 · B 15 · C 80 | 0 | True | True · True · True · True | True |
+| Q1_apply_date_changed | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| Q2_m_qty_changed | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| Q3_legit_looking_second_split | BATCH_ABORTED | A 185 · B 75 | 0 | True | True · True · True · True | True |
+| Q4_same_key_same_payload | COMMITTED | A 185 · B 15 | 0 | True | True · True · True · True | True |
+
+## 코드 순서
+{"gate_is_first_statement": true, "gate_return_line": 89, "first_watch_assign_line": 138, "watch_assign_lines": [138], "gate_before_all_mutation": true}
