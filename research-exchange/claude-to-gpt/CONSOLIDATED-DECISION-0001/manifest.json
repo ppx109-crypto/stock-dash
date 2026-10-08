@@ -1,0 +1,340 @@
+{
+ "schema_version": 1,
+ "task_id": "CONSOLIDATED-DECISION-0001",
+ "requested_by": "사용자 2026-10-08 12:13 KST(보정 포함)",
+ "status": "READY",
+ "status_meaning": "기존 근거로 만든 연구 판정표 완성. 실제 모의 체결 0행(WAITING_DATA). 운영 변경 · PAPER_VALIDATION_READY · 실전 승인 아님",
+ "verdicts": {
+  "1일봉 새82": "수정 후보",
+  "15분봉": "증거 부족",
+  "1시간봉": "중단 후보",
+  "빈칸 엔진": "유지 후보",
+  "코스닥 인버스": "유지 후보",
+  "바구니 C": "수정 후보",
+  "F5": "증거 부족"
+ },
+ "loss_criteria": {
+  "day_twr": -0.15,
+  "calendar_month_twr": -0.15,
+  "mdd": "별도 평가 항목(하드 한도 아님)"
+ },
+ "confirmed_fill_rows": 0,
+ "measured_metrics": 0,
+ "new_backtests": 0,
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "data_search": {
+  "rounds": 1,
+  "scope": "저장소 추적 파일 이름 · 원격 가지 이름 · 작업 환경 파일 이름(값 읽지 않음)",
+  "found_fill_ledgers": 0
+ },
+ "repo_base": "65bb2928",
+ "files": [
+  {
+   "path": "REPORT.md",
+   "sha256": "5f78f3583efe486272866c5ba8807f1d03d03b7e868e27e7aae72c508a99d419"
+  }
+ ],
+ "evidence_sources": [
+  {
+   "ref": "65bb2928",
+   "path": "docs/QUANT-REPORT.md",
+   "git_blob": "4a1db7a2a7601fac522560dd9c7aee33ecef3e02"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/QUANT-REPORT-2.md",
+   "git_blob": "d4b37ba6dce362bbde268fc72e1939741ef3742a"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/AUDIT-1.md",
+   "git_blob": "3ffa0efb4fb340bb90f0da17e94ef272811e5be4"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/AUDIT-UNIFIED-LOG.md",
+   "git_blob": "48f93f6e34c69faeb719f16b917dc198843432eb"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RULESET.md",
+   "git_blob": "b8e1b5982a388bff79e5eaa5fd7162dc154bf013"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-15M-LOG.md",
+   "git_blob": "ef960dc063dc67495f1eb3c8337a95b182fbe159"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-15M-PLAN.md",
+   "git_blob": "9490615a1b7d6361b1939bceae331332a87c8999"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/DATA-AUDIT-15M.md",
+   "git_blob": "9fd6175aab337f1ed5aa8c9b660bd57579756b11"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-1H-LOG.md",
+   "git_blob": "9d25636b05f38285956563be11445c4a1de94cb8"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/1H-GUARD.md",
+   "git_blob": "47e9e668d1eee9ec38746b6b9ef66aed3db8957c"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-1HY.md",
+   "git_blob": "ecd13cbb18b32e4bb13c9216840e1582e89eadfc"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-INVERSE.md",
+   "git_blob": "f4603d450f5fef074238c0f62327b9371dcc7366"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-INVERSE-LOG.md",
+   "git_blob": "d9f32c36ee634488f264a6dbc6f4540ac504598b"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-RNA.md",
+   "git_blob": "69974b1bd10b307562c29cd06719ac35dfde5ead"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-RNA-LOG.md",
+   "git_blob": "39e39d8ac79684b3809dd61c9ad9e3c890287250"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/RL-PRO.md",
+   "git_blob": "7dddb60cbe1ad817cabbd4bd3751d015aadcd07b"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/PREREG-2.md",
+   "git_blob": "b687a5f027c30128466153f6abbc4f4ece4a7dcb"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "docs/PAPER-TRADING.md",
+   "git_blob": "bd55f72762d8bf579a86b7a25fc885bd5a7f4508"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "audit/z070_long_none.out",
+   "git_blob": "cb98b5950cbf51a64eaa417cc89c5a6e4cb44820"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "audit/z070_long_basket.out",
+   "git_blob": "7c938fe2138b0f7cb2c920a6aab345d4fdbdb058"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "audit/z070_long_engine.out",
+   "git_blob": "aca97c8c8ed878b0c5591e3c0d6639305928bf6e"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "audit/z070_long_inverse.out",
+   "git_blob": "6ce66b9608039ed1cad1c93150dc5978338cad84"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "audit/z070_check_1donly.out",
+   "git_blob": "911e92945171a5a384be155e0c33c56d3bba18db"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "audit/z070_y1_inverse.out",
+   "git_blob": "b1eb4eb259ff9be924d073fee679ad7018cca1f2"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "daily_live.py",
+   "git_blob": "6bd00939ed48715010e76ac158b087d8d549aeeb"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "rule.py",
+   "git_blob": "3fc3cec2c0abd44a295b54dc9b0b2403b2919002"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "final_group.py",
+   "git_blob": "ff27bb32293efe11934d83010f89c5511271bfe3"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "idle_live.py",
+   "git_blob": "0e637aa9450b0bd40b5b7c510fbe23e7ea4337dc"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "research/idle_signal.py",
+   "git_blob": "766f2baefcfca9bd30a2129d594a005ce355701d"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "m15_live.py",
+   "git_blob": "2cdd38210c16066896a67111834e5b099645d2c9"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "hourly_a.py",
+   "git_blob": "1903ff37070382a2f75511b3d44fd2140c290198"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "basket_live.py",
+   "git_blob": "6fd7f46ab5280f7be8248603ba1a1fd1a3e19471"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "paper_trade.py",
+   "git_blob": "b5b710157f53dbbb7d7ab4294cf3bdaa6d19429f"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "paper_check.py",
+   "git_blob": "c51c208f5686220ead55826bd68b5bc0b9cf3d9c"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "research/perf2.py",
+   "git_blob": "bd22f8ffe5a39f76db2cdf190ee00e93c3f08454"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "research/z054.py",
+   "git_blob": "2f4cfd4662a9f58b4a2eaa0f65ec38caa2ebf0b3"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "collect_events.py",
+   "git_blob": "de029767cd508a389721b192dbc69e1dbe57e184"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "dashboard_ui.py",
+   "git_blob": "b9485343b93398e3291b47493478bee75d54bd73"
+  },
+  {
+   "ref": "65bb2928",
+   "path": "idle-live/paper-orders.json",
+   "git_blob": "5fb32fdcd76a9c84302be28b55f087c7b1bc4d84"
+  },
+  {
+   "ref": "65bb2928",
+   "path": ".github/workflows/daily-live.yml",
+   "git_blob": "a85f4b892506dea2e90d36871e9706f51f2a2d76"
+  },
+  {
+   "ref": "65bb2928",
+   "path": ".github/workflows/a-group.yml",
+   "git_blob": "838c6ba893322c115afeeb5226b8b0c542991c48"
+  },
+  {
+   "ref": "65bb2928",
+   "path": ".github/workflows/hourly-a-live.yml",
+   "git_blob": "5cfbf538a36747cdc6c4e25ca13d6bf7223b14fa"
+  },
+  {
+   "ref": "65bb2928",
+   "path": ".github/workflows/m15-live.yml",
+   "git_blob": "1c7808b03c95fa5fa7e1812bb10bc0a428c4a9de"
+  },
+  {
+   "ref": "65bb2928",
+   "path": ".github/workflows/intraday.yml",
+   "git_blob": "d4f53784d613ff221f94df3ee638d776c04fd11c"
+  },
+  {
+   "ref": "d39c6fc",
+   "path": "research-exchange/claude-to-gpt/RULES-0001/RULES-LOCK.md",
+   "git_blob": "ec055429c4caed7fa518de20410dfbce57f56a98"
+  },
+  {
+   "ref": "d39c6fc",
+   "path": "research-exchange/claude-to-gpt/RULES-0001/RULES-LOCK-1D.md",
+   "git_blob": "38ccf3457b32b3f01a3b964f525f229d99415fa0"
+  },
+  {
+   "ref": "d39c6fc",
+   "path": "research-exchange/claude-to-gpt/RULES-0001/RULES-LOCK-M15-1H.md",
+   "git_blob": "3cbd55011f182b6262c9c786e30a96850e7623a0"
+  },
+  {
+   "ref": "d39c6fc",
+   "path": "research-exchange/claude-to-gpt/RULES-0001/RULES-LOCK-ENGINE-BASKET.md",
+   "git_blob": "f2233b5f2d3509f4d094120c75ce4c306334a82f"
+  },
+  {
+   "ref": "d39c6fc",
+   "path": "research-exchange/claude-to-gpt/RULES-0001/REPORT.md",
+   "git_blob": "82d24799338646a064454c04b254c51828f1e588"
+  },
+  {
+   "ref": "a61f033",
+   "path": "research-exchange/claude-to-gpt/RULES-0002/REPORT.md",
+   "git_blob": "c47d8a931789bebf3c80538a4b278754e09c21a4"
+  },
+  {
+   "ref": "a61f033",
+   "path": "research-exchange/claude-to-gpt/RULES-0002/FLOW-LAG-IMPACT.md",
+   "git_blob": "8bcecbceeb2ec549ad29866c2159567509ca743a"
+  },
+  {
+   "ref": "a61f033",
+   "path": "research-exchange/claude-to-gpt/RULES-0002/results/m15_ASIS.json",
+   "git_blob": "65fb318a65da1a7e189a9758a1ecc83479bd0df3"
+  },
+  {
+   "ref": "a61f033",
+   "path": "research-exchange/claude-to-gpt/RULES-0002/results/h1k_ASIS.json",
+   "git_blob": "76e0f727cb0e67811eecafd362b600709b55c6ea"
+  },
+  {
+   "ref": "a61f033",
+   "path": "research-exchange/claude-to-gpt/RULES-0002/results/d1_ledger_ASIS.csv",
+   "git_blob": "1e390aef424cd69fdcc590cf05c24ff530337959"
+  },
+  {
+   "ref": "6c7e1f0f",
+   "path": "research-exchange/claude-to-gpt/MEAS-0001/REPORT.md",
+   "git_blob": "9bab2da7586a98276fce327c803a60230d175587"
+  },
+  {
+   "ref": "6c7e1f0f",
+   "path": "research-exchange/claude-to-gpt/MEAS-0001/RELIABILITY.md",
+   "git_blob": "489d03294fc5f2bd4b10fee25592ca002786e356"
+  },
+  {
+   "ref": "1e6ed49b",
+   "path": "research-exchange/claude-to-gpt/COST-REPLAY-0001/results/DELTA-SUMMARY.json",
+   "git_blob": "2d7d8541a3e09fd62078dbd6d75ca041f48fc664"
+  },
+  {
+   "ref": "9d52c57b",
+   "path": "research-exchange/claude-to-gpt/PAPER-MEASURE-FIX-0001/manifest.json",
+   "git_blob": "1bcd060620a9e14d464c9edd30bc1dc41ea0e078"
+  },
+  {
+   "ref": "d8024b55",
+   "path": "research-exchange/claude-to-gpt/SOURCE-VERIFY-0001/REPORT.md",
+   "git_blob": "973b8617f27771bd5b2f75cf1499d529ee7ba4c0"
+  }
+ ],
+ "evidence_missing_blobs": 0,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "created_at_kst": "2026-10-08T12:25:30+09:00"
+}
