@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "input_pr": 51,
+  "input_head_sha": "a7d1470f1c02bd7804e29455ef3f47d5849574fb",
+  "task_id": "WINNER-HOLD-0001",
+  "status": "REVIEWED",
+  "reviewed_at_kst": "2026-10-08T17:23:00+09:00",
+  "response_branch": "gpt/winner-hold-0001-pr51",
+  "response_pr": 52,
+  "claude_delivery": "RECEIVED",
+  "delivered_at_kst": "2026-10-08T17:26:00+09:00",
+  "existing_session_message": 155,
+  "task_read_head_sha": "1abbe1674264808e5e0167350258d9819c24f388",
+  "duplicate_sends": 0
+}
