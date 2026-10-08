@@ -1,0 +1,151 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-BLOCKED-DAY-METRIC-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 39,
+ "status": "READY",
+ "source_pr": 120,
+ "source_head_sha": "8ed1d7d24a7fd564c200f2978bd51659f1af4316",
+ "code_commit": "00db51429ea1176c82e0c1bc248fc47d2ac5aed4",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/blocked_day_metric_gate.py",
+  "evidence/blocked-day-metric-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:43:02+09:00",
+ "input": {
+  "pr": 121,
+  "head_sha": "46b8310ba29fac7f396d8a8eb3bafd1f243c5d08",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T03:38:44+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "8ed1d7d24a7fd564c200f2978bd51659f1af4316"
+   },
+   {
+    "at_kst": "2026-10-09T03:43:02+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "8ed1d7d24a7fd564c200f2978bd51659f1af4316"
+   }
+  ]
+ },
+ "prereg_commit": "777322f647b7166de2d5c797d492c3b4d8120d4e",
+ "prereg_committed_at_kst": "2026-10-09T03:40:21+09:00",
+ "verdict": "READY(합성 차단일 지표 게이트) / perf(snaps) 삭제 → perf_gate(ledger) · 첫 문장 blocked_from · M1 옛 함수 마지막 차단일 놓침(OK) 재현 · M2·M3·M5 PERF_BLOCKED 정확한 날짜·사유·지표 null·지표 호출 0 · M4 차단 8 fixture×4경로 동일 · M6 정상 다른 칸 0 · M7 reload·바이트 동일 · M8 정적·실행 근거",
+ "status_source": "evidence summary.all_pass",
+ "summary": {
+  "fixed_sha_ok": {
+   "pr120_code": true,
+   "pr120_evidence": true,
+   "pr114_evidence": true
+  },
+  "M1_negative_snapshot_only": true,
+  "M2_last_day_blocked": true,
+  "M3_first_day_blocked": true,
+  "M5_invalid_snapshot_without_flag": true,
+  "M4_event_batch_blocked_regression": true,
+  "M6_raw_normal": true,
+  "M7_serialization": true,
+  "M8_call_boundary": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ },
+ "m8_static": {
+  "no_perf_function": true,
+  "no_snapshot_only_perf": true,
+  "signature_single_ledger": true,
+  "first_statement_reads_blocked_from": true,
+  "gate_return_line": 203,
+  "metric_call_lines": [
+   208,
+   209,
+   211
+  ],
+  "gate_before_metrics": true,
+  "all_calls_single_arg": true,
+  "perf_gate_call_sites": 2,
+  "pass": true
+ },
+ "m1_negative": {
+  "old_perf": {
+   "status": "OK",
+   "all_zero": true
+  },
+  "blocked_from": "2026-01-29"
+ },
+ "fixed_inputs": {
+  "pr120_code": {
+   "git_blob": "80ab149655a2057e8e3587a6c44fcb3312acd8e1",
+   "sha256": "049342e8fa545f5092498eba8d19bc90cf1d850962f805bd0df61ba439384e93"
+  },
+  "pr120_evidence": {
+   "git_blob": "3b67cb16cdaafc94e4139dfd450a2a8ba8d1c9dd",
+   "sha256": "b7308516c2036cbcbc5f50cac3959f7713ea046e364d943eb39b90bae8945f70"
+  },
+  "pr114_evidence": {
+   "git_blob": "02f65d3c797d988315880cf08cbdbfbc5c72915f",
+   "sha256": "ecfb7a757e8de81a06027c39d2119b2bcf4c46bbaf090f4226df23b0c9fe2ace"
+  }
+ },
+ "disclosure": {
+  "post_prereg_code_change": "없음",
+  "invalid_snapshot_reason": "INVALID_SNAPSHOT 이름은 TASK 5항 경우용으로 사전등록에서 정함",
+  "cost_after_return": "합성 비용 모델 없음 → 정상에서도 null · cost_model NOT_MODELED"
+ },
+ "findings": {
+  "old_perf_empty_snapshots": "스냅숏 0개에서 옛 perf(snaps)는 IndexError(차단 표시 아님)",
+  "unflagged_empty_ledger": "차단 표시 없고 스냅숏 0개면 새 함수도 MDD에서 예외 · 정책은 TASK 밖이라 새로 만들지 않음"
+ },
+ "next_decision": "실제 Train 재생 가격기준 선택 — GPT·사용자 결정",
+ "file_sha256": {
+  "PREREG.md": "65bd2ebbcf143aa8272c2fa1c394ff9eba026ab522d26fb742992680ad7b81f6",
+  "REPORT.md": "892c6aa78ed6b4828d3783ce2bcadce49c091b39c6a86ca038daad1c1286eee2",
+  "code/blocked_day_metric_gate.py": "a28cf40e73462fa546772ae7ab9f1dd1c40c0397fdf2c1f3dbe7be7c46eead64",
+  "evidence/blocked-day-metric-gate.json": "edee9e29a5a844b744211e31325ca89be43cbf005444138e107a86c06cd6fec9",
+  "evidence/tables.md": "4ed7c880ef3de9577a9569f8ed78a1b7ff82690d90108d7e9a5a545f5748c804",
+  "evidence/run.log": "1cf5ec0633b8290921dd5baea5f52c9dd9f605cfdf7c2b2c3175c41bf9710d5c"
+ },
+ "runs": {
+  "official_runs": 1,
+  "cap": 1,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "real_events_applied": 0,
+  "real_quotes": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "kis_param_change": 0,
+  "existing_file_modification": 0,
+  "orders": 0,
+  "operations": 0,
+  "auto_merge": 0
+ },
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "oos": false
+}

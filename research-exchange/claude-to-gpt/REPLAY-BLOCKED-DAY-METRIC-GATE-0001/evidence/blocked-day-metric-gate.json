@@ -1,0 +1,528 @@
+{
+ "cases": {
+  "M1_negative_snapshot_only": {
+   "day1": {
+    "verdict": "DAY_BLOCKED",
+    "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+    "bad_quote_syms": [
+     "A"
+    ]
+   },
+   "blocked_from": "2026-01-29",
+   "snaps": [
+    [
+     "2026-01-28",
+     true
+    ]
+   ],
+   "old_perf": {
+    "status": "OK",
+    "all_zero": true
+   },
+   "pass": true
+  },
+  "M2_last_day_blocked": {
+   "blocked_from": "2026-01-29",
+   "snaps": [
+    [
+     "2026-01-28",
+     true
+    ]
+   ],
+   "perf_gate": {
+    "status": "PERF_BLOCKED",
+    "from": "2026-01-29",
+    "reason": "LEDGER_BLOCKED",
+    "daily_returns": null,
+    "monthly_twr": null,
+    "mdd": null,
+    "cost_after_return": null
+   },
+   "metric_calls": 0,
+   "reload": {
+    "output_same": true,
+    "bytes_same": true,
+    "bytes_sha256": "8f8d60e76a156b666e28c171982b2f9f1359fe7dd30bc4b0d3f0b4681c04739a"
+   },
+   "pass": true
+  },
+  "M3_first_day_blocked": {
+   "day0": {
+    "verdict": "DAY_BLOCKED",
+    "reason": "BLOCKED_QUOTE_PRICE_BASIS",
+    "bad_quote_syms": [
+     "A"
+    ]
+   },
+   "snaps_n": 0,
+   "perf_gate": {
+    "status": "PERF_BLOCKED",
+    "from": "2026-01-28",
+    "reason": "LEDGER_BLOCKED",
+    "daily_returns": null,
+    "monthly_twr": null,
+    "mdd": null,
+    "cost_after_return": null
+   },
+   "metric_calls": 0,
+   "old_perf_info": {
+    "exception": "IndexError"
+   },
+   "reload": {
+    "output_same": true,
+    "bytes_same": true,
+    "bytes_sha256": "6379086b87ad0f9d39f7b072938581f8a6153ab18849a016cdce9b81331d1643"
+   },
+   "pass": true
+  },
+  "M5_invalid_snapshot_without_flag": {
+   "blocked_from": null,
+   "snaps": [
+    [
+     "2026-01-28",
+     true
+    ],
+    [
+     "2026-01-29",
+     false
+    ]
+   ],
+   "perf_gate": {
+    "status": "PERF_BLOCKED",
+    "from": "2026-01-29",
+    "reason": "INVALID_SNAPSHOT",
+    "daily_returns": null,
+    "monthly_twr": null,
+    "mdd": null,
+    "cost_after_return": null
+   },
+   "metric_calls": 0,
+   "reload": {
+    "output_same": true,
+    "bytes_same": true,
+    "bytes_sha256": "ee3ff444b0896ebbc6cbc89b3c433696a10f4f4b79fff98bfd60c49f146e6931"
+   },
+   "pass": true
+  },
+  "M4_event_batch_blocked_regression": {
+   "fixtures": {
+    "M1_bonus_issue": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-02",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "M2_unknown_kind": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-02",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "M3_later_legit_looking_second_qm": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-03",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "K1_kind_flip_reverse_split": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-02",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "K2_later_independent_reverse_split": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-03",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q1_apply_date_changed": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-02",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-02",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q2_m_qty_changed": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-01-30",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-01-30",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q3_legit_looking_second_split": {
+     "kind": "M4_blocked",
+     "batch_day": "2026-02-03",
+     "perf_gate_first_path": {
+      "status": "PERF_BLOCKED",
+      "from": "2026-02-03",
+      "reason": "LEDGER_BLOCKED",
+      "daily_returns": null,
+      "monthly_twr": null,
+      "mdd": null,
+      "cost_after_return": null
+     },
+     "metric_calls_in_full": 0,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    }
+   },
+   "count": 8,
+   "pass": true
+  },
+  "M6_raw_normal": {
+   "pr120_Q1_raw": {
+    "diff_fields": [],
+    "perf_gate": {
+     "status": "OK",
+     "all_zero": true,
+     "daily_returns": [],
+     "monthly_twr": {},
+     "mdd": "0",
+     "cost_after_return": null,
+     "cost_model": "NOT_MODELED"
+    },
+    "metric_calls": 3,
+    "reload": {
+     "output_same": true,
+     "bytes_same": true,
+     "bytes_sha256": "d5c1f77a90c6fc4c8e3480dc4234dcf0e0a592b30accc878c89b55307aa07834"
+    },
+    "pass": true
+   },
+   "pr114_normal_fixtures": {
+    "M4_new_symbol_first_qm": {
+     "kind": "M6_normal",
+     "batch_day": "2026-01-30",
+     "perf_gate_first_path": {
+      "status": "OK",
+      "all_zero": true,
+      "daily_returns": [
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      "monthly_twr": {
+       "2026-01": "0",
+       "2026-02": "0"
+      },
+      "mdd": "0",
+      "cost_after_return": null,
+      "cost_model": "NOT_MODELED"
+     },
+     "metric_calls_in_full": 12,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "K3_unseen_symbols": {
+     "kind": "M6_normal",
+     "batch_day": "2026-01-30",
+     "perf_gate_first_path": {
+      "status": "OK",
+      "all_zero": true,
+      "daily_returns": [
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      "monthly_twr": {
+       "2026-01": "0",
+       "2026-02": "0"
+      },
+      "mdd": "0",
+      "cost_after_return": null,
+      "cost_model": "NOT_MODELED"
+     },
+     "metric_calls_in_full": 12,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    },
+    "Q4_same_key_same_payload": {
+     "kind": "M6_normal",
+     "batch_day": "2026-01-30",
+     "perf_gate_first_path": {
+      "status": "OK",
+      "all_zero": true,
+      "daily_returns": [
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      "monthly_twr": {
+       "2026-01": "0",
+       "2026-02": "0"
+      },
+      "mdd": "0",
+      "cost_after_return": null,
+      "cost_model": "NOT_MODELED"
+     },
+     "metric_calls_in_full": 12,
+     "diffs_vs_pr114_evidence": [],
+     "mutations_same": true,
+     "invariant": true,
+     "bytes_stable": true,
+     "cut_test": true,
+     "repeat_identical": true,
+     "pass": true
+    }
+   },
+   "pass": true
+  },
+  "M7_serialization": {
+   "single_ledgers": {
+    "M2_last_day_blocked": {
+     "output_same": true,
+     "bytes_same": true,
+     "bytes_sha256": "8f8d60e76a156b666e28c171982b2f9f1359fe7dd30bc4b0d3f0b4681c04739a"
+    },
+    "M3_first_day_blocked": {
+     "output_same": true,
+     "bytes_same": true,
+     "bytes_sha256": "6379086b87ad0f9d39f7b072938581f8a6153ab18849a016cdce9b81331d1643"
+    },
+    "M5_invalid_snapshot_without_flag": {
+     "output_same": true,
+     "bytes_same": true,
+     "bytes_sha256": "ee3ff444b0896ebbc6cbc89b3c433696a10f4f4b79fff98bfd60c49f146e6931"
+    },
+    "M6_pr120_Q1_raw": {
+     "output_same": true,
+     "bytes_same": true,
+     "bytes_sha256": "d5c1f77a90c6fc4c8e3480dc4234dcf0e0a592b30accc878c89b55307aa07834"
+    }
+   },
+   "fixture_invariants": {
+    "M1_bonus_issue": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "M2_unknown_kind": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "M3_later_legit_looking_second_qm": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "M4_new_symbol_first_qm": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "K1_kind_flip_reverse_split": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "K2_later_independent_reverse_split": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "K3_unseen_symbols": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "Q1_apply_date_changed": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "Q2_m_qty_changed": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "Q3_legit_looking_second_split": [
+     true,
+     true,
+     true,
+     true
+    ],
+    "Q4_same_key_same_payload": [
+     true,
+     true,
+     true,
+     true
+    ]
+   },
+   "pass": true
+  },
+  "M8_call_boundary": {
+   "static": {
+    "no_perf_function": true,
+    "no_snapshot_only_perf": true,
+    "signature_single_ledger": true,
+    "first_statement_reads_blocked_from": true,
+    "gate_return_line": 203,
+    "metric_call_lines": [
+     208,
+     209,
+     211
+    ],
+    "gate_before_metrics": true,
+    "all_calls_single_arg": true,
+    "perf_gate_call_sites": 2,
+    "pass": true
+   },
+   "blocked_metric_calls_zero": true,
+   "pass": true
+  }
+ },
+ "summary": {
+  "fixed_sha_ok": {
+   "pr120_code": true,
+   "pr120_evidence": true,
+   "pr114_evidence": true
+  },
+  "M1_negative_snapshot_only": true,
+  "M2_last_day_blocked": true,
+  "M3_first_day_blocked": true,
+  "M5_invalid_snapshot_without_flag": true,
+  "M4_event_batch_blocked_regression": true,
+  "M6_raw_normal": true,
+  "M7_serialization": true,
+  "M8_call_boundary": true,
+  "official_runs": 1,
+  "actual_events": 0,
+  "external_calls": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "all_pass": true
+ }
+}
