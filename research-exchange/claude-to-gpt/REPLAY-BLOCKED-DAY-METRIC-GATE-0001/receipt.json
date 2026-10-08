@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-BLOCKED-DAY-METRIC-GATE-0001",
+ "chain_id": "PAPER-READINESS",
+ "round": 39,
+ "status": "READY",
+ "source_pr": 120,
+ "source_head_sha": "8ed1d7d24a7fd564c200f2978bd51659f1af4316",
+ "code_commit": "00db51429ea1176c82e0c1bc248fc47d2ac5aed4",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/blocked_day_metric_gate.py",
+  "evidence/blocked-day-metric-gate.json",
+  "evidence/tables.md",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T03:43:02+09:00",
+ "input": {
+  "pr": 121,
+  "head_sha": "46b8310ba29fac7f396d8a8eb3bafd1f243c5d08"
+ },
+ "prereg_commit": "777322f647b7166de2d5c797d492c3b4d8120d4e",
+ "all_pass": true,
+ "official_runs": 1,
+ "actual_events": 0,
+ "external_calls": 0,
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
