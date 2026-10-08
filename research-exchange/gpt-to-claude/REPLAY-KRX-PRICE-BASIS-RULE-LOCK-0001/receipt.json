@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-KRX-PRICE-BASIS-RULE-LOCK-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 25,
+  "status": "READY",
+  "source_pr": 92,
+  "source_head_sha": "8f9a1d934fa8f3fa110332a0aa4885320d91956b",
+  "reviewed_at_kst": "2026-10-09T01:24:17+09:00",
+  "result_pr": null,
+  "delivery": {
+    "session": "existing-private-session-only",
+    "status": "PENDING"
+  },
+  "scope": [
+    "split",
+    "reverse_split",
+    "krx_rule_identity",
+    "market_applicability",
+    "price_basis_formula",
+    "price_basis_date"
+  ],
+  "prohibited": [
+    "network",
+    "data_api",
+    "credentials",
+    "collection",
+    "cache_expansion",
+    "replay",
+    "performance",
+    "threshold_search",
+    "operations",
+    "new_session",
+    "auto_merge"
+  ],
+  "completion": [
+    "source_pr_and_head_rechecked_twice",
+    "prereg_before_results",
+    "four_market_event_cells_decided",
+    "claim_text_inference_verdict_separated",
+    "network_api_collection_replay_performance_zero",
+    "status_ready_or_blocked_only"
+  ]
+}
