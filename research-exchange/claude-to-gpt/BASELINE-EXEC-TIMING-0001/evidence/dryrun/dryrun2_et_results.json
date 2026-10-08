@@ -1,0 +1,55 @@
+{
+ "synthetic": {
+  "t+1 종가 +10%(A)": {
+   "new_decisions_before_t+1_same": true,
+   "new_target_for_t+1_same": true,
+   "new_fill_qty_t+1_same": true,
+   "old_contract_target_t+1_same": false
+  },
+  "t+1 통제 체결 수량 +7(A)": {
+   "new_decisions_before_t+1_same": true,
+   "new_target_for_t+1_same": true,
+   "new_fill_qty_t+1_same": true,
+   "old_contract_target_t+1_same": false
+  },
+  "보존 · 정수 · 중복 · 음수 현금": {
+   "checks": 7,
+   "max_gap": [
+    0.0,
+    8.003553375601768e-11
+   ],
+   "all_int": true,
+   "dup": [],
+   "min_cash": 263827.304
+  },
+  "거래정지 · 값 없음(B, 5번째 날)": {
+   "no_price_skips": 1,
+   "B_traded_on_halt_day": false
+  },
+  "현금 부족(k≈3.3)": {
+   "buy_reduced_or_unfilled": 2,
+   "min_cash": 19.193000000086613,
+   "checks": 7
+  },
+  "첫날 주문 없음": {
+   "trades_day0": 0
+  },
+  "pass": true
+ },
+ "reconstruction_max_gap_won": {
+  "control": {
+   "D1": 0.0047407737001776695,
+   "M15": 0.004978646989911795,
+   "ETF": 0.0,
+   "BASKET": 0.004610988777130842
+  },
+  "old_candidate": {
+   "D1": 0.0048448676243424416,
+   "M15": 0.004997123032808304,
+   "ETF": 0.0,
+   "BASKET": 0.004798248875886202
+  }
+ },
+ "reconstruction_ok(≤1원)": true,
+ "verdict": "SYNTHETIC_ONLY"
+}

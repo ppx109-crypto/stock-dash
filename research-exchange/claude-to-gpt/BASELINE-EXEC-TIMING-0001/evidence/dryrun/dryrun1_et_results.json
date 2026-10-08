@@ -1,0 +1,46 @@
+{
+ "synthetic": {
+  "t+1 종가 +10%(A)": {
+   "new_decisions_before_t+1_same": true,
+   "new_target_for_t+1_same": true,
+   "new_fill_qty_t+1_same": true,
+   "old_contract_target_t+1_same": false
+  },
+  "t+1 통제 체결 수량 +7(A)": {
+   "new_decisions_before_t+1_same": true,
+   "new_target_for_t+1_same": true,
+   "new_fill_qty_t+1_same": true,
+   "old_contract_target_t+1_same": false
+  },
+  "보존 · 정수 · 중복 · 음수 현금": {
+   "checks": 7,
+   "max_gap": [
+    0.0,
+    8.003553375601768e-11
+   ],
+   "all_int": true,
+   "dup": [
+    [
+     "20250106",
+     "A",
+     "sell"
+    ]
+   ],
+   "min_cash": 263827.304
+  },
+  "거래정지 · 값 없음(B, 5번째 날)": {
+   "no_price_skips": 1,
+   "B_traded_on_halt_day": false
+  },
+  "현금 부족(시작 3만 원)": {
+   "buy_reduced_or_unfilled": 0,
+   "min_cash": 7956.978999999999,
+   "checks": 7
+  },
+  "첫날 주문 없음": {
+   "trades_day0": 0
+  },
+  "pass": false
+ },
+ "verdict": "BLOCKED"
+}
