@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "PORTFOLIO-CAP-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 10,
+  "phase": "ALPHA",
+  "status": "READY",
+  "source_pr": 62,
+  "source_head_sha": "f68eab60c9e8949dbf58ec6d1528e710bb0cadc0",
+  "scope": "one fixed C25 hypothesis, four Train runs at actual 2.5m sleeves",
+  "forbidden": [
+    "threshold, grid, seed, period or rule search",
+    "new API/data collection or orders",
+    "current bot, allocation, workflow or authentication changes",
+    "leverage, secrets or auto-merge"
+  ],
+  "completion": "READY or BLOCKED result with REPORT, manifest, receipt, four NAVs, aggregate NAV, weights, code diff, logs and hashes",
+  "paths": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "receipt.json"
+  ],
+  "created_at_kst": "2026-10-08T18:43:00+09:00"
+}
