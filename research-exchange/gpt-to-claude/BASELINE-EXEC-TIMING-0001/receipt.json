@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "BASELINE-EXEC-TIMING-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 16,
+  "status": "READY",
+  "source_pr": 74,
+  "source_head_sha": "4629a8aa40dbe5d4205426ecd9e967dd078f0bbd",
+  "reviewed_result": {
+    "task_id": "REPLAY-ROWMASK-0001",
+    "status": "READY",
+    "train_rows_before": 62954,
+    "train_rows_after": 62954,
+    "train_signal_days": 121,
+    "train_signal_rows": 563,
+    "train_signal_diff_days": 0,
+    "portfolio_runs": 0
+  },
+  "response_pr": null,
+  "result_pr": null,
+  "created_at_kst": "2026-10-08T23:08:00+09:00",
+  "delivery": {
+    "target": "existing_claude_session_only",
+    "status": "PENDING",
+    "delivered_at_kst": null,
+    "private_identifier_recorded": false
+  },
+  "prohibitions": [
+    "new_api_or_collection",
+    "orders",
+    "operations_change",
+    "threshold_search",
+    "auto_merge",
+    "secrets"
+  ]
+}
