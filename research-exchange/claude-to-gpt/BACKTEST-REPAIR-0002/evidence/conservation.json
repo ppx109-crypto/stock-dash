@@ -1,0 +1,173 @@
+{
+ "D1_next_x1": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 9.611248970031738e-07,
+  "max_gap_nav_identity_won": 1.7881393432617188e-07,
+  "closed_positions_qty_fully_sold": 474,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": 10
+ },
+ "D1_next_x2": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 1.0132789611816406e-06,
+  "max_gap_nav_identity_won": 8.940696716308594e-08,
+  "closed_positions_qty_fully_sold": 474,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": 10
+ },
+ "D1_next_x0": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 0.0,
+  "max_gap_nav_identity_won": 0.0,
+  "closed_positions_qty_fully_sold": 474,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": 10
+ },
+ "M15_x1": {
+  "daily_checks": 230,
+  "max_gap_cash_won": 1.4901161193847656e-07,
+  "max_gap_nav_identity_won": 5.960464477539063e-08,
+  "closed_positions_qty_fully_sold": 115,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "M15_x2": {
+  "daily_checks": 230,
+  "max_gap_cash_won": 2.682209014892578e-07,
+  "max_gap_nav_identity_won": 5.960464477539063e-08,
+  "closed_positions_qty_fully_sold": 116,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "M15_x0": {
+  "daily_checks": 230,
+  "max_gap_cash_won": 0.0,
+  "max_gap_nav_identity_won": 0.0,
+  "closed_positions_qty_fully_sold": 116,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_engine_next_x1": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 1.0170042514801025e-06,
+  "max_gap_nav_identity_won": 1.1920928955078125e-07,
+  "closed_positions_qty_fully_sold": 189,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_engine_next_x2": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 1.0132789611816406e-06,
+  "max_gap_nav_identity_won": 5.21540641784668e-08,
+  "closed_positions_qty_fully_sold": 181,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_engine_next_x0": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 0.0,
+  "max_gap_nav_identity_won": 0.0,
+  "closed_positions_qty_fully_sold": 183,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_inverse_next_x1": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 1.341104507446289e-07,
+  "max_gap_nav_identity_won": 4.0978193283081055e-08,
+  "closed_positions_qty_fully_sold": 42,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_inverse_next_x2": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 9.685754776000977e-08,
+  "max_gap_nav_identity_won": 5.21540641784668e-08,
+  "closed_positions_qty_fully_sold": 42,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_inverse_next_x0": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 0.0,
+  "max_gap_nav_identity_won": 0.0,
+  "closed_positions_qty_fully_sold": 42,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "BASKET_next_x1": {
+  "daily_checks": 2358,
+  "max_gap_cash_won": 2.980232238769531e-07,
+  "max_gap_nav_identity_won": 1.4901161193847656e-07,
+  "closed_positions_qty_fully_sold": 154,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "BASKET_next_x2": {
+  "daily_checks": 2358,
+  "max_gap_cash_won": 3.0547380447387695e-07,
+  "max_gap_nav_identity_won": 1.043081283569336e-07,
+  "closed_positions_qty_fully_sold": 154,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "BASKET_next_x0": {
+  "daily_checks": 2358,
+  "max_gap_cash_won": 0.0,
+  "max_gap_nav_identity_won": 0.0,
+  "closed_positions_qty_fully_sold": 154,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "D1_close_x1": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 1.6689300537109375e-06,
+  "max_gap_nav_identity_won": 2.384185791015625e-07,
+  "closed_positions_qty_fully_sold": 478,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": 10
+ },
+ "ETF_engine_close_x1": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 9.872019290924072e-07,
+  "max_gap_nav_identity_won": 7.450580596923828e-08,
+  "closed_positions_qty_fully_sold": 177,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "ETF_inverse_close_x1": {
+  "daily_checks": 2360,
+  "max_gap_cash_won": 2.384185791015625e-07,
+  "max_gap_nav_identity_won": 3.725290298461914e-08,
+  "closed_positions_qty_fully_sold": 51,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ },
+ "BASKET_close_x1": {
+  "daily_checks": 2358,
+  "max_gap_cash_won": 4.470348358154297e-07,
+  "max_gap_nav_identity_won": 7.450580596923828e-08,
+  "closed_positions_qty_fully_sold": 155,
+  "closed_positions_qty_mismatch": 0,
+  "open_positions_wrongly_fully_sold": 0,
+  "max_slots_used": null
+ }
+}

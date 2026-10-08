@@ -1,0 +1,23 @@
+준비 27 초 {'days': ['20170201', '20260916'], 'n_days': 2360, 'picks_days': 1116, 'picks_rows': 3712, 'row_i_date_mismatch': 0, 'br_days_equal': True}
+D1_next_x1 NAV 598266595 열린 0 닫힌 474 {'cap_forced': 0, 'pending_buy_at_end': 0, 'pending_sell_at_end': 0} 36 초
+D1_next_x2 NAV 299920383 열린 0 닫힌 474 {'cap_forced': 0, 'pending_buy_at_end': 0, 'pending_sell_at_end': 0} 36 초
+D1_next_x0 NAV 1421305758 열린 0 닫힌 474 {'cap_forced': 0, 'pending_buy_at_end': 0, 'pending_sell_at_end': 0} 37 초
+D1_close_x1 NAV 685090789 열린 0 닫힌 478 {'cap_forced': 0, 'buy_unfilled_slot_released': 6, 'pending_buy_at_end': 0, 'pending_sell_at_end': 0} 37 초
+원 엔진 칸 원장 504 줄 38 초
+자르기 1일봉 {'fills_equal': True, 'n_fills': 438, 'nav_equal': True, 'n_days': 1155, 'snap_equal': True}
+ETF_engine_next_x1 NAV 145669096 열린 0 닫힌 189 {'buy_reduced_state_kept': 1, 'pending_at_end': 0} 43 초
+ETF_engine_next_x2 NAV 127368725 열린 0 닫힌 181 {'buy_reduced_state_kept': 1, 'pending_at_end': 0} 47 초
+ETF_engine_next_x0 NAV 164092312 열린 0 닫힌 183 {'buy_reduced_state_kept': 1, 'pending_at_end': 0} 50 초
+ETF_engine_close_x1 NAV 169434395 열린 0 닫힌 177 {'pending_at_end': 0} 54 초
+자르기 engine {'fills_equal': True, 'n_fills': 216, 'nav_equal': True, 'n_days': 1155, 'snap_equal': True}
+ETF_inverse_next_x1 NAV 72511188 열린 0 닫힌 42 {'buy_reduced_state_kept': 2, 'pending_at_end': 0} 60 초
+ETF_inverse_next_x2 NAV 70029727 열린 0 닫힌 42 {'buy_reduced_state_kept': 2, 'pending_at_end': 0} 64 초
+ETF_inverse_next_x0 NAV 75039484 열린 0 닫힌 42 {'buy_reduced_state_kept': 2, 'pending_at_end': 0} 67 초
+ETF_inverse_close_x1 NAV 160545739 열린 0 닫힌 51 {'pending_at_end': 0} 70 초
+자르기 inverse {'fills_equal': True, 'n_fills': 36, 'nav_equal': True, 'n_days': 1155, 'snap_equal': True}
+BASKET_next_x1 NAV 180707519 열린 3 닫힌 154 {'buy_reduced_state_kept': 1, 'pending_at_end': 0, 'events_dropped_by_title': 682} 85 초
+BASKET_next_x2 NAV 130640428 열린 3 닫힌 154 {'buy_reduced_state_kept': 1, 'pending_at_end': 0, 'events_dropped_by_title': 682} 93 초
+BASKET_next_x0 NAV 258904600 열린 3 닫힌 154 {'buy_reduced_state_kept': 1, 'pending_at_end': 0, 'events_dropped_by_title': 682} 102 초
+BASKET_close_x1 NAV 251795451 열린 3 닫힌 155 {'pending_at_end': 0, 'events_dropped_by_title': 682} 111 초
+자르기 바구니 {'fills_equal': True, 'n_fills': 124, 'nav_equal': True, 'n_days': 1155, 'snap_equal': True}
+끝 120 초

@@ -1,0 +1,159 @@
+{
+ "synthetic": {
+  "all_pass": true,
+  "n": 11,
+  "results": {
+   "partial_exit_entry_cost_independent_of_future_split": {
+    "pass": true,
+    "detail": {
+     "buy_cost_unsplit": 383770.88,
+     "buy_cost_split": 383770.88,
+     "qty": 4000
+    }
+   },
+   "cash_and_nav_identity_after_partial": {
+    "pass": true,
+    "detail": {
+     "gaps": [
+      [
+       0.0,
+       7.450580596923828e-09
+      ],
+      [
+       0.0,
+       0.0
+      ]
+     ]
+    }
+   },
+   "position_grouped_once": {
+    "pass": true,
+    "detail": {
+     "closed_rows": 1
+    }
+   },
+   "unfilled_buy_no_ghost": {
+    "pass": true,
+    "detail": "체결 시각 값 없음"
+   },
+   "cash_reduced_exact_solve": {
+    "pass": true,
+    "detail": {
+     "want": 714,
+     "got": 142,
+     "cash_left": 3952.3952
+    }
+   },
+   "end_open_mtm_and_liquidation": {
+    "pass": true,
+    "detail": {
+     "nav": 101860508.89,
+     "liq_nav": 101656277.4,
+     "liq_cost": 204231.49,
+     "open_rows": 1
+    }
+   },
+   "unknown_adv_tax_counted": {
+    "pass": true,
+    "detail": {
+     "adv_missing_fills": 2,
+     "buy_filled": 1,
+     "tax_unknown_fills": 1
+    }
+   },
+   "loss_boundary_strict": {
+    "pass": true,
+    "detail": {
+     "day_breach": 1,
+     "worst_day": -15.0
+    }
+   },
+   "first_day_included": {
+    "pass": true,
+    "detail": {
+     "worst_day": -1.0,
+     "CAGR": -6.34
+    }
+   },
+   "sortino_rms_target0": {
+    "pass": true,
+    "detail": {
+     "sortino": -5.0199601592044525
+    }
+   },
+   "month_breach_strict": {
+    "pass": true,
+    "detail": {
+     "worst_month": -16.0
+    }
+   }
+  }
+ },
+ "synthetic_first_run": "10/11 — loss_boundary_strict 실패(정확히 −15%가 부동소수로 −0.15000000000000002가 되어 '넘음'으로 셈) → 경계 비교에 1e-12 여유 · 달 손실은 반올림 전 값으로 비교하게 고친 뒤 11/11",
+ "cut_daily_executor": {
+  "D1_next": {
+   "fills_equal": true,
+   "n_fills": 438,
+   "nav_equal": true,
+   "n_days": 1155,
+   "snap_equal": true
+  },
+  "ETF_engine_next": {
+   "fills_equal": true,
+   "n_fills": 216,
+   "nav_equal": true,
+   "n_days": 1155,
+   "snap_equal": true
+  },
+  "ETF_inverse_next": {
+   "fills_equal": true,
+   "n_fills": 36,
+   "nav_equal": true,
+   "n_days": 1155,
+   "snap_equal": true
+  },
+  "BASKET_next": {
+   "fills_equal": true,
+   "n_fills": 124,
+   "nav_equal": true,
+   "n_days": 1155,
+   "snap_equal": true
+  }
+ },
+ "cut_daily_how": "20211015 뒤 가격 ×1.37 · 뒤 신호/사건 지움 → 그날까지 체결 · NAV · 상태(대기 요청 포함) 비교",
+ "cut_m15_full_pipeline": {
+  "cut": "2026011510",
+  "how": "HLAB_CUT로 봉 · 일봉 재료를 처음부터 안 읽은 채 전 과정(신호 · 순위 · 실행) 다시",
+  "fills_equal": true,
+  "n_fills": 117,
+  "nav_equal": true,
+  "n_days": 77
+ },
+ "d1_close_vs_engine_slot_ledger": {
+  "engine_rows": 504,
+  "engine_entries": 478,
+  "seq_entries": 478,
+  "entries_common": 477,
+  "entries_engine_only": 1,
+  "entries_seq_only": 1,
+  "exits_common": 503,
+  "exits_engine_only": 1,
+  "exits_seq_only": 1,
+  "first_entry_divergence": "20251203",
+  "cause": "같은 종가 근사 · 같은 함수. 다른 점은 돈 장부(현금이 1주 미만이면 칸을 비움 · 원 엔진은 칸만 셈)와 그 뒤 칸 차이의 연쇄"
+ },
+ "m15_vs_original_slot_sim": {
+  "ref_rows": 122,
+  "ref_entries": 117,
+  "seq_entries": 116,
+  "entries_common": 114,
+  "entries_ref_only": 3,
+  "entries_seq_only": 2,
+  "exits_common": 118,
+  "exits_ref_only": 3,
+  "exits_seq_only": 2,
+  "ref_end_closures": 1,
+  "first_entry_divergence": "202603121030"
+ },
+ "ledger_files_read": 0
+}
