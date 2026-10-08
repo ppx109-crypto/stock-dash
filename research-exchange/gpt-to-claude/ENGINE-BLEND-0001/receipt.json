@@ -4,7 +4,7 @@
   "chain_id": "PAPER-READINESS-20261008",
   "round": 11,
   "phase": "ALPHA / portfolio diagnostic",
-  "status": "READY",
+  "status": "IN_PROGRESS",
   "source_pr": 64,
   "source_head_sha": "617eb2719f54285555af12e48f1ae0d95242345e",
   "source_status": "READY / AXIS_ENDED",
@@ -16,6 +16,8 @@
   "prior_task_pr": 63,
   "prior_result_pr": 64,
   "result_pr": null,
-  "delivered_to_existing_session": false,
-  "created_at_kst": "2026-10-08T18:57:12+09:00"
+  "delivered_to_existing_session": true,
+  "created_at_kst": "2026-10-08T18:57:12+09:00",
+  "delivery_note": "기존 지정 세션이 PR #65 수신, 지시 파일 읽기 및 PR #41 NAV blob 검산 착수를 명시적으로 확인함.",
+  "received_at_kst": "2026-10-08T19:00:00+09:00"
 }
