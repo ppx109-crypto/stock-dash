@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-SPLIT-RATIO-DIRECTION-CONTRACT-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 29,
+  "status": "READY",
+  "source_pr": 100,
+  "source_head_sha": "c16010b1ede2185814b1639cbb46cb2536a26e8f",
+  "issued_at_kst": "2026-10-09T02:01:51+09:00",
+  "source_result_status": "BLOCKED",
+  "paused_question": {
+    "task_id": "REPLAY-KOSPI-RULE2256-ARTICLE30-LOCK-0001",
+    "status": "NEEDS_DATA",
+    "reason": "same binding gap repeated three rounds"
+  },
+  "input": {
+    "pr": null,
+    "head_sha": null
+  },
+  "output": {
+    "result_pr": null
+  },
+  "delivery": {
+    "target": "designated existing session",
+    "status": "PENDING",
+    "sent_at_kst": null,
+    "acknowledged_at_kst": null
+  },
+  "paper_validation_ready": false,
+  "nav_verified": false
+}
