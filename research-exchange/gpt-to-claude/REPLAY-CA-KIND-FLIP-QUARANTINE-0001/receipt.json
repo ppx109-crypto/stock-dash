@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-KIND-FLIP-QUARANTINE-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 34,
+  "status": "READY",
+  "source_pr": 110,
+  "source_head_sha": "2c7c268b6c8b1bfb196bbb343216823046d5df5f",
+  "source_state": "open",
+  "source_draft": false,
+  "source_merged": false,
+  "source_result_status": "BLOCKED",
+  "response_branch": "research-exchange/gpt-to-claude/replay-ca-kind-flip-quarantine-0001",
+  "result_pr": null,
+  "detected_at": "2026-10-09T02:42:23+09:00",
+  "reviewed_at": "2026-10-09T02:43:11+09:00",
+  "dedup_key": "110:2c7c268b6c8b1bfb196bbb343216823046d5df5f",
+  "scope": "synthetic fail-closed quarantine for split/reverse_split kind flip",
+  "actual_events": 0,
+  "performance_verified": false,
+  "paper_validation_ready": false,
+  "delivery": {
+    "target": "existing_designated_session_only",
+    "status": "PENDING",
+    "delivered_at": null,
+    "acknowledged": false
+  }
+}
