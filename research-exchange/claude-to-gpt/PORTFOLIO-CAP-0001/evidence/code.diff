@@ -1,0 +1,250 @@
+--- orig/rs_m15.py	2026-10-08 09:45:39.599572593 +0000
++++ pc_m15.py	2026-10-08 09:46:59.048000488 +0000
+@@ -1,6 +1,6 @@
+-"""REAL-SLEEVE-0001 · 250만 원 소계정 B(M4) · R(R30) × seed 0~3 · 비용 2배(GPT PR #61 · 클로드 PREREG e6575a9e).
+-MR_D1PICKS=<d1_picks.json> python3 -E -P rs_m15.py <b3> <출력>
+-PR #55 fr_m15.py 그대로(자본은 common.py CASH = 2.5e6 한 줄). 보고용으로 장 마감 종목별 평가금액만 더 남김."""
++"""PORTFOLIO-CAP-0001 · 250만 원 소계정 C25(M4 + 매수 25% 상한 + 마감 30% 넘으면 다음 봉 25% 이하로 정수 올림 매도) × seed 0~3 · 비용 2배.
++GPT PR #63 · 클로드 PREREG 1d677f03. MR_D1PICKS=<d1_picks.json> python3 -E -P pc_m15.py <b3> <출력>
++PR #62 rs_m15.py에서 C25 갈고리 두 곳(②매수 상한 · ⓪집중 완화 판단)만 더함. 체결 기구는 R30 축소와 같음."""
+ import bisect
+ import json
+ import math
+@@ -24,7 +24,8 @@
+ D1IX = {d: i for i, d in enumerate(D1CAL)}
+ D1SET = {(c, d) for d, cs in D1["picks"].items() for c in cs}
+ CFG = {"B": {"d1filter": True}, "R": {"d1filter": True, "hold_cap": 0.30}, "F": {"d1filter": True, "fresh": True},
+-       "RF": {"d1filter": True, "hold_cap": 0.30, "fresh": True}}
++       "RF": {"d1filter": True, "hold_cap": 0.30, "fresh": True},
++       "C25": {"d1filter": True, "buy_cap": 0.25, "conc_trigger": 0.30, "conc_target": 0.25}}
+ TRAIN = ("202509170000", "202604010000")
+ FULLW = ("202509170000", "202609010000")
+ COMMONW = ("202509180000", "202609010000")
+@@ -69,7 +70,7 @@
+     navs, gross, last_day = [], [], None
+     notes = {"cant_split": 0, "stale_bumped": 0, "buy_signal_no_slot": 0, "skip_weak": 0, "skip_no_d1": 0, "partial_suppressed": 0,
+              "trim_decided": 0, "trim_filled": 0, "trim_cancelled": 0, "trim_cut_to_remaining": 0, "trim_closed_all": 0, "trim_notional": 0.0,
+-             "multi_candidate_times": 0, "fresh_order_changed_times": 0, "age_missing": 0}
++             "multi_candidate_times": 0, "fresh_order_changed_times": 0, "age_missing": 0, "buy_capped": 0, "buy_cancelled_cap": 0}
+     changed_codes = set()
+     pf = lambda code: (last_close.get(code, 0.0), False)
+     hold = []
+@@ -99,6 +100,15 @@
+             hold.append((last_day, held_values()))         # 보고용 기록(판단과 무관)
+             if last_day in snaps:
+                 snapshot(last_day)
++            if opt.get("conc_trigger"):                     # ⓪′ C25 집중 완화 판단(그날 마지막 봉까지의 값만)
++                for c, p in pos.items():
++                    if c in trim:
++                        continue
++                    qty, px = acc.pos[p["pid"]]["qty"], pf(c)[0]
++                    if qty * px > opt["conc_trigger"] * nav:
++                        q = min(qty, max(1, math.ceil(qty - opt["conc_target"] * nav / px)))
++                        trim[c] = (q, last_day, p["pid"], last_T)
++                        notes["trim_decided"] += 1
+             cap = opt.get("hold_cap")
+             if cap:                                         # ⓪ 장 마감 뒤 보유 축소 판단(그날 마지막 봉까지의 값만)
+                 for c, p in pos.items():
+@@ -143,6 +153,7 @@
+                     if acc.sell(tpid, px, T, dT, qty=qq, reason="보유 축소"):
+                         notes["trim_filled"] += 1
+                         notes["trim_notional"] += qq * px
++                        notes["trim_qty"] = notes.get("trim_qty", 0) + qq
+                         if tpid not in acc.pos:             # 남은 수량이 0이면 장부에서 닫혀 칸도 비움
+                             notes["trim_closed_all"] += 1
+                             del pos[c]
+@@ -185,7 +196,19 @@
+             take = min(need, free)
+             o = data[c]["o"][k]
+             pid = f"{c}:{T}"
+-            if acc.buy(pid, c, o, T, dec, value=take / SLOTS * acc.mtm(pf)[0], slots=take, tag=f"칸{take}"):
++            if opt.get("buy_cap"):                          # ② C25 매수 상한: 직전 장 마감 NAV의 25%
++                want = math.floor(take / SLOTS * acc.mtm(pf)[0] / o)
++                capq = math.floor(opt["buy_cap"] * (navs[-1][1] if navs else CM.CASH) / o)
++                bq = min(want, capq)
++                if capq < want:
++                    notes["buy_capped"] += 1
++                if bq < 1:
++                    notes["buy_cancelled_cap"] += 1
++                    continue
++                bought = acc.buy(pid, c, o, T, dec, qty=bq, slots=take, tag=f"칸{take}")
++            else:
++                bought = acc.buy(pid, c, o, T, dec, value=take / SLOTS * acc.mtm(pf)[0], slots=take, tag=f"칸{take}")
++            if bought:
+                 pos[c] = {"pid": pid, "i": k, "price": o, "칸": take, "처음칸": take, "peak": o, "now": k, "day": T[:8], "code": c}
+         for c, _ in bars:
+             want_buy.pop(c, None)
+@@ -235,101 +258,97 @@
+ OUT.mkdir(parents=True, exist_ok=True)
+ TOTAL = 4 * CM.CASH
+ assert CM.CASH == 2.5e6
++Dd = lambda x: date(int(x[:4]), int(x[4:6]), int(x[6:]))
+ 
+ 
+ def agg_stats(days, nav, inv, hold):
+     seg = [TOTAL] + nav
+     rets = [seg[i] / seg[i - 1] - 1 for i in range(1, len(seg))]
+-    peak, mdd = TOTAL, 0.0
+-    for v in seg:
++    peak, mdd, mdd_at = TOTAL, 0.0, None
++    for d, v in zip([None] + days, seg):
+         peak = max(peak, v)
+-        mdd = min(mdd, v / peak - 1)
++        if v / peak - 1 < mdd:
++            mdd, mdd_at = v / peak - 1, d
+     wd = min(range(len(rets)), key=lambda i: rets[i])
+     months = {}
+     for d, r in zip(days, rets):
+         months[d[:6]] = months.get(d[:6], 1.0) * (1 + r)
+     wm = min(months, key=months.get)
+-    D = lambda x: date(int(x[:4]), int(x[4:6]), int(x[6:]))
+-    yrs = (D(days[-1]) - D(days[0])).days / 365.25
+     wmax = []
+     for d, n, h in zip(days, nav, hold):
+         c, v = max(h.items(), key=lambda x: x[1]) if h else (None, 0.0)
+         wmax.append((d, c, v / n))
+     top = max(wmax, key=lambda x: x[2])
+-    return {"end_nav": nav[-1], "CAGR_pct": ((nav[-1] / TOTAL) ** (1 / yrs) - 1) * 100, "MDD_pct": mdd * 100, "worst_day_pct": rets[wd] * 100,
+-            "worst_day_at": days[wd], "day_breach_-15": sum(1 for r in rets if r < -0.15 - 1e-12), "worst_month_pct": (months[wm] - 1) * 100,
+-            "worst_month_at": wm, "month_breach_-15": sum(1 for v in months.values() if v - 1 < -0.15 - 1e-12),
++    return {"end_nav": nav[-1], "CAGR_pct": ((nav[-1] / TOTAL) ** (1 / ((Dd(days[-1]) - Dd(days[0])).days / 365.25)) - 1) * 100,
++            "MDD_pct": mdd * 100, "MDD_at": mdd_at, "worst_day_pct": rets[wd] * 100, "worst_day_at": days[wd],
++            "day_breach_-15": sum(1 for r in rets if r < -0.15 - 1e-12), "worst_month_pct": (months[wm] - 1) * 100, "worst_month_at": wm,
++            "month_breach_-15": sum(1 for v in months.values() if v - 1 < -0.15 - 1e-12),
+             "avg_invest_ratio_pct": sum(i / n for i, n in zip(inv, nav)) / len(nav) * 100,
+-            "max_single_name_weight_pct": top[2] * 100, "max_single_name_at": top[0], "max_single_name_code": top[1], "daily_max_weight": wmax}
++            "max_single_name_weight_pct": top[2] * 100, "max_single_name_at": top[0], "max_single_name_code": top[1],
++            "days_ge_30pct": sum(1 for x in wmax if x[2] >= 0.30), "days_gt_25pct": sum(1 for x in wmax if x[2] > 0.25), "daily_max_weight": wmax}
+ 
+ 
+ RES, RUNS = {"runs": {}}, {}
+-for cfg in ("B", "R"):
+-    for seed in (0, 1, 2, 3):
+-        r = run(cfg, 2.0, *TRAIN, seed=seed)
+-        key = f"{cfg}_x2_s{seed}"
+-        RUNS[key] = r
+-        fl = [f for f in r["fills"] if f["status"] in ("FILLED", "REDUCED")]
+-        navv = [x[1] for x in r["nav"]]
+-        D = lambda x: date(int(x[:4]), int(x[4:6]), int(x[6:]))
+-        yrs = (D(r["nav"][-1][0]) - D(r["nav"][0][0])).days / 365.25
+-        RES["runs"][key] = {"end_nav": navv[-1], "days": len(navv), "fills": len(fl), "cost_total_won": r["tot"]["buy_cost"] + r["tot"]["sell_cost"],
+-                            "notional_won": sum(f["notional"] for f in fl), "turnover_per_year": sum(f["notional"] for f in fl) / 2 / (sum(navv) / len(navv)) / yrs,
+-                            "max_gap_cash": r["tot"].get("max_gap_cash"), "max_gap_nav": r["tot"].get("max_gap_nav"), "checks": r["counts"].get("checks"),
+-                            "min_cash_ok": True, "unfilled_qty0": r["counts"].get("buy_unfilled:요청 수량 0", 0),
+-                            "unfilled_cash": r["counts"].get("buy_unfilled:현금 1주 미만", 0), "buy_reduced": r["counts"].get("buy_reduced", 0),
+-                            "trim_fills": sum(1 for f in fl if f.get("reason") == "보유 축소"), "positions_closed": len(r["closed"]), "open_at_end": len(r["open"])}
+-        with open(OUT / f"nav_{key}_2p5m.csv", "w", encoding="utf-8") as f:
+-            f.write("date,nav_won,invested_won\n")
+-            f.writelines(f"{d},{n:.2f},{i:.2f}\n" for d, n, i in r["nav"])
+-        print(key, round(navv[-1]), "체결", len(fl), "수량0 미체결", RES["runs"][key]["unfilled_qty0"], "축소", RES["runs"][key]["buy_reduced"],
+-              "비용", round(RES["runs"][key]["cost_total_won"]), "보존", r["tot"].get("max_gap_cash"), r["tot"].get("max_gap_nav"), flush=True)
+-OLD = {}
+-for nm in ("B4", "R4"):
+-    txt = subprocess.check_output(["git", "-C", os.environ.get("RS_REPO", "/home/user/stock-dash"), "show",
+-                                   f"24b12632560c7e4c911ce72a20df43fef004cb89:research-exchange/claude-to-gpt/PATH-ENSEMBLE-0001/evidence/ens_{nm}_EQUAL.csv"]).decode()
+-    OLD[nm] = {r["date"]: float(r["nav_won"]) for r in csv.DictReader(io.StringIO(txt))}
+-for nm, cfg in (("B4", "B"), ("R4", "R")):
+-    rs = [RUNS[f"{cfg}_x2_s{s}"] for s in range(4)]
+-    days = [x[0] for x in rs[0]["nav"]]
+-    if any([x[0] for x in r["nav"]] != days for r in rs):
+-        raise SystemExit("날짜행 다름 · 중단")
+-    nav = [sum(r["nav"][i][1] for r in rs) for i in range(len(days))]
+-    inv = [sum(r["nav"][i][2] for r in rs) for i in range(len(days))]
+-    hold = []
+-    for i in range(len(days)):
+-        h = {}
+-        for r in rs:
+-            assert r["hold"][i][0] == days[i]
+-            for c, v in r["hold"][i][1].items():
+-                h[c] = h.get(c, 0.0) + v
+-        hold.append(h)
+-    st = agg_stats(days, nav, inv, hold)
+-    st["cost_total_won"] = sum(RES["runs"][f"{cfg}_x2_s{s}"]["cost_total_won"] for s in range(4))
+-    D = lambda x: date(int(x[:4]), int(x[4:6]), int(x[6:]))
+-    st["turnover_per_year"] = sum(RES["runs"][f"{cfg}_x2_s{s}"]["notional_won"] for s in range(4)) / 2 / (sum(nav) / len(nav)) / ((D(days[-1]) - D(days[0])).days / 365.25)
+-    st["sleeve_end_share_pct"] = [r["nav"][-1][1] / nav[-1] * 100 for r in rs]
+-    old = OLD[nm]
+-    if sorted(old) != days:
+-        raise SystemExit("PR #60 날짜행 다름")
+-    dif = [nav[i] - old[d] for i, d in enumerate(days)]
+-    st["vs_pr60_equal"] = {"end_diff_won": dif[-1], "end_diff_pct": dif[-1] / old[days[-1]] * 100, "max_abs_diff_won": max(abs(x) for x in dif),
+-                           "max_abs_diff_at": days[max(range(len(dif)), key=lambda i: abs(dif[i]))], "mean_abs_diff_won": sum(abs(x) for x in dif) / len(dif)}
+-    RES[nm] = st
+-    with open(OUT / f"agg_{nm}_ACTUAL.csv", "w", encoding="utf-8") as f:
+-        f.write("date,nav_won,invested_won,max_name_code,max_name_weight,pr60_equal_nav,diff_won\n")
+-        f.writelines(f"{d},{n:.2f},{iv:.2f},{w[1]},{w[2]:.6f},{old[d]:.4f},{x:.4f}\n" for d, n, iv, w, x in zip(days, nav, inv, st["daily_max_weight"], dif))
+-    print(nm, {k: v for k, v in st.items() if k != "daily_max_weight"}, flush=True)
+-d = RES["R4"]["end_nav"] - RES["B4"]["end_nav"]
+-RES["R4_minus_B4"] = {"won": d, "pct": d / RES["B4"]["end_nav"] * 100}
+-inv_ok = all(abs(v["max_gap_cash"] or 0) <= 1.0 and abs(v["max_gap_nav"] or 0) <= 1.0 and (v["checks"] or 0) > 0 for v in RES["runs"].values()) and len(RES["runs"]) == 8
+-r4 = RES["R4"]
+-crit = {"1_eight_runs_and_invariants": inv_ok, "2_R4_end_ge_B4": r4["end_nav"] >= RES["B4"]["end_nav"], "3_R4_no_day_breach": r4["day_breach_-15"] == 0,
+-        "4_R4_no_month_breach": r4["month_breach_-15"] == 0, "5_R4_max_name_lt_30": r4["max_single_name_weight_pct"] < 30.0}
++for seed in (0, 1, 2, 3):
++    r = run("C25", 2.0, *TRAIN, seed=seed)
++    key = f"C25_x2_s{seed}"
++    RUNS[key] = r
++    fl = [f for f in r["fills"] if f["status"] in ("FILLED", "REDUCED")]
++    navv = [x[1] for x in r["nav"]]
++    yrs = (Dd(r["nav"][-1][0]) - Dd(r["nav"][0][0])).days / 365.25
++    nt = r["notes"]
++    RES["runs"][key] = {"end_nav": navv[-1], "days": len(navv), "fills": len(fl), "cost_total_won": r["tot"]["buy_cost"] + r["tot"]["sell_cost"],
++                        "notional_won": sum(f["notional"] for f in fl), "turnover_per_year": sum(f["notional"] for f in fl) / 2 / (sum(navv) / len(navv)) / yrs,
++                        "max_gap_cash": r["tot"].get("max_gap_cash"), "max_gap_nav": r["tot"].get("max_gap_nav"), "checks": r["counts"].get("checks"),
++                        "unfilled_qty0": r["counts"].get("buy_unfilled:요청 수량 0", 0), "buy_reduced_cash": r["counts"].get("buy_reduced", 0),
++                        "buy_capped": nt["buy_capped"], "buy_cancelled_cap": nt["buy_cancelled_cap"],
++                        "conc_decided": nt["trim_decided"], "conc_filled": nt["trim_filled"], "conc_qty": nt.get("trim_qty", 0), "conc_notional_won": nt["trim_notional"],
++                        "conc_cancelled": nt["trim_cancelled"], "conc_closed_all": nt["trim_closed_all"], "conc_pending_end": nt["trim_pending_at_end"],
++                        "positions_closed": len(r["closed"]), "open_at_end": len(r["open"])}
++    with open(OUT / f"nav_{key}_2p5m.csv", "w", encoding="utf-8") as f:
++        f.write("date,nav_won,invested_won\n")
++        f.writelines(f"{d},{n:.2f},{i:.2f}\n" for d, n, i in r["nav"])
++    print(key, {k: (round(v, 2) if isinstance(v, float) else v) for k, v in RES["runs"][key].items()}, flush=True)
++rs = [RUNS[f"C25_x2_s{s}"] for s in range(4)]
++days = [x[0] for x in rs[0]["nav"]]
++if any([x[0] for x in r["nav"]] != days for r in rs):
++    raise SystemExit("날짜행 다름 · 중단")
++nav = [sum(r["nav"][i][1] for r in rs) for i in range(len(days))]
++inv = [sum(r["nav"][i][2] for r in rs) for i in range(len(days))]
++hold = []
++for i in range(len(days)):
++    h = {}
++    for r in rs:
++        assert r["hold"][i][0] == days[i]
++        for c, v in r["hold"][i][1].items():
++            h[c] = h.get(c, 0.0) + v
++    hold.append(h)
++st = agg_stats(days, nav, inv, hold)
++st["cost_total_won"] = sum(v["cost_total_won"] for v in RES["runs"].values())
++st["turnover_per_year"] = sum(v["notional_won"] for v in RES["runs"].values()) / 2 / (sum(nav) / len(nav)) / ((Dd(days[-1]) - Dd(days[0])).days / 365.25)
++P62 = json.loads(subprocess.check_output(["git", "-C", os.environ.get("PC_REPO", "/home/user/stock-dash"), "show",
++                                          "f68eab60c9e8949dbf58ec6d1528e710bb0cadc0:research-exchange/claude-to-gpt/REAL-SLEEVE-0001/evidence/rs_results.json"]))
++r4 = P62["R4"]
++st["vs_pr62_R4"] = {"end_diff_won": st["end_nav"] - r4["end_nav"], "end_diff_pct": (st["end_nav"] / r4["end_nav"] - 1) * 100,
++                    "MDD_diff_pctp": st["MDD_pct"] - r4["MDD_pct"], "cost_diff_won": st["cost_total_won"] - r4["cost_total_won"],
++                    "max_name_diff_pctp": st["max_single_name_weight_pct"] - r4["max_single_name_weight_pct"],
++                    "r4": {k: r4[k] for k in ("end_nav", "MDD_pct", "cost_total_won", "max_single_name_weight_pct", "worst_day_pct")}}
++with open(OUT / "agg_C4_ACTUAL.csv", "w", encoding="utf-8") as f:
++    f.write("date,nav_won,invested_won,max_name_code,max_name_weight\n")
++    f.writelines(f"{d},{n:.2f},{iv:.2f},{w[1]},{w[2]:.6f}\n" for d, n, iv, w in zip(days, nav, inv, st["daily_max_weight"]))
++with open(OUT / "weights_C4_ACTUAL.csv", "w", encoding="utf-8") as f:
++    f.write("date,code,weight\n")
++    for d, n, h in zip(days, nav, hold):
++        f.writelines(f"{d},{c},{v / n:.6f}\n" for c, v in sorted(h.items(), key=lambda x: -x[1]))
++st.pop("daily_max_weight")
++RES["C4"] = st
++inv_ok = all(abs(v["max_gap_cash"] or 0) <= 1.0 and abs(v["max_gap_nav"] or 0) <= 1.0 and (v["checks"] or 0) > 0 for v in RES["runs"].values()) and len(RES["runs"]) == 4
++crit = {"1_four_runs_invariants": inv_ok, "2_no_day_breach": st["day_breach_-15"] == 0, "3_no_month_breach": st["month_breach_-15"] == 0,
++        "4_MDD_ge_-15": st["MDD_pct"] >= -15.0, "5_max_name_lt_30": st["max_single_name_weight_pct"] < 30.0, "6_end_gt_10m": st["end_nav"] > 10_000_000}
+ RES["criteria"] = crit
+-RES["verdict"] = "IMPLEMENTATION_READY" if all(crit.values()) else "NO_CANDIDATE"
+-print("R4−B4", RES["R4_minus_B4"], "판정", crit, RES["verdict"], flush=True)
+-for nm in ("B4", "R4"):
+-    RES[nm].pop("daily_max_weight")
+-(OUT / "rs_results.json").write_text(json.dumps(RES, ensure_ascii=False, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o)), encoding="utf-8")
++RES["verdict"] = "TRAIN_CANDIDATE_LOCKED" if all(crit.values()) else "AXIS_ENDED"
++RES["verdict_without_MDD"] = "TRAIN_CANDIDATE_LOCKED" if all(v for k, v in crit.items() if not k.startswith("4_")) else "AXIS_ENDED"
++print("C4", st, flush=True)
++print("판정", crit, RES["verdict"], "· MDD 조건 뺀 판정", RES["verdict_without_MDD"], flush=True)
++(OUT / "pc_results.json").write_text(json.dumps(RES, ensure_ascii=False, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o)), encoding="utf-8")
+ print("끝", flush=True)

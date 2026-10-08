@@ -1,0 +1,178 @@
+{
+ "schema_version": 1,
+ "task_id": "PORTFOLIO-CAP-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "PORTFOLIO-CAP-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 10,
+  "phase": "ALPHA",
+  "status": "READY",
+  "input": {
+   "pr": 63,
+   "head_sha": "cf76044c65a5b3c670bfa69d56294539b6a6f76c",
+   "read_files": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "manifest.json",
+    "receipt.json"
+   ]
+  },
+  "fixed_source": {
+   "pr": 62,
+   "head_sha": "f68eab60c9e8949dbf58ec6d1528e710bb0cadc0"
+  },
+  "base_main_sha": "3c03588d485923dce26d4b063f0b232318899431"
+ },
+ "prereg_commit": "1d677f03dfff5e0f6dd048a75c7bc339d90925fe",
+ "prereg_committed_at_kst": "2026-10-08T18:46:00+09:00",
+ "command": "MR_D1PICKS=<d1_picks.json> python3 -E -P code/pc_m15.py <b3> <출력>",
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "os": "Linux x86_64"
+ },
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "runs": {
+  "total": 4,
+  "failed": 0
+ },
+ "capital_per_sleeve_won": 2500000,
+ "cost_multiple": 2,
+ "criteria": {
+  "1_four_runs_invariants": true,
+  "2_no_day_breach": true,
+  "3_no_month_breach": true,
+  "4_MDD_ge_-15": false,
+  "5_max_name_lt_30": false,
+  "6_end_gt_10m": true
+ },
+ "verdict": "AXIS_ENDED",
+ "verdict_without_MDD": "AXIS_ENDED",
+ "key_facts": {
+  "end_nav": 20158305.980556116,
+  "MDD_pct": -18.29680877486424,
+  "max_single_name_weight_pct": 30.45367617981932,
+  "max_single_name_code": "000250",
+  "max_single_name_at": "20260305",
+  "days_ge_30pct": 2
+ },
+ "rebuttal": "MDD −15%는 사용자 지시상 비교 항목이었으나 이번 TASK가 판정 조건에 넣음 · 빼도 판정 같음",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/agg_C4_ACTUAL.csv",
+  "evidence/code.diff",
+  "evidence/nav_C25_x2_s0_2p5m.csv",
+  "evidence/nav_C25_x2_s1_2p5m.csv",
+  "evidence/nav_C25_x2_s2_2p5m.csv",
+  "evidence/nav_C25_x2_s3_2p5m.csv",
+  "evidence/pc_results.json",
+  "evidence/run.log",
+  "evidence/weights_C4_ACTUAL.csv"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "f7a5025232ffb0cfc989e08ef89a56e2898c11f771f0d91ddecb4ececf9ae5cc"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "6e23bc9eeb4d4d17ef6a90108b0567676446c59fc5ed8fdbf0570531687bdb9e"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "622eca9c9a4314ba704bc7f9cbb21cc1f7b0f094b4d70a84789c4ee751a67201"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/orig/common.py",
+   "sha256": "622eca9c9a4314ba704bc7f9cbb21cc1f7b0f094b4d70a84789c4ee751a67201"
+  },
+  {
+   "path": "code/orig/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/orig/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/orig/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/orig/rs_m15.py",
+   "sha256": "fc383cfc357c279f3e38c793bc14a9d635a9c94fb388a8a72baf339bbe1cdc22"
+  },
+  {
+   "path": "code/pc_m15.py",
+   "sha256": "30e876acdfe78a80bd2cfa2196a2e5775ec360f7cf3489941a0a6e2c8b123320"
+  },
+  {
+   "path": "evidence/agg_C4_ACTUAL.csv",
+   "sha256": "7f148f8238ae3dc01f2ce69aca2dcbb145bb03ac6482b5110185ac786282360a"
+  },
+  {
+   "path": "evidence/code.diff",
+   "sha256": "8b903206e5f4da2daa1e201183f1098c062cb6d2a43facbc71cff8b12af58cfd"
+  },
+  {
+   "path": "evidence/nav_C25_x2_s0_2p5m.csv",
+   "sha256": "d541c9b6a99735a7d34dc4cfcca038dff7989b5fb8ca7c3c216cd29acb41294c"
+  },
+  {
+   "path": "evidence/nav_C25_x2_s1_2p5m.csv",
+   "sha256": "d541c9b6a99735a7d34dc4cfcca038dff7989b5fb8ca7c3c216cd29acb41294c"
+  },
+  {
+   "path": "evidence/nav_C25_x2_s2_2p5m.csv",
+   "sha256": "d541c9b6a99735a7d34dc4cfcca038dff7989b5fb8ca7c3c216cd29acb41294c"
+  },
+  {
+   "path": "evidence/nav_C25_x2_s3_2p5m.csv",
+   "sha256": "4b05fab2ea960bcb94597dd74a359af4e64210f8692a6b2b368cc62edf6e3524"
+  },
+  {
+   "path": "evidence/pc_results.json",
+   "sha256": "c0a25563096804bf42ea1f70152ef811f4d64285cc86c9b2a3047b0c6e380e09"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "356005422e6bbedc389ea761c20d7895929dc5911dc9cd33226a6af1f1bc7a0a"
+  },
+  {
+   "path": "evidence/weights_C4_ACTUAL.csv",
+   "sha256": "54fe439905518bf2bc9b929974da2f733a2657dbe897ba59a391fcd23ab71c2a"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "70e186822cb378f8c3db9cd38bfa90cff94a19288dcb6039ef2938a1143faaa5"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/portfolio-cap-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T18:52:27+09:00"
+}
