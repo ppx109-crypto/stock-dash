@@ -1,0 +1,99 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KOSPI-RULE2256-ARTICLE30-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 28,
+ "status": "BLOCKED",
+ "source_pr": 98,
+ "source_head_sha": "c5abe6943aefa031109a23aec12311dd7342e5e9",
+ "code_commit": "af695131b5340b74204e6eddf3c7381ea4906e71",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/bind_check.py",
+  "evidence/rule2256-article30-binding.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:00:05+09:00",
+ "input": {
+  "pr": 99,
+  "head_sha": "0c21d0712e45ae5536afe9c5068f5f9552f85047",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T01:58:26+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "c5abe6943aefa031109a23aec12311dd7342e5e9"
+   },
+   {
+    "at_kst": "2026-10-09T01:59:45+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "c5abe6943aefa031109a23aec12311dd7342e5e9"
+   }
+  ]
+ },
+ "prereg_commit": "b6eeeb7a4e8a811604fae1694cc64ec90673401b",
+ "prereg_committed_at_kst": "2026-10-09T01:58:50+09:00",
+ "verdict": "BLOCKED / A ACCEPT 보존 · B REVISE(제2256호·시행일은 머리글·부칙·목록 2곳에서 직접, 제6호와 같은 버전 결속 증거 3종 모두 없음)",
+ "A": "ACCEPT",
+ "B": "REVISE",
+ "accept_evidence": {
+  "1_text_inside_2256_version": false,
+  "2_header_and_text_same_response": false,
+  "3_same_crawl_meta": false
+ },
+ "date_compare": {
+  "amend": "2024-10-29",
+  "effective": "2024-11-04",
+  "train_start": "2025-09-18",
+  "effective_before_train": true
+ },
+ "needs_data": "규정 제2256호(시행 2024-11-04) 시행본 또는 그 머리글/부칙과 같은 공식 색인 응답 안에 있는 제30조 제1항 제6호 정확 발췌 1건",
+ "stop_proposal": "같은 결손 3라운드 · NEEDS_DATA 확보 전 재발행 중단 제안",
+ "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX(현재 통합본 색인 · 시행본 직접 원문 아님)",
+ "excluded": [
+  "KOSDAQ",
+  "비율 방향",
+  "가격 기준일",
+  "거래재개일",
+  "최초 매도가능일",
+  "NAV",
+  "성과"
+ ],
+ "file_sha256": {
+  "PREREG.md": "9c73866cfd6f21013e7b12a8a29fdbd31b268565bfea9310e0078f6eb14be776",
+  "REPORT.md": "5b5f5bdf97bcf5d2fbdd4b6d14f0ea338f1957a86e7b5204befbfed21300f784",
+  "code/bind_check.py": "edb73c86526dad45011bf8cd348cab917ad3306de1490ae5d62725fb4158ba4b",
+  "evidence/rule2256-article30-binding.json": "2b54cdcbd5ea988bc6b6d49ab3591bdf194ccefe491d2fd7f61a94a7f2e202d9",
+  "evidence/run.log": "f00a3ff237cec0fad9e1bca678de49e8c5fd9342152aaef5278e2a110fc28de3"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "cap": 2,
+  "failed": 0,
+  "external_url": 0,
+  "network": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "replay": 0,
+  "backtest": 0,
+  "threshold": 0,
+  "performance": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
