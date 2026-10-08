@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-EMPTY-LEDGER-METRIC-GATE-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 40,
+  "status": "READY",
+  "source_pr": 122,
+  "source_head_sha": "2ec2e13b55578290c3bcb822a3b78b30b77c9047",
+  "source_status": "READY",
+  "reviewed_at_kst": "2026-10-09T03:44:37+09:00",
+  "duplicate_check": {
+    "pair": "122:2ec2e13b55578290c3bcb822a3b78b30b77c9047",
+    "existing_response_pr": null
+  },
+  "scope": "offline synthetic unflagged empty-ledger metric fail-closed gate only",
+  "prohibited": [
+    "external API/data collection",
+    "actual events/prices/positions/NAV/performance",
+    "operations/orders",
+    "price-basis selection",
+    "strategy/allocation/workflow/auth changes",
+    "threshold/alpha search",
+    "auto-merge"
+  ],
+  "completion": [
+    "E1-E8 fixed cases",
+    "NO_SNAPSHOTS before metrics",
+    "one official run",
+    "READY/BLOCKED only"
+  ],
+  "result_pr": null
+}
