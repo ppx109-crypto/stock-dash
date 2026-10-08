@@ -15,7 +15,10 @@
   "live_approval": false,
   "next_task_status": "NEEDS_DATA",
   "automatic_next_calculation": false,
-  "response_pr": null,
-  "delivery_status": "PENDING_EXISTING_SESSION",
-  "cancelled_pr": 42
+  "response_pr": 44,
+  "delivery_status": "ACCEPTED_IN_EXISTING_SESSION",
+  "cancelled_pr": 42,
+  "response_url": "https://github.com/ppx109-crypto/stock-dash/pull/44",
+  "delivered_at_kst": "2026-10-08T14:36:42+09:00",
+  "delivery_evidence": "Existing session displayed submitted message 119, PR #44 link, and responding status; sent once."
 }
