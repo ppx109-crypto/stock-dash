@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "REPLAY-CA-PRICE-BASIS-GATE-0001",
+  "chain_id": "PAPER-READINESS",
+  "round": 37,
+  "status": "READY",
+  "source_pr": 116,
+  "source_head_sha": "dc4335554b45ba8f257596acab44a0f6d2e985ff",
+  "source_status": "READY",
+  "reviewed_at_kst": "2026-10-09T03:17:15+09:00",
+  "duplicate_check": {
+    "pair": "116:dc4335554b45ba8f257596acab44a0f6d2e985ff",
+    "existing_response_pr": null
+  },
+  "scope": "offline synthetic price-basis fail-closed gate only",
+  "prohibited": [
+    "external API/data collection",
+    "actual events/positions/NAV",
+    "operations/orders",
+    "strategy/allocation/workflow/auth changes",
+    "threshold/alpha search",
+    "auto-merge"
+  ],
+  "completion": [
+    "P1-P5 fixed cases",
+    "mutation-before-check prohibited",
+    "one official run",
+    "READY/BLOCKED only"
+  ],
+  "result_pr": null
+}
