@@ -1,0 +1,874 @@
+{
+ "baseline_check": {
+  "pr45": {
+   "end_nav_won": 11653611,
+   "CAGR_x1": 3.99,
+   "CAGR_x2": 0.34,
+   "MDD": -24.4,
+   "worst_day": -4.5,
+   "positions": 123,
+   "top": "006280",
+   "CAGR_ex_top": 0.84
+  },
+  "mine": {
+   "end_nav_won": 11653611,
+   "CAGR_x1": 3.99,
+   "CAGR_x2": 0.34,
+   "MDD": -24.4,
+   "worst_day": -4.5,
+   "positions": 123,
+   "top": "006280",
+   "CAGR_ex_top": 0.84
+  },
+  "same": true
+ },
+ "train_B_x1": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 123,
+   "codes": 61,
+   "CAGR": 3.99,
+   "CAGR_gross_same_fills": 7.52,
+   "MDD_daily": -24.4,
+   "Sharpe": 0.35,
+   "Sortino": 0.52,
+   "worst_day": -4.5,
+   "worst_day_at": "20171130",
+   "worst_month": -7.03,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 1.206,
+   "win_rate": 42.3,
+   "avg_pos_ret_pct": 0.664,
+   "ci95_pos_iid_ref": [
+    -0.69,
+    2.177
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -6.76,
+    18.17
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.1,
+   "cost_total_pct_of_base": 16.1,
+   "utilization_avg_pct": 31.4,
+   "partial_months": [],
+   "turnover_per_year": 7.51,
+   "end_nav_won": 11653611,
+   "top_code": "006280",
+   "top_code_share_pct": 54.6,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     903248
+    ],
+    [
+     "009150",
+     727923
+    ],
+    [
+     "207940",
+     726867
+    ],
+    [
+     "008770",
+     510698
+    ],
+    [
+     "011200",
+     504547
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 3.9917985469273054,
+   "MDD": -24.398665973501675,
+   "worst_day": -4.500455289619721,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.510567914897384,
+   "end_nav": 11653610.692663351,
+   "fills": 261
+  },
+  "notes": {
+   "cap_forced": 0,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 1,
+   "i_counts": {}
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.4901161193847656e-08,
+   3.259629011154175e-09
+  ]
+ },
+ "train_B_x2": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 123,
+   "codes": 61,
+   "CAGR": 0.34,
+   "CAGR_gross_same_fills": 7.21,
+   "MDD_daily": -30.6,
+   "Sharpe": 0.1,
+   "Sortino": 0.14,
+   "worst_day": -4.31,
+   "worst_day_at": "20171130",
+   "worst_month": -7.63,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 0.991,
+   "win_rate": 37.4,
+   "avg_pos_ret_pct": 0.087,
+   "ci95_pos_iid_ref": [
+    -1.267,
+    1.594
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -10.85,
+    15.21
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.1,
+   "cost_total_pct_of_base": 29.67,
+   "utilization_avg_pct": 31.4,
+   "partial_months": [],
+   "turnover_per_year": 7.68,
+   "end_nav_won": 10134987,
+   "top_code": "006280",
+   "top_code_share_pct": 585.3,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     790060
+    ],
+    [
+     "009150",
+     698077
+    ],
+    [
+     "207940",
+     647524
+    ],
+    [
+     "008770",
+     437504
+    ],
+    [
+     "011200",
+     423859
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 0.3435452665680794,
+   "MDD": -30.596809550465963,
+   "worst_day": -4.305759443294077,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.679698238538017,
+   "end_nav": 10134986.976318834,
+   "fills": 261
+  },
+  "notes": {
+   "cap_forced": 0,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 1,
+   "i_counts": {}
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.5599653124809265e-08,
+   3.026798367500305e-09
+  ]
+ },
+ "train_B_ex_top": {
+  "excluded": "006280",
+  "raw": {
+   "CAGR": 0.8423681897161917,
+   "MDD": -23.49653419571919,
+   "worst_day": -4.500455289619721,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.377242434107294,
+   "end_nav": 10333394.25528271,
+   "fills": 254
+  },
+  "CAGR_engine": 0.84
+ },
+ "train_I_x1": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 109,
+   "codes": 57,
+   "CAGR": 6.47,
+   "CAGR_gross_same_fills": 9.75,
+   "MDD_daily": -21.01,
+   "Sharpe": 0.53,
+   "Sortino": 0.8,
+   "worst_day": -4.12,
+   "worst_day_at": "20171130",
+   "worst_month": -5.93,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 1.387,
+   "win_rate": 45.0,
+   "avg_pos_ret_pct": 0.823,
+   "ci95_pos_iid_ref": [
+    -0.773,
+    2.543
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -3.89,
+    20.8
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.7,
+   "cost_total_pct_of_base": 15.9,
+   "utilization_avg_pct": 31.1,
+   "partial_months": [],
+   "turnover_per_year": 6.89,
+   "end_nav_won": 12779241,
+   "top_code": "006280",
+   "top_code_share_pct": 35.6,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     990375
+    ],
+    [
+     "207940",
+     961365
+    ],
+    [
+     "008770",
+     615553
+    ],
+    [
+     "009150",
+     594005
+    ],
+    [
+     "008930",
+     541876
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 6.473511330750292,
+   "MDD": -21.007049899251108,
+   "worst_day": -4.117764524240153,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 6.885074045578387,
+   "end_nav": 12779240.850219674,
+   "fills": 231
+  },
+  "notes": {
+   "cap_forced": 0,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 1,
+   "i_counts": {
+    "i_passed": 2772,
+    "i_rejected": 614
+   }
+  },
+  "max_slots_used": 10,
+  "gap": [
+   2.0954757928848267e-08,
+   7.101334631443024e-09
+  ]
+ },
+ "train_I_x2": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 109,
+   "codes": 57,
+   "CAGR": 2.82,
+   "CAGR_gross_same_fills": 9.19,
+   "MDD_daily": -25.53,
+   "Sharpe": 0.27,
+   "Sortino": 0.41,
+   "worst_day": -4.21,
+   "worst_day_at": "20171130",
+   "worst_month": -6.26,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 1.138,
+   "win_rate": 39.4,
+   "avg_pos_ret_pct": 0.244,
+   "ci95_pos_iid_ref": [
+    -1.339,
+    1.95
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -7.81,
+    17.39
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.7,
+   "cost_total_pct_of_base": 29.25,
+   "utilization_avg_pct": 31.1,
+   "partial_months": [],
+   "turnover_per_year": 6.98,
+   "end_nav_won": 11147982,
+   "top_code": "006280",
+   "top_code_share_pct": 76.1,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     873497
+    ],
+    [
+     "207940",
+     825611
+    ],
+    [
+     "009150",
+     559416
+    ],
+    [
+     "008770",
+     535092
+    ],
+    [
+     "011200",
+     453683
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 2.81861069469882,
+   "MDD": -25.534126625864317,
+   "worst_day": -4.210509290772135,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 6.983661132354314,
+   "end_nav": 11147981.913050802,
+   "fills": 231
+  },
+  "notes": {
+   "cap_forced": 0,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 1,
+   "i_counts": {
+    "i_passed": 2772,
+    "i_rejected": 614
+   }
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.7695128917694092e-08,
+   3.958120942115784e-09
+  ]
+ },
+ "train_I_ex_top": {
+  "excluded": "006280",
+  "raw": {
+   "CAGR": 3.0738519741598136,
+   "MDD": -19.60889430475927,
+   "worst_day": -4.117764524240153,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 6.7156122402587535,
+   "end_nav": 11256569.836675998,
+   "fills": 224
+  },
+  "CAGR_engine": 3.07
+ },
+ "train_P_x1": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 123,
+   "codes": 61,
+   "CAGR": 4.27,
+   "CAGR_gross_same_fills": 7.76,
+   "MDD_daily": -19.72,
+   "Sharpe": 0.4,
+   "Sortino": 0.61,
+   "worst_day": -4.5,
+   "worst_day_at": "20171130",
+   "worst_month": -6.55,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 1.241,
+   "win_rate": 43.1,
+   "avg_pos_ret_pct": 0.614,
+   "ci95_pos_iid_ref": [
+    -0.598,
+    2.034
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -5.47,
+    16.95
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.1,
+   "cost_total_pct_of_base": 15.96,
+   "utilization_avg_pct": 27.9,
+   "partial_months": [],
+   "turnover_per_year": 7.5,
+   "end_nav_won": 11777763,
+   "top_code": "006280",
+   "top_code_share_pct": 50.5,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     898635
+    ],
+    [
+     "207940",
+     705023
+    ],
+    [
+     "011200",
+     509510
+    ],
+    [
+     "009150",
+     487481
+    ],
+    [
+     "008770",
+     472161
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 4.274052404152329,
+   "MDD": -19.715010890060125,
+   "worst_day": -4.5005736661249625,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.501725293596344,
+   "end_nav": 11777762.701145213,
+   "fills": 295
+  },
+  "notes": {
+   "cap_forced": 0,
+   "p_not_profit": 53,
+   "p_decided": 35,
+   "p_filled": 34,
+   "p_qty_lt1": 8,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 2,
+   "i_counts": {}
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.5133991837501526e-08,
+   3.841705620288849e-09
+  ]
+ },
+ "train_P_x2": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 123,
+   "codes": 61,
+   "CAGR": 0.32,
+   "CAGR_gross_same_fills": 7.17,
+   "MDD_daily": -27.41,
+   "Sharpe": 0.09,
+   "Sortino": 0.13,
+   "worst_day": -4.57,
+   "worst_day_at": "20171130",
+   "worst_month": -7.06,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 0.991,
+   "win_rate": 39.8,
+   "avg_pos_ret_pct": 0.051,
+   "ci95_pos_iid_ref": [
+    -1.182,
+    1.489
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -10.1,
+    13.53
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.1,
+   "cost_total_pct_of_base": 29.48,
+   "utilization_avg_pct": 28.5,
+   "partial_months": [],
+   "turnover_per_year": 7.75,
+   "end_nav_won": 10124757,
+   "top_code": "006280",
+   "top_code_share_pct": 630.6,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     786712
+    ],
+    [
+     "207940",
+     607002
+    ],
+    [
+     "009150",
+     454892
+    ],
+    [
+     "011200",
+     422006
+    ],
+    [
+     "008770",
+     397807
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 0.31763018027919365,
+   "MDD": -27.405436065367596,
+   "worst_day": -4.572773616049009,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.748366608939068,
+   "end_nav": 10124757.315946596,
+   "fills": 289
+  },
+  "notes": {
+   "cap_forced": 0,
+   "p_not_profit": 66,
+   "p_decided": 29,
+   "p_filled": 28,
+   "p_qty_lt1": 11,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 2,
+   "i_counts": {}
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.4901161193847656e-08,
+   4.307366907596588e-09
+  ]
+ },
+ "train_P_ex_top": {
+  "excluded": "006280",
+  "raw": {
+   "CAGR": 0.6578951265643118,
+   "MDD": -18.846303328350157,
+   "worst_day": -4.5005736661249625,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.365299207378157,
+   "end_nav": 10259686.20775786,
+   "fills": 286
+  },
+  "CAGR_engine": 0.66
+ },
+ "train_IP_x1": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 109,
+   "codes": 57,
+   "CAGR": 6.39,
+   "CAGR_gross_same_fills": 9.68,
+   "MDD_daily": -18.77,
+   "Sharpe": 0.57,
+   "Sortino": 0.87,
+   "worst_day": -4.1,
+   "worst_day_at": "20171130",
+   "worst_month": -5.85,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 1.401,
+   "win_rate": 45.0,
+   "avg_pos_ret_pct": 0.723,
+   "ci95_pos_iid_ref": [
+    -0.792,
+    2.308
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -3.47,
+    18.71
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.7,
+   "cost_total_pct_of_base": 15.83,
+   "utilization_avg_pct": 27.9,
+   "partial_months": [],
+   "turnover_per_year": 6.93,
+   "end_nav_won": 12741408,
+   "top_code": "207940",
+   "top_code_share_pct": 36.3,
+   "pnl_by_code_top5": [
+    [
+     "207940",
+     995711
+    ],
+    [
+     "006280",
+     985816
+    ],
+    [
+     "008770",
+     565619
+    ],
+    [
+     "011200",
+     541480
+    ],
+    [
+     "008930",
+     507431
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 6.392796753636931,
+   "MDD": -18.76751320471033,
+   "worst_day": -4.09779877270966,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 6.931009903877149,
+   "end_nav": 12741407.531655991,
+   "fills": 260
+  },
+  "notes": {
+   "cap_forced": 0,
+   "p_not_profit": 33,
+   "p_decided": 30,
+   "p_filled": 29,
+   "p_qty_lt1": 8,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 2,
+   "i_counts": {
+    "i_passed": 2772,
+    "i_rejected": 614
+   }
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.4901161193847656e-08,
+   4.540197551250458e-09
+  ]
+ },
+ "train_IP_x2": {
+  "report": {
+   "from": "20170201",
+   "to": "20201230",
+   "days": 961,
+   "base": "처음 현금 1억",
+   "positions": 109,
+   "codes": 57,
+   "CAGR": 2.59,
+   "CAGR_gross_same_fills": 8.97,
+   "MDD_daily": -23.28,
+   "Sharpe": 0.27,
+   "Sortino": 0.41,
+   "worst_day": -4.03,
+   "worst_day_at": "20171130",
+   "worst_month": -6.76,
+   "worst_month_at": "201802",
+   "worst_month_partial": false,
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "PF": 1.131,
+   "win_rate": 41.3,
+   "avg_pos_ret_pct": 0.111,
+   "ci95_pos_iid_ref": [
+    -1.4,
+    1.711
+   ],
+   "ci95_block20_ann_mean_ret_pct": [
+    -7.49,
+    15.3
+   ],
+   "ci_block_note": "",
+   "avg_hold_tdays": 11.7,
+   "cost_total_pct_of_base": 29.0,
+   "utilization_avg_pct": 28.1,
+   "partial_months": [],
+   "turnover_per_year": 7.02,
+   "end_nav_won": 11052782,
+   "top_code": "006280",
+   "top_code_share_pct": 82.6,
+   "pnl_by_code_top5": [
+    [
+     "006280",
+     869271
+    ],
+    [
+     "207940",
+     814554
+    ],
+    [
+     "008770",
+     492795
+    ],
+    [
+     "011200",
+     453131
+    ],
+    [
+     "008930",
+     366914
+    ]
+   ]
+  },
+  "raw": {
+   "CAGR": 2.5933115071891333,
+   "MDD": -23.276520096502786,
+   "worst_day": -4.031273463497431,
+   "worst_day_at": "20171130",
+   "day_breach": 0,
+   "turnover": 7.021013685472153,
+   "end_nav": 11052781.816509996,
+   "fills": 256
+  },
+  "notes": {
+   "cap_forced": 0,
+   "p_not_profit": 43,
+   "p_decided": 26,
+   "p_filled": 25,
+   "p_qty_lt1": 7,
+   "pending_buy_at_end": 1,
+   "pending_sell_at_end": 2,
+   "i_counts": {
+    "i_passed": 2772,
+    "i_rejected": 614
+   }
+  },
+  "max_slots_used": 10,
+  "gap": [
+   1.7695128917694092e-08,
+   5.3551048040390015e-09
+  ]
+ },
+ "train_IP_ex_top": {
+  "excluded": "207940",
+  "raw": {
+   "CAGR": 5.7732138507601505,
+   "MDD": -17.69793555644966,
+   "worst_day": -4.06950012757179,
+   "worst_day_at": "20200814",
+   "day_breach": 0,
+   "turnover": 6.053403581828854,
+   "end_nav": 12453759.632741205,
+   "fills": 237
+  },
+  "CAGR_engine": 5.77
+ },
+ "selection": {
+  "rows": [
+   {
+    "cfg": "B",
+    "day_ok": true,
+    "cagr2_pos": true,
+    "ex_top_pos": true,
+    "CAGR_x1": 3.9917985469273054,
+    "CAGR_x2": 0.3435452665680794,
+    "turnover_x2": 7.679698238538017,
+    "MDD_x2": -30.596809550465963,
+    "top": "006280",
+    "CAGR_ex_top": 0.8423681897161917
+   },
+   {
+    "cfg": "I",
+    "day_ok": true,
+    "cagr2_pos": true,
+    "ex_top_pos": true,
+    "CAGR_x1": 6.473511330750292,
+    "CAGR_x2": 2.81861069469882,
+    "turnover_x2": 6.983661132354314,
+    "MDD_x2": -25.534126625864317,
+    "top": "006280",
+    "CAGR_ex_top": 3.0738519741598136
+   },
+   {
+    "cfg": "P",
+    "day_ok": true,
+    "cagr2_pos": true,
+    "ex_top_pos": true,
+    "CAGR_x1": 4.274052404152329,
+    "CAGR_x2": 0.31763018027919365,
+    "turnover_x2": 7.748366608939068,
+    "MDD_x2": -27.405436065367596,
+    "top": "006280",
+    "CAGR_ex_top": 0.6578951265643118
+   },
+   {
+    "cfg": "IP",
+    "day_ok": true,
+    "cagr2_pos": true,
+    "ex_top_pos": true,
+    "CAGR_x1": 6.392796753636931,
+    "CAGR_x2": 2.5933115071891333,
+    "turnover_x2": 7.021013685472153,
+    "MDD_x2": -23.276520096502786,
+    "top": "207940",
+    "CAGR_ex_top": 5.7732138507601505
+   }
+  ],
+  "passed": [
+   "B",
+   "I",
+   "P",
+   "IP"
+  ],
+  "chosen": "I"
+ },
+ "cut_test": {
+  "B_20191231": {
+   "fills_equal": true,
+   "n_fills": 199,
+   "nav_equal": true,
+   "n_days": 713
+  },
+  "I_20191231": {
+   "fills_equal": true,
+   "n_fills": 171,
+   "nav_equal": true,
+   "n_days": 713
+  },
+  "B_20200930": {
+   "fills_equal": true,
+   "n_fills": 229,
+   "nav_equal": true,
+   "n_days": 900
+  },
+  "I_20200930": {
+   "fills_equal": true,
+   "n_fills": 199,
+   "nav_equal": true,
+   "n_days": 900
+  }
+ }
+}
