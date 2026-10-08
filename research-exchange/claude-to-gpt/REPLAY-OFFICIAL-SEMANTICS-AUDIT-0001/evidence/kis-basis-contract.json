@@ -1,0 +1,91 @@
+{
+ "tier_note": "KIS Developers 포털(apiportal.koreainvestment.com)은 이 환경 정책으로 차단 → 사전등록 §1대로 한국투자증권 공식 저장소(open-trading-api, README '당사에서 제공하는 샘플코드 · 참고용')의 명시 문구로 판정. 포털 원문 대조는 못 함.",
+ "items": [
+  {
+   "id": "A1",
+   "claim": "endpoint · TR ID",
+   "quotes": [
+    "[국내주식] 기본시세 > 국내주식기간별시세(일/주/월/년)[v1_국내주식-016]",
+    "API_URL = \"/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice\"",
+    "tr_id = \"FHKST03010100\""
+   ],
+   "verdict": "ACCEPT"
+  },
+  {
+   "id": "A2",
+   "claim": "FID_ORG_ADJ_PRC 값 방향",
+   "quotes": [
+    "fid_org_adj_prc (str): [필수] 수정주가 원주가 가격 여부 (ex. 0:수정주가 1:원주가)"
+   ],
+   "value_map": {
+    "0": "ADJUSTED(수정주가)",
+    "1": "RAW(원주가)"
+   },
+   "pr88_schema": {
+    "1": "RAW",
+    "0": "ADJUSTED"
+   },
+   "verdict": "ACCEPT",
+   "note": "PR #88 스키마와 같은 방향 · 저장소 broker_kis.py 300줄과도 일치"
+  },
+  {
+   "id": "A3",
+   "claim": "한 응답 행 수 · 연속조회",
+   "quotes": [
+    "실전계좌/모의계좌의 경우, 한 번의 호출에 최대 100건까지 확인 가능합니다.",
+    "fid_input_date_2 (str): [필수] 입력 날짜 2 (ex. 조회 종료일자 (최대 100개))",
+    "res = ka._url_fetch(API_URL, tr_id, \"\", params)"
+   ],
+   "verdict": "ACCEPT(최대 100건 · 이 API 예제는 연속조회 키 없이 호출)",
+   "unknown": "기간이 100거래일을 넘을 때 어느 100건을 돌려주는지(앞/뒤) 문서에 없음 → UNKNOWN_KIS_DOC_SEMANTICS",
+   "fail_closed": "창 하나는 거래일 100일 이하로 자름 · 응답이 정확히 100건이면 잘렸을 수 있으므로 창을 다시 나눠 재조회(동적 예산에 포함)"
+  },
+  {
+   "id": "A3b",
+   "claim": "시장 코드",
+   "quotes": [
+    "fid_cond_mrkt_div_code (str): [필수] 조건 시장 분류 코드 (ex. J:KRX, NX:NXT, UN:통합)",
+    "fid_period_div_code (str): [필수] 기간분류코드 (ex. D:일봉 W:주봉, M:월봉, Y:년봉)"
+   ],
+   "verdict": "ACCEPT",
+   "rule": "원주가 종가는 J(KRX) · D(일봉)로 고정. NX(NXT) · UN(통합) 금지"
+  },
+  {
+   "id": "A4",
+   "claim": "응답 날짜 · 종가 · 락 칸",
+   "quotes": [
+    "'stck_bsop_date': '주식 영업 일자'",
+    "'stck_clpr': '주식 종가'",
+    "'flng_cls_code': '락 구분 코드'",
+    "'prtt_rate': '분할 비율'",
+    "'mod_yn': '변경 여부'"
+   ],
+   "verdict": "ACCEPT(칸 이름)",
+   "needs_data": [
+    "flng_cls_code 값 목록(락 구분 코드 뜻)",
+    "prtt_rate · mod_yn 값 뜻",
+    "거래정지일 · 무거래일이 행 없음인지 · 같은 가격 행인지"
+   ],
+   "verdict_needs": "NEEDS_DATA"
+  },
+  {
+   "id": "A5",
+   "claim": "33종목 원/수정 호출식",
+   "quotes": [
+    "# Token 발급, 유효기간 1일, 6시간 이내 발급시 기존 token값 유지, 발급시 알림톡 무조건 발송"
+   ],
+   "formula": "base = 1(토큰 · 유효 1일 · 6시간 안 재발급 같은 값) + Σ_code 2 × ⌈N_code ÷ 100⌉, N_code = 그 종목에 필요한 거래일 수",
+   "example_if_all_132_days": {
+    "base": 133,
+    "worst_retry2": 399,
+    "cap": 500
+   },
+   "verdict": "ACCEPT(식) · 숫자는 거래일 달력 · 잘림 재조회에 따라 동적"
+  }
+ ],
+ "pr88_contract_changes": [
+  "market=J 고정을 스키마 const로(REVISE)",
+  "응답 100건이면 잘림 의심 → 창 다시 나눔(REVISE)",
+  "flng_cls_code · prtt_rate · mod_yn은 저장만 하고 뜻이 확인될 때까지 판단에 안 씀"
+ ]
+}

@@ -1,0 +1,627 @@
+{
+ "groups": {
+  "DS001": [
+   "공시검색",
+   "기업개황",
+   "공시서류원본파일",
+   "고유번호"
+  ],
+  "DS002": [
+   "주식의 총수 현황",
+   "자기주식 취득 및 처분 현황",
+   "배당에 관한 사항",
+   "증자(감자) 현황",
+   "채무증권 발행실적",
+   "기업어음증권 미상환 잔액",
+   "단기사채 미상환 잔액",
+   "회사채 미상환 잔액",
+   "신종자본증권 미상환 잔액",
+   "조건부 자본증권 미상환 잔액",
+   "공모자금의 사용내역",
+   "사모자금의 사용내역",
+   "회계감사인의 명칭 및 감사의견",
+   "감사용역체결현황",
+   "회계감사인과의 비감사용역 계약체결 현황",
+   "독립(사외)이사 및 그 변동현황",
+   "최대주주 현황",
+   "최대주주 변동현황",
+   "소액주주 현황",
+   "임원 현황",
+   "직원 현황",
+   "미등기임원 보수현황",
+   "이사·감사 전체의 보수현황(주주총회 승인금액)",
+   "이사·감사 전체의 보수현황(보수지급금액 - 이사·감사 전체)",
+   "이사·감사 전체의 보수현황(보수지급금액 - 유형별)",
+   "이사·감사의 개인별 보수현황(5억원 이상)",
+   "이사·감사의 개인별 보수현황(5억원 이상) (Ver 2.0)",
+   "개인별 보수지급 금액(5억이상 상위5인)",
+   "개인별 보수지급 금액(5억이상 상위5인) (Ver 2.0)",
+   "타법인 출자현황"
+  ],
+  "DS003": [
+   "단일회사 주요계정",
+   "다중회사 주요계정",
+   "재무제표 원본파일(XBRL)",
+   "단일회사 전체 재무제표",
+   "XBRL택사노미재무제표양식",
+   "단일회사 주요 재무지표",
+   "다중회사 주요 재무지표"
+  ],
+  "DS004": [
+   "대량보유 상황보고",
+   "임원ㆍ주요주주 소유보고"
+  ],
+  "DS005": [
+   "자산양수도(기타), 풋백옵션",
+   "부도발생",
+   "영업정지",
+   "회생절차 개시신청",
+   "해산사유 발생",
+   "유상증자 결정",
+   "무상증자 결정",
+   "유무상증자 결정",
+   "감자 결정",
+   "채권은행 등의 관리절차 개시",
+   "소송 등의 제기",
+   "해외 증권시장 주권등 상장 결정",
+   "해외 증권시장 주권등 상장폐지 결정",
+   "해외 증권시장 주권등 상장",
+   "해외 증권시장 주권등 상장폐지",
+   "전환사채권 발행결정",
+   "신주인수권부사채권 발행결정",
+   "교환사채권 발행결정",
+   "채권은행 등의 관리절차 중단",
+   "상각형 조건부자본증권 발행결정",
+   "자기주식 취득 결정",
+   "자기주식 처분 결정",
+   "자기주식취득 신탁계약 체결 결정",
+   "자기주식취득 신탁계약 해지 결정",
+   "영업양수 결정",
+   "영업양도 결정",
+   "유형자산 양수 결정",
+   "유형자산 양도 결정",
+   "타법인 주식 및 출자증권 양수결정",
+   "타법인 주식 및 출자증권 양도결정",
+   "주권 관련 사채권 양수 결정",
+   "주권 관련 사채권 양도 결정",
+   "회사합병 결정",
+   "회사분할 결정",
+   "회사분할합병 결정",
+   "주식교환·이전 결정"
+  ],
+  "DS006": [
+   "지분증권",
+   "채무증권",
+   "증권예탁증권",
+   "합병",
+   "주식의포괄적교환·이전",
+   "분할"
+  ]
+ },
+ "list_q": {
+  "page_count": "페이지당 건수(1~100) 기본값 : 10, 최대값 : 100",
+  "last_reprt_at": "최종보고서만 검색여부(Y or N) / 1) 기본값: N (N지정시 정정보고서를 포함한 제출 보고서 전체를 검색함)",
+  "bgn_de_limit": "고유번호(corp_code)가 없는 경우 검색기간은 3개월로 제한",
+  "pblntf_ty_I": "I : 거래소공시",
+  "I001": "I001 | 수시공시",
+  "rcept_dt": "공시 접수일자(YYYYMMDD)",
+  "report_nm_correction": "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+  "rm_correction": "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람",
+  "rcept_no": "접수번호(14자리)"
+ },
+ "list_keys": [
+  "result",
+  "status",
+  "message",
+  "page_no",
+  "page_count",
+  "total_count",
+  "total_page",
+  "list",
+  "corp_cls",
+  "corp_name",
+  "corp_code",
+  "stock_code",
+  "report_nm",
+  "rcept_no",
+  "flr_nm",
+  "rcept_dt",
+  "rm"
+ ],
+ "detail_fields": {
+  "rights_issue": {
+   "endpoint": "piicDecsn",
+   "apiId": "2020023",
+   "date_ratio_fields": [
+    {
+     "key": "fv_ps",
+     "name": "1주당 액면가액 (원)"
+    }
+   ],
+   "has_record_date": false,
+   "has_listing_date": false,
+   "has_ex_rights_date": false,
+   "has_halt_period": false,
+   "has_original_rcept_field": false,
+   "n_response_keys": 23,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020023",
+    "retrieved_at_kst": "2026-10-09T01:03:29+09:00",
+    "http": "200",
+    "sha256": "a47aa3c1c33ff1bae860197a2bec8ef4e381f27702fabdb06cf3ff6346a502e5",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  },
+  "bonus_issue": {
+   "endpoint": "fricDecsn",
+   "apiId": "2020024",
+   "date_ratio_fields": [
+    {
+     "key": "fv_ps",
+     "name": "1주당 액면가액 (원)"
+    },
+    {
+     "key": "nstk_asstd",
+     "name": "신주배정기준일"
+    },
+    {
+     "key": "nstk_ascnt_ps_ostk",
+     "name": "1주당 신주배정 주식수(보통주식 (주))"
+    },
+    {
+     "key": "nstk_ascnt_ps_estk",
+     "name": "1주당 신주배정 주식수(기타주식 (주))"
+    },
+    {
+     "key": "nstk_lstprd",
+     "name": "신주의 상장 예정일"
+    }
+   ],
+   "has_record_date": true,
+   "has_listing_date": true,
+   "has_ex_rights_date": false,
+   "has_halt_period": false,
+   "has_original_rcept_field": false,
+   "n_response_keys": 23,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020024",
+    "retrieved_at_kst": "2026-10-09T01:03:31+09:00",
+    "http": "200",
+    "sha256": "2cbf9eb19724e3740071698cce5e76d185ee1006ae90800740a6bb4ecce9fa90",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  },
+  "rights_bonus_issue": {
+   "endpoint": "pifricDecsn",
+   "apiId": "2020025",
+   "date_ratio_fields": [
+    {
+     "key": "piic_fv_ps",
+     "name": "유상증자(1주당 액면가액 (원))"
+    },
+    {
+     "key": "fric_fv_ps",
+     "name": "무상증자(1주당 액면가액 (원))"
+    },
+    {
+     "key": "fric_nstk_asstd",
+     "name": "무상증자(신주배정기준일)"
+    },
+    {
+     "key": "fric_nstk_ascnt_ps_ostk",
+     "name": "무상증자(1주당 신주배정 주식수(보통주식 (주)))"
+    },
+    {
+     "key": "fric_nstk_ascnt_ps_estk",
+     "name": "무상증자(1주당 신주배정 주식수(기타주식 (주)))"
+    },
+    {
+     "key": "fric_nstk_lstprd",
+     "name": "무상증자(신주의 상장 예정일)"
+    }
+   ],
+   "has_record_date": true,
+   "has_listing_date": true,
+   "has_ex_rights_date": false,
+   "has_halt_period": false,
+   "has_original_rcept_field": false,
+   "n_response_keys": 38,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020025",
+    "retrieved_at_kst": "2026-10-09T01:03:35+09:00",
+    "http": "200",
+    "sha256": "09d53110088b5a0d5e99dcc2aa013b9a7d4906a39f0bea14cfb3da914fac26e3",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  },
+  "capital_reduction": {
+   "endpoint": "crDecsn",
+   "apiId": "2020026",
+   "date_ratio_fields": [
+    {
+     "key": "fv_ps",
+     "name": "1주당 액면가액 (원)"
+    },
+    {
+     "key": "cr_rt_ostk",
+     "name": "감자비율(보통주식 (%))"
+    },
+    {
+     "key": "cr_rt_estk",
+     "name": "감자비율(기타주식 (%))"
+    },
+    {
+     "key": "cr_std",
+     "name": "감자기준일"
+    },
+    {
+     "key": "crsc_trnmsppd",
+     "name": "감자일정(명의개서정지기간)"
+    },
+    {
+     "key": "crsc_trspprpd",
+     "name": "감자일정(매매거래 정지예정기간)"
+    },
+    {
+     "key": "crsc_trspprpd_bgd",
+     "name": "감자일정(매매거래 정지예정기간(시작일))"
+    },
+    {
+     "key": "crsc_trspprpd_edd",
+     "name": "감자일정(매매거래 정지예정기간(종료일))"
+    },
+    {
+     "key": "crsc_nstklstprd",
+     "name": "감자일정(신주상장예정일)"
+    }
+   ],
+   "has_record_date": true,
+   "has_listing_date": true,
+   "has_ex_rights_date": false,
+   "has_halt_period": true,
+   "has_original_rcept_field": false,
+   "n_response_keys": 40,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020026",
+    "retrieved_at_kst": "2026-10-09T01:03:39+09:00",
+    "http": "200",
+    "sha256": "0318607852c7a18f3399f20fb5969f61ae11f3cc0adc4662ee424f556063e7d7",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  },
+  "merger": {
+   "endpoint": "cmpMgDecsn",
+   "apiId": "2020050",
+   "date_ratio_fields": [
+    {
+     "key": "mg_rt",
+     "name": "합병비율"
+    },
+    {
+     "key": "mg_rt_bs",
+     "name": "합병비율 산출근거"
+    },
+    {
+     "key": "nmgcmp_rlst_atn",
+     "name": "신설합병회사(재상장신청 여부)"
+    },
+    {
+     "key": "mgsc_shddstd",
+     "name": "합병일정(주주확정기준일)"
+    },
+    {
+     "key": "mgsc_trspprpd_bgd",
+     "name": "합병일정(매매거래 정지예정기간(시작일))"
+    },
+    {
+     "key": "mgsc_trspprpd_edd",
+     "name": "합병일정(매매거래 정지예정기간(종료일))"
+    },
+    {
+     "key": "mgsc_mgdt",
+     "name": "합병일정(합병기일)"
+    },
+    {
+     "key": "mgsc_nstklstprd",
+     "name": "합병일정(신주의 상장예정일)"
+    },
+    {
+     "key": "bdlst_atn",
+     "name": "우회상장 해당 여부"
+    },
+    {
+     "key": "otcpr_bdlst_sf_atn",
+     "name": "타법인의 우회상장 요건 충족여부"
+    }
+   ],
+   "has_record_date": true,
+   "has_listing_date": true,
+   "has_ex_rights_date": false,
+   "has_halt_period": true,
+   "has_original_rcept_field": false,
+   "n_response_keys": 73,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020050",
+    "retrieved_at_kst": "2026-10-09T01:03:45+09:00",
+    "http": "200",
+    "sha256": "a93c8de2bbdd69db711eacacc0ec8653bd97e6ad63a7fcebf83eaeaaf11bffeb",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  },
+  "spinoff": {
+   "endpoint": "cmpDvDecsn",
+   "apiId": "2020051",
+   "date_ratio_fields": [
+    {
+     "key": "dv_rt",
+     "name": "분할비율"
+    },
+    {
+     "key": "atdv_excmp_atdv_lstmn_atn",
+     "name": "분할 후 존속회사(분할 후 상장유지 여부)"
+    },
+    {
+     "key": "dvfcmp_rlst_atn",
+     "name": "분할설립회사(재상장신청 여부)"
+    },
+    {
+     "key": "abcr_crrt",
+     "name": "감자에 관한 사항(감자비율(%))"
+    },
+    {
+     "key": "abcr_trspprpd_bgd",
+     "name": "감자에 관한 사항(매매거래정지 예정기간(시작일))"
+    },
+    {
+     "key": "abcr_trspprpd_edd",
+     "name": "감자에 관한 사항(매매거래정지 예정기간(종료일))"
+    },
+    {
+     "key": "abcr_nstkascnd",
+     "name": "감자에 관한 사항(신주배정조건)"
+    },
+    {
+     "key": "abcr_nstkasstd",
+     "name": "감자에 관한 사항(신주배정기준일)"
+    },
+    {
+     "key": "abcr_nstklstprd",
+     "name": "감자에 관한 사항(신주의 상장예정일)"
+    },
+    {
+     "key": "dvdt",
+     "name": "분할기일"
+    }
+   ],
+   "has_record_date": true,
+   "has_listing_date": true,
+   "has_ex_rights_date": false,
+   "has_halt_period": true,
+   "has_original_rcept_field": false,
+   "n_response_keys": 53,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020051",
+    "retrieved_at_kst": "2026-10-09T01:03:50+09:00",
+    "http": "200",
+    "sha256": "5506b6e7a7608403a6d279919f5d1fe0c8f0ff5c9206f79c51e6d0db7e930949",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  },
+  "spinoff_merger": {
+   "endpoint": "cmpDvmgDecsn",
+   "apiId": "2020052",
+   "date_ratio_fields": [
+    {
+     "key": "atdv_excmp_atdv_lstmn_atn",
+     "name": "분할에 관한 사항(분할 후 존속회사(분할 후 상장유지 여부))"
+    },
+    {
+     "key": "dvfcmp_atdv_lstmn_at",
+     "name": "분할에 관한 사항(분할설립 회사(분할후 상장유지여부))"
+    },
+    {
+     "key": "abcr_crrt",
+     "name": "분할에 관한 사항(감자에 관한 사항(감자비율(%)))"
+    },
+    {
+     "key": "abcr_trspprpd_bgd",
+     "name": "분할에 관한 사항(감자에 관한 사항(매매거래정지 예정기간(시작일)))"
+    },
+    {
+     "key": "abcr_trspprpd_edd",
+     "name": "분할에 관한 사항(감자에 관한 사항(매매거래정지 예정기간(종료일)))"
+    },
+    {
+     "key": "abcr_nstkascnd",
+     "name": "분할에 관한 사항(감자에 관한 사항(신주배정조건))"
+    },
+    {
+     "key": "abcr_nstkasstd",
+     "name": "분할에 관한 사항(감자에 관한 사항(신주배정기준일))"
+    },
+    {
+     "key": "abcr_nstklstprd",
+     "name": "분할에 관한 사항(감자에 관한 사항(신주의 상장예정일))"
+    },
+    {
+     "key": "nmgcmp_rlst_atn",
+     "name": "합병에 관한 사항(합병신설 회사(재상장신청 여부))"
+    },
+    {
+     "key": "dvmg_rt",
+     "name": "분할합병비율"
+    },
+    {
+     "key": "dvmg_rt_bs",
+     "name": "분할합병비율 산출근거"
+    },
+    {
+     "key": "dvmgsc_shddstd",
+     "name": "분할합병일정(주주확정기준일)"
+    },
+    {
+     "key": "dvmgsc_dvmgdt",
+     "name": "분할합병일정(분할합병기일)"
+    },
+    {
+     "key": "bdlst_atn",
+     "name": "우회상장 해당 여부"
+    },
+    {
+     "key": "otcpr_bdlst_sf_atn",
+     "name": "타법인의 우회상장 요건 충족여부"
+    }
+   ],
+   "has_record_date": true,
+   "has_listing_date": true,
+   "has_ex_rights_date": false,
+   "has_halt_period": true,
+   "has_original_rcept_field": false,
+   "n_response_keys": 94,
+   "source": {
+    "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020052",
+    "retrieved_at_kst": "2026-10-09T01:03:54+09:00",
+    "http": "200",
+    "sha256": "c7bc13e6f3a7e1634743dd9874c1fca5af0830f9b4343f370a19c1a2f7587bfe",
+    "tier": "OPENDART_DEV_GUIDE"
+   }
+  }
+ },
+ "kis_q": {
+  "api_name": "[국내주식] 기본시세 > 국내주식기간별시세(일/주/월/년)[v1_국내주식-016]",
+  "endpoint": "API_URL = \"/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice\"",
+  "tr_id": "tr_id = \"FHKST03010100\"",
+  "adj_flag": "fid_org_adj_prc (str): [필수] 수정주가 원주가 가격 여부 (ex. 0:수정주가 1:원주가)",
+  "row_limit": "실전계좌/모의계좌의 경우, 한 번의 호출에 최대 100건까지 확인 가능합니다.",
+  "date2_limit": "fid_input_date_2 (str): [필수] 입력 날짜 2 (ex. 조회 종료일자 (최대 100개))",
+  "market": "fid_cond_mrkt_div_code (str): [필수] 조건 시장 분류 코드 (ex. J:KRX, NX:NXT, UN:통합)",
+  "period": "fid_period_div_code (str): [필수] 기간분류코드 (ex. D:일봉 W:주봉, M:월봉, Y:년봉)",
+  "no_cont_in_call": "res = ka._url_fetch(API_URL, tr_id, \"\", params)",
+  "f_date": "'stck_bsop_date': '주식 영업 일자'",
+  "f_close": "'stck_clpr': '주식 종가'",
+  "f_lock": "'flng_cls_code': '락 구분 코드'",
+  "f_prtt": "'prtt_rate': '분할 비율'",
+  "f_mod": "'mod_yn': '변경 여부'",
+  "token": "# Token 발급, 유효기간 1일, 6시간 이내 발급시 기존 token값 유지, 발급시 알림톡 무조건 발송",
+  "readme_official": "**[당사에서 제공하는 샘플코드에 대한 유의사항]**",
+  "readme_reference": "고객님의 개발 부담을 줄이고자 참고용으로 제공되고 있습니다."
+ },
+ "KSD": {
+  "ksdinfo_rev_split": {
+   "title": "# [국내주식] 종목정보 > 예탁원정보(액면교체일정)[국내주식-148]",
+   "fields": [
+    "'record_date': '기준일'",
+    "'inter_bf_face_amt': '변경전액면가'",
+    "'inter_af_face_amt': '변경후액면가'",
+    "'td_stop_dt': '매매거래정지기간'",
+    "'list_dt': '상장/등록일'"
+   ],
+   "continuation": "if tr_cont == \"M\":",
+   "source": {
+    "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_rev_split/chk_ksdinfo_rev_split.py",
+    "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+    "sha256": "c939dde4d51675422532aa51501fc42db37b57588a65b3241bdaf1a15509fc35",
+    "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+    "http": "git(공개 저장소 읽기)",
+    "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+   },
+   "available_at_field": false,
+   "note": "응답 칸 목록에 공개 시각 · 접수번호 칸 없음 → 그 레코드가 언제 알려졌는지 모름"
+  },
+  "ksdinfo_bonus_issue": {
+   "title": "# [국내주식] 종목정보 > 예탁원정보(무상증자일정)[국내주식-144]",
+   "fields": [
+    "'record_date': '기준일'",
+    "'fix_rate': '확정배정율'",
+    "'right_dt': '권리락일'",
+    "'odd_pay_dt': '단주대금지급일'",
+    "'list_date': '상장/등록일'"
+   ],
+   "continuation": "if tr_cont == \"M\":",
+   "source": {
+    "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_bonus_issue/chk_ksdinfo_bonus_issue.py",
+    "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+    "sha256": "43107ecc256d52a68bb5c91fab94d9ab61c0c8a6e7b44fbb56dd2407290474cd",
+    "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+    "http": "git(공개 저장소 읽기)",
+    "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+   },
+   "available_at_field": false,
+   "note": "응답 칸 목록에 공개 시각 · 접수번호 칸 없음 → 그 레코드가 언제 알려졌는지 모름"
+  },
+  "ksdinfo_cap_dcrs": {
+   "title": "# [국내주식] 종목정보 > 예탁원정보(자본감소일정) [국내주식-149]",
+   "fields": [
+    "'record_date': '기준일'",
+    "'reduce_cap_rate': '감자배정율'",
+    "'comp_way': '계산방법'",
+    "'td_stop_dt': '매매거래정지기간'",
+    "'list_dt': '상장/등록일'"
+   ],
+   "continuation": "if tr_cont == \"M\":",
+   "source": {
+    "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_cap_dcrs/chk_ksdinfo_cap_dcrs.py",
+    "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+    "sha256": "5cdf416a92490301f4dab7ee6324d4c646f118f8d5d7a5a842b28458befbccc2",
+    "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+    "http": "git(공개 저장소 읽기)",
+    "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+   },
+   "available_at_field": false,
+   "note": "응답 칸 목록에 공개 시각 · 접수번호 칸 없음 → 그 레코드가 언제 알려졌는지 모름"
+  },
+  "ksdinfo_merger_split": {
+   "title": "# [국내주식] 종목정보 > 예탁원정보(합병_분할일정)[국내주식-147]",
+   "fields": [
+    "'record_date': '기준일'",
+    "'merge_rate': '비율'",
+    "'td_stop_dt': '매매거래정지기간'",
+    "'list_dt': '상장/등록일'",
+    "'odd_amt_pay_dt': '단주대금지급일'"
+   ],
+   "continuation": "if tr_cont == \"M\":",
+   "source": {
+    "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_merger_split/chk_ksdinfo_merger_split.py",
+    "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+    "sha256": "a6a6b92ff594614105263215e6ed0df2fb55679d2768b7ebb2fe293676d5ece4",
+    "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+    "http": "git(공개 저장소 읽기)",
+    "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+   },
+   "available_at_field": false,
+   "note": "응답 칸 목록에 공개 시각 · 접수번호 칸 없음 → 그 레코드가 언제 알려졌는지 모름"
+  },
+  "ksdinfo_paidin_capin": {
+   "title": "# [국내주식] 종목정보 > 예탁원정보(유상증자일정)[국내주식-143]",
+   "fields": [
+    "'record_date': '기준일'",
+    "'fix_rate': '확정배정율'",
+    "'fix_price': '발행예정가'",
+    "'right_dt': '권리락일'",
+    "'list_date': '상장/등록일'"
+   ],
+   "continuation": "if tr_cont == \"M\":",
+   "source": {
+    "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_paidin_capin/chk_ksdinfo_paidin_capin.py",
+    "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+    "sha256": "33db3ed18bd622afc6e27dfcb7d5bb02aacd4ed840380e04eca7f29e9912848e",
+    "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+    "http": "git(공개 저장소 읽기)",
+    "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+   },
+   "available_at_field": false,
+   "note": "응답 칸 목록에 공개 시각 · 접수번호 칸 없음 → 그 레코드가 언제 알려졌는지 모름"
+  }
+ },
+ "split_like": [],
+ "corp_split": [
+  "회사분할 결정",
+  "회사분할합병 결정",
+  "분할"
+ ],
+ "doc_q": {
+  "document_req": "rcept_no | 접수번호 | STRING(14) | Y | 접수번호",
+  "document_out": "Zip FILE (binary)"
+ },
+ "detail_req": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD)"
+}

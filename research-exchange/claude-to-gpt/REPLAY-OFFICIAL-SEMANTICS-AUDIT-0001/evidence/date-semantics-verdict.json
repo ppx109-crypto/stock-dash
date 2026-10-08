@@ -1,0 +1,272 @@
+{
+ "events": [
+  {
+   "kind": "split",
+   "ko": "액면분할",
+   "official_date_fields": "KIS 액면교체: 기준일 · 매매거래정지기간 · 상장/등록일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "reverse_split",
+   "ko": "주식병합",
+   "official_date_fields": "KIS 액면교체: 기준일 · 매매거래정지기간 · 상장/등록일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "capital_reduction",
+   "ko": "감자",
+   "official_date_fields": "DART: 감자기준일 · 매매거래 정지예정기간 · 신주상장예정일 / KIS: 기준일 · 매매거래정지기간 · 상장/등록일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "bonus_issue",
+   "ko": "무상증자",
+   "official_date_fields": "DART: 신주배정기준일 · 신주의 상장 예정일 / KIS: 기준일 · 권리락일 · 상장/등록일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "rights_issue",
+   "ko": "유상증자",
+   "official_date_fields": "DART: (없음) / KIS: 기준일 · 권리락일 · 발행예정가 · 상장/등록일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "rights_bonus_issue",
+   "ko": "유무상증자",
+   "official_date_fields": "DART: 무상분 신주배정기준일 · 상장 예정일 / KIS: 위 둘",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "merger",
+   "ko": "합병",
+   "official_date_fields": "DART: 합병기일 · 매매거래 정지예정기간 · 신주의 상장예정일 / KIS: 기준일 · 매매거래정지기간 · 상장/등록일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "spinoff",
+   "ko": "회사분할",
+   "official_date_fields": "DART: 분할기일 · (감자 시) 매매거래정지 예정기간 · 신주의 상장예정일 / KIS: 합병_분할일정",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  },
+  {
+   "kind": "spinoff_merger",
+   "ko": "회사분할합병",
+   "official_date_fields": "DART: 분할합병기일 · (감자 시) 매매거래정지 예정기간 · 신주의 상장예정일",
+   "t1_price_basis_first_trading_day": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "어느 날 원주가 기준이 바뀌는지(권리락일 · 거래 재개일)를 정의하는 KRX 규정 원문 차단. 칸 이름(권리락일 · 매매거래정지기간)만으로 뜻을 정하지 않음"
+   },
+   "t2_legal_effective": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "기준일 · 효력일 · 합병/분할기일 중 법적 발생일을 정하는 근거(상법 · KRX)는 이번 허용 출처 밖이거나 차단"
+   },
+   "t3_first_sellable": {
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "why": "상장/등록일 · 신주의 상장 예정일이 매도 가능 첫날인지 공식 문구 없음(필드 이름뿐)"
+   },
+   "pr88_rule": {
+    "price_basis_date_apply": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "listing_date_lock": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+    "revise": "price_basis_date · listing_date마다 출처 칸(source_field)과 근거 등급을 레코드에 남기고, 근거 미확정이면 그 사건이 걸린 종목은 NAV 무효(PR #88 게이트)로 유지"
+   },
+   "data_side_check": "실제 수집 TASK에서 KIS 일봉 flng_cls_code(락 구분) · prtt_rate가 찍힌 날과 위 날짜 칸을 대조하는 검사는 가능(값 뜻은 NEEDS_DATA)"
+  }
+ ],
+ "overall": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+ "no_substitution_rule": "권리락일 · 기준일 · 효력일 · 변경상장일을 서로 대체하지 않음(PR #88 price_basis_date를 기준일 · 효력일로 채우지 않음)",
+ "unblock_needs": [
+  "law.krx.co.kr(유가증권 · 코스닥 업무규정 · 시행세칙 · 공시규정)",
+  "kind.krx.co.kr(공시 서식 · 매매거래정지 안내)",
+  "apiportal.koreainvestment.com(락 구분 코드 값)"
+ ],
+ "available_at_and_corrections": {
+  "available_at": {
+   "quote": "공시 접수일자(YYYYMMDD)",
+   "precision": "date",
+   "verdict": "ACCEPT",
+   "rule": "PR #88 규칙 유지: 날짜만 → 그날 23:59:59로 보아 당일 사용 금지 · 다음 거래일부터. same_day_pit는 DART만으로는 늘 false"
+  },
+  "correction_chain": {
+   "quotes": [
+    "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+    "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+   ],
+   "list_response_keys": [
+    "result",
+    "status",
+    "message",
+    "page_no",
+    "page_count",
+    "total_count",
+    "total_page",
+    "list",
+    "corp_cls",
+    "corp_name",
+    "corp_code",
+    "stock_code",
+    "report_nm",
+    "rcept_no",
+    "flr_nm",
+    "rcept_dt",
+    "rm"
+   ],
+   "original_rcept_field": "없음",
+   "verdict": "UNKNOWN_CA_VERSION_PIT",
+   "pr88_revise": "PR #88 스키마의 root_rcept_no(필수)를 공식 칸에서 채울 수 없음 → 원문(document) 안 정정 대상 표시를 읽는 경로가 공식 문서로 확인될 때까지 정정본이 있는 사건은 UNKNOWN_CA_VERSION_PIT(수량 변경 없음 · NAV 무효)",
+   "not_allowed": [
+    "보고서명 문자열 비교만으로 사슬 확정",
+    "접수번호 앞 8자리를 날짜로 보고 정렬(가이드는 '14자리'만 말함)"
+   ]
+  },
+  "detail_api_version": {
+   "quote": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD)",
+   "verdict": "UNKNOWN_CA_VERSION_PIT",
+   "rule": "상세 응답은 같은 rcept_no의 list 행과 맞을 때만 그 버전의 칸으로 씀"
+  },
+  "last_reprt_at": {
+   "quote": "최종보고서만 검색여부(Y or N) / 1) 기본값: N (N지정시 정정보고서를 포함한 제출 보고서 전체를 검색함)",
+   "rule": "N만 사용(Y 금지)",
+   "verdict": "ACCEPT"
+  },
+  "ksdinfo": {
+   "verdict": "UNKNOWN_CA_VERSION_PIT",
+   "why": "예탁원 일정 응답에 공개 시각 칸 없음 → 그 레코드를 그날 알 수 있었는지 모름"
+  }
+ }
+}
