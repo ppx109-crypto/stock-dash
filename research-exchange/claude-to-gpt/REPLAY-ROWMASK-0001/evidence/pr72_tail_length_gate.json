@@ -1,0 +1,92 @@
+{
+ "279570": [
+  {
+   "date": "20260917",
+   "n_prices": 135,
+   "shares_known": true,
+   "ratio_to_rank100": 0.442
+  },
+  {
+   "date": "20260918",
+   "n_prices": 136,
+   "shares_known": true,
+   "ratio_to_rank100": 0.414
+  },
+  {
+   "date": "20260921",
+   "n_prices": 137,
+   "shares_known": true,
+   "ratio_to_rank100": 0.4148
+  },
+  {
+   "date": "20260922",
+   "n_prices": 138,
+   "shares_known": true,
+   "ratio_to_rank100": 0.3911
+  },
+  {
+   "date": "20260923",
+   "n_prices": 139,
+   "shares_known": true,
+   "ratio_to_rank100": 0.4386
+  },
+  {
+   "date": "20260928",
+   "n_prices": 140,
+   "shares_known": true,
+   "ratio_to_rank100": 0.4405
+  },
+  {
+   "date": "20260929",
+   "n_prices": 141,
+   "shares_known": true,
+   "ratio_to_rank100": 0.425
+  },
+  {
+   "date": "20260930",
+   "n_prices": 142,
+   "shares_known": true,
+   "ratio_to_rank100": 0.4196
+  }
+ ],
+ "490470": [
+  {
+   "date": "20260917",
+   "n_prices": 177,
+   "shares_known": true,
+   "ratio_to_rank100": 0.1024
+  },
+  {
+   "date": "20260918",
+   "n_prices": 178,
+   "shares_known": true,
+   "ratio_to_rank100": 0.1002
+  },
+  {
+   "date": "20260921",
+   "n_prices": 179,
+   "shares_known": true,
+   "ratio_to_rank100": 0.1008
+  },
+  {
+   "date": "20260922",
+   "n_prices": 180,
+   "shares_known": true,
+   "ratio_to_rank100": 0.0964
+  }
+ ],
+ "491000": [
+  {
+   "date": "20260917",
+   "n_prices": 179,
+   "shares_known": true,
+   "ratio_to_rank100": 0.1422
+  },
+  {
+   "date": "20260918",
+   "n_prices": 180,
+   "shares_known": true,
+   "ratio_to_rank100": 0.1413
+  }
+ ]
+}

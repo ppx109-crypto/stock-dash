@@ -1,11 +1,9 @@
 """REPLAY-ROWMASK-0001 · 줄 만들기(잘라낸 입력 하나) — 고정 엔진 코드(b2 · 00b98ab1) + 옛 표 시점 저장소 자료(V · git b8365547).
 python3 -E -P rm_rows.py <b2> <V> <CUT YYYYMMDD | full> <옛 nrl-cache.pkl> <출력.pkl>
 
-- 가격을 CUT까지 자른 뒤 종목 20개씩 lab.build를 두 번 돌림. 특징 계산식은 그대로.
-  · 고친 존재 조건(repaired): lab.build(horizons=(0,)) — 그날까지 가격만 있으면 줄 있음(종목 길이 문턱도 120 + 0)
-  · 옛 존재 조건(orig): lab.build(horizons=(5,10,20,60)) — 원 표 그대로(앞으로 5일 가격 · 종목 길이 > 180) — 비교용, 고친 표에는 안 씀
-  · 두 빌드에 함께 있는 줄은 'ahead' 말고 모든 칸이 같아야 함(assert)
-  · 첫 시도(rm_rows_try1.py)는 horizons=(0,5,10,20,60) 한 번에 5 in ahead만 표시해, 종목 길이 문턱(> 180)이 남아 horizons=(0,)와 달랐음
+- 가격을 CUT까지 자른 뒤 lab.build(horizons=(0, 5, 10, 20, 60))를 종목 20개씩 한 번 돌림. 특징 계산식은 그대로.
+  · 고친 존재 조건(repaired): 그날까지 가격만 있으면 줄 있음 = horizons=(0,) 와 같음
+  · 옛 존재 조건(orig): 앞으로 5일 가격이 있어야 줄 있음(5 in ahead) — 비교용 표시만, 고친 표에는 안 씀
   · 'ahead'(앞날 수익)는 저장 전에 지움
 - 2025-08-01 ~ CUT(최대 2026-03-31) 줄만 남김. 시총 순위(caps.tag)는 repaired 묶음 · orig 묶음 따로, 날마다 그날 줄끼리만.
 - D1 신호용 캐시(repaired)도 같이 씀: (가격 ≤ CUT, lanes, shape, 시장 폭, 상위100 줄, 옛 calm · 옛 달별 calm 숫자 그대로).
@@ -52,18 +50,14 @@ HI = min(last, TRAIN_HI)
 rep, orig, codes = [], [], sorted(P)
 for s in range(0, len(codes), 20):
     part = {c: P[c] for c in codes[s:s + 20]}
-    got = {}
-    for r in lab.build(part, horizons=(0,)):
-        if LO <= r["date"] <= HI:
-            del r["ahead"]
-            rep.append(r)
-            got[(r["code"], r["date"])] = r
-    for r in lab.build(part, horizons=(5, 10, 20, 60)):
-        if LO <= r["date"] <= HI:
-            del r["ahead"]
-            a = got.get((r["code"], r["date"]))
-            assert a is not None and a == r, ("옛 조건 줄이 고친 줄에 없거나 칸이 다름", r["code"], r["date"])
-            orig.append(r)
+    for r in lab.build(part, horizons=(0, 5, 10, 20, 60)):
+        if not (LO <= r["date"] <= HI):
+            continue
+        o = 5 in r["ahead"]
+        del r["ahead"]
+        rep.append(r)
+        if o:
+            orig.append(dict(r))
 print("만듦", CUT, len(P), "종목 · 마지막 가격", last, "· repaired", len(rep), "· orig", len(orig), round(time.time() - t0), "초", flush=True)
 caps.tag(rep, rule.TOP)
 caps.tag(orig, rule.TOP)

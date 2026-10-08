@@ -1,0 +1,18 @@
+{
+ "command": "python3 -E -P code/prov_check.py <b2> <V> <옛 nrl-cache.pkl>",
+ "result": {
+  "compared_rows": 27500,
+  "same_rows": 27500,
+  "missing_in_V_build": 0,
+  "field_diffs": {},
+  "diff_codes": {}
+ },
+ "range": "2025-08-01 ~ 2026-09-16 · 옛 캐시 상위100 줄",
+ "excluded_fields": [
+  "ahead",
+  "i",
+  "시가총액",
+  "시총순위"
+ ],
+ "note": "결과는 실행 출력 그대로 옮김(파일로 저장하지 않은 실행)"
+}
