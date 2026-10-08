@@ -4,7 +4,7 @@
   "chain_id": "PAPER-READINESS-20261008",
   "round": 12,
   "phase": "ALPHA / fixed portfolio exposure control",
-  "status": "READY",
+  "status": "IN_PROGRESS",
   "source_pr": 66,
   "source_head_sha": "90df77038c5480ad49dd6331268a6d4abb5031b7",
   "source_status": "READY / AXIS_ENDED",
@@ -14,6 +14,8 @@
   "prior_task_pr": 65,
   "prior_result_pr": 66,
   "result_pr": null,
-  "delivered_to_existing_session": false,
-  "created_at_kst": "2026-10-08T19:08:00+09:00"
+  "delivered_to_existing_session": true,
+  "created_at_kst": "2026-10-08T19:08:00+09:00",
+  "received_at_kst": "2026-10-08T19:10:00+09:00",
+  "delivery_note": "기존 지정 Claude 세션이 PR #67 수신, 지시 파일 읽기 및 즉시 착수를 명시적으로 확인함. 새 세션/탭/루틴 없음."
 }
