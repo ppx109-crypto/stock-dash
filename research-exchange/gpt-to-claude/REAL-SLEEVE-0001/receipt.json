@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "REAL-SLEEVE-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 9,
+  "status": "COMPLETED",
+  "source_pr": 60,
+  "source_head_sha": "24b12632560c7e4c911ce72a20df43fef004cb89",
+  "source_status": "SHADOW_SPEC_READY",
+  "dedup_keys": [
+    "60:24b12632560c7e4c911ce72a20df43fef004cb89"
+  ],
+  "prior_task_pr": 59,
+  "prior_result_pr": 60,
+  "result_pr": 62,
+  "result_head_sha": "f68eab60c9e8949dbf58ec6d1528e710bb0cadc0",
+  "result_status": "NO_CANDIDATE",
+  "delivered_to_existing_session": true,
+  "delivery_note": "기존 지정 세션이 PR #61 수신 및 지시 파일 확인 후 즉시 착수를 명시적으로 확인함.",
+  "created_at_kst": "2026-10-08T18:30:23+09:00",
+  "received_at_kst": "2026-10-08T18:32:45+09:00",
+  "completed_at_kst": "2026-10-08T18:40:33+09:00"
+}
