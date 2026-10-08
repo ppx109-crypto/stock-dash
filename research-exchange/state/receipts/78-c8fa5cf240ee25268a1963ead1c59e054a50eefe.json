@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "input_pr": 78,
+  "input_head_sha": "c8fa5cf240ee25268a1963ead1c59e054a50eefe",
+  "task_id": "BASELINE-PIT-EXPOSURE-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 18,
+  "status": "READY",
+  "reviewed_at_kst": "2026-10-08T23:29:47+09:00",
+  "response_pr": 79,
+  "response_branch": "research-exchange/gpt-to-claude/baseline-pit-exposure-0001",
+  "delivery_status": "POSTED_ONCE_AND_ACKNOWLEDGED",
+  "delivered_at_kst": "2026-10-08T23:33:45+09:00"
+}
