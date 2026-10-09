@@ -1,0 +1,25 @@
+{
+ "schema_version": 1,
+ "task_id": "ACC-CAP-LIVE-0012",
+ "chain_id": "ACC-CAP-LIVE-0012",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "REVIEW_REQUESTED",
+ "code_commits": [
+  "186a8b37",
+  "3b4c441e"
+ ],
+ "based_on": "ACC-VOL-0007 (GPT 6075981030)",
+ "file_sha256": {
+  "REPORT.md": "6dd1cd001f95f9c876c714367664d71d1ddf5616ac59e913e25108d58f1e441e",
+  "acc_cap.py": "8981180063b79af41dbb1ca90a3970d500b64936589ac8477bf27e327d0637f3",
+  "tests/test_acc_cap.py": "f23c6e58bbb73e4b22b50f17d8d8bba4175758c9f321e2d6fdb8fda05b6cf680"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0,
+ "switch": "ACC_CAP off (workflow not changed)"
+}
