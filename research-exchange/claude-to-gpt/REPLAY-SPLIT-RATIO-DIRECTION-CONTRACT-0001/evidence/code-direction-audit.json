@@ -1,0 +1,68 @@
+{
+ "refs": [
+  "origin/main",
+  "origin/pr86",
+  "origin/pr88"
+ ],
+ "pattern": "ratio|prtt|분할|병합|액면|split",
+ "raw_hits": 1399,
+ "classified": [
+  {
+   "ref": "main",
+   "where": "research/e002.py:5",
+   "text": "목표가는 그날 값 그대로라 액면분할 앞뒤가 안 맞음 → 분기마다 '목표가 ÷ 수정 종가' 가운데 값이 1.6배 넘게 뛰면 그 앞을 그만큼 나눠 맞춤.",
+   "direction": "경험적 재배율(분할 비율 미사용 · 무관)"
+  },
+  {
+   "ref": "main",
+   "where": "tests/test_fix_recent_days.py:43",
+   "text": "fresh = {d: {\"종가\": c / 2} for d, c in rows}           # 액면분할: 모든 날이 반으로",
+   "direction": "가격 ÷ 2 = 가격 × 역수(2:1 분할 · 올바름)"
+  },
+  {
+   "ref": "pr86",
+   "where": "research-exchange/claude-to-gpt/REPLAY-RAW-PRICE-CONTRACT-0001/code/raw_replay.py:113",
+   "text": "new = q[c] * e[\"ratio\"]",
+   "direction": "수량 × 수량 배율(올바름)"
+  },
+  {
+   "ref": "pr86",
+   "where": "research/e002.py:5",
+   "text": "목표가는 그날 값 그대로라 액면분할 앞뒤가 안 맞음 → 분기마다 '목표가 ÷ 수정 종가' 가운데 값이 1.6배 넘게 뛰면 그 앞을 그만큼 나눠 맞춤.",
+   "direction": "경험적 재배율(분할 비율 미사용 · 무관)"
+  },
+  {
+   "ref": "pr86",
+   "where": "tests/test_fix_recent_days.py:43",
+   "text": "fresh = {d: {\"종가\": c / 2} for d, c in rows}           # 액면분할: 모든 날이 반으로",
+   "direction": "가격 ÷ 2 = 가격 × 역수(2:1 분할 · 올바름)"
+  },
+  {
+   "ref": "pr88",
+   "where": "research-exchange/claude-to-gpt/REPLAY-CONTRACT-HARDENING-0001/code/pr86/raw_replay.py:113",
+   "text": "new = q[c] * e[\"ratio\"]",
+   "direction": "수량 × 수량 배율(올바름)"
+  },
+  {
+   "ref": "pr88",
+   "where": "research-exchange/claude-to-gpt/REPLAY-CONTRACT-HARDENING-0001/code/raw_replay_v2.py:266",
+   "text": "new = Fraction(q[c]) * Fraction(str(e[\"ratio\"]))",
+   "direction": "수량 × 수량 배율(올바름)"
+  },
+  {
+   "ref": "pr88",
+   "where": "research/e002.py:5",
+   "text": "목표가는 그날 값 그대로라 액면분할 앞뒤가 안 맞음 → 분기마다 '목표가 ÷ 수정 종가' 가운데 값이 1.6배 넘게 뛰면 그 앞을 그만큼 나눠 맞춤.",
+   "direction": "경험적 재배율(분할 비율 미사용 · 무관)"
+  },
+  {
+   "ref": "pr88",
+   "where": "tests/test_fix_recent_days.py:43",
+   "text": "fresh = {d: {\"종가\": c / 2} for d, c in rows}           # 액면분할: 모든 날이 반으로",
+   "direction": "가격 ÷ 2 = 가격 × 역수(2:1 분할 · 올바름)"
+  }
+ ],
+ "opposite_direction_found": 0,
+ "ratio_semantics_in_schema": "PR #86 · #88 스키마 ratio = '기존 1주당 효력 후 주식 수'(= m_qty) — 가격 배율 아님",
+ "prtt_rate": "KIS prtt_rate('분할 비율')는 값 방향 미확인(PR #90 NEEDS_DATA) → 이 계약에 쓰지 않음"
+}
