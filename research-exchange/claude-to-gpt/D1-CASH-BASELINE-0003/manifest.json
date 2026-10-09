@@ -1,12 +1,81 @@
 {
- "schema_version": 1, "task_id": "D1-CASH-BASELINE-0003", "chain_id": "D1-ROBUST", "lead": "claude", "status": "READY",
- "verdict": {"baseline": "MEASURED(뒤 달 최악 -28.06% · 한도 넘음)", "H2": "NOT_ENOUGH", "H3": "ADOPT_CANDIDATE(조건부 역사 비교 · 사용자 결정)"},
- "family_trials": {"this": [3, 4], "cap": 11},
- "gpt_prereg_agreement": false, "gpt_prereg_note": "사용자 결정 2026-10-09 13:40 KST: 클로드 계산 · GPT 결과 검증",
- "code_commits": {"baseline": "1b9695fb", "H2": "35e997cc", "H3": "d887d9c8"},
- "data": {"nrl_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57", "train": ["20170102", "20201230"], "test": ["20210104", "20260916"]},
- "executions": {"baseline": 1, "H2": 1, "H3": 1, "explore_frontier_not_for_selection": 1, "diagnostic": 1, "py_compile": 3, "guard_py": "unknown_but_nonzero", "tests_executed": 0, "workflow_executed": 0, "external_calls": 0},
- "evidence_paths": ["evidence/baseline.json", "evidence/run.log", "evidence/h2.json", "evidence/run-h2.log", "evidence/h3.json", "evidence/run-h3.log", "evidence/explore-frontier.log", "PREREG-H2.md", "PREREG-H3.md", "REPORT.md", "code/"],
- "file_sha256": {"evidence/baseline.json": "e81ef8ebd40ec1f5b88699ed1a9403d5b766ad2f6fd12702a5b7be1333756572", "evidence/h2.json": "6fda4b3921b70cd7db8cf174268af521570038529ff8c3621cfdc43cc38133ad", "evidence/h3.json": "5622dea4ceebea6c9b0effc2df8c9973240649f65145daa2738e4826a8ec5dee", "evidence/run-h3.log": "aaca048a4d5b261c24e675d3c80a09d20d30e8d1539369fda74a794fd897e5d0", "REPORT.md": "850278c7a6e906e2b30df3e2dc6b4ae53c34547a6ab4d591421ea4f8667ba7b9", "PREREG-H3.md": "b66d76fca663a938a85b03c037740ac86f0f7b23fc46c4ba7958d2e029294389"},
- "performance_verified": false, "nav_verified": false, "paper_validation_ready": false, "orders": 0, "operations_changed": 0
+ "schema_version": 1,
+ "task_id": "D1-CASH-BASELINE-0003",
+ "chain_id": "D1-ROBUST",
+ "lead": "claude",
+ "status": "READY",
+ "verdict": {
+  "baseline": "MEASURED(뒤 달 최악 -28.06% · 한도 넘음)",
+  "H2": "NOT_ENOUGH",
+  "H3": "보류 · 대체(같은 종가 판단 · σ 날짜 맞춤 결함 → FIX-0008 · ACC-VOL-0007)"
+ },
+ "family_trials": {
+  "this": [
+   3,
+   4
+  ],
+  "cap": 11
+ },
+ "gpt_prereg_agreement": false,
+ "gpt_prereg_note": "사용자 결정 2026-10-09 13:40 KST: 클로드 계산 · GPT 결과 검증",
+ "code_commits": {
+  "baseline": "1b9695fb",
+  "H2": "35e997cc",
+  "H3": "d887d9c8"
+ },
+ "data": {
+  "nrl_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+  "train": [
+   "20170102",
+   "20201230"
+  ],
+  "test": [
+   "20210104",
+   "20260916"
+  ]
+ },
+ "executions": {
+  "baseline": 1,
+  "H2": 1,
+  "H3": 1,
+  "explore_frontier_not_for_selection": 1,
+  "diagnostic": 1,
+  "py_compile": 3,
+  "guard_py": "unknown_but_nonzero",
+  "tests_executed": 0,
+  "workflow_executed": 0,
+  "external_calls": 0
+ },
+ "evidence_paths": [
+  "evidence/baseline.json",
+  "evidence/run.log",
+  "evidence/h2.json",
+  "evidence/run-h2.log",
+  "evidence/h3.json",
+  "evidence/run-h3.log",
+  "evidence/explore-frontier.log",
+  "PREREG-H2.md",
+  "PREREG-H3.md",
+  "REPORT.md",
+  "code/"
+ ],
+ "file_sha256": {
+  "evidence/baseline.json": "e81ef8ebd40ec1f5b88699ed1a9403d5b766ad2f6fd12702a5b7be1333756572",
+  "evidence/h2.json": "6fda4b3921b70cd7db8cf174268af521570038529ff8c3621cfdc43cc38133ad",
+  "evidence/h3.json": "5622dea4ceebea6c9b0effc2df8c9973240649f65145daa2738e4826a8ec5dee",
+  "evidence/run-h3.log": "aaca048a4d5b261c24e675d3c80a09d20d30e8d1539369fda74a794fd897e5d0",
+  "REPORT.md": "850278c7a6e906e2b30df3e2dc6b4ae53c34547a6ab4d591421ea4f8667ba7b9",
+  "PREREG-H3.md": "b66d76fca663a938a85b03c037740ac86f0f7b23fc46c4ba7958d2e029294389"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0,
+ "round": "100 · 101",
+ "source_pr": 133,
+ "prereg_head_sha": null,
+ "result_head_sha": "b009b89f3cb2f82e8017573c5e803be646ae43c8",
+ "code_commit": "1b9695fb · 35e997cc · d887d9c8",
+ "completed_at_kst": "2026-10-09T13:55:58+09:00"
 }

@@ -4,7 +4,11 @@
  "chain_id": "D1-ROBUST",
  "lead": "claude",
  "hypothesis": "H1",
- "family_trials": {"this": 2, "cap": 11, "background": "1일봉 약 200회차"},
+ "family_trials": {
+  "this": 2,
+  "cap": 11,
+  "background": "1일봉 약 200회차"
+ },
  "status": "READY",
  "verdict": "REJECTED_TRAIN(V1 A1·A5 실패 · V2 A3 실패 · 뒤 반 미실행)",
  "source_pr": 133,
@@ -13,9 +17,39 @@
  "gpt_prereg_agreement": false,
  "gpt_prereg_note": "사용자 결정 2026-10-09 13:40 KST: 클로드가 계산·판정, GPT는 결과 검증만",
  "base_commit": "5f3b37e3",
- "data": {"nrl_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57", "train": ["20170102", "20201230"], "test_locked": ["20210101", "20260916"]},
- "executions": {"official_stage1": 1, "portfolios": 80, "official_stage2": 0, "data_format_check": 2, "py_compile": 4, "synthetic_account_tests": 4, "synthetic_failures_disclosed": 1, "guard_py": "unknown_but_nonzero", "tests_executed": 0, "workflow_executed": 0, "external_calls": 0},
- "evidence_paths": ["evidence/stage1.json", "evidence/run.log", "REPORT.md", "PREREG.md", "code/z077.py", "code/test_account.py", "code/chk_slope.py"],
+ "data": {
+  "nrl_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+  "train": [
+   "20170102",
+   "20201230"
+  ],
+  "test_locked": [
+   "20210101",
+   "20260916"
+  ]
+ },
+ "executions": {
+  "official_stage1": 1,
+  "portfolios": 80,
+  "official_stage2": 0,
+  "data_format_check": 2,
+  "py_compile": 4,
+  "synthetic_account_tests": 4,
+  "synthetic_failures_disclosed": 1,
+  "guard_py": "unknown_but_nonzero",
+  "tests_executed": 0,
+  "workflow_executed": 0,
+  "external_calls": 0
+ },
+ "evidence_paths": [
+  "evidence/stage1.json",
+  "evidence/run.log",
+  "REPORT.md",
+  "PREREG.md",
+  "code/z077.py",
+  "code/test_account.py",
+  "code/chk_slope.py"
+ ],
  "file_sha256": {
   "evidence/stage1.json": "f83be46a64f852c5c62234c51c4ec67b01594b5516c2288f2b2a3c6b09c7d161",
   "evidence/run.log": "5f2e4b2b9c4bfb8394478c91bea4309d3ed8d09fc8075eec9fb7b17fbb7be367",
@@ -27,5 +61,10 @@
  "nav_verified": false,
  "paper_validation_ready": false,
  "orders": 0,
- "operations_changed": 0
+ "operations_changed": 0,
+ "round": 99,
+ "prereg_head_sha": "9bff526a952e6923962e08487adc95380db37d67",
+ "result_head_sha": "0e7cc92bb536fcbb7e053a1b629c978bba29c161",
+ "code_commit": "9bff526a",
+ "completed_at_kst": "2026-10-09T13:43:31+09:00"
 }
