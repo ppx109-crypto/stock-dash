@@ -1,0 +1,6 @@
+{"schema_version": 1, "task_id": "ACC-VOL-0006", "chain_id": "D1-ROBUST", "lead": "claude", "status": "READY", "verdict": "ADOPT_CANDIDATE(조건부 역사 비교 · 사용자 결정)",
+ "prereg_commit": "d86e092f", "family_trials": {"this": 6, "cap": 11}, "gpt_prereg_agreement": false,
+ "executions": {"A2": 2, "A2_first_run": "NameError(설정값 줄 빠짐) · 결과 없음 · 고침", "A0": 1, "regime": 1, "orders": 0},
+ "evidence_paths": ["evidence/run-a2.log", "evidence/run-a0.log", "evidence/regime-acc.log", "code/z085.py", "code/regime_acc.py"],
+ "file_sha256": {"evidence/run-a2.log": "67f7371414c414de23ea718afb6c6b16731f848f50c176f168972aff3e1201ef", "evidence/run-a0.log": "9ad779f8d95dfaacbacd206970d11bcba0711589fd2e29f6f1b4114de98e9ecc", "evidence/regime-acc.log": "05824db8f8392b1611b323d66684a256f53c47639b0554c2ffdb5ddb50aaabbb", "REPORT.md": "9744b41172fdd6b8380f0bb66830b0a9820ef943e4452c6b849fde654a73d2bf", "PREREG.md": "08763b1e397f1849397080da13c3cc973dff3eb36100f62c2231521519e663d9", "code/z085.py": "59330f07b6459ebbe126a610aadbdf5937d5e5871ea01aa805b40c3297dd3151"},
+ "performance_verified": false, "nav_verified": false, "paper_validation_ready": false, "operations_changed": 0}
