@@ -1,0 +1,6 @@
+path /tmp/maxret-0026-cache.pkl
+sha256 03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7
+size_mtime 355055580 2026-10-09 23:28:01.412959457 +0000
+run_head e91f88e906209b7d4d25b37d5b719c10a6ba9d7d
+first_absent_check 2026-10-10 08:21:38 KST (없음 확인 뒤 m1이 만듦)
+same_sha_after_all_runs yes

@@ -1,0 +1,107 @@
+{
+ "m1": {
+  "front": {
+   "cagr": 14.18,
+   "worst_day": -2.65,
+   "worst_month": -3.9,
+   "mdd": -7.4
+  },
+  "back": {
+   "cagr": 23.44,
+   "worst_day": -4.66,
+   "worst_month": -7.26,
+   "mdd": -14.07
+  }
+ },
+ "m2": {
+  "front": {
+   "cagr": 19.23,
+   "worst_day": -2.65,
+   "worst_month": -4.25,
+   "mdd": -8.05
+  },
+  "back": {
+   "cagr": 33.83,
+   "worst_day": -6.62,
+   "worst_month": -11.27,
+   "mdd": -24.55
+  }
+ },
+ "m2.5": {
+  "front": {
+   "cagr": 20.0,
+   "worst_day": -2.65,
+   "worst_month": -4.25,
+   "mdd": -8.05
+  },
+  "back": {
+   "cagr": 36.83,
+   "worst_day": -7.87,
+   "worst_month": -15.43,
+   "mdd": -29.58
+  }
+ },
+ "m3": {
+  "front": {
+   "cagr": 20.01,
+   "worst_day": -2.65,
+   "worst_month": -4.25,
+   "mdd": -8.05
+  },
+  "back": {
+   "cagr": 42.46,
+   "worst_day": -8.64,
+   "worst_month": -15.51,
+   "mdd": -29.52
+  }
+ },
+ "m4": {
+  "front": {
+   "cagr": 19.62,
+   "worst_day": -2.65,
+   "worst_month": -4.25,
+   "mdd": -8.05
+  },
+  "back": {
+   "cagr": 41.47,
+   "worst_day": -11.54,
+   "worst_month": -20.91,
+   "mdd": -34.65
+  }
+ },
+ "off": {
+  "front": {
+   "cagr": 19.62,
+   "worst_day": -2.65,
+   "worst_month": -4.25,
+   "mdd": -8.05
+  },
+  "back": {
+   "cagr": 40.53,
+   "worst_day": -12.18,
+   "worst_month": -24.73,
+   "mdd": -36.79
+  }
+ },
+ "check_m1_same_as_ref": false,
+ "check_m1_first_diff": "20170818",
+ "check_m2_same_as_ref": false,
+ "check_m2_first_diff": "20170818",
+ "front_ok": [
+  "m1",
+  "m2",
+  "m2.5",
+  "m3",
+  "m4",
+  "off"
+ ],
+ "pick": "m3",
+ "pass_limits": false,
+ "pass_beats_m1": true,
+ "cut_rows": 1700,
+ "cut_last": "20231228",
+ "full_prefix_last": "20231228",
+ "cut_ok": true,
+ "cut_first_diff": null,
+ "verdict": "판정 보류"
+}
