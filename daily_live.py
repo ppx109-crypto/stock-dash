@@ -330,11 +330,8 @@ def run(now=None):
     # 일봉 자료가 늦거나 지금 값을 덜 받아 1일봉이 넘어가는 날에도 덜어내기는 하도록 여기서 함(판단은 전날까지 값이라 오늘 자료와 무관).
     cap_lines = []
     if not late:
-        try:
-            import acc_cap
-            cap_lines = acc_cap.run_trim(day, datetime.now(KST))
-        except Exception as e:           # 상한 단계가 말썽이어도 1일봉 주문은 그대로
-            cap_lines = [f"⚠️ 계좌 흔들림 상한 단계 문제 · {type(e).__name__}"]
+        import acc_cap                   # 덜어내기가 말썽이면 오늘 새 매수만 멈춤(1일봉 팔기는 그대로 · fail-closed)
+        cap_lines = acc_cap.trim_or_block(day, datetime.now(KST))
         if cap_lines:
             send(cap_lines[:1])
     prices = study.load_prices()
