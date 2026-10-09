@@ -1,0 +1,160 @@
+{
+ "all": {
+  "F": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.44,
+    "worst_day": -4.66,
+    "worst_month": -7.26,
+    "worst_2month": -10.5,
+    "mdd": -14.07
+   }
+  },
+  "basket_bear": {
+   "front": {
+    "cagr": 13.51,
+    "worst_day": -2.23,
+    "worst_month": -3.99,
+    "worst_2month": -3.41,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 21.98,
+    "worst_day": -4.7,
+    "worst_month": -7.23,
+    "worst_2month": -10.49,
+    "mdd": -14.05
+   }
+  },
+  "drop_15m": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.19,
+    "worst_day": -4.66,
+    "worst_month": -6.6,
+    "worst_2month": -9.38,
+    "mdd": -14.01
+   }
+  },
+  "drop_1d": {
+   "front": {
+    "cagr": 12.86,
+    "worst_day": -2.71,
+    "worst_month": -3.77,
+    "worst_2month": -3.3,
+    "mdd": -6.92
+   },
+   "back": {
+    "cagr": 14.06,
+    "worst_day": -2.52,
+    "worst_month": -4.79,
+    "worst_2month": -8.5,
+    "mdd": -13.4
+   }
+  },
+  "drop_basket": {
+   "front": {
+    "cagr": 13.93,
+    "worst_day": -2.23,
+    "worst_month": -3.99,
+    "worst_2month": -3.42,
+    "mdd": -8.45
+   },
+   "back": {
+    "cagr": 22.52,
+    "worst_day": -4.7,
+    "worst_month": -7.25,
+    "worst_2month": -11.94,
+    "mdd": -14.21
+   }
+  },
+  "drop_engine": {
+   "front": {
+    "cagr": 7.05,
+    "worst_day": -2.61,
+    "worst_month": -2.57,
+    "worst_2month": -3.41,
+    "mdd": -7.49
+   },
+   "back": {
+    "cagr": 19.96,
+    "worst_day": -4.66,
+    "worst_month": -7.11,
+    "worst_2month": -10.44,
+    "mdd": -13.98
+   }
+  },
+  "drop_inverse": {
+   "front": {
+    "cagr": 12.44,
+    "worst_day": -2.74,
+    "worst_month": -3.46,
+    "worst_2month": -3.48,
+    "mdd": -7.23
+   },
+   "back": {
+    "cagr": 20.64,
+    "worst_day": -4.66,
+    "worst_month": -7.19,
+    "worst_2month": -9.95,
+    "mdd": -12.62
+   }
+  },
+  "svol30": {
+   "front": {
+    "cagr": 14.87,
+    "worst_day": -2.06,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -6.94
+   },
+   "back": {
+    "cagr": 23.49,
+    "worst_day": -4.06,
+    "worst_month": -7.79,
+    "worst_2month": -10.95,
+    "mdd": -16.67
+   }
+  },
+  "svol40": {
+   "front": {
+    "cagr": 14.58,
+    "worst_day": -2.12,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -7.35
+   },
+   "back": {
+    "cagr": 22.87,
+    "worst_day": -4.46,
+    "worst_month": -8.15,
+    "worst_2month": -11.1,
+    "mdd": -16.93
+   }
+  }
+ },
+ "eligible": [
+  "svol30",
+  "svol40"
+ ],
+ "pick": "svol30",
+ "judge": {
+  "back_day_not_worse": true,
+  "back_month_not_worse": false,
+  "back_cagr_ok": true,
+  "back_limits": true,
+  "pass": false
+ }
+}

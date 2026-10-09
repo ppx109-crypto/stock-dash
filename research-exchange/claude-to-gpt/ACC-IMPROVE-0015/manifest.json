@@ -1,0 +1,46 @@
+{
+ "schema_version": 1,
+ "task_id": "ACC-IMPROVE-0015",
+ "chain_id": "ACC-IMPROVE-0015",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "FAIL",
+ "pick": "svol30",
+ "prereg_commit": "ec6f85c5",
+ "completed_at_kst": "2026-10-09T17:29:27+09:00",
+ "source_pr": 140,
+ "source_head_sha": "c89ac82875f90ed1ef62780327c0a01ba2174bf1",
+ "evidence_paths": [
+  "evidence/eval.json",
+  "evidence/nav/",
+  "evidence/log/",
+  "evidence/run.sh",
+  "evidence/cut_svol30_T20231231.csv",
+  "evidence/log/cut_svol30.log"
+ ],
+ "file_sha256": {
+  "REPORT.md": "9792b7a9256512c96d35684fa9a85b09b4c03d9df7855afe67f00ce8680ce8c0",
+  "PREREG.md": "1b4ae60ae483a8274baa260706743940ce37db8ba7886b0f4f337a01b265d46c",
+  "evidence/eval.json": "fa5f3dff5aa88a70d3c9245cb04eda27f654d537e019e49b4b9db33a747e69c1",
+  "evidence/nav/F.csv": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+  "evidence/nav/svol30.csv": "387538bd96e09e93bb5da839451ae8461e791894ac773c098a6d18f1acae612c",
+  "research/z093.py": "798883cb5015c6067e8332bb9b90aaf751b6bbe8bd2e5e1f383eaedf105cdcb5",
+  "research/z093_eval.py": "d0015fc6765a81380b7d44e3ef6f97973d0ce34c63739d4cafe0492a700bac98",
+  "evidence/cut_svol30_T20231231.csv": "637e8c680a79febddf4601e4f7e39dfa190a2c8b9f6cd5dc518f6b37d21ccab0"
+ },
+ "incident": "prereg commit pushed to #139 result branch (rule from 6076104792 broken; #139 judged files unchanged)",
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0,
+ "cut_check": {
+  "pick": "svol30",
+  "T": "20231231",
+  "days": 1700,
+  "max_rel_diff": 0.0,
+  "ok": true
+ },
+ "gpt_review": "6077405432 FAIL 인정"
+}
