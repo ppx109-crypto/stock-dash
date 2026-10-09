@@ -30,7 +30,7 @@ for c,b,e,p,s in L:
     if f:base.append(dict(c=c,b=b,p=p,**f))
 result['repository_diagnostics']={'front_n':sum(r['b']<'20210101' for r in base),'front_loss_below_minus8':sum(r['b']<'20210101' and r['p']<-8 for r in base),'front_quintiles':table([r for r in base if r['b']<'20210101'])}
 # API credentials remain exclusively in runner memory; raw prices stay ephemeral.
-key=os.getenv('KIS_APP_KEY','');secret=os.getenv('KIS_APP_SECRET','');token=''
+key=os.getenv('KIS_APP_KEY','').strip();secret=os.getenv('KIS_APP_SECRET','').strip();token=''
 pt=Path(os.getenv('RUNNER_TEMP','/tmp'))/'kis-token.json'
 if pt.exists():
     try:
@@ -111,6 +111,6 @@ try:
     result.update(status='COMPLETED' if len(matched)==len(L) and not errors else 'PARTIAL',api_requests=calls,failed_requests=len(errors),checked_trades=len(matched),matches_2dp=sum(r['agrees_at_2dp'] for r in matched),max_abs_delta_pp=max((abs(r['delta_pp']) for r in matched),default=None),front_features_n=len(front),front_loss_below_minus8=sum(r['p']<-8 for r in front),api_front_quintiles=table(front),trade_mean_net_pct=statistics.mean(pnl) if pnl else None,trade_pf=sum(p for p in pnl if p>0)/-sum(p for p in pnl if p<0) if any(p<0 for p in pnl) else None)
     sens=[r for r in matched if 'next_open_net_pct' in r];result['next_open_fixed_list_sensitivity']={'n':len(sens),'mean_net_pct':statistics.mean(r['next_open_net_pct'] for r in sens) if sens else None,'mean_delta_pp':statistics.mean(r['next_open_net_pct']-r['api_net_pct'] for r in sens) if sens else None}
     (OUT/'trades.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2));(OUT/'receipts.json').write_text(json.dumps(receipts,indent=2))
-except Exception as ex:result.update(status='BLOCKED',reason=str(ex) if isinstance(ex,ValueError) else type(ex).__name__)
+except Exception as ex:result.update(status='BLOCKED',reason=type(ex).__name__)
 result['completed_at_kst']=datetime.now(timezone(timedelta(hours=9))).isoformat()
 (OUT/'summary.json').write_text(json.dumps(result,ensure_ascii=False,indent=2));print(json.dumps({k:v for k,v in result.items() if k not in ('repository_diagnostics','api_front_quintiles')},ensure_ascii=False),flush=True)
