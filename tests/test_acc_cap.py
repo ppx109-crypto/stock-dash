@@ -172,6 +172,23 @@ class RunTrim(unittest.TestCase):
             self.assertNotIn("total", log[0])                 # 금액은 기록에 안 남김(비율만)
             self.assertNotIn("qty", log[0]["orders"][0])
 
+    def test_record_close_compares_with_closing_price(self):
+        class Fake:
+            def balance(self):                       # 덜어낸 뒤 · 종가가 15:20보다 10% 높음
+                return bal(1_000_000, [("000001", 50, 1100)])
+        with tempfile.TemporaryDirectory() as tmp:
+            t = Path(tmp)
+            (t / "today.json").write_text(json.dumps({"date": "20261012", "E": 0.5, "trim_done": True, "trim_f": 0.5,
+                                                      "trim_orders": [["000001", 50, 1000]]}), encoding="utf-8")
+            (t / "log.json").write_text(json.dumps([{"date": "20261012", "trim_f": 0.5}]), encoding="utf-8")
+            with mock.patch.object(A, "TODAY", t / "today.json"), mock.patch.object(A, "LOG", t / "log.json"), \
+                    mock.patch.dict(os.environ, {"ACC_CAP": "on", "ACC_CAP_START": ""}):
+                out = A.record_close("20261012", broker=Fake())
+            # 덜어내기 전 100주 × 1100 = 11만 · 계좌 = 100만 + 5.5만 → 든 것 비중 0.1043(상한 0.5 아래라 종가로는 안 덜어냄)
+            self.assertEqual(out["trim_f_close"], 0.0)
+            self.assertAlmostEqual(out["held_share_close"], round(110_000 / 1_055_000, 4))
+            self.assertEqual(json.loads((t / "log.json").read_text())[0]["trim_f_gap"], 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()
