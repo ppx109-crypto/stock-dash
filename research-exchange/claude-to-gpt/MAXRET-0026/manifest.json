@@ -1,0 +1,49 @@
+{
+ "schema_version": 1,
+ "task_id": "MAXRET-0026",
+ "chain_id": "MAXRET-0026",
+ "round": 2,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "판정 보류",
+ "verdict_note": "기준 맞춤(m1 · m2 일별 NAV 1e-9) 미달 · 최대 상대 9.6e-7 · 요약값 같음. 고른 판 m3 뒤 반 달 −15.51%(한도 넘음) → 맞춤이 됐어도 FAIL",
+ "prereg_commit": "e91f88e9",
+ "code_commit": "e91f88e906209b7d4d25b37d5b719c10a6ba9d7d",
+ "source_pr": 157,
+ "source_head_sha": "e91f88e906209b7d4d25b37d5b719c10a6ba9d7d",
+ "cache": {
+  "path": "/tmp/maxret-0026-cache.pkl",
+  "sha256": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
+  "bytes": 355055580
+ },
+ "runs": "여섯 판 각 1 + 자르기 1 · 재실행 0",
+ "evidence_paths": [
+  "evidence/eval.json",
+  "evidence/nav/",
+  "evidence/log/",
+  "evidence/run.sh",
+  "evidence/cache.txt"
+ ],
+ "completed_at_kst": "2026-10-10T08:40:00+09:00",
+ "file_sha256": {
+  "REPORT.md": "b9beeaec5baf1b6db8b595408a34cd01dccc19bd4ae9e9e04dabc97408be6640",
+  "PREREG.md": "108c283efe0a3767873144460668c88616f12a9c91d308ca4e1e03f3132eeb72",
+  "evidence/eval.json": "14a3549c988896d7b66761d282fa8b7a760a506b75fdbb0bb0f288e3bd45cb24",
+  "evidence/cache.txt": "81a025e97fc6fac5d70479277125c4a127609d129cb1a63d475c2f7575094c27",
+  "evidence/run.sh": "b22bf3812f7156ceef96c7315e8d69ff9b3ddedca64f6d88cc55297bf90d6b64",
+  "research/z099_eval.py": "cf208c8c9d035797ab80df9d6edc3799144a79a2540d88119239199da6e91e07",
+  "research/z094.py": "ca277c8a992e7019333d7ea3b54cfda54b07dea4889579b3f71ab8224e318a90",
+  "evidence/nav/cut_m3_T20231231.csv": "0dd3e080b314ba705a9a0fcf90cc3d315734645fda1eb115d214e76fcb0245d4",
+  "evidence/nav/m1.csv": "998ffd2f117967b9fe4f5c3ca39a766699d992ebb0151ba767c1b30f0a9633e7",
+  "evidence/nav/m2.5.csv": "3d9c7c4452197a18ebb1d9697281c7891de7e2aafead77ddabdecb8ff2f1c51f",
+  "evidence/nav/m2.csv": "02dfbde2374caa905e6db55fa8c7d1b6a7ad05b37a766d7e5c25070d46d21d65",
+  "evidence/nav/m3.csv": "d51a6e43e37b85e891ac4103444ae31efa46d8d52919cb45b9d6517c06e1bd79",
+  "evidence/nav/m4.csv": "7af4c023b1758c92f9590977e03528751c99aa4152bf4bb4e60fd4ff069bdff3",
+  "evidence/nav/off.csv": "00a42617aba7d37d0b590170f99db12430af5860d3cec2533787bbb60ea2eba0"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
