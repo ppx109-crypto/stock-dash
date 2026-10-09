@@ -314,11 +314,12 @@ def _give_room(broker, balance, need, now, book_file, state_file, label, partial
     return balance, lines
 
 
-def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
+def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0, room=None):
     """fill이 체결한 매매(done) → 넣을 주문 [(열쇠, 종목, 'buy'|'sell', 수량, 까닭)]. 계산만(주문은 안 넣음).
 
     살 때: 계좌 총액 × 칸 / 10 ÷ 체결 값(그 봉 시가) 내림 · 현금 안에서.
     팔 때: 연습 계좌에서 그 종목이 다 팔렸으면 모의 잔고 전부, 일부(절반 익절)면 잔고 × 판 칸 / (판 칸 + 남은 칸) 반올림.
+    room: 계좌 흔들림 상한이 허락한 더 살 돈(원 · acc_cap.room) — 같은 차례에 파는 것만큼 늘어남. None이면 한도 없음.
     """
     account = {p["code"]: int(p["quantity"]) for p in balance.get("positions", [])}
     # 규칙 장부(held)가 있으면 그 규칙이 산 수량까지만 팖(다른 규칙이 같은 종목을 들고 있어도 건드리지 않음)
@@ -338,6 +339,8 @@ def plan_orders(done, state, balance, prices, bar_id, held=None, share=1.0):
     # 같은 차례에 먼저 파는 것의 돈도 살 돈에 셈(파는 주문이 먼저 나감 · 2026-10-06 검토). 시장가 체결 값이 조금 높을 때를 위해 98%.
     freed = sum(q * float(prices.get(c) or 0) for _, c, side, q, _ in out if side == "sell")
     left = (cash + freed) * 0.98
+    if room is not None:
+        left = min(left, room + freed)
     for x in done:
         key = f"{bar_id}:{x['type']}:{x['code']}:{x.get('decided', '')}"
         if x["type"] != "buy":
@@ -376,12 +379,20 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
     seen = {o["key"] for o in book["orders"]}
     names = {p["code"]: p.get("name") for p in state.get("positions", {}).values()}
     lines = []
+    import acc_cap                       # 계좌 흔들림 상한(켜져 있을 때만): 사는 돈을 'E × 계좌 − 든 것'까지
+    cap = acc_cap.safe_room(balance, now.strftime("%Y%m%d"))         # 켜진 날 셈이 실패하면 0(새 매수 멈춤 · 팔기는 그대로)
+    stop_buys = acc_cap.blocked(now.strftime("%Y%m%d"))
+    if stop_buys:                        # 막힌 날은 판 돈으로도 새로 사지 않음
+        done_buys = [x for x in done if x["type"] == "buy"]
+        done = [x for x in done if x["type"] != "buy"]
     if strategy in SHARES:               # 규칙이 살 돈이 모자라면 빈칸 엔진이 먼저 자리를 내줌
         total = (float(balance.get("cash") or 0) + float(balance.get("value") or 0)) * SHARES[strategy]
         need = sum(total * x["칸"] / SLOTS for x in done if x["type"] == "buy" and prices.get(x["code"]))
+        if cap is not None:              # 상한이 막는 몫은 자리를 내줄 까닭도 없음
+            need = min(need, cap)
         balance, room = make_room(broker, balance, need, now)
         lines += room
-    planned = plan_orders(done, state, balance, prices, bar_id, held=book["held"], share=SHARES[strategy])
+    planned = plan_orders(done, state, balance, prices, bar_id, held=book["held"], share=SHARES[strategy], room=cap)
     # 주문을 못 넣는 매매도 알림에 남김(사용자 요청: 진입 · 청산은 모두 알림)
     have = {c for c, q in book["held"].items() if q > 0}
     for x in done:
@@ -391,8 +402,12 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
         if x["type"] == "sell":
             why = "이 규칙이 모의 계좌에서 산 수량이 없음" if x["code"] not in have else "팔 수량이 0주"
         else:
-            why = "시가를 몰라서" if not prices.get(x["code"]) else "살 돈이 모자람(1주 미만)"
+            why = ("시가를 몰라서" if not prices.get(x["code"]) else
+                   "계좌 흔들림 상한에 걸림" if cap is not None and cap < (prices.get(x["code"]) or 0) else "살 돈이 모자람(1주 미만)")
         lines.append(f"🧪 모의투자({tag}) {'매수' if x['type'] == 'buy' else '매도'} 건너뜀 · {name}({x['code']}) · {why}")
+    for x in (done_buys if stop_buys else []):
+        name = x.get("name") or names.get(x["code"]) or x["code"]
+        lines.append(f"🧪 모의투자({tag}) 매수 건너뜀 · {name}({x['code']}) · 계좌 흔들림 상한 셈 · 덜어내기 실패로 오늘 새 매수 멈춤")
     for key, code, side, qty, why in planned:
         if key in seen:
             continue

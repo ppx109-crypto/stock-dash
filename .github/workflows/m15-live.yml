@@ -51,7 +51,7 @@ jobs:
       - if: steps.gate.outputs.skip != '1'
         run: pip install requests numpy
       - if: steps.gate.outputs.skip != '1'
-        run: python -m unittest tests.test_m15_live tests.test_paper_trade -v
+        run: python -m unittest tests.test_m15_live tests.test_paper_trade tests.test_acc_cap -v
       - if: steps.gate.outputs.skip != '1'
         name: 15분봉 판단 · 디스코드 알림 · 연습 계좌 저장
         run: |
@@ -74,6 +74,9 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # 한투 모의투자 자동 주문(15분봉 몫 20%). 끄려면 M15_PAPER를 'off'로 · 모든 모의 주문을 끄려면 hourly-live/paper-off 파일.
           M15_PAPER: 'on'
+          # 계좌 흔들림 상한(acc_cap.py · 사용자 2026-10-09 "main에 넣고 켜라") — 15분봉 사기도 'E × 계좌 − 든 것'까지
+          ACC_CAP: 'on'
+          ACC_CAP_START: '20261012'
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}

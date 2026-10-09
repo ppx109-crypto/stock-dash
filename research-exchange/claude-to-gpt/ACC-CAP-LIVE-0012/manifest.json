@@ -1,0 +1,42 @@
+{
+ "schema_version": 1,
+ "task_id": "ACC-CAP-LIVE-0012",
+ "chain_id": "ACC-CAP-LIVE-0012",
+ "round": 2,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "REVIEW_REQUESTED",
+ "code_commits": [
+  "186a8b37",
+  "3b4c441e",
+  "ebe69887",
+  "511e2ebd"
+ ],
+ "based_on": "ACC-VOL-0007 (GPT 6075981030)",
+ "file_sha256": {
+  "REPORT.md": "d2f6183aa9cbed293de6d0fdd7a7773b0d20a765a1a2795abbb94a3fe25d3d8b",
+  "acc_cap.py": "f93b973bb1382a191d4cc62b4df4a10cc0dabe572f20139f2432dfffd007477a",
+  "paper_trade.py": "b3298d929c7a202630f878733a02bfca8b58957f99375eb41a76d941d44a256c",
+  "idle_live.py": "3c3ad88a8c26ad87500066173dc48f94a01fe89f569cecbc648da0570ffa7cd4",
+  "daily_live.py": "f5391f4bbe384d965f8036e9083dc80c4b5d09c50f88c98a96d5ef09acd2fef4",
+  "tests/test_acc_cap.py": "bc78e540aab85ee1b40de81cae8cbdbd0affe5a1e84f24671b39d9c5498511d7"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": "모의투자 서버 ACC_CAP on 2026-10-12부터(사용자 결정 · main ebe69887) · round 2 고침은 main 밖(GPT 인정 뒤 반영)",
+ "switch": "ACC_CAP on · ACC_CAP_START 20261012 · 상한 × 1",
+ "source_pr": 149,
+ "source_head_sha": "ebe6988707a584764ba00ab5aac1e033fc9c11a8",
+ "code_commit": "511e2ebd5f35291ccb3b3343010371888561239e",
+ "evidence_paths": [
+  "tests/test_acc_cap.py"
+ ],
+ "completed_at_kst": "2026-10-09T22:04:17+09:00",
+ "tests": {
+  "tests/test_acc_cap.py": "20 OK",
+  "workflow_bot_tests": "127 OK",
+  "all": "698 중 1 error(test_core · googleapiclient 없음 · 고치기 전과 같음)"
+ }
+}

@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests numpy
-      - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal tests.test_basket_live -v
+      - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal tests.test_basket_live tests.test_acc_cap -v
       - name: 사건 바구니 C · 빈칸 엔진 · 코스닥 과열 인버스(15:10 판단 · 모의투자 주문 · 1일봉보다 먼저)
         continue-on-error: true
         run: |
@@ -53,6 +53,9 @@ jobs:
           KIS_CALL_GAP: '0.07'
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # 빈칸 엔진 모의투자(사용자 2026-10-03 "최종 규칙 정하고 모의투자 제작") · 2026-10-05부터
+          # 계좌 흔들림 상한(acc_cap.py · ACC-VOL-0007 · 사용자 2026-10-09 "main에 넣고 켜라") · 모의투자만 · 바구니 · 엔진 사기 한도
+          ACC_CAP: 'on'
+          ACC_CAP_START: '20261012'
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'
           IDLE_START: '20261005'
@@ -66,9 +69,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python daily_live.py || status=$?
-          mkdir -p daily-live
-          mkdir -p basket-live
-          git add -A daily-live idle-live basket-live
+          mkdir -p daily-live basket-live m15-live hourly-live
+          git add -A daily-live idle-live basket-live m15-live hourly-live    # 흔들림 상한이 다른 규칙 장부에서 덜어낸 기록도
+          if [ -f acc-cap/log.json ]; then git add acc-cap/log.json; fi
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily rule live"
             ok=0
@@ -85,6 +88,9 @@ jobs:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           # 한투 모의투자 자동 주문(사용자 요청 2026-10-01). 계좌 하나를 1시간봉과 반씩 나눠 씀(PAPER_SHARE 0.5).
+          # 계좌 흔들림 상한(acc_cap.py) · 15:20 덜어내기 · 1일봉 사기 한도 · 15:32 종가 비교 기록
+          ACC_CAP: 'on'
+          ACC_CAP_START: '20261012'
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
           DAILY_START: '20261002'          # 종가 출격도 2026-10-02부터
