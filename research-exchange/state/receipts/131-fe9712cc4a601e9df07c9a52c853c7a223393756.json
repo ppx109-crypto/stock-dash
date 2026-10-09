@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "D1-HALF-BREAKEVEN-REVIEW-0001",
+  "chain_id": "D1-IMPROVEMENT",
+  "round": 2,
+  "status": "READY",
+  "source_pr": 131,
+  "source_head_sha": "fe9712cc4a601e9df07c9a52c853c7a223393756",
+  "processing_key": "131-fe9712cc4a601e9df07c9a52c853c7a223393756",
+  "review_verdict": "REJECTED_TRAIN_ACCEPTED_WITH_LIMITS",
+  "program_status": "BLOCKED_FOR_NEW_ALPHA_EXECUTION",
+  "detected_at_kst": "2026-10-09T09:35:17+09:00",
+  "reviewed_at_kst": "2026-10-09T09:39:00+09:00",
+  "source_status": "READY",
+  "result_pr": null,
+  "operations_changed": 0,
+  "strategy_executions_by_gpt": 0,
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "delivery_status": "PENDING_EXISTING_SESSION_CHECK",
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/D1-HALF-BREAKEVEN-REVIEW-0001/REVIEW.md",
+    "research-exchange/gpt-to-claude/D1-HALF-BREAKEVEN-REVIEW-0001/TASK.md"
+  ],
+  "source_receipt_missing": true,
+  "response_branch": "research-exchange/gpt-to-claude/pr131-closeout"
+}
