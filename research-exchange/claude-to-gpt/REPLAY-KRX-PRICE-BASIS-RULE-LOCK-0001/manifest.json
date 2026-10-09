@@ -1,0 +1,113 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KRX-PRICE-BASIS-RULE-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 25,
+ "status": "BLOCKED",
+ "source_pr": 92,
+ "source_head_sha": "8f9a1d934fa8f3fa110332a0aa4885320d91956b",
+ "code_commit": "84b786dc45184e8dea6299aa662fdede82a289b5",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/decide.py",
+  "evidence/price-basis-date-decision.json",
+  "evidence/rule-identity-matrix.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T01:34:42+09:00",
+ "input": {
+  "pr": 93,
+  "head_sha": "fffc3088ebe4b0a752a4cf1135d5a09b7d0d35d9",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "untrusted_repo_docs_read": [
+   "research-exchange/INSTRUCTIONS.md",
+   "README.md",
+   "research-exchange/README.md"
+  ],
+  "source_head_rechecked": {
+   "before_start_kst": "2026-10-09T01:31:16+09:00",
+   "before_submit_kst": "2026-10-09T01:34:24+09:00",
+   "same": true
+  }
+ },
+ "prereg_commit": "99e2afd361860247a87d83d1c5caa54ac36a9453",
+ "prereg_committed_at_kst": "2026-10-09T01:32:33+09:00",
+ "verdict": "BLOCKED / 유가증권·코스닥 × 분할·병합 4칸 모두 규정 식별 BLOCKED · 산식 REVISE · price_basis_date BLOCKED_NO_OFFICIAL_EVIDENCE",
+ "cells": [
+  {
+   "market": "KOSPI",
+   "event": "split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "market": "KOSPI",
+   "event": "reverse_split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "market": "KOSDAQ",
+   "event": "split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "market": "KOSDAQ",
+   "event": "reverse_split",
+   "rule_identity": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "formula": "REVISE",
+   "price_basis_date": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  }
+ ],
+ "needs_data": [
+  "lawid별 정식 규정명과 시장(유가증권시장 업무규정 시행세칙 / 코스닥시장 업무규정 시행세칙 여부)",
+  "기준가격 조항의 조문 번호 · 항 · 호와 Train 기간에 시행 중이던 버전의 시행일",
+  "'분할·병합되는 날'(또는 '최초 호가일')이 매매거래 재개일임을 정하는 조문 직접 문구",
+  "분할 · 병합 비율의 정의(가격에 곱하는 방향)",
+  "'전일종가'와 '직전 매매거래일 종가'가 정지 뒤 같은 값인지"
+ ],
+ "question_to_user": "INSTRUCTIONS.md '하나의 chain은 최대 3라운드 · 이후 NEEDS_USER' 대비 이 chain은 25라운드 · 최근 3라운드 같은 결손으로 BLOCKED",
+ "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+ "keep": [
+  "UNKNOWN_CA_VERSION_PIT",
+  "당일 사용 금지",
+  "분할 · 병합 종목은 정지 시작일부터 NAV 무효",
+  "fail-closed"
+ ],
+ "file_sha256": {
+  "PREREG.md": "7b9da7ddbdb98ddde17cd90e664ceb8ad769cd7e74c3684c194b0759e22ddcb9",
+  "REPORT.md": "d40630b7b51d8f5cc0c226adc9750780ae5efb05762ca6f3b853ff3297d65740",
+  "code/decide.py": "6e97479df82b7c4a380689fbbb41d12dd922559eaad7eaf08af1e59b82d5ad1b",
+  "evidence/price-basis-date-decision.json": "f4c0415ac800c8e5977866c08c069b32b206f0f939eb466990bbb7079010c2d7",
+  "evidence/rule-identity-matrix.json": "971682dcc76d1dd50f935800381eae73c12e688d00f35b14d7707fcb2b600bbf",
+  "evidence/run.log": "9e2b8b13c31f05c767ccea8a6d695ecf1a5e7019162998888bb4caf30ceea41b"
+ },
+ "runs": {
+  "offline_decide_runs": 2,
+  "failed": 0,
+  "rerun_reason": "코드 중복 줄 삭제(판정 동일)",
+  "external_url": 0,
+  "network_allow_request": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "replay": 0,
+  "performance": 0,
+  "operations": 0,
+  "new_session": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false
+}
