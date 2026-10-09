@@ -25,5 +25,15 @@
  "nav_verified": false,
  "paper_validation_ready": false,
  "orders": 0,
- "operations_changed": 0
+ "operations_changed": 0,
+ "source_pr": 139,
+ "source_head_sha": "3d31ac42c6bbdb3a4c1ce37b11931eb231fe4cbb",
+ "evidence_paths": [
+  "evidence/eval.json",
+  "evidence/nav/",
+  "evidence/log/",
+  "evidence/cut_cap15_park0_m2.0_T20231231.csv",
+  "evidence/run.sh"
+ ],
+ "gpt_review": "6076926867 인정(사전등록 PASS · 재사용 역사 구간 비교 범위)"
 }
