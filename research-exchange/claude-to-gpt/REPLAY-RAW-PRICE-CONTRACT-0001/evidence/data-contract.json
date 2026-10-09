@@ -1,0 +1,77 @@
+{
+ "scope": "현재 후보(PR #76 일봉 고침) D1 + BASKET만 · 통제는 비교 메타데이터 · 15분봉 제외",
+ "targets": {
+  "fills": 148,
+  "by_sleeve_side": {
+   "D1_buy": 52,
+   "D1_sell": 71,
+   "BASKET_buy": 12,
+   "BASKET_sell": 13
+  },
+  "classes": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 125,
+   "IMPOSSIBLE_RAW_FILL": 23
+  },
+  "unique_code_date": 145,
+  "unique_codes": 33,
+  "unique_dates": 77,
+  "off_tick_unique_code_date": 20
+ },
+ "inputs_to_adapter": {
+  "fills": "fill_id · sleeve(D1|BASKET) · date · code(로컬) · side · intent(buy: notional 원 · sell: fraction 또는 qty)",
+  "raw": "check_raw_pair 결과(날짜별 close · status) — RAW와 ADJUSTED 같은 요청 쌍",
+  "ca": "resolve_ca 결과(정정 사슬 · 필수 칸 · same_day_pit)",
+  "rate": "kernel2.Costs(cost_contract · 비용 2배) rate(side, code, day, notional)",
+  "cash0_and_days": "소계정 250만 원 · Train 거래일 달력"
+ },
+ "intent_mapping_for_real_run(다음 TASK)": "PR #76 원장의 수정 기준 수량을 그대로 쓰지 않음. buy notional = PR #76 목표의 금액(수정 수량 × 수정 종가)을 의도 금액으로 · sell = 그 시점 보유 대비 비율. 이 매핑은 실제 원주가 · 기업행동이 있을 때 별도 TASK에서 고정.",
+ "invariants": [
+  "체결가 = 그날 공식 원주가 종가 · 호가 배수(아니면 INVALID_OFFICIAL_RAW · 체결 안 함)",
+  "매수 수량 = floor(min(의도 금액, 현금 한도)/원주가) · 비용 포함 현금 ≥ 0",
+  "매도 수량 ≤ 기업행동 조정 뒤 보유(넘으면 SELL_CAPPED)",
+  "비용 · 세금 = 원주가 × 원수량 × rate",
+  "일별 MTM = 원주가 종가 × 실제 수량(값 없으면 STALE 표시)",
+  "기업행동 = 효력일 장 시작 전 CA_QTY · CA_CASH 레코드",
+  "기말현금 = 기초 − 매수대금 − 매수비용 + 매도대금 − 매도비용 + 명시적 현금조정(두 경로 비교)",
+  "기말수량 = 매수 − 매도 + 명시적 수량조정 · 음수 0",
+  "on-tick 125건을 원주가로 간주하지 않음 · off-tick을 가까운 호가로 반올림하지 않음"
+ ],
+ "public_local_boundary": {
+  "public": [
+   "개수 · 비율",
+   "salted hash(fill_id → sha(code|date|side) 앞 16자)",
+   "salt sha256",
+   "schema 검증 결과",
+   "파일 · 요청 sha256"
+  ],
+  "local_only_not_committed": [
+   "targets_local_only.json(실제 종목 · 날짜 · 수량 · 저장 종가)",
+   "salt",
+   "API 응답 원문 · 캐시",
+   "보고서명 · 원문"
+  ]
+ },
+ "next_real_run": {
+  "credentials": [
+   "KIS_APP_KEY",
+   "KIS_APP_SECRET",
+   "DART_CRTFC_KEY"
+  ],
+  "kis_calls_upper": 133,
+  "dart_calls_upper": 232,
+  "caps": {
+   "KIS": 500,
+   "DART": 250
+  },
+  "within_caps": true,
+  "environment": "이 세션 환경변수 주입(현재 없음 · PR #82) · 네트워크 허용(openapi.koreainvestment.com:9443 · opendart.fss.or.kr)은 실행 TASK에서 확인",
+  "forbidden": [
+   "주문(order-cash 등)",
+   "잔고(inquire-balance · TTTC8434R)",
+   "주문가능금액",
+   "계좌 조회 전부"
+  ]
+ },
+ "external_calls_this_task": 0,
+ "train_replay_runs_this_task": 0
+}

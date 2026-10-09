@@ -1,0 +1,27 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "corporate-action.schema.json",
+ "title": "OpenDART 기업행동(주요사항) — 로컬 캐시 파생 레코드",
+ "description": "list.json(rcept_no · rcept_dt · report_nm)과 주요사항 상세 API에서 뽑은 칸. 원문은 로컬에만. 접수 시각이 없으면 같은 날 사용을 PIT로 올리지 않음(same_day_pit=false).",
+ "type": "object",
+ "required": ["rcept_no", "rcept_dt", "report_nm", "is_correction", "kind", "code", "source_cache_sha256"],
+ "properties": {
+  "rcept_no": {"type": "string", "pattern": "^[0-9]{14}$"},
+  "rcept_dt": {"type": "string", "pattern": "^[0-9]{8}$"},
+  "report_nm": {"type": "string", "description": "로컬 전용(공개 산출물에는 kind만)"},
+  "is_correction": {"type": "boolean", "description": "report_nm의 [기재정정] 등 표시"},
+  "original_rcept_no": {"type": ["string", "null"], "description": "정정이면 원 접수번호(연결 불가면 null → 사슬 UNKNOWN)"},
+  "corp_code": {"type": "string"},
+  "code": {"type": "string", "pattern": "^[0-9]{6}$", "description": "로컬 전용"},
+  "kind": {"enum": ["split", "reverse_split", "capital_reduction", "bonus_issue", "rights_issue", "merger", "spinoff"]},
+  "ratio": {"type": ["number", "null"], "description": "기존 1주당 효력 후 주식 수(분할 5 · 감자 10→1은 0.1 · 무상 1주당 0.5주 배정은 1.5)"},
+  "record_date": {"type": ["string", "null"], "pattern": "^[0-9]{8}$", "description": "기준일(배정 기준일)"},
+  "effective_date": {"type": ["string", "null"], "pattern": "^[0-9]{8}$", "description": "효력일 · 신주 상장(매매 개시) 기준으로 원장 수량을 바꾸는 날"},
+  "listing_date": {"type": ["string", "null"], "pattern": "^[0-9]{8}$"},
+  "cash_in_lieu_per_share": {"type": ["number", "null"], "description": "단주 1주당 지급 현금(없으면 UNKNOWN_CASH_IN_LIEU)"},
+  "available_time": {"type": ["string", "null"], "description": "접수 시각(DART는 보통 없음 → null)"},
+  "same_day_pit": {"type": "boolean"},
+  "source_cache_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "status": {"enum": ["OK", "UNKNOWN_CA_FIELDS"]}
+ }
+}

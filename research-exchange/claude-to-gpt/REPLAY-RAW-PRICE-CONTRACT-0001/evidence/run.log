@@ -1,0 +1,15 @@
+== targets148
+{"fills": 148, "by_sleeve_side": {"D1_buy": 52, "D1_sell": 71, "BASKET_buy": 12, "BASKET_sell": 13}, "classes": {"UNKNOWN_RAW_OR_ADJUSTED": 125, "IMPOSSIBLE_RAW_FILL": 23}, "unique_code_date": 145, "unique_codes": 33, "unique_dates": 77, "off_tick_unique_code_date": 20, "salt_sha256": "eb7b7d0859a3a81b83e18f49d78248b697089fc286096655938908408d08e4eb", "date_range": ["20250922", "20260331"], "scope": "현재 후보(PR #76 일봉 고침) D1 + BASKET만 · 통제는 비교 메타데이터 · 15분봉 제외"}
+rc=0
+== fixtures
+{"1_기업행동_없음": true, "2_액면분할": false, "3_감자_병합": true, "4_유무상_칸없음": true, "5_선택_미지원": true, "6_원주가_호가밖": true, "7_정정_사슬": true, "8_비용_항등식": true, "9_한도_음수": true, "10_15분봉_거부": true, "pass": false}
+rc=0
+== collector plan
+{"codes": 33, "kis_calls_upper": 133, "kis_cap": 500, "dart_calls_upper": 232, "dart_cap": 250, "within_caps": true, "retry_per_request": 2, "credential_names": ["KIS_APP_KEY", "KIS_APP_SECRET", "DART_CRTFC_KEY"], "forbidden_endpoints": ["주문(order-cash 등)", "잔고(inquire-balance · TTTC8434R)", "주문가능금액", "계좌 조회 전부"], "cache_policy": "응답 원문 · 실제 종목 · 날짜는 로컬 캐시에만 · 커밋 금지 · 파일 sha256 · 요청 sha256 · fetched_at_kst만 공개", "network_calls_this_task": 0}
+rc=0
+== contract evidence
+계약 · UNKNOWN 표 작성
+rc=0
+== fixtures (2회째 · 시험 2번 입력값만 고침)
+{"1_기업행동_없음": true, "2_액면분할": true, "3_감자_병합": true, "4_유무상_칸없음": true, "5_선택_미지원": true, "6_원주가_호가밖": true, "7_정정_사슬": true, "8_비용_항등식": true, "9_한도_음수": true, "10_15분봉_거부": true, "pass": true}
+rc=0

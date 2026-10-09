@@ -1,0 +1,55 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "raw-price-response.schema.json",
+ "title": "KIS 국내주식 기간별 시세(일봉) 원/수정 쌍 — 로컬 캐시 레코드",
+ "description": "FHKST03010100을 같은 요청으로 FID_ORG_ADJ_PRC='1'(원주가) · '0'(수정주가) 두 번 받은 결과. 응답 원문은 로컬에만. 칸 이름은 저장소 broker_kis.py · collect_prices.py가 쓰는 output2 기준이며, 공식 문서 재확인은 실제 실행 TASK에서 함(이번에 문서 · API 열람 안 함).",
+ "type": "object",
+ "required": ["request", "fetched_at_kst", "request_param_sha256", "cache_file_sha256", "basis", "rows"],
+ "properties": {
+  "request": {
+   "type": "object",
+   "required": ["endpoint", "tr_id", "code", "start", "end", "FID_ORG_ADJ_PRC", "FID_PERIOD_DIV_CODE"],
+   "properties": {
+    "endpoint": {"const": "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"},
+    "tr_id": {"const": "FHKST03010100"},
+    "code": {"type": "string", "pattern": "^[0-9]{6}$", "description": "로컬 전용 · 공개 산출물에는 salted hash만"},
+    "start": {"type": "string", "pattern": "^[0-9]{8}$"},
+    "end": {"type": "string", "pattern": "^[0-9]{8}$"},
+    "FID_ORG_ADJ_PRC": {"enum": ["0", "1"], "description": "'1' = 원주가 · '0' = 수정주가(broker_kis.py L300 주석)"},
+    "FID_PERIOD_DIV_CODE": {"const": "D"}
+   }
+  },
+  "basis": {"enum": ["RAW", "ADJUSTED"]},
+  "fetched_at_kst": {"type": "string", "format": "date-time"},
+  "request_param_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "cache_file_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+  "http_status": {"type": "integer"},
+  "rt_cd": {"type": "string"},
+  "rows": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": ["stck_bsop_date", "stck_clpr"],
+    "properties": {
+     "stck_bsop_date": {"type": "string", "pattern": "^[0-9]{8}$"},
+     "stck_oprc": {"type": ["string", "number"]},
+     "stck_hgpr": {"type": ["string", "number"]},
+     "stck_lwpr": {"type": ["string", "number"]},
+     "stck_clpr": {"type": ["string", "number"]},
+     "acml_vol": {"type": ["string", "number"]},
+     "flng_cls_code": {"type": ["string", "null"], "description": "락 구분(있으면 기록 · 없으면 null)"},
+     "prtt_rate": {"type": ["string", "number", "null"], "description": "분할 비율(있으면 기록)"},
+     "mod_yn": {"type": ["string", "null"], "description": "수정 여부(있으면 기록)"}
+    }
+   }
+  },
+  "pair_check": {
+   "type": "object",
+   "description": "같은 요청의 RAW · ADJUSTED 비교(raw_replay.check_raw_pair)",
+   "properties": {
+    "selection_differs": {"type": ["boolean", "null"]},
+    "status_by_date": {"type": "object", "additionalProperties": {"enum": ["OK", "UNKNOWN_SELECTION_UNSUPPORTED", "INVALID_OFFICIAL_RAW", "UNKNOWN_MISSING_RAW"]}}
+   }
+  }
+ }
+}
