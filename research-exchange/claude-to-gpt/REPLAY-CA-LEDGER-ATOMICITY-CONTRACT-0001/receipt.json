@@ -1,0 +1,42 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-LEDGER-ATOMICITY-CONTRACT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 30,
+ "status": "READY",
+ "source_pr": 102,
+ "source_head_sha": "b940b28347c10bc4ca13b995dd49daca505dc5e7",
+ "code_commit": "6f80bfc5de9fca75fdf0721a9599c9c0943414e8",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/ledger_atomicity.py",
+  "code/run1_ledger_atomicity.py",
+  "evidence/code-path-audit.json",
+  "evidence/ledger-atomicity.json",
+  "evidence/run.log",
+  "evidence/run1/code-path-audit.json",
+  "evidence/run1/fix.diff",
+  "evidence/run1/ledger-atomicity.json",
+  "evidence/run1/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:16:32+09:00",
+ "input": {
+  "pr": 103,
+  "head_sha": "751eadf96fce25cf0c14cfbfb4b3dc384ef47d3b"
+ },
+ "prereg_commit": "a25d04c5756b759c691834311442755ccc8249e6",
+ "all_pass": true,
+ "runs": 2,
+ "failed_runs": 1,
+ "real_events_applied": 0,
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}

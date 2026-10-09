@@ -1,0 +1,167 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-LEDGER-ATOMICITY-CONTRACT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 30,
+ "status": "READY",
+ "source_pr": 102,
+ "source_head_sha": "b940b28347c10bc4ca13b995dd49daca505dc5e7",
+ "code_commit": "6f80bfc5de9fca75fdf0721a9599c9c0943414e8",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/ledger_atomicity.py",
+  "code/run1_ledger_atomicity.py",
+  "evidence/code-path-audit.json",
+  "evidence/ledger-atomicity.json",
+  "evidence/run.log",
+  "evidence/run1/code-path-audit.json",
+  "evidence/run1/fix.diff",
+  "evidence/run1/ledger-atomicity.json",
+  "evidence/run1/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:16:32+09:00",
+ "input": {
+  "pr": 103,
+  "head_sha": "751eadf96fce25cf0c14cfbfb4b3dc384ef47d3b",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T02:12:17+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "b940b28347c10bc4ca13b995dd49daca505dc5e7"
+   },
+   {
+    "at_kst": "2026-10-09T02:16:15+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "b940b28347c10bc4ca13b995dd49daca505dc5e7"
+   }
+  ]
+ },
+ "prereg_commit": "a25d04c5756b759c691834311442755ccc8249e6",
+ "prereg_committed_at_kst": "2026-10-09T02:13:14+09:00",
+ "verdict": "READY / 합성 원장 계약만 — 정상 4건 NAV·현금 불변·일/월 TWR 0·MDD 0, 중복 멱등(의미 키), 음성대조군 8/8, fail-closed 11/11, 실제 적용 0",
+ "summary": {
+  "normal_pass": true,
+  "idempotency_pass": true,
+  "negative_detected": true,
+  "fail_closed_pass": true,
+  "real_events_applied": 0,
+  "all_pass": true
+ },
+ "negative_controls": [
+  {
+   "mode": "partial",
+   "case": "split_1to5",
+   "distortion_r_event_day": "77404/29351",
+   "invested_distortion_factor": "5",
+   "mdd": "77404/106755",
+   "detected": true
+  },
+  {
+   "mode": "partial",
+   "case": "split_1to10",
+   "distortion_r_event_day": "5481/859",
+   "invested_distortion_factor": "10",
+   "mdd": "5481/6340",
+   "detected": true
+  },
+  {
+   "mode": "partial",
+   "case": "reverse_10to1",
+   "distortion_r_event_day": "-16659/143510",
+   "invested_distortion_factor": "1/10",
+   "mdd": "16659/143510",
+   "detected": true
+  },
+  {
+   "mode": "partial",
+   "case": "reverse_5to1",
+   "distortion_r_event_day": "-2172/42715",
+   "invested_distortion_factor": "1/5",
+   "mdd": "2172/42715",
+   "detected": true
+  },
+  {
+   "mode": "reverse",
+   "case": "split_1to5",
+   "distortion_r_event_day": "464424/29351",
+   "invested_distortion_factor": "25",
+   "mdd": "464424/493775",
+   "detected": true
+  },
+  {
+   "mode": "reverse",
+   "case": "split_1to10",
+   "distortion_r_event_day": "60291/859",
+   "invested_distortion_factor": "100",
+   "mdd": "60291/61150",
+   "detected": true
+  },
+  {
+   "mode": "reverse",
+   "case": "reverse_10to1",
+   "distortion_r_event_day": "-183249/1435100",
+   "invested_distortion_factor": "1/100",
+   "mdd": "183249/1435100",
+   "detected": true
+  },
+  {
+   "mode": "reverse",
+   "case": "reverse_5to1",
+   "distortion_r_event_day": "-13032/213575",
+   "invested_distortion_factor": "1/25",
+   "mdd": "13032/213575",
+   "detected": true
+  }
+ ],
+ "code_path_risks": [
+  "PR86 raw_replay: 원 접수번호 키·적용 기록 없음 → 연결 없는 정정 이중 적용 위험",
+  "PR88 raw_replay_v2: root_rcept_no 키 → root=self 입력 시 이중 적용 위험",
+  "main 모의 장부: 기업행동 반영 코드 없음(이중 적용 없음·반영 자체 없음)"
+ ],
+ "file_sha256": {
+  "PREREG.md": "ea6f1a40c3533da0151bf2e0f8a80b36e27a3155930a4c5b6e119e873fa4004c",
+  "REPORT.md": "c981e21c0b0b305a31fca5d547d975c9f037d28e16bb693d7737d08a8a2972b2",
+  "code/ledger_atomicity.py": "cf2c48f6057769edebe1433727ea0e4a76b9c4ecc1b332a0cd8966ddb330273b",
+  "code/run1_ledger_atomicity.py": "0834f53dedaeb9366d972f0dc621739d0ded61d0dbae4add00f3962979156a81",
+  "evidence/code-path-audit.json": "4d78e1bd18f7ae44d4c3c2be3e91e364a768c54e9a837c2cccde2c1c4df79384",
+  "evidence/ledger-atomicity.json": "d2fc4826ffa585dd0aedda35b0dd46a1cc0acc1401e0d32f841d501bb4b066db",
+  "evidence/run.log": "05bda000e433ae4bf5d157e0f0b022d7aab12cf6604f5e0de8106b195c5a9122",
+  "evidence/run1/code-path-audit.json": "4d78e1bd18f7ae44d4c3c2be3e91e364a768c54e9a837c2cccde2c1c4df79384",
+  "evidence/run1/fix.diff": "00bf0d6f9841bfd5d8ac03f0b654ce13426b86d9de595821191ecade04ccf237",
+  "evidence/run1/ledger-atomicity.json": "7cc806626b6467a687093b7e839ea0372a88c41b97a8d79b89a7b69c85a16d4f",
+  "evidence/run1/run.log": "754d087daf3ab15c702f4dd9d48c0a64d79f39d0a6f21ff86c3bd8d57f72ff07"
+ },
+ "runs": {
+  "offline_runs": 2,
+  "failed_runs": 1,
+  "failed_detail": "1회차 멱등성 2건: 중복 검사가 순서 검사보다 뒤 → BLOCKED_ORDER로 분류(상태는 불변) · 수정: 검사 순서 · 회귀 시험 1건 추가 · run1 보존",
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_symbols": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
