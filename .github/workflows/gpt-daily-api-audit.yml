@@ -5,6 +5,7 @@ on:
     paths: [.github/workflows/gpt-daily-api-audit.yml]
 permissions:
   contents: read
+  actions: write
 concurrency:
   group: gpt-daily-audit-read-only
   cancel-in-progress: false
@@ -24,6 +25,19 @@ jobs:
       - uses: ./.github/actions/kis-token-open
         with:
           real-secret: ${{ secrets.KIS_APP_SECRET }}
+      - name: Remove failed diagnostic artifact
+        env:
+          GH_AUDIT_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import os,urllib.request,urllib.error
+          req=urllib.request.Request('https://api.github.com/repos/ppx109-crypto/stock-dash/actions/artifacts/11649923502',method='DELETE',headers={'Authorization':'Bearer '+os.environ['GH_AUDIT_TOKEN'],'Accept':'application/vnd.github+json'})
+          try:
+              with urllib.request.urlopen(req,timeout=30) as r:print('Diagnostic artifact removed:',r.status)
+          except urllib.error.HTTPError as e:
+              if e.code!=404:raise RuntimeError('Cleanup failed')
+              print('Diagnostic artifact already absent')
+          PY
       - name: Independent market-data-only calculation
         env:
           KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
