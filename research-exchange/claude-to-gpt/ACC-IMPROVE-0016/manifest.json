@@ -1,0 +1,43 @@
+{
+ "schema_version": 1,
+ "task_id": "ACC-IMPROVE-0016",
+ "chain_id": "ACC-IMPROVE-0016",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "PASS",
+ "pick": "band02",
+ "prereg_commit": "6b6cce6a",
+ "completed_at_kst": "2026-10-09T17:39:20+09:00",
+ "source_pr": null,
+ "source_head_sha": null,
+ "evidence_paths": [
+  "evidence/eval.json",
+  "evidence/nav/",
+  "evidence/log/",
+  "evidence/run.sh",
+  "evidence/cut_band02_T20231231.csv"
+ ],
+ "cut_check": {
+  "pick": "band02",
+  "T": "20231231",
+  "days": 1700,
+  "max_rel_diff": 0.0,
+  "ok": true
+ },
+ "file_sha256": {
+  "REPORT.md": "1d869eefb66f2b9c200b4bd179a1b4f5807505c5bad0f88b61cd597d32f47d15",
+  "PREREG.md": "4343e9f80de888afeff62628100c4d844beb04fa9fc53538511d5cffa2821dbe",
+  "evidence/eval.json": "b40b69a149c4f9184045679495d3116dcd67a2cbd65820db5aeac4795ba5a363",
+  "evidence/nav/F.csv": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+  "evidence/nav/band02.csv": "2315c11f6c573ab6713eb01a3b1f4d9c5eaaaba09e6e715d391c0c786d11a465",
+  "evidence/cut_band02_T20231231.csv": "f934dc129a4fe476fd43cc37f37fbc006f8a2e8d3b791ba0d441408cb834fefa",
+  "research/z094.py": "ca277c8a992e7019333d7ea3b54cfda54b07dea4889579b3f71ab8224e318a90",
+  "research/z094_eval.py": "29aad87195a98c65a149370db2584f4c4356b1ed5930304f4110a7af1c84d4d8"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}

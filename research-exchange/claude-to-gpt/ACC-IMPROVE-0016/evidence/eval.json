@@ -1,0 +1,79 @@
+{
+ "all": {
+  "F": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.44,
+    "worst_day": -4.66,
+    "worst_month": -7.26,
+    "worst_2month": -10.5,
+    "mdd": -14.07
+   }
+  },
+  "band02": {
+   "front": {
+    "cagr": 14.24,
+    "worst_day": -2.65,
+    "worst_month": -3.91,
+    "worst_2month": -3.75,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.96,
+    "worst_day": -4.66,
+    "worst_month": -7.25,
+    "worst_2month": -10.45,
+    "mdd": -14.13
+   }
+  },
+  "band05": {
+   "front": {
+    "cagr": 14.06,
+    "worst_day": -2.65,
+    "worst_month": -3.91,
+    "worst_2month": -3.75,
+    "mdd": -7.49
+   },
+   "back": {
+    "cagr": 25.06,
+    "worst_day": -5.12,
+    "worst_month": -7.44,
+    "worst_2month": -10.51,
+    "mdd": -13.63
+   }
+  },
+  "band10": {
+   "front": {
+    "cagr": 13.55,
+    "worst_day": -2.65,
+    "worst_month": -3.91,
+    "worst_2month": -3.75,
+    "mdd": -7.49
+   },
+   "back": {
+    "cagr": 25.6,
+    "worst_day": -4.66,
+    "worst_month": -7.57,
+    "worst_2month": -11.22,
+    "mdd": -16.1
+   }
+  }
+ },
+ "eligible": [
+  "band02"
+ ],
+ "pick": "band02",
+ "judge": {
+  "back_cagr_better": true,
+  "back_day_ok": true,
+  "back_month_ok": true,
+  "back_limits": true,
+  "pass": true
+ }
+}
