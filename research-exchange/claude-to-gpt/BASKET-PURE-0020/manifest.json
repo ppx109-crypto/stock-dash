@@ -1,0 +1,42 @@
+{
+ "schema_version": 1,
+ "task_id": "BASKET-PURE-0020",
+ "chain_id": "BASKET-PURE-0020",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "PASS",
+ "pick": "pure",
+ "prereg_commit": "91f0a2f8",
+ "completed_at_kst": "2026-10-09T18:41:17+09:00",
+ "source_pr": null,
+ "source_head_sha": null,
+ "evidence_paths": [
+  "evidence/eval.json",
+  "evidence/nav/",
+  "evidence/log/",
+  "evidence/run.sh",
+  "evidence/cut_pure_T20231231.csv"
+ ],
+ "cut_check": {
+  "T": "20231231",
+  "days": 1700,
+  "max_rel_diff": 0.0,
+  "ok": true
+ },
+ "file_sha256": {
+  "REPORT.md": "9aed91a362a0e62917becab475b71f84b33f76b441018a9e74dd54cf18f4d14a",
+  "PREREG.md": "e8613f9260858c0126305cfe93e3be6e618db4af736ac30224b131a2c7662578",
+  "evidence/eval.json": "cdba8403d33758eded8d16eeec4ef7b5ac364e21b4f360ea504112f6e6a827f6",
+  "evidence/nav/F.csv": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+  "evidence/nav/pure.csv": "fbe41aa278314cdca1442d8bc1db793633b0729a5a08c12722b9e00448c89f75",
+  "evidence/cut_pure_T20231231.csv": "3d1133a6a19c884efd1a3079aa67c45a78acb51e0af6c7b6d121e7917ebeaa86",
+  "research/z096.py": "d060b94c26fb6f49e4b9c868d9e77a06b917778b214c586f11084785f12a2617",
+  "research/z096_eval.py": "cc656faeae95c692a81b87e0bb5ee678dc8e41503bbdd9fefd1fa418c442fd32"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
