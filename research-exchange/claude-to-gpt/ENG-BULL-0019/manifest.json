@@ -1,0 +1,35 @@
+{
+ "schema_version": 1,
+ "task_id": "ENG-BULL-0019",
+ "chain_id": "ENG-BULL-0019",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "NO_CANDIDATE",
+ "prereg_commit": "4a220b38",
+ "completed_at_kst": "2026-10-09T18:34:28+09:00",
+ "source_pr": null,
+ "source_head_sha": null,
+ "evidence_paths": [
+  "evidence/eval.json",
+  "evidence/nav/",
+  "evidence/log/",
+  "evidence/run.sh",
+  "evidence/cut_bull_T20231231.csv"
+ ],
+ "file_sha256": {
+  "REPORT.md": "3bececc49ec6cfa51fd7f5dd9b407f2b75a65e03bdc440de42ba6e714f27a973",
+  "PREREG.md": "fca65105782d2b3a2339fc777c4fa1ced7971f9600169ec6b9bf534fa784165f",
+  "evidence/eval.json": "dee30ff4f546d7c01a1a761b2ea65149a39372e141044978e17812c84386b872",
+  "evidence/nav/F.csv": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+  "evidence/nav/bull.csv": "512a1a08651b6b6733a1c3a278d459760767c6af0527490e0d7f01dfa2f15607",
+  "evidence/cut_bull_T20231231.csv": "4b1b2f2137e37d6f0d377422d4ef70078ef6e5eb9a95c0ca46425d166f11634b",
+  "research/z095.py": "cecdd4b9cfc916bcc1d0bd37538ee42653c8b0e004ff645099f9742f41f01315",
+  "research/z095_eval.py": "813035db11c40114ef1d1cbb918dd802f823d53fef49de6954b77717bba43182"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
