@@ -1,0 +1,360 @@
+{
+ "all": {
+  "cap0_park0_m1.0": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.44,
+    "worst_day": -4.66,
+    "worst_month": -7.26,
+    "mdd": -14.07
+   }
+  },
+  "cap0_park0_m1.5": {
+   "front": {
+    "cagr": 18.46,
+    "worst_day": -2.65,
+    "worst_month": -4.28,
+    "mdd": -7.79
+   },
+   "back": {
+    "cagr": 30.26,
+    "worst_day": -6.15,
+    "worst_month": -10.11,
+    "mdd": -21.52
+   }
+  },
+  "cap0_park0_m2.0": {
+   "front": {
+    "cagr": 19.23,
+    "worst_day": -2.65,
+    "worst_month": -4.25,
+    "mdd": -8.05
+   },
+   "back": {
+    "cagr": 33.83,
+    "worst_day": -6.62,
+    "worst_month": -11.27,
+    "mdd": -24.55
+   }
+  },
+  "cap0_park1_m1.0": {
+   "front": {
+    "cagr": 13.56,
+    "worst_day": -2.64,
+    "worst_month": -3.95,
+    "mdd": -7.63
+   },
+   "back": {
+    "cagr": 23.96,
+    "worst_day": -4.66,
+    "worst_month": -7.21,
+    "mdd": -13.82
+   }
+  },
+  "cap0_park1_m1.5": {
+   "front": {
+    "cagr": 17.49,
+    "worst_day": -2.63,
+    "worst_month": -4.31,
+    "mdd": -7.88
+   },
+   "back": {
+    "cagr": 30.61,
+    "worst_day": -6.14,
+    "worst_month": -10.04,
+    "mdd": -21.36
+   }
+  },
+  "cap0_park1_m2.0": {
+   "front": {
+    "cagr": 18.2,
+    "worst_day": -2.64,
+    "worst_month": -4.29,
+    "mdd": -8.16
+   },
+   "back": {
+    "cagr": 34.11,
+    "worst_day": -6.61,
+    "worst_month": -11.22,
+    "mdd": -24.47
+   }
+  },
+  "cap10_park0_m1.0": {
+   "front": {
+    "cagr": 13.83,
+    "worst_day": -2.65,
+    "worst_month": -3.78,
+    "mdd": -6.92
+   },
+   "back": {
+    "cagr": 21.8,
+    "worst_day": -4.04,
+    "worst_month": -5.77,
+    "mdd": -11.93
+   }
+  },
+  "cap10_park0_m1.5": {
+   "front": {
+    "cagr": 17.34,
+    "worst_day": -2.68,
+    "worst_month": -4.18,
+    "mdd": -8.75
+   },
+   "back": {
+    "cagr": 24.03,
+    "worst_day": -5.01,
+    "worst_month": -9.63,
+    "mdd": -18.17
+   }
+  },
+  "cap10_park0_m2.0": {
+   "front": {
+    "cagr": 18.16,
+    "worst_day": -3.09,
+    "worst_month": -4.16,
+    "mdd": -8.75
+   },
+   "back": {
+    "cagr": 26.18,
+    "worst_day": -8.62,
+    "worst_month": -12.69,
+    "mdd": -23.86
+   }
+  },
+  "cap10_park1_m1.0": {
+   "front": {
+    "cagr": 13.28,
+    "worst_day": -2.63,
+    "worst_month": -3.8,
+    "mdd": -6.92
+   },
+   "back": {
+    "cagr": 22.35,
+    "worst_day": -4.04,
+    "worst_month": -5.74,
+    "mdd": -12.02
+   }
+  },
+  "cap10_park1_m1.5": {
+   "front": {
+    "cagr": 16.58,
+    "worst_day": -2.7,
+    "worst_month": -4.22,
+    "mdd": -8.96
+   },
+   "back": {
+    "cagr": 24.39,
+    "worst_day": -5.02,
+    "worst_month": -9.56,
+    "mdd": -18.02
+   }
+  },
+  "cap10_park1_m2.0": {
+   "front": {
+    "cagr": 17.32,
+    "worst_day": -3.1,
+    "worst_month": -4.19,
+    "mdd": -8.96
+   },
+   "back": {
+    "cagr": 26.45,
+    "worst_day": -8.63,
+    "worst_month": -12.65,
+    "mdd": -23.78
+   }
+  },
+  "cap15_park0_m1.0": {
+   "front": {
+    "cagr": 14.39,
+    "worst_day": -2.65,
+    "worst_month": -3.82,
+    "mdd": -7.25
+   },
+   "back": {
+    "cagr": 22.81,
+    "worst_day": -4.66,
+    "worst_month": -7.2,
+    "mdd": -14.59
+   }
+  },
+  "cap15_park0_m1.5": {
+   "front": {
+    "cagr": 19.08,
+    "worst_day": -2.64,
+    "worst_month": -4.23,
+    "mdd": -8.05
+   },
+   "back": {
+    "cagr": 28.09,
+    "worst_day": -5.54,
+    "worst_month": -8.25,
+    "mdd": -18.14
+   }
+  },
+  "cap15_park0_m2.0": {
+   "front": {
+    "cagr": 19.96,
+    "worst_day": -2.65,
+    "worst_month": -4.2,
+    "mdd": -8.07
+   },
+   "back": {
+    "cagr": 29.92,
+    "worst_day": -6.49,
+    "worst_month": -11.7,
+    "mdd": -23.83
+   }
+  },
+  "cap15_park1_m1.0": {
+   "front": {
+    "cagr": 13.85,
+    "worst_day": -2.64,
+    "worst_month": -3.85,
+    "mdd": -7.48
+   },
+   "back": {
+    "cagr": 23.38,
+    "worst_day": -4.66,
+    "worst_month": -7.11,
+    "mdd": -14.35
+   }
+  },
+  "cap15_park1_m1.5": {
+   "front": {
+    "cagr": 18.34,
+    "worst_day": -2.64,
+    "worst_month": -4.26,
+    "mdd": -8.17
+   },
+   "back": {
+    "cagr": 28.48,
+    "worst_day": -5.54,
+    "worst_month": -8.16,
+    "mdd": -17.95
+   }
+  },
+  "cap15_park1_m2.0": {
+   "front": {
+    "cagr": 19.18,
+    "worst_day": -2.64,
+    "worst_month": -4.24,
+    "mdd": -8.21
+   },
+   "back": {
+    "cagr": 30.19,
+    "worst_day": -6.5,
+    "worst_month": -11.65,
+    "mdd": -23.75
+   }
+  },
+  "cap20_park0_m1.0": {
+   "front": {
+    "cagr": 14.25,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "mdd": -7.35
+   },
+   "back": {
+    "cagr": 24.25,
+    "worst_day": -4.66,
+    "worst_month": -6.94,
+    "mdd": -14.62
+   }
+  },
+  "cap20_park0_m1.5": {
+   "front": {
+    "cagr": 18.57,
+    "worst_day": -2.65,
+    "worst_month": -4.28,
+    "mdd": -7.72
+   },
+   "back": {
+    "cagr": 29.76,
+    "worst_day": -6.15,
+    "worst_month": -10.04,
+    "mdd": -21.22
+   }
+  },
+  "cap20_park0_m2.0": {
+   "front": {
+    "cagr": 19.31,
+    "worst_day": -2.65,
+    "worst_month": -4.25,
+    "mdd": -7.93
+   },
+   "back": {
+    "cagr": 33.15,
+    "worst_day": -6.15,
+    "worst_month": -11.12,
+    "mdd": -24.15
+   }
+  },
+  "cap20_park1_m1.0": {
+   "front": {
+    "cagr": 13.63,
+    "worst_day": -2.63,
+    "worst_month": -3.95,
+    "mdd": -7.59
+   },
+   "back": {
+    "cagr": 24.83,
+    "worst_day": -4.66,
+    "worst_month": -6.86,
+    "mdd": -14.38
+   }
+  },
+  "cap20_park1_m1.5": {
+   "front": {
+    "cagr": 17.74,
+    "worst_day": -2.64,
+    "worst_month": -4.31,
+    "mdd": -7.81
+   },
+   "back": {
+    "cagr": 30.1,
+    "worst_day": -6.14,
+    "worst_month": -9.96,
+    "mdd": -21.05
+   }
+  },
+  "cap20_park1_m2.0": {
+   "front": {
+    "cagr": 18.42,
+    "worst_day": -2.64,
+    "worst_month": -4.29,
+    "mdd": -8.05
+   },
+   "back": {
+    "cagr": 33.4,
+    "worst_day": -6.14,
+    "worst_month": -11.07,
+    "mdd": -24.06
+   }
+  },
+  "F기준": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.44,
+    "worst_day": -4.66,
+    "worst_month": -7.26,
+    "mdd": -14.07
+   }
+  }
+ },
+ "pick": "cap15_park0_m2.0",
+ "judge": {
+  "back_limits": true,
+  "back_cagr_better": true,
+  "pass": true
+ }
+}

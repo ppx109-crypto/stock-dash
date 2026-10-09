@@ -1,0 +1,29 @@
+{
+ "schema_version": 1,
+ "task_id": "ACC-IMPROVE-0014",
+ "chain_id": "ACC-IMPROVE-0014",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "PASS",
+ "pick": "cap15_park0_m2.0",
+ "prereg_commit": "5f4d9570",
+ "completed_at_kst": "2026-10-09T16:53:37+09:00",
+ "file_sha256": {
+  "REPORT.md": "0f8d1a9e66b057abb87aeec5dee2b3d4bace2be49fc854ce7e78b76af31b7b0b",
+  "PREREG.md": "e7f4c1a375ad4c0f01bf719c0b1d081880c803164abaa180bb04437786c32abe",
+  "evidence/eval.json": "73d96ac9683ebd69cebdf0a1560af1ba7ad5279a17f9f53a7e1ed27dcdf5aaad",
+  "evidence/cut_cap15_park0_m2.0_T20231231.csv": "53d8198a52f6f8e85ac59276bfaae476ed115d402c403a726cbc01971651489b",
+  "evidence/nav/cap15_park0_m2.0.csv": "394a2d170798fda779ef240ee3129385b51478808d37ad249d1521f7f45bf212",
+  "evidence/nav/cap0_park0_m1.0.csv": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+  "research/z091.py": "edcbc8b55bbfa1fbd3c35638539a1257152678080d7984fcddf1152d31db4b45",
+  "research/z092.py": "439f32f61ed29c4c80becf826da0f38f0e26d1235ad94a3a23c62b3142a9ad80",
+  "research/z092_eval.py": "4f3e26b991040a32a45fd6c215632bc02e616b4746ef460bec708a0a2265a116"
+ },
+ "incident": "branch switch during run; 20 variants rerun from same commit",
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
