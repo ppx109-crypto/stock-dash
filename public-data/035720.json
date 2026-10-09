@@ -117,8 +117,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-05",
+  "fetched": "2026-10-08",
   "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20261008",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261008800604"
+    },
     {
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20261001",
@@ -263,11 +268,6 @@
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20260727",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727800665"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260716",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716800213"
     }
   ]
 }
