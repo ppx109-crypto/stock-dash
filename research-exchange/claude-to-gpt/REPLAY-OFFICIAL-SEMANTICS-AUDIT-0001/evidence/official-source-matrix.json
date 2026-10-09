@@ -1,0 +1,644 @@
+{
+ "generated_at_kst": "2026-10-09T01:09:04+09:00",
+ "rule": "공식 도메인 원문만 · WebFetch(AI 요약) 미사용 · 원문은 로컬 보관(커밋 안 함) · sha256만 공개",
+ "fetches": [
+  {
+   "name": "dart_guide_main",
+   "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS001",
+   "retrieved_at_kst": "2026-10-09T01:02:30+09:00",
+   "http": "200",
+   "bytes": 22468,
+   "sha256": "d5942ea0d915b2e5edfe728489a3fe5dd5c7b32ee54ee4618ffd26bed7715faf",
+   "err": ""
+  },
+  {
+   "name": "dart_guide_ds005",
+   "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS005",
+   "retrieved_at_kst": "2026-10-09T01:02:34+09:00",
+   "http": "200",
+   "bytes": 33627,
+   "sha256": "a70516778e5cf1e2ece684d9cecf030c12713e073f03195c675e98bee614a608",
+   "err": ""
+  },
+  {
+   "name": "dart_guide_DS002",
+   "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS002",
+   "retrieved_at_kst": "2026-10-09T01:03:01+09:00",
+   "http": "200",
+   "bytes": 32585,
+   "sha256": "d4846510815f03dcda1ff0f10766a84150105d5b3d2ada859ccca85da7410f20",
+   "err": ""
+  },
+  {
+   "name": "dart_guide_DS003",
+   "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS003",
+   "retrieved_at_kst": "2026-10-09T01:03:07+09:00",
+   "http": "200",
+   "bytes": 25060,
+   "sha256": "239491f9d6a1efc7b0b72b52a3f1efeb89961e1e64ebd0362b487e7c1ce7ace1",
+   "err": ""
+  },
+  {
+   "name": "dart_guide_DS004",
+   "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS004",
+   "retrieved_at_kst": "2026-10-09T01:03:12+09:00",
+   "http": "200",
+   "bytes": 22312,
+   "sha256": "0d26485a879fc829a28efc0b932f36df27360e21a95f4b50dc89a63889d6c253",
+   "err": ""
+  },
+  {
+   "name": "dart_guide_DS006",
+   "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS006",
+   "retrieved_at_kst": "2026-10-09T01:03:14+09:00",
+   "http": "200",
+   "bytes": 23386,
+   "sha256": "b4108b36a3a8af34e602c49510e8a6377b6f49c79bf56a31966dfee7cb3fece2",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2019001",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001",
+   "retrieved_at_kst": "2026-10-09T01:03:16+09:00",
+   "http": "200",
+   "bytes": 52197,
+   "sha256": "63bc4e286e14bdb0ece90cbd1f0ab474de6367cea8b4240804d32263e2492ec3",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2019003",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019003",
+   "retrieved_at_kst": "2026-10-09T01:03:22+09:00",
+   "http": "200",
+   "bytes": 30959,
+   "sha256": "2252614de7282ff2d0fe95f36109d058926211adfca521e346bc40f93e464b6e",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2019018",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019018",
+   "retrieved_at_kst": "2026-10-09T01:03:27+09:00",
+   "http": "200",
+   "bytes": 32507,
+   "sha256": "100b19b57d02dba1715d8b8394d613cd137104747bf7c35cb69c7e0c73b59d49",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020023",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020023",
+   "retrieved_at_kst": "2026-10-09T01:03:29+09:00",
+   "http": "200",
+   "bytes": 39868,
+   "sha256": "a47aa3c1c33ff1bae860197a2bec8ef4e381f27702fabdb06cf3ff6346a502e5",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020024",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020024",
+   "retrieved_at_kst": "2026-10-09T01:03:31+09:00",
+   "http": "200",
+   "bytes": 39881,
+   "sha256": "2cbf9eb19724e3740071698cce5e76d185ee1006ae90800740a6bb4ecce9fa90",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020025",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020025",
+   "retrieved_at_kst": "2026-10-09T01:03:35+09:00",
+   "http": "200",
+   "bytes": 45459,
+   "sha256": "09d53110088b5a0d5e99dcc2aa013b9a7d4906a39f0bea14cfb3da914fac26e3",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020026",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020026",
+   "retrieved_at_kst": "2026-10-09T01:03:39+09:00",
+   "http": "200",
+   "bytes": 46193,
+   "sha256": "0318607852c7a18f3399f20fb5969f61ae11f3cc0adc4662ee424f556063e7d7",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020050",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020050",
+   "retrieved_at_kst": "2026-10-09T01:03:45+09:00",
+   "http": "200",
+   "bytes": 57951,
+   "sha256": "a93c8de2bbdd69db711eacacc0ec8653bd97e6ad63a7fcebf83eaeaaf11bffeb",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020051",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020051",
+   "retrieved_at_kst": "2026-10-09T01:03:50+09:00",
+   "http": "200",
+   "bytes": 50744,
+   "sha256": "5506b6e7a7608403a6d279919f5d1fe0c8f0ff5c9206f79c51e6d0db7e930949",
+   "err": ""
+  },
+  {
+   "name": "dart_detail_2020052",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020052",
+   "retrieved_at_kst": "2026-10-09T01:03:54+09:00",
+   "http": "200",
+   "bytes": 68054,
+   "sha256": "c7bc13e6f3a7e1634743dd9874c1fca5af0830f9b4343f370a19c1a2f7587bfe",
+   "err": ""
+  },
+  {
+   "name": "krx_law_main",
+   "url": "https://law.krx.co.kr/las/TopFrame.jsp",
+   "retrieved_at_kst": "2026-10-09T01:04:46+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "name": "kind_main",
+   "url": "https://kind.krx.co.kr/main.do",
+   "retrieved_at_kst": "2026-10-09T01:04:46+09:00",
+   "http": "403",
+   "bytes": 383,
+   "sha256": "81e1a132f7f585231a8774a29cca3e4a964d843a4cd85231d3df06f9b28787b9",
+   "err": ""
+  },
+  {
+   "name": "krx_main",
+   "url": "https://www.krx.co.kr/main/main.jsp",
+   "retrieved_at_kst": "2026-10-09T01:04:47+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "note": "차단 규칙 변경: 주소 안 /uapi/ 글자 기준 → 데이터 API 서버 호스트 기준(opendart /api/ · openapi(vts).koreainvestment.com · oauth2 · KRX 데이터). apiportal 문서 페이지는 문서라 허용",
+   "at": "2026-10-09T01:05:08+09:00"
+  },
+  {
+   "name": "kind_main_retry",
+   "url": "https://kind.krx.co.kr/",
+   "retrieved_at_kst": "2026-10-09T01:05:08+09:00",
+   "http": "403",
+   "bytes": 372,
+   "sha256": "225a1a237ba07777938226f545cad1c6584cf2e52b7ea2be432e765208a9a146",
+   "err": ""
+  },
+  {
+   "name": "kis_portal",
+   "url": "https://apiportal.koreainvestment.com/apiservice-apiservice?/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+   "retrieved_at_kst": "2026-10-09T01:05:08+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "name": "kis_github",
+   "url": "https://github.com/koreainvestment/open-trading-api",
+   "retrieved_at_kst": "2026-10-09T01:05:09+09:00",
+   "http": "403",
+   "bytes": 378,
+   "sha256": "b3e03aaaff81d68730d67392a135ac3fdfdf022880c66632ab188d2fe084cda3",
+   "err": ""
+  },
+  {
+   "name": "dart_main",
+   "url": "https://dart.fss.or.kr/main.do",
+   "retrieved_at_kst": "2026-10-09T01:06:14+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "name": "dart_search_form",
+   "url": "https://dart.fss.or.kr/dsab007/main.do",
+   "retrieved_at_kst": "2026-10-09T01:06:14+09:00",
+   "http": "000",
+   "bytes": 0,
+   "sha256": "",
+   "err": "curl: (56) CONNECT tunnel failed, response 403"
+  }
+ ],
+ "kis_official_repo": {
+  "url": "https://github.com/koreainvestment/open-trading-api",
+  "commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+  "how": "공개 저장소 git 읽기(코드 실행 안 함)",
+  "readme_official": "**[당사에서 제공하는 샘플코드에 대한 유의사항]**",
+  "readme_reference": "고객님의 개발 부담을 줄이고자 참고용으로 제공되고 있습니다."
+ },
+ "access_failures": [
+  {
+   "host": "law.krx.co.kr",
+   "url": "https://law.krx.co.kr/las/TopFrame.jsp",
+   "http": "000",
+   "why": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "host": "kind.krx.co.kr",
+   "url": "https://kind.krx.co.kr/main.do",
+   "http": "403",
+   "why": "서버 403(Access Denied)"
+  },
+  {
+   "host": "www.krx.co.kr",
+   "url": "https://www.krx.co.kr/main/main.jsp",
+   "http": "000",
+   "why": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "host": "kind.krx.co.kr",
+   "url": "https://kind.krx.co.kr/",
+   "http": "403",
+   "why": "서버 403(Access Denied)"
+  },
+  {
+   "host": "apiportal.koreainvestment.com",
+   "url": "https://apiportal.koreainvestment.com/apiservice-apiservice?/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+   "http": "000",
+   "why": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "host": "github.com",
+   "url": "https://github.com/koreainvestment/open-trading-api",
+   "http": "403",
+   "why": "서버 403(Access Denied)"
+  },
+  {
+   "host": "dart.fss.or.kr",
+   "url": "https://dart.fss.or.kr/main.do",
+   "http": "000",
+   "why": "curl: (56) CONNECT tunnel failed, response 403"
+  },
+  {
+   "host": "dart.fss.or.kr",
+   "url": "https://dart.fss.or.kr/dsab007/main.do",
+   "http": "000",
+   "why": "curl: (56) CONNECT tunnel failed, response 403"
+  }
+ ],
+ "rows": [
+  {
+   "id": "DART-LIST-ALL",
+   "source": [
+    {
+     "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS001",
+     "retrieved_at_kst": "2026-10-09T01:02:30+09:00",
+     "http": "200",
+     "sha256": "d5942ea0d915b2e5edfe728489a3fe5dd5c7b32ee54ee4618ffd26bed7715faf",
+     "tier": "OPENDART_DEV_GUIDE"
+    },
+    {
+     "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS002",
+     "retrieved_at_kst": "2026-10-09T01:03:01+09:00",
+     "http": "200",
+     "sha256": "d4846510815f03dcda1ff0f10766a84150105d5b3d2ada859ccca85da7410f20",
+     "tier": "OPENDART_DEV_GUIDE"
+    },
+    {
+     "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS003",
+     "retrieved_at_kst": "2026-10-09T01:03:07+09:00",
+     "http": "200",
+     "sha256": "239491f9d6a1efc7b0b72b52a3f1efeb89961e1e64ebd0362b487e7c1ce7ace1",
+     "tier": "OPENDART_DEV_GUIDE"
+    },
+    {
+     "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS004",
+     "retrieved_at_kst": "2026-10-09T01:03:12+09:00",
+     "http": "200",
+     "sha256": "0d26485a879fc829a28efc0b932f36df27360e21a95f4b50dc89a63889d6c253",
+     "tier": "OPENDART_DEV_GUIDE"
+    },
+    {
+     "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS005",
+     "retrieved_at_kst": "2026-10-09T01:02:34+09:00",
+     "http": "200",
+     "sha256": "a70516778e5cf1e2ece684d9cecf030c12713e073f03195c675e98bee614a608",
+     "tier": "OPENDART_DEV_GUIDE"
+    },
+    {
+     "url": "https://opendart.fss.or.kr/guide/main.do?apiGrpCd=DS006",
+     "retrieved_at_kst": "2026-10-09T01:03:14+09:00",
+     "http": "200",
+     "sha256": "b4108b36a3a8af34e602c49510e8a6377b6f49c79bf56a31966dfee7cb3fece2",
+     "tier": "OPENDART_DEV_GUIDE"
+    }
+   ],
+   "claim": "OpenDART API 6그룹 전체 목록에 주식분할 · 주식병합 · 액면교체 이름의 API가 없음",
+   "field": "API명",
+   "evidence": {
+    "groups": {
+     "DS001": 4,
+     "DS002": 30,
+     "DS003": 7,
+     "DS004": 2,
+     "DS005": 36,
+     "DS006": 6
+    },
+    "total": 85,
+    "split_like_names": [],
+    "names_with_분할": [
+     "회사분할 결정",
+     "회사분할합병 결정",
+     "분할"
+    ]
+   },
+   "verdict": "ACCEPT"
+  },
+  {
+   "id": "DART-LIST-API",
+   "source": [
+    {
+     "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001",
+     "retrieved_at_kst": "2026-10-09T01:03:16+09:00",
+     "http": "200",
+     "sha256": "63bc4e286e14bdb0ece90cbd1f0ab474de6367cea8b4240804d32263e2492ec3",
+     "tier": "OPENDART_DEV_GUIDE"
+    }
+   ],
+   "claim": "공시검색 칸 · 정밀도 · 정정 표시",
+   "field": "list.json",
+   "evidence": {
+    "page_count": "페이지당 건수(1~100) 기본값 : 10, 최대값 : 100",
+    "last_reprt_at": "최종보고서만 검색여부(Y or N) / 1) 기본값: N (N지정시 정정보고서를 포함한 제출 보고서 전체를 검색함)",
+    "bgn_de_limit": "고유번호(corp_code)가 없는 경우 검색기간은 3개월로 제한",
+    "pblntf_ty_I": "I : 거래소공시",
+    "I001": "I001 | 수시공시",
+    "rcept_dt": "공시 접수일자(YYYYMMDD)",
+    "report_nm_correction": "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+    "rm_correction": "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람",
+    "rcept_no": "접수번호(14자리)"
+   },
+   "response_keys": [
+    "result",
+    "status",
+    "message",
+    "page_no",
+    "page_count",
+    "total_count",
+    "total_page",
+    "list",
+    "corp_cls",
+    "corp_name",
+    "corp_code",
+    "stock_code",
+    "report_nm",
+    "rcept_no",
+    "flr_nm",
+    "rcept_dt",
+    "rm"
+   ],
+   "verdict": "ACCEPT"
+  },
+  {
+   "id": "DART-DOCUMENT",
+   "source": [
+    {
+     "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019003",
+     "retrieved_at_kst": "2026-10-09T01:03:22+09:00",
+     "http": "200",
+     "sha256": "2252614de7282ff2d0fe95f36109d058926211adfca521e346bc40f93e464b6e",
+     "tier": "OPENDART_DEV_GUIDE"
+    }
+   ],
+   "claim": "공시원문은 접수번호로 zip 파일 · 내부 칸 구조는 가이드에 없음",
+   "evidence": {
+    "document_req": "rcept_no | 접수번호 | STRING(14) | Y | 접수번호",
+    "document_out": "Zip FILE (binary)"
+   },
+   "verdict": "ACCEPT(경로) · NEEDS_DATA(원문 안 칸)"
+  },
+  {
+   "id": "DART-DETAIL-REQ",
+   "source": [
+    {
+     "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS005&apiId=2020024",
+     "retrieved_at_kst": "2026-10-09T01:03:31+09:00",
+     "http": "200",
+     "sha256": "2cbf9eb19724e3740071698cce5e76d185ee1006ae90800740a6bb4ecce9fa90",
+     "tier": "OPENDART_DEV_GUIDE"
+    }
+   ],
+   "claim": "상세 API 검색 기간은 '최초접수일' 기준",
+   "evidence": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD)",
+   "verdict": "ACCEPT",
+   "consequence": "상세 응답이 어느 정정 버전인지 가이드에 없음 → 버전 PIT로 쓰지 않음(UNKNOWN_CA_VERSION_PIT)"
+  },
+  {
+   "id": "KIS-CHART",
+   "source": [
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/inquire_daily_itemchartprice/inquire_daily_itemchartprice.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "429f45248678d60a67990da1760af5965597201a3f9b790fb27a34e1fcfb2c06",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    },
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/inquire_daily_itemchartprice/chk_inquire_daily_itemchartprice.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "bf5f5327696ee7fb1f83e63eed8bc7750b405444c2df7b10cfba43a7e8d0a220",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    }
+   ],
+   "claim": "기간별 시세 endpoint · TR · 원/수정 값 방향 · 100건 · 시장 코드 · 응답 칸",
+   "evidence": {
+    "api_name": "[국내주식] 기본시세 > 국내주식기간별시세(일/주/월/년)[v1_국내주식-016]",
+    "endpoint": "API_URL = \"/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice\"",
+    "tr_id": "tr_id = \"FHKST03010100\"",
+    "adj_flag": "fid_org_adj_prc (str): [필수] 수정주가 원주가 가격 여부 (ex. 0:수정주가 1:원주가)",
+    "row_limit": "실전계좌/모의계좌의 경우, 한 번의 호출에 최대 100건까지 확인 가능합니다.",
+    "date2_limit": "fid_input_date_2 (str): [필수] 입력 날짜 2 (ex. 조회 종료일자 (최대 100개))",
+    "market": "fid_cond_mrkt_div_code (str): [필수] 조건 시장 분류 코드 (ex. J:KRX, NX:NXT, UN:통합)",
+    "period": "fid_period_div_code (str): [필수] 기간분류코드 (ex. D:일봉 W:주봉, M:월봉, Y:년봉)",
+    "no_cont_in_call": "res = ka._url_fetch(API_URL, tr_id, \"\", params)",
+    "f_date": "'stck_bsop_date': '주식 영업 일자'",
+    "f_close": "'stck_clpr': '주식 종가'",
+    "f_lock": "'flng_cls_code': '락 구분 코드'",
+    "f_prtt": "'prtt_rate': '분할 비율'",
+    "f_mod": "'mod_yn': '변경 여부'",
+    "token": "# Token 발급, 유효기간 1일, 6시간 이내 발급시 기존 token값 유지, 발급시 알림톡 무조건 발송",
+    "readme_official": "**[당사에서 제공하는 샘플코드에 대한 유의사항]**",
+    "readme_reference": "고객님의 개발 부담을 줄이고자 참고용으로 제공되고 있습니다."
+   },
+   "verdict": "ACCEPT(공식 샘플 등급 · 포털 원문 대조 못 함)"
+  },
+  {
+   "id": "KIS-KSDINFO",
+   "source": [
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_rev_split/chk_ksdinfo_rev_split.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "c939dde4d51675422532aa51501fc42db37b57588a65b3241bdaf1a15509fc35",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    },
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_bonus_issue/chk_ksdinfo_bonus_issue.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "43107ecc256d52a68bb5c91fab94d9ab61c0c8a6e7b44fbb56dd2407290474cd",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    },
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_cap_dcrs/chk_ksdinfo_cap_dcrs.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "5cdf416a92490301f4dab7ee6324d4c646f118f8d5d7a5a842b28458befbccc2",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    },
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_merger_split/chk_ksdinfo_merger_split.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "a6a6b92ff594614105263215e6ed0df2fb55679d2768b7ebb2fe293676d5ece4",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    },
+    {
+     "url": "https://github.com/koreainvestment/open-trading-api/blob/b4e6249714418aa57833d1cbbbced39cbcc5b125/examples_llm/domestic_stock/ksdinfo_paidin_capin/chk_ksdinfo_paidin_capin.py",
+     "repo_commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+     "sha256": "33db3ed18bd622afc6e27dfcb7d5bb02aacd4ed840380e04eca7f29e9912848e",
+     "retrieved_at_kst": "2026-10-09T01:09:04+09:00",
+     "http": "git(공개 저장소 읽기)",
+     "tier": "KIS_OFFICIAL_SAMPLE(한국투자증권 공식 저장소 · README: 당사 제공 샘플 · 참고용)"
+    }
+   ],
+   "claim": "예탁원 기업행동 일정 API 5개의 칸",
+   "evidence": {
+    "ksdinfo_rev_split": {
+     "title": "# [국내주식] 종목정보 > 예탁원정보(액면교체일정)[국내주식-148]",
+     "fields": [
+      "'record_date': '기준일'",
+      "'inter_bf_face_amt': '변경전액면가'",
+      "'inter_af_face_amt': '변경후액면가'",
+      "'td_stop_dt': '매매거래정지기간'",
+      "'list_dt': '상장/등록일'"
+     ]
+    },
+    "ksdinfo_bonus_issue": {
+     "title": "# [국내주식] 종목정보 > 예탁원정보(무상증자일정)[국내주식-144]",
+     "fields": [
+      "'record_date': '기준일'",
+      "'fix_rate': '확정배정율'",
+      "'right_dt': '권리락일'",
+      "'odd_pay_dt': '단주대금지급일'",
+      "'list_date': '상장/등록일'"
+     ]
+    },
+    "ksdinfo_cap_dcrs": {
+     "title": "# [국내주식] 종목정보 > 예탁원정보(자본감소일정) [국내주식-149]",
+     "fields": [
+      "'record_date': '기준일'",
+      "'reduce_cap_rate': '감자배정율'",
+      "'comp_way': '계산방법'",
+      "'td_stop_dt': '매매거래정지기간'",
+      "'list_dt': '상장/등록일'"
+     ]
+    },
+    "ksdinfo_merger_split": {
+     "title": "# [국내주식] 종목정보 > 예탁원정보(합병_분할일정)[국내주식-147]",
+     "fields": [
+      "'record_date': '기준일'",
+      "'merge_rate': '비율'",
+      "'td_stop_dt': '매매거래정지기간'",
+      "'list_dt': '상장/등록일'",
+      "'odd_amt_pay_dt': '단주대금지급일'"
+     ]
+    },
+    "ksdinfo_paidin_capin": {
+     "title": "# [국내주식] 종목정보 > 예탁원정보(유상증자일정)[국내주식-143]",
+     "fields": [
+      "'record_date': '기준일'",
+      "'fix_rate': '확정배정율'",
+      "'fix_price': '발행예정가'",
+      "'right_dt': '권리락일'",
+      "'list_date': '상장/등록일'"
+     ]
+    }
+   },
+   "verdict": "ACCEPT(칸 존재) · UNKNOWN_CA_VERSION_PIT(공개 시각 칸 없음)"
+  },
+  {
+   "id": "REPO-BROKER",
+   "source": [
+    {
+     "file": "broker_kis.py",
+     "line": 300,
+     "claim": "FID_ORG_ADJ_PRC=0은 수정주가",
+     "tier": "REPO_CODE(근거 순위 4)"
+    }
+   ],
+   "claim": "저장소 코드도 0 = 수정주가로 씀",
+   "verdict": "ACCEPT(일치 · 보조)"
+  },
+  {
+   "id": "KRX-RULES",
+   "source": [
+    {
+     "url": "https://law.krx.co.kr/las/TopFrame.jsp",
+     "http": "000",
+     "retrieved_at_kst": "2026-10-09T01:04:46+09:00"
+    },
+    {
+     "url": "https://kind.krx.co.kr/main.do",
+     "http": "403",
+     "retrieved_at_kst": "2026-10-09T01:04:46+09:00"
+    },
+    {
+     "url": "https://www.krx.co.kr/main/main.jsp",
+     "http": "000",
+     "retrieved_at_kst": "2026-10-09T01:04:47+09:00"
+    },
+    {
+     "url": "https://kind.krx.co.kr/",
+     "http": "403",
+     "retrieved_at_kst": "2026-10-09T01:05:08+09:00"
+    }
+   ],
+   "claim": "권리락 · 매매거래정지 · 변경상장 · 주식분할/병합 공시 항목(거래소 규정)",
+   "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "why": "law.krx.co.kr · www.krx.co.kr 환경 정책 차단 · kind.krx.co.kr 서버 403(2회)"
+  },
+  {
+   "id": "KIS-PORTAL",
+   "source": [
+    {
+     "url": "https://apiportal.koreainvestment.com/apiservice-apiservice?/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice",
+     "http": "000",
+     "retrieved_at_kst": "2026-10-09T01:05:08+09:00"
+    }
+   ],
+   "claim": "KIS Developers 포털 원문",
+   "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "why": "apiportal.koreainvestment.com 환경 정책 차단 → 공식 저장소로 대신"
+  },
+  {
+   "id": "DART-WEB",
+   "source": [
+    {
+     "url": "https://dart.fss.or.kr/main.do",
+     "http": "000",
+     "retrieved_at_kst": "2026-10-09T01:06:14+09:00"
+    },
+    {
+     "url": "https://dart.fss.or.kr/dsab007/main.do",
+     "http": "000",
+     "retrieved_at_kst": "2026-10-09T01:06:14+09:00"
+    }
+   ],
+   "claim": "DART 공시 사이트(보고서명 선택지)",
+   "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "why": "dart.fss.or.kr 환경 정책 차단"
+  }
+ ]
+}

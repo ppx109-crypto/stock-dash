@@ -1,0 +1,399 @@
+{
+ "events": [
+  {
+   "kind": "split",
+   "ko": "주식 액면분할",
+   "structured_opendart": "없음(OpenDART 6그룹 85개 API 전체 목록에 주식분할 · 병합 · 액면교체 이름 0개)",
+   "structured_verdict": "ACCEPT(없음 증명)",
+   "not_same_as": "회사분할(cmpDvDecsn · 2020051)과 다른 사건",
+   "list_filter": {
+    "available": [
+     "I : 거래소공시",
+     "I001 | 수시공시"
+    ],
+    "report_nm_for_this_event": "공식 근거 없음(KRX 공시규정 · KIND 차단)",
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+   },
+   "document_path": {
+    "quote": {
+     "document_req": "rcept_no | 접수번호 | STRING(14) | Y | 접수번호",
+     "document_out": "Zip FILE (binary)"
+    },
+    "verdict": "ACCEPT(경로) · NEEDS_DATA(원문 안 칸 구조 미공개)"
+   },
+   "alt_official_source": {
+    "api": "# [국내주식] 종목정보 > 예탁원정보(액면교체일정)[국내주식-148]",
+    "fields": [
+     "'record_date': '기준일'",
+     "'inter_bf_face_amt': '변경전액면가'",
+     "'inter_af_face_amt': '변경후액면가'",
+     "'td_stop_dt': '매매거래정지기간'",
+     "'list_dt': '상장/등록일'"
+    ],
+    "ratio_note": "비율 칸 없음 · 변경전/변경후 액면가만 있음(비율로 바꾸는 식은 공식 근거 없음 → NEEDS_DATA)",
+    "pit": "공개 시각 · 접수번호 칸 없음 → UNKNOWN_CA_VERSION_PIT",
+    "verdict": "REVISE(일정 출처 후보로 추가) · PIT는 미확정"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "BLOCKED_UNMAPPED_KIND(DART 탐지 경로 미확정)",
+   "overall": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "kind": "reverse_split",
+   "ko": "주식병합",
+   "structured_opendart": "없음(OpenDART 6그룹 85개 API 전체 목록에 주식분할 · 병합 · 액면교체 이름 0개)",
+   "structured_verdict": "ACCEPT(없음 증명)",
+   "not_same_as": "회사분할(cmpDvDecsn · 2020051)과 다른 사건",
+   "list_filter": {
+    "available": [
+     "I : 거래소공시",
+     "I001 | 수시공시"
+    ],
+    "report_nm_for_this_event": "공식 근거 없음(KRX 공시규정 · KIND 차단)",
+    "verdict": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+   },
+   "document_path": {
+    "quote": {
+     "document_req": "rcept_no | 접수번호 | STRING(14) | Y | 접수번호",
+     "document_out": "Zip FILE (binary)"
+    },
+    "verdict": "ACCEPT(경로) · NEEDS_DATA(원문 안 칸 구조 미공개)"
+   },
+   "alt_official_source": {
+    "api": "# [국내주식] 종목정보 > 예탁원정보(액면교체일정)[국내주식-148]",
+    "fields": [
+     "'record_date': '기준일'",
+     "'inter_bf_face_amt': '변경전액면가'",
+     "'inter_af_face_amt': '변경후액면가'",
+     "'td_stop_dt': '매매거래정지기간'",
+     "'list_dt': '상장/등록일'"
+    ],
+    "ratio_note": "비율 칸 없음 · 변경전/변경후 액면가만 있음(비율로 바꾸는 식은 공식 근거 없음 → NEEDS_DATA)",
+    "pit": "공개 시각 · 접수번호 칸 없음 → UNKNOWN_CA_VERSION_PIT",
+    "verdict": "REVISE(일정 출처 후보로 추가) · PIT는 미확정"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "BLOCKED_UNMAPPED_KIND(DART 탐지 경로 미확정)",
+   "overall": "BLOCKED_NO_OFFICIAL_EVIDENCE"
+  },
+  {
+   "kind": "capital_reduction",
+   "ko": "감자",
+   "structured_opendart": "crDecsn(apiId 2020026)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "fv_ps(1주당 액면가액 (원))",
+    "cr_rt_ostk(감자비율(보통주식 (%)))",
+    "cr_rt_estk(감자비율(기타주식 (%)))",
+    "cr_std(감자기준일)",
+    "crsc_trnmsppd(감자일정(명의개서정지기간))",
+    "crsc_trspprpd(감자일정(매매거래 정지예정기간))",
+    "crsc_trspprpd_bgd(감자일정(매매거래 정지예정기간(시작일)))",
+    "crsc_trspprpd_edd(감자일정(매매거래 정지예정기간(종료일)))",
+    "crsc_nstklstprd(감자일정(신주상장예정일))"
+   ],
+   "missing_official_fields": [
+    "권리락일"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_cap_dcrs",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "UNKNOWN_CA_VERSION_PIT(정정 사슬) · 권리락일은 DART 칸에 없음",
+   "overall": "REVISE"
+  },
+  {
+   "kind": "bonus_issue",
+   "ko": "무상증자",
+   "structured_opendart": "fricDecsn(apiId 2020024)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "fv_ps(1주당 액면가액 (원))",
+    "nstk_asstd(신주배정기준일)",
+    "nstk_ascnt_ps_ostk(1주당 신주배정 주식수(보통주식 (주)))",
+    "nstk_ascnt_ps_estk(1주당 신주배정 주식수(기타주식 (주)))",
+    "nstk_lstprd(신주의 상장 예정일)"
+   ],
+   "missing_official_fields": [
+    "권리락일",
+    "매매거래정지기간"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_bonus_issue",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "UNKNOWN_CA_VERSION_PIT(정정 사슬) · 권리락일은 DART 칸에 없음",
+   "overall": "REVISE"
+  },
+  {
+   "kind": "rights_issue",
+   "ko": "유상증자",
+   "structured_opendart": "piicDecsn(apiId 2020023)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "fv_ps(1주당 액면가액 (원))"
+   ],
+   "missing_official_fields": [
+    "기준일",
+    "상장예정일",
+    "권리락일",
+    "매매거래정지기간"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_paidin_capin",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "NEEDS_DATA(구조화 칸에 기준일 · 발행가 · 상장일 없음 → 원문 또는 KIS 예탁원 일정)",
+   "overall": "NEEDS_DATA"
+  },
+  {
+   "kind": "rights_bonus_issue",
+   "ko": "유무상증자",
+   "structured_opendart": "pifricDecsn(apiId 2020025)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "piic_fv_ps(유상증자(1주당 액면가액 (원)))",
+    "fric_fv_ps(무상증자(1주당 액면가액 (원)))",
+    "fric_nstk_asstd(무상증자(신주배정기준일))",
+    "fric_nstk_ascnt_ps_ostk(무상증자(1주당 신주배정 주식수(보통주식 (주))))",
+    "fric_nstk_ascnt_ps_estk(무상증자(1주당 신주배정 주식수(기타주식 (주))))",
+    "fric_nstk_lstprd(무상증자(신주의 상장 예정일))"
+   ],
+   "missing_official_fields": [
+    "권리락일",
+    "매매거래정지기간"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_bonus_issue+ksdinfo_paidin_capin",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "UNKNOWN_CA_VERSION_PIT(정정 사슬) · 권리락일은 DART 칸에 없음",
+   "overall": "REVISE"
+  },
+  {
+   "kind": "merger",
+   "ko": "합병",
+   "structured_opendart": "cmpMgDecsn(apiId 2020050)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "mg_rt(합병비율)",
+    "mg_rt_bs(합병비율 산출근거)",
+    "nmgcmp_rlst_atn(신설합병회사(재상장신청 여부))",
+    "mgsc_shddstd(합병일정(주주확정기준일))",
+    "mgsc_trspprpd_bgd(합병일정(매매거래 정지예정기간(시작일)))",
+    "mgsc_trspprpd_edd(합병일정(매매거래 정지예정기간(종료일)))",
+    "mgsc_mgdt(합병일정(합병기일))",
+    "mgsc_nstklstprd(합병일정(신주의 상장예정일))",
+    "bdlst_atn(우회상장 해당 여부)",
+    "otcpr_bdlst_sf_atn(타법인의 우회상장 요건 충족여부)"
+   ],
+   "missing_official_fields": [
+    "권리락일"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_merger_split",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "UNKNOWN_CA_VERSION_PIT(정정 사슬) · 권리락일은 DART 칸에 없음",
+   "overall": "REVISE"
+  },
+  {
+   "kind": "spinoff",
+   "ko": "회사분할",
+   "structured_opendart": "cmpDvDecsn(apiId 2020051)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "dv_rt(분할비율)",
+    "atdv_excmp_atdv_lstmn_atn(분할 후 존속회사(분할 후 상장유지 여부))",
+    "dvfcmp_rlst_atn(분할설립회사(재상장신청 여부))",
+    "abcr_crrt(감자에 관한 사항(감자비율(%)))",
+    "abcr_trspprpd_bgd(감자에 관한 사항(매매거래정지 예정기간(시작일)))",
+    "abcr_trspprpd_edd(감자에 관한 사항(매매거래정지 예정기간(종료일)))",
+    "abcr_nstkascnd(감자에 관한 사항(신주배정조건))",
+    "abcr_nstkasstd(감자에 관한 사항(신주배정기준일))",
+    "abcr_nstklstprd(감자에 관한 사항(신주의 상장예정일))",
+    "dvdt(분할기일)"
+   ],
+   "missing_official_fields": [
+    "권리락일"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_merger_split",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "UNKNOWN_CA_VERSION_PIT(정정 사슬) · 권리락일은 DART 칸에 없음",
+   "overall": "REVISE"
+  },
+  {
+   "kind": "spinoff_merger",
+   "ko": "회사분할합병",
+   "structured_opendart": "cmpDvmgDecsn(apiId 2020052)",
+   "structured_verdict": "ACCEPT",
+   "official_fields": [
+    "atdv_excmp_atdv_lstmn_atn(분할에 관한 사항(분할 후 존속회사(분할 후 상장유지 여부)))",
+    "dvfcmp_atdv_lstmn_at(분할에 관한 사항(분할설립 회사(분할후 상장유지여부)))",
+    "abcr_crrt(분할에 관한 사항(감자에 관한 사항(감자비율(%))))",
+    "abcr_trspprpd_bgd(분할에 관한 사항(감자에 관한 사항(매매거래정지 예정기간(시작일))))",
+    "abcr_trspprpd_edd(분할에 관한 사항(감자에 관한 사항(매매거래정지 예정기간(종료일))))",
+    "abcr_nstkascnd(분할에 관한 사항(감자에 관한 사항(신주배정조건)))",
+    "abcr_nstkasstd(분할에 관한 사항(감자에 관한 사항(신주배정기준일)))",
+    "abcr_nstklstprd(분할에 관한 사항(감자에 관한 사항(신주의 상장예정일)))",
+    "nmgcmp_rlst_atn(합병에 관한 사항(합병신설 회사(재상장신청 여부)))",
+    "dvmg_rt(분할합병비율)",
+    "dvmg_rt_bs(분할합병비율 산출근거)",
+    "dvmgsc_shddstd(분할합병일정(주주확정기준일))",
+    "dvmgsc_dvmgdt(분할합병일정(분할합병기일))",
+    "bdlst_atn(우회상장 해당 여부)",
+    "otcpr_bdlst_sf_atn(타법인의 우회상장 요건 충족여부)"
+   ],
+   "missing_official_fields": [
+    "권리락일"
+   ],
+   "list_filter": {
+    "pblntf_ty": "B(주요사항보고) · B001",
+    "verdict": "ACCEPT(유형 코드)"
+   },
+   "alt_official_source": {
+    "api": "ksdinfo_merger_split",
+    "pit": "공개 시각 칸 없음 → UNKNOWN_CA_VERSION_PIT"
+   },
+   "correction_chain": {
+    "original_link_field": "없음(list 응답 칸 17개에 원 접수번호 칸 없음)",
+    "list_markers": [
+     "[기재정정] : 본 보고서명으로 이미 제출된 보고서의 기재내용이 변경되어 제출된 것임",
+     "정 : 본 보고서 제출 후 정정신고가 있으니 관련 보고서를 참조하시기 바람"
+    ],
+    "available_at_precision": "공시 접수일자(YYYYMMDD)",
+    "detail_api_version": "bgn_de | 시작일(최초접수일) | STRING(8) | Y | 검색시작 접수일자(YYYYMMDD) → 상세 응답이 어느 정정 버전인지 가이드에 없음",
+    "verdict": "UNKNOWN_CA_VERSION_PIT"
+   },
+   "fail_closed_reason": "UNKNOWN_CA_VERSION_PIT(정정 사슬) · 권리락일은 DART 칸에 없음",
+   "overall": "REVISE"
+  }
+ ],
+ "common": {
+  "list_page_count": "페이지당 건수(1~100) 기본값 : 10, 최대값 : 100",
+  "list_last_reprt_at": "최종보고서만 검색여부(Y or N) / 1) 기본값: N (N지정시 정정보고서를 포함한 제출 보고서 전체를 검색함)",
+  "rule_last_reprt_at": "반드시 N(정정 포함 전체) — Y는 지금 기준 최종본만 줘서 미래 정정을 과거에 쓰게 됨",
+  "list_corp_code": "고유번호(corp_code)가 없는 경우 검색기간은 3개월로 제한",
+  "rcept_no": "접수번호(14자리)"
+ },
+ "summary": {
+  "structured_api_exists": [
+   "capital_reduction",
+   "bonus_issue",
+   "rights_issue",
+   "rights_bonus_issue",
+   "merger",
+   "spinoff",
+   "spinoff_merger"
+  ],
+  "no_structured_api": [
+   "split",
+   "reverse_split"
+  ],
+  "split_vs_spinoff": "다른 사건으로 분리(ACCEPT)"
+ }
+}

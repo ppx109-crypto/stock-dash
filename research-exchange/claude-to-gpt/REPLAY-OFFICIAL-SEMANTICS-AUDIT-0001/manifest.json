@@ -1,0 +1,132 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-OFFICIAL-SEMANTICS-AUDIT-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 23,
+ "status": "BLOCKED",
+ "source_pr": 88,
+ "source_head_sha": "a5891f5b91d7c206e5afb26049907f426e253c89",
+ "code_commit": "b9927547c8ebc41b43f13a1b68fe572e4448a69e",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/build_evidence.py",
+  "code/get.sh",
+  "code/tables.py",
+  "code/verdicts.py",
+  "evidence/dart-event-source-map.json",
+  "evidence/date-semantics-verdict.json",
+  "evidence/dynamic-call-budget-contract.json",
+  "evidence/kis-basis-contract.json",
+  "evidence/official-facts.json",
+  "evidence/official-source-matrix.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T01:12:01+09:00",
+ "input": {
+  "pr": 89,
+  "head_sha": "1b9491a143e9918e950859a12873e8e1ad52102c",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "receipt.json"
+  ],
+  "pr87_heads": {
+   "read": "fd37b8b99071a7444abbacaf0255ac2be8aabf6a",
+   "current": "24df3f414cf3ee4eb7d4f23bf25ea2bb0dc686ed",
+   "delta": "receipt.json만"
+  }
+ },
+ "prereg_commit": "7a9e1039c19be87f3183b4a0969da2fd5f81479b",
+ "prereg_committed_at_kst": "2026-10-09T01:02:18+09:00",
+ "verdict": "BLOCKED / KIS 값 방향 · 100건 ACCEPT(공식 샘플 등급) · DART 분할/병합 경로와 사건별 날짜 의미는 KRX·KIND·KIS 포털·DART 웹 차단으로 BLOCKED_NO_OFFICIAL_EVIDENCE · 정정 사슬 UNKNOWN_CA_VERSION_PIT",
+ "blocked_reasons": [
+  "KRX 규정(law.krx.co.kr)·www.krx.co.kr·apiportal.koreainvestment.com·dart.fss.or.kr: 환경 네트워크 정책 차단(CONNECT 403)",
+  "kind.krx.co.kr: 서버 403 2회",
+  "주식분할·병합의 DART 공시목록 보고서명 공식 근거 없음",
+  "사건별 가격기준일·법적발생일·매도가능일 정의 원문 없음",
+  "DART list에 원 접수번호 칸 없음 → 정정 사슬 미확정"
+ ],
+ "results": {
+  "kis": {
+   "A1_endpoint_tr": "ACCEPT",
+   "A2_adj_flag": "ACCEPT(0 수정 · 1 원 · PR88과 같음)",
+   "A3_rows": "ACCEPT(최대 100) · 100 초과 기간 동작 UNKNOWN_KIS_DOC_SEMANTICS",
+   "A3b_market": "ACCEPT(J 고정)",
+   "A4_fields": "ACCEPT(칸 이름) · 락코드 값·정지 표현 NEEDS_DATA",
+   "A5_formula": "ACCEPT(식) · 숫자 동적",
+   "tier": "KIS_OFFICIAL_SAMPLE(포털 원문 대조 못 함)"
+  },
+  "dart": {
+   "api_total": 85,
+   "split_like_api": 0,
+   "split": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "reverse_split": "BLOCKED_NO_OFFICIAL_EVIDENCE",
+   "capital_reduction": "REVISE",
+   "bonus_issue": "REVISE",
+   "rights_issue": "NEEDS_DATA",
+   "rights_bonus_issue": "REVISE",
+   "merger": "REVISE",
+   "spinoff": "REVISE",
+   "spinoff_merger": "REVISE",
+   "split_vs_spinoff": "다른 사건(ACCEPT)"
+  },
+  "date_semantics": "9개 사건 × 3시점 모두 BLOCKED_NO_OFFICIAL_EVIDENCE",
+  "available_at": "ACCEPT(접수일 날짜만 · PR88 당일 금지 유지)",
+  "correction_chain": "UNKNOWN_CA_VERSION_PIT",
+  "last_reprt_at": "N만 허용",
+  "dynamic_budget": "의사코드 고정 · 72는 예시",
+  "ledger_boundary": "148은 기존 체결 감사 분모 · 전체 542/154 재생 아님"
+ },
+ "fetch_counts": {
+  "total": 25,
+  "ok_200": 16,
+  "failures": 8
+ },
+ "kis_official_repo": {
+  "url": "https://github.com/koreainvestment/open-trading-api",
+  "commit": "b4e6249714418aa57833d1cbbbced39cbcc5b125",
+  "how": "공개 저장소 git 읽기(코드 실행 안 함)",
+  "readme_official": "**[당사에서 제공하는 샘플코드에 대한 유의사항]**",
+  "readme_reference": "고객님의 개발 부담을 줄이고자 참고용으로 제공되고 있습니다."
+ },
+ "file_sha256": {
+  "PREREG.md": "d21030365da031f59f2eb59e2996c54065501ce2afc83f1bfb9e5b09e1258dde",
+  "REPORT.md": "a34d67e13b7c13f3349e9c0606ce1c3664c344cf3cb9c7de6432ab3bb3593503",
+  "code/build_evidence.py": "f8f9e9d543b802b33a41e9c0605746b9ff7e82bda7c395a18498235deb20e7c1",
+  "code/get.sh": "9b406b7f483592450d2ea5e2293033eb55fe6607fa979c1c7914cf557e698a4d",
+  "code/tables.py": "9991372c3e93059e756b57ee47bd8760ff3b5b905bfa3a7b5f30f682a4db156e",
+  "code/verdicts.py": "cb4936fb36b458f0a1555602b5d36f93f01034330b6e8aedafaba6ae9da66e38",
+  "evidence/dart-event-source-map.json": "bb6880f2e7abd2f97ca55a24d522cc009736f9ad0b33f64bedd636105d4eae5d",
+  "evidence/date-semantics-verdict.json": "3cc27bfa9af1f4584ad40992d58b540d0884fa9bb5fc0a4cf4ea7e2bd115526e",
+  "evidence/dynamic-call-budget-contract.json": "95e1e26b6b2224ed7f16b73a915686b509f0e8d019f442e9007df96333e45ec2",
+  "evidence/kis-basis-contract.json": "fe6c1beb3f6e5e8e8c0e033563406d82a3ee06578bbefb486241269fa910e4cf",
+  "evidence/official-facts.json": "1ad567ca838930e5f3c03ca4f8bb89eb91c0c7e44eeb59e42223a05688f0761b",
+  "evidence/official-source-matrix.json": "d760a819f25aa7d4aa271b96bd2fb0debe56cb838423ded676bada55f576245b",
+  "evidence/run.log": "24885d160558123db767d43915edf88a3c555a412dcad3cb8daf5a19767c0612"
+ },
+ "runs": {
+  "doc_fetch_runs": 1,
+  "retries": "kind 1회(사전등록 허용)",
+  "data_api_calls": 0,
+  "token_calls": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "train_replay_runs": 0,
+  "performance_runs": 0,
+  "web_search": 0,
+  "webfetch_ai_summary": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "데이터 API · 토큰 · 키 · Secrets",
+  "실제 수집 · 캐시",
+  "148 · 전체 원장 재생 · 성과",
+  "alpha · threshold · OOS",
+  "주문 · 운영 · 워크플로 · 15분봉 · 자동병합",
+  "비공식 2차 자료"
+ ]
+}
