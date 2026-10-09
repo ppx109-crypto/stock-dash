@@ -1,0 +1,12 @@
+{
+ "task_id": "D1-BEAR-0011",
+ "chain_id": "D1-BEAR-0011",
+ "code_commit": "029f2667",
+ "completed_at_kst": "2026-10-09T15:55:47+09:00",
+ "evidence_paths": [
+  "evidence/hedge_raw.json",
+  "evidence/hedge_adj.json",
+  "evidence/run-raw.log",
+  "evidence/run-adj.log"
+ ]
+}
