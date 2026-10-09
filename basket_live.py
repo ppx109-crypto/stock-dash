@@ -134,13 +134,21 @@ def step(state, day, t0, days_since, events_t0, react, inside, held, now_price, 
 
 # ───────────────────────── 실제 날(idle_live.run 안에서 15:10에 부름) ─────────────────────────
 
+def event_class(title):
+    """공시 제목 → 정정 · 권리락 · 매매거래정지 · 자회사·종속 · 본 공시(감사 AUDIT-1 F7 · research/z071.py 22줄과 같은 식)."""
+    t = title or ""
+    return "정정" if "정정" in t else "권리락" if "권리락" in t else "매매거래정지" if "거래정지" in t else "자회사·종속" if ("자회사" in t or "종속" in t) else "본 공시"
+
+
 def load_events(codes=None, folder="event-data"):
+    """바구니 사건은 '본 공시'만(정정 · 권리락 · 거래정지 안내 · 자회사 공시는 뺌 · 연구 BASKET-PURE-0020 PASS · 사용자 결정)."""
     out = {}
     for path in Path(folder).glob("*.json"):
         if codes is not None and path.stem not in codes:
             continue
         b = _load(path, {})
-        out[path.stem] = [(str(r.get("date")), r.get("kind")) for r in (b.get("rows") or []) if r.get("date")]
+        out[path.stem] = [(str(r.get("date")), r.get("kind")) for r in (b.get("rows") or [])
+                          if r.get("date") and event_class(r.get("title")) == "본 공시"]
     return out
 
 
