@@ -266,6 +266,9 @@ def stage2():
     acc = [got[choice][1.0]["account"]["worst_day"][1], got[choice][1.0]["account"]["worst_month"][1],
            s1["results"][choice]["1.0"]["account"]["worst_day"][1], s1["results"][choice]["1.0"]["account"]["worst_month"][1]]
     acc_ok = all(x is not None and x > -15 for x in acc)
+    cash = [got[choice][1.0]["account"]["min_cash_share"], s1["results"][choice]["1.0"]["account"]["min_cash_share"]]
+    cash_ok = all(x is not None and x >= -1e-9 for x in cash)      # 현금이 음수(빚)인 날이 있으면 계좌 위험은 미검증(GPT #133 재검토)
+    account_status = "FAIL" if not acc_ok else ("PASS" if cash_ok else "UNVERIFIED_NEGATIVE_CASH")
     cuts = cut_check(choice)
     import dguard  # noqa: E402
     before = len(dguard.FAILS)
@@ -273,14 +276,19 @@ def stage2():
         dguard.layer8()
     fill_ok = len(dguard.FAILS) == before
     guard_ok = all(c["ok"] for c in cuts) and fill_ok
-    ok = all(t.values()) and acc_ok and guard_ok
-    verdict = "ROBUST_CANDIDATE(사용자 결정 → 모의투자)" if ok else "REJECTED"
+    engine_ok = all(t.values()) and guard_ok
+    if engine_ok and account_status == "PASS":
+        verdict = "ROBUST_CANDIDATE(조건부 역사 비교 · 사용자 결정)"
+    elif engine_ok and account_status == "UNVERIFIED_NEGATIVE_CASH":
+        verdict = "ROBUST_ENGINE_ONLY(계좌 위험 미검증 — 현금 음수)"
+    else:
+        verdict = "REJECTED"
     out = {"stage": 2, "side": "뒤(2021~)", "choice": choice, "results": {n: {str(m): brief(got[n][m]) for m in NEIGH} for n in got},
            "R": {n: R(got[n]) for n in got}, "SPREAD": {n: SPREAD(got[n]) for n in got}, "years": {n: got[n][1.0]["해마다"] for n in got}, "test": t,
-           "diff_vs_V0": diff(got["V0"][1.0], got[choice][1.0]), "account_ok_both_halves": acc_ok, "cut_check": cuts,
+           "diff_vs_V0": diff(got["V0"][1.0], got[choice][1.0]), "account_ok_both_halves": acc_ok, "min_cash_share_both": cash, "account_status": account_status, "cut_check": cuts,
            "date_hold_audit_ok(dguard 8겹 · 체결 가능성은 미검증)": fill_ok, "dguard_fails": dguard.FAILS, "verdict": verdict}
     (OUT / "stage2.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
-    print(f"[뒤] 판정 {t} · 계좌 한도 {acc_ok} · 자르기 {cuts} · 날짜 · 보유기간 감사 {fill_ok}(체결 가능성 미검증) → {verdict}", flush=True)
+    print(f"[뒤] 판정 {t} · 계좌 한도 {acc_ok} · 계좌 상태 {account_status}(가장 낮은 현금 몫 {cash}) · 자르기 {cuts} · 날짜 · 보유기간 감사 {fill_ok}(체결 가능성 미검증) → {verdict}", flush=True)
     return 0
 
 
