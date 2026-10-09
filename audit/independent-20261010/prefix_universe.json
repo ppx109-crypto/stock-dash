@@ -1,0 +1,113 @@
+{
+  "cutoff": "20201231",
+  "current_adjusted_price_vintage_held_fixed": true,
+  "universe_membership_changed_cells": 20790,
+  "universe_changed_days": 1169,
+  "F5_month_selection_changed_count": 32,
+  "examples": [
+    {
+      "decision_date": "20170201",
+      "full_only": [
+        "103140"
+      ],
+      "prefix_only": [
+        "016380"
+      ]
+    },
+    {
+      "decision_date": "20170403",
+      "full_only": [
+        "000990",
+        "035420"
+      ],
+      "prefix_only": [
+        "032350",
+        "042700"
+      ]
+    },
+    {
+      "decision_date": "20170601",
+      "full_only": [
+        "096530"
+      ],
+      "prefix_only": [
+        "032350"
+      ]
+    },
+    {
+      "decision_date": "20170703",
+      "full_only": [
+        "006260",
+        "025540",
+        "035720",
+        "096530"
+      ],
+      "prefix_only": [
+        "007700",
+        "066970",
+        "086520",
+        "112610"
+      ]
+    },
+    {
+      "decision_date": "20170901",
+      "full_only": [
+        "071970"
+      ],
+      "prefix_only": [
+        "112610"
+      ]
+    },
+    {
+      "decision_date": "20171101",
+      "full_only": [
+        "042700",
+        "112040"
+      ],
+      "prefix_only": [
+        "003230",
+        "004490"
+      ]
+    },
+    {
+      "decision_date": "20180201",
+      "full_only": [
+        "009420"
+      ],
+      "prefix_only": [
+        "141080"
+      ]
+    },
+    {
+      "decision_date": "20180402",
+      "full_only": [
+        "004800"
+      ],
+      "prefix_only": [
+        "042700"
+      ]
+    },
+    {
+      "decision_date": "20180502",
+      "full_only": [
+        "001680",
+        "012630"
+      ],
+      "prefix_only": [
+        "030190",
+        "141080"
+      ]
+    },
+    {
+      "decision_date": "20180601",
+      "full_only": [
+        "004800",
+        "064350"
+      ],
+      "prefix_only": [
+        "042700",
+        "218410"
+      ]
+    }
+  ]
+}
