@@ -44,6 +44,7 @@ ETF_SIDE = 0.00065
 STOCK_SIDE = os.getenv("Z_STOCK_SIDE")
 D1_VOL = float(os.getenv("Z_D1_VOL", "0"))   # 1일봉 몫 흔들림 상한(하루 σ). 후보 = 0.021822
 LOOK = 20   # 검산용: 주식 편도 비용을 고정(예: 0.00125 = 왕복 0.25%)
+ACC_VOL = float(os.getenv("Z_ACC_VOL", "0"))   # 계좌 전체 흔들림 상한(하루 σ) · H5 = 0.010911
 
 
 def etf_closes(code):

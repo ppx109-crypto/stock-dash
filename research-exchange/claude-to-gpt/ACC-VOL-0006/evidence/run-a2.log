@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/user/stock-dash/research/z085.py", line 372, in <module>
+    main()
+  File "/home/user/stock-dash/research/z085.py", line 158, in main
+    if ACC_VOL > 0 and pos:
+       ^^^^^^^
+NameError: name 'ACC_VOL' is not defined
