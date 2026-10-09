@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/user/stock-dash/research/z082.py", line 165, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/user/stock-dash/research/z082.py", line 136, in main
+    a0 = account(gs[0]["led"], gs[0]["still"], gs[0]["since"], gs[0]["end"])[0]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/stock-dash/research/z082.py", line 89, in account
+    rets.append((v / tot, seq))
+                 ~~^~~~~
+ZeroDivisionError: float division by zero

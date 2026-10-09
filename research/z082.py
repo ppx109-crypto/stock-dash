@@ -78,7 +78,7 @@ def account(led, still, start, end, pre=None):
                 w[pos[k]["code"]] += u * px_dec(pos[k]["code"], d)
             tot = sum(w.values())
             rets, ok = [], tot > 0
-            for c, v in w.items():
+            for c, v in (w.items() if ok else []):      # 평가액 합이 0(0원어치 줄만)이면 흔들림 판단 없음 — z080.asset_sigma와 같음(고장 고침 · 공개)
                 ds, cs = series[c]
                 i = bisect.bisect_right(ds, d) - 1
                 if i - z080.LOOK < 0:
