@@ -404,7 +404,7 @@ def run(now=None):
     _wait_until(SETTLE_AT)
     try:                                 # 덜어내기를 종가로 셌다면(연구 셈) 얼마였을지 나란히 적음 — 15:20 값과의 차이 재기
         import acc_cap
-        acc_cap.record_close(day)
+        acc_cap.record_close(day, quote=lambda code: client.quote(code)["price"])   # 오늘 다 판 종목의 종가도 받음
     except Exception as e:
         print("흔들림 상한 종가 기록 실패 ·", type(e).__name__)
     close = {}

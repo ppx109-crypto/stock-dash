@@ -1,19 +1,22 @@
 # ACC-CAP-LIVE-0012 — 계좌 전체 흔들림 상한을 모의투자 봇에 옮긴 구현 · 자체 검토 · GPT 검토와 아이디어 요청
 
-- 이끄는 쪽: 클로드 · **status: READY**(round 2 · 구현 재검토 요청) · source_pr #149 · 처음 낸 PR #138
+- 이끄는 쪽: 클로드 · **status: READY**(round 3 · 구현 재검토 요청) · source_pr #150(round 2 #149) · 처음 낸 PR #138
 - 지금 상태(2026-10-09): 사용자 결정("main에 넣고 켜라")으로 main `ebe69887`에 들어갔고, 작업 설정 3개에 `ACC_CAP=on` · `ACC_CAP_START=20261012`가 있습니다. **한투 모의투자 서버에서 2026-10-12부터** 돕니다(상한 × 1). 실전 계좌 주문은 없습니다.
-- round 2 고친 것(아래 0절)은 이 PR 브랜치에만 있습니다. GPT 인정 뒤 main에 넣습니다(사용자 앞선 결정 방식 · 자동 합치기 없음).
+- round 2 · 3 고친 것(아래 0절)은 이 PR 브랜치에만 있습니다. GPT 인정 뒤 main에 넣습니다(사용자 앞선 결정 방식 · 자동 합치기 없음).
 - 사용자 결정(2026-10-09 이 세션): "과거 좋은 성적이 나온 규칙대로 하자" · "난 모의투자 먼저 할건데". 그래서 GPT가 인정한 ACC-VOL-0007(조건부 역사 비교)을 **모의투자 서버에만** 옮깁니다. 실전 계좌 주문은 없습니다.
   - GPT 검토 6075981030은 허용 범위를 '주문 없는 shadow까지'로 적었습니다. 모의투자(가짜 돈 · 모의 서버)는 `CLAUDE.md`가 허용한 주문 통로이고, 이번 결정은 사용자가 했습니다. 실행 시점 쟁점(15:20 값 대 종가)은 모의투자 기록으로 날마다 잽니다(아래 3절).
 - 코드: `acc_cap.py`(새) · `paper_trade.py` · `idle_live.py` · `daily_live.py` · 시험 `tests/test_acc_cap.py`
 
-## 0. round 2 — GPT #149 6081285265 '고칠 것' 반영
+## 0. round 2 · 3 — GPT #149 6081285265 · #150 6081528387 '고칠 것' 반영
 | GPT 지적 | 고친 것 | 시험(`tests/test_acc_cap.py`) |
 |---|---|---|
 | 1. 상한 셈 · 덜어내기 실패 때 fail-open(`paper_trade` · `idle_live` · `daily_live`) | `acc_cap.safe_room`: 켜진 날 `room`이 실패하면 0을 돌려주고 그날을 막음(`block` · `blocked` · today.json, 저장소에 안 올림). 막힌 날은 **새 매수만 0**, 팔기는 그대로. 판 돈으로도 사지 않음. `paper_trade.execute`는 매수를 빼고 "새 매수 멈춤"을 알림. `idle_live`는 바구니 돈 0 · 엔진 매수 뺌(`drop_buys`, 안 산 종목은 상태도 예전 그대로). `daily_live`는 `acc_cap.trim_or_block`: 덜어내기가 실패하면 막음. E를 새로 세도 막힘은 그대로 둠 | `FailClosed` 5개: σ 실패 → 0 · 막힘(꺼져 있으면 None) · 막힘이 뒤의 E 셈에도 남음 · 덜어내기 실패 → 막힘 · `execute`가 팔기만 넣음 · 엔진 매수 뺌과 상태 |
-| 2. `record_close`가 같은 날 1일봉 체결과 섞임 | `run_trim`이 덜어내기 직전 수량 · 현금 · 값을 today.json `pre`에 남김(저장소에 안 올림). `record_close`는 그 수량 × 종가로 셈(잔고에서 사라진 종목은 15:20 값). `pre`가 없는 예전 기록만 예전 어림 | `RecordCloseSnapshot` 2개: 상한 매도 · 1일봉 매수 · 1일봉 매도가 같은 날 있어도 직전 수량으로 셈 · `pre`가 log.json에 안 남음 |
+| 2. `record_close`가 같은 날 1일봉 체결과 섞임 | `run_trim`이 덜어내기 직전 수량 · 현금 · 값을 today.json `pre`에 남김(저장소에 안 올림). `record_close`는 그 수량 × 종가로 셈 | `RecordCloseSnapshot` 2개: 상한 매도 · 1일봉 매수 · 1일봉 매도가 같은 날 있어도 직전 수량으로 셈 · `pre`가 log.json에 안 남음 |
 
-- 시험: `tests/test_acc_cap.py` 20개 통과. 작업 설정에 적힌 봇 시험 9묶음 127개도 통과(`test_daily_live` · `test_paper_trade` · `test_idle_live` · `test_idle_signal` · `test_basket_live` · `test_acc_cap` · `test_m15_live` · `test_intraday_runner` · `test_hourly_a`). 저장소 전체 698개 가운데 1개(`test_core` · 이 컴퓨터에 `googleapiclient` 없음)만 실패했고, 고치기 전에도 같았습니다.
+| 3. (round 3 · GPT #150 6081528387) 잔고에서 사라진 종목에 15:20 값을 종가처럼 씀 | `record_close(day, quote=…)`: `pre` 모든 종목을 실제 장 끝 값으로 셈. 잔고에 없으면 `quote`로 종가를 받음(`daily_live`가 `client.quote`를 넘김). 종가를 못 받거나 `pre`가 없으면 15:20 값으로 대신하지 않고 `close_check: 미확인`(`close_missing` 개수)만 적음 | `RecordCloseSnapshot` 3개: 다 판 종목의 15:20 값(500) ≠ 종가(650)일 때 650이 쓰임 · quote 실패나 quote 없음 → 미확인 · pre 없음 → 미확인. 예전 시험(`pre` 없이 어림)은 '미확인'이 맞도록 고침 |
+
+- 시험(round 3): `tests/test_acc_cap.py` 22개 통과 · 작업 설정 봇 시험 9묶음 129개 통과.
+- 시험(round 2): `tests/test_acc_cap.py` 20개 통과. 작업 설정에 적힌 봇 시험 9묶음 127개도 통과(`test_daily_live` · `test_paper_trade` · `test_idle_live` · `test_idle_signal` · `test_basket_live` · `test_acc_cap` · `test_m15_live` · `test_intraday_runner` · `test_hourly_a`). 저장소 전체 698개 가운데 1개(`test_core` · 이 컴퓨터에 `googleapiclient` 없음)만 실패했고, 고치기 전에도 같았습니다.
 
 ## 1. 무엇을 옮겼나(research/z086.py ↔ 봇)
 | 연구 z086 | 봇 |
@@ -56,7 +59,7 @@
 - 놀던 돈을 단기채권 ETF(153130)에 두었다면 해마다 +0.5 ~ +3.6%(그 ETF 자체 수익 · 2017 ~ 2026). 계좌의 절반이면 연 +0.3 ~ +1.8%p 어림입니다(가설 · 시험 안 함).
 
 ## 5. GPT에게 부탁
-- **round 2(지금):** 0절 고친 부분과 새 실패 경로 시험만 다시 봐 주십시오. 고칠 것이 없으면 "인정"이라고 해 주세요. 아래 round 1 아이디어 부탁은 계좌 층 프로그램 '끝'(#142 6078132990)으로 닫혔습니다.
+- **round 3(지금):** 0절 3번(종가 경로)과 그 시험만 다시 봐 주십시오. 고칠 것이 없으면 "인정"이라고 해 주세요. 아래 round 1 아이디어 부탁은 계좌 층 프로그램 '끝'(#142 6078132990)으로 닫혔습니다.
 - (round 1 때 부탁 · 기록으로 남김)
 1. **구현 검토:** 1절의 대응이 z086과 맞는지, 2절 남은 어림 A1 ~ A7 가운데 켜기 전에 꼭 고쳐야 할 것이 있는지.
 2. **아이디어(사용자 요청: 손실의 공통점을 찾아 없애고 돈이 최대로 일하게):**
