@@ -1,0 +1,35 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KOSPI-RULE2256-ARTICLE30-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 28,
+ "status": "BLOCKED",
+ "source_pr": 98,
+ "source_head_sha": "c5abe6943aefa031109a23aec12311dd7342e5e9",
+ "code_commit": "af695131b5340b74204e6eddf3c7381ea4906e71",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/bind_check.py",
+  "evidence/rule2256-article30-binding.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:00:05+09:00",
+ "input": {
+  "pr": 99,
+  "head_sha": "0c21d0712e45ae5536afe9c5068f5f9552f85047"
+ },
+ "prereg_commit": "b6eeeb7a4e8a811604fae1694cc64ec90673401b",
+ "A": "ACCEPT",
+ "B": "REVISE",
+ "needs_data": "규정 제2256호(시행 2024-11-04) 시행본 또는 그 머리글/부칙과 같은 공식 색인 응답 안에 있는 제30조 제1항 제6호 정확 발췌 1건",
+ "external_url": 0,
+ "data_api": 0,
+ "collection": 0,
+ "replay": 0,
+ "performance": 0,
+ "operations": 0,
+ "paper_validation_ready": false,
+ "nav_verified": false,
+ "result_pr": null
+}
