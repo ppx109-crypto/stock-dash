@@ -37,6 +37,9 @@ jobs:
       M15_PAPER_TRADING: 'on'
       M15_PAPER: 'on'
       PAPER_START: '20261002'
+      # 계좌 흔들림 상한(acc_cap.py · 사용자 2026-10-09 "main에 넣고 켜라") — 장중 15분봉 사기도 'E × 계좌 − 든 것'까지
+      ACC_CAP: 'on'
+      ACC_CAP_START: '20261012'
       KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
       KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
       KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
@@ -53,7 +56,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install requests numpy
-      - run: python -m unittest tests.test_intraday_runner tests.test_hourly_a tests.test_m15_live tests.test_paper_trade -v
+      - run: python -m unittest tests.test_intraday_runner tests.test_hourly_a tests.test_m15_live tests.test_paper_trade tests.test_acc_cap -v
       - name: 출입증을 지금 받아 두고 바로 보관함에 넣음(오후 작업 · 다른 봇이 같은 날 또 받지 않게)
         continue-on-error: true
         run: python -c "import broker_kis, paper_trade; broker_kis.market().authorize(); paper_trade.PaperBroker().authorize(); print('출입증 준비')"
