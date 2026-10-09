@@ -26,6 +26,7 @@ BASE = rule.SLOPE                       # 1.46 (5거래일)
 STEPS = {"V0": 5, "V1": 10, "V2": 20}
 THRESH = {v: ((1 + BASE / 100) ** (n / 5) - 1) * 100 for v, n in STEPS.items()}   # V0는 정확히 1.46
 NEIGH = (0.9, 1.0, 1.1)
+CASH_EPS = 1e-12                          # 현금 음수 판정의 부동소수 오차 허용(NAV 대비) — 사전등록 2.2판
 REF = (13.86, -6.6, 12.65, 8.9)          # RULESET 새 82 앞 반(연수익 · 골 · 행운뺌 · 큰2건뺌) — 참고 판이 이와 다르면 멈춤
 FULL_CALM = rule._calm
 ORIG_HOLDS = rule.holds
@@ -146,7 +147,7 @@ def account(led, still, start, end, lanes=None):
     pct = lambda x: round(x * 100, 3) if x is not None else None
     return {"worst_day": [wd[0], pct(wd[1])], "worst_month": [wm[0], pct(wm[1] - 1) if wm[1] is not None else None],
             "mdd_daily_reported_only": [mdd[0], pct(mdd[1])], "open_at_end": len(still), "max_gross_exposure": round(gross_max, 4),
-            "min_cash_share": round(cash_min, 4), "end_nav": round(navs[-1][1], 4), "period": [days[0], days[-1]], "days": len(navs)}
+            "min_cash_share": round(cash_min, 4), "min_cash_raw": cash_min, "end_nav": round(navs[-1][1], 4), "period": [days[0], days[-1]], "days": len(navs)}
 
 
 def grid(name, which):
@@ -266,8 +267,9 @@ def stage2():
     acc = [got[choice][1.0]["account"]["worst_day"][1], got[choice][1.0]["account"]["worst_month"][1],
            s1["results"][choice]["1.0"]["account"]["worst_day"][1], s1["results"][choice]["1.0"]["account"]["worst_month"][1]]
     acc_ok = all(x is not None and x > -15 for x in acc)
-    cash = [got[choice][1.0]["account"]["min_cash_share"], s1["results"][choice]["1.0"]["account"]["min_cash_share"]]
-    cash_ok = all(x is not None and x >= -1e-9 for x in cash)      # 현금이 음수(빚)인 날이 있으면 계좌 위험은 미검증(GPT #133 재검토)
+    cash = [got[choice][1.0]["account"]["min_cash_raw"], s1["results"][choice]["1.0"]["account"]["min_cash_raw"]]
+    # 현금이 음수(빚)인 날이 있으면 계좌 위험은 미검증(GPT #133 재검토). 반올림 전 값으로 판정 · 허용 오차는 부동소수 셈 오차 1e-12(NAV 대비)만
+    cash_ok = all(x is not None and x >= -CASH_EPS for x in cash)
     account_status = "FAIL" if not acc_ok else ("PASS" if cash_ok else "UNVERIFIED_NEGATIVE_CASH")
     cuts = cut_check(choice)
     import dguard  # noqa: E402
