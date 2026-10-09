@@ -1,0 +1,417 @@
+{
+ "task": "Z1-DELISTED-0023",
+ "round": 3,
+ "T": "20231231",
+ "hashes": {
+  "research/z077.py": "fe332afd382260393ec15ea4fb927777420798457262454973334b40809a3000",
+  "research/z078.py": "687f8df9e75a5c942aedfe85d1d72da63ccfbef1b757d18e84f1b1db3f2708ad",
+  "research/z080.py": "b23cfaf19d869963ef120da4f4b0d8a889eaa093b4c60f08808bd780d759bc65",
+  "research/z081.py": "fb7ccd76691b96eb1a145042237c06760eaf0da06d0cb263299752ff3930d325",
+  "research/z098.py": "b7d7ef5936a568579e7d5f237d88b1d710a957db1efb2144cba9493406b4ae6d",
+  "nrl.py": "18a653db8d9e6698e1fe8b8c2cefeb1ae785a9834fdaf4180958bbb55963718f",
+  "rule.py": "a52b695123aa2bced7fedbb130f43b586c86c24274760cbed13f7c9fb4e8b9ed",
+  "lab.py": "2665a76cffc18ce1ec3b6e2c0a25527c291636a5c0c65f017c4e60c2ae9ce36b",
+  "caps.py": "8da24e031c222c5a9eca7ff4859c993baaac449d1c74664a9e84208812f90c78",
+  "final_group.py": "130abf9c7e840acf3d8d28bb21a497297715823632bedafb178e349cc15a167a",
+  "final_study.py": "989b915c481a5aaddb7aef97459c1fdeae02caf99e4db1205b0eda4f615e91d2",
+  "public-daily/2020.csv": "49a0656fee77d387630790ac328a7bbfa364cb7c8626b3ea538607fe5d06fb6d",
+  "public-daily/2021.csv": "62ef94f44cf7cbe2001c157b0d5a9da1b9236b1d8ab812b2c6c5be10f678ba56",
+  "public-daily/2022.csv": "d85a243c14e635e19a6cc1903ae28ed39341403cae763619a20af65505b9bb43",
+  "public-daily/2023.csv": "1a9f75de54c5be3ff233891f50e9696d2bace8a65bd7c71c8024308f389e44aa",
+  "public-daily/2024.csv": "04cac8c2a23490d32328018c9a554f524b2bff614599cc83354535ff99e64e39",
+  "public-daily/2025.csv": "a57554cc72e160f07e5e21dd88c90cb7cf1cb0b443694760f94c0d4e87587915",
+  "public-daily/2026.csv": "06addd1ff5979f8844b258b383bbdf0340c59913a157485bb40b817bf68c49dd"
+ },
+ "nrl_cache": {
+  "path": "/tmp/nrl-cache.pkl",
+  "sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57"
+ },
+ "check_calm_month_equal": true,
+ "check_inside_same_keys": true,
+ "check_inside_same_fields_mismatch": 0,
+ "check_breadth_equal": true,
+ "flow_targets_loaded_for_b1_only_codes": 5,
+ "pool": {
+  "B0": 139900,
+  "B1": 135352,
+  "both": 124715,
+  "only_B0": 15185,
+  "only_B1": 10637
+ },
+ "missing19_top100_stockdays_from_2021": 2729,
+ "true_top100_stockdays_from_2021": 141100,
+ "check_b0_order_independent": true,
+ "seeds": [
+  {
+   "seed": 0,
+   "B0_cagr": 61.31,
+   "B1_cagr": 59.98,
+   "diff": -1.33,
+   "B0_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B0_worst_month": [
+    "202606",
+    -27.642
+   ],
+   "B1_worst_month": [
+    "202606",
+    -27.648
+   ],
+   "B0_mdd": [
+    "20260729",
+    -36.709
+   ],
+   "B1_mdd": [
+    "20260729",
+    -36.724
+   ],
+   "B0_trades": 363,
+   "B1_trades": 351,
+   "buys_only_B0": 85,
+   "buys_only_B1": 75
+  },
+  {
+   "seed": 1,
+   "B0_cagr": 60.02,
+   "B1_cagr": 59.9,
+   "diff": -0.12,
+   "B0_worst_day": [
+    "20260304",
+    -12.998
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B0_worst_month": [
+    "202606",
+    -27.643
+   ],
+   "B1_worst_month": [
+    "202606",
+    -27.65
+   ],
+   "B0_mdd": [
+    "20260729",
+    -36.71
+   ],
+   "B1_mdd": [
+    "20260729",
+    -36.728
+   ],
+   "B0_trades": 363,
+   "B1_trades": 351,
+   "buys_only_B0": 99,
+   "buys_only_B1": 88
+  },
+  {
+   "seed": 2,
+   "B0_cagr": 59.42,
+   "B1_cagr": 60.42,
+   "diff": 1.0,
+   "B0_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.88
+   ],
+   "B0_worst_month": [
+    "202606",
+    -27.635
+   ],
+   "B1_worst_month": [
+    "202606",
+    -27.648
+   ],
+   "B0_mdd": [
+    "20260729",
+    -36.692
+   ],
+   "B1_mdd": [
+    "20260729",
+    -36.724
+   ],
+   "B0_trades": 366,
+   "B1_trades": 349,
+   "buys_only_B0": 101,
+   "buys_only_B1": 86
+  },
+  {
+   "seed": 3,
+   "B0_cagr": 60.99,
+   "B1_cagr": 60.2,
+   "diff": -0.79,
+   "B0_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.876
+   ],
+   "B0_worst_month": [
+    "202606",
+    -27.635
+   ],
+   "B1_worst_month": [
+    "202606",
+    -28.07
+   ],
+   "B0_mdd": [
+    "20260729",
+    -36.692
+   ],
+   "B1_mdd": [
+    "20260729",
+    -37.095
+   ],
+   "B0_trades": 365,
+   "B1_trades": 350,
+   "buys_only_B0": 93,
+   "buys_only_B1": 80
+  },
+  {
+   "seed": 4,
+   "B0_cagr": 58.85,
+   "B1_cagr": 58.31,
+   "diff": -0.54,
+   "B0_worst_day": [
+    "20260304",
+    -12.876
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.998
+   ],
+   "B0_worst_month": [
+    "202606",
+    -28.063
+   ],
+   "B1_worst_month": [
+    "202606",
+    -27.65
+   ],
+   "B0_mdd": [
+    "20260729",
+    -37.077
+   ],
+   "B1_mdd": [
+    "20260729",
+    -36.728
+   ],
+   "B0_trades": 369,
+   "B1_trades": 355,
+   "buys_only_B0": 110,
+   "buys_only_B1": 100
+  },
+  {
+   "seed": 5,
+   "B0_cagr": 60.72,
+   "B1_cagr": 59.06,
+   "diff": -1.66,
+   "B0_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.887
+   ],
+   "B0_worst_month": [
+    "202606",
+    -27.635
+   ],
+   "B1_worst_month": [
+    "202606",
+    -27.65
+   ],
+   "B0_mdd": [
+    "20260729",
+    -36.692
+   ],
+   "B1_mdd": [
+    "20260729",
+    -36.728
+   ],
+   "B0_trades": 365,
+   "B1_trades": 346,
+   "buys_only_B0": 101,
+   "buys_only_B1": 86
+  },
+  {
+   "seed": 6,
+   "B0_cagr": 59.65,
+   "B1_cagr": 60.4,
+   "diff": 0.75,
+   "B0_worst_day": [
+    "20260304",
+    -12.876
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.857
+   ],
+   "B0_worst_month": [
+    "202606",
+    -28.063
+   ],
+   "B1_worst_month": [
+    "202606",
+    -28.069
+   ],
+   "B0_mdd": [
+    "20260729",
+    -37.077
+   ],
+   "B1_mdd": [
+    "20260729",
+    -37.092
+   ],
+   "B0_trades": 368,
+   "B1_trades": 347,
+   "buys_only_B0": 93,
+   "buys_only_B1": 74
+  },
+  {
+   "seed": 7,
+   "B0_cagr": 58.73,
+   "B1_cagr": 57.21,
+   "diff": -1.52,
+   "B0_worst_day": [
+    "20260304",
+    -12.876
+   ],
+   "B1_worst_day": [
+    "20260304",
+    -12.869
+   ],
+   "B0_worst_month": [
+    "202606",
+    -27.642
+   ],
+   "B1_worst_month": [
+    "202606",
+    -28.069
+   ],
+   "B0_mdd": [
+    "20260729",
+    -36.709
+   ],
+   "B1_mdd": [
+    "20260729",
+    -37.092
+   ],
+   "B0_trades": 367,
+   "B1_trades": 354,
+   "buys_only_B0": 94,
+   "buys_only_B1": 84
+  }
+ ],
+ "B0": {
+  "cagr": 60.02,
+  "cagr_spread": 2.58,
+  "worst_day": [
+   "20260304",
+   -12.998
+  ],
+  "worst_month": [
+   "202606",
+   -28.063
+  ],
+  "mdd": [
+   "20260729",
+   -37.077
+  ]
+ },
+ "B1": {
+  "cagr": 59.98,
+  "cagr_spread": 3.21,
+  "worst_day": [
+   "20260304",
+   -12.998
+  ],
+  "worst_month": [
+   "202606",
+   -28.07
+  ],
+  "mdd": [
+   "20260729",
+   -37.095
+  ]
+ },
+ "diff_median": -0.54,
+ "diff_ge_minus3_count": 8,
+ "cut_t5": "20231220",
+ "check_cut_calm_month_equal": true,
+ "check_cut_breadth_equal_to_t5": true,
+ "cut": [
+  {
+   "seed": 0,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 1,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 2,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 3,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 4,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 5,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 6,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  },
+  {
+   "seed": 7,
+   "same_days": true,
+   "nav_maxdiff_to_t5": 0.0,
+   "buys_same_to_t5": true,
+   "tail_days_diff": 5
+  }
+ ],
+ "cut_ok": true,
+ "checks_ok": true,
+ "limits_ok": false,
+ "verdict": "RANK_EFFECT_LARGE"
+}

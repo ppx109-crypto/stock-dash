@@ -1,0 +1,49 @@
+{
+ "schema_version": 1,
+ "task_id": "Z1-DELISTED-0023",
+ "chain_id": "Z1-DELISTED-0023",
+ "round": 3,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "RANK_EFFECT_LARGE",
+ "verdict_note": "기준 1(달 최악 > −15%) 실패 · B0도 −28.06%로 같음 · 기준 2 · 3 통과(가운데 −0.54%p · 8/8)",
+ "prereg_commit": "41c30e74",
+ "code_commit": "42219736",
+ "source_pr": 153,
+ "source_head_sha": "41c30e74d50e272edd71cd0fb0af6baeda29e039",
+ "runs": 2,
+ "run_note": "1번째 KeyError 남은자리(성과 없음) → lab.py c823063f 판(E3) → 2번째 완주",
+ "evidence_paths": [
+  "evidence/result.json",
+  "evidence/nav_B0.csv",
+  "evidence/nav_B1.csv",
+  "evidence/run.log",
+  "evidence/run-1-crash.log"
+ ],
+ "completed_at_kst": "2026-10-10T01:19:44+09:00",
+ "needs_data": [
+  "빠진 19종목 원래 규칙 매매(수급 결손)",
+  "2017 ~ 2020 참 순위"
+ ],
+ "file_sha256": {
+  "REPORT.md": "b861f2498ae87fe0e0054a84c699f13079ada4603b430523054921145bca1025",
+  "PREREG.md": "ed9c57b9debdd9610ff0f5c91b4f5d75c534e3adf2af90bdb83e7392bae233b2",
+  "ERRATA-PRE-RUN.md": "e8221afbdaf66d9c1c0aed2069e27b89f5e7b209c2c91110b92202340049cd79",
+  "evidence/result.json": "8831f607d67ba105a968bae95794caf82c1bc7e946b38b9e21fdb5f4f72913c6",
+  "evidence/nav_B0.csv": "83d9d5fec7ed05a05260156f1de1f8ba9b43bf0decdb6c2b5ea813e3195f50c4",
+  "evidence/nav_B1.csv": "927c9071deacb5349191ca2dca42efd296128cf58e5111422e77a78b66d55437",
+  "evidence/run.log": "a50d4fa4e4d4c53b6e65bdfecd6b4af43817ac12eb30e5309399801d948199cf",
+  "evidence/run-1-crash.log": "0e14ee8175575eb546efba8af4d2c14d396161da4cde5a5e14e4bf78c1c1753f",
+  "research/z098.py": "b7d7ef5936a568579e7d5f237d88b1d710a957db1efb2144cba9493406b4ae6d",
+  "research/z077.py": "fe332afd382260393ec15ea4fb927777420798457262454973334b40809a3000",
+  "research/z078.py": "687f8df9e75a5c942aedfe85d1d72da63ccfbef1b757d18e84f1b1db3f2708ad",
+  "research/z080.py": "b23cfaf19d869963ef120da4f4b0d8a889eaa093b4c60f08808bd780d759bc65",
+  "research/z081.py": "fb7ccd76691b96eb1a145042237c06760eaf0da06d0cb263299752ff3930d325",
+  "lab.py": "2665a76cffc18ce1ec3b6e2c0a25527c291636a5c0c65f017c4e60c2ae9ce36b"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}

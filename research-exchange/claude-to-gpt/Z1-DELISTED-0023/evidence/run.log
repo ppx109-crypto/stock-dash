@@ -1,0 +1,12 @@
+16:15:31 참 순위 만들기
+16:15:33 표 흘려 읽기(몇 분)
+16:17:45 행 658,620 · 변동성 2,261,332
+16:18:03 바탕 점검 {'check_calm_month_equal': True, 'check_inside_same_keys': True, 'check_inside_same_fields_mismatch': 0, 'check_breadth_equal': True}
+16:18:13 후보 모음 {'B0': 139900, 'B1': 135352, 'both': 124715, 'only_B0': 15185, 'only_B1': 10637}
+16:18:13 B0 돌리기(1)
+16:18:30 B1 돌리기
+16:18:34 B0 돌리기(2 · 순서 독립 확인)
+16:18:48 B0 {'cagr': 60.02, 'cagr_spread': 2.58, 'worst_day': ['20260304', -12.998], 'worst_month': ['202606', -28.063], 'mdd': ['20260729', -37.077]} B1 {'cagr': 59.98, 'cagr_spread': 3.21, 'worst_day': ['20260304', -12.998], 'worst_month': ['202606', -28.07], 'mdd': ['20260729', -37.095]} 짝 차 가운데 -0.54
+16:18:48 자르기 판 만들기 · 돌리기
+16:19:12 자르기 True [{'seed': 0, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 1, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 2, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 3, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 4, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 5, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 6, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}, {'seed': 7, 'same_days': True, 'nav_maxdiff_to_t5': 0.0, 'buys_same_to_t5': True, 'tail_days_diff': 5}]
+16:19:12 판정 RANK_EFFECT_LARGE
