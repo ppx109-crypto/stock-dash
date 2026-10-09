@@ -129,3 +129,19 @@ class RoomTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PureEvents(unittest.TestCase):
+    def test_only_main_announcements(self):
+        import tempfile
+        from pathlib import Path
+        rows = [{"date": "20261005", "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"},
+                {"date": "20261005", "kind": "무상증자", "title": "[기재정정]주요사항보고서(무상증자결정)"},
+                {"date": "20261005", "kind": "무상증자", "title": "매매거래정지및정지해제(중요내용공시)"},
+                {"date": "20261005", "kind": "무상증자", "title": "권리락(무상증자)"},
+                {"date": "20261005", "kind": "자사주취득", "title": "자회사의 주요경영사항(자기주식취득결정)"},
+                {"date": "20261005", "kind": "자사주취득", "title": "주요사항보고서(자기주식취득결정)"}]
+        with tempfile.TemporaryDirectory() as tmp:
+            Path(tmp, "000001.json").write_text(json.dumps({"rows": rows}), encoding="utf-8")
+            got = B.load_events(folder=tmp)
+        self.assertEqual(got, {"000001": [("20261005", "무상증자"), ("20261005", "자사주취득")]})
