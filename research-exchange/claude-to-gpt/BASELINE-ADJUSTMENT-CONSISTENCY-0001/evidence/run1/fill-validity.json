@@ -1,0 +1,48 @@
+{
+ "denominator_fills": 250,
+ "classes": {
+  "UNKNOWN_RAW_OR_ADJUSTED": 218,
+  "IMPOSSIBLE_RAW_FILL": 32
+ },
+ "by_ledger_sleeve_side": {
+  "control_D1_buy": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 42,
+   "IMPOSSIBLE_RAW_FILL": 3
+  },
+  "control_D1_sell": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 39,
+   "IMPOSSIBLE_RAW_FILL": 3
+  },
+  "fixed76_D1_buy": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 48,
+   "IMPOSSIBLE_RAW_FILL": 4
+  },
+  "fixed76_D1_sell": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 59,
+   "IMPOSSIBLE_RAW_FILL": 12
+  },
+  "control_BASKET_buy": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 7,
+   "IMPOSSIBLE_RAW_FILL": 2
+  },
+  "control_BASKET_sell": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 5,
+   "IMPOSSIBLE_RAW_FILL": 1
+  },
+  "fixed76_BASKET_buy": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 10,
+   "IMPOSSIBLE_RAW_FILL": 2
+  },
+  "fixed76_BASKET_sell": {
+   "UNKNOWN_RAW_OR_ADJUSTED": 8,
+   "IMPOSSIBLE_RAW_FILL": 5
+  }
+ },
+ "fill_price_vs_stored_close": {
+  "fill_price_eq_stored_close": 250
+ },
+ "cross_check(역할표 체결 수 = 유효성표 IMPOSSIBLE 수)": true,
+ "impossible_fill_unique(원장·소계정·종목·날)": 32,
+ "fee_tax_notional_on_impossible_fills": 32,
+ "note": "off-tick 체결가는 KRX 가격 단위 밖이라 실제 원주가 체결일 수 없음(한정된 뜻). on-tick은 원주가 · 수정주가 구별 불가."
+}
