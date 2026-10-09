@@ -1,0 +1,139 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-CA-BATCH-ATOMICITY-REPAIR-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 31,
+ "status": "READY",
+ "source_pr": 104,
+ "source_head_sha": "ad13f07772edbff446adba56edb7d645c1b8dccd",
+ "code_commit": "1d587893bf91c5e180061ae7c18929c9e4d36af6",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/batch_atomicity.py",
+  "evidence/batch-atomicity.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T02:24:56+09:00",
+ "input": {
+  "pr": 105,
+  "head_sha": "6f87b63615fe1b387d4e7d6a127dfbc179a693a9",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T02:21:14+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "ad13f07772edbff446adba56edb7d645c1b8dccd"
+   },
+   {
+    "at_kst": "2026-10-09T02:24:11+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "ad13f07772edbff446adba56edb7d645c1b8dccd"
+   }
+  ]
+ },
+ "prereg_commit": "7d85f1329411fbfb287afb102d47d70bf68274bd",
+ "prereg_committed_at_kst": "2026-10-09T02:22:08+09:00",
+ "verdict": "READY / 합성 배치 원자성 복구 — 수정 전 PR104 부분 커밋 재현(두 순서 모두) · 실패 배치 6개 해시=S0 · 성공 3개 순열 불변·1회 반영·TWR/MDD 0 · 같은 키 다른 내용 충돌 차단 · 실제 적용 0",
+ "admission": "PR104 사전등록(모두 통과해야 적용)과 코드(부분 커밋) 불일치 인정",
+ "summary": {
+  "fixtures_pass": true,
+  "n_fixtures": 9,
+  "n_permutation_runs": 18,
+  "prefix_defect_reproduced": true,
+  "real_events_applied": 0,
+  "all_pass": true
+ },
+ "fixtures": {
+  "F1_A_ok+B_ratio_bad": {
+   "verdict": "BATCH_ABORTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F2_A_ok+D_fractional": {
+   "verdict": "BATCH_ABORTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F3_A_ok+X_unknown": {
+   "verdict": "BATCH_ABORTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F4_A_ok+B_ok": {
+   "verdict": "COMMITTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F5_A_ok+A_dup": {
+   "verdict": "COMMITTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F6_same_symbol_two_events": {
+   "verdict": "BATCH_ABORTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F7_same_key_payload_conflict": {
+   "verdict": "BATCH_ABORTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F8_A_ok+B_redelivered": {
+   "verdict": "COMMITTED",
+   "permutation_invariant": true,
+   "pass": true
+  },
+  "F9_A_ok+B_real_flag": {
+   "verdict": "BATCH_ABORTED",
+   "permutation_invariant": true,
+   "pass": true
+  }
+ },
+ "pre_fix_defect": {
+  "F1_A_ok+B_ratio_bad": true,
+  "F2_A_ok+D_fractional": true,
+  "F3_A_ok+X_unknown": true
+ },
+ "pr104_source_sha256": "cf2c48f6057769edebe1433727ea0e4a76b9c4ecc1b332a0cd8966ddb330273b",
+ "file_sha256": {
+  "PREREG.md": "9c7bd03049b6296ead88bac56f7c7e90ae080bc42840d560b4b146beecd28087",
+  "REPORT.md": "5ffe3f42eb03527d34440c1fd57d2e50227599060c51bdb6261792df2ba6317d",
+  "code/batch_atomicity.py": "db4403a70299b733356c401f061e3cf1b650bffa8bb650b77126329c6e050ba2",
+  "evidence/batch-atomicity.json": "39c2dd9c11d261a9e034a087c0c62475444bbdafd3eba22255e291b9046c9fc6",
+  "evidence/run.log": "23cf5d244a4ee6b21826a8f8a41c470b70904dc0bcf2c87b85e39b1edcafca10"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "cap": 2,
+  "failed": 0,
+  "permutation_runs": 18,
+  "external_url": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "real_symbols": 0,
+  "real_events_applied": 0,
+  "replay": 0,
+  "backtest": 0,
+  "performance": 0,
+  "nav_claim": 0,
+  "threshold": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
