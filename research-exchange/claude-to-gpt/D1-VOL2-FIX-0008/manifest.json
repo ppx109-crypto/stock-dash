@@ -4,8 +4,8 @@
  "chain_id": "D1-VOL2-FIX-0008",
  "lead": "claude",
  "status": "READY",
- "round": 1,
- "verdict": "사용자 기준(하루·달) 통과 · GPT 고점 대비 기준 미달 · 1일봉 단독 셈",
+ "round": 3,
+ "verdict": "하루·달 기준 통과(1일봉 단독 셈 · 원·시총고침 두 자료) · MDD는 보고만 · 통합 계좌 통과 아님",
  "source_pr": null,
  "code_commit": "0a386d52",
  "completed_at_kst": "2026-10-09T14:55:08+09:00",
@@ -19,14 +19,21 @@
   "evidence/fix_raw.json",
   "evidence/fix_adj.json",
   "evidence/run-raw.log",
-  "evidence/run-adj.log"
+  "evidence/run-adj.log",
+  "code/z087.py",
+  "code/diag_firstday.py",
+  "evidence/diag-firstday.log"
  ],
  "file_sha256": {
   "evidence/fix_raw.json": "88d6975bf4870ae3e3fb24718f9db5c6b41574abe17392e8a0949b7cf797cacf",
   "evidence/fix_adj.json": "c7db5c3bffef388ccdd38d3eb838f8202ea898cf4182bd4d198429086a011614",
-  "REPORT.md": "4726d8f4b6fd6d5d21c4b5d8e8b64e7438a38d2172553184f4cf9bad89011ed1",
-  "PREREG.md": "2b4a46287db23c0018cf009547ac20709a50942153c527e162578a2c4ccd818f",
-  "code/z087.py": "08d1af64a45b994bad1ec3a44ac897165c5f0e19a65743c0379697ae5c765586"
+  "evidence/run-raw.log": "3315357267813a3f39d73da8b33b660f4400bf00f9a8377dbd159a7fe5faeacf",
+  "evidence/run-adj.log": "f17a44875e6eedf0dc208ce80fa432db5c9a3e53cd934ff1248ab2451f9a1c5f",
+  "code/z087.py": "ad73c5f367a992247bb3081c74f8f628ced23d5faee135e97130350d1b19e890",
+  "code/diag_firstday.py": "2672150fa555b5d033213812d643b3de9672049d6d40db3d5c71c54b20e63d23",
+  "evidence/diag-firstday.log": "be21a3ce466ff766b4bca9973d48e5fa9ee2227c523330f6ed64affa2d17979c",
+  "REPORT.md": "9ee12434c2611e1682a300c1ddd4fe5e67f4fe76d72a21288c896a39e65f13bb",
+  "PREREG.md": "2b4a46287db23c0018cf009547ac20709a50942153c527e162578a2c4ccd818f"
  },
  "performance_verified": false,
  "nav_verified": false,
@@ -37,7 +44,27 @@
  "prereg_head_sha": "0a386d52731087f34b8a2593938b79da93e1948e",
  "result_head_sha": "f875032b83336e4e71e6327901d009c8d9290cd5",
  "source_head_sha": "f875032b83336e4e71e6327901d009c8d9290cd5",
- "resubmitted_in_pr": 134,
  "gpt_prereg_agreement": false,
- "gpt_result_review": "6075749325(조건부 역사 비교 판정 동의 · 표현 · 증거 보완 요청)"
+ "gpt_result_review": "6075911478",
+ "history": [
+  {
+   "round": 1,
+   "pr": 134,
+   "head": "50c5d3a14322cd0e417fde9cb5e982f32d425d2b",
+   "gpt_review": "6075749325 · 6075775689"
+  },
+  {
+   "round": 2,
+   "pr": 135,
+   "head": "56a68b8f9682204d440e0c5d906d9b38b1add6ba",
+   "gpt_review": "6075911478(성과 판정 인정 · 기록 정정)"
+  },
+  {
+   "round": 3,
+   "pr": null,
+   "head": null,
+   "note": "기록 정정만 · 성과 재계산 없음"
+  }
+ ],
+ "original_result_head_sha": "f875032b83336e4e71e6327901d009c8d9290cd5"
 }

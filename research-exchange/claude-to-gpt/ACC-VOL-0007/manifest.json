@@ -4,7 +4,7 @@
  "chain_id": "ACC-VOL-0007",
  "lead": "claude",
  "status": "READY",
- "verdict": "ADOPT_CANDIDATE(조건부 역사 비교 · 사용자 결정)",
+ "verdict": "ADOPT_CANDIDATE(조건부 역사 비교 · 하루·달 기준) · 실행 가능성·독립 검증 미확인 · 운영 변경 승인 아님",
  "source_pr": null,
  "code_commit": "2c17d542",
  "completed_at_kst": "2026-10-09T15:01:33+09:00",
@@ -14,11 +14,18 @@
   "evidence/nav/FJ.csv",
   "evidence/nav/F10.csv",
   "evidence/nav/F40.csv",
-  "evidence/diag-sigma-skip.log"
+  "evidence/diag-sigma-skip.log",
+  "code/z086.py"
  ],
  "file_sha256": {
   "evidence/run-final.log": "1c31ba66ded9e0278a4c1e54ea38001976e3bca0570b0f42f39277374820f958",
-  "REPORT.md": "548eb868405a668592f815c824e619bc3802138c39506dd7fb6ff632c6864c1f",
+  "evidence/nav/F.csv": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+  "evidence/nav/FJ.csv": "2a4d1e4f2ceda768f75928a99c660d45f09afa3756b05e9ad4c13d81d305901e",
+  "evidence/nav/F10.csv": "7e72e72a528187d213c6baccc17c84d9728d4d4a193505e5d1ae3115915ea218",
+  "evidence/nav/F40.csv": "c85dd21ad96f10917f8c2e402a9adf69e0fa68fb61f50301cc263c665495d112",
+  "evidence/diag-sigma-skip.log": "a3d4c53791b601fab966eb7412f4c7455552f5d858d5b63de8bcfd27052ba871",
+  "code/z086.py": "97f0fe1d5769808bcced4284a2bc8dc15f681e4eced214c68560fc3957ee8f9c",
+  "REPORT.md": "1f98d2baf96423a963e410ea7e429444fe85a1bae7159f9b4af2bdf24dc2392a",
   "PREREG.md": "7e0db04c07d889a917e2a4a746ea4f2b73e34df2fe0e383ab90851dd779066ac"
  },
  "performance_verified": false,
@@ -26,13 +33,37 @@
  "paper_validation_ready": false,
  "orders": 0,
  "operations_changed": 0,
- "round": 1,
+ "round": 3,
  "result_pr": null,
  "note_chain": "과제마다 각자 chain(INSTRUCTIONS 3라운드 상한은 같은 과제의 결과→검토→고침 반복에 적용). 이전 기록 PR #133.",
  "prereg_head_sha": "2c17d54239f450d9b8a0867b7255e61e49b7f69f",
  "result_head_sha": "9567ad2925c90a516465aa513c71777f706e6acf",
  "source_head_sha": "9567ad2925c90a516465aa513c71777f706e6acf",
- "resubmitted_in_pr": 134,
  "gpt_prereg_agreement": false,
- "gpt_result_review": "6075749325(조건부 역사 비교 판정 동의 · 표현 · 증거 보완 요청)"
+ "gpt_result_review": "6075911478",
+ "history": [
+  {
+   "round": 1,
+   "pr": 134,
+   "head": "50c5d3a14322cd0e417fde9cb5e982f32d425d2b",
+   "gpt_review": "6075749325 · 6075775689"
+  },
+  {
+   "round": 2,
+   "pr": 135,
+   "head": "56a68b8f9682204d440e0c5d906d9b38b1add6ba",
+   "gpt_review": "6075911478(성과 판정 인정 · 기록 정정)"
+  },
+  {
+   "round": 3,
+   "pr": null,
+   "head": null,
+   "note": "기록 정정만 · 성과 재계산 없음"
+  }
+ ],
+ "original_result_head_sha": "9567ad2925c90a516465aa513c71777f706e6acf",
+ "data_period": [
+  "20170201",
+  "20260916"
+ ]
 }

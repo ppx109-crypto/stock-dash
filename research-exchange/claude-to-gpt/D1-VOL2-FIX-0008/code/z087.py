@@ -1,6 +1,6 @@
 """D1-VOL2-FIX-0008 — 사용자가 고른 '지금 규칙 + 흔들림 상한 × 2(1일봉 계좌 100% 셈)'를 GPT 지적 결함을 고쳐 다시 잼.
 고친 것(z080.account 대비): ① σ는 전체 거래일 달력의 **전날까지** 21날 종가로(종목 값 없는 날은 앞 값 = 수익 0) ② 보유 비중도 **전날 종가 평가액**
-③ 그래서 오늘 종가를 보고 판단 · 실행하는 일이 없음(판단은 아침 · 실행은 그날 종가). 매수 크기는 운영처럼 그 순간 NAV × 칸/10 · 현금 · 허용 비중 안.
+③ 시점: 허용 비중 E는 전날까지 값으로 아침에 정함. 거래 필요 여부(보유 > E × NAV)와 덜어낼 · 살 정확한 금액은 **그날 종가**의 NAV · 보유액으로 셈해 같은 종가에 체결한다고 봄(이 실행 계약은 검증 안 됨). 매수 크기 = min(NAV × 칸/10, 현금, E × NAV − 보유).
 Z_TAG=raw|adj(NRL_CACHE · CAPS_ADJ로 자료 고름) · python3 research/z087.py"""
 import bisect
 import json
@@ -25,7 +25,7 @@ COST = 0.0025
 CAL = lab.trading_days(nrl.lanes)
 
 
-def account(led, still, start, end, vol=VOL, want_navs=False):
+def account(led, still, start, end, vol=VOL, want_navs=False, market_cap=None, cushion=None):
     lanes = nrl.lanes
     pos = [dict(t, open=False) for t in led] + [dict(t, open=True, 행=t.get("행")) for t in still]
     codes = {t["code"] for t in pos}
@@ -72,6 +72,12 @@ def account(led, still, start, end, vol=VOL, want_navs=False):
                     sd = math.sqrt(sum((x - m) ** 2 for x in port) / (LOOK - 1))
                     if sd > 0:
                         allowed = min(1.0, vol / sd)
+        if market_cap is not None:                       # 시장 신호 상한(전날까지 값만 · D1-BEAR-0009)
+            allowed = min(allowed, market_cap(d))
+        if cushion is not None and navs:                 # 손실 쿠션(전날까지 NAV 고점 대비 · D1-BEAR-0010)
+            hw = max(v for _, v in navs)
+            dd = 1 - navs[-1][1] / hw
+            allowed = min(allowed, max(0.0, min(1.0, cushion[0] * (cushion[1] - dd))))
         # 그날 종가
         for c in codes:
             if d in close[c]:
@@ -81,7 +87,7 @@ def account(led, still, start, end, vol=VOL, want_navs=False):
             del units[k]
         h = held()
         nav = cash + h
-        if vol is not None and h > allowed * nav + 1e-12:     # 아침에 정한 비중을 종가에 실행
+        if (vol is not None or market_cap is not None or cushion is not None) and h > allowed * nav + 1e-12:     # 아침에 정한 비중을 종가에 실행
             f = allowed * nav / h
             cash += h * (1 - f) * (1 - COST)
             for k in units:
@@ -91,7 +97,7 @@ def account(led, still, start, end, vol=VOL, want_navs=False):
         h = held()
         nav = cash + h
         for k in sorted(buys[d], key=order):
-            room = max(0.0, allowed * nav - h) if vol is not None else float("inf")
+            room = max(0.0, allowed * nav - h) if (vol is not None or market_cap is not None or cushion is not None) else float("inf")
             pay = max(0.0, min(pos[k]["자리"] / nrl.SLOTS * nav, cash, room))
             units[k], spent[k] = pay / close[pos[k]["code"]][d], pay
             cash -= pay
