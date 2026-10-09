@@ -1025,7 +1025,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             "최대낙폭": round(dip, 1), "연패": streak(trades),
             "연수익": round(sum(weighted) / slots / max(years, 1), 2),
             "해마다": {y: round(sum(v) / slots, 1) for y, v in sorted(year_gains.items())},
-            **({"매매목록": ledger} if detail else {})}
+            **({"매매목록": ledger} if detail else {}),
+            # 끝날 때 아직 들고 있던 자리(성적 셈에는 안 들어감 · 계좌 가치 셈용, D1-ROBUST-SLOPE-0002).
+            **({"남은자리": [{"code": c, "산 날": lane[c]["날"][s["i"]], "자리": s["자리"], "price": s["price"]}
+                            for c, s in open_slots.items()], "끝날": days[-1]} if detail else {})}
 
 
 def exit_intraday(take, stop, limit):
