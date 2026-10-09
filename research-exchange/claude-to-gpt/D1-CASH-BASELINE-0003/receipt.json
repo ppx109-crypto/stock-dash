@@ -1,0 +1,20 @@
+{
+ "task_id": "D1-CASH-BASELINE-0003",
+ "source_pr": 133,
+ "result_head_sha": "b009b89f3cb2f82e8017573c5e803be646ae43c8",
+ "completed_at_kst": "2026-10-09T13:55:58+09:00",
+ "evidence_paths": [
+  "evidence/baseline.json",
+  "evidence/run.log",
+  "evidence/h2.json",
+  "evidence/run-h2.log",
+  "evidence/h3.json",
+  "evidence/run-h3.log",
+  "evidence/explore-frontier.log",
+  "PREREG-H2.md",
+  "PREREG-H3.md",
+  "REPORT.md",
+  "code/"
+ ],
+ "note": "공통 계약 필드 보충 · 결과 수치 불변"
+}

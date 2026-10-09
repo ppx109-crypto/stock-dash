@@ -1,0 +1,152 @@
+{
+ "task": "D1-VOL2-VALIDATE-0005",
+ "tag": "adj",
+ "cache": "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/nrl-cache-adj.pkl",
+ "candidate": {
+  "vol_day": 0.021821789023599242
+ },
+ "앞": {
+  "지금 규칙": {
+   "cagr": 13.8,
+   "cagr_spread": 1.44,
+   "worst_day": [
+    "20201208",
+    -5.852
+   ],
+   "worst_month": [
+    "201707",
+    -7.363
+   ],
+   "mdd": [
+    "20180328",
+    -16.25
+   ],
+   "regime": {
+    "상승": 67.11,
+    "횡보": -6.47,
+    "하락": -5.46
+   },
+   "down_side": -6.19,
+   "down_side_spread": 1.62,
+   "months": {
+    "상승": 16,
+    "횡보": 23,
+    "하락": 9
+   }
+  },
+  "후보": {
+   "cagr": 10.5,
+   "cagr_spread": 1.4,
+   "worst_day": [
+    "20180207",
+    -5.068
+   ],
+   "worst_month": [
+    "201707",
+    -7.363
+   ],
+   "mdd": [
+    "20180328",
+    -16.25
+   ],
+   "regime": {
+    "상승": 52.86,
+    "횡보": -6.49,
+    "하락": -5.46
+   },
+   "down_side": -6.2,
+   "down_side_spread": 1.63,
+   "months": {
+    "상승": 16,
+    "횡보": 23,
+    "하락": 9
+   }
+  },
+  "cut_check": [
+   {
+    "T": "20190630",
+    "days": 608,
+    "ok": true,
+    "max_diff": 0.0
+   }
+  ],
+  "engine_median": 8.12
+ },
+ "뒤": {
+  "지금 규칙": {
+   "cagr": 62.24,
+   "cagr_spread": 2.15,
+   "worst_day": [
+    "20230727",
+    -12.979
+   ],
+   "worst_month": [
+    "202606",
+    -28.063
+   ],
+   "mdd": [
+    "20260729",
+    -37.077
+   ],
+   "regime": {
+    "상승": 217.23,
+    "횡보": 19.74,
+    "하락": -4.76
+   },
+   "down_side": 10.19,
+   "down_side_spread": 2.44,
+   "months": {
+    "상승": 25,
+    "횡보": 28,
+    "하락": 16
+   }
+  },
+  "후보": {
+   "cagr": 44.78,
+   "cagr_spread": 4.46,
+   "worst_day": [
+    "20240805",
+    -8.575
+   ],
+   "worst_month": [
+    "202606",
+    -11.787
+   ],
+   "mdd": [
+    "20260729",
+    -20.771
+   ],
+   "regime": {
+    "상승": 112.64,
+    "횡보": 28.64,
+    "하락": -3.06
+   },
+   "down_side": 16.06,
+   "down_side_spread": 4.91,
+   "months": {
+    "상승": 25,
+    "횡보": 28,
+    "하락": 16
+   }
+  },
+  "cut_check": [
+   {
+    "T": "20231231",
+    "days": 739,
+    "ok": true,
+    "max_diff": 0.0
+   },
+   {
+    "T": "20250630",
+    "days": 1101,
+    "ok": true,
+    "max_diff": 0.0
+   }
+  ],
+  "engine_median": 60.36
+ },
+ "limits_ok": true,
+ "positive": true,
+ "cuts_ok": true,
+ "pass": true
+}

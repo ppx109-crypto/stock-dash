@@ -1,0 +1,16 @@
+{
+ "task_id": "D1-ROBUST-SLOPE-0002",
+ "source_pr": 133,
+ "result_head_sha": "0e7cc92bb536fcbb7e053a1b629c978bba29c161",
+ "completed_at_kst": "2026-10-09T13:43:31+09:00",
+ "evidence_paths": [
+  "evidence/stage1.json",
+  "evidence/run.log",
+  "REPORT.md",
+  "PREREG.md",
+  "code/z077.py",
+  "code/test_account.py",
+  "code/chk_slope.py"
+ ],
+ "note": "공통 계약 필드 보충 · 결과 수치 불변"
+}

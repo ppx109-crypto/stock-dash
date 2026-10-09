@@ -1,0 +1,37 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-VOL2-FIX-0008",
+ "chain_id": "D1-VOL2-FIX-0008",
+ "lead": "claude",
+ "status": "READY",
+ "round": 1,
+ "verdict": "사용자 기준(하루·달) 통과 · GPT 고점 대비 기준 미달 · 1일봉 단독 셈",
+ "source_pr": null,
+ "code_commit": "0a386d52",
+ "completed_at_kst": "2026-10-09T14:55:08+09:00",
+ "executions": {
+  "raw": 1,
+  "adj": 1,
+  "py_compile": 1,
+  "orders": 0
+ },
+ "evidence_paths": [
+  "evidence/fix_raw.json",
+  "evidence/fix_adj.json",
+  "evidence/run-raw.log",
+  "evidence/run-adj.log"
+ ],
+ "file_sha256": {
+  "evidence/fix_raw.json": "88d6975bf4870ae3e3fb24718f9db5c6b41574abe17392e8a0949b7cf797cacf",
+  "evidence/fix_adj.json": "c7db5c3bffef388ccdd38d3eb838f8202ea898cf4182bd4d198429086a011614",
+  "REPORT.md": "4726d8f4b6fd6d5d21c4b5d8e8b64e7438a38d2172553184f4cf9bad89011ed1",
+  "PREREG.md": "2b4a46287db23c0018cf009547ac20709a50942153c527e162578a2c4ccd818f",
+  "code/z087.py": "08d1af64a45b994bad1ec3a44ac897165c5f0e19a65743c0379697ae5c765586"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "operations_changed": 0,
+ "result_pr": null,
+ "note_chain": "과제마다 각자 chain(INSTRUCTIONS 3라운드 상한은 같은 과제의 결과→검토→고침 반복에 적용). 이전 기록 PR #133."
+}
