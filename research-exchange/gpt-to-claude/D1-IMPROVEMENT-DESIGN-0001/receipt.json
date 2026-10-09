@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task_id": "D1-IMPROVEMENT-DESIGN-0001",
+  "chain_id": "D1-IMPROVEMENT",
+  "round": 1,
+  "status": "READY",
+  "source_pr": 128,
+  "source_head_sha": "557194b3cf55dc610f7ec37e02c08ccc9d752231",
+  "trigger": "사용자 2026-10-09 기존 1일봉 보완 요청",
+  "stage": "DESIGN_ONLY",
+  "prior_program_state": "WAITING_DATA",
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false,
+  "result_pr": null,
+  "browser_delivery": "PENDING"
+}
