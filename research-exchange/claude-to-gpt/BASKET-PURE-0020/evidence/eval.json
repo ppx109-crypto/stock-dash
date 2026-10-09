@@ -1,0 +1,47 @@
+{
+ "all": {
+  "F": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.44,
+    "worst_day": -4.66,
+    "worst_month": -7.26,
+    "worst_2month": -10.5,
+    "mdd": -14.07
+   }
+  },
+  "pure": {
+   "front": {
+    "cagr": 14.83,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "worst_2month": -3.74,
+    "mdd": -7.39
+   },
+   "back": {
+    "cagr": 23.84,
+    "worst_day": -4.67,
+    "worst_month": -7.28,
+    "worst_2month": -10.51,
+    "mdd": -14.08
+   }
+  }
+ },
+ "eligible": [
+  "pure"
+ ],
+ "pick": "pure",
+ "judge": {
+  "back_cagr_better": true,
+  "back_day_ok": true,
+  "back_month_ok": true,
+  "back_limits": true,
+  "pass": true
+ }
+}
