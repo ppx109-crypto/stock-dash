@@ -1,0 +1,253 @@
+{
+ "task": "D1-VOL2-VALIDATE 15:15",
+ "period": [
+  "20250918",
+  "20260831"
+ ],
+ "seeds": [
+  {
+   "seed": 0,
+   "close": {
+    "period_return": 77.23,
+    "worst_day": [
+     "20251105",
+     -4.876
+    ],
+    "worst_month": [
+     "202606",
+     -11.353
+    ],
+    "cuts": 74
+   },
+   "p1515": {
+    "period_return": 77.34,
+    "worst_day": [
+     "20251105",
+     -4.876
+    ],
+    "worst_month": [
+     "202606",
+     -11.397
+    ],
+    "cuts": 73
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 8,
+   "pre_price_uses": 1445
+  },
+  {
+   "seed": 1,
+   "close": {
+    "period_return": 73.51,
+    "worst_day": [
+     "20260202",
+     -4.793
+    ],
+    "worst_month": [
+     "202606",
+     -11.353
+    ],
+    "cuts": 73
+   },
+   "p1515": {
+    "period_return": 73.7,
+    "worst_day": [
+     "20260202",
+     -4.727
+    ],
+    "worst_month": [
+     "202606",
+     -11.397
+    ],
+    "cuts": 73
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 3,
+   "pre_price_uses": 1411
+  },
+  {
+   "seed": 2,
+   "close": {
+    "period_return": 78.0,
+    "worst_day": [
+     "20251105",
+     -4.873
+    ],
+    "worst_month": [
+     "202606",
+     -11.348
+    ],
+    "cuts": 74
+   },
+   "p1515": {
+    "period_return": 78.12,
+    "worst_day": [
+     "20251105",
+     -4.873
+    ],
+    "worst_month": [
+     "202606",
+     -11.393
+    ],
+    "cuts": 73
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 8,
+   "pre_price_uses": 1439
+  },
+  {
+   "seed": 3,
+   "close": {
+    "period_return": 59.68,
+    "worst_day": [
+     "20251105",
+     -4.873
+    ],
+    "worst_month": [
+     "202606",
+     -11.348
+    ],
+    "cuts": 65
+   },
+   "p1515": {
+    "period_return": 59.42,
+    "worst_day": [
+     "20251105",
+     -4.873
+    ],
+    "worst_month": [
+     "202606",
+     -11.393
+    ],
+    "cuts": 65
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 24,
+   "pre_price_uses": 1441
+  },
+  {
+   "seed": 4,
+   "close": {
+    "period_return": 59.21,
+    "worst_day": [
+     "20251105",
+     -4.876
+    ],
+    "worst_month": [
+     "202606",
+     -11.787
+    ],
+    "cuts": 67
+   },
+   "p1515": {
+    "period_return": 59.06,
+    "worst_day": [
+     "20251105",
+     -4.876
+    ],
+    "worst_month": [
+     "202606",
+     -11.83
+    ],
+    "cuts": 68
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 20,
+   "pre_price_uses": 1451
+  },
+  {
+   "seed": 5,
+   "close": {
+    "period_return": 59.61,
+    "worst_day": [
+     "20251105",
+     -4.876
+    ],
+    "worst_month": [
+     "202606",
+     -11.348
+    ],
+    "cuts": 67
+   },
+   "p1515": {
+    "period_return": 59.48,
+    "worst_day": [
+     "20251105",
+     -4.876
+    ],
+    "worst_month": [
+     "202606",
+     -11.393
+    ],
+    "cuts": 67
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 20,
+   "pre_price_uses": 1441
+  },
+  {
+   "seed": 6,
+   "close": {
+    "period_return": 77.55,
+    "worst_day": [
+     "20251105",
+     -4.873
+    ],
+    "worst_month": [
+     "202606",
+     -11.787
+    ],
+    "cuts": 74
+   },
+   "p1515": {
+    "period_return": 77.65,
+    "worst_day": [
+     "20251105",
+     -4.873
+    ],
+    "worst_month": [
+     "202606",
+     -11.83
+    ],
+    "cuts": 74
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 8,
+   "pre_price_uses": 1449
+  },
+  {
+   "seed": 7,
+   "close": {
+    "period_return": 44.42,
+    "worst_day": [
+     "20251105",
+     -5.064
+    ],
+    "worst_month": [
+     "202606",
+     -11.353
+    ],
+    "cuts": 66
+   },
+   "p1515": {
+    "period_return": 44.56,
+    "worst_day": [
+     "20251105",
+     -5.063
+    ],
+    "worst_month": [
+     "202606",
+     -11.397
+    ],
+    "cuts": 67
+   },
+   "decision_days": 242,
+   "decision_days_diff_over_1pp": 2,
+   "pre_price_uses": 1434
+  }
+ ],
+ "seed_spread_close": 33.58,
+ "max_gap_close_vs_1515": 0.26,
+ "limits_ok_1515": true,
+ "verdict": "PASS"
+}
