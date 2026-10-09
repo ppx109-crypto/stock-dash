@@ -379,12 +379,12 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
     seen = {o["key"] for o in book["orders"]}
     names = {p["code"]: p.get("name") for p in state.get("positions", {}).values()}
     lines = []
-    cap = None
-    try:                                 # 계좌 흔들림 상한(acc_cap · 켜져 있을 때만): 사는 돈을 'E × 계좌 − 든 것'까지
-        import acc_cap
-        cap = acc_cap.room(balance, now.strftime("%Y%m%d"))
-    except Exception as e:               # 상한 셈이 말썽이면 한도 없이(예전 그대로) 돎
-        print("계좌 흔들림 상한 셈 실패 ·", type(e).__name__)
+    import acc_cap                       # 계좌 흔들림 상한(켜져 있을 때만): 사는 돈을 'E × 계좌 − 든 것'까지
+    cap = acc_cap.safe_room(balance, now.strftime("%Y%m%d"))         # 켜진 날 셈이 실패하면 0(새 매수 멈춤 · 팔기는 그대로)
+    stop_buys = acc_cap.blocked(now.strftime("%Y%m%d"))
+    if stop_buys:                        # 막힌 날은 판 돈으로도 새로 사지 않음
+        done_buys = [x for x in done if x["type"] == "buy"]
+        done = [x for x in done if x["type"] != "buy"]
     if strategy in SHARES:               # 규칙이 살 돈이 모자라면 빈칸 엔진이 먼저 자리를 내줌
         total = (float(balance.get("cash") or 0) + float(balance.get("value") or 0)) * SHARES[strategy]
         need = sum(total * x["칸"] / SLOTS for x in done if x["type"] == "buy" and prices.get(x["code"]))
@@ -405,6 +405,9 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
             why = ("시가를 몰라서" if not prices.get(x["code"]) else
                    "계좌 흔들림 상한에 걸림" if cap is not None and cap < (prices.get(x["code"]) or 0) else "살 돈이 모자람(1주 미만)")
         lines.append(f"🧪 모의투자({tag}) {'매수' if x['type'] == 'buy' else '매도'} 건너뜀 · {name}({x['code']}) · {why}")
+    for x in (done_buys if stop_buys else []):
+        name = x.get("name") or names.get(x["code"]) or x["code"]
+        lines.append(f"🧪 모의투자({tag}) 매수 건너뜀 · {name}({x['code']}) · 계좌 흔들림 상한 셈 · 덜어내기 실패로 오늘 새 매수 멈춤")
     for key, code, side, qty, why in planned:
         if key in seen:
             continue

@@ -2,24 +2,42 @@
  "schema_version": 1,
  "task_id": "ACC-CAP-LIVE-0012",
  "chain_id": "ACC-CAP-LIVE-0012",
- "round": 1,
+ "round": 3,
  "lead": "claude",
  "status": "READY",
  "verdict": "REVIEW_REQUESTED",
  "code_commits": [
   "186a8b37",
-  "3b4c441e"
+  "3b4c441e",
+  "ebe69887",
+  "511e2ebd",
+  "a35f49ed"
  ],
  "based_on": "ACC-VOL-0007 (GPT 6075981030)",
  "file_sha256": {
-  "REPORT.md": "6dd1cd001f95f9c876c714367664d71d1ddf5616ac59e913e25108d58f1e441e",
-  "acc_cap.py": "8981180063b79af41dbb1ca90a3970d500b64936589ac8477bf27e327d0637f3",
-  "tests/test_acc_cap.py": "f23c6e58bbb73e4b22b50f17d8d8bba4175758c9f321e2d6fdb8fda05b6cf680"
+  "REPORT.md": "815b3fa821ed1020c2aee8678491d511334612647c971983b0abdf96543f481f",
+  "acc_cap.py": "f0454f5f409272c5d82ccea156c376c84458e870adc274a1d8470b068f0b6e6b",
+  "paper_trade.py": "b3298d929c7a202630f878733a02bfca8b58957f99375eb41a76d941d44a256c",
+  "idle_live.py": "3c3ad88a8c26ad87500066173dc48f94a01fe89f569cecbc648da0570ffa7cd4",
+  "daily_live.py": "92da117c754640f42058b6eee48983d74647e8e553765f7fb644f2aa2ba1d051",
+  "tests/test_acc_cap.py": "e6c582241e202c853388850221acc41193d1d2b02f7d4e06ec4285b5adb6a41a"
  },
  "performance_verified": false,
  "nav_verified": false,
  "paper_validation_ready": false,
  "orders": 0,
- "operations_changed": 0,
- "switch": "ACC_CAP off (workflow not changed)"
+ "operations_changed": "모의투자 서버 ACC_CAP on 2026-10-12부터(사용자 결정 · main ebe69887) · round 2 고침은 main 밖(GPT 인정 뒤 반영)",
+ "switch": "ACC_CAP on · ACC_CAP_START 20261012 · 상한 × 1",
+ "source_pr": 150,
+ "source_head_sha": "43f7fe5c8568c42d90a467abbb3db7eff8f920f8",
+ "code_commit": "a35f49edd03519fc6814f554822494a3c137452a",
+ "evidence_paths": [
+  "tests/test_acc_cap.py"
+ ],
+ "completed_at_kst": "2026-10-09T22:10:31+09:00",
+ "tests": {
+  "tests/test_acc_cap.py": "22 OK",
+  "workflow_bot_tests": "129 OK",
+  "all": "round 2 때 698 중 1 error(test_core · googleapiclient 없음 · 고치기 전과 같음)"
+ }
 }

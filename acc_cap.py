@@ -10,6 +10,7 @@
 끄기: ACC_CAP이 'on'이 아니거나 ACC_CAP_START(YYYYMMDD) 전이면 아무것도 안 함.
 기록: acc-cap/today.json(작업마다 따로 · 저장소에 안 올림 — 여러 작업이 같은 파일을 올리다 부딪히지 않게) · acc-cap/log.json(15:20 작업만 올림 · 비율만).
 판단은 전날까지 값만 씀(미래 참조 없음) · 덜어낼 금액만 15:20 지금 값(연구는 종가 — 이 차이를 log에 날마다 남김).
+막힘(fail-closed · GPT #149 검토): 켜진 날 상한 셈이나 덜어내기가 실패하면 그날 **새 매수만 멈춤**(팔기는 그대로) — safe_room · block · blocked.
 """
 import json
 import math
@@ -103,9 +104,10 @@ def today(day, balance, get=series):
     t = _load(TODAY, {})
     if t.get("date") == day and "E" in t:
         return t
+    keep = {"blocked": t["blocked"]} if t.get("date") == day and t.get("blocked") else {}     # 오늘 막힌 것은 그대로 둠
     sd, why = sigma(day, positions_of(balance), get)
     t = {"date": day, "at": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "E": round(allowed_from(sd), 4),
-         "sigma": None if sd is None else round(sd, 6), "why": why, "target": TARGET, "trimmed_value": 0.0, "trim_done": False}
+         "sigma": None if sd is None else round(sd, 6), "why": why, "target": TARGET, "trimmed_value": 0.0, "trim_done": False, **keep}
     _save(TODAY, t)
     return t
 
@@ -119,6 +121,36 @@ def room(balance, day, get=series):
     value = float(balance.get("value") or 0)
     held = max(0.0, value - float(t.get("trimmed_value") or 0))
     return max(0.0, t["E"] * (cash + value) - held)
+
+
+def block(day, why):
+    """오늘 새 매수를 멈춤(상한 셈 · 덜어내기 실패 때). acc-cap/today.json에 남김(작업 안에서만 · 저장소에 안 올림)."""
+    t = _load(TODAY, {})
+    if t.get("date") != day:
+        t = {"date": day}
+    t["blocked"] = why
+    _save(TODAY, t)
+
+
+def blocked(day):
+    """켜진 날이고 오늘 막혔으면 True(새 매수 없음 · 팔기는 그대로)."""
+    if not enabled(day):
+        return False
+    t = _load(TODAY, {})
+    return t.get("date") == day and bool(t.get("blocked"))
+
+
+def safe_room(balance, day, get=series):
+    """room과 같되 **켜진 날 셈이 실패하거나 오늘 막혔으면 0**(fail-closed). 꺼져 있으면 None(한도 없음)."""
+    if not enabled(day):
+        return None
+    try:
+        r = room(balance, day, get)
+    except Exception as e:
+        block(day, f"상한 셈 실패 · {type(e).__name__}")
+        print("계좌 흔들림 상한 셈 실패 → 오늘 새 매수 멈춤(팔기는 그대로) ·", type(e).__name__)
+        return 0.0
+    return 0.0 if blocked(day) else r
 
 
 def plan_trim(balance, E, books, prices=None):
@@ -168,6 +200,8 @@ def run_trim(day, now=None, broker=None):
     price = {p["code"]: float(p.get("price") or 0) for p in balance.get("positions", [])}
     cash = float(balance.get("cash") or 0)
     value = float(balance.get("value") or 0)
+    # 덜어내기 직전 수량 · 현금 · 값(장 끝 record_close가 같은 날 1일봉 등 다른 체결과 섞이지 않게 · 저장소에 안 올림)
+    pre = {"cash": cash, "qty": positions_of(balance), "price": price}
     lines, sold_value, orders = [], 0.0, []
     for name, code, qty in plan:
         try:
@@ -196,7 +230,8 @@ def run_trim(day, now=None, broker=None):
                     st["positions"].pop(code)
             _save(state_file, st)
     t = dict(t, trim_done=True, trimmed_value=round(sold_value, 0), trim_f=round(f, 4), trim_at=now.strftime("%Y-%m-%d %H:%M"),
-             trim_orders=[[o["code"], o["qty"], price.get(o["code"])] for o in orders if o["status"].startswith("접수")])     # 이 파일은 저장소에 안 올림
+             trim_orders=[[o["code"], o["qty"], price.get(o["code"])] for o in orders if o["status"].startswith("접수")],
+             pre=pre)     # 이 파일은 저장소에 안 올림
     _save(TODAY, t)
     log = _load(LOG, [])
     log = [x for x in log if x.get("date") != day] + [{
@@ -214,9 +249,20 @@ def run_trim(day, now=None, broker=None):
     return lines
 
 
-def record_close(day, broker=None):
+def trim_or_block(day, now=None, broker=None):
+    """15:20 덜어내기. 실패하면 오늘 새 매수를 막고 알림 줄을 돌려줌(fail-closed · 1일봉 팔기는 그대로)."""
+    try:
+        return run_trim(day, now, broker)
+    except Exception as e:
+        block(day, f"덜어내기 실패 · {type(e).__name__}")
+        return [f"⚠️ 계좌 흔들림 상한 단계 문제 · {type(e).__name__} → 오늘 새 매수 멈춤(팔기는 그대로)"]
+
+
+def record_close(day, broker=None, quote=None):
     """15:32(장 끝난 뒤) — 같은 날 덜어내기를 연구처럼 **종가**로 셌다면 얼마였을지 log에 나란히 적음(15:20 값과의 차이 재기).
-    덜어내기 전 수량 = 지금 수량 + 오늘 덜어내려고 판 수량(시장가 · 마감 동시호가라 체결로 봄). 비율만 적음."""
+    덜어내기 직전에 남긴 수량 · 현금(today.json의 pre)에 **실제 종가**를 매겨 셈 — 같은 날 1일봉 등 다른 매수 · 매도는 섞이지 않음.
+    잔고에서 사라진 종목은 quote(코드)로 종가를 받음. 종가를 못 받은 종목이 있거나 pre가 없으면 15:20 값으로 대신하지 않고
+    그날 비교를 '미확인'으로 적음(GPT #150). 비율만 적음."""
     import paper_trade as P
     if not enabled(day):
         return None
@@ -225,19 +271,30 @@ def record_close(day, broker=None):
         return None
     broker = broker or P.PaperBroker()
     b = broker.balance()
-    qty = positions_of(b)
-    price = {p["code"]: float(p.get("price") or 0) for p in b.get("positions", [])}
-    for code, q, p1520 in t.get("trim_orders") or []:
-        qty[code] = qty.get(code, 0) + int(q)
-        if not price.get(code):          # 다 팔려 잔고에 없으면 15:20 값으로(드묾)
-            price[code] = float(p1520 or 0)
-    total = float(b.get("cash") or 0) + float(b.get("value") or 0)
-    held = sum(q * price.get(c, 0) for c, q in qty.items())
-    if total <= 0:
-        return None
-    f_close = max(0.0, 1 - t["E"] * total / held) if held > 0 else 0.0
-    out = {"held_share_close": round(held / total, 4), "trim_f_close": round(f_close, 4),
-           "trim_f_gap": round(float(t.get("trim_f") or 0) - f_close, 4)}
+    price = {p["code"]: float(p.get("price") or 0) for p in b.get("positions", [])}      # 장 끝 값 = 종가
+    pre = t.get("pre")
+    missing = []
+    if pre:
+        qty = {c: int(q) for c, q in pre["qty"].items()}
+        for c in qty:
+            if price.get(c):
+                continue
+            try:                         # 오늘 다 팔려 잔고에 없으면 종가를 따로 받음
+                price[c] = float(quote(c) or 0) if quote else 0.0
+            except Exception:
+                price[c] = 0.0
+            if not price[c]:
+                missing.append(c)
+    if not pre or missing:
+        out = {"close_check": "미확인", "close_missing": len(missing) if pre else None}
+    else:
+        held = sum(q * price[c] for c, q in qty.items())
+        total = float(pre["cash"]) + held
+        if total <= 0:
+            return None
+        f_close = max(0.0, 1 - t["E"] * total / held) if held > 0 else 0.0
+        out = {"close_check": "확인", "held_share_close": round(held / total, 4), "trim_f_close": round(f_close, 4),
+               "trim_f_gap": round(float(t.get("trim_f") or 0) - f_close, 4)}
     log = _load(LOG, [])
     for x in log:
         if x.get("date") == day:
