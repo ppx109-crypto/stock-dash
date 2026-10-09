@@ -1,0 +1,27 @@
+{
+ "schema_version": 1,
+ "task_id": "M15-DIAG-0024",
+ "chain_id": "M15-DIAG-0024",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "NO_CANDIDATE",
+ "source_pr": null,
+ "source_head_sha": null,
+ "code_commit": null,
+ "evidence_paths": [
+  "docs/RL-15M-LOG.md",
+  "docs/15M-GUARD.md",
+  "audit/inputs/x004_m15_final.json",
+  "research/z091.py"
+ ],
+ "completed_at_kst": "2026-10-10T06:43:05+09:00",
+ "file_sha256": {
+  "REPORT.md": "906be28c4f693607bbbf9909fcc6ab217e9584e13d9b28baec92c9821b1c2157"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
