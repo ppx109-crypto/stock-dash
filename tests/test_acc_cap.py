@@ -172,9 +172,9 @@ class RunTrim(unittest.TestCase):
             self.assertNotIn("total", log[0])                 # 금액은 기록에 안 남김(비율만)
             self.assertNotIn("qty", log[0]["orders"][0])
 
-    def test_record_close_compares_with_closing_price(self):
+    def test_record_close_without_snapshot_is_unconfirmed(self):
         class Fake:
-            def balance(self):                       # 덜어낸 뒤 · 종가가 15:20보다 10% 높음
+            def balance(self):
                 return bal(1_000_000, [("000001", 50, 1100)])
         with tempfile.TemporaryDirectory() as tmp:
             t = Path(tmp)
@@ -184,11 +184,8 @@ class RunTrim(unittest.TestCase):
             with mock.patch.object(A, "TODAY", t / "today.json"), mock.patch.object(A, "LOG", t / "log.json"), \
                     mock.patch.dict(os.environ, {"ACC_CAP": "on", "ACC_CAP_START": ""}):
                 out = A.record_close("20261012", broker=Fake())
-            # 덜어내기 전 100주 × 1100 = 11만 · 계좌 = 100만 + 5.5만 → 든 것 비중 0.1043(상한 0.5 아래라 종가로는 안 덜어냄)
-            self.assertEqual(out["trim_f_close"], 0.0)
-            self.assertAlmostEqual(out["held_share_close"], round(110_000 / 1_055_000, 4))
-            self.assertEqual(json.loads((t / "log.json").read_text())[0]["trim_f_gap"], 0.5)
-
+            self.assertEqual(out["close_check"], "미확인")          # 덜어내기 직전 수량이 없으면 어림하지 않음
+            self.assertEqual(json.loads((t / "log.json").read_text())[0]["close_check"], "미확인")
 
 class FailClosed(unittest.TestCase):
     """GPT #149 검토: 켜진 날 상한 셈 · 덜어내기가 실패하면 새 매수만 0(팔기는 그대로) — 세 호출 경로 모두."""
@@ -259,24 +256,53 @@ class FailClosed(unittest.TestCase):
 class RecordCloseSnapshot(unittest.TestCase):
     """GPT #149 검토: 같은 날 1일봉 매수 · 매도 · 상한 매도가 함께 있어도 종가 셈은 덜어내기 직전 수량으로."""
 
-    def test_other_fills_do_not_leak(self):
+    def run_close(self, pre, quote, balance):
         class Fake:
-            def balance(self):            # 장 끝: 상한으로 000001 50주 팔고 · 1일봉이 000003을 새로 사고 000002를 다 팖
-                return bal(900_000, [("000001", 50, 1100), ("000003", 100, 2000)])
+            def balance(self):
+                return balance
         with tempfile.TemporaryDirectory() as tmp:
             t = Path(tmp)
-            pre = {"cash": 1_000_000, "qty": {"000001": 100, "000002": 40}, "price": {"000001": 1000, "000002": 500}}
-            (t / "today.json").write_text(json.dumps({"date": "20261012", "E": 0.1, "trim_done": True, "trim_f": 0.2,
-                                                      "trim_orders": [["000001", 50, 1000]], "pre": pre}), encoding="utf-8")
+            body = {"date": "20261012", "E": 0.1, "trim_done": True, "trim_f": 0.2, "trim_orders": [["000001", 50, 1000]]}
+            if pre:
+                body["pre"] = pre
+            (t / "today.json").write_text(json.dumps(body), encoding="utf-8")
             (t / "log.json").write_text(json.dumps([{"date": "20261012", "trim_f": 0.2}]), encoding="utf-8")
             with mock.patch.object(A, "TODAY", t / "today.json"), mock.patch.object(A, "LOG", t / "log.json"), \
                     mock.patch.dict(os.environ, {"ACC_CAP": "on", "ACC_CAP_START": ""}):
-                out = A.record_close("20261012", broker=Fake())
-        # 덜어내기 직전: 000001 100주 × 종가 1100 + 000002 40주 × (잔고에 없어 15:20 값) 500 = 13만 · 계좌 113만
-        held, total = 130_000, 1_130_000
+                out = A.record_close("20261012", broker=Fake(), quote=quote)
+            return out, json.loads((t / "log.json").read_text())[0]
+
+    # 장 끝: 상한으로 000001 50주 팔고 · 1일봉이 000003을 새로 사고 000002를 다 팖(잔고에 없음)
+    END = bal(900_000, [("000001", 50, 1100), ("000003", 100, 2000)])
+    PRE = {"cash": 1_000_000, "qty": {"000001": 100, "000002": 40}, "price": {"000001": 1000, "000002": 500}}
+
+    def test_other_fills_do_not_leak_and_sold_out_uses_real_close(self):
+        asked = []
+
+        def quote(code):
+            asked.append(code)
+            return 650                                  # 다 판 000002의 실제 종가(15:20 값 500과 다름)
+        out, log = self.run_close(self.PRE, quote, self.END)
+        self.assertEqual(asked, ["000002"])
+        # 덜어내기 직전 수량 × 실제 종가: 000001 100주 × 1100 + 000002 40주 × 650 = 13.6만 · 계좌 113.6만(000003 매수는 안 섞임)
+        held, total = 136_000, 1_136_000
+        self.assertEqual(out["close_check"], "확인")
         self.assertAlmostEqual(out["held_share_close"], round(held / total, 4))
         self.assertAlmostEqual(out["trim_f_close"], round(1 - 0.1 * total / held, 4))
-        self.assertAlmostEqual(out["trim_f_gap"], round(0.2 - (1 - 0.1 * total / held), 4))
+        self.assertAlmostEqual(log["trim_f_gap"], round(0.2 - (1 - 0.1 * total / held), 4))
+
+    def test_missing_close_is_unconfirmed_not_1520(self):
+        def quote(code):
+            raise RuntimeError("시세 못 받음")
+        out, log = self.run_close(self.PRE, quote, self.END)
+        self.assertEqual(out, {"close_check": "미확인", "close_missing": 1})
+        self.assertNotIn("trim_f_close", log)
+        out, _ = self.run_close(self.PRE, None, self.END)
+        self.assertEqual(out["close_check"], "미확인", "종가를 받을 길이 없어도 15:20 값으로 대신하지 않음")
+
+    def test_no_snapshot_is_unconfirmed(self):
+        out, _ = self.run_close(None, None, self.END)
+        self.assertEqual(out["close_check"], "미확인")
 
     def test_run_trim_saves_snapshot(self):
         class Fake:
