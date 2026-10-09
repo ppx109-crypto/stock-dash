@@ -1,0 +1,158 @@
+{
+ "cases": {
+  "D0_정상_쌍_OK": {
+   "expect": [
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "got": [
+    "OK",
+    "OK",
+    "OK",
+    "OK"
+   ],
+   "pass": true
+  },
+  "N7_원수정_요청_칸_불일치": {
+   "expect": [
+    [
+     "UNKNOWN_PROVENANCE",
+     [
+      "PARAM_MISMATCH"
+     ]
+    ],
+    [
+     "UNKNOWN_PROVENANCE",
+     [
+      "PARAM_MISMATCH"
+     ]
+    ]
+   ],
+   "got": [
+    [
+     "UNKNOWN_PROVENANCE",
+     [
+      "PARAM_MISMATCH"
+     ]
+    ],
+    [
+     "UNKNOWN_PROVENANCE",
+     [
+      "PARAM_MISMATCH"
+     ]
+    ]
+   ],
+   "pass": true
+  },
+  "N8_basis_반전_또는_같은_응답": {
+   "expect": [
+    "UNKNOWN_PROVENANCE",
+    "UNKNOWN_PROVENANCE",
+    "UNKNOWN_SELECTION_UNSUPPORTED",
+    "OK"
+   ],
+   "got": [
+    "UNKNOWN_PROVENANCE",
+    "UNKNOWN_PROVENANCE",
+    "UNKNOWN_SELECTION_UNSUPPORTED",
+    "OK"
+   ],
+   "pass": true,
+   "flip_why": [
+    "BASIS_MISMATCH:RAW"
+   ],
+   "label_why": [
+    "BASIS_MISMATCH:RAW"
+   ],
+   "note": "원 요청에 '0' · basis 칸만 바뀜 → 출처 실패 · 아는 기업행동 앞인데 원 = 수정 → 선택 미지원(기업행동 뒤 날은 원 = 수정이 정상)"
+  },
+  "E9_요청해시_캐시해시_조회시각": {
+   "expect": [
+    [
+     "REQUEST_HASH:RAW"
+    ],
+    [
+     "CACHE_HASH:RAW"
+    ],
+    [
+     "FETCHED_AT:RAW",
+     "FETCHED_AT:ADJUSTED"
+    ]
+   ],
+   "got": [
+    [
+     "REQUEST_HASH:RAW"
+    ],
+    [
+     "CACHE_HASH:RAW"
+    ],
+    [
+     "FETCHED_AT:RAW",
+     "FETCHED_AT:ADJUSTED"
+    ]
+   ],
+   "pass": true
+  },
+  "E11_설명못하는_원수정_차이": {
+   "expect": [
+    "UNKNOWN_CA_COVERAGE",
+    "OK"
+   ],
+   "got": [
+    "UNKNOWN_CA_COVERAGE",
+    "OK"
+   ],
+   "pass": true,
+   "note": "기업행동 목록이 비었는데 D[0] · D[1] 원 ≠ 수정 → 목록 불완전"
+  },
+  "E10_쌍검사_자르기_일관": {
+   "expect": [
+    [
+     "OK",
+     "OK"
+    ],
+    [
+     "OK",
+     "OK"
+    ],
+    [
+     103600.0,
+     104000.0
+    ]
+   ],
+   "got": [
+    [
+     "OK",
+     "OK"
+    ],
+    [
+     "OK",
+     "OK"
+    ],
+    [
+     103600.0,
+     104000.0
+    ]
+   ],
+   "pass": true,
+   "note": "D[1] 밤에 받은 세계(기업행동 전 · 원 = 수정 · 목록 없음)와 뒤에 받은 세계(차이 + 기업행동 앎)가 앞 날 원주가 · 상태를 같게 냄"
+  },
+  "E9b_on_tick은_원주가_증거아님_off_tick은_INVALID": {
+   "expect": [
+    "INVALID_OFFICIAL_RAW",
+    "UNKNOWN_SELECTION_UNSUPPORTED"
+   ],
+   "got": [
+    "INVALID_OFFICIAL_RAW",
+    "UNKNOWN_SELECTION_UNSUPPORTED"
+   ],
+   "pass": true,
+   "note": "20700은 50원 배수(on-tick)지만 기업행동 앞인데 원 = 수정이라 원주가로 인정 안 함"
+  }
+ },
+ "pass": true,
+ "n": 7,
+ "n_pass": 7
+}

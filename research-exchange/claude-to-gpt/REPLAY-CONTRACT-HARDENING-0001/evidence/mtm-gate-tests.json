@@ -1,0 +1,95 @@
+{
+ "cases": {
+  "N9_하루_누락_nav_valid_false_성과차단": {
+   "expect": [
+    false,
+    [
+     "UNKNOWN_MTM_STALE"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW",
+    false,
+    1
+   ],
+   "got": [
+    false,
+    [
+     "UNKNOWN_MTM_STALE"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW",
+    false,
+    1
+   ],
+   "pass": true,
+   "diagnostic_nav_D2": 999500.0
+  },
+  "E6_0원_대체는_유효_NAV_아님": {
+   "expect": [
+    0.0,
+    false,
+    [
+     "MTM_NO_PRIOR_PRICE"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "got": [
+    0.0,
+    false,
+    [
+     "MTM_NO_PRIOR_PRICE"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "pass": true
+  },
+  "E6b_원주가_없어_체결못한_의도도_NAV_무효": {
+   "expect": [
+    false,
+    [
+     "UNFILLED_INTENT",
+     "UNKNOWN_MISSING_RAW"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "got": [
+    false,
+    [
+     "UNFILLED_INTENT",
+     "UNKNOWN_MISSING_RAW"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "pass": true
+  },
+  "E7_완전한_자료면_게이트_통과": {
+   "expect": [
+    "PERFORMANCE_INPUT_OK",
+    5,
+    true
+   ],
+   "got": [
+    "PERFORMANCE_INPUT_OK",
+    5,
+    true
+   ],
+   "pass": true
+  },
+  "E7b_합병_보유중이면_수량자동조정_안하고_차단": {
+   "expect": [
+    [
+     "CA_NO_AUTO_QTY"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "got": [
+    [
+     "CA_NO_AUTO_QTY"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "pass": true
+  }
+ },
+ "pass": true,
+ "n": 5,
+ "n_pass": 5
+}

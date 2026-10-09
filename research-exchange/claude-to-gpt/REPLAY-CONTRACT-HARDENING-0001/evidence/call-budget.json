@@ -1,0 +1,204 @@
+{
+ "plan": {
+  "codes": 33,
+  "retry_per_request": 2,
+  "cap_includes": [
+   "인증 · 코드표 호출(KIS tokenP 1 · DART corpCode 1)",
+   "재시도 전부"
+  ],
+  "dart_detail_endpoints": [
+   "piicDecsn",
+   "fricDecsn",
+   "pifricDecsn",
+   "crDecsn",
+   "cmpMgDecsn",
+   "cmpDvDecsn",
+   "cmpDvmgDecsn"
+  ],
+  "dart_detail_endpoint_count": 7,
+  "dart_no_structured_kinds": [
+   "split",
+   "reverse_split"
+  ],
+  "dart_exhaustive": {
+   "pr86_reported(6개로 셈)": 232,
+   "declared_7": 265,
+   "cap": 250,
+   "base_within_cap": false,
+   "worst": 795,
+   "worst_within_cap": false
+  },
+  "dart_staged_before_stage1": {
+   "status": "STAGE2_PENDING_LIST",
+   "log": [
+    {
+     "stage": "corpCode.xml",
+     "base": 1,
+     "worst": 3,
+     "used_before": 0,
+     "cap": 250,
+     "decision": "ALLOW"
+    },
+    {
+     "stage": "list.json",
+     "base": 33,
+     "worst": 99,
+     "used_before": 1,
+     "cap": 250,
+     "decision": "ALLOW"
+    }
+   ],
+   "stage2_max_base_after_stage1": 72
+  },
+  "kis": {
+   "auth_calls": 1,
+   "per_code": 4,
+   "base": 133,
+   "worst": 399,
+   "cap": 500,
+   "decision": "ALLOW"
+  },
+  "network_calls_this_task": 0
+ },
+ "cases": {
+  "N1_DART_7개_전수_265_상한초과": {
+   "expect": [
+    7,
+    265,
+    232,
+    "BLOCKED_CALL_BUDGET"
+   ],
+   "got": [
+    7,
+    265,
+    232,
+    "BLOCKED_CALL_BUDGET"
+   ],
+   "pass": true,
+   "note": "1 + 33 × (1 + 7) = 265 > 250(재시도 0으로 봐도 초과) · PR #86의 232는 상세를 6개로 셈"
+  },
+  "N2_목록결과로_줄인_계획_상한안": {
+   "expect": [
+    "ALLOW",
+    3,
+    1,
+    4,
+    38,
+    114
+   ],
+   "got": [
+    "ALLOW",
+    3,
+    1,
+    4,
+    38,
+    114
+   ],
+   "pass": true,
+   "note": "고유 (종목, endpoint) 3 + 분할 원문 1 · 기본 1 + 33 + 4 = 38 · 재시도 2 포함 worst 114 ≤ 250"
+  },
+  "N3_재시도_worst_초과_호출전_차단": {
+   "expect": [
+    "BLOCKED_CALL_BUDGET",
+    99,
+    297,
+    34,
+    133,
+    true
+   ],
+   "got": [
+    "BLOCKED_CALL_BUDGET",
+    99,
+    297,
+    34,
+    133,
+    true
+   ],
+   "pass": true,
+   "note": "기본 성공 호출 합 133은 상한 안이지만, 2단계 worst 297 > 남은 216 → 2단계 호출 0으로 멈춤",
+   "log": [
+    {
+     "stage": "corpCode.xml",
+     "base": 1,
+     "worst": 3,
+     "used_before": 0,
+     "cap": 250,
+     "decision": "ALLOW"
+    },
+    {
+     "stage": "list.json",
+     "base": 33,
+     "worst": 99,
+     "used_before": 1,
+     "cap": 250,
+     "decision": "ALLOW"
+    },
+    {
+     "stage": "detail+document",
+     "base": 99,
+     "worst": 297,
+     "used_before": 34,
+     "cap": 250,
+     "decision": "BLOCKED_CALL_BUDGET"
+    }
+   ]
+  },
+  "E1_1단계_결과없으면_2단계_숫자_안정함": {
+   "expect": [
+    "STAGE2_PENDING_LIST",
+    false
+   ],
+   "got": [
+    "STAGE2_PENDING_LIST",
+    false
+   ],
+   "pass": true,
+   "stage2_max_base_after_stage1": 72
+  },
+  "E1b_목록_여러쪽이면_쪽수로_다시_검사": {
+   "expect": [
+    "STAGE2_PENDING_LIST",
+    73
+   ],
+   "got": [
+    "STAGE2_PENDING_LIST",
+    73
+   ],
+   "pass": true,
+   "log": [
+    {
+     "stage": "corpCode.xml",
+     "base": 1,
+     "worst": 3,
+     "used_before": 0,
+     "cap": 250,
+     "decision": "ALLOW"
+    },
+    {
+     "stage": "list.json",
+     "base": 73,
+     "worst": 219,
+     "used_before": 1,
+     "cap": 250,
+     "decision": "ALLOW"
+    }
+   ]
+  },
+  "E1c_KIS_인증_재시도_포함": {
+   "expect": [
+    133,
+    399,
+    "ALLOW"
+   ],
+   "got": [
+    133,
+    399,
+    "ALLOW"
+   ],
+   "pass": true
+  }
+ },
+ "pass": true,
+ "n": 6,
+ "n_pass": 6
+}

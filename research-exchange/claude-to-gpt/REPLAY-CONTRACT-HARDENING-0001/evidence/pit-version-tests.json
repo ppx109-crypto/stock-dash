@@ -1,0 +1,221 @@
+{
+ "cases": {
+  "N4_효력일_뒤_정정본은_과거_as_of에서_제외": {
+   "expect": [
+    2,
+    [
+     "20260102000100"
+    ],
+    5,
+    [
+     "20260102000100",
+     "20260108000050"
+    ]
+   ],
+   "got": [
+    2,
+    [
+     "20260102000100"
+    ],
+    5,
+    [
+     "20260102000100",
+     "20260108000050"
+    ]
+   ],
+   "pass": true
+  },
+  "N4b_재생은_그때_버전으로_수량_뒤_정정은_충돌표시": {
+   "expect": [
+    20,
+    true,
+    false,
+    [
+     "CA_VERSION_CONFLICT_AFTER_USE"
+    ]
+   ],
+   "got": [
+    20,
+    true,
+    false,
+    [
+     "CA_VERSION_CONFLICT_AFTER_USE"
+    ]
+   ],
+   "pass": true,
+   "note": "미래 정정본(비율 5)을 효력일 D[2]에 소급하지 않음 · 공개된 D[3]부터 NAV 무효"
+  },
+  "N5_cutoff_전_후_날짜만_시각없음": {
+   "expect": [
+    true,
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "got": [
+    true,
+    false,
+    false,
+    true,
+    false,
+    false
+   ],
+   "pass": true,
+   "order": [
+    "07:59 ≤ 08:00",
+    "08:01 > 08:00",
+    "날짜만 · 당일",
+    "날짜만 · 다음 거래일",
+    "시각 없음",
+    "시간대 없는 시각"
+   ]
+  },
+  "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단": {
+   "expect": [
+    200000.0,
+    20,
+    [
+     "CA_APPLIED_LATE"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "got": [
+    200000.0,
+    20,
+    [
+     "CA_APPLIED_LATE"
+    ],
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "pass": true,
+   "note": "D[2] 평가 = 10주 × 20000(당일 사용 금지라 수량 그대로) · D[3]에 20주 · 그 사이 NAV는 틀렸으므로 차단"
+  },
+  "N6_원접수_단절_시각없음_동시각_두버전": {
+   "expect": [
+    [
+     "UNKNOWN_CA_VERSION_PIT",
+     "ROOT_MISSING"
+    ],
+    [
+     "UNKNOWN_CA_VERSION_PIT",
+     "AVAILABLE_AT_MISSING"
+    ],
+    [
+     "UNKNOWN_CA_VERSION_PIT",
+     "SAME_TIME_VERSIONS"
+    ]
+   ],
+   "got": [
+    [
+     "UNKNOWN_CA_VERSION_PIT",
+     "ROOT_MISSING"
+    ],
+    [
+     "UNKNOWN_CA_VERSION_PIT",
+     "AVAILABLE_AT_MISSING"
+    ],
+    [
+     "UNKNOWN_CA_VERSION_PIT",
+     "SAME_TIME_VERSIONS"
+    ]
+   ],
+   "pass": true
+  },
+  "N6b_단절_사슬은_수량_안바꾸고_NAV_무효": {
+   "expect": [
+    10,
+    false,
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "got": [
+    10,
+    false,
+    "PERFORMANCE_BLOCKED_INCOMPLETE_RAW"
+   ],
+   "pass": true
+  },
+  "N6c_접수번호_문자열_순서로_최신_추정안함": {
+   "expect": [
+    2,
+    5
+   ],
+   "got": [
+    2,
+    5
+   ],
+   "pass": true,
+   "note": "정정본 접수번호가 문자열로 더 작아도 공개 시각 순으로 고름"
+  },
+  "E2_자르기_시험_미래_독정정본": {
+   "expect": [
+    [
+     true,
+     true,
+     true,
+     true
+    ],
+    10,
+    true,
+    [
+     "CA_VERSION_CONFLICT_AFTER_USE"
+    ]
+   ],
+   "got": [
+    [
+     true,
+     true,
+     true,
+     true
+    ],
+    10,
+    true,
+    [
+     "CA_VERSION_CONFLICT_AFTER_USE"
+    ]
+   ],
+   "pass": true,
+   "note": "비율 100짜리 정정본(D[3] 09:00 공개)은 D[3] 08:00 cutoff 뒤라 D[4]부터 보임 · 그 앞 수량(분할 2 → +10주) · 현금 · MTM · 표시는 자른 세계와 한 칸도 같음"
+  },
+  "E4_기준일이_휴장일이면_다음거래일_적용(PR86은_건너뜀)": {
+   "expect": [
+    20,
+    "20260108",
+    10,
+    "건너뜀"
+   ],
+   "got": [
+    20,
+    "20260108",
+    10,
+    "건너뜀"
+   ],
+   "pass": true,
+   "note": "10주 보유 · 분할 ×2 기준일이 휴장일(01-07) · PR #86 raw_replay.py 107줄은 effective_date가 거래일 목록에 없어 영원히 적용 안 함"
+  },
+  "E5_권리락일_수량_평가_상장전_매도잠금": {
+   "expect": [
+    300000.0,
+    true,
+    5,
+    [
+     "SELL_LOCKED_PENDING"
+    ]
+   ],
+   "got": [
+    300000.0,
+    true,
+    5,
+    [
+     "SELL_LOCKED_PENDING"
+    ]
+   ],
+   "pass": true,
+   "note": "권리락일(D[2])부터 15주 × 원주가로 평가 · 상장일(D[4]) 전 늘어난 5주는 못 팔아 15주 매도 요청이 10주로"
+  }
+ },
+ "pass": true,
+ "n": 10,
+ "n_pass": 10
+}

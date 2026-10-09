@@ -1,0 +1,21 @@
+== 1 targets148(PR86 그대로)
+{"fills": 148, "by_sleeve_side": {"D1_buy": 52, "D1_sell": 71, "BASKET_buy": 12, "BASKET_sell": 13}, "classes": {"UNKNOWN_RAW_OR_ADJUSTED": 125, "IMPOSSIBLE_RAW_FILL": 23}, "unique_code_date": 145, "unique_codes": 33, "unique_dates": 77, "off_tick_unique_code_date": 20, "salt_sha256": "eb7b7d0859a3a81b83e18f49d78248b697089fc286096655938908408d08e4eb", "date_range": ["20250922", "20260331"], "scope": "현재 후보(PR #76 일봉 고침) D1 + BASKET만 · 통제는 비교 메타데이터 · 15분봉 제외"}
+rc=0
+== 2 PR86 기존 10개(PR86 어댑터)
+{"1_기업행동_없음": true, "2_액면분할": true, "3_감자_병합": true, "4_유무상_칸없음": true, "5_선택_미지원": true, "6_원주가_호가밖": true, "7_정정_사슬": true, "8_비용_항등식": true, "9_한도_음수": true, "10_15분봉_거부": true, "pass": true}
+rc=0
+== 3 call_budget
+{"declared_7": 265, "pr86_6": 232, "cap": 250, "staged": "STAGE2_PENDING_LIST", "stage2_max_base": 72, "kis": {"auth_calls": 1, "per_code": 4, "base": 133, "worst": 399, "cap": 500, "decision": "ALLOW"}}
+rc=0
+== 4 intent_map
+{"fills": 148, "status": {"MAPPED_PENDING_OFFICIAL_RAW": 148}, "mapped_plus_blocked": 148, "by_class_status": {"UNKNOWN_RAW_OR_ADJUSTED|MAPPED_PENDING_OFFICIAL_RAW": 125, "IMPOSSIBLE_RAW_FILL|MAPPED_PENDING_OFFICIAL_RAW": 23}, "by_sleeve_side_status": {"D1_buy|MAPPED_PENDING_OFFICIAL_RAW": 52, "D1_sell|MAPPED_PENDING_OFFICIAL_RAW": 71, "BASKET_buy|MAPPED_PENDING_OFFICIAL_RAW": 12, "BASKET_sell|MAPPED_PENDING_OFFICIAL_RAW": 13}, "buy_reduced_in_pr76": 0, "same_day_order_rule_matches_pr76_storage": {"same": 90}, "dup_same_day_same_code": 0, "deterministic_under_shuffled_input": true, "decision_targets_total(날 × 종목)": {"D1": 542, "BASKET": 154}, "salt_sha256": "eb7b7d0859a3a81b83e18f49d78248b697089fc286096655938908408d08e4eb", "mapping_rule": "target_raw = floor(target_adj × 저장 수정종가_t ÷ 공식 원주가_t) · 주문 = 목표 − 보유 · 팔기 먼저 · 종목 코드 오름차순", "pending": "공식 원주가_t가 없어 수치 목표는 아직 없음(실제 수집 TASK에서 환산)"}
+rc=0
+== 5 fixtures_v2
+{"call-budget": {"n": 6, "n_pass": 6, "fail": []}, "pit-version-tests": {"n": 10, "n_pass": 10, "fail": []}, "raw-pair-tests": {"n": 7, "n_pass": 7, "fail": []}, "mtm-gate-tests": {"n": 5, "n_pass": 5, "fail": []}, "intent-mapping-tests": {"n": 4, "n_pass": 4, "fail": []}, "ported-fixtures-v2": {"n": 10, "n_pass": 10, "fail": []}, "all_pass": true}
+rc=0
+== 6 schema_check
+{"CA_정상": true, "CA_날짜만_공개": true, "CA_available_at_없음": true, "CA_root_없음": true, "CA_무상_상장일_없음": true, "CA_시간대_없는_시각": true, "CA_분할_원문경로": true, "KIS_원_정상": true, "KIS_원인데_플래그0": true, "KIS_조회시각_날짜만": true, "KIS_요청해시_없음": true, "로컬_148_의도_스키마": true, "pass": true}
+rc=0
+== 7 변이 점검(사전등록 밖 추가)
+{"M1_as_of_무시(미래 정정본 읽음)": [true, ["E2_자르기_시험_미래_독정정본", "N4_효력일_뒤_정정본은_과거_as_of에서_제외", "N4b_재생은_그때_버전으로_수량_뒤_정정은_충돌표시", "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단", "N6c_접수번호_문자열_순서로_최신_추정안함"]], "M2_날짜만_공개를_0시로(당일 사용 허용)": [true, ["N5_cutoff_전_후_날짜만_시각없음", "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단"]], "M3_성과게이트_끔": [true, ["E6_0원_대체는_유효_NAV_아님", "E6b_원주가_없어_체결못한_의도도_NAV_무효", "E7b_합병_보유중이면_수량자동조정_안하고_차단", "N5b_날짜만_공개된_기업행동은_다음날_늦게_적용_성과차단", "N6b_단절_사슬은_수량_안바꾸고_NAV_무효", "N9_하루_누락_nav_valid_false_성과차단"]], "M4_STALE을_유효로": [true, ["N9_하루_누락_nav_valid_false_성과차단"]], "M5_출처검사_끔": [true, "KeyError: 'why'"], "M6_팔기먼저_끔": [true, ["N10_같은날_팔기먼저_입력순서_무관"]], "M7_잠금창_끔": [true, ["E8_목표수량_환산_분할전후_잠금창_차단"]], "M8_기준일_정확일치만(PR86 방식)": [true, "StopIteration"]}
+rc=0
