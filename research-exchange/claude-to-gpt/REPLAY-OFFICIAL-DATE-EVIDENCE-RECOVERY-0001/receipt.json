@@ -1,0 +1,38 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-OFFICIAL-DATE-EVIDENCE-RECOVERY-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 24,
+ "status": "BLOCKED",
+ "source_pr": 90,
+ "source_head_sha": "f2e59846f89bd8da8392db07a0570f2d3578f109",
+ "code_commit": "c7424d40ba3d5752284ea192e0ef090298952813",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/build_contract.py",
+  "evidence/run.log",
+  "evidence/source-access-log.json",
+  "evidence/split-reverse-split-date-contract.json"
+ ],
+ "completed_at_kst": "2026-10-09T01:21:16+09:00",
+ "input": {
+  "pr": 91,
+  "head_sha": "c463763d8efbcbec49f0fa571a1843dd3cd13a60"
+ },
+ "prereg_commit": "b06b17822e935a4007d443b8d991f91ce34ceb14",
+ "direct_access": {
+  "urls": 5,
+  "attempts": 5,
+  "succeeded": 0,
+  "retries": 0,
+  "kind_server_403": 3,
+  "law_krx_policy_block": 2,
+  "new_network_allow_requested": false
+ },
+ "data_api_calls": 0,
+ "replay": 0,
+ "performance": 0,
+ "paper_validation_ready": false,
+ "result_pr": null
+}
