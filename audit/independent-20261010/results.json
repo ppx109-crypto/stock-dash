@@ -1,0 +1,1406 @@
+{
+  "scope": "Independent reproduction of historical z054 numerical contract; all submitted NAV CSV arithmetic on PR140 snapshot. Not all-strategy raw-ledger validation.",
+  "input_sha": "2d43aa8d26deeeb30d52c2aed6906dbdc798885d",
+  "public_inputs": {
+    "price-data": {
+      "files": 507,
+      "sha256_ordered_filename_bytes": "04410bf34898df3de5aa35029e5c5746adb75a10a3c44b83ebd3104aa8bf8973"
+    },
+    "share-data": {
+      "files": 499,
+      "sha256_ordered_filename_bytes": "e52bc340dd49ce38c585ccca04d3aea523f041f9f5932e3eacf97a45069136c7"
+    },
+    "short-data": {
+      "files": 270,
+      "sha256_ordered_filename_bytes": "0903d3c4f24c8bac4546a5b73dac2584ad268411318ccde31b35191f862111cf"
+    },
+    "loan-data": {
+      "files": 272,
+      "sha256_ordered_filename_bytes": "d545d1eaa0ff93b9f787bb7957c37c711071e6171c193b1e5e709fb9f08853dc"
+    },
+    "event-data": {
+      "files": 509,
+      "sha256_ordered_filename_bytes": "9bfcb808a2ef96b40e7d2afe3b6abac63704d4803a9e79d990ded6ccbb33de66"
+    },
+    "volume-data": {
+      "files": 507,
+      "sha256_ordered_filename_bytes": "ed6cf674ade142df24bcac25aac98c4e6b97e35abe9364d2598cfe51ad4eb9ee"
+    }
+  },
+  "nav_csvs": [
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/cut_cap15_park0_m2.0_T20231231.csv",
+      "sha256": "53d8198a52f6f8e85ac59276bfaae476ed115d402c403a726cbc01971651489b",
+      "rows": 1700,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 19.955091042052263,
+        "worst_day_pct": -2.651523198232031,
+        "worst_month_pct": -4.1994200924077685,
+        "worst_2month_pct": -3.738477786941541,
+        "mdd_pct": -8.071625327336186,
+        "total_pct": 104.14876600000022
+      },
+      "back": {
+        "days": 739,
+        "cagr_pct": 20.61442791523764,
+        "worst_day_pct": -3.0391127128709505,
+        "worst_month_pct": -4.737753927375787,
+        "worst_2month_pct": -5.889783047212848,
+        "mdd_pct": -10.743677685002794,
+        "total_pct": 76.00570752409048
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap0_park0_m1.0.csv",
+      "sha256": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.180190871313524,
+        "worst_day_pct": -2.6451013766541465,
+        "worst_month_pct": -3.9006059480717337,
+        "worst_2month_pct": -3.7465666369283057,
+        "mdd_pct": -7.398293771874176,
+        "total_pct": 68.22744000000047
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.44153682408816,
+        "worst_day_pct": -4.664791538412216,
+        "worst_month_pct": -7.264699614366521,
+        "worst_2month_pct": -10.502439076029614,
+        "mdd_pct": -14.067533908123675,
+        "total_pct": 232.86091496131726
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap0_park0_m1.5.csv",
+      "sha256": "c9e16846ded55bf7cb9f5d0ddac8184ed4f77dc768fd0441d653cbfb57e53f30",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 18.463498300929615,
+        "worst_day_pct": -2.65356926795417,
+        "worst_month_pct": -4.2793090331633366,
+        "worst_2month_pct": -3.799318879725233,
+        "mdd_pct": -7.791811991922204,
+        "total_pct": 94.3710839999997
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 30.259068307490878,
+        "worst_day_pct": -6.150658592879177,
+        "worst_month_pct": -10.105971718404128,
+        "worst_2month_pct": -15.980786081555799,
+        "mdd_pct": -21.523882174139754,
+        "total_pct": 352.4565968876318
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap0_park0_m2.0.csv",
+      "sha256": "f15ad4212581a468e5bf457ae582b19944e8dee2214c19c4cf0c00b3248a143c",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 19.234328037305026,
+        "worst_day_pct": -2.645641806359822,
+        "worst_month_pct": -4.253440545618615,
+        "worst_2month_pct": -3.7740213527370225,
+        "mdd_pct": -8.04579083055591,
+        "total_pct": 99.3793769999992
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 33.83393687727037,
+        "worst_day_pct": -6.6233223485436366,
+        "worst_month_pct": -11.26512634558372,
+        "worst_2month_pct": -18.931079019484287,
+        "mdd_pct": -24.55341860210456,
+        "total_pct": 428.1036107360301
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap0_park1_m1.0.csv",
+      "sha256": "27bd8686f49bab34d80d4798550f2a270b27b6f83eab1429aa777c91d5c6885d",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.561746977889744,
+        "worst_day_pct": -2.6398286486153166,
+        "worst_month_pct": -3.946480904697114,
+        "worst_2month_pct": -3.9417027944678606,
+        "mdd_pct": -7.634085838608451,
+        "total_pct": 64.68155399999982
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.95586318875662,
+        "worst_day_pct": -4.658769831882181,
+        "worst_month_pct": -7.214567312344855,
+        "worst_2month_pct": -10.271757463078579,
+        "mdd_pct": -13.817035290727308,
+        "total_pct": 240.8584200025225
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap0_park1_m1.5.csv",
+      "sha256": "3ac7ba86220050db4a5437b0a57a2719d45cbb18ab2e93607b92a364fe63bc85",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 17.48806376604879,
+        "worst_day_pct": -2.6334455502234566,
+        "worst_month_pct": -4.314799107923195,
+        "worst_2month_pct": -3.963514489925579,
+        "mdd_pct": -7.880940005951553,
+        "total_pct": 88.16849000000038
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 30.606579398546785,
+        "worst_day_pct": -6.143196486056846,
+        "worst_month_pct": -10.039306454219032,
+        "worst_2month_pct": -15.817838985151278,
+        "mdd_pct": -21.36408421763297,
+        "total_pct": 359.3927452997028
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap0_park1_m2.0.csv",
+      "sha256": "cd810ee1daadae879837280b3299403185b55c3aa79ec780889f8547d56b8a9b",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 18.201470039133973,
+        "worst_day_pct": -2.635521339295299,
+        "worst_month_pct": -4.288403885267322,
+        "worst_2month_pct": -3.935921496807049,
+        "mdd_pct": -8.15955914784815,
+        "total_pct": 92.69015800000122
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 34.110125381786375,
+        "worst_day_pct": -6.610091688672892,
+        "worst_month_pct": -11.21739039746994,
+        "worst_2month_pct": -18.82991970898682,
+        "mdd_pct": -24.473176264560692,
+        "total_pct": 434.35708117484626
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap10_park0_m1.0.csv",
+      "sha256": "f113abbf5d475413f0d0fe62049c45756cf158f0d89a73d932fdfabd3c8ad699",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.827738875636285,
+        "worst_day_pct": -2.651029042181874,
+        "worst_month_pct": -3.7804231664922305,
+        "worst_2month_pct": -3.6520780846904133,
+        "mdd_pct": -6.91749552769304,
+        "total_pct": 66.1997390000002
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 21.802804566441324,
+        "worst_day_pct": -4.042507177384092,
+        "worst_month_pct": -5.772504056452988,
+        "worst_2month_pct": -9.127117864230637,
+        "mdd_pct": -11.929387250724366,
+        "total_pct": 208.40442234388914
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap10_park0_m1.5.csv",
+      "sha256": "846342201714185849cdb08057d0eb64357d151cc561c147141054ef6a28648c",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 17.343099523397832,
+        "worst_day_pct": -2.6824478799434615,
+        "worst_month_pct": -4.180646753153161,
+        "worst_2month_pct": -3.921277898753972,
+        "mdd_pct": -8.749966423328026,
+        "total_pct": 87.2594390000002
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 24.030789124009043,
+        "worst_day_pct": -5.008693899459804,
+        "worst_month_pct": -9.632190721435796,
+        "worst_2month_pct": -15.066896510028261,
+        "mdd_pct": -18.17427971592478,
+        "total_pct": 242.03659287903793
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap10_park0_m2.0.csv",
+      "sha256": "36c7068010b696209583a38bd96a366e5263a354a5d8ecbb53c4831166514995",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 18.162556924888595,
+        "worst_day_pct": -3.089947272033877,
+        "worst_month_pct": -4.155567764972012,
+        "worst_2month_pct": -3.921277898753972,
+        "mdd_pct": -8.749966423328026,
+        "total_pct": 92.44145500000056
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 26.181084107692776,
+        "worst_day_pct": -8.620874630515774,
+        "worst_month_pct": -12.690406931681453,
+        "worst_2month_pct": -20.14598551850877,
+        "mdd_pct": -23.86046125338549,
+        "total_pct": 277.3095552618853
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap10_park1_m1.0.csv",
+      "sha256": "f624d36b78494d26a22083579c083b6c4a7df04c0a22ba373f6b3698243ff93b",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.280480645190762,
+        "worst_day_pct": -2.634863427673151,
+        "worst_month_pct": -3.8049599096011244,
+        "worst_2month_pct": -3.5895000848276237,
+        "mdd_pct": -6.91500587194569,
+        "total_pct": 63.08745299999969
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 22.3535221211947,
+        "worst_day_pct": -4.040808315117506,
+        "worst_month_pct": -5.737112394487209,
+        "worst_2month_pct": -8.890030046355479,
+        "mdd_pct": -12.021819673706979,
+        "total_pct": 216.45208169386297
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap10_park1_m1.5.csv",
+      "sha256": "5696e44a2386d6a695a670cabdacb2af602a5291b368a609387e5f2baae0149a",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 16.575451355641047,
+        "worst_day_pct": -2.695812955247079,
+        "worst_month_pct": -4.218944599432161,
+        "worst_2month_pct": -4.126912441478126,
+        "mdd_pct": -8.963436817378867,
+        "total_pct": 82.50004400000073
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 24.39306747187271,
+        "worst_day_pct": -5.0220831277031035,
+        "worst_month_pct": -9.556752776710908,
+        "worst_2month_pct": -14.888608060623554,
+        "mdd_pct": -18.021573640505416,
+        "total_pct": 247.7807336857393
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap10_park1_m2.0.csv",
+      "sha256": "c79391372ed571720c8e647bea3c61e6815fa8bd8168c42425cdcb9244740928",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 17.323982272596083,
+        "worst_day_pct": -3.097658629818656,
+        "worst_month_pct": -4.1942174220902295,
+        "worst_2month_pct": -4.126912441478126,
+        "mdd_pct": -8.963436817378867,
+        "total_pct": 87.13980200000037
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 26.453184460563396,
+        "worst_day_pct": -8.626659470589226,
+        "worst_month_pct": -12.65209188777291,
+        "worst_2month_pct": -20.049744310279983,
+        "mdd_pct": -23.78499726463619,
+        "total_pct": 281.97926809818887
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap15_park0_m1.0.csv",
+      "sha256": "9049e63175070c64de5ed99e18d2b5308ff290a400a74fd80e257a672055f9a3",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.39478570225412,
+        "worst_day_pct": -2.6485735991859327,
+        "worst_month_pct": -3.8237037117661687,
+        "worst_2month_pct": -3.5429925126736816,
+        "mdd_pct": -7.2539106542012455,
+        "total_pct": 69.47102400000011
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 22.808492148039527,
+        "worst_day_pct": -4.663501119374402,
+        "worst_month_pct": -7.195949404853308,
+        "worst_2month_pct": -10.764574933635574,
+        "mdd_pct": -14.589936805562964,
+        "total_pct": 223.2305258272353
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap15_park0_m1.5.csv",
+      "sha256": "583f68d3aba7947fa0a9d81ac468296fc29621acaa7f4c47a0be2b7b071005c6",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 19.08301624529878,
+        "worst_day_pct": -2.6446144949987316,
+        "worst_month_pct": -4.225265283051849,
+        "worst_2month_pct": -3.7653184721893274,
+        "mdd_pct": -8.046275230849087,
+        "total_pct": 98.38876499999981
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 28.09277514327828,
+        "worst_day_pct": -5.541583523746985,
+        "worst_month_pct": -8.253168073614814,
+        "worst_2month_pct": -14.259005530430946,
+        "mdd_pct": -18.142912548078716,
+        "total_pct": 311.1379900973735
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap15_park0_m2.0.csv",
+      "sha256": "394a2d170798fda779ef240ee3129385b51478808d37ad249d1521f7f45bf212",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 19.955091042052263,
+        "worst_day_pct": -2.651523198232031,
+        "worst_month_pct": -4.1994200924077685,
+        "worst_2month_pct": -3.738477786941541,
+        "mdd_pct": -8.071625327336186,
+        "total_pct": 104.14876600000022
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 29.91538211278213,
+        "worst_day_pct": -6.493224857953416,
+        "worst_month_pct": -11.695531441208828,
+        "worst_2month_pct": -19.385952003629125,
+        "mdd_pct": -23.832651618996824,
+        "total_pct": 345.68198467582187
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap15_park1_m1.0.csv",
+      "sha256": "5539a305ed4e8e661a62e08bbee4fb065227f2b136f5995ee1c7d004152bc091",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.848976238661969,
+        "worst_day_pct": -2.6407954833262637,
+        "worst_month_pct": -3.8470261931017213,
+        "worst_2month_pct": -3.49342299007388,
+        "mdd_pct": -7.478845671093426,
+        "total_pct": 66.32140199999984
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.378583895158478,
+        "worst_day_pct": -4.657683318303163,
+        "worst_month_pct": -7.1114111339156905,
+        "worst_2month_pct": -10.543336611470666,
+        "mdd_pct": -14.3500096889286,
+        "total_pct": 231.89275424698374
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap15_park1_m1.5.csv",
+      "sha256": "99a54de1c5c5308120777d27849be3ea91d0d0e53bb010bd13724dd21328e296",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 18.34229813901258,
+        "worst_day_pct": -2.6422925115597184,
+        "worst_month_pct": -4.262123793944816,
+        "worst_2month_pct": -3.9328898539112367,
+        "mdd_pct": -8.17269584965451,
+        "total_pct": 93.5922259999997
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 28.480357646136433,
+        "worst_day_pct": -5.544329788040492,
+        "worst_month_pct": -8.16129570243177,
+        "worst_2month_pct": -14.072510150538298,
+        "mdd_pct": -17.951756332666015,
+        "total_pct": 318.29240498531385
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap15_park1_m2.0.csv",
+      "sha256": "6e38998f850522c3520a1580a11c6be4484b775c455a48b70649549e58cc1aef",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 19.176496817638,
+        "worst_day_pct": -2.638913055715375,
+        "worst_month_pct": -4.237339392214812,
+        "worst_2month_pct": -3.9092878898797534,
+        "mdd_pct": -8.206038607274092,
+        "total_pct": 99.00033200000044
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 30.190719955965186,
+        "worst_day_pct": -6.504490335446411,
+        "worst_month_pct": -11.649699802605673,
+        "worst_2month_pct": -19.276023988867397,
+        "mdd_pct": -23.74614701503913,
+        "total_pct": 351.10261775844725
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap20_park0_m1.0.csv",
+      "sha256": "378103dd097db091554492a9fd13cbd7315e0b2dad370e00d34d5c989a9a2368",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.254676234576525,
+        "worst_day_pct": -2.6472078577152724,
+        "worst_month_pct": -3.900427920256744,
+        "worst_2month_pct": -3.745763242702116,
+        "mdd_pct": -7.350844851603632,
+        "total_pct": 68.65831200000055
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 24.247409482268957,
+        "worst_day_pct": -4.66410139293858,
+        "worst_month_pct": -6.940758442559458,
+        "worst_2month_pct": -10.766022748606119,
+        "mdd_pct": -14.62169692205344,
+        "total_pct": 245.46174990770564
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap20_park0_m1.5.csv",
+      "sha256": "a98d86f91e95b0285fd1422fd9a376041f4a632936fcf44ac7ddcc46ad18fa05",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 18.571803449435897,
+        "worst_day_pct": -2.6494282585968976,
+        "worst_month_pct": -4.27876398473842,
+        "worst_2month_pct": -3.797946779902528,
+        "mdd_pct": -7.720740794625202,
+        "total_pct": 95.06904900000033
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 29.75972400867406,
+        "worst_day_pct": -6.149195201853352,
+        "worst_month_pct": -10.037574311382368,
+        "worst_2month_pct": -15.895308541345743,
+        "mdd_pct": -21.221811605678585,
+        "total_pct": 342.64136234139346
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap20_park0_m2.0.csv",
+      "sha256": "4a25d1eb7c696cc30b2821d9c40e234855c6825c70bd12ef71da3ada68b0acac",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 19.314263372870787,
+        "worst_day_pct": -2.65039711393783,
+        "worst_month_pct": -4.252930323899062,
+        "worst_2month_pct": -3.772338288041499,
+        "mdd_pct": -7.931898773039448,
+        "total_pct": 99.90418500000042
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 33.14830941012203,
+        "worst_day_pct": -6.149709024655459,
+        "worst_month_pct": -11.121656147596127,
+        "worst_2month_pct": -18.798124793509842,
+        "mdd_pct": -24.148586173096643,
+        "total_pct": 412.8400968694047
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap20_park1_m1.0.csv",
+      "sha256": "44c4dba2ff59861be61e8fec885e698b754019779736a16e67fc0f026873288f",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.62509672585357,
+        "worst_day_pct": -2.632578783769335,
+        "worst_month_pct": -3.9464711956728626,
+        "worst_2month_pct": -3.940724617651059,
+        "mdd_pct": -7.591007524290061,
+        "total_pct": 65.04219000000077
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 24.82548480568587,
+        "worst_day_pct": -4.658822561954656,
+        "worst_month_pct": -6.857549501131743,
+        "worst_2month_pct": -10.542907655089762,
+        "mdd_pct": -14.379142032292657,
+        "total_pct": 254.74091079377797
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap20_park1_m1.5.csv",
+      "sha256": "0fa388f32291c97a02151b5a23772f0d142c4cf8b9b77516acd231d7f8ce5827",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 17.742149843389154,
+        "worst_day_pct": -2.6398996636232908,
+        "worst_month_pct": -4.314854162700444,
+        "worst_2month_pct": -3.962980051155829,
+        "mdd_pct": -7.813169505581685,
+        "total_pct": 89.76975599999997
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 30.09889097390719,
+        "worst_day_pct": -6.141999381101959,
+        "worst_month_pct": -9.958223372167463,
+        "worst_2month_pct": -15.724003884315096,
+        "mdd_pct": -21.052927630448227,
+        "total_pct": 349.2887512591837
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0014/evidence/nav/cap20_park1_m2.0.csv",
+      "sha256": "132c11de8d7437823fed0d341e1d872d80050117c31b1409704c0ee0ebdc590b",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 18.416774666261727,
+        "worst_day_pct": -2.6412704671926246,
+        "worst_month_pct": -4.2891819299126555,
+        "worst_2month_pct": -3.935056953167859,
+        "mdd_pct": -8.051010182246998,
+        "total_pct": 94.0705520000006
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 33.40150281650587,
+        "worst_day_pct": -6.142471034184838,
+        "worst_month_pct": -11.073946570888161,
+        "worst_2month_pct": -18.69599081231027,
+        "mdd_pct": -24.062840589063327,
+        "total_pct": 418.4337498045563
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/cut_svol30_T20231231.csv",
+      "sha256": "637e8c680a79febddf4601e4f7e39dfa190a2c8b9f6cd5dc518f6b37d21ccab0",
+      "rows": 1700,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.86959982819782,
+        "worst_day_pct": -2.064110747135317,
+        "worst_month_pct": -3.9008914796686223,
+        "worst_2month_pct": -3.746774518055762,
+        "mdd_pct": -6.9387615757011245,
+        "total_pct": 72.2469200000001
+      },
+      "back": {
+        "days": 739,
+        "cagr_pct": 24.1870273540985,
+        "worst_day_pct": -3.3213297192737468,
+        "worst_month_pct": -3.8939979313140416,
+        "worst_2month_pct": -5.488543059583995,
+        "mdd_pct": -9.120991990843796,
+        "total_pct": 92.20497875956258
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/F.csv",
+      "sha256": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.180190871313524,
+        "worst_day_pct": -2.6451013766541465,
+        "worst_month_pct": -3.9006059480717337,
+        "worst_2month_pct": -3.7465666369283057,
+        "mdd_pct": -7.398293771874176,
+        "total_pct": 68.22744000000047
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.44153682408816,
+        "worst_day_pct": -4.664791538412216,
+        "worst_month_pct": -7.264699614366521,
+        "worst_2month_pct": -10.502439076029614,
+        "mdd_pct": -14.067533908123675,
+        "total_pct": 232.86091496131726
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/basket_bear.csv",
+      "sha256": "779d4f15aaf5d1ec6c0451a050f6a5f30fc73079c1a8bc6f7c9a3a907abc0252",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.505057762122341,
+        "worst_day_pct": -2.227616144363309,
+        "worst_month_pct": -3.9883609251248564,
+        "worst_2month_pct": -3.4062501544893764,
+        "mdd_pct": -7.398293771874176,
+        "total_pct": 64.35933300000032
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 21.975412577167177,
+        "worst_day_pct": -4.699995300738857,
+        "worst_month_pct": -7.228535902049671,
+        "worst_2month_pct": -10.486245980848153,
+        "mdd_pct": -14.04501235843324,
+        "total_pct": 210.90837111148466
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/drop_15m.csv",
+      "sha256": "ae027d7408efa084c8a63889ae49df1cf19cfe0aa1f64c99f2f7621f173896a3",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.180190871313524,
+        "worst_day_pct": -2.6451013766541465,
+        "worst_month_pct": -3.9006059480717337,
+        "worst_2month_pct": -3.7465666369283057,
+        "mdd_pct": -7.398293771874176,
+        "total_pct": 68.22744000000047
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.193759387183334,
+        "worst_day_pct": -4.664791538412216,
+        "worst_month_pct": -6.59723844581892,
+        "worst_2month_pct": -9.379880865080114,
+        "mdd_pct": -14.012424377251275,
+        "total_pct": 229.0637270590349
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/drop_1d.csv",
+      "sha256": "f561647ce946acdc253bb7c307f5ba7df76785476ece4698ac9571dca77504eb",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 12.857244492941899,
+        "worst_day_pct": -2.7114025603774627,
+        "worst_month_pct": -3.7744573260046765,
+        "worst_2month_pct": -3.296818838789972,
+        "mdd_pct": -6.921339085238342,
+        "total_pct": 60.710428000000284
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 14.064498397624071,
+        "worst_day_pct": -2.515805502319912,
+        "worst_month_pct": -4.791738406003676,
+        "worst_2month_pct": -8.497303055565064,
+        "mdd_pct": -13.40033839913497,
+        "total_pct": 112.00250365831846
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/drop_basket.csv",
+      "sha256": "88179beb298827d4be13d26f789a1fdb6219c0b76feb46077d2a0ee23df8f480",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 13.934227517026198,
+        "worst_day_pct": -2.2276212121145056,
+        "worst_month_pct": -3.9873043241686723,
+        "worst_2month_pct": -3.421504902777872,
+        "mdd_pct": -8.449028878787212,
+        "total_pct": 66.81045100000014
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 22.523293320145775,
+        "worst_day_pct": -4.700691308134896,
+        "worst_month_pct": -7.24617787978743,
+        "worst_2month_pct": -11.940051781556772,
+        "mdd_pct": -14.206346223418631,
+        "total_pct": 218.96759394289913
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/drop_engine.csv",
+      "sha256": "6802d30de0328e574f26704df9b3a19aa2442e88373a3e141f4944e14b4df3f5",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 7.050632127582435,
+        "worst_day_pct": -2.606033166132582,
+        "worst_month_pct": -2.5697959777139734,
+        "worst_2month_pct": -3.4090454234282586,
+        "mdd_pct": -7.490023739418062,
+        "total_pct": 30.635817999999638
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 19.960762487001492,
+        "worst_day_pct": -4.655803989601559,
+        "worst_month_pct": -7.112135329312952,
+        "worst_2month_pct": -10.44170096329321,
+        "mdd_pct": -13.977006151309979,
+        "total_pct": 182.7027691593739
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/drop_inverse.csv",
+      "sha256": "b2503f8fd9484dd9caeebd256edadd17138456261b24f590210eab7d6dd2ba3f",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 12.439424736565584,
+        "worst_day_pct": -2.7420759450671905,
+        "worst_month_pct": -3.4623202883052207,
+        "worst_2month_pct": -3.47733693287009,
+        "mdd_pct": -7.22776291541215,
+        "total_pct": 58.389237999999736
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 20.638981512029318,
+        "worst_day_pct": -4.663912523567825,
+        "worst_month_pct": -7.1949939247780925,
+        "worst_2month_pct": -9.953691788205688,
+        "mdd_pct": -12.62179665469555,
+        "total_pct": 191.95181556464183
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/svol30.csv",
+      "sha256": "387538bd96e09e93bb5da839451ae8461e791894ac773c098a6d18f1acae612c",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.86959982819782,
+        "worst_day_pct": -2.064110747135317,
+        "worst_month_pct": -3.9008914796686223,
+        "worst_2month_pct": -3.746774518055762,
+        "mdd_pct": -6.9387615757011245,
+        "total_pct": 72.2469200000001
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.490667665048505,
+        "worst_day_pct": -4.057777444225719,
+        "worst_month_pct": -7.7916696306613575,
+        "worst_2month_pct": -10.95287580431693,
+        "mdd_pct": -16.67082274047341,
+        "total_pct": 233.61812158963437
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-IMPROVE-0015/evidence/nav/svol40.csv",
+      "sha256": "e811eab7317a858103ccc4f4984dac6c3d4f465217df57bb5d3c146627e84de9",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 1.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.583655158757391,
+        "worst_day_pct": -2.12429561411851,
+        "worst_month_pct": -3.9002135413524264,
+        "worst_2month_pct": -3.7477787357472647,
+        "mdd_pct": -7.346941729729595,
+        "total_pct": 70.57118399999982
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 22.87304361901601,
+        "worst_day_pct": -4.45870050940419,
+        "worst_month_pct": -8.153647101190465,
+        "worst_2month_pct": -11.095020921985988,
+        "mdd_pct": -16.93422694889203,
+        "total_pct": 224.2018839477601
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-VOL-0007/evidence/nav/F.csv",
+      "sha256": "a7fd29e96633d72d97ab8f9c0cfe3a238d2fa05e35bdfbe1923dd017b3994df2",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.180190871313524,
+        "worst_day_pct": -2.6451013766541465,
+        "worst_month_pct": -3.9006059480717337,
+        "worst_2month_pct": -3.7465666369283057,
+        "mdd_pct": -7.398293771874176,
+        "total_pct": 68.22744000000047
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.44153682408816,
+        "worst_day_pct": -4.664791538412216,
+        "worst_month_pct": -7.264699614366521,
+        "worst_2month_pct": -10.502439076029614,
+        "mdd_pct": -14.067533908123675,
+        "total_pct": 232.86091496131726
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-VOL-0007/evidence/nav/F10.csv",
+      "sha256": "7e72e72a528187d213c6baccc17c84d9728d4d4a193505e5d1ae3115915ea218",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 14.378634041323867,
+        "worst_day_pct": -2.652922105569455,
+        "worst_month_pct": -4.106350256792557,
+        "worst_2month_pct": -3.403227392595476,
+        "mdd_pct": -8.557864932367988,
+        "total_pct": 69.37718700000053
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 23.56131093349585,
+        "worst_day_pct": -4.234840134698203,
+        "worst_month_pct": -7.442568581726561,
+        "worst_2month_pct": -8.434885755998867,
+        "mdd_pct": -10.733957977874464,
+        "total_pct": 234.70936850545337
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-VOL-0007/evidence/nav/F40.csv",
+      "sha256": "c85dd21ad96f10917f8c2e402a9adf69e0fa68fb61f50301cc263c665495d112",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 15.28792006191364,
+        "worst_day_pct": -2.64559502774514,
+        "worst_month_pct": -3.525985489562722,
+        "worst_2month_pct": -3.4248712885577848,
+        "mdd_pct": -7.818993569869193,
+        "total_pct": 74.72048199999932
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 21.421448746447382,
+        "worst_day_pct": -4.822181444735396,
+        "worst_month_pct": -9.113865907681973,
+        "worst_2month_pct": -12.567889038920132,
+        "mdd_pct": -17.404001666934576,
+        "total_pct": 202.93119383679507
+      }
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/ACC-VOL-0007/evidence/nav/FJ.csv",
+      "sha256": "2a4d1e4f2ceda768f75928a99c660d45f09afa3756b05e9ad4c13d81d305901e",
+      "rows": 2360,
+      "duplicate_dates": 0,
+      "dates_sorted": true,
+      "negative_nav_rows": 0,
+      "max_account_components_residual_won": 2.0,
+      "front": {
+        "days": 961,
+        "cagr_pct": 10.182690783572191,
+        "worst_day_pct": -2.6449114335838075,
+        "worst_month_pct": -4.709713794881809,
+        "worst_2month_pct": -6.569996955037016,
+        "mdd_pct": -11.760755116052302,
+        "total_pct": 46.280878999999906
+      },
+      "back": {
+        "days": 1399,
+        "cagr_pct": 24.757746126476675,
+        "worst_day_pct": -4.6630641008385325,
+        "worst_month_pct": -7.233329042923908,
+        "worst_2month_pct": -10.490231382779779,
+        "mdd_pct": -14.049067190081654,
+        "total_pct": 253.64306499689593
+      }
+    }
+  ],
+  "raw_reproduction": {
+    "price_codes": 507,
+    "days": 2626,
+    "date_end": "20260916",
+    "F5": {
+      "train": {
+        "days": 961,
+        "cagr_pct": 30.154268014679133,
+        "worst_day_pct": -9.703200218962824,
+        "worst_month_pct": -15.732808549551358,
+        "worst_2month_pct": -16.193574235028542,
+        "mdd_pct": -36.65220888242292,
+        "total_pct": 181.16243081672584
+      },
+      "validation": {
+        "days": 494,
+        "cagr_pct": -11.648047968022013,
+        "worst_day_pct": -4.732081263990604,
+        "worst_month_pct": -14.693978994291356,
+        "worst_2month_pct": -16.345197007187107,
+        "mdd_pct": -31.818015619872853,
+        "total_pct": -22.096997806112583
+      },
+      "reused_2023_onward": {
+        "days": 905,
+        "cagr_pct": 52.20767602693257,
+        "worst_day_pct": -13.947023181046985,
+        "worst_month_pct": -23.89858076248871,
+        "worst_2month_pct": -32.99111685471935,
+        "mdd_pct": -46.22787293595072,
+        "total_pct": 371.9525044417038
+      }
+    },
+    "baseline": {
+      "train": {
+        "days": 961,
+        "cagr_pct": 9.43490238221818,
+        "worst_day_pct": -10.74605283444169,
+        "worst_month_pct": -15.930380280250866,
+        "worst_2month_pct": -16.59862616198724,
+        "mdd_pct": -50.56353215958966,
+        "total_pct": 42.425201618015016
+      },
+      "validation": {
+        "days": 494,
+        "cagr_pct": -5.915484536327886,
+        "worst_day_pct": -3.8569789390363027,
+        "worst_month_pct": -14.70014147019354,
+        "worst_2month_pct": -12.740984930419385,
+        "mdd_pct": -32.58123093390836,
+        "total_pct": -11.569119644204108
+      },
+      "reused_2023_onward": {
+        "days": 905,
+        "cagr_pct": 21.95658840827941,
+        "worst_day_pct": -13.2056513301566,
+        "worst_month_pct": -14.867909307288063,
+        "worst_2month_pct": -23.545408063654282,
+        "mdd_pct": -33.92306129216575,
+        "total_pct": 108.17649898701194
+      }
+    },
+    "F5_deferred": 2,
+    "basket_events": 211,
+    "D5": {
+      "train": {
+        "days": 961,
+        "cagr_pct": 22.36031028731542,
+        "worst_day_pct": -6.0700294374486985,
+        "worst_month_pct": -7.406768849626744,
+        "worst_2month_pct": -10.934108535780418,
+        "mdd_pct": -15.225211680805806,
+        "total_pct": 120.68136566078746
+      },
+      "validation": {
+        "days": 494,
+        "cagr_pct": -2.6237974314016865,
+        "worst_day_pct": -4.643828785646498,
+        "worst_month_pct": -10.146479508410911,
+        "worst_2month_pct": -9.130534572793225,
+        "mdd_pct": -26.3516988245167,
+        "total_pct": -5.219904250775276
+      },
+      "reused_2023_onward": {
+        "days": 905,
+        "cagr_pct": 14.739019049158575,
+        "worst_day_pct": -6.167864835333581,
+        "worst_month_pct": -12.022844769282692,
+        "worst_2month_pct": -10.11918554624389,
+        "mdd_pct": -20.244450108699176,
+        "total_pct": 66.17497123166893
+      }
+    },
+    "D8": {
+      "train": {
+        "days": 961,
+        "cagr_pct": 15.641332522522756,
+        "worst_day_pct": -4.59487922159052,
+        "worst_month_pct": -4.632687797440516,
+        "worst_2month_pct": -6.813977186676934,
+        "mdd_pct": -9.567000243184754,
+        "total_pct": 76.83078101508491
+      },
+      "validation": {
+        "days": 494,
+        "cagr_pct": -3.4062435610516917,
+        "worst_day_pct": -3.270223342674128,
+        "worst_month_pct": -8.673430496912172,
+        "worst_2month_pct": -8.034699091518394,
+        "mdd_pct": -19.271682086874943,
+        "total_pct": -6.749239643674021
+      },
+      "reused_2023_onward": {
+        "days": 905,
+        "cagr_pct": 9.73353238701755,
+        "worst_day_pct": -4.404712296510082,
+        "worst_month_pct": -7.48891835908585,
+        "worst_2month_pct": -6.883770096663966,
+        "mdd_pct": -12.968234052622895,
+        "total_pct": 40.93168839881638
+      }
+    },
+    "D5_trades": 194,
+    "D8_trades": 205,
+    "D5_deferred": 1,
+    "D8_deferred": 1
+  },
+  "cut_tests": [
+    {
+      "cutoff": "20201231",
+      "short_feature_max_diff": 0.0,
+      "adjusted_share_changed_codes": 49,
+      "examples": [
+        {
+          "code": "000400",
+          "changed_receipt_rows": 4,
+          "first": "20160330"
+        },
+        {
+          "code": "000670",
+          "changed_receipt_rows": 5,
+          "first": "20160516"
+        },
+        {
+          "code": "001500",
+          "changed_receipt_rows": 4,
+          "first": "20160330"
+        },
+        {
+          "code": "001530",
+          "changed_receipt_rows": 5,
+          "first": "20160330"
+        },
+        {
+          "code": "003300",
+          "changed_receipt_rows": 4,
+          "first": "20160330"
+        },
+        {
+          "code": "003850",
+          "changed_receipt_rows": 5,
+          "first": "20160330"
+        },
+        {
+          "code": "005090",
+          "changed_receipt_rows": 5,
+          "first": "20160330"
+        },
+        {
+          "code": "005880",
+          "changed_receipt_rows": 5,
+          "first": "20160516"
+        },
+        {
+          "code": "006040",
+          "changed_receipt_rows": 5,
+          "first": "20160512"
+        },
+        {
+          "code": "007340",
+          "changed_receipt_rows": 5,
+          "first": "20160329"
+        }
+      ]
+    },
+    {
+      "cutoff": "20220615",
+      "short_feature_max_diff": 0.0,
+      "adjusted_share_changed_codes": 35,
+      "examples": [
+        {
+          "code": "000670",
+          "changed_receipt_rows": 7,
+          "first": "20160516"
+        },
+        {
+          "code": "001500",
+          "changed_receipt_rows": 7,
+          "first": "20160330"
+        },
+        {
+          "code": "001530",
+          "changed_receipt_rows": 7,
+          "first": "20160330"
+        },
+        {
+          "code": "006040",
+          "changed_receipt_rows": 6,
+          "first": "20160512"
+        },
+        {
+          "code": "007340",
+          "changed_receipt_rows": 7,
+          "first": "20160329"
+        },
+        {
+          "code": "024850",
+          "changed_receipt_rows": 7,
+          "first": "20160330"
+        },
+        {
+          "code": "033790",
+          "changed_receipt_rows": 7,
+          "first": "20160330"
+        },
+        {
+          "code": "048410",
+          "changed_receipt_rows": 6,
+          "first": "20160329"
+        },
+        {
+          "code": "064960",
+          "changed_receipt_rows": 7,
+          "first": "20160316"
+        },
+        {
+          "code": "067310",
+          "changed_receipt_rows": 7,
+          "first": "20160330"
+        }
+      ]
+    },
+    {
+      "cutoff": "20231231",
+      "short_feature_max_diff": 0.0,
+      "adjusted_share_changed_codes": 23,
+      "examples": [
+        {
+          "code": "000670",
+          "changed_receipt_rows": 8,
+          "first": "20160516"
+        },
+        {
+          "code": "001500",
+          "changed_receipt_rows": 8,
+          "first": "20160330"
+        },
+        {
+          "code": "007340",
+          "changed_receipt_rows": 8,
+          "first": "20160329"
+        },
+        {
+          "code": "024850",
+          "changed_receipt_rows": 9,
+          "first": "20160330"
+        },
+        {
+          "code": "033790",
+          "changed_receipt_rows": 8,
+          "first": "20160330"
+        },
+        {
+          "code": "048410",
+          "changed_receipt_rows": 8,
+          "first": "20160329"
+        },
+        {
+          "code": "064960",
+          "changed_receipt_rows": 8,
+          "first": "20160316"
+        },
+        {
+          "code": "067310",
+          "changed_receipt_rows": 8,
+          "first": "20160330"
+        },
+        {
+          "code": "069540",
+          "changed_receipt_rows": 8,
+          "first": "20160330"
+        },
+        {
+          "code": "082920",
+          "changed_receipt_rows": 8,
+          "first": "20150923"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Historical source snapshot differs from unpublished original caches; current-vintage data is not historical available_at proof.",
+    "Published perf2 tax schedule reproduced for comparison only, not endorsed.",
+    "F5 published daily equal-weight accounting implies weight restoration without recording daily rebalancing trades/costs; not constant-quantity monthly holdings.",
+    "Missing prices filled with zero returns or entry price as in published contracts; delist/suspension realizations not independently proven.",
+    "Current survivor universe, receipt-date-only DART, missing original publication timestamps/revision vintages.",
+    "Submitted NAV decomposition equality does not prove quantity/cash ledger, executions, or point-in-time signals.",
+    "No provider API refresh performed: GitHub Actions secrets cannot be decrypted by current connector."
+  ],
+  "verification": {
+    "full_caps_timeline_matches_repository": true,
+    "ACC_IMPROVE_0015_metrics_checked": 90,
+    "max_difference_rounded_percentage_points": 0.0,
+    "F5_no_trade_weight_drift_example": {
+      "start": "20260402",
+      "end": "20260506",
+      "daily_equal_weight_return_pct": 41.38315018835576,
+      "constant_quantity_return_pct": 44.50974451804952,
+      "difference_pp": -3.126594329693755
+    }
+  }
+}
