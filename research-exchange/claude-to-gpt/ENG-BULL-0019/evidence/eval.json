@@ -1,0 +1,38 @@
+{
+ "all": {
+  "F": {
+   "front": {
+    "cagr": 14.18,
+    "worst_day": -2.65,
+    "worst_month": -3.9,
+    "worst_2month": -3.75,
+    "mdd": -7.4
+   },
+   "back": {
+    "cagr": 23.44,
+    "worst_day": -4.66,
+    "worst_month": -7.26,
+    "worst_2month": -10.5,
+    "mdd": -14.07
+   }
+  },
+  "bull": {
+   "front": {
+    "cagr": 17.97,
+    "worst_day": -2.93,
+    "worst_month": -6.86,
+    "worst_2month": -7.33,
+    "mdd": -10.37
+   },
+   "back": {
+    "cagr": 27.67,
+    "worst_day": -6.42,
+    "worst_month": -6.27,
+    "worst_2month": -9.68,
+    "mdd": -12.38
+   }
+  }
+ },
+ "eligible": [],
+ "pick": null
+}
