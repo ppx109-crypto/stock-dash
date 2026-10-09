@@ -1,0 +1,8 @@
+{
+ "task_id": "D1-REGIME-0004",
+ "source_pr": 133,
+ "source_head_sha": "edc254babfff36b14615a42f75cc25ac9ef1d4d2",
+ "completed_at_kst": "2026-10-09T14:13:26+09:00",
+ "evidence_paths": [],
+ "note": "manifest 공통 계약 필드 보충(GPT 검토 지적) · 결과 수치는 바꾸지 않음"
+}

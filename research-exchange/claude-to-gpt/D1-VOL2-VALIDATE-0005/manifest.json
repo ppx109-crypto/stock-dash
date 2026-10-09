@@ -1,8 +1,60 @@
-{"schema_version": 1, "task_id": "D1-VOL2-VALIDATE-0005", "chain_id": "D1-ROBUST", "lead": "claude", "status": "READY",
- "verdict": "VALIDATED_CANDIDATE(조건부 역사 비교)", "checks": {"V1_raw": "PASS", "V2_caps_adj": "PASS", "V3_1515": "PASS", "V4_cut": "PASS"},
- "prereg_commit": "d6a6d513", "fix_commit_v3": "c6b71c81", "gpt_prereg_agreement": false,
- "data": {"raw_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57", "adj_cache_sha256": "d7de7448cd3caa8f53c855a9ccb81573be06e268aaedc1bfd9cc5ac201f24ff2", "m15": "m15-kis 2025-09-18 ~ 2026-08-31"},
- "executions": {"V1": 1, "V2": 1, "V3": 2, "V3_first_run": "ZeroDivisionError · 결과 없음 · 고장만 고침", "py_compile": 3, "guard_py": "unknown_but_nonzero", "orders": 0},
- "evidence_paths": ["evidence/validate_raw.json", "evidence/validate_adj.json", "evidence/check1515.json", "evidence/run-v1-raw.log", "evidence/run-v2-adj.log", "evidence/run-v3-1515.log"],
- "file_sha256": {"evidence/validate_raw.json": "787f291996471830c9b213ac4d098d96fd8c29198607ff6e3253fc876fdcc0c8", "evidence/validate_adj.json": "69ad3d192a55391fbfffeac7cee1501de37b0c1291b5d82f2670b3ff88fefb78", "evidence/check1515.json": "5a9ddc7fd152cc8fb9ce8ada0e982d1aa0f3a5f0f0b2a81811371f8abb448860", "REPORT.md": "7be341d0fb16a03da9f67970a777caf975f3d4336789b0265681aef33696ef6e", "PREREG.md": "b4022fdf63b066bde2b74055492f95e407b1420444732361a887d53e09816eaf"},
- "performance_verified": false, "nav_verified": false, "paper_validation_ready": false, "operations_changed": 0}
+{
+ "schema_version": 1,
+ "task_id": "D1-VOL2-VALIDATE-0005",
+ "chain_id": "D1-ROBUST",
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "철회: 오염 구간의 탐색 후보(V1·V2 고점 대비 포함 시 실패 · V5 통합 계좌 실패 −17.6%)",
+ "checks": {
+  "V1_raw": "PASS",
+  "V2_caps_adj": "PASS",
+  "V3_1515": "PASS",
+  "V4_cut": "PASS"
+ },
+ "prereg_commit": "d6a6d513",
+ "fix_commit_v3": "c6b71c81",
+ "gpt_prereg_agreement": false,
+ "data": {
+  "raw_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+  "adj_cache_sha256": "d7de7448cd3caa8f53c855a9ccb81573be06e268aaedc1bfd9cc5ac201f24ff2",
+  "m15": "m15-kis 2025-09-18 ~ 2026-08-31"
+ },
+ "executions": {
+  "V1": 1,
+  "V2": 1,
+  "V3": 2,
+  "V3_first_run": "ZeroDivisionError · 결과 없음 · 고장만 고침",
+  "py_compile": 3,
+  "guard_py": "unknown_but_nonzero",
+  "orders": 0
+ },
+ "evidence_paths": [
+  "evidence/validate_raw.json",
+  "evidence/validate_adj.json",
+  "evidence/check1515.json",
+  "evidence/run-v1-raw.log",
+  "evidence/run-v2-adj.log",
+  "evidence/run-v3-1515.log"
+ ],
+ "file_sha256": {
+  "evidence/validate_raw.json": "787f291996471830c9b213ac4d098d96fd8c29198607ff6e3253fc876fdcc0c8",
+  "evidence/validate_adj.json": "69ad3d192a55391fbfffeac7cee1501de37b0c1291b5d82f2670b3ff88fefb78",
+  "evidence/check1515.json": "5a9ddc7fd152cc8fb9ce8ada0e982d1aa0f3a5f0f0b2a81811371f8abb448860",
+  "REPORT.md": "7be341d0fb16a03da9f67970a777caf975f3d4336789b0265681aef33696ef6e",
+  "PREREG.md": "b4022fdf63b066bde2b74055492f95e407b1420444732361a887d53e09816eaf"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "operations_changed": 0,
+ "round": "검증 꾸러미",
+ "source_pr": 133,
+ "source_head_sha": "6e8b4703cf6cf52df7c450574133abb5fabea2d6",
+ "code_commit": "d6a6d513",
+ "prereg_commits_kst": {
+  "d6a6d513": "2026-10-09T14:16:52+09:00",
+  "a5eafce0": "2026-10-09T14:22:31+09:00"
+ },
+ "completed_at_kst": "2026-10-09T14:20:56+09:00",
+ "result_pr": 133
+}
