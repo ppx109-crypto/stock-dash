@@ -1,0 +1,33 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-BEAR-0011",
+ "chain_id": "D1-BEAR-0011",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "REJECTED",
+ "prereg_commit": "029f2667",
+ "code_commit": "029f2667",
+ "completed_at_kst": "2026-10-09T15:55:47+09:00",
+ "evidence_paths": [
+  "evidence/hedge_raw.json",
+  "evidence/hedge_adj.json",
+  "evidence/run-raw.log",
+  "evidence/run-adj.log"
+ ],
+ "file_sha256": {
+  "evidence/hedge_raw.json": "8d3d26e5b2a6ddf609c60a94c5a2a0a5f69f674b3c50d643621d190ae770a01f",
+  "evidence/hedge_adj.json": "8c6cf0233b832390f1b486b3cb3162085dd401bc64b46e7e0b65e7de2696ef55",
+  "evidence/run-raw.log": "f8371d394aa552a7860dfa1494230d02d0df4b9817a249554111ba61a23cbfdf",
+  "evidence/run-adj.log": "e9a5e02a107709e72601fc4c2e2e4b4115dd52541475eb85587c35a3a9f10553",
+  "REPORT.md": "40a5ca840b3eca4d53f7d10f21437dbf85dc1a9b8943b89f7974ee0fb0cb504e",
+  "PREREG.md": "d2e90cef8b1e699aaf6c17edb831b4ce413ab403eb48ab31ce70ab2056ca4a87",
+  "code/z090.py": "9d75fde4bd7877f0006a7e70d262d6f75a355de471c01d8e128c357ca626d3a0",
+  "code/z087.py": "ad73c5f367a992247bb3081c74f8f628ced23d5faee135e97130350d1b19e890"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
