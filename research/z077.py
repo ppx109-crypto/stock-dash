@@ -93,24 +93,56 @@ def one(name, mult, which, past_calm=True):
             "account": account(led), "ledger_keys": sorted([t["code"], t["산 날"], t["판 날"], t["자리"], round(t["손익"], 4)] for t in led)}
 
 
-def account(led):
-    """씨앗 0번 매매목록 → 날마다 단순 계좌 손익(%) · 하루 최악 · 달력월 최악(z076과 같은 셈)."""
-    day = defaultdict(float)
-    for t in led:
-        lane = nrl.lanes[t["code"]]
-        d, c = lane["날"], lane["closes"]
-        i0, i1 = d.index(t["산 날"]), d.index(t["판 날"])
-        w = t["자리"] / nrl.SLOTS
-        for j in range(i0 + 1, i1 + 1):
-            day[d[j]] += (c[j] / c[j - 1] - 1) * 100 * w
-        day[d[i1]] += (t["손익"] - (c[i1] / c[i0] - 1) * 100) * w
-    month = defaultdict(float)
-    for k, v in day.items():
-        month[k[:6]] += v
-    wd = min(day.items(), key=lambda kv: kv[1]) if day else (None, None)
-    wm = min(month.items(), key=lambda kv: kv[1]) if month else (None, None)
-    return {"worst_day": [wd[0], round(wd[1], 3) if wd[1] is not None else None],
-            "worst_month": [wm[0], round(wm[1], 3) if wm[1] is not None else None], "days": len(day)}
+def account(led, lanes=None):
+    """씨앗 0번 매매목록 → 날마다 계좌 가치(NAV, 복리) · 하루 TWR 최악 · 달력월 TWR(그 달 날마다 곱) 최악 · 일별 MTM 고점 대비 최악.
+    처음 NAV 1 · 현금 + 보유 평가액(그날 종가, 자료 없는 날은 마지막 종가). 판 날: 매도 먼저(받는 돈 = 산 금액 × (1 + 순손익%)) · 그다음 매수.
+    매수 금액 = 자리/10 × 그날 매수 전 NAV, 현금보다 크면 현금만큼만 사고 그 횟수를 셈(빚 없음). 반익 줄은 따로 한 줄로 둠(엔진 매매목록 그대로)."""
+    lanes = lanes or nrl.lanes
+    if not led:
+        return {"worst_day": [None, None], "worst_month": [None, None], "mdd_daily": [None, None], "capped_buys": 0, "days": 0}
+    codes = {t["code"] for t in led}
+    close = {c: dict(zip(lanes[c]["날"], lanes[c]["closes"])) for c in codes}
+    start, end = min(t["산 날"] for t in led), max(t["판 날"] for t in led)
+    days = sorted({d for c in codes for d in lanes[c]["날"] if start <= d <= end})
+    buys, sells = defaultdict(list), defaultdict(list)
+    for k, t in enumerate(led):
+        buys[t["산 날"]].append(k)
+        sells[t["판 날"]].append(k)
+    cash, units, spent, last = 1.0, {}, {}, {}
+    capped, short, navs = 0, 0.0, []
+    for d in days:
+        for c in codes:
+            if d in close[c]:
+                last[c] = close[c][d]
+        for k in sells[d]:
+            if k in units:
+                cash += spent.pop(k) * (1 + led[k]["손익"] / 100)
+                del units[k]
+        nav = cash + sum(u * last[led[k]["code"]] for k, u in units.items())
+        for k in buys[d]:
+            want = led[k]["자리"] / nrl.SLOTS * nav
+            pay = min(want, max(cash, 0.0))
+            if pay < want - 1e-12:
+                capped += 1
+                short = max(short, (want - pay) / nav)
+            units[k], spent[k] = pay / close[led[k]["code"]][d], pay
+            cash -= pay
+        navs.append((d, cash + sum(u * last[led[k]["code"]] for k, u in units.items())))
+    rets = [(navs[i][0], navs[i][1] / navs[i - 1][1] - 1) for i in range(1, len(navs))]
+    month = defaultdict(lambda: 1.0)
+    for d, r in rets:
+        month[d[:6]] *= 1 + r
+    peak, mdd = navs[0][1], (navs[0][0], 0.0)
+    for d, v in navs:
+        peak = max(peak, v)
+        if v / peak - 1 < mdd[1]:
+            mdd = (d, v / peak - 1)
+    wd = min(rets, key=lambda x: x[1]) if rets else (None, None)
+    wm = min(month.items(), key=lambda x: x[1]) if month else (None, None)
+    pct = lambda x: round(x * 100, 3) if x is not None else None
+    return {"worst_day": [wd[0], pct(wd[1])], "worst_month": [wm[0], pct(wm[1] - 1) if wm[1] is not None else None],
+            "mdd_daily": [mdd[0], pct(mdd[1])], "capped_buys": capped, "max_shortfall_pct": pct(short),
+            "end_nav": round(navs[-1][1], 4), "days": len(navs)}
 
 
 def grid(name, which):
