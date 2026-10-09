@@ -1,0 +1,66 @@
+name: GPT isolated daily data access check
+on:
+  push:
+    branches: [audit/gpt-daily-api-20261010]
+    paths: [.github/workflows/gpt-daily-api-audit.yml]
+permissions:
+  contents: read
+jobs:
+  data-access:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/kis-token-open
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+      - name: Query daily prices only using existing shared token
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+        shell: bash
+        run: |
+          mkdir -p audit-access-output
+          python - <<'PY'
+          import os,json,time,hashlib,urllib.request
+          from pathlib import Path
+          out=Path('audit-access-output/status.json')
+          key=os.getenv('KIS_APP_KEY','')
+          secret=os.getenv('KIS_APP_SECRET','')
+          result={'status':'BLOCKED','provider':'KIS','account_requests':0,'order_requests':0,'token_issued':False}
+          p=Path(os.environ['RUNNER_TEMP'])/'kis-token.json'
+          if not key or not secret:
+              result['reason']='MISSING_KIS_SECRET'
+          elif not p.exists():
+              result['reason']='EXISTING_SHARED_TOKEN_UNAVAILABLE'
+          else:
+              t=json.loads(p.read_text())
+              if t.get('key')!=key or t.get('mode')!='real' or time.time()>=float(t.get('expires',0)):
+                  result['reason']='EXISTING_SHARED_TOKEN_INVALID_OR_EXPIRED'
+              else:
+                  from urllib.parse import urlencode
+                  params={'FID_COND_MRKT_DIV_CODE':'J','FID_INPUT_ISCD':'005930','FID_INPUT_DATE_1':'20260101','FID_INPUT_DATE_2':'20261009','FID_PERIOD_DIV_CODE':'D','FID_ORG_ADJ_PRC':'0'}
+                  url='https://openapi.koreainvestment.com:9443/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice?'+urlencode(params)
+                  req=urllib.request.Request(url,headers={'authorization':'Bearer '+t['token'],'appkey':key,'appsecret':secret,'tr_id':'FHKST03010100','custtype':'P'})
+                  try:
+                      with urllib.request.urlopen(req,timeout=30) as response:
+                          raw=response.read();b=json.loads(raw)
+                      if b.get('rt_cd')=='0':
+                          rows=b.get('output2') or []
+                          dates=sorted(str(r.get('stck_bsop_date','')) for r in rows if r.get('stck_bsop_date'))
+                          result.update(status='DATA_ACCESS_CONFIRMED',code='005930',rows=len(rows),first=dates[0] if dates else None,last=dates[-1] if dates else None,response_sha256=hashlib.sha256(raw).hexdigest())
+                      else:
+                          result['reason']='KIS_QUERY_REJECTED'
+                  except Exception as e:
+                      result['reason']='NETWORK_OR_PROVIDER_ERROR'
+                      result['error_class']=type(e).__name__
+          out.write_text(json.dumps(result,ensure_ascii=False,indent=2))
+          print(json.dumps(result,ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gpt-daily-api-access-status
+          path: audit-access-output/status.json
+          retention-days: 7
