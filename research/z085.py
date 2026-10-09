@@ -43,7 +43,9 @@ SHARE = 0.5
 ETF_SIDE = 0.00065
 STOCK_SIDE = os.getenv("Z_STOCK_SIDE")
 D1_VOL = float(os.getenv("Z_D1_VOL", "0"))   # 1일봉 몫 흔들림 상한(하루 σ). 후보 = 0.021822
-LOOK = 20   # 검산용: 주식 편도 비용을 고정(예: 0.00125 = 왕복 0.25%)
+LOOK = int(os.getenv("Z_LOOK", "20"))
+STRICT = os.getenv("Z_ACC_STRICT", "0") == "1"   # 1이면 보유 비중도 전날 종가 평가액으로(R2 엄격판)
+D1_LED = os.getenv("Z_D1_LED", "z055_d1_raw.json")
 ACC_VOL = float(os.getenv("Z_ACC_VOL", "0"))   # 계좌 전체 흔들림 상한(하루 σ) · H5 = 0.010911
 
 
@@ -61,7 +63,7 @@ def main():
     etf_days = {c: sorted(v) for c, v in etf.items()}
     etf_arr = {c: np.array([etf[c][x] for x in etf_days[c]], float) for c in etf_codes}
     import bisect
-    led1 = [] if "1d" in DROP else json.load(open(SP / "z055_d1_raw.json"))
+    led1 = [] if "1d" in DROP else json.load(open(SP / D1_LED))
     led15 = [] if "15m" in DROP else json.load(open(SP / "x004_m15_final.json"))
     buys = {}
     sells = {}
@@ -149,6 +151,7 @@ def main():
 
     for d in days:
         # 1) 값 매기기(어제 → 오늘 종가)
+        prev_val = {k: p["val"] for k, p in pos.items()}       # 전날 종가 평가액(엄격판 비중용)
         for k, p in pos.items():
             px = price(p["code"], d)
             if px and p["px"]:
@@ -157,9 +160,10 @@ def main():
         tot0 = total()
         acc_allowed = 1.0
         if ACC_VOL > 0 and pos:
-            held_v = sum(p["val"] for p in pos.values())
+            wv = {k: (prev_val.get(k, p["val"]) if STRICT else p["val"]) for k, p in pos.items()}
+            held_v = sum(wv.values())
             rets, ok = [], held_v > 0
-            for p in (pos.values() if ok else []):
+            for kk, p in (pos.items() if ok else []):
                 if p["code"] in etf:
                     ds = etf_days[p["code"]]; cs = [etf[p["code"]][x] for x in ds]
                 else:
@@ -168,7 +172,7 @@ def main():
                 if i - LOOK < 0:
                     ok = False
                     break
-                rets.append((p["val"] / held_v, [cs[j] / cs[j - 1] - 1 for j in range(i - LOOK + 1, i + 1)]))
+                rets.append((wv[kk] / held_v, [cs[j] / cs[j - 1] - 1 for j in range(i - LOOK + 1, i + 1)]))
             if ok and rets:
                 port = [sum(w * r[t] for w, r in rets) for t in range(LOOK)]
                 m = sum(port) / LOOK
@@ -345,7 +349,7 @@ def main():
     out = os.getenv("Z_OUT")
     if out:
         N.round(0).to_csv(out)
-    print(f"== 통합 계좌 {FROM} ~ {TO} · 뺀 것 {sorted(DROP) or '없음'} · 증거금 {MARGIN} · 계좌 {ACC / 1e8:.0f}억 · 1일봉 흔들림 상한 {D1_VOL or '없음'}(덜어낸 날 {vol_cuts[0]}) · 계좌 흔들림 상한 {ACC_VOL or '없음'}(덜어낸 날 {acc_cuts[0]}) ==", flush=True)
+    print(f"== 통합 계좌 {FROM} ~ {TO} · 뺀 것 {sorted(DROP) or '없음'} · 증거금 {MARGIN} · 계좌 {ACC / 1e8:.0f}억 · 1일봉 흔들림 상한 {D1_VOL or '없음'}(덜어낸 날 {vol_cuts[0]}) · 계좌 흔들림 상한 {ACC_VOL or '없음'}(덜어낸 날 {acc_cuts[0]}) · 창 {LOOK} · 엄격 {STRICT} · 1일봉 목록 {D1_LED} ==", flush=True)
     for h, lo, hi in (("학습 2017 ~ 20", "20170201", "20210101"), ("검증 2021 ~ 22", "20210101", "20230101"), ("다시 본 기간 2023 ~ 26", "20230101", "20991231"), ("전체", "20000101", "20991231")):
         s = P.daily_stats(r, lo, hi)
         if s:
