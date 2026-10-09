@@ -383,16 +383,22 @@ def run(now=None):
     warn = [] if ready else [f"⚠️ 1일봉 새로 사기 멈춤(자료 덜 들어옴 · 팔기는 그대로)"]
     send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
     paper = []
+    if not late:                         # 계좌 흔들림 상한 덜어내기(acc_cap · 켜져 있을 때만) — 1일봉 주문보다 먼저(연구 z086 순서)
+        try:
+            import acc_cap
+            paper += acc_cap.run_trim(day, datetime.now(KST))
+        except Exception as e:           # 상한 단계가 말썽이어도 1일봉 주문은 그대로
+            paper += [f"⚠️ 계좌 흔들림 상한 단계 문제 · {type(e).__name__}"]
     if (sells or buys) and not late:
         try:
             import paper_trade
             after = {"positions": {c: dict(p, 칸=p["칸"] - sum(x["칸"] for x in sells if x["code"] == c)) for c, p in held.items()}}
-            paper = paper_trade.execute([dict(x, decided=day) for x in sells + buys], after, now_price, day + "1520",
-                                        now=datetime.now(KST), strategy="1d")
+            paper += paper_trade.execute([dict(x, decided=day) for x in sells + buys], after, now_price, day + "1520",
+                                         now=datetime.now(KST), strategy="1d")
         except Exception as e:           # 모의투자 주문이 잘못돼도 연습 계좌 · 알림은 그대로
-            paper = [f"🧪 모의투자(1일봉) 주문 중 문제 · {type(e).__name__}"]
+            paper += [f"🧪 모의투자(1일봉) 주문 중 문제 · {type(e).__name__}"]
     elif (sells or buys) and late:
-        paper = ["🧪 모의투자(1일봉) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
+        paper += ["🧪 모의투자(1일봉) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
     _wait_until(SETTLE_AT)
     close = {}
     for code in {x["code"] for x in sells + buys} | set(held):
