@@ -1,0 +1,86 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KOSPI-RULE-TEMPORAL-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 26,
+ "status": "BLOCKED",
+ "source_pr": 94,
+ "source_head_sha": "63942ef7e9bc6820739e19331cdd7e44aeda5b5a",
+ "code_commit": "bc0484f69ba4c25bde171c9ec9118f3aa1044859",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/compare.py",
+  "evidence/article-30-1-6-timeline.json",
+  "evidence/lawid-000111-identity.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-09T01:46:00+09:00",
+ "input": {
+  "pr": 95,
+  "head_sha": "6290a13465c9ce4a5072f25e92d0b068c2ed9107",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T01:43:58+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "63942ef7e9bc6820739e19331cdd7e44aeda5b5a"
+   },
+   {
+    "at_kst": "2026-10-09T01:45:42+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "63942ef7e9bc6820739e19331cdd7e44aeda5b5a"
+   }
+  ]
+ },
+ "prereg_commit": "81b0db07cc093418031c0cd0d94d7fa000f2df1c",
+ "prereg_committed_at_kst": "2026-10-09T01:44:20+09:00",
+ "verdict": "BLOCKED / A 시장 식별 REVISE(내부 참조 일관·직접 결합 없음) · B Train 존속성 REVISE(P2=P1 글자 단위 같음·중간 공백 배제 불가)",
+ "A": "REVISE",
+ "B": "REVISE",
+ "first_text_difference": "비교 가능한 범위(P2 · P1)에서 없음",
+ "not_comparable": [
+  "P4",
+  "P3"
+ ],
+ "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+ "excluded": [
+  "KOSDAQ",
+  "비율 방향",
+  "가격 기준일",
+  "거래재개일",
+  "최초 매도가능일"
+ ],
+ "file_sha256": {
+  "PREREG.md": "c9abac376387b1fb42f36514c520e6bce9631d2da802ce6bf4b06dc6fe15e86b",
+  "REPORT.md": "4edca8033f3c77ff96f8c8c336788b9e54d45b464a25d06cff71ad7cf6c8cc32",
+  "code/compare.py": "687aec6883a13d6229311969b1809170649ed48f3ce185eabadf6ced50b8b2aa",
+  "evidence/article-30-1-6-timeline.json": "377b69bfd5c98a062668759fa67572a815e9a022eb8c2a90ffeeea71edf10911",
+  "evidence/lawid-000111-identity.json": "dbd94ce5149d0cd89712a6271b040e5a29b00f1bd278aec50e4bc7d078db4c3b",
+  "evidence/run.log": "0f58b7ec75ed1d1a90b5f144c1cfa19bc99b292650b6251229b116026839c925"
+ },
+ "runs": {
+  "offline_compare_runs": 1,
+  "failed": 0,
+  "external_url": 0,
+  "network_allow_request": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "replay": 0,
+  "performance": 0,
+  "operations": 0,
+  "new_session": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false
+}
