@@ -1,0 +1,38 @@
+{
+ "schema_version": 1,
+ "task_id": "ENG-INV-DIAG-0022",
+ "chain_id": "ENG-INV-DIAG-0022",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "NO_CANDIDATE",
+ "prereg_commit": null,
+ "code_commit": "76445427d45e0b6f506bd344d82ebe2d7651c162",
+ "completed_at_kst": "2026-10-09T19:25:24+09:00",
+ "source_pr": 147,
+ "source_head_sha": "76445427d45e0b6f506bd344d82ebe2d7651c162",
+ "observed_period": [
+  "2017-02-01",
+  "2026-09-16"
+ ],
+ "requested_to": "20260930",
+ "evidence_paths": [
+  "evidence/F_attr_stage.csv",
+  "evidence/F.log"
+ ],
+ "file_sha256": {
+  "REPORT.md": "166fb08e35b9e4129dba6ac5af3db0db8c4e807549b494f9e1044930b398a545",
+  "evidence/F_attr_stage.csv": "b2d3cc3e32dbaa57393c938167bff7411d6acdda47fc0539d36e245aa3e4d601",
+  "evidence/F.log": "366ec1d6d63b4306062438faad252fded8bd0459f51292d150ee2be244402c0a",
+  "research/z097.py": "1821b70a4d6067d7a50f452e8d21df19edd5d977e56b740d44c15cfaa0d6df3e"
+ },
+ "pending": {
+  "Z1": "NEEDS_DATA(원인 미확인)",
+  "T2b": "관측 대기"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
