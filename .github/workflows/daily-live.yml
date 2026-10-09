@@ -56,6 +56,7 @@ jobs:
           # 계좌 흔들림 상한(acc_cap.py · ACC-VOL-0007 · 사용자 2026-10-09 "main에 넣고 켜라") · 모의투자만 · 바구니 · 엔진 사기 한도
           ACC_CAP: 'on'
           ACC_CAP_START: '20261012'
+          ACC_CAP_TARGET: '0.021822'          # 상한 × 2(사용자 2026-10-09 "2배로바꿔줘" · 연구 ACC-IMPROVE-0014)
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'
           IDLE_START: '20261005'
@@ -91,6 +92,7 @@ jobs:
           # 계좌 흔들림 상한(acc_cap.py) · 15:20 덜어내기 · 1일봉 사기 한도 · 15:32 종가 비교 기록
           ACC_CAP: 'on'
           ACC_CAP_START: '20261012'
+          ACC_CAP_TARGET: '0.021822'          # 상한 × 2(사용자 2026-10-09 "2배로바꿔줘" · 연구 ACC-IMPROVE-0014)
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
           DAILY_START: '20261002'          # 종가 출격도 2026-10-02부터
