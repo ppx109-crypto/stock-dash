@@ -195,7 +195,8 @@ def run_trim(day, now=None, broker=None):
                 if code not in books[name]["held"]:
                     st["positions"].pop(code)
             _save(state_file, st)
-    t = dict(t, trim_done=True, trimmed_value=round(sold_value, 0), trim_f=round(f, 4), trim_at=now.strftime("%Y-%m-%d %H:%M"))
+    t = dict(t, trim_done=True, trimmed_value=round(sold_value, 0), trim_f=round(f, 4), trim_at=now.strftime("%Y-%m-%d %H:%M"),
+             trim_orders=[[o["code"], o["qty"], price.get(o["code"])] for o in orders if o["status"].startswith("접수")])     # 이 파일은 저장소에 안 올림
     _save(TODAY, t)
     log = _load(LOG, [])
     log = [x for x in log if x.get("date") != day] + [{
@@ -211,3 +212,35 @@ def run_trim(day, now=None, broker=None):
     else:
         print(f"계좌 흔들림 상한 · 허용 {t['E'] * 100:.0f}% · 든 것 {share:.0f}% → 덜어낼 것 없음")
     return lines
+
+
+def record_close(day, broker=None):
+    """15:32(장 끝난 뒤) — 같은 날 덜어내기를 연구처럼 **종가**로 셌다면 얼마였을지 log에 나란히 적음(15:20 값과의 차이 재기).
+    덜어내기 전 수량 = 지금 수량 + 오늘 덜어내려고 판 수량(시장가 · 마감 동시호가라 체결로 봄). 비율만 적음."""
+    import paper_trade as P
+    if not enabled(day):
+        return None
+    t = _load(TODAY, {})
+    if t.get("date") != day or not t.get("trim_done"):
+        return None
+    broker = broker or P.PaperBroker()
+    b = broker.balance()
+    qty = positions_of(b)
+    price = {p["code"]: float(p.get("price") or 0) for p in b.get("positions", [])}
+    for code, q, p1520 in t.get("trim_orders") or []:
+        qty[code] = qty.get(code, 0) + int(q)
+        if not price.get(code):          # 다 팔려 잔고에 없으면 15:20 값으로(드묾)
+            price[code] = float(p1520 or 0)
+    total = float(b.get("cash") or 0) + float(b.get("value") or 0)
+    held = sum(q * price.get(c, 0) for c, q in qty.items())
+    if total <= 0:
+        return None
+    f_close = max(0.0, 1 - t["E"] * total / held) if held > 0 else 0.0
+    out = {"held_share_close": round(held / total, 4), "trim_f_close": round(f_close, 4),
+           "trim_f_gap": round(float(t.get("trim_f") or 0) - f_close, 4)}
+    log = _load(LOG, [])
+    for x in log:
+        if x.get("date") == day:
+            x.update(out)
+    _save(LOG, log)
+    return out
