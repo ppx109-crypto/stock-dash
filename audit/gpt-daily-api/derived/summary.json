@@ -1,0 +1,424 @@
+{
+  "audit": "D1-RULE-0018 independent API arithmetic audit",
+  "source_head": "6474a4ae72f237dc0aaee2c754e2d86de2d3357a",
+  "source_trades": 495,
+  "source_codes": 136,
+  "orders": 0,
+  "account_queries": 0,
+  "limitations": [
+    "Supplied trade selection is not regenerated.",
+    "Current adjusted-price vintage cannot certify historical available_at.",
+    "Next-open sensitivity keeps original trade dates; not a rerun of strategy.",
+    "No independent clean OOS claim."
+  ],
+  "repository_diagnostics": {
+    "front_n": 128,
+    "front_loss_below_minus8": 5,
+    "front_quintiles": {
+      "r60": [
+        {
+          "n": 25,
+          "mean_pct": 2.4044,
+          "loss_below_minus8": 1,
+          "upper": 0.132404181184669
+        },
+        {
+          "n": 26,
+          "mean_pct": 2.0734615384615385,
+          "loss_below_minus8": 1,
+          "upper": 0.19028452207307844
+        },
+        {
+          "n": 25,
+          "mean_pct": 0.6844,
+          "loss_below_minus8": 2,
+          "upper": 0.2846513778247439
+        },
+        {
+          "n": 26,
+          "mean_pct": 2.535769230769231,
+          "loss_below_minus8": 0,
+          "upper": 0.38775358707063856
+        },
+        {
+          "n": 26,
+          "mean_pct": 3.335,
+          "loss_below_minus8": 1,
+          "upper": 0.6568204150909687
+        }
+      ],
+      "r20": [
+        {
+          "n": 25,
+          "mean_pct": -0.05360000000000004,
+          "loss_below_minus8": 2,
+          "upper": 0.028231797919762158
+        },
+        {
+          "n": 26,
+          "mean_pct": 2.665,
+          "loss_below_minus8": 0,
+          "upper": 0.07499999999999996
+        },
+        {
+          "n": 25,
+          "mean_pct": 3.5132,
+          "loss_below_minus8": 0,
+          "upper": 0.11169346364018495
+        },
+        {
+          "n": 26,
+          "mean_pct": 4.527692307692308,
+          "loss_below_minus8": 1,
+          "upper": 0.15946156847444404
+        },
+        {
+          "n": 26,
+          "mean_pct": 0.395,
+          "loss_below_minus8": 2,
+          "upper": 0.3113839285714286
+        }
+      ],
+      "r5": [
+        {
+          "n": 25,
+          "mean_pct": 0.5504,
+          "loss_below_minus8": 1,
+          "upper": 0.0018399334459580086
+        },
+        {
+          "n": 26,
+          "mean_pct": 3.6369230769230767,
+          "loss_below_minus8": 0,
+          "upper": 0.029880478087649376
+        },
+        {
+          "n": 25,
+          "mean_pct": -0.0704,
+          "loss_below_minus8": 1,
+          "upper": 0.04632152588555849
+        },
+        {
+          "n": 26,
+          "mean_pct": 3.2165384615384616,
+          "loss_below_minus8": 0,
+          "upper": 0.07038144292763748
+        },
+        {
+          "n": 26,
+          "mean_pct": 3.5992307692307692,
+          "loss_below_minus8": 3,
+          "upper": 0.20674157303370788
+        }
+      ],
+      "sd20": [
+        {
+          "n": 25,
+          "mean_pct": 0.7728,
+          "loss_below_minus8": 1,
+          "upper": 0.017476866283639203
+        },
+        {
+          "n": 26,
+          "mean_pct": 5.315384615384615,
+          "loss_below_minus8": 0,
+          "upper": 0.01933524818389828
+        },
+        {
+          "n": 25,
+          "mean_pct": 1.472,
+          "loss_below_minus8": 0,
+          "upper": 0.022077773949299582
+        },
+        {
+          "n": 26,
+          "mean_pct": 0.1742307692307692,
+          "loss_below_minus8": 3,
+          "upper": 0.027059223119602654
+        },
+        {
+          "n": 26,
+          "mean_pct": 3.266153846153846,
+          "loss_below_minus8": 1,
+          "upper": 0.05361398918466521
+        }
+      ],
+      "maxup20": [
+        {
+          "n": 25,
+          "mean_pct": 2.2308,
+          "loss_below_minus8": 0,
+          "upper": 0.03846153846153855
+        },
+        {
+          "n": 26,
+          "mean_pct": 2.833076923076923,
+          "loss_below_minus8": 1,
+          "upper": 0.04504504504504503
+        },
+        {
+          "n": 25,
+          "mean_pct": -0.6087999999999999,
+          "loss_below_minus8": 2,
+          "upper": 0.05368393737565946
+        },
+        {
+          "n": 26,
+          "mean_pct": 3.9396153846153847,
+          "loss_below_minus8": 0,
+          "upper": 0.06421761076836785
+        },
+        {
+          "n": 26,
+          "mean_pct": 2.581923076923077,
+          "loss_below_minus8": 2,
+          "upper": 0.21413759523400344
+        }
+      ],
+      "ma20gap": [
+        {
+          "n": 25,
+          "mean_pct": 0.9508,
+          "loss_below_minus8": 1,
+          "upper": 0.01816321309797897
+        },
+        {
+          "n": 26,
+          "mean_pct": 0.25692307692307687,
+          "loss_below_minus8": 0,
+          "upper": 0.041996218476205716
+        },
+        {
+          "n": 25,
+          "mean_pct": 3.1428,
+          "loss_below_minus8": 0,
+          "upper": 0.05936205769091041
+        },
+        {
+          "n": 26,
+          "mean_pct": 4.5115384615384615,
+          "loss_below_minus8": 3,
+          "upper": 0.09019185942262875
+        },
+        {
+          "n": 26,
+          "mean_pct": 2.2096153846153848,
+          "loss_below_minus8": 1,
+          "upper": 0.17563066856586373
+        }
+      ]
+    }
+  },
+  "token_issued": true,
+  "planned_price_requests": 663,
+  "status": "COMPLETED",
+  "api_requests": 664,
+  "failed_requests": 0,
+  "checked_trades": 495,
+  "matches_2dp": 495,
+  "max_abs_delta_pp": 0.004969450101834028,
+  "front_features_n": 128,
+  "front_loss_below_minus8": 5,
+  "api_front_quintiles": {
+    "r60": [
+      {
+        "n": 25,
+        "mean_pct": 2.404059886900834,
+        "loss_below_minus8": 1,
+        "upper": 0.132404181184669
+      },
+      {
+        "n": 26,
+        "mean_pct": 2.0740990528142227,
+        "loss_below_minus8": 1,
+        "upper": 0.19028452207307844
+      },
+      {
+        "n": 25,
+        "mean_pct": 0.6843969563680719,
+        "loss_below_minus8": 2,
+        "upper": 0.2846513778247439
+      },
+      {
+        "n": 26,
+        "mean_pct": 2.5366464992713653,
+        "loss_below_minus8": 0,
+        "upper": 0.38775358707063856
+      },
+      {
+        "n": 26,
+        "mean_pct": 3.3353464197219247,
+        "loss_below_minus8": 1,
+        "upper": 0.6568204150909687
+      }
+    ],
+    "r20": [
+      {
+        "n": 25,
+        "mean_pct": -0.05366907437107621,
+        "loss_below_minus8": 2,
+        "upper": 0.028231797919762158
+      },
+      {
+        "n": 26,
+        "mean_pct": 2.665975247544876,
+        "loss_below_minus8": 0,
+        "upper": 0.07499999999999996
+      },
+      {
+        "n": 25,
+        "mean_pct": 3.5133038595027117,
+        "loss_below_minus8": 0,
+        "upper": 0.11169346364018495
+      },
+      {
+        "n": 26,
+        "mean_pct": 4.52890333476136,
+        "loss_below_minus8": 1,
+        "upper": 0.15946156847444404
+      },
+      {
+        "n": 26,
+        "mean_pct": 0.3943115223255752,
+        "loss_below_minus8": 2,
+        "upper": 0.3113839285714286
+      }
+    ],
+    "r5": [
+      {
+        "n": 25,
+        "mean_pct": 0.550102978902105,
+        "loss_below_minus8": 1,
+        "upper": 0.0018399334459580086
+      },
+      {
+        "n": 26,
+        "mean_pct": 3.6377437606411904,
+        "loss_below_minus8": 0,
+        "upper": 0.029880478087649376
+      },
+      {
+        "n": 25,
+        "mean_pct": -0.07069844449615419,
+        "loss_below_minus8": 1,
+        "upper": 0.04632152588555849
+      },
+      {
+        "n": 26,
+        "mean_pct": 3.2183078243871117,
+        "loss_below_minus8": 0,
+        "upper": 0.07038144292763748
+      },
+      {
+        "n": 26,
+        "mean_pct": 3.5987445299166674,
+        "loss_below_minus8": 3,
+        "upper": 0.20674157303370788
+      }
+    ],
+    "sd20": [
+      {
+        "n": 25,
+        "mean_pct": 0.7733249536274989,
+        "loss_below_minus8": 1,
+        "upper": 0.017476866283639203
+      },
+      {
+        "n": 26,
+        "mean_pct": 5.315900689790675,
+        "loss_below_minus8": 0,
+        "upper": 0.01933524818389828
+      },
+      {
+        "n": 25,
+        "mean_pct": 1.472496824936071,
+        "loss_below_minus8": 0,
+        "upper": 0.022077773949299582
+      },
+      {
+        "n": 26,
+        "mean_pct": 0.1739519996537104,
+        "loss_below_minus8": 3,
+        "upper": 0.027059223119602654
+      },
+      {
+        "n": 26,
+        "mean_pct": 3.266465306118258,
+        "loss_below_minus8": 1,
+        "upper": 0.05361398918466521
+      }
+    ],
+    "maxup20": [
+      {
+        "n": 25,
+        "mean_pct": 2.231584518279076,
+        "loss_below_minus8": 0,
+        "upper": 0.03846153846153855
+      },
+      {
+        "n": 26,
+        "mean_pct": 2.8343732868058082,
+        "loss_below_minus8": 1,
+        "upper": 0.04504504504504503
+      },
+      {
+        "n": 25,
+        "mean_pct": -0.6098209604926547,
+        "loss_below_minus8": 2,
+        "upper": 0.05368393737565946
+      },
+      {
+        "n": 26,
+        "mean_pct": 3.939949490381277,
+        "loss_below_minus8": 0,
+        "upper": 0.06421761076836785
+      },
+      {
+        "n": 26,
+        "mean_pct": 2.5820511998920472,
+        "loss_below_minus8": 2,
+        "upper": 0.21413759523400344
+      }
+    ],
+    "ma20gap": [
+      {
+        "n": 25,
+        "mean_pct": 0.9504975446907274,
+        "loss_below_minus8": 1,
+        "upper": 0.01816321309797897
+      },
+      {
+        "n": 26,
+        "mean_pct": 0.25722175610537573,
+        "loss_below_minus8": 0,
+        "upper": 0.041996218476205716
+      },
+      {
+        "n": 25,
+        "mean_pct": 3.14365318967818,
+        "loss_below_minus8": 0,
+        "upper": 0.05936205769091041
+      },
+      {
+        "n": 26,
+        "mean_pct": 4.511979603441648,
+        "loss_below_minus8": 3,
+        "upper": 0.09019185942262875
+      },
+      {
+        "n": 26,
+        "mean_pct": 2.2098772554335646,
+        "loss_below_minus8": 1,
+        "upper": 0.17563066856586373
+      }
+    ]
+  },
+  "trade_mean_net_pct": 3.598568951842323,
+  "trade_pf": 2.3940517915325232,
+  "next_open_fixed_list_sensitivity": {
+    "n": 495,
+    "mean_net_pct": 3.768672333847234,
+    "mean_delta_pp": 0.17010338200491115
+  },
+  "completed_at_kst": "2026-10-10T08:09:42.071348+09:00"
+}
