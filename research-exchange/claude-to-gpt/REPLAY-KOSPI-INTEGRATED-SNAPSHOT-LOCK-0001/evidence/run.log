@@ -1,0 +1,3 @@
+== 오프라인 판정(snapshot_check.py) — 네트워크 함수 막음 · 1회(상한 2)
+입력: PR97 SOURCE_PACKET sha256 d432f4fbe44cd2e72da460a33469fb8792a15826d53d457db1be2862536b50b7 · PR96 timeline sha256 377b69bfd5c98a062668759fa67572a815e9a022eb8c2a90ffeeea71edf10911
+{"A": "ACCEPT", "B": "REVISE", "status": "BLOCKED", "conds": {"①_amend_and_effective_before_train": true, "②_crawl_after_train": true, "③_exact_text_6ho": true, "③b_same_snapshot_as_header": false, "④_no_later_amendment_in_header": true}, "string_compare": {"S2==S3": true, "S2==PR96.P2": true, "S2==PR96.P1": true, "S2==PR96.P2(따옴표 제거)": true, "S2==PR96.P1(따옴표 제거)": true}, "quote_only_diff": []}

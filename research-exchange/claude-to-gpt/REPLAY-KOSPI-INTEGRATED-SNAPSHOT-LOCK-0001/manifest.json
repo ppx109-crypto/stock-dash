@@ -1,0 +1,103 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-KOSPI-INTEGRATED-SNAPSHOT-LOCK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 27,
+ "status": "BLOCKED",
+ "source_pr": 96,
+ "source_head_sha": "e6c4f9d56621f4cc50b913ba86be98444ed9728e",
+ "code_commit": "15ec98ccf2f747e5a5535513d74137ae232c82cb",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/snapshot_check.py",
+  "evidence/run.log",
+  "evidence/snapshot-identity-and-train.json"
+ ],
+ "completed_at_kst": "2026-10-09T01:52:47+09:00",
+ "input": {
+  "pr": 97,
+  "head_sha": "1533ecb4c63d2fa764170c29c2735e35626ce04c",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "SOURCE_PACKET.md",
+   "receipt.json"
+  ],
+  "source_pr_rechecked": [
+   {
+    "at_kst": "2026-10-09T01:50:20+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "e6c4f9d56621f4cc50b913ba86be98444ed9728e"
+   },
+   {
+    "at_kst": "2026-10-09T01:52:31+09:00",
+    "state": "open",
+    "draft": false,
+    "head": "e6c4f9d56621f4cc50b913ba86be98444ed9728e"
+   }
+  ]
+ },
+ "prereg_commit": "70a5aeb9556208c46dd6675b3835a835544738c1",
+ "prereg_committed_at_kst": "2026-10-09T01:51:19+09:00",
+ "verdict": "BLOCKED / A 규정 정체성 ACCEPT(lawid=000111 URL + 정식명 머리글 직접) · B Train 시행본 REVISE(①②③④ 성립 · ③b 같은 스냅샷 연결 직접 근거 없음)",
+ "A": "ACCEPT",
+ "B": "REVISE",
+ "B_conditions": {
+  "①_amend_and_effective_before_train": true,
+  "②_crawl_after_train": true,
+  "③_exact_text_6ho": true,
+  "③b_same_snapshot_as_header": false,
+  "④_no_later_amendment_in_header": true
+ },
+ "string_exact_match": {
+  "S2==S3": true,
+  "S2==PR96.P2": true,
+  "S2==PR96.P1": true,
+  "S2==PR96.P2(따옴표 제거)": true,
+  "S2==PR96.P1(따옴표 제거)": true
+ },
+ "evidence_tier": "GPT_CAPTURED_OFFICIAL_INDEX",
+ "excluded": [
+  "KOSDAQ",
+  "비율 방향",
+  "가격 기준일",
+  "거래재개일",
+  "최초 매도가능일",
+  "NAV",
+  "성과"
+ ],
+ "needs_data_any_one": [
+  "머리글과 제6호가 한 색인 응답에 함께 나온 캡처",
+  "두 발췌가 같은 크롤본임을 보이는 메타",
+  "2024-11-04 시행본(규정 제2256호) 제6호 정확 발췌"
+ ],
+ "file_sha256": {
+  "PREREG.md": "0a04a5fc4d10dfb647860126b73ba3df1b0e2dafa5f3550e530c03ace9c37edd",
+  "REPORT.md": "6d5180c557a5ff20bd12dac0430d590008a7d31d28fc551f9debba1e3e4ed240",
+  "code/snapshot_check.py": "884482ccc50c223daa65b07a221bea4b2b6290320297e92b16c1d04945526819",
+  "evidence/run.log": "a712e1eb3400626613a3e505dc71b4a01c2bce9de3e7b2213a889d589b2d0eb6",
+  "evidence/snapshot-identity-and-train.json": "1d47e47a4763544dc0fd64c81c5804cd0ff1ebc1104fb6f913d838088f79bedb"
+ },
+ "runs": {
+  "offline_runs": 1,
+  "cap": 2,
+  "failed": 0,
+  "external_url": 0,
+  "network": 0,
+  "data_api": 0,
+  "credentials": 0,
+  "collection": 0,
+  "cache": 0,
+  "replay": 0,
+  "performance": 0,
+  "operations": 0,
+  "new_session": 0,
+  "auto_merge": 0
+ },
+ "oos": false,
+ "paper_validation_ready": false,
+ "nav_verified": false
+}
