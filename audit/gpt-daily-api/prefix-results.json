@@ -1,0 +1,84 @@
+{
+  "cutoff": "20201231",
+  "full_vol_n": 2477481,
+  "prefix_vol_n": 1823709,
+  "full_calm40": 2.1482956557355815,
+  "prefix_calm40": 2.138680988582111,
+  "price_files": 507,
+  "trend_price_gate_flip_n": 38,
+  "supplied_entry_trend_branch_flip_n": 0,
+  "supplied_entry_flips": [],
+  "examples": [
+    {
+      "code": "000270",
+      "day": "20201202",
+      "vol": 2.138859717466563,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "000660",
+      "day": "20170213",
+      "vol": 2.142342107187626,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "000660",
+      "day": "20170727",
+      "vol": 2.146364325829778,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "003300",
+      "day": "20170523",
+      "vol": 2.1406778366068258,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "003490",
+      "day": "20201216",
+      "vol": 2.142632035743147,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "003670",
+      "day": "20200907",
+      "vol": 2.140189223405312,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "003670",
+      "day": "20200908",
+      "vol": 2.138955478488102,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "005290",
+      "day": "20171010",
+      "vol": 2.146275992988612,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "006400",
+      "day": "20170601",
+      "vol": 2.1418824805632233,
+      "full_pass": true,
+      "prefix_pass": false
+    },
+    {
+      "code": "006400",
+      "day": "20170602",
+      "vol": 2.1418824805632233,
+      "full_pass": true,
+      "prefix_pass": false
+    }
+  ],
+  "scope": "Same frozen adjusted-price vintage, price trend branch only, no rank/flow/alignment/target gate; not regenerated trade list."
+}
