@@ -9,7 +9,12 @@
  "code_commit": "2c17d542",
  "completed_at_kst": "2026-10-09T15:01:33+09:00",
  "evidence_paths": [
-  "evidence/run-final.log"
+  "evidence/run-final.log",
+  "evidence/nav/F.csv",
+  "evidence/nav/FJ.csv",
+  "evidence/nav/F10.csv",
+  "evidence/nav/F40.csv",
+  "evidence/diag-sigma-skip.log"
  ],
  "file_sha256": {
   "evidence/run-final.log": "1c31ba66ded9e0278a4c1e54ea38001976e3bca0570b0f42f39277374820f958",
@@ -23,5 +28,11 @@
  "operations_changed": 0,
  "round": 1,
  "result_pr": null,
- "note_chain": "과제마다 각자 chain(INSTRUCTIONS 3라운드 상한은 같은 과제의 결과→검토→고침 반복에 적용). 이전 기록 PR #133."
+ "note_chain": "과제마다 각자 chain(INSTRUCTIONS 3라운드 상한은 같은 과제의 결과→검토→고침 반복에 적용). 이전 기록 PR #133.",
+ "prereg_head_sha": "2c17d54239f450d9b8a0867b7255e61e49b7f69f",
+ "result_head_sha": "9567ad2925c90a516465aa513c71777f706e6acf",
+ "source_head_sha": "9567ad2925c90a516465aa513c71777f706e6acf",
+ "resubmitted_in_pr": 134,
+ "gpt_prereg_agreement": false,
+ "gpt_result_review": "6075749325(조건부 역사 비교 판정 동의 · 표현 · 증거 보완 요청)"
 }

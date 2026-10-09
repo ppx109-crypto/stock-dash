@@ -99,6 +99,7 @@ def main():
     forced = 0.0
     prev = None
     vol_cuts = [0]
+    skip_log = []
     acc_cuts = [0]
     acc_allowed = 1.0
 
@@ -181,6 +182,7 @@ def main():
                     lastpx = v
                 if seq[0] is None or any(v is None for v in seq):
                     ok = False
+                    skip_log.append((d, p["bot"], "첫날 값 없음" if seq[0] is None and src else "일봉 자료 없음"))   # 진단 칸(결과 불변)
                     break
                 rets.append((wv[kk] / held_v, [seq[j] / seq[j - 1] - 1 for j in range(1, LOOK + 1)]))
             if ok and rets:
@@ -354,6 +356,9 @@ def main():
         nav_rows.append(dict(날=d, NAV=tot, 현금=cash, 일봉=by["1d"], 분봉15=by["15m"], 바구니=by["basket"], 엔진=by["engine"] - inv_v, 인버스=inv_v,
                              예비=min(cash, reserve_1d), 비용누계=costs, 강제매도누계=forced))
         prev = d
+    if ACC_VOL > 0:
+        from collections import Counter
+        print(f"  [진단] σ 건너뛴 날 {len({x[0] for x in skip_log})} · 까닭별 {dict(Counter(x[2] for x in skip_log))} · 갈래별 {dict(Counter(x[1] for x in skip_log))}", flush=True)
     N = pd.DataFrame(nav_rows).set_index("날")
     r = N["NAV"].pct_change().fillna(0.0)
     out = os.getenv("Z_OUT")

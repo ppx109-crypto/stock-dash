@@ -33,5 +33,11 @@
  "paper_validation_ready": false,
  "operations_changed": 0,
  "result_pr": null,
- "note_chain": "과제마다 각자 chain(INSTRUCTIONS 3라운드 상한은 같은 과제의 결과→검토→고침 반복에 적용). 이전 기록 PR #133."
+ "note_chain": "과제마다 각자 chain(INSTRUCTIONS 3라운드 상한은 같은 과제의 결과→검토→고침 반복에 적용). 이전 기록 PR #133.",
+ "prereg_head_sha": "0a386d52731087f34b8a2593938b79da93e1948e",
+ "result_head_sha": "f875032b83336e4e71e6327901d009c8d9290cd5",
+ "source_head_sha": "f875032b83336e4e71e6327901d009c8d9290cd5",
+ "resubmitted_in_pr": 134,
+ "gpt_prereg_agreement": false,
+ "gpt_result_review": "6075749325(조건부 역사 비교 판정 동의 · 표현 · 증거 보완 요청)"
 }
