@@ -258,10 +258,11 @@ def trim_or_block(day, now=None, broker=None):
         return [f"⚠️ 계좌 흔들림 상한 단계 문제 · {type(e).__name__} → 오늘 새 매수 멈춤(팔기는 그대로)"]
 
 
-def record_close(day, broker=None):
+def record_close(day, broker=None, quote=None):
     """15:32(장 끝난 뒤) — 같은 날 덜어내기를 연구처럼 **종가**로 셌다면 얼마였을지 log에 나란히 적음(15:20 값과의 차이 재기).
-    덜어내기 직전에 남긴 수량 · 현금(today.json의 pre)에 종가를 매겨 셈 — 같은 날 1일봉 등 다른 매수 · 매도는 섞이지 않음(GPT #149).
-    pre가 없는 예전 기록이면 지금 수량 + 오늘 덜어내려고 판 수량으로 어림. 비율만 적음."""
+    덜어내기 직전에 남긴 수량 · 현금(today.json의 pre)에 **실제 종가**를 매겨 셈 — 같은 날 1일봉 등 다른 매수 · 매도는 섞이지 않음.
+    잔고에서 사라진 종목은 quote(코드)로 종가를 받음. 종가를 못 받은 종목이 있거나 pre가 없으면 15:20 값으로 대신하지 않고
+    그날 비교를 '미확인'으로 적음(GPT #150). 비율만 적음."""
     import paper_trade as P
     if not enabled(day):
         return None
@@ -272,26 +273,28 @@ def record_close(day, broker=None):
     b = broker.balance()
     price = {p["code"]: float(p.get("price") or 0) for p in b.get("positions", [])}      # 장 끝 값 = 종가
     pre = t.get("pre")
+    missing = []
     if pre:
         qty = {c: int(q) for c, q in pre["qty"].items()}
         for c in qty:
-            if not price.get(c):         # 오늘 다 팔려 잔고에 없으면 15:20 값으로(드묾)
-                price[c] = float(pre["price"].get(c) or 0)
-        held = sum(q * price.get(c, 0) for c, q in qty.items())
-        total = float(pre["cash"]) + held
+            if price.get(c):
+                continue
+            try:                         # 오늘 다 팔려 잔고에 없으면 종가를 따로 받음
+                price[c] = float(quote(c) or 0) if quote else 0.0
+            except Exception:
+                price[c] = 0.0
+            if not price[c]:
+                missing.append(c)
+    if not pre or missing:
+        out = {"close_check": "미확인", "close_missing": len(missing) if pre else None}
     else:
-        qty = positions_of(b)
-        for code, q, p1520 in t.get("trim_orders") or []:
-            qty[code] = qty.get(code, 0) + int(q)
-            if not price.get(code):
-                price[code] = float(p1520 or 0)
-        total = float(b.get("cash") or 0) + float(b.get("value") or 0)
-        held = sum(q * price.get(c, 0) for c, q in qty.items())
-    if total <= 0:
-        return None
-    f_close = max(0.0, 1 - t["E"] * total / held) if held > 0 else 0.0
-    out = {"held_share_close": round(held / total, 4), "trim_f_close": round(f_close, 4),
-           "trim_f_gap": round(float(t.get("trim_f") or 0) - f_close, 4)}
+        held = sum(q * price[c] for c, q in qty.items())
+        total = float(pre["cash"]) + held
+        if total <= 0:
+            return None
+        f_close = max(0.0, 1 - t["E"] * total / held) if held > 0 else 0.0
+        out = {"close_check": "확인", "held_share_close": round(held / total, 4), "trim_f_close": round(f_close, 4),
+               "trim_f_gap": round(float(t.get("trim_f") or 0) - f_close, 4)}
     log = _load(LOG, [])
     for x in log:
         if x.get("date") == day:
