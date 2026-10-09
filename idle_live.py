@@ -343,6 +343,12 @@ def run(now=None):
             used = max(0.0, (value - engine_value) / total) if total > 0 else 1.0
     # 사건 바구니 C(2026-10-07 사용자 "바구니C 좋네 넣어주고" · 연구 P4b): 규칙 > 바구니 > 엔진.
     # 바구니가 든 것은 '규칙 쓴 몫'에서 빼고(엔진 켜고 끄는 판단은 연구 그대로 1일봉 등 규칙만) · 엔진 몫에서는 바구니 몫을 먼저 뺌.
+    cap = None
+    try:                                 # 계좌 흔들림 상한(acc_cap · 켜져 있을 때만): 바구니 · 엔진이 사는 돈도 'E × 계좌 − 든 것'까지
+        import acc_cap
+        cap = acc_cap.room(balance, day)
+    except Exception as e:               # 상한 셈이 말썽이면 한도 없이(예전 그대로) 돎
+        print("계좌 흔들림 상한 셈 실패 ·", type(e).__name__)
     import basket_live
     b_held = basket_live.held_now(account)
     basket_value = sum(q * float(account.get(c, {}).get("price") or now_price.get(c, 0)) for c, q in b_held.items())
@@ -365,17 +371,23 @@ def run(now=None):
             for bk in (paper_trade.DAILY_BOOK, paper_trade.M15_BOOK, paper_trade.BOOK, paper_trade.IDLE_BOOK):
                 others |= {c for c, q in ((_load(bk, {}) or {}).get("held") or {}).items() if int(q) > 0}
             b_short, basket_after, b_spent = basket_live.run(client, broker, day, account, total, b_capital,
-                                                             max(0.0, cash - reserve * paper_trade.MKT_MARGIN), quote, days, others)
+                                                             max(0.0, min(cash - reserve * paper_trade.MKT_MARGIN,
+                                                                          cap if cap is not None else float("inf"))),
+                                                             quote, days, others)
         except Exception as e:                       # 바구니가 말썽이어도 엔진은 그대로
             print("사건 바구니 실패 ·", type(e).__name__, e)
             b_short = ["⚠️ 사건 바구니 단계 실패(엔진은 그대로 돎)"]
     cash_for_engine = max(0.0, cash - (b_spent * paper_trade.MKT_MARGIN if b_spent > 0 else b_spent) - reserve * paper_trade.MKT_MARGIN)
+    if cap is not None:
+        cash_for_engine = min(cash_for_engine, max(0.0, cap - max(0.0, b_spent)))
     orders, new_state, why = step(state, day, px, breadth if breadth is not None else 100.0, used, total, cash_for_engine, held,
                                   now_price, week_end(day), reserve=reserve + basket_after)
     if basket_after > 0 or b_short:
         why.insert(0, f"사건 바구니가 든 것 약 {basket_after / 1e4:,.0f}만 원(엔진 몫에서 먼저 뺌)")
     if reserve_note:
         why.insert(0, reserve_note + (" · 엔진 것을 팔아 자리를 냄" if room_note else ""))
+    if cap is not None:
+        why.insert(0, f"계좌 흔들림 상한: 더 살 수 있는 돈 약 {cap / 1e4:,.0f}만 원")
     if breadth is None:
         why.insert(0, "⚠️ 시장 폭을 못 세어 엔진을 끈 것으로 봄(팔 것만)")
     late = datetime.now(KST).strftime("%H%M") > LAST_ORDER

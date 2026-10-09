@@ -326,6 +326,17 @@ def run(now=None):
     if not I.market_open_today(client, day):
         print(f"{day}은 장이 열리지 않은 날로 보여 넘어갑니다.")
         return 0
+    # 계좌 흔들림 상한 덜어내기(acc_cap · 켜져 있을 때만) — 1일봉 판단 · 주문보다 먼저(연구 z086 순서).
+    # 일봉 자료가 늦거나 지금 값을 덜 받아 1일봉이 넘어가는 날에도 덜어내기는 하도록 여기서 함(판단은 전날까지 값이라 오늘 자료와 무관).
+    cap_lines = []
+    if not late:
+        try:
+            import acc_cap
+            cap_lines = acc_cap.run_trim(day, datetime.now(KST))
+        except Exception as e:           # 상한 단계가 말썽이어도 1일봉 주문은 그대로
+            cap_lines = [f"⚠️ 계좌 흔들림 상한 단계 문제 · {type(e).__name__}"]
+        if cap_lines:
+            send(cap_lines[:1])
     prices = study.load_prices()
     # 자료 확인(사용자 2026-10-02): 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼 · 모자라면 팔기만 함(data_guard)
     import data_guard
@@ -382,18 +393,23 @@ def run(now=None):
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
     warn = [] if ready else [f"⚠️ 1일봉 새로 사기 멈춤(자료 덜 들어옴 · 팔기는 그대로)"]
     send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
-    paper = []
+    paper = list(cap_lines)
     if (sells or buys) and not late:
         try:
             import paper_trade
             after = {"positions": {c: dict(p, 칸=p["칸"] - sum(x["칸"] for x in sells if x["code"] == c)) for c, p in held.items()}}
-            paper = paper_trade.execute([dict(x, decided=day) for x in sells + buys], after, now_price, day + "1520",
-                                        now=datetime.now(KST), strategy="1d")
+            paper += paper_trade.execute([dict(x, decided=day) for x in sells + buys], after, now_price, day + "1520",
+                                         now=datetime.now(KST), strategy="1d")
         except Exception as e:           # 모의투자 주문이 잘못돼도 연습 계좌 · 알림은 그대로
-            paper = [f"🧪 모의투자(1일봉) 주문 중 문제 · {type(e).__name__}"]
+            paper += [f"🧪 모의투자(1일봉) 주문 중 문제 · {type(e).__name__}"]
     elif (sells or buys) and late:
-        paper = ["🧪 모의투자(1일봉) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
+        paper += ["🧪 모의투자(1일봉) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
     _wait_until(SETTLE_AT)
+    try:                                 # 덜어내기를 종가로 셌다면(연구 셈) 얼마였을지 나란히 적음 — 15:20 값과의 차이 재기
+        import acc_cap
+        acc_cap.record_close(day)
+    except Exception as e:
+        print("흔들림 상한 종가 기록 실패 ·", type(e).__name__)
     close = {}
     for code in {x["code"] for x in sells + buys} | set(held):
         try:
