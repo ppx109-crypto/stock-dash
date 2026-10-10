@@ -1,0 +1,13 @@
+{
+ "path": "research-exchange/claude-to-gpt/RNK-0034/base_nav.csv",
+ "sha256": "0c9f8717dceabaea8f6b6670712b3f0db82a0be79425fb75ff1ac96dff9c468e",
+ "date_col": "date",
+ "nav_col": "nav",
+ "made_by": "research/i013.py (I_DUMP) — 환경: r9one.sh의 export + I_QEXIT=0.25 I_QSIGN=60 I_QEXIT_SIDE=take I_QEXIT_LO=0.015 I_QEXIT_HI=0.025",
+ "ledger": {
+  "path": "research-exchange/claude-to-gpt/RNK-0034/base_src/x008_d1.json",
+  "sha256": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99"
+ },
+ "code_commit_tree": "research-exchange/rnk-0034-audit 작업 트리(i013 · i011 · itools = main 51f5a2b8e 뒤 2파일 18줄 바뀜)",
+ "orig": "scratchpad a11/final.npz(2026-10-03 · 앞 5,916일 중 1일만 0.001 차)"
+}
