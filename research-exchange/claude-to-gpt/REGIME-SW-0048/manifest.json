@@ -2,47 +2,155 @@
  "schema_version": 1,
  "task_id": "REGIME-SW-0048",
  "chain_id": "REGIME-SW-0048",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": 2,
  "status": "READY",
- "method": "사용자 2026-10-10 새 방식(10년 백테스트 최고 · 장마다 선수 바꾸기 · −15% 세 장 각각 · 미래 참조 차단 · 고원)",
- "source_pr": 210,
- "source_head_sha": "e3d4e2f1448fdc74f8bb17485a84e678f6be6814",
- "code_commit": null,
- "completed_at_kst": null,
- "code": {
-  "research/regime_dev.py": "0936eb18b278407b38c5f53e6e555dd6d5cce015573aa6b8829d2489a048325d",
-  "research/regime_rules.py": "0605ee332cd7c2d25e04860775a53ff2efe5d3aac36e3466ba43ee320da7ab1a"
- },
- "data": {
-  "base_m1.csv": "998ffd2f117967b9fe4f5c3ca39a766699d992ebb0151ba767c1b30f0a9633e7",
-  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
-  "/tmp/reg-cut.pkl": "9fc1febde27a4d73b5b5c1e0719e4d73501aab9f24df2335269a8093b76bac84",
-  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
-  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980"
- },
- "eval_cap": 300,
- "evals_started": 0,
- "verdicts": [
-  "ADOPT_CANDIDATE",
-  "PEAK_ONLY",
-  "NO_IMPROVEMENT"
- ],
- "evidence_paths": [
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/PLAN.md",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/cut_test.out",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.py",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.out",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/regime_look.py",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/regime_look.out"
- ],
+ "verdict": "PEAK_ONLY",
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
  "actual_period": [
   "20170201",
   "20260915"
  ],
- "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
- "stage1_grid": 108,
- "expected_evals": 210,
- "answering": "211+5fff6b4092c3e3632aa222d5e6dbafae6e0e6b1c+PREREG+REGIME-SW-0048(6098335523)"
+ "source_pr": 211,
+ "source_head_sha": "5c72acf9df4e3a16981f94f577d13fbb547a38e2",
+ "code_commit": "5c72acf9df4e3a16981f94f577d13fbb547a38e2",
+ "code": {
+  "research/regime_dev.py": "0936eb18b278407b38c5f53e6e555dd6d5cce015573aa6b8829d2489a048325d",
+  "research/regime_rules.py": "0605ee332cd7c2d25e04860775a53ff2efe5d3aac36e3466ba43ee320da7ab1a"
+ },
+ "evals": {
+  "started": 149,
+  "done": 149,
+  "failed": 0,
+  "cap": 300
+ },
+ "final": {
+  "n": 20,
+  "confirm": "br30",
+  "persist": 3,
+  "down_base": 1.0,
+  "down_inv": 0.0,
+  "inv": "114800",
+  "up_lev": 0.3,
+  "side_inv": 0.0,
+  "up_need": "above_only",
+  "exit_buf": 0.0
+ },
+ "final_res": {
+  "annual_pct": 30.382,
+  "annual_raw": 0.3038230888960789,
+  "worst_day_pct": -9.894,
+  "worst_month_pct": -10.801,
+  "loss_ok": true,
+  "mdd_report_pct": -18.61,
+  "years_pct": {
+   "2017": 15.36,
+   "2018": 3.11,
+   "2019": 11.53,
+   "2020": 52.4,
+   "2021": 2.89,
+   "2022": 12.58,
+   "2023": 60.99,
+   "2024": 2.68,
+   "2025": 63.85,
+   "2026": 92.71
+  },
+  "by_kind": {
+   "상승": {
+    "worst_day_pct": -9.894,
+    "worst_month_pct": -10.801,
+    "ok": true
+   },
+   "하락": {
+    "worst_day_pct": -3.001,
+    "worst_month_pct": -6.738,
+    "ok": true
+   },
+   "횡보": {
+    "worst_day_pct": -4.665,
+    "worst_month_pct": -8.358,
+    "ok": true
+   }
+  },
+  "kinds_ok": true,
+  "halves_report": {
+   "2017~2021": 16.35,
+   "2022~2026": 46.93
+  },
+  "state_share_pct": {
+   "상승": 57.6,
+   "횡보": 41.0,
+   "하락": 1.4
+  },
+  "period": "실제 셈 기간 2017-02-01 ~ 2026-09-15(1일봉 장부가 2017-02-01부터) · 사용자 지정 2016 ~ 2026 가운데 2016-01 ~ 2017-01은 장부 없음 → NEEDS_DATA 칸",
+  "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+  "etf_trims": 38,
+  "base_trims": 0,
+  "min_cash_slack": -1.1102230246251565e-16
+ },
+ "base_res_annual_pct": 20.045,
+ "plateau_ok": false,
+ "plateau": {
+  "n=60": {
+   "annual_pct": 31.504,
+   "ok": false,
+   "sides": "한쪽(격자 끝)"
+  },
+  "persist=1": {
+   "annual_pct": 28.192,
+   "ok": false,
+   "sides": "양쪽"
+  },
+  "persist=5": {
+   "annual_pct": 26.719,
+   "ok": true,
+   "sides": "양쪽"
+  },
+  "exit_buf=0.02": {
+   "annual_pct": 30.125,
+   "ok": true,
+   "sides": "한쪽(격자 끝)"
+  },
+  "down_base=0.5": {
+   "annual_pct": 29.974,
+   "ok": true,
+   "sides": "한쪽(격자 끝)"
+  },
+  "down_inv=0.3": {
+   "annual_pct": 30.352,
+   "ok": true,
+   "sides": "한쪽(격자 끝)"
+  },
+  "up_lev=0.0": {
+   "annual_pct": 20.045,
+   "ok": false,
+   "sides": "양쪽"
+  },
+  "up_lev=0.6": {
+   "annual_pct": 36.133,
+   "ok": false,
+   "sides": "양쪽"
+  },
+  "side_inv=0.2": {
+   "annual_pct": 28.992,
+   "ok": true,
+   "sides": "한쪽(격자 끝)"
+  }
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/REPORT.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/dev_main.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/dev_run.log",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evals.jsonl",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/LOG.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/cut_test_final.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/cut_test_final.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/PLAN.md"
+ ],
+ "started_at_kst": "2026-10-10 23:16:28",
+ "completed_at_kst": "2026-10-10 23:16:39",
+ "answering": "211+5c72acf9df4e3a16981f94f577d13fbb547a38e2+PREREG+REGIME-SW-0048(6098402467)"
 }
