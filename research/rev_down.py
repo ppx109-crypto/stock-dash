@@ -10,6 +10,13 @@
   ⑤ 산 줄에서 10줄 뒤(그 종목의 10번째 다음 거래일) 종가에 팖. 파는 데 0.25%(세금 · 수수료 · 미끄러짐 합). 값이 끝나면 마지막 값으로 '기간 끝 정산'.
   ⑥ 내림이 아닌 날에는 사지 않음(현금). 이미 산 것은 10줄을 채움.
 - 미래 참조 막기: 살지 말지는 t날까지의 값만 씀. 앞날 줄이 있는지 미리 보지 않음(없으면 그때 정산).
+- round 2(GPT #208 6097323248):
+  · 기간 끝 정산 돈을 현금에 넣고 마지막 날 NAV를 정산 뒤(파는 비용 뺀) 값으로 고침.
+  · 판정 ④는 반올림 전 해 수익으로 셈(출력만 반올림).
+  · 같은 날 종가 순서 고정: ㉠ 어제 정한 것 사기(그 시각 현금까지) → ㉡ 팔 것 팔기. 그날 판 돈은 다음 날 판단부터 씀(보수적). 계좌 · 대조 8개 모두 같은 함수.
+  · 가격 제한: 그 종목 그날 종가가 앞 줄 종가 대비 하한가(2015-06-15 전 −15% · 그 뒤 −30% · 0.5%p 여유)면 그날 못 팖 → 다음 줄로 미룸.
+    상한가(+15% · +30% · 같은 여유)면 그날 못 삼 → 그 몫은 현금.
+  · 판정 이름: CLOSE_MODEL_PASS_IN_SEEN_DATA(비용 · 가격 제한 넣은 종가 모형 · 이미 본 자료 안) — 모의 운영 근거로 바로 쓰지 않음.
 python3 research/rev_down.py --run      잠금 확인 → O_EXCL 영수증 → 계좌 셈 → 대조 8 → 판정(한 번뿐)
 python3 research/rev_down.py --cut-test 자르기 시험(같음 · 다름 수만)
 python3 research/rev_down.py --lock     잠금 파일 쓰기(성과 셈 없음)"""
@@ -34,6 +41,25 @@ BUY_COST, SELL_COST = 0.0005, 0.0025
 PH_N, PH_TH = 60, -0.05
 SEEDS = tuple(range(1, 9))
 BOOT_REPS, BOOT_SEED = 2000, 47
+LIMIT_CHANGE, SLACK = "20150615", 0.005
+
+
+def limit_of(d):
+    return 0.15 if d < LIMIT_CHANGE else 0.30
+
+
+def day_move(ln, k):
+    return None if k < 1 else ln["x"][k] / ln["x"][k - 1] - 1
+
+
+def locked_down(ln, k, d):
+    m = day_move(ln, k)
+    return m is not None and m <= -(limit_of(d) - SLACK)
+
+
+def locked_up(ln, k, d):
+    m = day_move(ln, k)
+    return m is not None and m >= limit_of(d) - SLACK
 
 
 def load(path):
@@ -81,6 +107,7 @@ def simulate(part, chooser="rank", seed=None):
     pending = []       # (code, 돈, cohort) — 어제 정한 오늘 살 것
     cohorts = {}       # 번호 → {day, spent, back}
     navs, trades = {}, 0
+    blocked_buy, delayed_sell = 0, 0
     for d in days:
         # ④ 어제 정한 것 사기
         for code, money, cid in pending:
@@ -88,6 +115,9 @@ def simulate(part, chooser="rank", seed=None):
             k = ln["pos"].get(d)
             money = min(money, cash)
             if k is None or money <= 0:
+                continue
+            if locked_up(ln, k, d):          # 상한가 → 못 삼(현금)
+                blocked_buy += 1
                 continue
             px = ln["x"][k]
             sh = money * (1 - BUY_COST) / px
@@ -101,7 +131,10 @@ def simulate(part, chooser="rank", seed=None):
         for h in held:
             ln = lanes[h["code"]]
             k = ln["pos"].get(d)
-            if k is not None and k >= h["k"] + HOLD:
+            if k is not None and k >= h["k"] + HOLD and locked_down(ln, k, d):   # 하한가 → 못 팖 · 다음 줄로
+                delayed_sell += 1
+                keep.append(h)
+            elif k is not None and k >= h["k"] + HOLD:
                 back = h["sh"] * ln["x"][k] * (1 - SELL_COST)
                 cash += back
                 cohorts[h["cohort"]]["back"] += back
@@ -129,10 +162,12 @@ def simulate(part, chooser="rank", seed=None):
         ln = lanes[h["code"]]
         k = bisect.bisect_right(ln["d"], last) - 1
         back = h["sh"] * ln["x"][k] * (1 - SELL_COST)
+        cash += back
         cohorts[h["cohort"]]["back"] += back
         cohorts[h["cohort"]]["end_settled"] = True
+    navs[last] = cash                     # 정산 뒤(파는 비용 뺀) 값
     return {"nav": navs, "cohorts": [dict(v, id=k) for k, v in cohorts.items() if v["spent"] > 0], "trades": trades,
-            "last_day": last, "end_open": len(held)}
+            "last_day": last, "end_open": len(held), "blocked_buy_limit_up": blocked_buy, "delayed_sell_limit_down_rows": delayed_sell}
 
 
 def stats(sim):
@@ -154,6 +189,8 @@ def stats(sim):
     coh = [c["back"] / c["spent"] - 1 for c in sim["cohorts"]]
     return {"end_nav": end, "annual_pct": round((end ** (1 / n_years) - 1) * 100, 3), "worst_day": [worst_day[0], round(worst_day[1] * 100, 3)],
             "worst_month": [worst_month[0], round((worst_month[1] - 1) * 100, 3)], "years_pct": {y: round((v - 1) * 100, 3) for y, v in sorted(years.items())},
+            "years_raw": {y: v - 1 for y, v in sorted(years.items())}, "annual_raw": end ** (1 / n_years) - 1,
+            "worst_day_raw": worst_day[1], "worst_month_raw": worst_month[1] - 1,
             "mtm_mdd_report_only_pct": round(mdd * 100, 3), "cohorts": len(coh), "trades": sim["trades"],
             "cohort_mean_net_pct": round(sum(coh) / len(coh) * 100, 3) if coh else None}
 
@@ -174,14 +211,18 @@ def boot_cohort(sim):
 
 
 def judge(st, ctrl, boot):
-    active = [y for y, v in st["years_pct"].items() if v != 0.0]
-    pos = sum(1 for y in active if st["years_pct"][y] > 0)
+    yr = st.get("years_raw", st["years_pct"])          # 판정은 반올림 전 값(round 2)
+    active = [y for y, v in yr.items() if v != 0.0]
+    pos = sum(1 for y in active if yr[y] > 0)
     med = sorted(ctrl)[len(ctrl) // 2 - 1: len(ctrl) // 2 + 1]
     med = sum(med) / 2
-    c = {"0_cohorts_ge_60": st["cohorts"] >= 60, "1_annual_gt0": st["annual_pct"] > 0, "2_beats_random_median": st["annual_pct"] > med,
-         "3_day_month_ge_-15": st["worst_day"][1] >= -15 and st["worst_month"][1] >= -15,
+    ann = st["annual_raw"] * 100 if "annual_raw" in st else st["annual_pct"]
+    wd = st["worst_day_raw"] * 100 if "worst_day_raw" in st else st["worst_day"][1]
+    wm = st["worst_month_raw"] * 100 if "worst_month_raw" in st else st["worst_month"][1]
+    c = {"0_cohorts_ge_60": st["cohorts"] >= 60, "1_annual_gt0": ann > 0, "2_beats_random_median": ann > med,
+         "3_day_month_ge_-15": wd >= -15 and wm >= -15,
          "4_active_years_pos_ge_60pct": bool(active) and pos / len(active) >= 0.6, "5_boot_lo_gt0": boot[0] > 0}
-    verdict = "NEEDS_DATA" if not c["0_cohorts_ge_60"] else ("IMPLEMENTABLE_IN_SEEN_DATA" if all(c.values()) else "REJECTED")
+    verdict = "NEEDS_DATA" if not c["0_cohorts_ge_60"] else ("CLOSE_MODEL_PASS_IN_SEEN_DATA" if all(c.values()) else "REJECTED")
     return c, verdict, med, f"{pos}/{len(active)}"
 
 
@@ -215,12 +256,15 @@ def run():
     ctrl_runs = []
     for sd in SEEDS:
         cs = stats(simulate(FULL, "random", sd))
-        ctrl_runs.append({"seed": sd, "annual_pct": cs["annual_pct"], "cohorts": cs["cohorts"], "trades": cs["trades"]})
+        ctrl_runs.append({"seed": sd, "annual_pct": cs["annual_pct"], "annual_raw_pct": cs["annual_raw"] * 100, "cohorts": cs["cohorts"], "trades": cs["trades"]})
     boot = boot_cohort(sim)
-    cond, verdict, med, ypos = judge(st, [x["annual_pct"] for x in ctrl_runs], boot)
-    out = {"task": "REV-DOWN-0047", "lock_key": key, "receipt": body, "stats": st, "active_years_pos": ypos, "control": ctrl_runs,
+    cond, verdict, med, ypos = judge(st, [x["annual_raw_pct"] for x in ctrl_runs], boot)
+    st_out = {k: v for k, v in st.items() if not k.endswith("_raw")}
+    out = {"task": "REV-DOWN-0047", "lock_key": key, "receipt": body, "stats": st_out, "annual_raw_pct": st["annual_raw"] * 100, "active_years_pos": ypos, "control": ctrl_runs,
            "control_median_pct": round(med, 3), "boot95_cohort_net_pct": boot, "conditions": cond, "verdict": verdict,
-           "end_open_positions": sim["end_open"], "independent_validation": "WAITING_DATA",
+           "end_open_positions": sim["end_open"], "blocked_buy_limit_up": sim["blocked_buy_limit_up"],
+           "delayed_sell_limit_down_rows": sim["delayed_sell_limit_down_rows"], "independent_validation": "WAITING_DATA",
+           "verdict_meaning": "비용 · 가격 제한을 넣은 종가 모형 · 이미 본 자료 안 · 모의 운영 근거로 바로 쓰지 않음",
            "cohorts_detail": [{"day": c["day"], "n": c["n"], "net_pct": round((c["back"] / c["spent"] - 1) * 100, 3)} for c in sim["cohorts"]]}
     print(json.dumps(out, ensure_ascii=False))
 

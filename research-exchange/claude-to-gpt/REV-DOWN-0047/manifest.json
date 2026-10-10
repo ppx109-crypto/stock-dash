@@ -3,17 +3,17 @@
  "task_id": "REV-DOWN-0047",
  "chain_id": "REV-DOWN-0047",
  "kind": "PREREG",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "source_pr": 207,
  "source_head_sha": "9cca272445dd2fc5b16fa753c954efa3d8fc3596",
  "code_commit": null,
  "completed_at_kst": null,
  "code": {
-  "research/rev_down.py": "d7f087c809ed6787647d287519c7996fa205b007bd2c5e0545b083e444cac710"
+  "research/rev_down.py": "db65528d382c2259a12a86b2cafb43aeb2f2a0c877c4906f8f919f13e627ff2f"
  },
  "lock": {
-  "research/rev_down.py": "d7f087c809ed6787647d287519c7996fa205b007bd2c5e0545b083e444cac710",
+  "research/rev_down.py": "db65528d382c2259a12a86b2cafb43aeb2f2a0c877c4906f8f919f13e627ff2f",
   "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
  },
  "period": [
@@ -26,11 +26,13 @@
   "hold_rows": 10,
   "slice": "NAV 1/10",
   "buy_cost": 0.0005,
-  "sell_cost": 0.0025
+  "sell_cost": 0.0025,
+  "limit": "2015-06-15 전 ±15% · 뒤 ±30% · 0.5%p 여유",
+  "same_day_order": "사기 → 팔기 · 판 돈은 다음 날부터"
  },
  "verdicts": [
   "NEEDS_DATA",
-  "IMPLEMENTABLE_IN_SEEN_DATA",
+  "CLOSE_MODEL_PASS_IN_SEEN_DATA",
   "REJECTED"
  ],
  "independent_validation": "WAITING_DATA",
@@ -43,5 +45,6 @@
   "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.py",
   "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.out"
- ]
+ ],
+ "answering": "208+aa65644e02ad7d58b0af68ffcdc19750b9483644+PREREG+REV-DOWN-0047(6097323248)"
 }
