@@ -118,6 +118,62 @@
    "source_head": "44de593b205aeac6ba74d1cdbad2c6d9403d4d12",
    "orders": false,
    "saved_at": "2026-10-10 23:56:01 KST"
+  },
+  {
+   "id": "REGIME-SW-0051",
+   "verdict": "ROBUST_CANDIDATE",
+   "loss_basis": "세 장 각각 하루 −15% · 달 −10% + 작은 규칙 이웃 6개도 모두 같은 잣대 안(손실 고원)",
+   "config": {
+    "n": 24,
+    "confirm": "r10m5",
+    "persist": 3,
+    "down_base": 1.0,
+    "down_inv": 0.0,
+    "inv": "114800",
+    "up_lev": 0.2,
+    "side_inv": 0.2,
+    "up_need": "above_only",
+    "exit_buf": 0.0,
+    "band": null,
+    "lev_vt": null
+   },
+   "summary": {
+    "annual_pct": 27.129,
+    "worst_day_pct": -7.459,
+    "worst_month_pct": -8.567,
+    "mdd_report_pct": -16.52,
+    "years_pct": {
+     "2017": 11.24,
+     "2018": 4.19,
+     "2019": 13.08,
+     "2020": 39.36,
+     "2021": 7.62,
+     "2022": 16.75,
+     "2023": 56.73,
+     "2024": 7.78,
+     "2025": 43.4,
+     "2026": 73.21
+    },
+    "by_kind": {
+     "상승": {
+      "worst_day_pct": -7.459,
+      "worst_month_pct": -8.567
+     },
+     "하락": {
+      "worst_day_pct": -2.425,
+      "worst_month_pct": -5.056
+     },
+     "횡보": {
+      "worst_day_pct": -5.0,
+      "worst_month_pct": -7.901
+     }
+    }
+   },
+   "warning": "같은 10년에서 고름(0048 ~ 0050과 같은 구간 · 다중 시험) · side_inv 0.2는 격자 끝 · 2016-01 ~ 2017-01 NEEDS_DATA",
+   "pr": "결과 PR(아래 커밋 뒤 채움)",
+   "source_head": "594536f7e454f142c7951114ba0558fdf10d7593",
+   "orders": false,
+   "saved_at": "2026-10-11 00:1x KST"
   }
  ]
 }
