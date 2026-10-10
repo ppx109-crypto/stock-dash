@@ -1,0 +1,25 @@
+{
+ "보통": {
+  "rows": 147500,
+  "max_date": "20221229",
+  "res_present": {
+   "D1": true,
+   "D2": true
+  },
+  "feat_sha": "1ad260582b495bfad5d57b05154458e58b535dacf0ca790d8d4728495d591400",
+  "res_sha": "97c9ae629496e4d9b2870d429c4ef2f38cd56ad6cf166731dc4fefecacab9fa2",
+  "prices_sha": "783fd899e53cb1d9a0565721929bdf66fe219f98a172ebd4026941c035817190"
+ },
+ "센티널": {
+  "rows": 147500,
+  "max_date": "20221229",
+  "res_present": {
+   "D1": true,
+   "D2": true
+  },
+  "feat_sha": "1ad260582b495bfad5d57b05154458e58b535dacf0ca790d8d4728495d591400",
+  "res_sha": "97c9ae629496e4d9b2870d429c4ef2f38cd56ad6cf166731dc4fefecacab9fa2",
+  "prices_sha": "783fd899e53cb1d9a0565721929bdf66fe219f98a172ebd4026941c035817190"
+ },
+ "완전_같음": true
+}
