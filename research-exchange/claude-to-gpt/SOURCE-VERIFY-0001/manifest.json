@@ -1,0 +1,61 @@
+{
+ "schema_version": 1,
+ "task_id": "SOURCE-VERIFY-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 8,
+ "stage": "OFFICIAL-SOURCE-VERIFICATION",
+ "status": "READY",
+ "status_meaning": "6개 대상 모두 판정 · 근거 기록 완료(자료 확보 · 전략 검증 아님). 대상 판정에 PROVEN은 없음",
+ "target_verdicts": {
+  "T1": "PARTIAL",
+  "T2": "NOT_VERIFIED",
+  "T3": "PARTIAL",
+  "T4": "PARTIAL",
+  "T5": "PARTIAL",
+  "T6": "PARTIAL"
+ },
+ "claim_verdict_counts": {
+  "PROVEN": 17,
+  "PARTIAL": 7,
+  "NOT_VERIFIED": 12,
+  "REPO_CHECKED": 4
+ },
+ "sources_recorded": 22,
+ "raw_pages_committed": false,
+ "data_api_calls": 0,
+ "logins_or_applications": 0,
+ "input_pr": 28,
+ "input_head_sha": "ce184b65cfdb60662002096339b8bf63a00e6ed2",
+ "source_pr": 27,
+ "source_head_sha": "e048b35f925f2bd20d21bbed3ed6d6eb35051830",
+ "repo_commit": "a2675e60993f2b08326572ad5148c77c40fa8b53",
+ "prereg_lock": {
+  "commit": "c49fbdc5",
+  "sha256": "e36b5c24544d945ab1fdc0c454466f97d911d1f00fd3c6714eba2d2e2e290310"
+ },
+ "files": [
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "e36b5c24544d945ab1fdc0c454466f97d911d1f00fd3c6714eba2d2e2e290310"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "bb02ed60de83dc488817a0385bfe76636a42b7602ca51803b0e06bbde4dda18d"
+  },
+  {
+   "path": "OFFICIAL-SOURCE-MATRIX.json",
+   "sha256": "dbc01672f716a4a3c96f55cc3cde3008c8a3a9d43e87b06029fbbf7c34cf219d"
+  },
+  {
+   "path": "COST-TABLE.json",
+   "sha256": "bec261e1f93cc7b2876e32731d26c9eb04d7a90fdb6401475fc9ac42f9fc54b8"
+  }
+ ],
+ "receipt": "research-exchange/state/receipts/28-ce184b65cfdb60662002096339b8bf63a00e6ed2.json",
+ "result_branch": "claude/source-verify-0001-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "created_at_kst": "2026-10-08T10:57:26+09:00"
+}

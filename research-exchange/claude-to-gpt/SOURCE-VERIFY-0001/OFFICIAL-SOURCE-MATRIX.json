@@ -1,0 +1,718 @@
+{
+ "schema_version": 1,
+ "task_id": "SOURCE-VERIFY-0001",
+ "input_pr": 28,
+ "input_head_sha": "ce184b65cfdb60662002096339b8bf63a00e6ed2",
+ "source_pr": 27,
+ "source_head_sha": "e048b35f925f2bd20d21bbed3ed6d6eb35051830",
+ "verdict_rule": "PREREG: PROVEN = 공식 원문이 직접 명시 / PARTIAL = 일부만 / NOT_VERIFIED = 원문 없음·추론뿐. 부재는 NOT_STATED_IN_DOC.",
+ "evidence_classes": [
+  "official_fact",
+  "repo_expectation",
+  "inference",
+  "unproven"
+ ],
+ "data_api_calls": 0,
+ "logins_or_applications": 0,
+ "raw_pages_committed": false,
+ "sources": [
+  {
+   "id": "S01",
+   "url": "https://openapi.krx.co.kr/contents/OPP/INFO/service/OPPINFO004.cmd",
+   "doc_name": "KRX Open API 서비스 목록",
+   "fetched_at_kst": "2026-10-08T10:39:18+09:00",
+   "sha256": "75862141539a47bb445a9041beb31d10106dcc960fd458bac26ea0eb90fc58b4",
+   "bytes": 28577,
+   "content_usable": true
+  },
+  {
+   "id": "S02",
+   "url": "https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO003.jsp",
+   "doc_name": "KRX Open API 이용방법",
+   "fetched_at_kst": "2026-10-08T10:39:19+09:00",
+   "sha256": "9fdcfcef63ef306b3d50a8111b1e0cabc6811916a42f0612241794651cd7e822",
+   "bytes": 18980,
+   "content_usable": true
+  },
+  {
+   "id": "S03",
+   "url": "https://openapi.krx.co.kr/contents/OPP/INFO/OPPINFO002.jsp",
+   "doc_name": "KRX Open API 이용약관",
+   "fetched_at_kst": "2026-10-08T10:39:20+09:00",
+   "sha256": "f1dd54bba0048be7224fb7514e41465842493fefd7afa4f450bd08f0f9d2d94e",
+   "bytes": 29832,
+   "content_usable": true
+  },
+  {
+   "id": "S04",
+   "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES002_S2.cmd?BO_ID=JvJFzlAENzZlPBDNGAWC",
+   "doc_name": "KRX Open API 유가증권 일별매매정보 명세(stk_bydd_trd)",
+   "fetched_at_kst": "2026-10-08T10:40:04+09:00",
+   "sha256": "760021d10ba0f5646112c5e60f600cb587b08c7d22c271f3685e702c93bf58e6",
+   "bytes": 39880,
+   "content_usable": true
+  },
+  {
+   "id": "S05",
+   "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES002_S2.cmd?BO_ID=hZjGpkllgCBCWqeTsYFj",
+   "doc_name": "KRX Open API 코스닥 일별매매정보 명세(ksq_bydd_trd)",
+   "fetched_at_kst": "2026-10-08T10:40:06+09:00",
+   "sha256": "332fb6a390593c78003f1fe5555fab6a480db3c4b6abecd15544a83ad066ed48",
+   "bytes": 39863,
+   "content_usable": true
+  },
+  {
+   "id": "S06",
+   "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES002_S2.cmd?BO_ID=PiwgMdTwmsenXhmqqxuj",
+   "doc_name": "KRX Open API 유가증권 종목기본정보 명세(stk_isu_base_info)",
+   "fetched_at_kst": "2026-10-08T10:40:06+09:00",
+   "sha256": "663d5a4855962d4968e255165a89e690076e264bba00068efd96e7aa86a90b09",
+   "bytes": 39344,
+   "content_usable": true
+  },
+  {
+   "id": "S07",
+   "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES002_S2.cmd?BO_ID=CifLHplnUFMgpHIMMPXs",
+   "doc_name": "KRX Open API 코스닥 종목기본정보 명세(ksq_isu_base_info)",
+   "fetched_at_kst": "2026-10-08T10:40:07+09:00",
+   "sha256": "e65f0f8b44e725f34e9a1d67a971715e69d6688d0e6ca83d8a13a0dcb93e86e4",
+   "bytes": 39323,
+   "content_usable": true
+  },
+  {
+   "id": "S08",
+   "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES001_S2.cmd?BO_ID=EREKZauXnMmxyIlqzeDN",
+   "doc_name": "KRX Open API KOSPI 시리즈 일별시세정보 명세(kospi_dd_trd)",
+   "fetched_at_kst": "2026-10-08T10:40:08+09:00",
+   "sha256": "847faae16c6928d5e69f54eb22b5056e60469613b45ce519d3c7c2e3418df292",
+   "bytes": 45604,
+   "content_usable": true
+  },
+  {
+   "id": "S09",
+   "url": "https://openapi.krx.co.kr/contents/OPP/USES/service/OPPUSES001_S2.cmd?BO_ID=nimebcamqFNIPNcRrHoO",
+   "doc_name": "KRX Open API KOSDAQ 시리즈 일별시세정보 명세(kosdaq_dd_trd)",
+   "fetched_at_kst": "2026-10-08T10:40:09+09:00",
+   "sha256": "f8556ed066055d66fb002be2db07d65943e0776eab2318ab7a630c1534ff353b",
+   "bytes": 45619,
+   "content_usable": true
+  },
+  {
+   "id": "S10",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019001",
+   "doc_name": "OpenDART 개발가이드 공시검색(list.json)",
+   "fetched_at_kst": "2026-10-08T10:42:06+09:00",
+   "sha256": "63bc4e286e14bdb0ece90cbd1f0ab474de6367cea8b4240804d32263e2492ec3",
+   "bytes": 52197,
+   "content_usable": true
+  },
+  {
+   "id": "S11",
+   "url": "https://opendart.fss.or.kr/guide/detail.do?apiGrpCd=DS001&apiId=2019003",
+   "doc_name": "OpenDART 개발가이드 공시서류원본파일(document.xml)",
+   "fetched_at_kst": "2026-10-08T10:42:10+09:00",
+   "sha256": "2252614de7282ff2d0fe95f36109d058926211adfca521e346bc40f93e464b6e",
+   "bytes": 30959,
+   "content_usable": true
+  },
+  {
+   "id": "S12",
+   "url": "https://www.law.go.kr/LSW/lsRvsRsnListP.do?lsId=005028&chrClsCd=010202&lsRvsGubun=all",
+   "doc_name": "국가법령정보센터 증권거래세법 시행령 전체 제정·개정이유",
+   "fetched_at_kst": "2026-10-08T10:43:34+09:00",
+   "sha256": "0965fc15e0cd4e5f4c160d60554da938907f34fdc99b6f1b01775f82431ed07c",
+   "bytes": 110839,
+   "content_usable": true
+  },
+  {
+   "id": "S13",
+   "url": "https://www.law.go.kr/LSW/lsRvsRsnListP.do?lsId=001569&chrClsCd=010202&lsRvsGubun=all",
+   "doc_name": "국가법령정보센터 농어촌특별세법 전체 제정·개정이유",
+   "fetched_at_kst": "2026-10-08T10:45:58+09:00",
+   "sha256": "3955e9b74b31d7e9ea003ffd02dc77621a839a3e27d3a9e8479f8fc20246a36c",
+   "bytes": 202888,
+   "content_usable": true,
+   "note": "세율 조문 문장은 없음(개정이유만)"
+  },
+  {
+   "id": "S14",
+   "url": "https://www.law.go.kr/LSW/lsInfoP.do?lsiSeq=285905&efYd=&chrClsCd=010202&urlMode=lsInfoP&viewCls=lsInfoP",
+   "doc_name": "국가법령정보센터 농어촌특별세법 본문 화면",
+   "fetched_at_kst": "2026-10-08T10:47:04+09:00",
+   "sha256": "bf77f0bbfc14ef723b9b646b42100bda1cfdabc9044b084b56c69a7255465bc4",
+   "bytes": 144875,
+   "content_usable": false,
+   "note": "본문이 스크립트로 불러와져 조문 텍스트를 얻지 못함. 본문 조각 주소는 3회 연결 끊김"
+  },
+  {
+   "id": "S15",
+   "url": "https://securities.koreainvestment.com/main/customer/guide/_static/TF04ae010000.jsp?tab=2",
+   "doc_name": "한국투자증권 수수료안내(국내 수수료 · 매매관련 세금)",
+   "fetched_at_kst": "2026-10-08T10:44:08+09:00",
+   "sha256": "259090877761dde3a06ae464f997bd918e15b040173d4c35d99711d9664a5377",
+   "bytes": 282608,
+   "content_usable": true
+  },
+  {
+   "id": "S16",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03020201/RGL03020201.jsp",
+   "doc_name": "KRX 규정/제도 코스닥시장 기준가격/가격제한폭/상하한가",
+   "fetched_at_kst": "2026-10-08T10:47:23+09:00",
+   "sha256": "143334a9476c675443117cb645ad15c52c437258ac645838aeab3a560469fc24",
+   "bytes": 220004,
+   "content_usable": true
+  },
+  {
+   "id": "S17",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03020100/RGL03020100.jsp",
+   "doc_name": "KRX 규정/제도 코스닥시장 매매거래제도일반(호가단위)",
+   "fetched_at_kst": "2026-10-08T10:48:39+09:00",
+   "sha256": "630971b4784323abd1d2d65a01698d748eb2a50bd499f3d5d73332e6b60a55d9",
+   "bytes": 219682,
+   "content_usable": true
+  },
+  {
+   "id": "S18",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03020401/RGL03020401.jsp",
+   "doc_name": "KRX 규정/제도 코스닥시장 시장의 개폐(매매거래시간 · 휴장일)",
+   "fetched_at_kst": "2026-10-08T10:48:39+09:00",
+   "sha256": "39da1663a109885859ea96ce02a3bf77bc4eb9432e5b4768be9c802ecc7c205e",
+   "bytes": 220943,
+   "content_usable": true
+  },
+  {
+   "id": "S19",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03010403/RGL03010403.jsp",
+   "doc_name": "KRX 규정/제도 유가증권시장 개별종목의 매매거래 정지 및 재개",
+   "fetched_at_kst": "2026-10-08T10:48:40+09:00",
+   "sha256": "896718c853e4f45a98570cecde3859ef8ae3774ebafd232148786ea8a64f8eab",
+   "bytes": 218934,
+   "content_usable": true
+  },
+  {
+   "id": "S20",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03020405/RGL03020405.jsp",
+   "doc_name": "KRX 규정/제도 코스닥시장 개별종목의 매매거래 정지 및 재개",
+   "fetched_at_kst": "2026-10-08T10:48:41+09:00",
+   "sha256": "793cbad96f6ec5b07bdaef28ef5e33f0a3b6458399f5b396265a8d97b862a3ac",
+   "bytes": 221055,
+   "content_usable": true
+  },
+  {
+   "id": "S21",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03010100/RGL03010100.jsp",
+   "doc_name": "KRX 규정/제도 유가증권시장 매매거래제도일반",
+   "fetched_at_kst": "2026-10-08T10:48:38+09:00",
+   "sha256": "2eee8cce3e57d249d1e8f878d0b408ec9d849198636e81ab525756ba6345ca7d",
+   "bytes": 218412,
+   "content_usable": false,
+   "note": "탭 제목만 있고 휴장일 · 호가 · 가격제한폭 본문이 없음"
+  },
+  {
+   "id": "S22",
+   "url": "https://regulation.krx.co.kr/contents/RGL/03/03010101/RGL03010101.jsp",
+   "doc_name": "KRX 규정/제도 유가증권시장 하위 화면(03010101~03010104)",
+   "fetched_at_kst": "2026-10-08T10:48:04+09:00",
+   "sha256": "78f5f3829d873682d68405b67ad2d410416f298121328910ddaef86bfa52ea4e",
+   "bytes": 167782,
+   "content_usable": false,
+   "note": "03010101~03010104 · 03020101~03020103 · 03020103(별도 받음)이 모두 같은 167,782바이트 빈 화면"
+  }
+ ],
+ "targets": [
+  {
+   "target": "T1",
+   "name": "KRX 일별매매정보(유가 · 코스닥)",
+   "verdict": "PARTIAL",
+   "claims": [
+    {
+     "id": "T1-start",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S01"
+     ],
+     "applies_from": "2010-01-04",
+     "text": "유가증권 · 코스닥 일별매매정보와 종목기본정보는 '10년01월04일 데이터부터 제공. 코넥스는 '13년07월01일부터.",
+     "checked_at_kst": "2026-10-08T10:39:18+09:00"
+    },
+    {
+     "id": "T1-fields",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S04",
+      "S05"
+     ],
+     "applies_from": "명세 화면 확인 시점(2026-10-08) 현재",
+     "text": "입력 basDd(기준일자) 1개. 출력 BAS_DD · ISU_CD · ISU_NM · MKT_NM · SECT_TP_NM · TDD_CLSPRC · CMPPREVDD_PRC · FLUC_RT · TDD_OPNPRC(시가) · TDD_HGPRC(고가) · TDD_LWPRC(저가) · ACC_TRDVOL · ACC_TRDVAL · MKTCAP · LIST_SHRS.",
+     "note": "명세 화면에 들어 있는 정의(인코딩된 XML)를 풀어 읽음. 수정주가 여부 · 거래정지 표시 필드는 없음(NOT_STATED_IN_DOC).",
+     "checked_at_kst": "2026-10-08T10:40:06+09:00"
+    },
+    {
+     "id": "T1-ohlc",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S04",
+      "S05"
+     ],
+     "applies_from": "명세 현재",
+     "text": "시가 · 고가 · 저가 · 종가가 모두 출력 필드에 있음.",
+     "checked_at_kst": "2026-10-08T10:40:06+09:00"
+    },
+    {
+     "id": "T1-past-range",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S01",
+      "S04"
+     ],
+     "text": "과거는 기준일자 하나씩 조회(basDd). 대상기간 '2010년 이후'. 그날 자료가 몇 시에 올라오는지(당일 available_at)는 적혀 있지 않음."
+    },
+    {
+     "id": "T1-delisted-included",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S01",
+      "S04",
+      "S05"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "과거 날짜 결과에 그 뒤 상장폐지된 종목이 들어 있다는 보장 문구를 찾지 못함. 없다고 단정하지도 않음."
+    },
+    {
+     "id": "T1-halted-included",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S04",
+      "S05"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "거래정지일 종목 포함 여부 문구 없음. 정지 표시 필드도 없음."
+    },
+    {
+     "id": "T1-zero-volume-included",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S04",
+      "S05"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "0거래 종목 포함 여부 문구 없음."
+    },
+    {
+     "id": "T1-key-validity",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S03"
+     ],
+     "applies_from": "약관 현재본",
+     "text": "이용기간은 인증키를 받은 날부터 1년, 만료 전 요청 시 1년 단위 연장.",
+     "checked_at_kst": "2026-10-08T10:39:20+09:00"
+    },
+    {
+     "id": "T1-call-limit",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S03"
+     ],
+     "applies_from": "약관 현재본",
+     "text": "키 하나당 하루(0시~24시) 10,000회 이하. 넘으면 서비스가 중지될 수 있음.",
+     "checked_at_kst": "2026-10-08T10:39:20+09:00"
+    },
+    {
+     "id": "T1-application",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S02",
+      "S03"
+     ],
+     "applies_from": "현재",
+     "text": "약관 동의 등 요건을 갖춘 신청자에게 인증키 부여, 서비스별 이용신청 뒤 관리자 승인 후 사용.",
+     "note": "이번 단계에서 신청 · 로그인 · 약관 동의는 하지 않음.",
+     "checked_at_kst": "2026-10-08T10:39:20+09:00"
+    },
+    {
+     "id": "T1-redistribution",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S03"
+     ],
+     "applies_from": "약관 현재본",
+     "text": "비상업적 목적으로만 이용. 제공받은 정보를 제3자에게 제공할 수 없음. 결과로 화면을 만들면 '한국거래소 통계정보'를 쓴 결과임을 표시. 계속 제공은 보장하지 않음.",
+     "public_redistribution": "NOT_ALLOWED",
+     "note": "공개 저장소에 원자료를 올리는 것은 제3자 제공에 해당한다고 보수적으로 해석(inference). 가공 결과 공개 범위는 확인하지 못함(NOT_VERIFIED).",
+     "checked_at_kst": "2026-10-08T10:39:20+09:00"
+    },
+    {
+     "id": "T1-repo-ohlc-gap",
+     "verdict": "REPO_CHECKED",
+     "class": "repo_expectation",
+     "sources": [
+      "S04"
+     ],
+     "text": "collect_krx_daily.py:26 COLS = date · market · code · name · close · volume · value · mktcap · shares — 공식 출력에 있는 시가 · 고가 · 저가를 버림.",
+     "note": "코드 변경은 이번 범위 밖."
+    }
+   ]
+  },
+  {
+   "target": "T2",
+   "name": "KRX/KIND Universe(t)",
+   "verdict": "NOT_VERIFIED",
+   "claims": [
+    {
+     "id": "T2-list-date",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S06",
+      "S07"
+     ],
+     "text": "종목기본정보에 LIST_DD(상장일) · LIST_SHRS · SECT_TP_NM(소속부)가 있음.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:40:07+09:00"
+    },
+    {
+     "id": "T2-delist-halt-designation-fields",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S01",
+      "S06",
+      "S07"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "KRX Open API 서비스 목록과 종목기본정보 명세에 상장폐지일 · 관리종목 · 거래정지 · 이전상장 · 합병/분할 효력일 필드나 서비스가 보이지 않음."
+    },
+    {
+     "id": "T2-kind",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [],
+     "text": "kind.krx.co.kr은 프록시는 통과했지만 사이트가 자동 접속에 403. 상장폐지 · 관리 · 정지 공식 목록을 원문으로 확인하지 못함."
+    },
+    {
+     "id": "T2-halt-resume-rule",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S19",
+      "S20"
+     ],
+     "text": "개별종목 매매거래정지 사유와 재개 시점 규칙: 조회결과 공시 후 30분 경과 시 재개, 14:30 이후 공시면 다음 매매거래일 재개, 관리종목 지정 시 1일 정지 등.",
+     "note": "현재 규칙 설명이며 적용 시작일 · 과거 개정 이력은 화면에 없음."
+    },
+    {
+     "id": "T2-daily-only-sufficient",
+     "verdict": "NOT_VERIFIED",
+     "class": "inference",
+     "sources": [
+      "S01",
+      "S04",
+      "S06"
+     ],
+     "text": "일별매매정보 + 종목기본정보만으로 Universe(t)를 완전 복원할 수 있다는 공식 근거 없음. 상태 · 공시 자료가 따로 필요하다고 보는 것이 안전(추론)."
+    }
+   ]
+  },
+  {
+   "target": "T3",
+   "name": "OpenDART 공시검색 · 원본",
+   "verdict": "PARTIAL",
+   "claims": [
+    {
+     "id": "T3-rcept_no",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S10"
+     ],
+     "text": "rcept_no = 접수번호(14자리). 공시뷰어 주소 dsaf001/main.do?rcpNo=접수번호 에 쓰임.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:42:06+09:00"
+    },
+    {
+     "id": "T3-rcept_dt",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S10"
+     ],
+     "text": "rcept_dt = 공시 접수일자(YYYYMMDD). 날짜만 있음.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:42:06+09:00"
+    },
+    {
+     "id": "T3-receipt-time",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S10"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "list.json 출력 명세에 접수 시각 필드가 없음. 다른 경로에서 시각을 주는지는 확인하지 못함."
+    },
+    {
+     "id": "T3-report_nm",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S10"
+     ],
+     "text": "report_nm = 공시구분+보고서명+기타정보. 앞머리 [기재정정] · [첨부정정] · [첨부추가] · [변경등록] · [연장결정] · [발행조건확정] · [정정명령부과] · [정정제출요구]의 뜻이 적혀 있음.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:42:06+09:00"
+    },
+    {
+     "id": "T3-rm",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S10"
+     ],
+     "text": "rm(비고)은 조합 문자: 유 · 코 · 채 · 넥 · 공 · 연 · 정(제출 후 정정신고가 있으니 관련 보고서 참조) · 철(철회(간주)되었음).",
+     "note": "지시서의 'rm=U/W' 표기와 달리 공식 값은 한글 한 글자. '정'은 정정이 있었다는 표시일 뿐 연결키가 아님.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:42:06+09:00"
+    },
+    {
+     "id": "T3-correction-link-key",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S10"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "정정본과 원 공시를 잇는 키(원 접수번호 등) 필드가 list.json 명세에 없음."
+    },
+    {
+     "id": "T3-last_reprt_at",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S10"
+     ],
+     "text": "last_reprt_at 기본값 N = 정정보고서를 포함한 제출 보고서 전체 검색. Y = 최종보고서만.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:42:06+09:00"
+    },
+    {
+     "id": "T3-search-window",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S10"
+     ],
+     "text": "corp_code 없이 검색하면 기간이 3개월로 제한됨.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:42:06+09:00"
+    },
+    {
+     "id": "T3-past-original",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S11"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "document.xml은 rcept_no로 공시서류 원본파일(zip)을 돌려준다고 적혀 있으나, 과거 원 공시 · 정정 전 문서를 계속 볼 수 있다는 보존 기간 보장은 없음."
+    },
+    {
+     "id": "T3-available_at",
+     "verdict": "NOT_VERIFIED",
+     "class": "inference",
+     "sources": [
+      "S10"
+     ],
+     "text": "공식 시각이 없으므로 보수적 available_at = rcept_dt 다음 거래일 정규장 시작(09:00 KST). 이는 공식 사실이 아니라 저장소 규칙(CLAUDE.md '공시는 다음 거래일부터')과 날짜만 있는 명세를 합친 추론."
+    },
+    {
+     "id": "T3-repo-drops-rcept_no",
+     "verdict": "REPO_CHECKED",
+     "class": "repo_expectation",
+     "sources": [
+      "S10"
+     ],
+     "text": "collect_events.py:98-99 · 125-126은 rcept_dt만 date로 남기고 rcept_no를 저장하지 않음 — 정정 추적 · 원본 재조회에 필요한 키가 버려짐."
+    }
+   ]
+  },
+  {
+   "target": "T4",
+   "name": "비용(세금 · 수수료)",
+   "verdict": "PARTIAL",
+   "claims": [
+    {
+     "id": "T4-stt-2023-2026",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S12"
+     ],
+     "text": "증권거래세법 시행령 개정이유: 유가증권 주권 2023년 1만분의 5 · 2024년 1만분의 3 · 2025년부터 영(零), 코스닥 주권 2023년 1만분의 20 · 2024년 1만분의 18 · 2025년부터 1만분의 15(대통령령 제33209호, 2023-01-01 시행). 2026-01-01부터 유가 영→1만분의 5, 코스닥 1만분의 15→1만분의 20으로 환원(대통령령 제36001호).",
+     "note": "개정이유 원문 기준. 시행령 조문 본문은 따로 받지 않음.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:43:34+09:00"
+    },
+    {
+     "id": "T4-farm-tax",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S15",
+      "S13",
+      "S14"
+     ],
+     "text": "한국투자증권 매매관련 세금표(현재): 거래소(유가) 주식 증권거래세 매도금액의 0.05% + 농어촌특별세 0.15% = 0.20%, 코스닥 0.20%(농특세 -).",
+     "note": "증권사 안내 화면이며 법령 조문(농어촌특별세법 세율 조항)은 원문을 얻지 못함. 2023~2025 기간의 농특세 0.15%는 이 화면으로 증명되지 않음(추론)."
+    },
+    {
+     "id": "T4-fees",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S15"
+     ],
+     "applies_from": "2025-10-27(화면 '기준')",
+     "text": "계좌 유형(영업점 · 뱅키스) × 시장(KRX · NXT) × 주문 채널(HTS/홈페이지/모바일 · ARS · 오프라인)별 요율이 따로 적혀 있음. COST-TABLE.json 참고.",
+     "note": "현재 화면만 확인. 2023~2025-10-26 기간 요율, 우대 · 협의 수수료, 사용자 실제 계좌 유형은 모름."
+    },
+    {
+     "id": "T4-repo-tax-gap",
+     "verdict": "REPO_CHECKED",
+     "class": "repo_expectation",
+     "sources": [
+      "S12",
+      "S15"
+     ],
+     "text": "research/perf2.py:16 TAX는 2023 0.20% · 2024 0.18%만 있고 그 밖의 해는 0.15%(기본값). 2026년 공식 합계는 0.20%(코스닥 거래세 0.20%, 유가 0.05%+농특세 0.15%)라서 2026년 매도세를 0.05%p 낮게 잡음.",
+     "note": "2025년 0.15%는 공식과 같음(유가는 농특세 0.15% 포함 시). 코드 변경 · 재계산은 이번 범위 밖."
+    }
+   ],
+   "decision": "BASE · STRESS · EXTREME에 어떤 값을 쓸지는 고르지 않음. 사용자 계좌 유형은 모름(UNKNOWN)."
+  },
+  {
+   "target": "T5",
+   "name": "체결제약(가격제한폭 · 호가단위 · 시장충격)",
+   "verdict": "PARTIAL",
+   "claims": [
+    {
+     "id": "T5-price-limit",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S16"
+     ],
+     "text": "코스닥: 가격제한폭은 기준가격 대비 상하 30%, 기준가격×0.3에서 호가가격단위 미만 절사. 상하한가도 호가가격단위 미만 절사. 기준가격은 보통 직전 거래일 종가.",
+     "note": "현재 규칙만 확인. 적용 시작일은 화면에 없음. 유가증권시장 화면은 본문이 비어 있어 따로 확인하지 못함."
+    },
+    {
+     "id": "T5-tick",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S17"
+     ],
+     "text": "코스닥 호가가격단위: 2,000원 미만 1원 · 2,000~5,000 미만 5원 · 5,000~20,000 미만 10원 · 20,000~50,000 미만 50원 · 50,000~200,000 미만 100원 · 200,000~500,000 미만 500원 · 500,000원 이상 1,000원.",
+     "note": "현재 표만 확인. 적용 시작일은 화면에 없음(NOT_STATED_IN_DOC). 유가증권시장 표는 화면 본문이 비어 확인하지 못함."
+    },
+    {
+     "id": "T5-hours",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S18"
+     ],
+     "text": "코스닥 정규시장 호가접수 08:30~15:30, 매매거래 09:00~15:30. 장종료후 시간외종가 15:40~16:00.",
+     "note": "현재 규칙.",
+     "applies_from": "적용 시작일은 화면에 없음 — 확인 시각 현재본",
+     "checked_at_kst": "2026-10-08T10:48:39+09:00"
+    },
+    {
+     "id": "T5-market-impact",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [],
+     "text": "과거 호가 · 체결 이력이 없어 시장충격은 검증하지 못함. 연구 코드의 충격 계수(perf2.py IMPACT_K 0.10 등)는 가정값으로만 표시하고 공식 · 실측 근거로 쓰지 않음."
+    }
+   ]
+  },
+  {
+   "target": "T6",
+   "name": "달력 · 지수",
+   "verdict": "PARTIAL",
+   "claims": [
+    {
+     "id": "T6-holiday-rule",
+     "verdict": "PARTIAL",
+     "class": "official_fact",
+     "sources": [
+      "S18"
+     ],
+     "text": "휴장일: 토요일, 관공서의 공휴일에 관한 규정에 의한 공휴일, 노동절(5월 1일), 연말 1일(공휴일 · 토요일 제외 셈), 거래소가 필요하다고 인정하는 날.",
+     "note": "규칙만 있음. 날짜가 적힌 공식 연간 휴장일 목록(open.krx.co.kr)은 허용 목록 밖이라 받지 못함. 임시공휴일 · 선거일 · 임시 휴장은 규칙만으로 미리 알 수 없음."
+    },
+    {
+     "id": "T6-index-start",
+     "verdict": "PROVEN",
+     "class": "official_fact",
+     "sources": [
+      "S01",
+      "S08",
+      "S09"
+     ],
+     "applies_from": "2010-01-04",
+     "text": "KOSPI · KOSDAQ 시리즈 지수 일별시세정보는 '10년01월04일 데이터부터 제공. 출력에 시가 · 고가 · 저가 · 종가 지수 있음.",
+     "checked_at_kst": "2026-10-08T10:40:09+09:00"
+    },
+    {
+     "id": "T6-index-available_at",
+     "verdict": "NOT_VERIFIED",
+     "class": "unproven",
+     "sources": [
+      "S01",
+      "S08",
+      "S09"
+     ],
+     "absence": "NOT_STATED_IN_DOC",
+     "text": "그날 지수 일별자료가 몇 시에 조회 가능해지는지 적혀 있지 않음. 보수적으로는 장 마감(15:30) 뒤이며 정확한 시각은 모름."
+    },
+    {
+     "id": "T6-repo-holidays",
+     "verdict": "REPO_CHECKED",
+     "class": "repo_expectation",
+     "sources": [
+      "S18"
+     ],
+     "text": "idle_live.py:51 HOLIDAYS는 손으로 적은 날짜 집합. 공식 연간 목록과 대조한 기록 없음."
+    }
+   ]
+  }
+ ],
+ "unreachable": [
+  {
+   "host": "kind.krx.co.kr",
+   "reason": "사이트가 자동 접속에 403"
+  },
+  {
+   "host": "open.krx.co.kr",
+   "reason": "환경 허용 목록 밖(휴장일 연간 목록)"
+  },
+  {
+   "host": "www.law.go.kr 본문 조각",
+   "reason": "연결 끊김 3회 · 본문 화면은 스크립트로만 채워짐"
+  }
+ ],
+ "paper_validation_ready": false,
+ "live_approval": false
+}
