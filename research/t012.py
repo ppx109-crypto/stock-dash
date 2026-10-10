@@ -4,6 +4,7 @@
 - 이번에는 같은 방법을 2017 ~ 2020 · 2021 ~ 2026-09-16에도 돌려, 공식(시총 100위) 수치와 견줌.
 - 판 2개: B 지금 1일봉(새 82 · BASE_HOLD/EXIT/SIZE) · S1 쉬운 판(D1-SIMPLE-0041 t011 그대로).
 - 엔진: lab.wobble 씨앗 8 · 신호 날 종가 · realistic · cap 130 · 왕복 0.25% · rule.order.
+- round 3(GPT #194 6095840662): 정산판은 lab.run(settle_end=True)로 줄 끝 · 끝 날 하한가 · 보유 한도 넘음 · 기간 끝을 모두 정산.
 - round 2(GPT #194 6095763346):
   1. 셈 전에 자료 · 코드 잠금(lock.json)을 다시 세어 다르면 멈춤(캐시 · 표 · investor-full · volume-data · investor-data · opinion-data · 코드).
   2. 기간마다 일봉을 그 기간 끝 날까지로 잘라 엔진에 주고, 끝 날에는 새로 사지 않으며, 열린 매매는 끝 날 종가에 팖(정산판).
@@ -142,17 +143,25 @@ def main():
             p = {c: b for c, b in p.items() if b["rows"]}
             sub = [r for r in sub if r["code"] in p and r["i"] < len(p[r["code"]]["rows"])]
             holds = lambda r, h=w["holds"], hi=hi: r["date"] < hi and h(r)
-            exits = t011_settle(w["exits"])
+            exits = w["exits"]
             kin = rule.apart(p)
         else:
             p, holds, exits, kin = nrl.prices, w["holds"], w["exits"], nrl.kin
+        # round 3(GPT #194 6095840662): 정산판은 엔진 lab.run(settle_end=True) — 줄 끝 · 끝 날 하한가 · 보유 한도(130) 넘음 ·
+        # 기간 끝 열린 매매를 기록 없이 버리지 않고 그 칸 종가로 가상 정산(매매목록 '정산' 칸) · 종목 줄 마지막 칸에서는 새로 안 삼.
         g = lab.wobble(sub, p, holds, exits, tries=8, slots=nrl.SLOTS, since=lo, apart=kin, realistic=True, cap=130,
-                       detail=True, size=w["size"], rank=rule.order, cost=0.25)
+                       detail=True, size=w["size"], rank=rule.order, cost=0.25, settle_end=settled)
         if not g:
             return None
         s_, a, b = nrl.luck(g, nrl.SLOTS, lo)
         res = {k: g.get(k) for k in ("매매", "연수익", "폭", "최대낙폭", "골 폭", "가동률", "승률", "해마다")}
         res.update({"행운뺌": a, "큰2건뺌": b})
+        if settled:   # 씨앗 0번 판의 가상 정산 건수(종류별)
+            kinds = {}
+            for t in g.get("매매목록") or []:
+                if t.get("정산"):
+                    kinds[t["정산"]] = kinds.get(t["정산"], 0) + 1
+            res["가상정산"] = kinds
         return res
 
     for tag in ("B", "S1"):
@@ -176,15 +185,6 @@ def main():
         out["crosses_width"] = abs(x["연수익"] - bound) <= max(x["폭"], 0.5 * pp["폭"])
     out["초"] = round(time.time() - t0)
     print(json.dumps(out, ensure_ascii=False))
-
-
-def t011_settle(exit_at):
-    """종목 줄의 마지막 칸(기간 끝 · 줄 끝)에서 그날 종가에 팖(연구용 가상 정산)."""
-    def go(lane, start, price, step, peak, row=None):
-        if start + step >= len(lane["closes"]) - 1:
-            return True
-        return exit_at(lane, start, price, step, peak, row)
-    return go
 
 
 if __name__ == "__main__":
