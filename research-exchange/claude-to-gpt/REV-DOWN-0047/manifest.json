@@ -1,0 +1,57 @@
+{
+ "schema_version": 1,
+ "task_id": "REV-DOWN-0047",
+ "chain_id": "REV-DOWN-0047",
+ "kind": "PREREG",
+ "round": 3,
+ "status": "READY",
+ "source_pr": 207,
+ "source_head_sha": "9cca272445dd2fc5b16fa753c954efa3d8fc3596",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/rev_down.py": "9be73203c1571512b4867012234a09548c5360d3083becebfbf97dc4450f9cf0"
+ },
+ "lock": {
+  "research/rev_down.py": "9be73203c1571512b4867012234a09548c5360d3083becebfbf97dc4450f9cf0",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "period": [
+  "20060102",
+  "20260915"
+ ],
+ "fixed": {
+  "phase": "069500 60일 < −5%",
+  "topq": "위 20%",
+  "hold_rows": 10,
+  "slice": "NAV 1/10",
+  "buy_cost": 0.0005,
+  "sell_cost": 0.0025,
+  "limit": "2015-06-15 전 ±15% · 뒤 ±30% · 0.5%p 여유",
+  "same_day_order": "사기 → 팔기 → 그날 장 끝 판단(판 돈 포함) → 다음 날 삼 · 판 돈은 같은 날 보류 매수에 못 씀"
+ },
+ "verdicts": [
+  "NEEDS_DATA",
+  "CLOSE_MODEL_PASS_IN_SEEN_DATA",
+  "REJECTED"
+ ],
+ "independent_validation": "WAITING_DATA",
+ "run_once": "python3 research/rev_down.py --run",
+ "results_seen_in_this_task": "없음",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/PREREG.md",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/lock.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/snapshots.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.py",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.out"
+ ],
+ "answering": "208+0d2abc8f0559fc2a9cc96d18e44d028e33977b5d+PREREG+REV-DOWN-0047(6097363711)",
+ "judge_uses_raw": [
+  "annual",
+  "worst_day",
+  "worst_month",
+  "years",
+  "boot_lo"
+ ]
+}
