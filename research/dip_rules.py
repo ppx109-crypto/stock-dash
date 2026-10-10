@@ -70,6 +70,27 @@ def guard_exit(take, stop, days, reach=5.0, floor=1.0):
     return go
 
 
+def steady3(r):
+    got = D.FLOW.get(r["code"])
+    if not got:
+        return False
+    import bisect
+    days, acc, ok = got
+    k = bisect.bisect_left(days, r["date"])
+    if k < 3:
+        return False
+    return all(acc["외국인"][j] - acc["외국인"][j - 1] > 0 and acc["투신"][j] - acc["투신"][j - 1] > 0 for j in range(k - 2, k + 1))
+
+
+def vol20(r):
+    import statistics
+    c = D.LANES[r["code"]]["closes"]
+    i = r["i"]
+    if i < 21:
+        return None
+    return statistics.pstdev([c[j] / c[j - 1] - 1 for j in range(i - 19, i + 1)]) * 100
+
+
 def deeper_first(r):
     v = D.ret(r, 5)
     return v if v is not None else 0.0
@@ -137,6 +158,12 @@ WAYS = {
     "R2-hb70": hb(70, extra=lambda r: D.BR.get(r["date"], 0) >= 40, note="R2 돌파 창 70"),
     "R2-d15": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40, days=15, note="R2 기간 15"),
     "R2-fl7": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40, flown=7, note="R2 수급 창 7"),
+    # 46 ~ : 구조 바꿈
+    "R2-steady": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and steady3(r), note="R2 + 외+투 3일 연속"),
+    "R2-ix20": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and (D.ix_ret(r["date"], 20) or -1) > 0, note="R2 + 069500 20일 > 0"),
+    "R2-lowvol": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and (vol20(r) or 99) < 2.5, note="R2 + 20일 변동성 < 2.5%"),
+    "R2-top50": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and r.get("시총순위", 999) <= 50, note="R2 + 시총 50위 안"),
+    "R2-rel60": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), rank=lambda r: -(rel(r, 60) or 0), note="R2 순서 = 60일 상대 강세"),
     "R1-ma120": dict(holds=lambda r: sideways(r, 3) and dip(r) and above_ma(r) and smart(r), exits=D.fixed_exit(5, 7, 10),
                      size=lambda r: 2, rank=deeper_first, note="R1 + 120일선 위(오름 추세 안 눌림)"),
 }
