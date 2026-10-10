@@ -1,0 +1,18 @@
+{
+ "lo": {
+  "trades_equal": true,
+  "n_trades": 147,
+  "nav_equal": true,
+  "n_nav": 736,
+  "max_trade_diff": 0.0,
+  "max_nav_diff": 0.0
+ },
+ "hi": {
+  "trades_equal": true,
+  "n_trades": 147,
+  "nav_equal": true,
+  "n_nav": 736,
+  "max_trade_diff": 0.0,
+  "max_nav_diff": 0.0
+ }
+}
