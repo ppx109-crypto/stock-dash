@@ -2,8 +2,9 @@
 t 시가에 사서 t 종가에 팖(G · 주가설 하나). 아니면 현금. 대조: D 전체일(모든 날 시가 → 종가) · 매수 · 보유.
 사전등록: research-exchange/claude-to-gpt/GAP-0033/PREREG.md
 - 자료 · 분배금 표 · 비용(날마다 호가 상한 · 수수료) · 기간 · 위험 · 부트스트랩은 research/t004.py(OVN-0032 d9631826 판) 그대로 불러 씀.
-- 분배금은 신호의 기준에만 들어감(분배락 날 시가 내림을 갭다운으로 잘못 보지 않게 · 분배금은 분배락 앞에 공시됨).
-  2002 ~ 2010 역산분은 est · zero 두 가정 — 판정은 둘 다 통과해야 함.
+- round 2(GPT #169 지적 2): 신호는 **전날 원주가 종가만** 씀(분배금을 빼지 않음 — 9:00에 금액을 알았다는 공개 시각 근거가 없어서).
+  분배락 날 시가가 분배금만큼 내려가 갭다운으로 잡힐 수 있음(그날도 똑같이 셈 · 건수는 결과에 적음). D · G는 분배금을 받지 않아
+  est · zero 두 가정의 결과가 같음(형식상 둘 다 적음).
 python3 research/t005.py            (T_TO=YYYYMMDD — 자르기 시험)"""
 import json
 import math
@@ -17,12 +18,11 @@ import t004 as T  # noqa: E402
 
 
 def gap_trades(raw, dist, cost):
-    """[(날, 날, 순수익)] — 갭다운 날만 시가 → 종가."""
+    """[(날, 날, 순수익)] — 갭다운 날(시가 < 전날 원주가 종가)만 시가 → 종가. dist는 쓰지 않음(round 2)."""
     out = []
     for i in range(1, len(raw)):
         y, t = raw[i - 1], raw[i]
-        base = y[4] - dist.get(t[0], 0.0)
-        if t[1] < base:
+        if t[1] < y[4]:
             b, s = t[1], t[4]
             out.append((t[0], t[0], s * (1 - T.side(s, cost, t[0])) / (b * (1 + T.side(b, cost, t[0]))) - 1))
     return out
@@ -72,10 +72,11 @@ def evaluate(raw, dist):
 def main():
     T.check()
     raw, dists = T.load()
-    out = {"task": "GAP-0033", "round": 1, "first": raw[0][0], "last": raw[-1][0], "T_TO": T.TO or None, "days": len(raw)}
+    out = {"task": "GAP-0033", "round": 2, "first": raw[0][0], "last": raw[-1][0], "T_TO": T.TO or None, "days": len(raw)}
     for k in ("est", "zero"):
         out[k], g = evaluate(raw, dists[k])
         out[k]["trades_G"] = [[b, s_, round(x * 100, 7)] for b, s_, x in g]
+        out[k]["gap_days_on_ex_date"] = sorted(x[0] for x in g if x[0] in dists["est"])
         out[k]["navs_all_G"] = [[dd, round(v, 12)] for dd, v in T.nav_of(g, raw, raw[0][0], raw[-1][0])]
     print(json.dumps(out, ensure_ascii=False))
 
