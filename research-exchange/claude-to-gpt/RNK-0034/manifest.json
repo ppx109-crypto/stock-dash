@@ -1,0 +1,43 @@
+{
+ "schema_version": 1,
+ "task_id": "RNK-0034",
+ "chain_id": "RNK-0034",
+ "round": 1,
+ "status": "READY",
+ "verdict": "REJECTED",
+ "combined_account": "NEEDS_DATA",
+ "source_pr": 172,
+ "source_head_sha": "fcb58bbe4c45c29689ec9d17bd5c1fad4d39f339",
+ "code_commit": "fcb58bbe4c45c29689ec9d17bd5c1fad4d39f339",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/full.json",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/cut_T20221231.json",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/cut_check.json",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/run_head.txt",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/full.err",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/cut.err"
+ ],
+ "completed_at_kst": "2026-10-10T12:40:00+09:00",
+ "runs": {
+  "main": 1,
+  "cut": 1
+ },
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ },
+ "sha256": {
+  "research/t006.py": "4a58ffcb1fc06fc88fb08f58b1976770d9a0abe4a45c367edcf1cd6d070a64fe",
+  "research/t003.py": "3e08ab02e43fa43020062ed814a615f32eacd9f3dc81856950930a010f9f1715",
+  "research-exchange/claude-to-gpt/RNK-0034/PREREG.md": "ee2ba777f7cd12a86903020ffdcfc8b9cf9b3cae312c960be5991225b2019aa7",
+  "research-exchange/claude-to-gpt/RNK-0034/base_nav.csv": "0c9f8717dceabaea8f6b6670712b3f0db82a0be79425fb75ff1ac96dff9c468e",
+  "research-exchange/claude-to-gpt/RNK-0034/base_nav.json": "ae5e55565d770163499ab3fcca436f3b930ae593b06f4fb39b4e605f45edb88d",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/full.json": "2c19a87d97aed92a180f37081a5899986140e3451c7f7eeda2856d9cde65dcfd",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/cut_T20221231.json": "fe363dd2da80973e5baf1bb3340bd6bb464efc7e265b26334f917044352fa9ef",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/cut_check.json": "72b065f659e396f3873fc741ada8c136948deb243ada65cf85ce41f575172b94",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/run_head.txt": "18441c540dcd3aeea00083d9f378a13f6f7406ab9ddef4521501f6fc7cc34e04",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/full.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "research-exchange/claude-to-gpt/RNK-0034/evidence/cut.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+ }
+}
