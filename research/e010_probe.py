@@ -28,7 +28,7 @@ import requests
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "research-exchange/claude-to-gpt/ERN-0036/feas/probe.json"
 KEY = os.getenv("DART_CRTFC_KEY", "").strip()
-CAP, LAST, PIVOT = 199, "20261007", "20200301"   # 첫 실행(38023332836)이 1번 써서 총 200을 지킴
+CAP, LAST, PIVOT = 198, "20261007", "20200301"   # round 3: 앞 두 실행(38023332836 보고 1 · 38023730874 확인 1)이 2번 써서 총 200을 지킴
 API = "https://opendart.fss.or.kr/api/"
 calls = []
 
