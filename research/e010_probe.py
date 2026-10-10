@@ -28,7 +28,7 @@ import requests
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "research-exchange/claude-to-gpt/ERN-0036/feas/probe.json"
 KEY = os.getenv("DART_CRTFC_KEY", "").strip()
-CAP, LAST, PIVOT = 200, "20261007", "20200301"
+CAP, LAST, PIVOT = 199, "20261007", "20200301"   # 첫 실행(38023332836)이 1번 써서 총 200을 지킴
 API = "https://opendart.fss.or.kr/api/"
 calls = []
 
@@ -71,8 +71,16 @@ def get(ep, **p):
     return r
 
 
+def dart_status(raw):
+    """ZIP이 아닌 응답에서 DART 상태 코드(숫자 3자리)만 꺼냄 — 본문 · 메시지는 저장하지 않음."""
+    m = re.search(rb"<status>\s*([0-9]{3})\s*</status>|\"status\"\s*:\s*\"([0-9]{3})\"", raw[:2000])
+    return (m.group(1) or m.group(2)).decode() if m else "알 수 없음"
+
+
 def corp_map():
     raw = get("corpCode.xml").content
+    if not zipfile.is_zipfile(io.BytesIO(raw)):
+        raise RuntimeError(f"corpCode.xml ZIP 아님 · DART 상태 {dart_status(raw)}")
     with zipfile.ZipFile(io.BytesIO(raw)) as z:
         root = ElementTree.fromstring(z.read("CORPCODE.xml"))
     out = {}
@@ -310,6 +318,8 @@ def main():
                 it["compare"] = compare(code, pick["rcept_dt"], it["parsed"])
     except RuntimeError as e:
         out["stopped"] = str(e)
+    except Exception as e:   # 어떤 오류든 결과 파일은 남김(종류만 · 내용 · 주소는 안 적음 — 주소에 키가 들어갈 수 있음)
+        out["stopped"] = f"예상 못 한 오류 {type(e).__name__}"
     done = {i["code"] for i in out["items"]}
     if out.get("stopped") and out["items"]:
         out["items"][-1].setdefault("status", "미수행(상한 도달 중)")
