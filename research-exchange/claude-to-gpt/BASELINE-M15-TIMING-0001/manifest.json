@@ -1,0 +1,258 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-M15-TIMING-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 17,
+ "status": "READY",
+ "source_pr": 76,
+ "source_head_sha": "6933fdc57f4e5494be196ba62e7543f38c278e4c",
+ "code_commit": "7a1f07b49712e7f6a1e56cb9d70e10a60fb15033",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/cost_contract.py",
+  "code/daily_exec.py",
+  "code/et_m15.py",
+  "code/kernel2.py",
+  "code/rules.py",
+  "evidence/m15_results.json",
+  "evidence/nav_train_m15_fixed.csv",
+  "evidence/precheck/precheck2_recon_gap.json",
+  "evidence/precheck/precheck3_pass.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-08T23:27:56+09:00",
+ "input": {
+  "pr": 77,
+  "head_sha": "b5e9905a3c2068e5a00e6b92b4d68d7e63055d0c",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "receipt.json"
+  ]
+ },
+ "prereg_commit": "dc63983b2c69af4153a08c1f9254c02a1c282eb8",
+ "prereg_committed_at_kst": "2026-10-08T23:26:03+09:00",
+ "verdict": "READY / 15분봉 시점 결함 확인 · 완료 봉 뒤 잠금 → 다음 봉 계약 Train 1회(재사용 진단)",
+ "inputs": {
+  "pr68_control_trades": "880a277bad0fa0eaebd34cdd9dc9c7acab9a4d4c511f97570e488190c5561ad3",
+  "pr68_candidate_trades": "1be20f8faa80afb07a5a257031707c8cceb921655be9fd1db6808a2ce455efc3",
+  "pr68_nav_control_candidate": "2c3b4bceccf7a5f45fe0f46e0197dac437bca8dbe5c56c6e71e23acfef1577b1",
+  "pr68_rr_daily": "bad2f70617c00d77c414ffa018ded0d98e8916bcde9f4d0a2a174aeee55bf12a",
+  "pr68_rr_m15": "72d5eb84fd456539f3d3ee116400d4d6befc11498324688b8ed086f97f57ce93",
+  "pr68_m15_natural": "61101d86b2032f4a9394830006f69afc48f5c9fdf3dc52da71b42e3550877a02",
+  "pr76_nav_csv": "007cebe625b316102df01f31acaf31a363bc60a541ce092871d0afbbc3107137",
+  "pr76_fixed_local_only": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8",
+  "old_nrl_cache": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f"
+ },
+ "code_sha256": {
+  "cost_contract.py": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae",
+  "daily_exec.py": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9",
+  "et_m15.py": "bda900a38c6de9119f56d203119be3711d0053a6be41fb513a0e10edacfbf0fb",
+  "kernel2.py": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac",
+  "rules.py": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+ },
+ "commands": [
+  "python3 -E -P code/et_m15.py <b2> <옛 nrl-cache.pkl> <출력> <PR68 evidence 폴더> <PR68 m15_natural.pkl> <PR76 폴더>"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "os": "Linux x86_64"
+ },
+ "pass": {
+  "synthetic": true,
+  "reconstruction": true,
+  "conservation": true,
+  "timing_audit": true
+ },
+ "timing_audit": {
+  "locks": 725,
+  "executed": 725,
+  "superseded_or_end": 0,
+  "all_exec_after_lock": true,
+  "exec_on_next_bar_of_code": true,
+  "trades_before_first_control_fill": 0
+ },
+ "totals": {
+  "control": {
+   "end_won": 12840979.299999999,
+   "return_pct": 28.409792999999993,
+   "MDD_pct": -15.851315479700556,
+   "worst_day_pct": -9.882227500799512,
+   "worst_day_at": "20260304",
+   "worst_month_pct": -11.386659655466136,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 503045.6974847606,
+   "turnover_per_year": 11.666456110263377,
+   "cash_share_avg_pct": 50.527091272919066,
+   "cash_share_min_pct": 20.386184323117224,
+   "trades": {
+    "D1": {
+     "buy": 45,
+     "sell": 42
+    },
+    "M15": {
+     "buy": 82,
+     "sell": 82
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 9,
+     "sell": 6
+    }
+   }
+  },
+  "old_candidate": {
+   "end_won": 13071169.469999999,
+   "return_pct": 30.711694699999992,
+   "MDD_pct": -4.7851301008621006,
+   "worst_day_pct": -3.7027833499272744,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.881041162682164,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 371226.53020495066,
+   "turnover_per_year": 8.74886192761797,
+   "cash_share_avg_pct": 64.91180584396095,
+   "cash_share_min_pct": 39.31024980657875,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 77
+    },
+    "M15": {
+     "buy": 81,
+     "sell": 105
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 11,
+     "sell": 16
+    }
+   }
+  },
+  "pr76": {
+   "end_won": 12196224.61,
+   "return_pct": 21.962246099999994,
+   "MDD_pct": -4.718566655249301,
+   "worst_day_pct": -3.3538724365604122,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.6063426190412473,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 341103.3934444541,
+   "turnover_per_year": 8.421617960187318,
+   "cash_share_avg_pct": 67.51193803474256,
+   "cash_share_min_pct": 44.33067196142843,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 71
+    },
+    "M15": {
+     "buy": 81,
+     "sell": 105
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 12,
+     "sell": 13
+    }
+   }
+  },
+  "new": {
+   "end_won": 11990194.900350936,
+   "return_pct": 19.901949003509365,
+   "MDD_pct": -4.684709549021015,
+   "worst_day_pct": -2.872785155635804,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.326735504378764,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 312777.1042244206,
+   "turnover_per_year": 7.918828831038323,
+   "cash_share_avg_pct": 69.5354748291961,
+   "cash_share_min_pct": 52.59080573748711,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 71
+    },
+    "M15": {
+     "buy": 87,
+     "sell": 102
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 12,
+     "sell": 13
+    }
+   }
+  }
+ },
+ "diff_new_minus": {
+  "control": {
+   "end_won": -850784.3996490631,
+   "return_pp": -8.507843996490628,
+   "MDD_pp": 11.166605930679541
+  },
+  "old_candidate": {
+   "end_won": -1080974.569649063,
+   "return_pp": -10.809745696490626,
+   "MDD_pp": 0.10042055184108545
+  },
+  "pr76": {
+   "end_won": -206029.70964906365,
+   "return_pp": -2.060297096490629,
+   "MDD_pp": 0.03385710622828597
+  }
+ },
+ "runs": {
+  "fixed_m15_train_runs": 1,
+  "control_rerun": 0,
+  "old_candidate_rerun": 0,
+  "daily_rerun": 0,
+  "prechecks_before_prereg": 3,
+  "failed": 2,
+  "failed_note": "사전 점검 1회차 합성 자료 오류(StopIteration) · 2회차 PR76 일봉 재구성 625/250원(매도 합친 원장) → 묶음별 비용 재구성으로 고침"
+ },
+ "local_only": {
+  "m15_fixed_local_only.json": "a22098a18c8b5f82534703ef28891ed51b43ceeca5108a15ef60865a981fd703"
+ },
+ "unverified": [
+  "수급 · 공시 available_at",
+  "수정주가",
+  "생존자 편향"
+ ],
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "15:15 대안 비교",
+  "지연 · 가격 · threshold · sizing · 노출식 변경",
+  "통제 · 옛 후보 · 일봉 재실행",
+  "OOS · 9월 · 10월",
+  "새 API · 수집 · 주문",
+  "운영 · 워크플로 · 인증 변경",
+  "자동 병합 · 레버리지",
+  "원가격 · 비밀 공개"
+ ]
+}

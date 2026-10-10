@@ -1,0 +1,73 @@
+{
+ "synthetic": {
+  "실행 봉 체결 봉 시가 +10%(A)": {
+   "new_locks_before_exec_bar_same": true,
+   "new_fill_qty_at_exec_bar_same": true,
+   "new_exec_bar_has_fill": true,
+   "old_target_at_control_fill_bar_same": false
+  },
+  "실행 봉 체결 봉 통제 수량 +9(A)": {
+   "new_locks_before_exec_bar_same": true,
+   "new_fill_qty_at_exec_bar_same": true,
+   "new_exec_bar_has_fill": true,
+   "old_target_at_control_fill_bar_same": false
+  },
+  "첫 통제 체결 봉까지 주문 0": {
+   "trades_at_or_before_first_control_fill": 0
+  },
+  "장 경계(1515 체결 → 다음 날 첫 봉)": {
+   "A_lock_after_1515": [
+    "20250102"
+   ],
+   "executed_at": [
+    null,
+    "202501030900"
+   ],
+   "no_trade_same_day_after_1515": true
+  },
+  "보존 · 정수 · 중복 · 음수 현금": {
+   "checks": 3,
+   "max_gap": [
+    1.1641532182693481e-10,
+    5.820766091346741e-11
+   ],
+   "all_int": true,
+   "dup": [],
+   "min_cash": 696757.06
+  },
+  "가격 없음(B 0915 봉 없음)": {
+   "B_trades_at_missing_bar": 0
+  },
+  "현금 부족(k≈4)": {
+   "buy_reduced_or_unfilled": 2,
+   "min_cash": 136565.6540000001
+  },
+  "잠금 → 실행 순서": {
+   "all_exec_after_lock": true,
+   "locks": 6,
+   "executed": 5
+  },
+  "pass": true
+ },
+ "reconstruction_max_gap_won": {
+  "control": {
+   "D1": 0.0047407737001776695,
+   "M15": 0.004978646989911795,
+   "ETF": 0.0,
+   "BASKET": 0.004610988777130842
+  },
+  "old_candidate": {
+   "D1": 0.0048448676243424416,
+   "M15": 0.004997123032808304,
+   "ETF": 0.0,
+   "BASKET": 0.004798248875886202
+  },
+  "pr76_daily_fixed": {
+   "D1": 0.004962979815900326,
+   "ETF": 0.0,
+   "BASKET": 0.004802126437425613
+  }
+ },
+ "reconstruction_ok(≤1원)": true,
+ "verdict": "CHECKS_ONLY"
+}

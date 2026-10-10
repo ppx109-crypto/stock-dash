@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-M15-TIMING-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 17,
+ "status": "READY",
+ "source_pr": 76,
+ "source_head_sha": "6933fdc57f4e5494be196ba62e7543f38c278e4c",
+ "code_commit": "7a1f07b49712e7f6a1e56cb9d70e10a60fb15033",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/cost_contract.py",
+  "code/daily_exec.py",
+  "code/et_m15.py",
+  "code/kernel2.py",
+  "code/rules.py",
+  "evidence/m15_results.json",
+  "evidence/nav_train_m15_fixed.csv",
+  "evidence/precheck/precheck2_recon_gap.json",
+  "evidence/precheck/precheck3_pass.json",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-08T23:27:56+09:00",
+ "input": {
+  "pr": 77,
+  "head_sha": "b5e9905a3c2068e5a00e6b92b4d68d7e63055d0c"
+ },
+ "fixed_m15_train_runs": 1,
+ "failed": 2,
+ "result_pr": null
+}
