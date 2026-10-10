@@ -1,0 +1,30 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-SIMPLE-0041",
+ "chain_id": "D1-SIMPLE-0041",
+ "kind": "RESULT",
+ "round": 2,
+ "status": "READY",
+ "verdict": "CORE_WEAK",
+ "source_pr": 189,
+ "source_head_sha": "0b8ff662634087069497a4bd58b4e1849807962f",
+ "code_commit": "0b8ff662634087069497a4bd58b4e1849807962f",
+ "code_sha256": "fc5736519f7e7c8cf6cbb573c84d22258f8248759f570bda02b6a7feba10fa42",
+ "runs": [
+  "python3 research/t011.py > evidence/main.json 2> evidence/run.log (S0 S1 S2 S3 각 1번)"
+ ],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/D1-SIMPLE-0041/evidence/main.json",
+  "research-exchange/claude-to-gpt/D1-SIMPLE-0041/evidence/run.log",
+  "research-exchange/claude-to-gpt/D1-SIMPLE-0041/evidence/B_reproduce.json",
+  "research-exchange/claude-to-gpt/D1-SIMPLE-0041/evidence/synth_test.py",
+  "research-exchange/claude-to-gpt/D1-SIMPLE-0041/evidence/synth_test.out"
+ ],
+ "synth_tests": {
+  "pass": 16,
+  "fail": 0
+ },
+ "loss_limit": "미측정",
+ "started_at_kst": "2026-10-10 16:36:26",
+ "completed_at_kst": "2026-10-10 16:37:56"
+}
