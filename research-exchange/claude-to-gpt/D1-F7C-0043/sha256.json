@@ -1,5 +1,5 @@
 {
- "research/t012.py": "ea4a4b6ca798ae9ee1db36b30d700dcbcfb0488a25051cd0a5c98572f8c8f054",
+ "research/t012.py": "bf76527669c0eb09d9ecfb66726ca01580e242eac5f0c914df36f35f2350717d",
  "research/t011.py": "fc5736519f7e7c8cf6cbb573c84d22258f8248759f570bda02b6a7feba10fa42",
  "research/f007b.py": "6c7db3ab0d7bc628b156aa58576c01092c485e616e5b8b75cccc76f4ce4f91c6",
  "nrl.py": "18a653db8d9e6698e1fe8b8c2cefeb1ae785a9834fdaf4180958bbb55963718f",
@@ -9,5 +9,7 @@
  "caps.py": "8da24e031c222c5a9eca7ff4859c993baaac449d1c74664a9e84208812f90c78",
  "/tmp/nrl-cache.pkl(저장소 밖)": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
  "study/features.json(저장소 밖)": "9e5818196117059980750de779eebb28981971465cfc0875c9b6f9ca03e1a82e",
- "investor-full · volume-data 파일들(이름 + 내용 해시의 해시)": "dc8fa686ca62a6e4af416f0fc5252c4562ddf40b232e315ab8a6bc692e8962b3"
+ "investor-full · volume-data 파일들(이름 + 내용 해시의 해시)": "dc8fa686ca62a6e4af416f0fc5252c4562ddf40b232e315ab8a6bc692e8962b3",
+ "lock.json": "3494b4436e1f997869aa48e8642ee7b6299d3a2fe2a89784db664740b4ce2365",
+ "B_reproduce_from_0041.json": "59137887d10e7099151e7a910889333d195911cd5282bdd4a42e2f4475f35410"
 }
