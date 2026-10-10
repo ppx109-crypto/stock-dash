@@ -1,0 +1,203 @@
+{
+ "schema_version": 1,
+ "task_id": "SIG-MAP-0045",
+ "chain_id": "SIG-MAP-0045",
+ "kind": "RESULT",
+ "phase": "M(T 안 엶)",
+ "status": "READY",
+ "verdict": "NO_STABLE_SIGNAL",
+ "independent_validation": "WAITING_DATA",
+ "source_pr": 203,
+ "source_head_sha": "d629056f3e4b385ba2cf4eb1339f5ab160439890",
+ "code_commit": "d629056f3e4b385ba2cf4eb1339f5ab160439890",
+ "code": {
+  "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9"
+ },
+ "t_lock": {
+  "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9",
+  "/tmp/sig-m1.pkl": "7cdaeb9cc6a33af5ecdd515524a91e6ac685642f4c9e71f72cc29e8521215276",
+  "/tmp/sig-m2.pkl": "4c1b73fc3b2623b07b219f670f4e362ec577ab44841197c086dd7e9e62d0a0c3",
+  "/tmp/sig-t.pkl": "1c072856bb1460b773bb5ba07b85951a311755cc78a09172086784322868ef7e"
+ },
+ "lock_key": "a926ff873de39e720d11abbf1cf22e185d746fe15557b0856f80dac8407fcaa1",
+ "receipt": {
+  "status": "STARTED",
+  "lock_key": "a926ff873de39e720d11abbf1cf22e185d746fe15557b0856f80dac8407fcaa1",
+  "git_head": "d629056f3e4b385ba2cf4eb1339f5ab160439890",
+  "pick": null,
+  "at": "2026-10-10 11:09:15"
+ },
+ "pick": null,
+ "map_summary": {
+  "S1_MOM20": {
+   "mean_pct": -0.092,
+   "years_pos": "10/16",
+   "phase_pct": {
+    "오름": 0.36,
+    "횡보": 0.13,
+    "내림": -1.365
+   },
+   "eras": [
+    -0.22,
+    0.039
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.406,
+    0.217
+   ]
+  },
+  "S2_REV5": {
+   "mean_pct": 0.303,
+   "years_pos": "12/16",
+   "phase_pct": {
+    "오름": 0.094,
+    "횡보": -0.002,
+    "내림": 1.345
+   },
+   "eras": [
+    0.721,
+    -0.123
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    0.043,
+    0.561
+   ]
+  },
+  "S3_HIGH120": {
+   "mean_pct": -0.225,
+   "years_pos": "7/16",
+   "phase_pct": {
+    "오름": 0.384,
+    "횡보": 0.054,
+    "내림": -1.902
+   },
+   "eras": [
+    -0.403,
+    -0.044
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.614,
+    0.178
+   ]
+  },
+  "S4_LOWVOL60": {
+   "mean_pct": -0.449,
+   "years_pos": "4/16",
+   "phase_pct": {
+    "오름": 0.174,
+    "횡보": -0.794,
+    "내림": -0.758
+   },
+   "eras": [
+    -0.231,
+    -0.672
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.909,
+    0.012
+   ]
+  },
+  "S5_FLOW_FT10": {
+   "mean_pct": -0.238,
+   "years_pos": "6/16",
+   "phase_pct": {
+    "오름": -0.333,
+    "횡보": -0.007,
+    "내림": -0.59
+   },
+   "eras": [
+    -0.364,
+    -0.11
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.452,
+    -0.015
+   ]
+  },
+  "S6_RETAIL_CONTRA10": {
+   "mean_pct": -0.051,
+   "years_pos": "9/16",
+   "phase_pct": {
+    "오름": -0.044,
+    "횡보": 0.238,
+    "내림": -0.708
+   },
+   "eras": [
+    -0.269,
+    0.171
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.281,
+    0.184
+   ]
+  },
+  "S7_EMA_ALIGN": {
+   "mean_pct": 0.138,
+   "years_pos": "9/16",
+   "phase_pct": {
+    "오름": 0.465,
+    "횡보": 0.329,
+    "내림": -0.831
+   },
+   "eras": [
+    0.077,
+    0.201
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.259,
+    0.558
+   ]
+  },
+  "S8_MOM120_SKIP20": {
+   "mean_pct": 0.08,
+   "years_pos": "8/16",
+   "phase_pct": {
+    "오름": 0.563,
+    "횡보": 0.175,
+    "내림": -0.966
+   },
+   "eras": [
+    -0.202,
+    0.369
+   ],
+   "STABLE": false,
+   "boot95_report_only": [
+    -0.311,
+    0.472
+   ]
+  }
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/REPORT.md",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/t_main.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/t_run.log",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/t_receipt.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/t_lock.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/snapshots.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/sig_test.py",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/sig_test.out",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/PREREG.md"
+ ],
+ "started_at_kst": "2026-10-10 20:09:14",
+ "completed_at_kst": "2026-10-10 20:09:37",
+ "answering": "203+d629056f3e4b385ba2cf4eb1339f5ab160439890+PREREG+SIG-MAP-0045(6096865701)",
+ "round": 1,
+ "days_by_signal": {
+  "S1_MOM20": 3934,
+  "S2_REV5": 3934,
+  "S3_HIGH120": 3934,
+  "S4_LOWVOL60": 3934,
+  "S5_FLOW_FT10": 3925,
+  "S6_RETAIL_CONTRA10": 3925,
+  "S7_EMA_ALIGN": 3535,
+  "S8_MOM120_SKIP20": 3934
+ }
+}

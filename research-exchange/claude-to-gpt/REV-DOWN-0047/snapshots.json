@@ -1,0 +1,42 @@
+{
+ "/tmp/rev-full.pkl": {
+  "from": "20050103",
+  "cut": "20260915",
+  "snapshot_sha256": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "snapshot_bytes": 150918636,
+  "rows": 523500,
+  "codes": 268,
+  "flow_codes": 263,
+  "days": 5235,
+  "sources": {
+   "price-data/*.json": "ce1f5ac17fb9a8c0cc12db49aa6eea8406fdae0ca6e5bd6766a621fbd87182c8",
+   "volume-data/*.json": "08d3ce29de460afea0e5ae0d88a0c6924d13a3038b83dd9e27b62e477fa89416",
+   "investor-full/*.json": "2ea20df3cd47a7f51506c8611ff9eab4039e153db95f10580499682466fcfeca",
+   "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+  },
+  "code": {
+   "research/brk_build.py": "7acae41e6c8ca6947a8b68dfd3e41cb0a58a3bfd74b61a313bc939d043569e50"
+  },
+  "sentinel": false
+ },
+ "/tmp/rev-cut.pkl": {
+  "from": "20050103",
+  "cut": "20131230",
+  "snapshot_sha256": "fa0f6ae64441f353e51333cb8def4a3263452ba512201d3cda2890b5ae41892e",
+  "snapshot_bytes": 46037605,
+  "rows": 211700,
+  "codes": 188,
+  "flow_codes": 175,
+  "days": 2117,
+  "sources": {
+   "price-data/*.json": "ce1f5ac17fb9a8c0cc12db49aa6eea8406fdae0ca6e5bd6766a621fbd87182c8",
+   "volume-data/*.json": "08d3ce29de460afea0e5ae0d88a0c6924d13a3038b83dd9e27b62e477fa89416",
+   "investor-full/*.json": "2ea20df3cd47a7f51506c8611ff9eab4039e153db95f10580499682466fcfeca",
+   "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+  },
+  "code": {
+   "research/brk_build.py": "7acae41e6c8ca6947a8b68dfd3e41cb0a58a3bfd74b61a313bc939d043569e50"
+  },
+  "sentinel": false
+ }
+}

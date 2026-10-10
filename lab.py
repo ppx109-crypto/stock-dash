@@ -746,7 +746,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None, cosell=None):
+        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None, cosell=None, settle_end=False, align_days=False):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -821,6 +821,23 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
     weighted = []            # 자리 수를 곱한 손익. 연수익은 이것으로 냅니다.
     purse = crest = 1.0      # 끝난 매매만으로 센 지갑. brake가 이것을 봅니다.
     loss_days, pause_until, day_no = [], -1, -1     # stop_run용(끝난 매매만)
+
+    def _settle(code, spot, index, day, step, why):
+        # settle_end=True(연구용 가상 정산): 종목 줄 끝 · 보유 한도 · 기간 끝에서 열린 매매를 그 칸 종가로 정산해 기록.
+        nonlocal purse, crest
+        closes_ = lane[code]["closes"]
+        k = min(index, len(closes_) - 1)
+        gain = (closes_[k] / spot["price"] - 1) * 100 - cost
+        trades.append(gain)
+        weighted.append(gain * spot["자리"])
+        purse *= 1 + gain * spot["자리"] / 100 / slots
+        crest = max(crest, purse)
+        year_gains.setdefault(day[:4], []).append(gain * spot["자리"])
+        held_days.append(step)
+        if detail:
+            ledger.append({"code": code, "산 날": spot["row"]["date"], "판 날": day, "들고": step,
+                           "자리": spot["자리"], "손익": round(gain, 2), "행": spot["row"], "정산": why})
+
     for day in days:
         day_no += 1
         n_before = len(trades)
@@ -829,17 +846,29 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             closes = lane[code]["closes"]
             step = spot["step"] + 1
             index = spot["i"] + step
+            if align_days and index < len(closes) and lane[code]["날"][index] > day:
+                # align_days: 이 종목은 오늘 바가 없음(정지 · 결측) → 보유 그대로 · 칸 · 보유 일수 진행 안 함(미래 종가 앞당김 막기)
+                continue
             if index >= len(closes) or step > cap:
+                if settle_end:
+                    _settle(code, spot, index, day, step, "보유 한도 정산" if step > cap else "줄 끝 정산")
                 del open_slots[code]
                 continue
             spot["peak"] = max(spot["peak"], closes[index])
             one = lane[code]
-            if realistic and locked(closes, one["날"], index, -1):
+            last_cell = settle_end and index == len(closes) - 1
+            if realistic and locked(closes, one["날"], index, -1) and not last_cell:
                 # 하한가에 붙은 날은 팔 수 없습니다. 팔 수 있는 날까지 갑니다.
                 spot["step"] = step
                 continue
             decided = exit_at(one, spot["i"], spot["price"], step, spot["peak"],
                               spot["row"])
+            if last_cell:
+                # 종목 줄의 마지막 칸(기간 끝 · 줄 끝): 청산 판단과 하한가에 상관없이 그날 종가로 가상 정산.
+                _settle(code, spot, index, day, step,
+                        "끝 날 하한가 가상 정산" if realistic and locked(closes, one["날"], index, -1) else "끝 날 가상 정산")
+                del open_slots[code]
+                continue
             # 나눠 팔기: 청산이 True가 아닌 정수 k(0 < k < 들고 있는 자리)를 내면 k자리만 그날 종가에 팝니다.
             # 칸이 모자라 적게 담은 자리에서도 '나눠 팔기'가 전량 매도로 바뀌지 않게, 들고 있는 칸보다 하나 적게까지만 팝니다.
             # 한 칸만 들고 있으면 나눌 수 없으니 그날은 그냥 들고 갑니다.
@@ -963,8 +992,8 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
                 continue
             spot = row["i"] + delay
             one = lane[row["code"]]
-            if spot >= len(one["closes"]):
-                continue
+            if spot >= len(one["closes"]) or (settle_end and spot >= len(one["closes"]) - 1):
+                continue        # settle_end: 종목 줄의 마지막 칸에서는 새로 사지 않음(바로 정산될 자리)
             if realistic and locked(one["closes"], one["날"], spot, 1):
                 continue        # 상한가에 붙은 날은 종가에 살 수 없습니다.
             if swap and (beyond or top - used < max(int(size(row)), 1)):
@@ -1009,6 +1038,10 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             bought += 1
             opened_on.append(day)
         missed += max(0, len(ready) - max(room, 0))
+    if settle_end:
+        for code, spot in list(open_slots.items()):
+            _settle(code, spot, spot["i"] + spot["step"], days[-1], spot["step"], "기간 끝 정산")
+            del open_slots[code]
     if len(trades) < 60:
         return None
     ordered = sorted(trades)
