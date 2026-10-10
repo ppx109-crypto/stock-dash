@@ -1,0 +1,33 @@
+{
+ "schema_version": 1,
+ "task_id": "ERN-0036",
+ "chain_id": "ERN-0036",
+ "round": 2,
+ "status": "BLOCKED",
+ "verdict": "NEEDS_DATA(DART 점검 · 상태 800)",
+ "source_pr": 176,
+ "source_head_sha": "51e7f3d1e6433611e1575464ee62c054425f680a",
+ "code_commit": "main 0ca19aac7",
+ "code_sha256": "c3e1521126f0077362826a0d13c4497a4afabdc2516fe696655af05c01152393",
+ "runs": [
+  {
+   "run": "https://github.com/ppx109-crypto/stock-dash/actions/runs/38023332836",
+   "result": "미확인 실패 기록 — Python 단계 BadZipFile(corpCode.xml ZIP 아님) · artifact 0 · 결과 파일 없음 · 보고 호출 1회(로그 · 산출물로 독립 확인 안 됨)"
+  },
+  {
+   "run": "https://github.com/ppx109-crypto/stock-dash/actions/runs/38023730874",
+   "result": "성공 끝 · stopped='corpCode.xml ZIP 아님 · DART 상태 800' · calls_n=1 · 30개 모두 미수행 · verdict pass=false"
+  }
+ ],
+ "calls_total_reported": 2,
+ "workflow_timeout_min": 60,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/ERN-0036/feas/probe.json"
+ ],
+ "completed_at_kst": "2026-10-10T13:22:00+09:00",
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ }
+}
