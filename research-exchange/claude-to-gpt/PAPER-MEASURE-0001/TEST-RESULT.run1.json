@@ -1,0 +1,77 @@
+{
+ "kind": "synthetic_test(실측 아님)",
+ "cases": [
+  {
+   "case": "확정 · 취소 · 미체결 · 중복",
+   "result": "PASS"
+  },
+  {
+   "case": "충돌 중복 중단",
+   "result": "PASS"
+  },
+  {
+   "case": "부분체결",
+   "result": "PASS"
+  },
+  {
+   "case": "필드 누락 거부 · 맥락 누락 개수",
+   "result": "FAIL",
+   "why": "AssertionError: InputError 안 남"
+  },
+  {
+   "case": "주문 장부(접수) 행 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "predash.normalize_kis와 의미 일치",
+   "result": "PASS"
+  },
+  {
+   "case": "HMAC 식별자 · 원 번호 미출력",
+   "result": "PASS"
+  },
+  {
+   "case": "키 없음 fail-closed",
+   "result": "PASS"
+  },
+  {
+   "case": "CLI 키 · 작업트리 거부",
+   "result": "PASS"
+  },
+  {
+   "case": "반대 side 같은 시각",
+   "result": "PASS"
+  },
+  {
+   "case": "일별 MTM · TWR · 입출금(손셈)",
+   "result": "FAIL",
+   "why": "AssertionError: 11.5498 != 11.549751243781095"
+  },
+  {
+   "case": "−15% 하루 · 달 경계",
+   "result": "PASS"
+  },
+  {
+   "case": "평가 누락 · 기업행동",
+   "result": "PASS"
+  },
+  {
+   "case": "불가능 체결 · 비용 누락",
+   "result": "PASS"
+  },
+  {
+   "case": "미끄러짐 bps · 기준가 없음 null",
+   "result": "PASS"
+  },
+  {
+   "case": "공개 출력 비밀 검사",
+   "result": "PASS"
+  },
+  {
+   "case": "기간 밖 체결 거부",
+   "result": "PASS"
+  }
+ ],
+ "passed": 15,
+ "total": 17
+}
