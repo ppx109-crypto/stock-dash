@@ -1,0 +1,161 @@
+{
+ "cut": {
+  "A1": {
+   "x": "20160630",
+   "fills_equal": true,
+   "n_fills": 302,
+   "nav_equal": true,
+   "n_days": 1109
+  },
+  "B1": {
+   "x": "20160630",
+   "fills_equal": true,
+   "n_fills": 452,
+   "nav_equal": true,
+   "n_days": 1109
+  },
+  "C1": {
+   "x": "20160630",
+   "fills_equal": true,
+   "n_fills": 298,
+   "nav_equal": true,
+   "n_days": 1109
+  }
+ },
+ "train_only_equals_full_prefix": true,
+ "fixes_full": [
+  {
+   "code": "069500",
+   "date": "20260608",
+   "jump": -0.0875,
+   "back": 0.0884,
+   "fixed": false
+  },
+  {
+   "code": "091160",
+   "date": "20080325",
+   "jump": 0.1496,
+   "back": -0.133,
+   "fixed": false
+  },
+  {
+   "code": "091160",
+   "date": "20200319",
+   "jump": -0.0912,
+   "back": 0.0904,
+   "fixed": false
+  },
+  {
+   "code": "091160",
+   "date": "20200320",
+   "jump": 0.0904,
+   "back": -0.0709,
+   "fixed": false
+  },
+  {
+   "code": "091160",
+   "date": "20260608",
+   "jump": -0.0971,
+   "back": 0.1176,
+   "fixed": false
+  },
+  {
+   "code": "091160",
+   "date": "20260715",
+   "jump": 0.0968,
+   "back": -0.0949,
+   "fixed": false
+  },
+  {
+   "code": "091170",
+   "date": "20060711",
+   "jump": 0.0812,
+   "back": -0.0696,
+   "fixed": false
+  },
+  {
+   "code": "091170",
+   "date": "20070712",
+   "jump": 0.15,
+   "back": -0.125,
+   "fixed": false
+  },
+  {
+   "code": "091170",
+   "date": "20081024",
+   "jump": -0.0805,
+   "back": 0.0849,
+   "fixed": false
+  },
+  {
+   "code": "091170",
+   "date": "20200319",
+   "jump": -0.0846,
+   "back": 0.1059,
+   "fixed": false
+  },
+  {
+   "code": "091170",
+   "date": "20200320",
+   "jump": 0.1059,
+   "back": -0.0857,
+   "fixed": false
+  },
+  {
+   "code": "091180",
+   "date": "20071029",
+   "jump": -0.0827,
+   "back": 0.0871,
+   "fixed": false
+  },
+  {
+   "code": "102970",
+   "date": "20081029",
+   "jump": -0.12,
+   "back": 0.1481,
+   "fixed": false
+  },
+  {
+   "code": "102970",
+   "date": "20200323",
+   "jump": -0.0971,
+   "back": 0.1216,
+   "fixed": false
+  },
+  {
+   "code": "102970",
+   "date": "20260401",
+   "jump": 0.0826,
+   "back": -0.0686,
+   "fixed": false
+  },
+  {
+   "code": "114820",
+   "date": "20130628",
+   "jump": 0.1272,
+   "back": -0.1137,
+   "fixed": true
+  },
+  {
+   "code": "117700",
+   "date": "20091127",
+   "jump": -0.0864,
+   "back": 0.0885,
+   "fixed": false
+  },
+  {
+   "code": "229200",
+   "date": "20200319",
+   "jump": -0.0814,
+   "back": 0.0873,
+   "fixed": false
+  },
+  {
+   "code": "266420",
+   "date": "20200319",
+   "jump": -0.0886,
+   "back": 0.103,
+   "fixed": false
+  }
+ ]
+}
