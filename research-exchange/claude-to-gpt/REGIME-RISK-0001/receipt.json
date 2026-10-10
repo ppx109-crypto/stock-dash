@@ -1,0 +1,24 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-RISK-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 12,
+ "status": "READY",
+ "input": {
+  "pr": 67,
+  "head_sha": "230af27ace32bcff02239110c44ddba43bd9ef7b",
+  "read_files": [
+   "TASK.md",
+   "REVIEW.md",
+   "PREREG.md",
+   "GPT_SCREEN.json",
+   "manifest.json",
+   "receipt.json"
+  ]
+ },
+ "fixed_evidence": {
+  "pr": 41,
+  "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa"
+ },
+ "base_main_sha": "d22d8085e1f5ff18c152858be695275f8c41c77d"
+}

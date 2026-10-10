@@ -1,0 +1,12 @@
+준비 26 초 {'days': ['20170201', '20260916'], 'n_days': 2360, 'picks_days': 1116, 'picks_rows': 3712, 'row_i_date_mismatch': 0, 'br_days_equal': True}
+통제 P4 17476433 {'D1': 6486615, 'M15': 5242565, 'ETF': 2481928, 'BASKET': 3265324}
+후보 D1 5684127 매매 212 {'locked': 0, 'no_price': 0}
+후보 ETF 2495477 매매 8 {'locked': 0, 'no_price': 0}
+후보 BASKET 2776446 매매 88 {'locked': 0, 'no_price': 0}
+후보 M15 3935923 매매 263
+통제 {'end_won': 17476432.673979506, 'CAGR_pct': 79.97172020264733, 'MDD_pct': -24.390309211255722, 'MDD_at': '20260729', 'worst_day_pct': -9.882227463575799, 'worst_day_at': '20260304', 'worst_month_pct': -14.890827084512159, 'worst_month_at': '202606', 'day_breach_-15': 0, 'month_breach_-15': 0, 'cost_total_won': np.float64(1044889.3260204962), 'sleeve_end': {'D1': 6486615.156232063, 'M15': 5242565.14755383, 'ETF': 2481928.392, 'BASKET': 3265323.97819361}}
+후보 {'end_won': 14891973.12644649, 'CAGR_pct': 52.07171204940639, 'MDD_pct': -6.186793787034139, 'MDD_at': '20260803', 'worst_day_pct': -3.7027833211968675, 'worst_day_at': '20260202', 'worst_month_pct': -4.565929566471905, 'worst_month_at': '202607', 'day_breach_-15': 0, 'month_breach_-15': 0, 'cost_total_won': 590307.8735535117, 'turnover_per_year': 6.672126682122536, 'sleeve_end': {'D1': 5684127.039466936, 'M15': 3935923.2154865186, 'ETF': 2495476.5039999997, 'BASKET': 2776446.3674930343}, 'trades': {'D1': {'buy': 89, 'sell': 123}, 'M15': {'buy': 115, 'sell': 148}, 'ETF': {'buy': 5, 'sell': 3}, 'BASKET': {'buy': 36, 'sell': 52}}, 'max_gap': {'D1': [2.7939677238464355e-09, 1.862645149230957e-09], 'M15': [3.259629011154175e-09, 1.1641532182693481e-09], 'ETF': [4.656612873077393e-10, 4.3655745685100555e-10], 'BASKET': [9.313225746154785e-10, 1.0477378964424133e-09]}, 'checks': {'D1': 230, 'M15': 230, 'ETF': 230, 'BASKET': 230}}
+노출 {'avg': 0.664177719904481, 'min': 0.25, 'max': 1.0, 'changes': 124, 'sum_abs_delta': 4.1873851677211364, 'days_at_0.25': 36}
+GPT 대조 {'gpt_screen_end_multiple(PR66 P4 기반)': 1.616181828972704, 'gpt_screen_json': 1.6161818289727041, 'screen_matches_gpt_json': True, 'candidate_end_multiple': 1.489197312644649, 'diff_vs_pr66_screen': -0.12698451632805496, 'first_diff_date_vs_pr66_screen(1e-6)': '20250918', 'screen_on_cash_start_P4_end_multiple': 1.5836605310686065, 'diff_vs_cash_start_screen': -0.09446321842395755, 'first_diff_date_vs_cash_start_screen(1e-6)': '20251015', 'exposure_same_days_pr66_vs_cash_start': 108}
+판정 {'inputs_timing_conservation': True, 'day_ok': True, 'month_ok': True, 'mdd_ok': True, 'end_gt_10m': True} TRAIN_CANDIDATE_LOCKED
+끝
