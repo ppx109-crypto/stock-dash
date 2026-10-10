@@ -34,7 +34,8 @@ YEAR_KIND = {"2017": "상승", "2018": "하락", "2019": "횡보", "2020": "상�
              "2023": "횡보", "2024": "횡보", "2025": "상승", "2026": "상승"}      # 사용자 2026-10-10 나눔 그대로
 COST_ETF, COST_BASE_DOWN, COST_BASE_UP = 0.0005, 0.0030, 0.0005
 R0 = {"n": 60, "confirm": "none", "persist": 1, "down_base": 1.0, "down_inv": 0.0, "inv": "114800",
-      "up_lev": 0.0, "side_inv": 0.0, "up_need": "ma_rising"}
+      "up_lev": 0.0, "side_inv": 0.0, "up_need": "ma_rising", "exit_buf": 0.0}
+PERIOD_NOTE = "실제 셈 기간 2017-02-01 ~ 2026-09-15(1일봉 장부가 2017-02-01부터) · 사용자 지정 2016 ~ 2026 가운데 2016-01 ~ 2017-01은 장부 없음 → NEEDS_DATA 칸"
 
 
 def cut_ok(d):
@@ -69,8 +70,23 @@ def data():
     return DATA
 
 
-def features(etf, br, flow):
+def short_breadth():
+    """거래대금 상위 100 가운데 종가 > 20일 단순평균 몫(그날까지 값 · 30종목 이상인 날만)."""
+    s = pickle.load(open(SNAP, "rb"))
+    lanes = {c: [x for _, x in b["rows"]] for c, b in s["prices"].items()}
+    byd = {}
+    for r in s["rows"]:
+        if not cut_ok(r["date"]):
+            continue
+        x, i = lanes[r["code"]], r["i"]
+        if i >= 19:
+            byd.setdefault(r["date"], []).append(x[i] > sum(x[i - 19:i + 1]) / 20)
+    return {d: sum(v) / len(v) * 100 for d, v in byd.items() if len(v) >= 30}
+
+
+def features(etf, br, flow, br20=None):
     """날 → 판정 재료(그날 장 끝까지 값만)."""
+    br20 = br20 or {}
     px = etf["069500"]
     ds = sorted(px)
     xs = [px[d] for d in ds]
@@ -91,6 +107,11 @@ def features(etf, br, flow):
                 f["vol_ratio"] = v20 / vols[len(vols) // 2]
         if d in br:
             f["breadth"] = br[d]
+        if d in br20:
+            f["br20"] = br20[d]
+        for n in (3, 5, 10):
+            if k >= n:
+                f[f"r{n}"] = xs[k] / xs[k - n] - 1
         j = bisect.bisect_right(fd, d)
         if j >= 20:
             f["F20"] = sum(flow[fd[i]]["F"] for i in range(j - 20, j))
@@ -107,7 +128,8 @@ def raw_state(f, cfg):
     c = cfg["confirm"]
     conf = {"none": True, "br40": f.get("breadth", 100) < 40, "br30": f.get("breadth", 100) < 30,
             "F20neg": f.get("F20", 0) < 0, "FI20neg": f.get("F20", 0) + f.get("I20", 0) < 0,
-            "vol15": f.get("vol_ratio", 0) > 1.5}[c]
+            "vol15": f.get("vol_ratio", 0) > 1.5, "r5m3": f.get("r5", 0) < -0.03, "r10m5": f.get("r10", 0) < -0.05,
+            "sbr30": f.get("br20", 100) < 30}[c]
     if f["close"] < ma and conf:
         return "하락"
     up = f["close"] > ma
@@ -119,10 +141,14 @@ def raw_state(f, cfg):
 
 
 def states(feat, cfg):
-    """판정(t날 장 끝) → 버팀 날 수 persist를 채워야 바뀜."""
+    """판정(t날 장 끝) → 버팀 날 수 persist를 채워야 바뀜. 하락 중에는 종가가 n일선 × (1 + exit_buf) 위여야 하락을 끝냄."""
     out, cur, run, last = {}, "횡보", 0, None
+    buf = cfg.get("exit_buf", 0.0)
     for d in sorted(feat):
         s = raw_state(feat[d], cfg)
+        ma = feat[d].get(f"ma{cfg['n']}")
+        if cur == "하락" and s != "하락" and buf > 0 and ma is not None and feat[d]["close"] <= ma * (1 + buf):
+            s = "하락"
         run = run + 1 if s == last else 1
         last = s
         if s != cur and run >= cfg["persist"]:
@@ -147,14 +173,15 @@ def account(cfg, lo=LO, hi=HI):
     global FEAT
     base, etf, br, flow = data()
     if FEAT is None or FEAT[0] is not DATA:
-        FEAT = (DATA, features(etf, br, flow))
+        FEAT = (DATA, features(etf, br, flow, short_breadth() if br else {}))
     feat = FEAT[1]
     st = states(feat, cfg)
     days = [d for d in sorted(base) if lo <= d <= hi and all(d in etf[c] for c in ETF)]
     A, vb, ve, code, cash = 1.0, 1.0, 0.0, None, 0.0
     navs, nst = {days[0]: 1.0}, {}
     pending = None
-    trims = [0]
+    trims = [0, 0]
+    slack = [0.0]
     for j in range(1, len(days)):
         p, d = days[j - 1], days[j]
         # 오늘 수익(어제 몫 그대로)
@@ -180,16 +207,28 @@ def account(cfg, lo=LO, hi=HI):
                 ve = 0.0
             cash = A - vb - ve
             pending = s_prev
-        elif code and cash < -vb * base[d][1] - 1e-12:
+        elif code and cash < -vb * base[d][1] - 1e-12:   # (round 2: 아래에서 1일봉까지 줄여 빚 0 보장)
             # 1일봉이 현금을 다시 쓰면 ETF가 1일봉의 놀던 현금을 넘음(cash < −1일봉 현금) → 넘친 만큼 오늘 종가에 팖(빚 없음)
             need = -vb * base[d][1] - cash
             cut = min(ve, need / (1 - COST_ETF))
             ve -= cut
             cash += cut * (1 - COST_ETF)
             trims[0] += 1
+            if ve <= 1e-15:
+                ve, code = 0.0, None
+        if cash < -vb * base[d][1] - 1e-12:
+            # ETF를 다 팔아도 모자람(ETF 손실 + 1일봉 현금 사용) → 1일봉 몫을 줄여 메움(파는 비용 0.30%) · 빚 없음
+            c = base[d][1]
+            x = (-c * vb - cash) / (1 - COST_BASE_DOWN - c)
+            vb -= x
+            cash += x * (1 - COST_BASE_DOWN)
+            trims[1] += 1
+        slack[0] = min(slack[0], cash + vb * base[d][1])      # 빚 없음 점검: 늘 ≥ 0이어야 함
         navs[d] = vb + ve + cash
         nst[d] = s_prev
     account.trims = trims[0]
+    account.base_trims = trims[1]
+    account.min_slack = slack[0]
     return navs, nst
 
 
@@ -213,7 +252,8 @@ def stats(navs, nst):
         g["worst_day"] = min(g["worst_day"], r)
     for m, v in mo.items():
         kind[YEAR_KIND[m[:4]]]["months"][m] = v - 1
-    kinds = {k: {"worst_day_pct": round(g["worst_day"] * 100, 3), "worst_month_pct": round(min(g["months"].values()) * 100, 3)} for k, g in kind.items()}
+    kinds = {k: {"worst_day_pct": round(g["worst_day"] * 100, 3), "worst_month_pct": round(min(g["months"].values()) * 100, 3),
+                 "ok": g["worst_day"] >= -0.15 and min(g["months"].values()) >= -0.15} for k, g in kind.items()}
     half = {}
     for name, a, b in (("2017~2021", "20170101", "20211231"), ("2022~2026", "20220101", "20261231")):
         sub = [d for d in ds if a <= d <= b]
@@ -223,7 +263,10 @@ def stats(navs, nst):
     wm = min(mo.values()) - 1
     return {"annual_pct": round(ann * 100, 3), "annual_raw": ann, "worst_day_pct": round(wd * 100, 3), "worst_month_pct": round(wm * 100, 3),
             "loss_ok": wd >= -0.15 and wm >= -0.15, "mdd_report_pct": round(mdd * 100, 2),
-            "years_pct": {y: round((v - 1) * 100, 2) for y, v in sorted(yr.items())}, "by_kind": kinds, "halves_report": half, "state_share_pct": share}
+            "years_pct": {y: round((v - 1) * 100, 2) for y, v in sorted(yr.items())}, "by_kind": kinds, "kinds_ok": all(v["ok"] for v in kinds.values()),
+            "halves_report": half, "state_share_pct": share, "period": PERIOD_NOTE, "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+            "etf_trims": getattr(account, "trims", None), "base_trims": getattr(account, "base_trims", None),
+            "min_cash_slack": getattr(account, "min_slack", None)}
 
 
 def _started():
@@ -239,7 +282,18 @@ def _log(rec):
         os.fsync(fh.fileno())
 
 
+def done_results():
+    """재시작 때 앞서 끝난 평가를 다시 씀(같은 설정은 한 번만)."""
+    if not EVALS.exists():
+        return {}
+    return {r["cfg"]: r["res"] for r in map(json.loads, EVALS.read_text().splitlines()) if r["status"] == "DONE" and "res" in r}
+
+
 def evaluate(cfg, note=""):
+    key0 = json.dumps(cfg, sort_keys=True, ensure_ascii=False)
+    prev = done_results().get(key0)
+    if prev is not None:
+        return prev
     n = _started()
     if n >= EVAL_CAP:
         sys.exit("평가 상한 300 도달(멈춤)")
@@ -250,8 +304,8 @@ def evaluate(cfg, note=""):
     except Exception as e:                                  # 실패도 기록
         _log({"status": "FAILED", "no": n + 1, "error": repr(e)})
         raise
-    _log({"status": "DONE", "no": n + 1, "annual_pct": res["annual_pct"], "worst_day_pct": res["worst_day_pct"],
-          "worst_month_pct": res["worst_month_pct"]})
+    _log({"status": "DONE", "no": n + 1, "cfg": key, "annual_pct": res["annual_pct"], "worst_day_pct": res["worst_day_pct"],
+          "worst_month_pct": res["worst_month_pct"], "res": res})
     return res
 
 

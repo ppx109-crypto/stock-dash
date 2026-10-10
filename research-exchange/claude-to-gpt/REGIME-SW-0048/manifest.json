@@ -3,7 +3,7 @@
  "task_id": "REGIME-SW-0048",
  "chain_id": "REGIME-SW-0048",
  "kind": "PLAN",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "method": "사용자 2026-10-10 새 방식(10년 백테스트 최고 · 장마다 선수 바꾸기 · −15% 세 장 각각 · 미래 참조 차단 · 고원)",
  "source_pr": 210,
@@ -11,8 +11,8 @@
  "code_commit": null,
  "completed_at_kst": null,
  "code": {
-  "research/regime_dev.py": "2b284eee26c8e779db3f67e6fc07c81782d15f90a4039e71adc22a85041ab6eb",
-  "research/regime_rules.py": "69300a7738c98ca3c3188e50ac66a1fe625f64b79a4d176dd83410da85b68da1"
+  "research/regime_dev.py": "0936eb18b278407b38c5f53e6e555dd6d5cce015573aa6b8829d2489a048325d",
+  "research/regime_rules.py": "0605ee332cd7c2d25e04860775a53ff2efe5d3aac36e3466ba43ee320da7ab1a"
  },
  "data": {
   "base_m1.csv": "998ffd2f117967b9fe4f5c3ca39a766699d992ebb0151ba767c1b30f0a9633e7",
@@ -33,6 +33,16 @@
   "research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv",
   "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.py",
-  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.out"
- ]
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/regime_look.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/regime_look.out"
+ ],
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "stage1_grid": 108,
+ "expected_evals": 210,
+ "answering": "211+5fff6b4092c3e3632aa222d5e6dbafae6e0e6b1c+PREREG+REGIME-SW-0048(6098335523)"
 }

@@ -92,4 +92,44 @@ except SystemExit as e:
 check("15 STARTED 300개면 더 못 셈", capped)
 src = Path(D.__file__).read_text()
 check("16 바꿈은 전날 판정(st.get(p))으로 · 오늘 판정(st[d])으로 오늘 바꾸지 않음", "s_prev = st.get(p" in src and "st.get(d" not in src and re.search(r"(?<![a-z])st\[d\]", src) is None)
+# round 2(GPT #211 6098335523)
+# 반례: 상승장 레버리지 1.0 몫 · 1일봉 현금 0.6 → 0으로 줄고 동시에 레버리지가 크게 떨어짐 → ETF 다 팔아도 모자람 → 1일봉을 줄여 메움
+setup(rise, base_fn=lambda t: 1.0, cash_fn=lambda t: 0.6 if t < 300 else 0.0, lev_fn=lambda t: 100.0 if t < 299 else 10.0)
+cfg = dict(D.R0, up_lev=1.0, up_need="above_only")
+nav, st = D.account(cfg, D.LO, D.HI)
+check("17 ETF를 다 팔아도 모자라면 1일봉 몫을 줄여 메움(1일봉 덜기 > 0)", D.account.base_trims > 0)
+check("18 빚 없음: 날마다 (현금 + 1일봉 몫 × 1일봉 현금 비율)의 가장 작은 값 ≥ 0 · NAV는 1일봉 장부(평평)를 넘지 않음",
+      D.account.min_slack >= -1e-12 and min(nav.values()) > 0 and max(nav[d] for d in nav if d > days[300]) <= 1.0 + 1e-9)
+# 반올림 전 비교(고원): GPT 합성 예 — 기준 20.0000 · 후보 21.0024 · 이웃 20.5006 → 원값으로는 고원 실패
+import regime_rules as RR
+fake = {"annual_raw": 0.210024, "loss_ok": True}
+nb = {"annual_raw": 0.205006, "loss_ok": True, "annual_pct": 20.501}
+RR.SEEN.clear()
+cfg0 = dict(D.R0, n=60)
+real_run = RR.run
+RR.run = lambda c, note: nb
+ok_pl, detail = RR.plateau(cfg0, fake, 20.0)
+RR.run = real_run
+check("19 고원은 반올림 전 값: 이웃 더 번 몫 0.5006 < 후보 절반 0.5012 → 실패(표시값 21.002 · 20.501로는 통과했을 경우)", ok_pl is False)
+check("20 고원 칸에 양쪽 / 한쪽(격자 끝) 표시", any(v["sides"] == "양쪽" for v in detail.values()))
+check("21 받아들이기도 반올림 전: 0.3%p를 0.0001 넘으면 받아들임 · 딱 0.3이면 안 받음",
+      RR.better({"annual_raw": 0.203001, "loss_ok": True}, {"annual_raw": 0.200000}) and not RR.better({"annual_raw": 0.203000, "loss_ok": True}, {"annual_raw": 0.200000}))
+# 새 재료
+f = {"close": 90, "ma60": 100, "r5": -0.04, "r10": -0.04, "br20": 25}
+check("22 r5m3(5일 −4% → 하락) · r10m5(10일 −4% → 아님) · sbr30(짧은 폭 25 → 하락)",
+      D.raw_state(f, dict(D.R0, confirm="r5m3")) == "하락" and D.raw_state(f, dict(D.R0, confirm="r10m5")) == "횡보" and D.raw_state(f, dict(D.R0, confirm="sbr30")) == "하락")
+# 하락 빠져나올 때 여유
+feat = {"20200101": {"close": 90, "ma60": 100}, "20200102": {"close": 101, "ma60": 100, "ma60_20ago": 90}, "20200103": {"close": 103, "ma60": 100, "ma60_20ago": 90}}
+s0 = D.states(feat, dict(D.R0, exit_buf=0.0)); s2 = D.states(feat, dict(D.R0, exit_buf=0.02))
+check("23 exit_buf 0.02: 종가 101(평균 +1%)이면 하락 그대로 · 103이면 빠져나옴 · 여유 0이면 101에 바로 빠져나옴",
+      s2["20200102"] == "하락" and s2["20200103"] == "상승" and s0["20200102"] == "상승")
+# 끝난 평가 다시 쓰기
+D.EVALS = tmp / "e2.jsonl"
+k = json.dumps(D.R0, sort_keys=True, ensure_ascii=False)
+D.EVALS.write_text(json.dumps({"status": "STARTED", "no": 1, "cfg": k}) + "\n" + json.dumps({"status": "DONE", "no": 1, "cfg": k, "res": {"annual_pct": 1.23}}) + "\n")
+r = D.evaluate(D.R0, "다시")
+check("24 이미 끝난 설정은 기록에서 다시 쓰고 STARTED를 늘리지 않음", r == {"annual_pct": 1.23} and D._started() == 1)
+src2 = Path(RR.__file__).read_text()
+check("25 1단계 시험용 몫이 0이 아님(판정 축이 계좌를 바꿈) · 격자 = n 4 × 확인 9 × 버팀 3",
+      RR.PROBE["down_inv"] > 0 and RR.PROBE["up_lev"] > 0 and len(RR.CONFIRMS) == 9)
 print(f"모두 {ok}개 통과")
