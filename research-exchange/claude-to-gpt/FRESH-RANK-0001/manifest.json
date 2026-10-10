@@ -1,0 +1,224 @@
+{
+ "schema_version": 1,
+ "task_id": "FRESH-RANK-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "FRESH-RANK-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 6,
+  "input": {
+   "pr": 54,
+   "head_sha_read": "25772dbfff51758c1fb216126e73659d82c95833",
+   "head_sha_latest": "23a49ec14a9dca06563f6e775dfc8eb4d55b18c0",
+   "instruction_files_identical": true,
+   "read_files": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "receipt.json"
+   ]
+  },
+  "prior": {
+   "pr": 49,
+   "head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4",
+   "reused": "m15_exec.py · kernel2.py · cost_contract.py · common.py(바이트 동일) · lc_m15.py에 seed와 F 정렬을 더해 fr_m15.py"
+  },
+  "base_main_sha": "62d9d363a7b57e390d6e7320b98bc8d31f5c0ef2",
+  "received_at_kst": "2026-10-08T17:48:25+09:00 이후(입력 head 커밋 시각) · 17:50:26 PREREG 커밋 전"
+ },
+ "prereg_commit": "7b8c55bb235ff59c9265d33958c202bebf186bba",
+ "prereg_committed_at_kst": "2026-10-08T17:50:26+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "baseline_same_as_pr49": true,
+ "runs": {
+  "cost2_seeds0to3": 16,
+  "cost1_seed0": 4,
+  "total": 20,
+  "failed": 0
+ },
+ "capital_won": 10000000,
+ "train": [
+  "2025-09-17",
+  "2026-03-31"
+ ],
+ "verdict": {
+  "R30": "종료(경로 민감 후보로 내려놓음)",
+  "F_RF": "개선 없음"
+ },
+ "key_numbers": {
+  "R_minus_B_median_won": 216292,
+  "R30_threshold_won": 366258,
+  "R_wins": 3,
+  "F_wins": 0,
+  "F_median_rate_pct": -1.9,
+  "RF_wins": 1,
+  "RF_median_rate_pct": -2.51,
+  "B_cost2_end_range_won": [
+   18157070,
+   20891705
+  ]
+ },
+ "cut_test": "20판 상한으로 미실시 · F/RF 탈락으로 채택 판단 없음",
+ "rl_note": "결과 피드백 공동 연구 · 강화학습 모델 학습 아님",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/fr_results.json",
+  "evidence/nav_B_x1_s0.csv",
+  "evidence/nav_B_x2_s0.csv",
+  "evidence/nav_B_x2_s1.csv",
+  "evidence/nav_B_x2_s2.csv",
+  "evidence/nav_B_x2_s3.csv",
+  "evidence/nav_F_x1_s0.csv",
+  "evidence/nav_F_x2_s0.csv",
+  "evidence/nav_F_x2_s1.csv",
+  "evidence/nav_F_x2_s2.csv",
+  "evidence/nav_F_x2_s3.csv",
+  "evidence/nav_RF_x1_s0.csv",
+  "evidence/nav_RF_x2_s0.csv",
+  "evidence/nav_RF_x2_s1.csv",
+  "evidence/nav_RF_x2_s2.csv",
+  "evidence/nav_RF_x2_s3.csv",
+  "evidence/nav_R_x1_s0.csv",
+  "evidence/nav_R_x2_s0.csv",
+  "evidence/nav_R_x2_s1.csv",
+  "evidence/nav_R_x2_s2.csv",
+  "evidence/nav_R_x2_s3.csv",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "4d61b2ae531b8e2015b4df3017e7834339cb156e5c89a831d99daf1079526165"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "709022795b3b0103a01407cdd56c78f665ab7ac2e53694babedc01604fb359fb"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/fr_m15.py",
+   "sha256": "0c6582b4cd7a54d03c3e64c6e29a92cb2a86f434d00c3c0040b75d499a84967b"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "evidence/fr_results.json",
+   "sha256": "07c3e5501d2e3436971132cd58f8e240117f2ab5970b4cb18fa22792f7f74e40"
+  },
+  {
+   "path": "evidence/nav_B_x1_s0.csv",
+   "sha256": "794a5b994f896488058af3ea1eced7bae8828ce928097602be5610f8e1462f39"
+  },
+  {
+   "path": "evidence/nav_B_x2_s0.csv",
+   "sha256": "148d7de7979f96cb45db0a5dfa399c40fc1b981e637c58e1c49cecd62e3268e1"
+  },
+  {
+   "path": "evidence/nav_B_x2_s1.csv",
+   "sha256": "694b75259f0ff487e5296cb62ae7f23d736956b67b09e93d9b0dbf21f07f26cd"
+  },
+  {
+   "path": "evidence/nav_B_x2_s2.csv",
+   "sha256": "5b65b3887569441c717c94113737b24348cd52623f8c4116179449e3570b44bb"
+  },
+  {
+   "path": "evidence/nav_B_x2_s3.csv",
+   "sha256": "07b17150181d8082fcbd923fe3a60e65fd697dee20baf6cfa3b8d7aff3161790"
+  },
+  {
+   "path": "evidence/nav_F_x1_s0.csv",
+   "sha256": "692b569e365d14a01f7d3867adbd79ead5f57d0089859e1b41bba6a2a26efe89"
+  },
+  {
+   "path": "evidence/nav_F_x2_s0.csv",
+   "sha256": "e21763755a145c29a30f97b24ffb61bf589311acc4131d743c66b3d370dbc3e9"
+  },
+  {
+   "path": "evidence/nav_F_x2_s1.csv",
+   "sha256": "91d5f015adc950d757a450b4d7a4c6ad4593ec7865b1ad00e34319adf64d3d97"
+  },
+  {
+   "path": "evidence/nav_F_x2_s2.csv",
+   "sha256": "d0cc5d96412beb9a20de21c2e775bf05090d852abae24e30a88091c1a6cb8e86"
+  },
+  {
+   "path": "evidence/nav_F_x2_s3.csv",
+   "sha256": "a8a6153573c73add5478ace94093c741ac992c2c868e6581461fac5bd09e7477"
+  },
+  {
+   "path": "evidence/nav_RF_x1_s0.csv",
+   "sha256": "b9b5242c22667a230129222524c91b0d0762f37cbbb93bf4d406104e95b66e52"
+  },
+  {
+   "path": "evidence/nav_RF_x2_s0.csv",
+   "sha256": "1643809e18707e7fb16f006c71eed3c0ac4c7cd008bd4435919473d8d0e46b8c"
+  },
+  {
+   "path": "evidence/nav_RF_x2_s1.csv",
+   "sha256": "1710094bad87678b4a49e8646a8900fcf6695949eb985965f16ce5fcd9357339"
+  },
+  {
+   "path": "evidence/nav_RF_x2_s2.csv",
+   "sha256": "330792d7e2aa920353b2a167d1d19af60fef5fe49f58ac66145aa5f57c92a5ec"
+  },
+  {
+   "path": "evidence/nav_RF_x2_s3.csv",
+   "sha256": "aee6c8327762d81ade07d8c69d99d270b93fc908e9e54bda2177998c84942ccd"
+  },
+  {
+   "path": "evidence/nav_R_x1_s0.csv",
+   "sha256": "b95202937c5a436565869d33cae6a3a4b100addb426af1fb9c2be42b6c4c0e69"
+  },
+  {
+   "path": "evidence/nav_R_x2_s0.csv",
+   "sha256": "4f7afd1a7bac6b3e3cbe65f8748a56cc37757a87ee31123cc916598bf08f0bb3"
+  },
+  {
+   "path": "evidence/nav_R_x2_s1.csv",
+   "sha256": "4dd73642f7a2f0a123a79917a227ad8fd82c012cae3a1ce9091408d508f56c4d"
+  },
+  {
+   "path": "evidence/nav_R_x2_s2.csv",
+   "sha256": "1241092ecff310749ff79c4fd652eafe7ecc421ab0fed66baeaa0aa044672189"
+  },
+  {
+   "path": "evidence/nav_R_x2_s3.csv",
+   "sha256": "9c223d8a7503e11d3d50c8df17a119390b2f476fa4e1064a2e30c1bff695d3ba"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "27f6ba8046582dacd46eb14e6f1a3d4747baf9154f63746f2b3c065624df9177"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "1d060b3b0772dee4848a10b490ec08c38f340d992db58e366000f943fc0ed9e5"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/fresh-rank-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T17:57:57+09:00"
+}
