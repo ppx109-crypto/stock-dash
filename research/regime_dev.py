@@ -22,8 +22,8 @@ import time
 from pathlib import Path
 
 ROOT = Path("/home/user/stock-dash")
-BOX = ROOT / "research-exchange/claude-to-gpt/REGIME-SW-0048"
-BASE_CSV = BOX / "base_m1.csv"
+BOX = ROOT / "research-exchange/claude-to-gpt" / os.getenv("REG_BOX", "REGIME-SW-0048")      # 기록 칸(과제마다)
+BASE_CSV = ROOT / "research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv"                   # 1일봉 장부(같은 파일)
 SNAP = os.getenv("REG_SNAP", "/tmp/rev-full.pkl")
 CUT = os.getenv("REG_CUT", "")
 LO, HI = "20170201", "20260915"
@@ -102,6 +102,7 @@ def features(etf, br, flow, br20=None):
         if k >= 250:
             rets = [xs[j] / xs[j - 1] - 1 for j in range(k - 249, k + 1)]
             v20 = math.sqrt(sum(r * r for r in rets[-20:]) / 20)
+            f["v20a"] = v20 * math.sqrt(250)                     # 20일 흔들림(연 환산 · REGIME-SW-0049)
             vols = sorted(math.sqrt(sum(r * r for r in rets[j - 20:j]) / 20) for j in range(20, 251, 5))
             if vols[len(vols) // 2] > 0:
                 f["vol_ratio"] = v20 / vols[len(vols) // 2]
@@ -157,12 +158,16 @@ def states(feat, cfg):
     return out
 
 
-def targets(state, cfg):
-    """국면 → (1일봉 몫 fb, ETF 코드, ETF 몫 fe)."""
+def targets(state, cfg, f=None):
+    """국면 → (1일봉 몫 fb, ETF 코드, ETF 몫 fe). REGIME-SW-0049: lev_vt가 있으면 레버리지 몫 = up_lev × min(1, lev_vt / 그날까지 20일 흔들림)."""
     if state == "하락":
         return cfg["down_base"], cfg["inv"], cfg["down_inv"]
     if state == "상승":
-        return 1.0, "122630", cfg["up_lev"]
+        lev = cfg["up_lev"]
+        vt = cfg.get("lev_vt")
+        if vt is not None and f is not None and f.get("v20a"):
+            lev = lev * min(1.0, vt / f["v20a"])
+        return 1.0, "122630", lev
     return 1.0, cfg["inv"], cfg["side_inv"]
 
 
@@ -191,8 +196,11 @@ def account(cfg, lo=LO, hi=HI):
         A = vb + ve + cash
         # 바꿈: 어제 장 끝 판정이 그 전과 다르면 오늘 종가에 맞춤 · 달 첫날도 맞춤
         s_prev = st.get(p, "횡보")
-        if pending != s_prev or d[:6] != p[:6]:
-            fb, c_new, fe = targets(s_prev, cfg)
+        tgt = targets(s_prev, cfg, feat.get(p))                 # 전날 장 끝 판정 · 전날까지 흔들림
+        band = cfg.get("band")
+        drift = band is not None and code == tgt[1] and A > 0 and abs(ve / A - min(tgt[2], tgt[0] * base[d][1] + (1 - tgt[0]))) > band
+        if pending != s_prev or d[:6] != p[:6] or drift:
+            fb, c_new, fe = tgt
             room = fb * base[d][1] + (1 - fb)                # 1일봉 몫 안 현금 + 1일봉에서 뺀 돈
             fe = min(fe, room)
             tb, te = fb * A, fe * A

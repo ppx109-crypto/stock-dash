@@ -1,0 +1,37 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-SW-0049",
+ "chain_id": "REGIME-SW-0049",
+ "kind": "PLAN",
+ "round": 1,
+ "status": "READY",
+ "method": "사용자 2026-10-10 새 방식",
+ "source_pr": 212,
+ "source_head_sha": "aec60e0c535dbc5b41cc74a773c8f61f9b707baa",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/regime_dev.py": "2c2d4911da2d35251089f4e4c82375bf38ee09c1037ded3b1919e125f9bb172a",
+  "research/regime_rules2.py": "4ca47584eac474fbb94c0afa69befc60cb505bb2597834f4ccfa92ae49f4b0da"
+ },
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "eval_cap": 300,
+ "expected_evals": 190,
+ "evals_started": 0,
+ "verdicts": [
+  "ADOPT_CANDIDATE",
+  "PEAK_ONLY",
+  "NO_IMPROVEMENT"
+ ],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/PLAN.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/cut_test2.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/cut_test2.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/reg2_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/reg2_test.out"
+ ]
+}
