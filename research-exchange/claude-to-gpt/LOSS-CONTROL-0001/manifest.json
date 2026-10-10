@@ -1,0 +1,204 @@
+{
+ "schema_version": 1,
+ "task_id": "LOSS-CONTROL-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "LOSS-CONTROL-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 3,
+  "input": {
+   "pr": 48,
+   "head_sha": "812810b54be4e03c6eccce5e56affb0897ccf4a2",
+   "read_files": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "GPT_ATTRIBUTION.json",
+    "receipt.json"
+   ]
+  },
+  "prior": {
+   "pr": 47,
+   "head_sha": "9ddc8551047ce5b5561d0b7516fa1fae554c2f3e",
+   "reused": "kernel2.py · m15_exec.py · cost_contract.py · common.py(바이트 동일) · mr2_m15.py에서 진입 상한을 빼고 보유 축소 갈고리를 더함"
+  },
+  "base_main_sha": "319eea3da0cfaba8d414d4981b5c739a8dd405d1",
+  "received_at_kst": "2026-10-08T16:43:19+09:00 이후(입력 head 커밋 시각) · 16:47:32 PREREG 커밋 전"
+ },
+ "prereg_commit": "2cc68ef7111034a53570e64f8472f1bfbd0621ee",
+ "prereg_committed_at_kst": "2026-10-08T16:47:32+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "attribution_check": {
+  "all_same": true,
+  "items": 9,
+  "kind": "같은 공유 엔진 재실행 · 독립 엔진 증명 아님"
+ },
+ "rules": [
+  "M0",
+  "M4",
+  "R30",
+  "R40",
+  "R50"
+ ],
+ "runs": {
+  "train": 10,
+  "ex_top": 5,
+  "cut_test": 6,
+  "post_selection": 9
+ },
+ "capital_won": 10000000,
+ "cost_stress": [
+  1,
+  2
+ ],
+ "train": {
+  "first_bar": "2025-09-17",
+  "first_nav_day": "2025-09-18",
+  "last_day": "2026-03-31"
+ },
+ "elimination": "하루 TWR −15% 넘음(1배 · 2배) · 2배 CAGR ≤ 0 · 최대 이익 종목 제외 1배 CAGR ≤ 0",
+ "selection_rule": "통과판 중 비용 2배 CAGR 최고 · 1%p 안이면 비용 2배 회전율 낮은 것 · 그다음 비용 2배 MDD 얕은 것",
+ "not_elimination": [
+  "달력월 −15%",
+  "MDD(비교 항목)"
+ ],
+ "passed": [
+  "M0",
+  "R30"
+ ],
+ "chosen": "R30",
+ "cut_test_all_pass": true,
+ "verdict": "개선 후보",
+ "verdict_note": "R30은 약한 후보: 규칙이 Train 03-31을 본 뒤 설계됨 · R40은 0.02%p 차이로 탈락 · 이득 대부분이 000250 경로 · 전체 MDD와 뒤 구간 비용 2배 CAGR은 M4보다 조금 나쁨",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/attribution_M4_x2_20260331.json",
+  "evidence/lc_results.json",
+  "evidence/nav_full_M0_x1.csv",
+  "evidence/nav_full_M4_x1.csv",
+  "evidence/nav_full_R30_x1.csv",
+  "evidence/nav_train_M0_x1.csv",
+  "evidence/nav_train_M0_x2.csv",
+  "evidence/nav_train_M4_x1.csv",
+  "evidence/nav_train_M4_x2.csv",
+  "evidence/nav_train_R30_x1.csv",
+  "evidence/nav_train_R30_x2.csv",
+  "evidence/nav_train_R40_x1.csv",
+  "evidence/nav_train_R40_x2.csv",
+  "evidence/nav_train_R50_x1.csv",
+  "evidence/nav_train_R50_x2.csv",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "0ffda4f86afe37184488b8db4b4e49ee5eaae3c85211e60a7e9b68b8f61a8f52"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "f2eb67238263efbba92dd760bfaa67b32f862bb6f505e9386d6f3a7e2daefc27"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/lc_m15.py",
+   "sha256": "25d1364f0535e222f8fa6f03b874e08dbeb429dca553824d811517228852c965"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "evidence/attribution_M4_x2_20260331.json",
+   "sha256": "6c614964788b115e1c5a1ed862465115df2c1f7ed50f1444a73463d121336fa7"
+  },
+  {
+   "path": "evidence/lc_results.json",
+   "sha256": "0a4ebe2c3299b61ef49d6a0c7cd991917ac61bd325fb05d8a21290157db86d77"
+  },
+  {
+   "path": "evidence/nav_full_M0_x1.csv",
+   "sha256": "563c1361da2f4201fe8d96df99ac1f37a48ca27372f6a058ef55ebb05598f308"
+  },
+  {
+   "path": "evidence/nav_full_M4_x1.csv",
+   "sha256": "3e5e4204cd2bef74bd71dba8ccd383cc4b8013e054b7e6e31d35c4660c4722b7"
+  },
+  {
+   "path": "evidence/nav_full_R30_x1.csv",
+   "sha256": "fc4fafbe339f35feb4f9f0d48654c0ddb655c08f87486a4b3fbf2ec4e4e3ab35"
+  },
+  {
+   "path": "evidence/nav_train_M0_x1.csv",
+   "sha256": "b377de7ab1a79512dfde9f2600fa79c9324419100af3df0f2e4a58943e6e13f3"
+  },
+  {
+   "path": "evidence/nav_train_M0_x2.csv",
+   "sha256": "36d10bb4cbc4d90e3091c03fa55291acca52602cc94007a67402605381b3e362"
+  },
+  {
+   "path": "evidence/nav_train_M4_x1.csv",
+   "sha256": "794a5b994f896488058af3ea1eced7bae8828ce928097602be5610f8e1462f39"
+  },
+  {
+   "path": "evidence/nav_train_M4_x2.csv",
+   "sha256": "148d7de7979f96cb45db0a5dfa399c40fc1b981e637c58e1c49cecd62e3268e1"
+  },
+  {
+   "path": "evidence/nav_train_R30_x1.csv",
+   "sha256": "b95202937c5a436565869d33cae6a3a4b100addb426af1fb9c2be42b6c4c0e69"
+  },
+  {
+   "path": "evidence/nav_train_R30_x2.csv",
+   "sha256": "4f7afd1a7bac6b3e3cbe65f8748a56cc37757a87ee31123cc916598bf08f0bb3"
+  },
+  {
+   "path": "evidence/nav_train_R40_x1.csv",
+   "sha256": "496f4bea206348b1135ff2acb9211ec698e96e6bc5eaad2b16711d31c3dd8211"
+  },
+  {
+   "path": "evidence/nav_train_R40_x2.csv",
+   "sha256": "93bede6cb4df9aefcba33e94fc1a1625b7bdadae8794bea0330a47399191835c"
+  },
+  {
+   "path": "evidence/nav_train_R50_x1.csv",
+   "sha256": "794a5b994f896488058af3ea1eced7bae8828ce928097602be5610f8e1462f39"
+  },
+  {
+   "path": "evidence/nav_train_R50_x2.csv",
+   "sha256": "148d7de7979f96cb45db0a5dfa399c40fc1b981e637c58e1c49cecd62e3268e1"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "3065d01cb615d7397808e8f11778e009ce3ece18e297631f4b2c1a3aef24c78a"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "2cd84739495a1d057836fc9ad0191e3f66181c06cb8207bae50ba3316208222a"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/loss-control-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T16:56:50+09:00"
+}
