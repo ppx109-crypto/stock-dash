@@ -1,0 +1,20 @@
+{
+ "cut": "20260916",
+ "snapshot_sha256": "7f6c79754f16437d2f7ca1175d35ceddd251baaa22cd0e129b2c0ae885a8eb18",
+ "snapshot_bytes": 110808651,
+ "rows": 244300,
+ "codes": 507,
+ "flow_codes": 238,
+ "days": 2443,
+ "sources": {
+  "price-data/*.json": "ce1f5ac17fb9a8c0cc12db49aa6eea8406fdae0ca6e5bd6766a621fbd87182c8",
+  "share-data/*.json": "f2d8140a7b97cf585f7b2f81d635cb8c4c068e6fb4ae9b9608c2e98931540dfd",
+  "investor-data/*.json": "5f039894273cc5bbdda1717a5e688e501f4395b9dc3fa2b67a7fe046fafdc06b",
+  "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+ },
+ "code": {
+  "research/dip_build.py": "f07f3d946859d058ae47f83f96c3d5b131536bfffa4f06c2de9e4247ae86d323"
+ },
+ "CAPS_ADJ": "0",
+ "sentinel": false
+}
