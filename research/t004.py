@@ -5,8 +5,10 @@
 - 분배금: OVN-0032/dist.json(분배락 날 · 1주당 현금). N이 분배락 날 앞날 종가에 들고 있으면(= 분배락 날 시가에 팖) 현금을 받음.
   주 판정은 세후(배당소득세 15.4% 원천징수 → 84.6%) 현금 · 보조표는 가격만(분배금 0) · 세전.
 - 비용(편도, 그날 체결 가격 P 원주가): 수수료 0.015% + 미끄러짐 k호가 × 호가 상한(그해) ÷ P. 주 k = 1 · 스트레스 k = 3(수수료 0.03%).
-  호가 상한 = 그해 원주가 시가 · 고가 · 저가 · 종가 전부의 최대공약수(호가 단위는 모든 체결 가격을 나누므로 단위 ≤ 최대공약수):
-  2002 ~ 2004 10원 · 2005 ~ 5원(2025 ~ 2026은 최대공약수 1이지만 5원으로 둠 · 더 보수적). ETF 매도 거래세 없음(국내 주식형 ETF 면제).
+  호가 상한(날마다) = 그날 원주가 시가 · 고가 · 저가 · 종가의 최대공약수(그날 호가 단위가 하나면 단위 ≤ 최대공약수 ·
+  해 중간 규칙 바뀜도 막음). 그날 저가 ~ 고가가 가격대 경계(1천 · 2천 · 5천 · 1만 · 2만 · 5만 · 10만 · 20만 · 50만)를 넘으면
+  옛 코스피 주식 호가표(2023-01 개편 전)의 고가 기준 단위와 견줘 큰 쪽. ETF 매도 거래세 없음(국내 주식형 ETF 면제).
+  (GPT #167 6092914611 · round 3)
 - 2002 ~ 2010 분배금(한투 수정 계수 역산 · 독립 원천 없음)은 두 가지로 셈: est = 역산값 · zero = 0원. 판정은 둘 다 통과해야 함(GPT #167 6092887504 (c)).
 - 계좌 NAV: N은 날마다 '앞날 종가 → 오늘 시가' 한 번 · 그 밖은 현금(이자 0). 하루 수익은 판 날(오늘)에 둠.
 python3 research/t004.py            (T_TO=YYYYMMDD면 가격 · 분배금(분배락 날 기준)을 그날까지만 읽음 — 자르기 시험)"""
@@ -46,12 +48,36 @@ def load():
     for x in raw:
         if not (x[1] and x[1] > 0 and x[4] > 0):
             sys.exit(f"NEEDS_DATA: 시가 · 종가 없음 {x[0]}")
+    set_ticks(raw)
     return raw, dist
 
 
+BANDS = (1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000)
+TICKS = {}
+
+
+def old_stock_tick(p):
+    """옛 코스피 주식 호가표(2023-01 개편 전)."""
+    for lim, t in ((1000, 1), (5000, 5), (10000, 10), (50000, 50), (100000, 100), (500000, 500)):
+        if p < lim:
+            return t
+    return 1000
+
+
+def set_ticks(raw):
+    """날마다 호가 상한(원) — PREREG 3절. 그날 값만 씀(앞뒤 날 안 봄)."""
+    for x in raw:
+        v = [int(round(t)) for t in x[1:5] if t]
+        g = 0
+        for t in v:
+            g = math.gcd(g, t)
+        if any(min(v) < b <= max(v) for b in BANDS):
+            g = max(g, old_stock_tick(max(v)))
+        TICKS[x[0]] = float(g)
+
+
 def tick(day):
-    """그해 호가 단위 상한(원) — PREREG 3절 · 해마다 원주가 값들의 최대공약수에서."""
-    return 10.0 if day < "20050101" else 5.0
+    return TICKS[day]
 
 
 def side(price, cost, day):
@@ -182,7 +208,7 @@ def evaluate(raw, dist):
 def main():
     check()
     raw, dists = load()
-    out = {"task": "OVN-0032", "round": 2, "first": raw[0][0], "last": raw[-1][0], "T_TO": TO or None, "days": len(raw),
+    out = {"task": "OVN-0032", "round": 3, "tick_upper_counts": {str(k): v for k, v in sorted(__import__("collections").Counter(TICKS.values()).items())}, "first": raw[0][0], "last": raw[-1][0], "T_TO": TO or None, "days": len(raw),
            "dist_used": {k: len(v) for k, v in dists.items()}, "sha256": SHA}
     for k in ("est", "zero"):
         out[k], n = evaluate(raw, dists[k])
