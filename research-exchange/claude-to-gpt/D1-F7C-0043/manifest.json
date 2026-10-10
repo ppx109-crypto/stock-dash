@@ -1,0 +1,33 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-F7C-0043",
+ "chain_id": "D1-F7C-0043",
+ "kind": "RESULT",
+ "round": 3,
+ "status": "READY",
+ "verdict": "PERIOD_EFFECT",
+ "source_pr": 194,
+ "source_head_sha": "e1ee843d944e213c6f186b9acd5fd7cc1be4ae92",
+ "code_commit": "e1ee843d944e213c6f186b9acd5fd7cc1be4ae92",
+ "X": 15.4,
+ "P_settled": 21.08,
+ "bound": 10.54,
+ "crosses_width": false,
+ "lock_check": "통과(멈춤 없이 끝까지)",
+ "runs": [
+  "python3 research/t012.py > evidence/main.json 2> evidence/run.log (12칸 · 1번)"
+ ],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/D1-F7C-0043/evidence/main.json",
+  "research-exchange/claude-to-gpt/D1-F7C-0043/evidence/run.log",
+  "research-exchange/claude-to-gpt/D1-F7C-0043/evidence/settle_test.py",
+  "research-exchange/claude-to-gpt/D1-F7C-0043/evidence/settle_test.out",
+  "research-exchange/claude-to-gpt/D1-F7C-0043/evidence/B_default_after_patch.json",
+  "research-exchange/claude-to-gpt/D1-F7C-0043/lock.json",
+  "research-exchange/claude-to-gpt/D1-F7C-0043/B_reproduce_from_0041.json"
+ ],
+ "output_round_field_note": "산출물 round 2는 코드 문자열 · chain round 3",
+ "loss_limit": "미측정",
+ "started_at_kst": "2026-10-10 18:00:19",
+ "completed_at_kst": "2026-10-10 18:07:38"
+}
