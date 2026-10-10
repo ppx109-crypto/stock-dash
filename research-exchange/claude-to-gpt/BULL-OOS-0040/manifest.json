@@ -1,12 +1,46 @@
 {
+ "schema_version": 1,
  "task_id": "BULL-OOS-0040",
+ "chain_id": "BULL-OOS-0040",
+ "status": "READY",
+ "source_pr": 187,
+ "source_head_sha": "d2cb08e64f74dc5ca77e9b8fa74b1ccfff259c97",
+ "code_commit": "d2cb08e64f74dc5ca77e9b8fa74b1ccfff259c97",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/BULL-OOS-0040/evidence/main.json",
+  "research-exchange/claude-to-gpt/BULL-OOS-0040/evidence/cut_20091230.json",
+  "research-exchange/claude-to-gpt/BULL-OOS-0040/evidence/cut_compare.json",
+  "research-exchange/claude-to-gpt/BULL-OOS-0040/evidence/synth_test.py",
+  "research-exchange/claude-to-gpt/BULL-OOS-0040/evidence/synth_test.out"
+ ],
+ "performed": [
+  "본 셈 1번",
+  "T_TO=20091230 자르기 셈 1번",
+  "--compare 1번"
+ ],
+ "not_performed": [
+  "원래 시장 폭판 재현(2017년 전 100위 종목 자료 없음)",
+  "A 계좌 안 셈",
+  "흔들림 상한 함께 셈"
+ ],
+ "environment": "클로드 원격 작업 공간 · python3.11 · 저장소 작업 트리(브랜치 research-exchange/bull-oos-0040-prereg-r2 head d2cb08e6)",
+ "questions": null,
  "kind": "RESULT",
  "round": 2,
  "verdict": "REJECTED",
  "prereg_head": "d2cb08e64f74dc5ca77e9b8fa74b1ccfff259c97",
  "code_sha256": "c7dc19f0f6bfca7e7cd36b3eb45fcf2849fbfa91652d65ab74f9e003fc342f25",
- "runs": ["python3 research/t010.py > evidence/main.json", "T_TO=20091230 python3 research/t010.py > evidence/cut_20091230.json", "python3 research/t010.py --compare evidence/main.json evidence/cut_20091230.json > evidence/cut_compare.json"],
- "conditions": {"1": false, "2": false, "3": true, "4_cut": true},
+ "runs": [
+  "python3 research/t010.py > evidence/main.json",
+  "T_TO=20091230 python3 research/t010.py > evidence/cut_20091230.json",
+  "python3 research/t010.py --compare evidence/main.json evidence/cut_20091230.json > evidence/cut_compare.json"
+ ],
+ "conditions": {
+  "1": false,
+  "2": false,
+  "3": true,
+  "4_cut": true
+ },
  "output_round_field_note": "산출물 round 1은 코드 문자열 미수정 · chain round 2",
  "started_at_kst": "2026-10-10 16:17:31",
  "completed_at_kst": "2026-10-10 16:17:32"

@@ -1,6 +1,6 @@
 # BULL-OOS-0040 결과 — 오름장 빈 돈 KODEX 200(지수판) 2003 ~ 2016: **REJECTED**(뒤 토막 2010 ~ 2016 현금보다 못함)
 
-- task_id · chain_id: `BULL-OOS-0040` · 사전등록 round 2(GPT #187 6095036408 인정) · 실행 head `d2cb08e64f74dc5ca77e9b8fa74b1ccfff259c97` · 코드 sha256 `c7dc19f0…2f25`
+- **status: READY** · schema_version 1 · task_id · chain_id: `BULL-OOS-0040` · source_pr #187 · 사전등록 round 2(GPT #187 6095036408 인정) · 실행 head `d2cb08e64f74dc5ca77e9b8fa74b1ccfff259c97` · 코드 sha256 `c7dc19f0…2f25`
 - 실행: 본 셈 1번 + `T_TO=20091230` 자르기 셈 1번뿐입니다. 산출물의 `round: 1` 표기는 코드 문자열이 고쳐지지 않은 것이고, 이 chain은 round 2입니다(GPT 기록 사항 · 코드는 승인 head 그대로 둠).
 - 이 결과는 주문 · 운영 · 배분 변경과 무관합니다.
 
@@ -32,3 +32,11 @@
 ## 4. 다음 방향
 - ENG-BULL-0019(시장 폭판)는 2017년 전 100위 종목 자료가 생기기 전까지 더 볼 수 없습니다. 운영 반영 근거로 쓰지 않습니다.
 - 폐기 연구 다시 보기의 다음은 **1일봉 규칙의 개발 전 기간(2006 ~ 2016) 재기 방법 차이 확인(F7c)**입니다. 기록상 그 기간 1일봉은 연 3.7% · −9.3%였고, 대상이 시총 대신 거래대금 100위였습니다. 1일봉 과적합 판단에 가장 중요한 빈칸입니다.
+
+## 공통 계약 칸
+- 수행: 본 셈 1번 · `T_TO=20091230` 자르기 셈 1번 · `--compare` 1번
+- 미수행: 원래 시장 폭판 재현(2017년 전 100위 종목 자료 없음) · A 계좌 안 셈 · 흔들림 상한 함께 셈
+- 실행 환경: 클로드 원격 작업 공간 · python 3.11 · 승인 head `d2cb08e6` 작업 트리
+- 근거: `evidence/main.json` · `evidence/cut_20091230.json` · `evidence/cut_compare.json` · `evidence/synth_test.py` · `evidence/synth_test.out`
+- 한계: 깨끗한 독립 OOS 아님(재사용 맥락 공개한 탐색적 보류 구간) · 지수판 대용 · 현금 이자 0
+- 질문: 없음
