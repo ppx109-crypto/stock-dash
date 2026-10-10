@@ -1,5 +1,6 @@
 """DIP-DEEP-0042 개발 도구 — 잘린 스냅샷(/tmp/dip-d.pkl · research/dip_build.py가 원자료에서 '자르기 → 파생'으로 구움)만 읽음.
 (계획: research-exchange/claude-to-gpt/DIP-DEEP-0042/PLAN.md)
+- round 4 안(GPT #193 6095950168 · 사용자 예외 승인 전 준비): 스냅샷 해시 검사를 끌 수 있는 길을 없앰 · rule 모듈 import 없앰.
 - round 3(GPT #193 6095756125):
   1. 1일봉 캐시 · 표 · nrl 모듈을 읽지도 import하지도 않음. 시작 때 스냅샷 sha256을 snapshot.json 값과 견주고, 다르면 멈춤.
   2. 토막(D1 · D2)마다 일봉을 그 토막 끝 날까지로 잘라 엔진에 줌. 끝 날에는 새로 사지 않고(holds 감쌈), 열린 매매는 끝 날 종가에 팖
@@ -32,13 +33,14 @@ EVAL_LOG = Path(os.getenv("DIP_EVAL_LOG", str(BOX / "evals.jsonl")))
 def _load():
     blob = SNAP.read_bytes()
     want = json.loads((BOX / "snapshot.json").read_text())["snapshot_sha256"]
-    if os.getenv("DIP_SNAP_CHECK", "1") == "1" and hashlib.sha256(blob).hexdigest() != want:
+    if hashlib.sha256(blob).hexdigest() != want:          # round 4 안: 끌 수 있는 길 없음
         sys.exit("스냅샷 해시 다름 — 셈하지 않음")
     return pickle.loads(blob)
 
 
-import lab  # noqa: E402
-import rule  # noqa: E402
+import lab  # noqa: E402   (lab.run · lanes · moves · unlike만 씀 — 파일을 읽지 않는 함수들)
+
+KIN = 0.6           # 같이 움직이는 종목 문턱(rule.KIN과 같은 값 · rule은 import하지 않음)
 
 _s = _load()
 assert _s["cut"] == CUT
@@ -65,7 +67,7 @@ def _seg(hi):
     """토막 끝 날까지 자른 일봉 · lanes · 같이 움직이는 표(토막마다 한 번 만들어 둠)."""
     p = {c: {**b, "rows": [x for x in b["rows"] if x[0] <= hi]} for c, b in prices.items()}
     p = {c: b for c, b in p.items() if b["rows"]}
-    return p, lab.lanes(p), rule.apart(p)
+    return p, lab.lanes(p), lab.unlike(lab.moves(p), edge=KIN)
 
 
 SEG = {}
