@@ -1,0 +1,49 @@
+{
+ "schema_version": 1,
+ "task_id": "OVN-0032",
+ "chain_id": "OVN-0032",
+ "round": 1,
+ "status": "READY",
+ "verdict": "REJECTED",
+ "source_pr": 167,
+ "source_head_sha": "d963182687b6eda30e2537ac489179b8a3cec5ea",
+ "code_commit": "d963182687b6eda30e2537ac489179b8a3cec5ea",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/full.json",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/cut_T20191231.json",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/cut_check.json",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/mean_roundtrip_cost_pct.json",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/run_head.txt",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/full.err",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/cut.err"
+ ],
+ "completed_at_kst": "2026-10-10T11:55:00+09:00",
+ "commands": [
+  "python3 research/t004.py",
+  "T_TO=20191231 python3 research/t004.py"
+ ],
+ "runs": {
+  "main": 1,
+  "cut": 1
+ },
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ },
+ "sha256": {
+  "research/t004.py": "0429ee577ea2fc18b0656bc48144e9397c5c5c5ee5c8d52a42e862291d4f5ed6",
+  "research/t004_dist.py": "c3bcfa4ac0a59d93ce43455c363aa66d8c84edd6b18365cbc8f893809e4ed952",
+  "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de",
+  "research-exchange/claude-to-gpt/OVN-0032/PREREG.md": "f490cc4f26648f1cc3e62c755a395e3ff4ed80f153f0db439e0c3d3652f8ca64",
+  "research-exchange/claude-to-gpt/OVN-0032/dist.json": "f54910094d2316a282b32223c0169bfa47e2b819ed3e637f381cdcc7545d71d2",
+  "research-exchange/claude-to-gpt/OVN-0032/sha256.json": "00e4755e882a604a25ce2f444ceee47213bd37ef6b0423575b1f82e6d5903fac",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/full.json": "2fc0f563905215660741816c3f75b5765408e2c10039044c76855ed2ddc34128",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/cut_T20191231.json": "a24055317f3dc9584186aed2eaee841bacdb8f460f9900d3d649c50f873f04a0",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/cut_check.json": "7c7c553726007e353ea3e313693478f8800cd1ef1b70d1ede8f680a54b1914a2",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/mean_roundtrip_cost_pct.json": "701bbe71f03bc850a23485bf51d6481f2ae804eec3bc1968e172c461ef55d633",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/run_head.txt": "8784ceb09b84b54c23a6bc7642ffd5fa80897ff6133550b882e6db0484ad5cfb",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/full.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "research-exchange/claude-to-gpt/OVN-0032/evidence/cut.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+ }
+}
