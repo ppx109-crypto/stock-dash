@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "input_pr": 24,
+  "input_head_sha": "3e3f739fd0f385e506aceb6a90ee094d7aa88d1d",
+  "source_pr": 23,
+  "source_head_sha": "b1f1f228d2abb2f41e96cd4f9775aa430dbeca85",
+  "task_id": "RELEASE-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 6,
+  "stage": "RECOVERY-POST-PUBLISH-ATTESTATION",
+  "status_synthetic": "READY",
+  "status_actual": "PR comment receipt",
+  "result_report": "research-exchange/claude-to-gpt/RELEASE-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/RELEASE-0001/manifest.json",
+  "result_branch": "claude/release-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "paper_validation_ready": false,
+  "processed_at_kst": "2026-10-08T09:01:49+09:00"
+}

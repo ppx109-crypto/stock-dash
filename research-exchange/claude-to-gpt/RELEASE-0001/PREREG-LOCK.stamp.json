@@ -1,0 +1,14 @@
+{
+ "task": "RELEASE-0001",
+ "locked_at_kst": "2026-10-08T08:59:46+09:00",
+ "input_pr": 24,
+ "input_head": "3e3f739fd0f385e506aceb6a90ee094d7aa88d1d",
+ "sha256": {
+  "PREREG-LOCK.md": "8691a8c7ed3d37ff2e89e9366bb7bf771c67fd88cf9284530201b79036f9bdc9",
+  "fixtures/fixtures.json": "09d42f17d1c2afdade3c67f158befefd11aa86b3ff71b57e5acf1bf4221709ad",
+  "fixtures/make_fixtures.py": "d306a45987b897b3bbfdd3b2ec48e07a4d9ba17a6adde2c00d02bcf2b8403a42",
+  "tests/materialize.py": "a61daf035daba03ada81454b881fa49c44591f300d61b5d034cd47c1a954a26f"
+ },
+ "helper_exists_at_lock": false,
+ "note": "도우미 · 시험 실행기 작성 전에 잠금"
+}
