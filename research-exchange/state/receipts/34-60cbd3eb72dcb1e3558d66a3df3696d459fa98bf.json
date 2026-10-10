@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "input_pr": 34,
+  "input_head_sha": "60cbd3eb72dcb1e3558d66a3df3696d459fa98bf",
+  "source_pr": 33,
+  "source_head_sha": "f8cfa8f08f95f164971e007aa526ab57a8077cc1",
+  "task_id": "PAPER-MEASURE-FIX-0001",
+  "status": "READY",
+  "tool_status": "READY_AFTER_FIX",
+  "data_status": "WAITING_DATA",
+  "result_report": "research-exchange/claude-to-gpt/PAPER-MEASURE-FIX-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/PAPER-MEASURE-FIX-0001/manifest.json",
+  "result_branch": "claude/paper-measure-fix-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "duplicate": false,
+  "paper_validation_ready": false,
+  "live_approval": false,
+  "processed_at_kst": "2026-10-08T11:51:17+09:00"
+}
