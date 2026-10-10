@@ -92,8 +92,11 @@ def features(etf, br, flow, br20=None):
     xs = [px[d] for d in ds]
     fd = sorted(flow)
     out = {}
+    PREF[:] = [0.0]
+    for x in xs:
+        PREF.append(PREF[-1] + x)
     for k, d in enumerate(ds):
-        f = {"close": xs[k]}
+        f = {"close": xs[k], "_k": k}
         for n in (20, 60, 120, 200):
             if k >= n - 1:
                 f[f"ma{n}"] = sum(xs[k - n + 1:k + 1]) / n
@@ -121,21 +124,53 @@ def features(etf, br, flow, br20=None):
     return out
 
 
+PREF = [0.0]
+
+
+def ma_of(f, n, back=0):
+    """그날(back=20이면 20날 전)까지 n일 단순평균. f에 저장된 값이 있으면 그것, 없으면 누적합(그날까지 값만)으로. 모자라면 None."""
+    key = f"ma{n}" + ("_20ago" if back else "")
+    if key in f:
+        return f[key]
+    k = f.get("_k")
+    if k is None or k - back < n - 1:
+        return None
+    e = k - back + 1
+    return (PREF[e] - PREF[e - n]) / n
+
+
+def confirm_ok(f, c):
+    """확인 조건. 이름 = 종류 + 문턱(REGIME-SW-0049 round 2: 문턱을 조금씩 바꾼 이웃을 재기 위해 숫자를 이름에서 읽음).
+    br{x}: 시장 폭 < x · sbr{x}: 짧은 폭 < x · r5m{x} / r10m{x}: 5 / 10일 수익 < −x% · vol{x}: 흔들림 비 > x/10 · F20neg · FI20neg · none"""
+    if c == "none":
+        return True
+    if c == "F20neg":
+        return f.get("F20", 0) < 0
+    if c == "FI20neg":
+        return f.get("F20", 0) + f.get("I20", 0) < 0
+    for pre, key, kind in (("sbr", "br20", "lt"), ("br", "breadth", "lt"), ("r10m", "r10", "ret"), ("r5m", "r5", "ret"), ("vol", "vol_ratio", "vol")):
+        if c.startswith(pre):
+            x = float(c[len(pre):])
+            if kind == "lt":
+                return f.get(key, 100) < x
+            if kind == "ret":
+                return f.get(key, 0) < -x / 100
+            return f.get(key, 0) > x / 10
+    raise KeyError(c)
+
+
 def raw_state(f, cfg):
     n = cfg["n"]
-    ma = f.get(f"ma{n}")
+    ma = ma_of(f, n)
     if ma is None:
         return "횡보"
-    c = cfg["confirm"]
-    conf = {"none": True, "br40": f.get("breadth", 100) < 40, "br30": f.get("breadth", 100) < 30,
-            "F20neg": f.get("F20", 0) < 0, "FI20neg": f.get("F20", 0) + f.get("I20", 0) < 0,
-            "vol15": f.get("vol_ratio", 0) > 1.5, "r5m3": f.get("r5", 0) < -0.03, "r10m5": f.get("r10", 0) < -0.05,
-            "sbr30": f.get("br20", 100) < 30}[c]
+    conf = confirm_ok(f, cfg["confirm"])
     if f["close"] < ma and conf:
         return "하락"
     up = f["close"] > ma
     if cfg["up_need"] == "ma_rising":
-        up = up and f.get(f"ma{n}_20ago") is not None and ma > f[f"ma{n}_20ago"]
+        ago = ma_of(f, n, 20)
+        up = up and ago is not None and ma > ago
     elif cfg["up_need"] == "br50":
         up = up and f.get("breadth", 0) >= 50
     return "상승" if up else "횡보"
@@ -147,7 +182,7 @@ def states(feat, cfg):
     buf = cfg.get("exit_buf", 0.0)
     for d in sorted(feat):
         s = raw_state(feat[d], cfg)
-        ma = feat[d].get(f"ma{cfg['n']}")
+        ma = ma_of(feat[d], cfg["n"])
         if cur == "하락" and s != "하락" and buf > 0 and ma is not None and feat[d]["close"] <= ma * (1 + buf):
             s = "하락"
         run = run + 1 if s == last else 1
@@ -198,7 +233,9 @@ def account(cfg, lo=LO, hi=HI):
         s_prev = st.get(p, "횡보")
         tgt = targets(s_prev, cfg, feat.get(p))                 # 전날 장 끝 판정 · 전날까지 흔들림
         band = cfg.get("band")
-        drift = band is not None and code == tgt[1] and A > 0 and abs(ve / A - min(tgt[2], tgt[0] * base[d][1] + (1 - tgt[0]))) > band
+        cur_w = 0.0 if code is None else ve / A if A > 0 else 0.0
+        same_kind = code is None or code == tgt[1]
+        drift = band is not None and same_kind and A > 0 and abs(cur_w - min(tgt[2], tgt[0] * base[d][1] + (1 - tgt[0]))) > band
         if pending != s_prev or d[:6] != p[:6] or drift:
             fb, c_new, fe = tgt
             room = fb * base[d][1] + (1 - fb)                # 1일봉 몫 안 현금 + 1일봉에서 뺀 돈

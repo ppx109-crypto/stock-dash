@@ -47,9 +47,56 @@ D.account(cfg, D.LO, D.HI)
 check("8 계좌 셈이 흔들림 판에서도 빚 없이 끝남(min_cash_slack ≥ 0)", D.account.min_slack >= -1e-12)
 # band 비교 문장: 몫 차가 band보다 크면 그날 다시 맞춤(코드 위치 점검)
 src = Path(D.__file__).read_text()
-check("9 다시 맞춤 조건에 drift(몫 차 > band)가 들어 있음 · 판정은 전날 특징(feat.get(p))으로", "or drift:" in src and "targets(s_prev, cfg, feat.get(p))" in src)
+check("9 판정은 전날 특징(feat.get(p))으로", "targets(s_prev, cfg, feat.get(p))" in src)
 # 실행기
 check("10 1단계 격자 = 상한 9 × 목표 흔들림 7 = 63 · 출발 판정기 = 0048 최종", len(RR.CAPS) * len(RR.VTS) == 63 and all(RR.START[k] == F48[k] for k in F48 if k != "up_lev"))
 check("11 down_inv를 바꾸면 하락 1일봉 몫도 같이 맞춤(0 → 1.0 · 0.3 → 0.5)", RR.change(RR.START, "down_inv", 0.3)["down_base"] == 0.5 and RR.change(RR.START, "down_inv", 0.0)["down_base"] == 1.0)
 check("12 받아들이기 · 고원은 반올림 전 값", RR.better({"annual_raw": 0.203001, "loss_ok": True}, {"annual_raw": 0.2}) and not RR.better({"annual_raw": 0.203, "loss_ok": True}, {"annual_raw": 0.2}))
+# round 2(GPT #213 6098537485 · 사용자 2026-10-10 고원 다시 정의)
+# ① 등록한 n 모두 이동평균이 계산됨(합성 상승 · 하락)
+up = lambda t: 100 * 1.002 ** t
+down = lambda t: 100 * 0.998 ** t
+for name, fn, want in (("상승", up, "상승"), ("하락", down, "하락")):
+    setup(fn)
+    feat = D.features(D.DATA[1], {}, {})
+    last = max(feat)
+    got = {n: D.raw_state(feat[last], dict(F48, n=n, confirm="none", up_need="above_only")) for n in (10, 15, 17, 20, 23, 30, 40)}
+    check(f"13 {name} 자료에서 n 10 · 15 · 17 · 20 · 23 · 30 · 40 모두 이동평균이 있고 국면 = {want}", all(D.ma_of(feat[last], n) is not None for n in got) and set(got.values()) == {want})
+f0 = {"close": 1, "_k": 5}
+D.PREF[:] = [sum(range(1, i + 1)) * 1.0 for i in range(11)]
+check("14 ma_of 손셈: 값 1..10 누적합에서 k=5 · n=3 → (4+5+6)/3 = 5 · 이력 모자라면 None", abs(D.ma_of(f0, 3) - 5.0) < 1e-12 and D.ma_of(f0, 7) is None)
+check("15 0048 표의 저장 값이 있으면 그것을 씀(ma60 키)", D.ma_of({"ma60": 99.0, "_k": 0}, 60) == 99.0)
+# ② 무보유에서 band 재진입
+D.DATA = None; D.FEAT = None
+days2 = days
+def setup_cash(cash_fn):
+    D.DATA = ({d: (1.0, cash_fn(t)) for t, d in enumerate(days2)}, {"069500": {d: 100 * 1.002 ** t for t, d in enumerate(days2)}, "114800": {d: 100.0 for d in days2},
+               "252670": {d: 100.0 for d in days2}, "122630": {d: 100.0 for d in days2}}, {}, {})
+    D.FEAT = None
+    D.LO, D.HI = days2[300], days2[-1]
+# 1일봉 현금이 처음엔 0(레버리지 못 삼) → 같은 달 안에서 0.8로 늘어남 → band 넘으면 그날 삼
+mid = days2.index(days2[305])
+setup_cash(lambda t: 0.0 if t < 305 else 0.8)
+cfgb = dict(F48, up_lev=0.3, band=0.05, n=20, confirm="none")
+nav_b, st_b = D.account(cfgb, D.LO, D.HI)
+setup_cash(lambda t: 0.0 if t < 305 else 0.8)
+nav_n, st_n = D.account(dict(cfgb, band=None), D.LO, D.HI)
+d_in = days2[306]
+check("16 현금 부족으로 무보유 → 같은 달 · 국면에서 현금 회복 → band 넘으면 그날 레버리지를 삼(산 비용만큼 NAV가 band 없는 판보다 작음)",
+      nav_b[days2[305]] < nav_n[days2[305]] and days2[305][:6] == days2[301][:6])
+setup_cash(lambda t: 0.8)
+nav_z, _ = D.account(dict(cfgb, up_lev=0.0, band=0.05), D.LO, D.HI)
+check("17 목표 몫 0이면 band가 있어도 거래 없음(NAV = 1일봉 장부 = 1)", all(abs(v - 1.0) < 1e-12 for v in nav_z.values()))
+# ③ 새 고원 정의
+nb = RR.neighbors(dict(RR.START, lev_vt=0.15))
+axes_nb = {a for a, _ in nb}
+check("18 이웃은 규칙 숫자만 조금: n 17 · 23 · 버팀 2 · 4 · 폭 25 · 35 · 목표 흔들림 ±0.02 · band ±0.02 · 몫 축(up_lev · side_inv · down_inv) 없음",
+      ("n", 17) in nb and ("n", 23) in nb and ("confirm", "br25") in nb and ("confirm", "br35") in nb and ("lev_vt", 0.13) in nb and not ({"up_lev", "side_inv", "down_inv", "down_base"} & axes_nb))
+check("19 확인 문턱 읽기: br25(폭 24 → 하락 확인) · r5m2.5(5일 −3% → 확인) · vol13(비 1.4 → 확인)",
+      D.confirm_ok({"breadth": 24}, "br25") and D.confirm_ok({"r5": -0.03}, "r5m2.5") and D.confirm_ok({"vol_ratio": 1.4}, "vol13") and not D.confirm_ok({"breadth": 26}, "br25"))
+real_run = RR.run
+RR.run = lambda c, note: {"annual_raw": 0.255, "annual_pct": 25.5, "worst_day_pct": -20.0, "worst_month_pct": -20.0, "loss_ok": False}
+okp, det = RR.plateau(dict(RR.START, lev_vt=0.15), {"annual_raw": 0.30}, 20.0)
+RR.run = real_run
+check("20 고원 통과는 더 번 몫만 봄: 이웃이 5.5 ≥ 10/2 더 벌면 통과 · 이웃 손실(−20%)은 보고 칸에만", okp and all(v["loss_ok_report"] is False for v in det.values()))
 print(f"모두 {ok}개 통과")

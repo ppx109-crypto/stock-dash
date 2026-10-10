@@ -4,7 +4,10 @@
 - 1단계(63판): 레버리지 상한 up_lev 9 × 목표 흔들림 lev_vt 7(None = 줄이지 않음) · band 0.05로 모두 셈 → 손실 한도 안 최고(같으면 표 앞).
 - 2단계(좌표 하강 · 최대 3바퀴): 아래 모든 축 · 받아들이기 = +0.3%p 넘게 · 하루 · 달 −15% 이내.
 - 덜어냄: band → None · side_inv → 0 · down_inv → 0(down_base → 1.0) 쪽으로 되돌려 0.3%p 넘게 안 떨어지면 되돌림.
-- 고원: 순서 있는 축(n · persist · up_lev · lev_vt · band · side_inv · down_inv)의 이웃이 '1일봉만 대비 더 번 몫'의 절반 이상 · 손실 한도 안. 격자 끝은 한쪽만.
+- 고원(round 2 · 사용자 2026-10-10 "고원의 정의를 다시 해"): **규칙 숫자만, 아주 조금 바꾼 이웃**으로 잼.
+  · 몫 축(up_lev · side_inv · down_inv · down_base)은 고원에서 뺌 — 몫을 키우면 손실이 커지는 것은 당연하므로, 몫은 손실 한도(−15%)로만 정함.
+  · 이웃: n × 0.85 · × 1.15(반올림) · persist ± 1 · 확인 문턱(폭 ± 5 · 5일 ± 0.5%p · 10일 ± 1%p · 흔들림 비 ± 0.2) · lev_vt ± 0.02 · band ± 0.02 · exit_buf ± 0.01
+  · 통과: 이웃마다 '1일봉만 대비 더 번 몫'의 절반 이상. 손실 한도는 최종 설정에만 적용하고, 이웃의 손실은 보고만 함.
 - 판정: 연수익 > 1일봉만 + 1%p · 세 장 각각 −15% · 고원 → ADOPT_CANDIDATE / 고원 실패 → PEAK_ONLY / NO_IMPROVEMENT. 기간 결손 NEEDS_DATA 따로.
 REG_BOX=REGIME-SW-0049 python3 research/regime_rules2.py"""
 import json
@@ -23,7 +26,6 @@ START = {"n": 20, "confirm": "br30", "persist": 3, "down_base": 1.0, "down_inv":
 CONFIRMS = ["none", "br40", "br30", "F20neg", "FI20neg", "vol15", "r5m3", "r10m5", "sbr30"]
 AXES = [("n", [10, 15, 20, 30, 40]), ("persist", [2, 3, 4]), ("confirm", CONFIRMS), ("up_need", ["ma_rising", "above_only", "br50"]),
         ("band", [None, 0.05, 0.10]), ("up_lev", CAPS), ("lev_vt", VTS), ("side_inv", [0.0, 0.1, 0.2]), ("down_inv", [0.0, 0.3, 0.5])]
-ORDERED = ("n", "persist", "up_lev", "lev_vt", "band", "side_inv", "down_inv")
 SIMPLER = {"band": None, "side_inv": 0.0, "down_inv": 0.0}
 STEP, MAX_PASS, ADOPT_MARGIN = 0.3, 3, 1.0
 SEEN = {}
@@ -63,20 +65,44 @@ def better(c, i):
     return c["loss_ok"] and ann(c) > ann(i) + STEP
 
 
+def neighbors(cfg):
+    """규칙 숫자를 아주 조금 바꾼 이웃(몫 축은 뺌)."""
+    out = []
+    n = cfg["n"]
+    for m in sorted({round(n * 0.85), round(n * 1.15)} - {n}):
+        out.append(("n", m))
+    for p in (cfg["persist"] - 1, cfg["persist"] + 1):
+        if p >= 1:
+            out.append(("persist", p))
+    c = cfg["confirm"]
+    for pre, step in (("sbr", 5), ("br", 5), ("r10m", 1), ("r5m", 0.5), ("vol", 2)):
+        if c.startswith(pre):
+            x = float(c[len(pre):])
+            for y in (x - step, x + step):
+                out.append(("confirm", f"{pre}{y:g}"))
+            break
+    if cfg.get("lev_vt") is not None:
+        for y in (cfg["lev_vt"] - 0.02, cfg["lev_vt"] + 0.02):
+            out.append(("lev_vt", round(y, 4)))
+    if cfg.get("band") is not None:
+        for y in (cfg["band"] - 0.02, cfg["band"] + 0.02):
+            if y > 0:
+                out.append(("band", round(y, 4)))
+    if cfg.get("exit_buf", 0) > 0:
+        for y in (cfg["exit_buf"] - 0.01, cfg["exit_buf"] + 0.01):
+            if y >= 0:
+                out.append(("exit_buf", round(y, 4)))
+    return out
+
+
 def plateau(cfg, res, base_ann):
     gain = ann(res) - base_ann
     out = {}
-    for axis, values in AXES:
-        if axis not in ORDERED:
-            continue
-        k = values.index(cfg[axis])
-        side = "양쪽" if 0 < k < len(values) - 1 else "한쪽(격자 끝)"
-        for j in (k - 1, k + 1):
-            if 0 <= j < len(values):
-                r = run(change(cfg, axis, values[j]), f"고원 이웃 {axis}={values[j]}")
-                out[f"{axis}={values[j]}"] = {"annual_pct": r["annual_pct"], "worst_month_pct": r["worst_month_pct"],
-                                              "ok": r["loss_ok"] and (ann(r) - base_ann) >= gain / 2, "sides": side}
-    return all(v["ok"] for v in out.values()), out
+    for axis, v in neighbors(cfg):
+        r = run(dict(cfg, **{axis: v}), f"고원 이웃 {axis}={v}")
+        out[f"{axis}={v}"] = {"annual_pct": r["annual_pct"], "worst_day_pct": r["worst_day_pct"], "worst_month_pct": r["worst_month_pct"],
+                              "loss_ok_report": r["loss_ok"], "ok": (ann(r) - base_ann) >= gain / 2}
+    return (bool(out) and all(v["ok"] for v in out.values())), out
 
 
 def main():

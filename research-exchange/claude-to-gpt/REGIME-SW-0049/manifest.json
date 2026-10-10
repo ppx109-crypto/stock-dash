@@ -3,7 +3,7 @@
  "task_id": "REGIME-SW-0049",
  "chain_id": "REGIME-SW-0049",
  "kind": "PLAN",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "method": "사용자 2026-10-10 새 방식",
  "source_pr": 212,
@@ -11,8 +11,8 @@
  "code_commit": null,
  "completed_at_kst": null,
  "code": {
-  "research/regime_dev.py": "2c2d4911da2d35251089f4e4c82375bf38ee09c1037ded3b1919e125f9bb172a",
-  "research/regime_rules2.py": "4ca47584eac474fbb94c0afa69befc60cb505bb2597834f4ccfa92ae49f4b0da"
+  "research/regime_dev.py": "4b13c9009395e01e31674bba9067c8af600dbaea4e6f2f74030b20b616564f93",
+  "research/regime_rules2.py": "5684ae8ae57402aeb3931bec85175c8a97095133a31097f6a0a7393247002396"
  },
  "actual_period": [
   "20170201",
@@ -33,5 +33,7 @@
   "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/cut_test2.out",
   "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/reg2_test.py",
   "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/reg2_test.out"
- ]
+ ],
+ "plateau_definition": "사용자 2026-10-10: 몫 축 제외 · 규칙 숫자 아주 조금(n ×0.85/×1.15 · persist ±1 · 문턱 ±작은 값 · lev_vt/band ±0.02 · exit_buf ±0.01) · 이웃마다 더 번 몫의 절반 이상 · 손실 한도는 최종만(이웃 손실은 보고)",
+ "answering": "213+2d08525ae5d9229f56d6a6a37dd9600f99860ec2+PREREG+REGIME-SW-0049(6098537485)"
 }
