@@ -1,0 +1,43 @@
+{
+ "보통": {
+  "from": "20050103",
+  "cut": "20161229",
+  "snapshot_sha256": "7cdaeb9cc6a33af5ecdd515524a91e6ac685642f4c9e71f72cc29e8521215276",
+  "snapshot_bytes": 66632289,
+  "rows": 285600,
+  "codes": 211,
+  "flow_codes": 194,
+  "days": 2856,
+  "sources": {
+   "price-data/*.json": "ce1f5ac17fb9a8c0cc12db49aa6eea8406fdae0ca6e5bd6766a621fbd87182c8",
+   "volume-data/*.json": "08d3ce29de460afea0e5ae0d88a0c6924d13a3038b83dd9e27b62e477fa89416",
+   "investor-full/*.json": "2ea20df3cd47a7f51506c8611ff9eab4039e153db95f10580499682466fcfeca",
+   "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+  },
+  "code": {
+   "research/brk_build.py": "7acae41e6c8ca6947a8b68dfd3e41cb0a58a3bfd74b61a313bc939d043569e50"
+  },
+  "sentinel": false
+ },
+ "센티널": {
+  "from": "20050103",
+  "cut": "20161229",
+  "snapshot_sha256": "7cdaeb9cc6a33af5ecdd515524a91e6ac685642f4c9e71f72cc29e8521215276",
+  "snapshot_bytes": 66632289,
+  "rows": 285600,
+  "codes": 211,
+  "flow_codes": 194,
+  "days": 2856,
+  "sources": {
+   "price-data/*.json": "ce1f5ac17fb9a8c0cc12db49aa6eea8406fdae0ca6e5bd6766a621fbd87182c8",
+   "volume-data/*.json": "08d3ce29de460afea0e5ae0d88a0c6924d13a3038b83dd9e27b62e477fa89416",
+   "investor-full/*.json": "2ea20df3cd47a7f51506c8611ff9eab4039e153db95f10580499682466fcfeca",
+   "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+  },
+  "code": {
+   "research/brk_build.py": "7acae41e6c8ca6947a8b68dfd3e41cb0a58a3bfd74b61a313bc939d043569e50"
+  },
+  "sentinel": true
+ },
+ "스냅샷_바이트까지_같음": true
+}

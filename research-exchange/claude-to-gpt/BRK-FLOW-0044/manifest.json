@@ -1,0 +1,86 @@
+{
+ "schema_version": 1,
+ "task_id": "BRK-FLOW-0044",
+ "chain_id": "BRK-FLOW-0044",
+ "kind": "RESULT",
+ "phase": "H",
+ "status": "READY",
+ "verdict": "REJECTED",
+ "independent_verification": "WAITING_DATA(퇴출 종목 포함 자료 없음)",
+ "source_pr": 200,
+ "source_head_sha": "dc1ef1ec0afa74401b6fb1d6088b661b29c1e133",
+ "code_commit": "dc1ef1ec0afa74401b6fb1d6088b661b29c1e133",
+ "lock_key": "01430acd5b91e2825744557fecd7368c4dffcd2d58e2ffec9c27eb3b28e628a9",
+ "final_lock": {
+  "research/brk_final.py": "e6255cde055abe555e5a7a4475f76f4c2300700271ce07d150db067082c73f77",
+  "lab.py": "c693d9268dbc8fc7f2db904971533fa7aac5957f72beff70f96672676934ff96",
+  "h_snapshot_sha256": "7cdaeb9cc6a33af5ecdd515524a91e6ac685642f4c9e71f72cc29e8521215276"
+ },
+ "receipt": {
+  "status": "STARTED",
+  "lock_key": "01430acd5b91e2825744557fecd7368c4dffcd2d58e2ffec9c27eb3b28e628a9",
+  "git_head": "dc1ef1ec0afa74401b6fb1d6088b661b29c1e133",
+  "at": "2026-10-10 10:40:10"
+ },
+ "conditions": {
+  "0_trades_ge_60": true,
+  "1_annual_and_luck_gt0": true,
+  "2_beats_random_median": true,
+  "3_twr_day_month_ge_-15": false,
+  "4_seven_of_eleven_years": false,
+  "5_boot_lo_gt0": false
+ },
+ "engine_annual": 1.64,
+ "control_median": -2.421539823853343,
+ "nav_worst_day": [
+  "20150707",
+  -0.1346530242920443
+ ],
+ "nav_worst_month": [
+  "200810",
+  -0.15629661968387476
+ ],
+ "nav_years": {
+  "2006": -0.174695792981316,
+  "2007": 0.6378496634833346,
+  "2008": -0.3843761892958384,
+  "2009": 0.4929038746060941,
+  "2010": 0.10429777728621681,
+  "2011": 0.07256975305573654,
+  "2012": -0.13998320865353198,
+  "2013": 0.07643598568632437,
+  "2014": -0.05375089378060538,
+  "2015": -0.08239699760850894,
+  "2016": -0.25580545528380305
+ },
+ "nav_end": 0.8802155189996941,
+ "mtm_mdd_report_only": [
+  "20090115",
+  -0.5561518114220085
+ ],
+ "boot": [
+  0.0635236081747708,
+  -0.5629475308641985,
+  0.80222739361702
+ ],
+ "boot_empty_reps": 0,
+ "dev_evals": {
+  "started": 21,
+  "done": 21,
+  "failed": 0
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/evidence/h_main.json",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/evidence/h_run.log",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/h_receipt.json",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/final_lock.json",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/h_snapshot.json",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/evidence/final_test.py",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/evidence/final_test.out",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/evidence/final_repro_d.json",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/LOG.md",
+  "research-exchange/claude-to-gpt/BRK-FLOW-0044/evals.jsonl"
+ ],
+ "started_at_kst": "2026-10-10 19:40:07",
+ "completed_at_kst": "2026-10-10 19:40:21"
+}
