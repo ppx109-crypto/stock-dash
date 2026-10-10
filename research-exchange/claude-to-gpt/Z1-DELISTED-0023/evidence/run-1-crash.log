@@ -1,0 +1,20 @@
+16:08:55 참 순위 만들기
+16:08:58 표 흘려 읽기(몇 분)
+16:13:54 행 658,620 · 변동성 2,261,332
+16:14:13 바탕 점검 {'check_calm_month_equal': True, 'check_inside_same_keys': True, 'check_inside_same_fields_mismatch': 0, 'check_breadth_equal': True}
+16:14:22 후보 모음 {'B0': 139900, 'B1': 135352, 'both': 124715, 'only_B0': 15185, 'only_B1': 10637}
+16:14:22 B0 돌리기(1)
+Traceback (most recent call last):
+  File "/home/user/stock-dash/research/z098.py", line 321, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/user/stock-dash/research/z098.py", line 254, in main
+    g0 = run_ledgers(pool_b0)
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/stock-dash/research/z098.py", line 123, in run_ledgers
+    return z081.ledgers("뒤", z081.holds_b0)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/stock-dash/research/z081.py", line 53, in ledgers
+    out.append({"seed": seed, "engine": g["연수익"], "led": g["매매목록"], "still": g["남은자리"], "end": g["끝날"], "since": since})
+                                                                                    ~^^^^^^^^^^^^
+KeyError: '남은자리'
