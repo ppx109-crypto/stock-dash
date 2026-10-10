@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/home/user/stock-dash/research/t008.py", line 306, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/user/stock-dash/research/t008.py", line 296, in main
+    "risk_on": risk(navon, lo, hi), "risk_on_stress": risk(navs, lo, hi), "risk_always_cc": risk(navall, lo, hi),
+                                                                                            ^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/stock-dash/research/t008.py", line 197, in risk
+    return {"cagr": round((nv[-1][1] ** (245 / len(rets)) - 1) * 100, 3), "worst_day": [wd[0], round(wd[1] * 100, 3)],
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: type complex doesn't define __round__ method
