@@ -1,0 +1,12 @@
+{
+ "task_id": "D1-VOL2-FIX-0008",
+ "source_pr": 133,
+ "code_commit": "0a386d52",
+ "completed_at_kst": "2026-10-09T14:55:08+09:00",
+ "evidence_paths": [
+  "evidence/fix_raw.json",
+  "evidence/fix_adj.json",
+  "evidence/run-raw.log",
+  "evidence/run-adj.log"
+ ]
+}

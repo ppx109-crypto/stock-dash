@@ -1,0 +1,459 @@
+{
+ "task": "D1-CASH-BASELINE-0003",
+ "rule": "새 82 + 조용함 문턱 그 달 앞 자료만(B0)",
+ "sizing": "min(칸/10 × NAV, 현금) — paper_trade.py:348과 같음",
+ "앞": {
+  "seeds": [
+   {
+    "seed": 0,
+    "engine_연수익": 13.14,
+    "engine_골": -6.6,
+    "매매": 129,
+    "cagr": 19.88,
+    "end_nav": 2.0668,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20180328",
+     -11.261
+    ],
+    "capped_buys": 42,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 1,
+    "engine_연수익": 13.68,
+    "engine_골": -6.6,
+    "매매": 130,
+    "cagr": 20.41,
+    "end_nav": 2.1035,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20201027",
+     -11.224
+    ],
+    "capped_buys": 39,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 2,
+    "engine_연수익": 14.54,
+    "engine_골": -6.6,
+    "매매": 128,
+    "cagr": 21.48,
+    "end_nav": 2.1792,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20201027",
+     -11.224
+    ],
+    "capped_buys": 42,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 3,
+    "engine_연수익": 13.14,
+    "engine_골": -6.6,
+    "매매": 129,
+    "cagr": 19.88,
+    "end_nav": 2.0668,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20180328",
+     -11.261
+    ],
+    "capped_buys": 42,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 4,
+    "engine_연수익": 12.01,
+    "engine_골": -7.8,
+    "매매": 131,
+    "cagr": 18.69,
+    "end_nav": 1.9859,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20180328",
+     -12.052
+    ],
+    "capped_buys": 41,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 5,
+    "engine_연수익": 13.25,
+    "engine_골": -6.6,
+    "매매": 129,
+    "cagr": 20.0,
+    "end_nav": 2.0752,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20180328",
+     -11.261
+    ],
+    "capped_buys": 42,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 6,
+    "engine_연수익": 13.14,
+    "engine_골": -6.6,
+    "매매": 129,
+    "cagr": 19.88,
+    "end_nav": 2.0668,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20180328",
+     -11.261
+    ],
+    "capped_buys": 42,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5136,
+    "days": 981,
+    "years": 4.0
+   },
+   {
+    "seed": 7,
+    "engine_연수익": 12.88,
+    "engine_골": -6.6,
+    "매매": 130,
+    "cagr": 19.38,
+    "end_nav": 2.0329,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd_daily": [
+     "20201027",
+     -11.224
+    ],
+    "capped_buys": 35,
+    "max_shortfall_pct": 9.73,
+    "min_funded_share": 0.5116,
+    "days": 981,
+    "years": 4.0
+   }
+  ],
+  "summary": {
+   "engine_연수익": {
+    "median": 13.14,
+    "spread": 2.53
+   },
+   "cagr": {
+    "median": 19.88,
+    "spread": 2.79
+   },
+   "worst_day_min": [
+    "20201208",
+    -5.851
+   ],
+   "worst_month_min": [
+    "201802",
+    -4.073
+   ],
+   "mdd_min": [
+    "20180328",
+    -12.052
+   ],
+   "capped_buys_median": 42
+  }
+ },
+ "뒤": {
+  "seeds": [
+   {
+    "seed": 0,
+    "engine_연수익": 59.21,
+    "engine_골": -15.9,
+    "매매": 363,
+    "cagr": 61.31,
+    "end_nav": 15.3363,
+    "worst_day": [
+     "20260304",
+     -12.869
+    ],
+    "worst_month": [
+     "202606",
+     -27.642
+    ],
+    "mdd_daily": [
+     "20260729",
+     -36.709
+    ],
+    "capped_buys": 138,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 1,
+    "engine_연수익": 57.98,
+    "engine_골": -15.9,
+    "매매": 363,
+    "cagr": 60.02,
+    "end_nav": 14.6515,
+    "worst_day": [
+     "20260304",
+     -12.998
+    ],
+    "worst_month": [
+     "202606",
+     -27.643
+    ],
+    "mdd_daily": [
+     "20260729",
+     -36.71
+    ],
+    "capped_buys": 136,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 2,
+    "engine_연수익": 58.18,
+    "engine_골": -15.9,
+    "매매": 366,
+    "cagr": 59.42,
+    "end_nav": 14.3404,
+    "worst_day": [
+     "20260304",
+     -12.869
+    ],
+    "worst_month": [
+     "202606",
+     -27.635
+    ],
+    "mdd_daily": [
+     "20260729",
+     -36.692
+    ],
+    "capped_buys": 137,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 3,
+    "engine_연수익": 59.11,
+    "engine_골": -15.9,
+    "매매": 365,
+    "cagr": 60.99,
+    "end_nav": 15.1652,
+    "worst_day": [
+     "20260304",
+     -12.869
+    ],
+    "worst_month": [
+     "202606",
+     -27.635
+    ],
+    "mdd_daily": [
+     "20260729",
+     -36.692
+    ],
+    "capped_buys": 135,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 4,
+    "engine_연수익": 57.7,
+    "engine_골": -15.9,
+    "매매": 369,
+    "cagr": 58.85,
+    "end_nav": 14.0497,
+    "worst_day": [
+     "20260304",
+     -12.876
+    ],
+    "worst_month": [
+     "202606",
+     -28.063
+    ],
+    "mdd_daily": [
+     "20260729",
+     -37.077
+    ],
+    "capped_buys": 138,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 5,
+    "engine_연수익": 58.7,
+    "engine_골": -15.9,
+    "매매": 365,
+    "cagr": 60.72,
+    "end_nav": 15.0193,
+    "worst_day": [
+     "20260304",
+     -12.869
+    ],
+    "worst_month": [
+     "202606",
+     -27.635
+    ],
+    "mdd_daily": [
+     "20260729",
+     -36.692
+    ],
+    "capped_buys": 138,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 6,
+    "engine_연수익": 58.29,
+    "engine_골": -15.9,
+    "매매": 368,
+    "cagr": 59.65,
+    "end_nav": 14.459,
+    "worst_day": [
+     "20260304",
+     -12.876
+    ],
+    "worst_month": [
+     "202606",
+     -28.063
+    ],
+    "mdd_daily": [
+     "20260729",
+     -37.077
+    ],
+    "capped_buys": 134,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   },
+   {
+    "seed": 7,
+    "engine_연수익": 57.67,
+    "engine_골": -15.9,
+    "매매": 367,
+    "cagr": 58.73,
+    "end_nav": 13.9907,
+    "worst_day": [
+     "20260304",
+     -12.876
+    ],
+    "worst_month": [
+     "202606",
+     -27.642
+    ],
+    "mdd_daily": [
+     "20260729",
+     -36.709
+    ],
+    "capped_buys": 139,
+    "max_shortfall_pct": 20.0,
+    "min_funded_share": 0.0,
+    "days": 1399,
+    "years": 5.71
+   }
+  ],
+  "summary": {
+   "engine_연수익": {
+    "median": 58.29,
+    "spread": 1.54
+   },
+   "cagr": {
+    "median": 60.02,
+    "spread": 2.58
+   },
+   "worst_day_min": [
+    "20260304",
+    -12.998
+   ],
+   "worst_month_min": [
+    "202606",
+    -28.063
+   ],
+   "mdd_min": [
+    "20260729",
+    -37.077
+   ],
+   "capped_buys_median": 138
+  }
+ }
+}
