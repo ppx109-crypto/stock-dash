@@ -6,7 +6,9 @@
 - 비용: 편도 수수료 + k틱 ÷ 원주가(틱 5원 · 기간 내내 6,800원 위).
 python3 research/t010.py                       본 셈
 T_TO=20091230 python3 research/t010.py         자르기 셈(앞 반까지만)
-python3 research/t010.py --compare 본.json 자르기.json"""
+python3 research/t010.py --compare 본.json 자르기.json
+- round 2(GPT #186 6094938506): 계좌는 2003-08 ~ 2016-12 한 줄로 이어 감(H2는 2009-12-30 종가의 계좌 · 보유를 그대로 이어받음 · 재시작 없음) ·
+  자르기 신호 비교는 두 산출물의 2009-12-30까지 신호 사전이 키 · 값 모두 같은지(완전 동등)."""
 import hashlib
 import json
 import math
@@ -158,6 +160,7 @@ def run(to=""):
     on = signal(days, px)
     res = {"task": "BULL-OOS-0040", "round": 1, "T_TO": to or None, "first_signal": min(on) if on else None,
            "last_day": days[-1]}
+    res["signals"] = sorted([t, v] for t, v in on.items())
     res["H1"], r1 = period(days, px, adj, on, *P["H1"])
     if to:
         return res
@@ -170,18 +173,23 @@ def run(to=""):
     res["conditions"] = {"1_cagr_gt_cash_both_halves_8paths": c1, "2_boot_lo_gt0": c2, "3_loss_limit_8paths": c3,
                          "4_cut": "--compare로 따로"}
     res["verdict_before_cut"] = "EXPLORATORY_CANDIDATE" if all((c1, c2, c3)) else "REJECTED"
-    res["signals"] = sorted([t, v] for t, v in on.items())
+    res["h2_start"] = {"carried_from": "20091230", "note": "H2 기준 NAV = 2009-12-30 종가 계좌 · 그날 보유 그대로"}
     return res
+
+
+def cut_same(x, y, cut="20091230"):
+    """CUT_KEYS 같음 그리고 cut까지 신호 사전이 키 집합 · 값 모두 같음(완전 동등)."""
+    bad = [k for k in CUT_KEYS if x.get(k) != y.get(k)]
+    xs = {t: v for t, v in x["signals"] if t <= cut}
+    ys = {t: v for t, v in y["signals"] if t <= cut}
+    return bad, xs == ys
 
 
 def compare(a, b):
     x, y = json.loads(Path(a).read_text()), json.loads(Path(b).read_text())
-    bad = [k for k in CUT_KEYS if x.get(k) != y.get(k)]
-    xs = [s for s in x["signals"] if s[0] <= "20091230"]
-    ys = dict(signal(*load("20091230")[:2]).items())
-    sig_same = all(ys.get(t) == v for t, v in xs)
-    print(json.dumps({"cut_keys": CUT_KEYS, "different": bad, "signals_same_to_cut": sig_same, "same": not bad and sig_same}, ensure_ascii=False))
-    return 0 if not bad and sig_same else 1
+    bad, sig = cut_same(x, y)
+    print(json.dumps({"cut_keys": CUT_KEYS, "different": bad, "signals_equal_to_cut": sig, "same": not bad and sig}, ensure_ascii=False))
+    return 0 if not bad and sig else 1
 
 
 def main():

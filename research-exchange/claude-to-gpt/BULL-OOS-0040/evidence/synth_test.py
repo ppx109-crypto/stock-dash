@@ -31,4 +31,17 @@ n = dict(nav)
 ok(abs(n[days[305]] / n[days[304]] - 1 - (0.5 * (1 - 0.00065) * 0.1) / n[days[304]]) < 1e-12, "10% 오른 날 = 든 몫 × 10%")
 nav, _ = t.account(days, up, up, on2, t.MAIN, "adj", gate=False)
 ok(abs(dict(nav)[days[0]] - (1 - 0.5 * 0.00065)) < 1e-12, "대조(늘 50%)는 첫날 삼")
+# round 2: H2는 이어받음 — H2 첫날 수익의 기준은 H1 마지막 날 계좌
+navx = [("20091229", 1.0), ("20091230", 1.2), ("20100104", 1.32)]
+rep, raw, rets = t.risk(navx, "20100104", "20161230")
+ok(abs(rets[0][1] - 0.1) < 1e-12, "H2 첫날 수익 = 2009-12-30 계좌 대비(재시작 아님)")
+# round 2: 자르기 신호 완전 비교 — 누락 · 추가 · 값 변경 각각 실패
+base_sig = [["20091228", True], ["20091229", False], ["20091230", True], ["20100104", True]]
+full = {"H1": {"a": 1}, "signals": base_sig}
+cut = {"H1": {"a": 1}, "signals": base_sig[:3]}
+bad, sig = t.cut_same(full, cut); ok(not bad and sig, "같으면 통과(컷 뒤 신호는 비교 밖)")
+bad, sig = t.cut_same(full, {"H1": {"a": 1}, "signals": base_sig[1:3]}); ok(not sig, "컷 쪽 신호 한 칸 누락 → 실패")
+bad, sig = t.cut_same(full, {"H1": {"a": 1}, "signals": [["20091227", True]] + base_sig[:3]}); ok(not sig, "컷 쪽 신호 한 칸 추가 → 실패")
+bad, sig = t.cut_same(full, {"H1": {"a": 1}, "signals": [["20091228", False]] + base_sig[1:3]}); ok(not sig, "컷 쪽 신호 값 하나 바뀜 → 실패")
+bad, sig = t.cut_same(full, {"H1": {"a": 2}, "signals": base_sig[:3]}); ok(bad == ["H1"], "H1 결과 다르면 실패")
 print(f"합계: 실패 {len(fails)}"); sys.exit(1 if fails else 0)
