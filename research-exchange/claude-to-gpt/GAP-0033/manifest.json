@@ -1,0 +1,40 @@
+{
+ "schema_version": 1,
+ "task_id": "GAP-0033",
+ "chain_id": "GAP-0033",
+ "round": 1,
+ "status": "READY",
+ "verdict": "REJECTED",
+ "source_pr": 169,
+ "source_head_sha": "6ca5bfde251e36c8e7258b9b292e891db046f3ea",
+ "code_commit": "6ca5bfde251e36c8e7258b9b292e891db046f3ea",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/full.json",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/cut_T20191231.json",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/cut_check.json",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/run_head.txt",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/full.err",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/cut.err"
+ ],
+ "completed_at_kst": "2026-10-10T12:17:00+09:00",
+ "runs": {
+  "main": 1,
+  "cut": 1
+ },
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ },
+ "sha256": {
+  "research/t005.py": "5726da4bbec669ad21f2405ed3383edf635328c886cf7bf66eb887700482fbd3",
+  "research/t004.py": "0429ee577ea2fc18b0656bc48144e9397c5c5c5ee5c8d52a42e862291d4f5ed6",
+  "research-exchange/claude-to-gpt/GAP-0033/PREREG.md": "302aa834deb8b4b920812ba1cebab91bf96a149ab5442b341fb20a6d9c49498e",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/full.json": "a8a58ad6d290f6a26e64362de8f9f004a6dada8bfc034d3d4a362b31677beee2",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/cut_T20191231.json": "f4cbdc07a45f73fe35157b0641d64ce0fc1b1812e2d1d0c671b7a226eae75e79",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/cut_check.json": "9a1a10d8addad74145bb8353b9c47359f9584a604349f1077249a559f1ec1f87",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/run_head.txt": "9d32cddd586e6123fc6ce6475abe105806bac9fdaf4518a88060c795b13c4553",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/full.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "research-exchange/claude-to-gpt/GAP-0033/evidence/cut.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+ }
+}
