@@ -1,0 +1,123 @@
+{
+ "설명": "모의투자 후보 목록(임시저장) — 사용자 2026-10-10 지시: '최종후보가 되면 모의투자에 모두 임시저장하고 최종후보들로만 어떻게 운영할지 추후 재계산하자'. orders=false: 모의투자 봇(paper_trade.py · daily_live.py 등)은 이 파일을 읽지 않으며 주문 · 배분을 바꾸지 않음. 운영 반영은 사용자 직접 승인 뒤 별도 과제.",
+ "공통": {
+  "바탕": "1일봉 운영 장부(research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv)에 덧붙이는 국면 바꾸기 판",
+  "코드": "research/regime_dev.py(account · 계좌 셈) · 판정 t날 장 끝 → t+1날 종가에 몫 맞춤 · 빚 없음(1일봉 놀던 현금까지)",
+  "기간": "실제 2017-02-01 ~ 2026-09-15 · 2016-01 ~ 2017-01 NEEDS_DATA · 2026 부분 해",
+  "독립 확인": "WAITING_DATA(같은 10년에서 고름)"
+ },
+ "candidates": [
+  {
+   "id": "REGIME-SW-0049",
+   "verdict": "ADOPT_CANDIDATE",
+   "loss_basis": "세 장 각각 하루 · 달 −15%",
+   "config": {
+    "n": 30,
+    "confirm": "r10m5",
+    "persist": 2,
+    "down_base": 1.0,
+    "down_inv": 0.0,
+    "inv": "114800",
+    "up_lev": 0.8,
+    "side_inv": 0.2,
+    "up_need": "above_only",
+    "exit_buf": 0.0,
+    "lev_vt": 0.25,
+    "band": null
+   },
+   "summary": {
+    "annual_pct": 40.371,
+    "worst_day_pct": -12.346,
+    "worst_month_pct": -14.887,
+    "mdd_report_pct": -24.11,
+    "years_pct": {
+     "2017": 24.06,
+     "2018": -0.13,
+     "2019": 3.62,
+     "2020": 98.24,
+     "2021": -0.51,
+     "2022": 19.17,
+     "2023": 46.83,
+     "2024": 7.02,
+     "2025": 114.71,
+     "2026": 140.93
+    },
+    "by_kind": {
+     "상승": {
+      "worst_day_pct": -12.346,
+      "worst_month_pct": -14.887
+     },
+     "하락": {
+      "worst_day_pct": -5.027,
+      "worst_month_pct": -6.567
+     },
+     "횡보": {
+      "worst_day_pct": -4.532,
+      "worst_month_pct": -11.229
+     }
+    }
+   },
+   "warning": "가장 나쁜 달 −14.887%(한도 경계) · 작은 규칙 이웃 8개 중 5개가 달 −15% 넘음 · 레버리지 0.8 · lev_vt 0.25 격자 끝",
+   "pr": "https://github.com/ppx109-crypto/stock-dash/pull/214",
+   "source_head": "49ddda2823bb89fe245447d510131c758c9abcde",
+   "orders": false,
+   "saved_at": "2026-10-10 23:56:01 KST"
+  },
+  {
+   "id": "REGIME-SW-0050",
+   "verdict": "ADOPT_CANDIDATE",
+   "loss_basis": "세 장 각각 하루 −15% · 달 −10%(사용자 2026-10-10)",
+   "config": {
+    "n": 30,
+    "confirm": "r10m5",
+    "persist": 2,
+    "down_base": 1.0,
+    "down_inv": 0.0,
+    "inv": "114800",
+    "up_lev": 0.3,
+    "side_inv": 0.2,
+    "up_need": "above_only",
+    "exit_buf": 0.0,
+    "band": null,
+    "lev_vt": null
+   },
+   "summary": {
+    "annual_pct": 32.699,
+    "worst_day_pct": -9.894,
+    "worst_month_pct": -9.336,
+    "mdd_report_pct": -18.61,
+    "years_pct": {
+     "2017": 16.79,
+     "2018": 4.65,
+     "2019": 7.61,
+     "2020": 57.31,
+     "2021": 1.98,
+     "2022": 19.72,
+     "2023": 55.49,
+     "2024": 10.05,
+     "2025": 70.54,
+     "2026": 95.8
+    },
+    "by_kind": {
+     "상승": {
+      "worst_day_pct": -9.894,
+      "worst_month_pct": -9.336
+     },
+     "하락": {
+      "worst_day_pct": -2.999,
+      "worst_month_pct": -4.634
+     },
+     "횡보": {
+      "worst_day_pct": -4.515,
+      "worst_month_pct": -9.034
+     }
+    }
+   },
+   "warning": "작은 규칙 이웃 6개 중 4개가 달 −10% 넘음(1개는 −15%도) · 레버리지 0.30은 격자 가장 작은 끝",
+   "pr": "결과 PR(이 커밋 뒤 번호 기록)",
+   "source_head": "44de593b205aeac6ba74d1cdbad2c6d9403d4d12",
+   "orders": false,
+   "saved_at": "2026-10-10 23:56:01 KST"
+  }
+ ]
+}
