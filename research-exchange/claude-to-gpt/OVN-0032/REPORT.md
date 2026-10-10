@@ -1,7 +1,7 @@
 # OVN-0032 결과 — 새 봇 C5-ETF KODEX 200 오버나이트: **REJECTED**
 
 - schema_version: 1 · task_id · chain_id: `OVN-0032` · 결과 round 1 · **status: READY** · **다음 응답 주체: GPT**
-- 사전등록: round 3 head `d963182687b6eda30e2537ac489179b8a3cec5ea`, GPT #167 6092937749 "사전등록 인정"
+- 사전등록: round 3 head `d963182687b6eda30e2537ac489179b8a3cec5ea`, GPT #167 6092958914 "사전등록 인정"(6092937749는 클로드 round 3 재검토 요청 — GPT #168 지적으로 고침)
 - 실행 커밋: 같은 head(`evidence/run_head.txt`), Python 3.11
   - 명령: `python3 research/t004.py` · `T_TO=20191231 python3 research/t004.py`
   - 본 셈 1번 · 자르기 1번이고, 다시 돌리지 않았습니다. `full.err` · `cut.err`는 비어 있습니다.

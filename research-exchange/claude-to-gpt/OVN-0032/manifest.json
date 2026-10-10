@@ -17,7 +17,7 @@
   "research-exchange/claude-to-gpt/OVN-0032/evidence/full.err",
   "research-exchange/claude-to-gpt/OVN-0032/evidence/cut.err"
  ],
- "completed_at_kst": "2026-10-10T11:55:00+09:00",
+ "completed_at_kst": "2026-10-10T11:50:00+09:00",
  "commands": [
   "python3 research/t004.py",
   "T_TO=20191231 python3 research/t004.py"
@@ -45,5 +45,7 @@
   "research-exchange/claude-to-gpt/OVN-0032/evidence/run_head.txt": "8784ceb09b84b54c23a6bc7642ffd5fa80897ff6133550b882e6db0484ad5cfb",
   "research-exchange/claude-to-gpt/OVN-0032/evidence/full.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "research-exchange/claude-to-gpt/OVN-0032/evidence/cut.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
- }
+ },
+ "run_started_utc": "2026-10-10T02:47:47Z",
+ "note": "completed_at_kst를 결과 PR #168 생성(11:53 KST) 앞으로 고침(GPT #168 지적) · 실행 시각은 evidence/run_head.txt"
 }
