@@ -1,0 +1,76 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-OOS-0001",
+ "status": "BLOCKED",
+ "verdict": "BLOCKED / WAITING_DATA",
+ "source": {
+  "schema_version": 1,
+  "task_id": "REGIME-OOS-0001",
+  "chain_id": "PAPER-READINESS-20261008",
+  "round": 13,
+  "status": "BLOCKED",
+  "input": {
+   "pr": 69,
+   "head_sha": "13ecdb8477fc983717b8cbef870467508f3136cc",
+   "read_files": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "LOCK.json",
+    "manifest.json",
+    "receipt.json"
+   ]
+  },
+  "source": {
+   "pr": 68,
+   "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
+  },
+  "base_main_sha": "d22d8085e1f5ff18c152858be695275f8c41c77d"
+ },
+ "common_forward_N": {
+  "frozen_pipeline": 0,
+  "if_m15_lock_ignored": 12,
+  "if_d1_rebuilt_and_m15_opened": 22,
+  "needed_interim": 20,
+  "needed_oos_check": 60
+ },
+ "deficits": [
+  "M15: 고정 m15_exec가 M15_OPEN_OOS · HLAB_OPEN_HOLDOUT를 지워 2026-09-01 뒤 봉을 읽지 않음(0일)",
+  "D1: study/features.json(로컬 파생 · git 밖) · nrl-cache.pkl이 2026-09-16에서 끝남(12일)",
+  "ETF: 엔진 필수 ETF가 2026-10-02에서 끝남(22일)",
+  "investor-data 151종목 2026-09-29에서 끝남"
+ ],
+ "recheck_conditions": [
+  "D1 특징표 재생성(저장소 자료 · 승인 필요)",
+  "M15 9월 시험지 열기(승인 필요)",
+  "OOS_CHECK는 2026-09-01부터 60거래일(대략 2026-11월 말)"
+ ],
+ "computed_runs": 0,
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/inventory.json"
+ ],
+ "files": [
+  {
+   "path": "REPORT.md",
+   "sha256": "fba6344e55525db6537c0ebc6d431dd6c59822870ccf5cec885d4323dbbf5012"
+  },
+  {
+   "path": "evidence/inventory.json",
+   "sha256": "475c342f4fdf96398e2a941db118a2698a4f803229f0e5b345c35943b3cd96e8"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "d2dc06a8c4133cf0479149316233bd5d3653d4c169def4045dda72a8824da31b"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/regime-oos-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T19:31:43+09:00"
+}
