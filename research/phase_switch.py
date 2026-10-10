@@ -6,6 +6,8 @@
   날마다 그날 국면(굽기 안 069500 60일 ±5%)의 신호 값만 씀. 그 신호 값이 없는 날은 뺌.
 - 판정(T): ① 평균 > 0 ② 2022 ~ 2026 다섯 해 가운데 3해 이상 + ③ 바꾸는 판 평균 > 'S7을 늘 쓰는 판' 평균(같은 날들)
   모두면 PHASE_SWITCH_IN_REUSED_T · 아니면 PHASE_SWITCH_REJECTED · independent_validation은 늘 WAITING_DATA.
+- round 2(GPT #205 6096936274): 국면마다 유효 날 ≥ MIN_PHASE_DAYS(60) 아니면 판정 전에 NEEDS_DATA(① ② ③을 보지 않음).
+  95% 구간(보고 전용 · 판정 밖): 바꾸는 판 평균 · 같은 날 (바꾸는 판 − S7 늘) 차 — 달 덩어리 되뽑기 2,000번 · 씨앗 46.
 python3 research/phase_switch.py --t      잠금 확인 → O_EXCL 영수증 → 고르기 → T 셈(이 한 번뿐)
 python3 research/phase_switch.py --lock   잠금 파일 쓰기(성과 셈 없음)"""
 import hashlib
@@ -26,6 +28,8 @@ RECEIPT = BOX / "t_receipt.json"
 POOL = ("S1_MOM20", "S2_REV5", "S3_HIGH120", "S4_LOWVOL60", "S7_EMA_ALIGN", "S8_MOM120_SKIP20")
 WANT = {"오름": "S8_MOM120_SKIP20", "횡보": "S7_EMA_ALIGN", "내림": "S2_REV5"}
 YEARS = ("2022", "2023", "2024", "2025", "2026")
+MIN_PHASE_DAYS = 60
+BOOT_REPS, BOOT_SEED = 2000, 46
 
 
 def pick_from_map(table):
@@ -48,8 +52,19 @@ def combine(res, plan):
     return out
 
 
+def boot_ci(daily):
+    """{날: 값} → 달 덩어리 되뽑기 평균의 95% 구간(%) · 보고 전용."""
+    if not daily:
+        return None
+    return G.boot_month({d: (v, None) for d, v in daily.items()}, reps=BOOT_REPS, seed=BOOT_SEED)
+
+
 def judge(comb, base):
     same = [d for d in comb if d in base]
+    pdays = {p: sum(1 for _, q, _ in comb.values() if q == p) for p in ("오름", "횡보", "내림")}
+    ci = {"switch_mean_ci95_pct": boot_ci({d: comb[d][0] for d in comb}),
+          "paired_switch_minus_S7_ci95_pct": boot_ci({d: comb[d][0] - base[d][0] for d in same}),
+          "ci_use": "보고 전용(판정 밖)", "boot": {"unit": "달", "reps": BOOT_REPS, "seed": BOOT_SEED}}
     m = G.mean([comb[d][0] for d in comb])
     ys = {y: G.mean([v for d, (v, _, _) in comb.items() if d[:4] == y]) for y in YEARS}
     pos = sum(1 for v in ys.values() if v is not None and v > 0)
@@ -62,11 +77,13 @@ def judge(comb, base):
             "years_pct": {y: (None if v is None else round(v * 100, 3)) for y, v in ys.items()},
             "phase_pct": {p: (lambda xs: None if not xs else round(sum(xs) / len(xs) * 100, 3))([v for v, q, _ in comb.values() if q == p])
                           for p in ("오름", "횡보", "내림")},
-            "phase_days": {p: sum(1 for _, q, _ in comb.values() if q == p) for p in ("오름", "횡보", "내림")},
+            "phase_days": pdays,
             "same_days": len(same), "switch_mean_same_days_pct": None if cm is None else round(cm * 100, 3),
             "always_S7_mean_same_days_pct": None if bm is None else round(bm * 100, 3),
-            "c1_mean_gt0": c1, "c2_years_ge_3": c2, "c3_beats_always_S7": c3,
-            "verdict": "PHASE_SWITCH_IN_REUSED_T" if (c1 and c2 and c3) else "PHASE_SWITCH_REJECTED"}
+            "c0_phase_days_ge_60": all(v >= MIN_PHASE_DAYS for v in pdays.values()),
+            "c1_mean_gt0": c1, "c2_years_ge_3": c2, "c3_beats_always_S7": c3, **ci,
+            "verdict": ("NEEDS_DATA" if not all(v >= MIN_PHASE_DAYS for v in pdays.values())
+                        else "PHASE_SWITCH_IN_REUSED_T" if (c1 and c2 and c3) else "PHASE_SWITCH_REJECTED")}
 
 
 def sha(p):

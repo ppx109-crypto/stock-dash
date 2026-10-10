@@ -3,15 +3,15 @@
  "task_id": "PHASE-SWITCH-0046",
  "chain_id": "PHASE-SWITCH-0046",
  "kind": "PREREG",
- "round": 1,
+ "round": 2,
  "status": "READY",
- "source_pr": null,
- "source_head_sha": null,
+ "source_pr": 204,
+ "source_head_sha": "59485b3a5fa736676214862eac210ab085bd25fd",
  "base_head_sha": "59485b3a5",
  "code_commit": null,
  "completed_at_kst": null,
  "t_lock": {
-  "research/phase_switch.py": "c1e758d91c30670765a8eb86ffc812894f6b923b1ba7203d767d2b45916070bd",
+  "research/phase_switch.py": "590179126481f234989dcd363021a17b7a76f8fa0b9936ad71c9d9381e2bc98e",
   "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9",
   "/tmp/sig-t.pkl": "1c072856bb1460b773bb5ba07b85951a311755cc78a09172086784322868ef7e",
   "SIG-MAP-0045/evidence/t_main.json": "3629ac41ee88f58806f1149b3d5652803e7583049d7a04dc6b23287c02d51515"
@@ -26,6 +26,7 @@
   "20260915"
  ],
  "verdicts": [
+  "NEEDS_DATA",
   "PHASE_SWITCH_IN_REUSED_T",
   "PHASE_SWITCH_REJECTED"
  ],
@@ -37,5 +38,21 @@
   "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/t_lock.json",
   "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.py",
   "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.out"
- ]
+ ],
+ "code": {
+  "research/phase_switch.py": "590179126481f234989dcd363021a17b7a76f8fa0b9936ad71c9d9381e2bc98e"
+ },
+ "min_phase_days": 60,
+ "ci": {
+  "use": "보고 전용(판정 밖)",
+  "unit": "달",
+  "reps": 2000,
+  "seed": 46,
+  "fields": [
+   "switch_mean_ci95_pct",
+   "paired_switch_minus_S7_ci95_pct"
+  ]
+ },
+ "post_hoc_selection": "6 후보 × 3 국면 = 18칸 · M에서 국면마다 최대 · 승자 편향",
+ "answering": "205+01138f311e812da70685fced37365651512579d7+PREREG+PHASE-SWITCH-0046(6096936274)"
 }
