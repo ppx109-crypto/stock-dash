@@ -4,6 +4,8 @@ probe_delisted 2026-09-24 '시세는 없는데 일봉은 있음 0').
 
 날짜(basDt)로 물으면 그날 상장된 종목이 모두 옴 → 뒤에 상장폐지된 회사도 그날 줄에 있음.
 저장: public-daily/{해}.csv — "날,코드,이름,종가,시가총액(억),거래량" · 날마다 시가총액 위 TOP(기본 400)만(대상 200 + 여유).
+넓게 받기(PUB_WIDE=1 · 저장 PUB_HOME 기본 public-daily-v2): 대비(종가 − 거래소 기준가) · 등락률 · 상장주식수를 더함
+  → 기준가는 분할 · 무상증자 · 권리락 날 거래소가 맞춘 값이라, 종가 ÷ (종가 − 대비)가 그날 수정 수익(STR-0030 · GPT #164 6091687311).
 이어 받기: 이미 있는 날은 건너뜀 · 한 번에 MAX_DAYS일까지(호출 한도). 조회 전용 · 키는 찍지 않음.
 python collect_public_daily.py [시작날 YYYYMMDD]
 """
@@ -18,7 +20,9 @@ from pathlib import Path
 
 from market import MARKETS, _number, board
 
-HOME = Path("public-daily")
+WIDE = os.getenv("PUB_WIDE", "0") == "1"
+HOME = Path(os.getenv("PUB_HOME") or ("public-daily-v2" if WIDE else "public-daily"))
+HEAD = ["날", "코드", "이름", "종가", "시가총액(억)", "거래량"] + (["대비", "등락률", "상장주식수"] if WIDE else [])
 TOP = int(os.getenv("PUB_TOP", "400"))
 MAX_DAYS = int(os.getenv("PUB_MAX_DAYS", "400"))
 
@@ -44,9 +48,21 @@ def one_day(day, key):
             cap, close = _number(it.get("mrktTotAmt")), _number(it.get("clpr"))
             if len(code) != 6 or not cap or not close:
                 continue
-            rows.append((day, code, str(it.get("itmsNm") or "").replace(",", " ").strip(), close, round(cap / 1e8), _number(it.get("trqu")) or 0))
+            row = (day, code, str(it.get("itmsNm") or "").replace(",", " ").strip(), close, round(cap / 1e8), _number(it.get("trqu")) or 0)
+            if WIDE:
+                row += (_number(it.get("vs")), _number(it.get("fltRt")), _number(it.get("lstgStCnt")))
+            rows.append(row)
     rows.sort(key=lambda r: -r[4])
     return rows[:TOP]
+
+
+def num(x):
+    """정수 값은 소수점 없이(기존 파일과 같은 꼴) · 비면 빈칸."""
+    if x is None:
+        return ""
+    if isinstance(x, float) and x.is_integer():
+        return str(int(x))
+    return str(x)
 
 
 def save(rows):
@@ -59,8 +75,8 @@ def save(rows):
         old = f.read_text(encoding="utf-8").splitlines()[1:] if f.exists() else []
         buf = io.StringIO()
         w = csv.writer(buf, lineterminator="\n")
-        w.writerow(["날", "코드", "이름", "종가", "시가총액(억)", "거래량"])
-        lines = sorted(set(old) | {",".join(str(x) for x in (r[0], r[1], r[2], int(r[3]) if float(r[3]).is_integer() else r[3], r[4], int(r[5]))) for r in new})
+        w.writerow(HEAD)
+        lines = sorted(set(old) | {",".join(num(x) for x in r) for r in new})
         buf.write("\n".join(lines) + "\n")
         f.write_text(buf.getvalue(), encoding="utf-8")
 

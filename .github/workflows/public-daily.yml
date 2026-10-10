@@ -12,6 +12,10 @@ on:
         description: '한 번에 받을 날 수(호출 한도)'
         required: false
         default: '400'
+      wide:
+        description: '넓게 받기(1이면 대비 · 등락률 · 상장주식수를 더해 public-daily-v2에 저장)'
+        required: false
+        default: '0'
 permissions:
   contents: write
 concurrency:
@@ -20,7 +24,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,13 +36,14 @@ jobs:
           SINCE: ${{ inputs.since || '20170102' }}
           DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
           PUB_MAX_DAYS: ${{ inputs.days || '400' }}
+          PUB_WIDE: ${{ inputs.wide || '0' }}
       - name: Save
         if: always()
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          mkdir -p public-daily
-          git add -A public-daily
+          mkdir -p public-daily public-daily-v2
+          git add -A public-daily public-daily-v2
           if ! git diff --cached --quiet; then
             git commit -q -m 'Public daily snapshot (상장폐지 포함 그날 상위 종목)'
             ok=0
