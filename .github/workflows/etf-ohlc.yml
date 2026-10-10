@@ -1,0 +1,52 @@
+name: ETF OHLC + distributions (research)
+# 연구용 ETF 일봉 시가 · 고가 · 저가 · 종가(수정 · 원주가) + 분배금 일정을 etf-ohlc에 받습니다(collect_etf_ohlc.py · 조회 전용 · 주문과 무관).
+# C5-ETF 오버나이트 사전등록 전 자료(GPT #166 6092707290). 손으로만 돌립니다.
+on:
+  workflow_dispatch:
+    inputs:
+      codes:
+        description: '종목코드(공백). 비우면 069500'
+        required: false
+        default: '069500'
+permissions:
+  contents: write
+concurrency:
+  group: etf-collect
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/kis-token-open
+        continue-on-error: true
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python collect_etf_ohlc.py $CODES || { sleep 70; python collect_etf_ohlc.py $CODES; }
+          git add -A etf-ohlc
+          if ! git diff --cached --quiet; then
+            git commit -q -m 'Collect ETF OHLC + distributions (research)'
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; sleep $((try * 7)); done
+          fi
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          CODES: ${{ inputs.codes || '069500' }}
+      - if: always()
+        uses: ./.github/actions/kis-token-close
+        continue-on-error: true
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
