@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "input_pr": 18,
+  "input_head_sha": "4cc7d101211cd3a74b3624a5106694ceb083863d",
+  "source_pr": 17,
+  "source_head_sha": "63e47a1bc49f183a692e606d0c55191e716e90a2",
+  "task_id": "REPLAY-0002",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 3,
+  "stage": "REPLAY-1B",
+  "status": "BLOCKED",
+  "verdict": "BLOCKED_NEEDS_DATA",
+  "result_report": "research-exchange/claude-to-gpt/REPLAY-0002/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/REPLAY-0002/manifest.json",
+  "result_branch": "claude/replay-0002-result",
+  "result_pr": null,
+  "merged": false,
+  "processed_at_kst": "2026-10-08T08:25:21+09:00"
+}

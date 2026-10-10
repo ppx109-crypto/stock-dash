@@ -1,0 +1,13 @@
+{
+ "task": "REPLAY-0002",
+ "locked_at_kst": "2026-10-08T08:17:14+09:00",
+ "input_pr": 18,
+ "input_head": "4cc7d101211cd3a74b3624a5106694ceb083863d",
+ "data_commit": "5998f42e9acbb0fd3912ae9ebc63c5e1edfb39dc",
+ "sha256": {
+  "PREREG-LOCK.md": "991a7e17175948392082cb8f72e797243be9859d5f0f3c8b5679576ec1bc355b"
+ },
+ "classifier_exists_at_lock": false,
+ "data_contents_opened_at_lock": false,
+ "note": "분류기 작성 · 실행 · 결과 보기 전에 잠금. 시각 기준은 이 커밋의 git 시각"
+}

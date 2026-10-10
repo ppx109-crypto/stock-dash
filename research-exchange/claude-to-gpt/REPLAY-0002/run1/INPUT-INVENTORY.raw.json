@@ -1,0 +1,186 @@
+{
+ "base_commit": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+ "data_commit": "5998f42e9acbb0fd3912ae9ebc63c5e1edfb39dc",
+ "ledger": {
+  "columns_dropped": [
+   "pnl_pct_engine",
+   "slots(값)"
+  ],
+  "columns_read": [
+   "code",
+   "entry",
+   "exit"
+  ],
+  "commit": "a61f033ecd16ba0976c955a93bfec70c7463ad53",
+  "path": "research-exchange/claude-to-gpt/RULES-0002/results/d1_ledger_ASIS.csv",
+  "rows": 495,
+  "sha256": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b"
+ },
+ "sources": [
+  {
+   "engine_reads": true,
+   "files": 507,
+   "git_first_add_kst_max": "20260924",
+   "git_first_add_kst_min": "20260922",
+   "git_versions_total": 5810,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 136,
+   "role": "study.load_prices → 일봉 종가(caps.py:100 '한투 수정주가')",
+   "source": "price-data",
+   "tree_sha1": "a8f70a114d0572f86012a5e057dbb3280f121c51"
+  },
+  {
+   "engine_reads": true,
+   "files": 507,
+   "git_first_add_kst_max": "20260925",
+   "git_first_add_kst_min": "20260923",
+   "git_versions_total": 4173,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 136,
+   "role": "lab.RANGE_DIR · ntools.VOL → 거래량 · 고가 · 저가",
+   "source": "volume-data",
+   "tree_sha1": "67a8475fb16e61860e3904df416cffc68386ea77"
+  },
+  {
+   "engine_reads": true,
+   "files": 499,
+   "git_first_add_kst_max": "20260924",
+   "git_first_add_kst_min": "20260923",
+   "git_versions_total": 499,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 136,
+   "role": "caps → 주식수(시가총액 순위 TOP100)",
+   "source": "share-data",
+   "tree_sha1": "5b8fdc00d462f552a0e433f9c8d1a0e30cfea349"
+  },
+  {
+   "engine_reads": true,
+   "files": 509,
+   "git_first_add_kst_max": "20261003",
+   "git_first_add_kst_min": "20260923",
+   "git_versions_total": 1946,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 136,
+   "role": "caps · ntools.EVENTS → 공시 목록",
+   "source": "event-data",
+   "tree_sha1": "52e5183d89b60bd24e320e8e455e997de8fd2fb1"
+  },
+  {
+   "engine_reads": true,
+   "files": 272,
+   "git_first_add_kst_max": "20260930",
+   "git_first_add_kst_min": "20260930",
+   "git_versions_total": 272,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 135,
+   "role": "caps → 원주가(수정 안 한 종가, 2017~, 일부 종목)",
+   "source": "loan-data",
+   "tree_sha1": "6b7febf9c10f165cdf3f6345d83f96a5dd53c05d"
+  },
+  {
+   "engine_reads": true,
+   "files": 440,
+   "git_first_add_kst_max": "20261001",
+   "git_first_add_kst_min": "20260928",
+   "git_versions_total": 2120,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 136,
+   "role": "final_group.flow_rows → 투자자별 순매수(teacher · steady)",
+   "source": "investor-data",
+   "tree_sha1": "83d241cb2a9ac962420330a82253db5ec4a62ba8"
+  },
+  {
+   "engine_reads": true,
+   "files": 416,
+   "git_first_add_kst_max": "20260929",
+   "git_first_add_kst_min": "20260922",
+   "git_versions_total": 862,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 136,
+   "role": "study.target_timeline → 목표가(target_cut)",
+   "source": "opinion-data",
+   "tree_sha1": "83b6904a73c7655e67a24ec2337d33df3764cb52"
+  },
+  {
+   "blob_sha256": null,
+   "engine_reads": true,
+   "in_git_at_C": false,
+   "role": "lab.load → 특징 표(rule.holds · aligned · rank · calm 문턱의 원료)",
+   "source": "study/features.json"
+  },
+  {
+   "engine_reads": false,
+   "files": 1697,
+   "git_first_add_kst_max": "20261002",
+   "git_first_add_kst_min": "20261002",
+   "git_versions_total": 3103,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 18,
+   "role": "코스닥 일봉(시가 · 고가 · 저가 · 종가)",
+   "source": "kosdaq-data",
+   "tree_sha1": "71d84171b9773866a33b765efba461c9b4431ccb"
+  },
+  {
+   "engine_reads": false,
+   "files": 1697,
+   "git_first_add_kst_max": "20260930",
+   "git_first_add_kst_min": "20260930",
+   "git_versions_total": 4146,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 135,
+   "role": "시간봉 CSV(연도별)",
+   "source": "hourly-data",
+   "tree_sha1": "bb4ed73100272dc45a988a3c5492e60327eb1aa7"
+  },
+  {
+   "engine_reads": false,
+   "files": 312,
+   "git_first_add_kst_max": "20260930",
+   "git_first_add_kst_min": "20260930",
+   "git_versions_total": 328,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 115,
+   "role": "시간봉 CSV(한투, 연도별)",
+   "source": "hourly-kis",
+   "tree_sha1": "796ffa517e26d15bc2a1c90942e46906f8947222"
+  },
+  {
+   "engine_reads": false,
+   "files": 477,
+   "git_first_add_kst_max": null,
+   "git_first_add_kst_min": null,
+   "git_versions_total": 0,
+   "in_git_at_C": true,
+   "ledger_codes": 136,
+   "ledger_codes_with_file": 134,
+   "role": "조사 자료(since · disclosures)",
+   "source": "public-data",
+   "tree_sha1": "9c06398cbb0dd78220d74e7c3cdcd7c7cac75470"
+  },
+  {
+   "blob_sha256": "6bd324e66c773b4a7a0a10bc826b6b47b73d90a8616e892ca4a964f4d2bc3758",
+   "engine_reads": false,
+   "in_git_at_C": true,
+   "role": "현재 목록",
+   "source": "study/flow_universe.json"
+  },
+  {
+   "blob_sha256": "b496504febc96ac880940af7ca372fe3514e9065a5d1ad28fb7d75802a35cfaa",
+   "engine_reads": false,
+   "in_git_at_C": true,
+   "role": "현재 목록",
+   "source": "study/kosdaq_codes.json"
+  }
+ ],
+ "task": "REPLAY-0002"
+}

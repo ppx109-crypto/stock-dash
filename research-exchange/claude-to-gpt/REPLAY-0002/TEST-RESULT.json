@@ -1,0 +1,50 @@
+{
+ "determinism": {
+  "run1_list_hash": "8786d82edc64f86ef0fba1b9372f98c5d1c062fe3975a408d9ccd53377255a04",
+  "run2_list_hash": "8786d82edc64f86ef0fba1b9372f98c5d1c062fe3975a408d9ccd53377255a04",
+  "same": true,
+  "coverage_file_sha256_same": true
+ },
+ "pnl_shuffle": {
+  "pnl_values_changed_rows": 495,
+  "loaded_rows_equal": true,
+  "result_hash_equal": true,
+  "matches_run1": true
+ },
+ "exit_swap": {
+  "entry_side_fields": [
+   "F01",
+   "F02",
+   "F03",
+   "F04",
+   "F05",
+   "F06",
+   "F07",
+   "F10",
+   "F11",
+   "F13"
+  ],
+  "entry_side_diffs": 0,
+  "exit_side_changed_rows": 17
+ },
+ "static_no_pnl_read": {
+  "violations": [],
+  "ok": true
+ },
+ "isolation": {
+  "network": "socket connect 차단",
+  "pkl_opened": [],
+  "ops_state_opened": [],
+  "ops_modules_imported": [],
+  "ok": true
+ },
+ "budget": {
+  "seconds": 55.3,
+  "max_rss_mb": 406.7,
+  "limit_seconds": 300,
+  "limit_mb": 512,
+  "result_runs": 2,
+  "within": true
+ },
+ "all_ok": true
+}
