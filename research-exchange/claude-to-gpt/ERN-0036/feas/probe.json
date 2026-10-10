@@ -1,0 +1,332 @@
+{
+ "sample_matches_csv": true,
+ "task": "ERN-0036",
+ "stage": "feasibility",
+ "started_kst": "2026-10-10T13:21:43+09:00",
+ "sample": [
+  [
+   "033270",
+   "gone"
+  ],
+  [
+   "200230",
+   "gone"
+  ],
+  [
+   "056080",
+   "gone"
+  ],
+  [
+   "297890",
+   "gone"
+  ],
+  [
+   "019210",
+   "gone"
+  ],
+  [
+   "093050",
+   "gone"
+  ],
+  [
+   "348950",
+   "gone"
+  ],
+  [
+   "419530",
+   "gone"
+  ],
+  [
+   "348150",
+   "gone"
+  ],
+  [
+   "450140",
+   "gone"
+  ],
+  [
+   "006800",
+   "now"
+  ],
+  [
+   "004370",
+   "now"
+  ],
+  [
+   "010140",
+   "now"
+  ],
+  [
+   "105560",
+   "now"
+  ],
+  [
+   "005690",
+   "now"
+  ],
+  [
+   "028670",
+   "now"
+  ],
+  [
+   "002790",
+   "now"
+  ],
+  [
+   "086520",
+   "now"
+  ],
+  [
+   "003380",
+   "now"
+  ],
+  [
+   "003490",
+   "now"
+  ],
+  [
+   "000210",
+   "now"
+  ],
+  [
+   "005440",
+   "now"
+  ],
+  [
+   "108490",
+   "now"
+  ],
+  [
+   "090460",
+   "now"
+  ],
+  [
+   "006280",
+   "now"
+  ],
+  [
+   "030610",
+   "now"
+  ],
+  [
+   "079160",
+   "now"
+  ],
+  [
+   "328130",
+   "now"
+  ],
+  [
+   "026960",
+   "now"
+  ],
+  [
+   "161890",
+   "now"
+  ]
+ ],
+ "items": [
+  {
+   "code": "033270",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "200230",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "056080",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "297890",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "019210",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "093050",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "348950",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "419530",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "348150",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "450140",
+   "group": "gone",
+   "status": "미수행"
+  },
+  {
+   "code": "006800",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "004370",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "010140",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "105560",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "005690",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "028670",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "002790",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "086520",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "003380",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "003490",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "000210",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "005440",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "108490",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "090460",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "006280",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "030610",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "079160",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "328130",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "026960",
+   "group": "now",
+   "status": "미수행"
+  },
+  {
+   "code": "161890",
+   "group": "now",
+   "status": "미수행"
+  }
+ ],
+ "stopped": "corpCode.xml ZIP 아님 · DART 상태 800",
+ "verdict": {
+  "steps_now": {
+   "corp": [
+    0,
+    20
+   ],
+   "list_complete": [
+    0,
+    20
+   ],
+   "doc": [
+    0,
+    20
+   ],
+   "parse": [
+    0,
+    20
+   ]
+  },
+  "compare_firms": 0,
+  "compare_values": [
+   0,
+   0
+  ],
+  "unit_errors": 0,
+  "period_errors": 0,
+  "gone_corp": [
+   0,
+   10
+  ],
+  "pass": false,
+  "why": [
+   "corp 0/20 < 90%",
+   "list_complete 0/20 < 90%",
+   "doc 0/20 < 90%",
+   "parse 0/20 < 90%",
+   "견줄 수 있는 종목 0 < 10",
+   "gone 고유번호 0/10 < 50%",
+   "호출 상한 · 멈춤으로 미수행 표본 있음"
+  ],
+  "note": "gone 고유번호 회수율은 '과거 등장 · 지금 위 400 밖 코드' 범위의 값이고, 상장폐지 포괄성은 따로 NEEDS_DATA"
+ },
+ "calls": [
+  [
+   "corpCode.xml",
+   200,
+   0.57
+  ]
+ ],
+ "calls_n": 1,
+ "ended_kst": "2026-10-10T13:21:43+09:00"
+}
