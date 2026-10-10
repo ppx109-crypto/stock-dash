@@ -1,0 +1,67 @@
+{
+ "schema_version": 1,
+ "task_id": "DIP-DEEP-0042",
+ "chain_id": "DIP-DEEP-0042",
+ "kind": "RESULT",
+ "phase": "H",
+ "status": "READY",
+ "verdict": "REJECTED",
+ "source_pr": 197,
+ "source_head_sha": "cb699fe6c31e40ca86a7597809bd6f3f5431aa57",
+ "code_commit": "cb699fe6c31e40ca86a7597809bd6f3f5431aa57",
+ "lock_key": "7768e81afbe8252e1a4dcc5c831bd8f55a38b4bf35100b1e5354a8a24f2b72ff",
+ "receipt": {
+  "status": "STARTED",
+  "lock_key": "7768e81afbe8252e1a4dcc5c831bd8f55a38b4bf35100b1e5354a8a24f2b72ff",
+  "git_head": "cb699fe6c31e40ca86a7597809bd6f3f5431aa57",
+  "at": "2026-10-10 10:09:14"
+ },
+ "conditions": {
+  "0_trades_ge_60": true,
+  "1_annual_and_luck_gt0": true,
+  "2_beats_random_median": true,
+  "3_twr_day_month_ge_-15": true,
+  "4_three_of_four_years": false,
+  "5_boot_lo_gt0": false
+ },
+ "engine_annual": 9.49,
+ "control_median": 2.7629983409479904,
+ "nav_worst_day": [
+  "20240805",
+  -0.05541368935760338
+ ],
+ "nav_worst_month": [
+  "202408",
+  -0.09053746276912977
+ ],
+ "nav_years": {
+  "2023": -0.02728980954869553,
+  "2024": -0.018484633863560695,
+  "2025": 0.48227538379866686,
+  "2026": 0.0
+ },
+ "boot": [
+  0.9837305699481866,
+  -0.4785897435897442,
+  3.0761728395061723
+ ],
+ "dev_evals": {
+  "started": 63,
+  "done": 63,
+  "failed": 0
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/evidence/h_main.json",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/evidence/h_run.log",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/h_receipt.json",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/final_lock.json",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/h_snapshot.json",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/evidence/final_test.py",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/evidence/final_test.out",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/evidence/final_repro_d.json",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/LOG.md",
+  "research-exchange/claude-to-gpt/DIP-DEEP-0042/evals.jsonl"
+ ],
+ "started_at_kst": "2026-10-10 19:09:03",
+ "completed_at_kst": "2026-10-10 19:09:27"
+}
