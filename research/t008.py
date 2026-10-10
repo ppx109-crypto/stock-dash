@@ -90,10 +90,12 @@ def dist_table(d):
 
 def load(code):
     d = json.loads((ROOT / f"etf-ohlc/{code}.json").read_text())
-    raw = [x for x in d["raw"] if not TO or x[0] <= TO]
+    if TO:   # 원자료까지 절단(분배금 표도 자른 자료로만 만듦 · round 1 고침)
+        d = dict(d, raw=[x for x in d["raw"] if x[0] <= TO], adjusted=[x for x in d["adjusted"] if x[0] <= TO],
+                 dividends=[x for x in d["dividends"] if x["record_date"] <= TO])
+    raw = d["raw"]
     est, zero = dist_table(d)
-    cut = lambda m: {k: v for k, v in m.items() if not TO or k <= TO}
-    return raw, ticks(raw), cut(est), cut(zero)
+    return raw, ticks(raw), est, zero
 
 
 def sideways(ix, days):
@@ -119,10 +121,11 @@ def sideways(ix, days):
 
 
 def hold(raw, tk, dist, b_i, s_i, cost, tax=True):
-    """b_i 칸 종가에 사서 s_i 칸 종가에 팜 · 그 사이 분배락 날(b_i < 날 ≤ s_i) 현금 받음. 날마다 값(산 비용 뒤)."""
+    """b_i 칸 종가에 사서 s_i 칸 종가에 팜(s_i가 None이면 열린 채 마지막 날까지 · 판 비용 없음) · 그 사이 분배락 날 현금 받음."""
     b = raw[b_i][4] * (1 + side(raw[b_i][4], cost, tk[raw[b_i][0]]))
     cash, path = 0.0, [(raw[b_i][0], raw[b_i][4] / b)]
-    for x in range(b_i + 1, s_i + 1):
+    end = s_i if s_i is not None else len(raw) - 1
+    for x in range(b_i + 1, end + 1):
         d = raw[x][0]
         if d in dist:
             cash += dist[d] * ((1 - TAX) if tax else 1)
@@ -136,10 +139,13 @@ def windows(sig, days):
     ts = sorted(sig)
     idx = {d: i for i, d in enumerate(days)}
     out = []
-    for k in range(len(ts) - 1):
-        bi, si = idx[ts[k]] + 1, idx[ts[k + 1]] + 1
-        if si < len(days):
-            out.append((ts[k], days[bi], days[si], sig[ts[k]]))
+    for k in range(len(ts)):
+        bi = idx[ts[k]] + 1
+        if bi >= len(days):
+            break
+        si = idx[ts[k + 1]] + 1 if k + 1 < len(ts) else None
+        # 판 날이 자료 밖이면 열린 구간(판 날 None) — NAV는 마지막 날까지 적고 매매 목록에는 넣지 않음(round 1 고침)
+        out.append((ts[k], days[bi], days[si] if si is not None and si < len(days) else None, sig[ts[k]]))
     return out
 
 
@@ -149,13 +155,15 @@ def run(code_raw, tk, dist, wins, cost, which):
     idx = {d: i for i, d in enumerate(days)}
     trades, nav, V = [], [], 1.0
     for t, b, s, on in wins:
-        if b not in idx or s not in idx:
+        if b not in idx or (s is not None and s not in idx):
             continue
+        si = idx[s] if s is not None else None
+        end = si if si is not None else len(days) - 1
         if which == "on" and not on:
-            for x in range(idx[b] + (0 if not nav or nav[-1][0] != b else 1), idx[s] + 1):
+            for x in range(idx[b] + (0 if not nav or nav[-1][0] != b else 1), end + 1):
                 nav.append((days[x], V))
             continue
-        path = hold(code_raw, tk, dist, idx[b], idx[s], cost)
+        path = hold(code_raw, tk, dist, idx[b], si, cost)
         start = V
         for d, v in path:
             if nav and nav[-1][0] == d:
@@ -163,7 +171,8 @@ def run(code_raw, tk, dist, wins, cost, which):
             else:
                 nav.append((d, start * v))
         V = start * path[-1][1]
-        trades.append((b, s, path[-1][1] - 1, on))
+        if s is not None:
+            trades.append((b, s, path[-1][1] - 1, on))
     assert all(nav[z][0] < nav[z + 1][0] for z in range(len(nav) - 1)), "NAV 날짜 순서"
     return trades, nav
 
@@ -189,28 +198,45 @@ def risk(navs, lo, hi):
             "worst_month": [wm[0], round((wm[1] - 1) * 100, 3)], "mdd": round(mdd * 100, 3)}
 
 
-def paired(a, c):
-    """같은 산 날 짝 (CC − 069500) · 달 블록 6 · 10,000번 → (평균, 95% 구간)."""
+def months_between(lo, hi):
+    y, m = int(lo[:4]), int(lo[4:6])
+    out = []
+    while f"{y:04d}{m:02d}" <= hi[:6]:
+        out.append(f"{y:04d}{m:02d}")
+        y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    return out
+
+
+def paired(a, c, lo, hi):
+    """같은 산 날 짝 (CC − 069500). 부트스트랩: 기간의 **달력 달 전체**(짝 없는 달 포함)에서 연속 6달 블록을
+    ceil(달 수 ÷ 6)개 뽑아(시작 달은 0 ~ 달 수 − 6에서 고르게) 그 블록들에 든 짝만 합쳐 평균(조건부 평균).
+    짝이 0인 복제는 버리고 수를 적음 · 버린 복제가 5% 넘으면 구간 없음(None = 조건 실패). round 1 고침."""
     cm = {r[0]: r[2] for r in c}
     pairs = [(r[0], r[2] - cm[r[0]]) for r in a if r[0] in cm]
     by = defaultdict(list)
     for d, x in pairs:
         by[d[:6]].append(x)
-    months = sorted(by)
-    if len(months) < BLOCK:
-        return None, None, len(pairs)
+    months = months_between(lo, hi)
+    if not pairs or len(months) < BLOCK:
+        return None, None, len(pairs), None
     rng = random.Random(SEED)
     nb = math.ceil(len(months) / BLOCK)
-    ms = []
+    ms, empty = [], 0
     for _ in range(REPS):
         xs = []
         for _ in range(nb):
-            s = rng.randrange(0, len(months) - BLOCK + 1)
-            for m in months[s:s + BLOCK]:
-                xs += by[m]
-        ms.append(sum(xs) / len(xs))
+            st = rng.randrange(0, len(months) - BLOCK + 1)
+            for m in months[st:st + BLOCK]:
+                xs += by.get(m, [])
+        if xs:
+            ms.append(sum(xs) / len(xs))
+        else:
+            empty += 1
+    mean = round(sum(x for _, x in pairs) / len(pairs) * 100, 4)
+    if empty > 0.05 * REPS:
+        return mean, None, len(pairs), empty
     q = lambda v, p: sorted(v)[int(p * (len(v) - 1))]
-    return round(sum(x for _, x in pairs) / len(pairs) * 100, 4), [round(q(ms, .025) * 100, 4), round(q(ms, .975) * 100, 4)], len(pairs)
+    return mean, [round(q(ms, .025) * 100, 4), round(q(ms, .975) * 100, 4)], len(pairs), empty
 
 
 def combined(navc, buys, lo, hi):
@@ -247,7 +273,7 @@ def main():
     days = [x[0] for x in craw]
     sig = sideways(iraw, days)
     wins = windows(sig, days)
-    out = {"task": "CC-0038", "round": 1, "T_TO": TO or None, "signals": len(sig), "sideways_months": sum(sig.values()),
+    out = {"task": "CC-0038", "round": 2, "T_TO": TO or None, "signals": len(sig), "sideways_months": sum(sig.values()),
            "windows": len(wins), "first_signal": min(sig) if sig else None}
     for k, (cd, idd) in {"est": (cest, iest), "zero": (czero, izero)}.items():
         on, navon = run(craw, ctk, cd, wins, MAIN, "on")
@@ -262,11 +288,11 @@ def main():
             if not a:
                 out[k][p] = {"n": 0}
                 continue
-            m, ci, n = paired(a, c_)
+            m, ci, n, empty = paired(a, c_, lo, hi)
             out[k][p] = {"n": len(a), "cc_mean_pct": round(sum(r[2] for r in a) / len(a) * 100, 4),
                          "cc_stress_mean_pct": round(sum(r[2] for r in s_) / len(s_) * 100, 4),
                          "ix_same_months_mean_pct": round(sum(r[2] for r in c_) / len(c_) * 100, 4) if c_ else None,
-                         "cc_minus_ix_mean_pct": m, "cc_minus_ix_ci95_pct": ci, "pairs": n,
+                         "cc_minus_ix_mean_pct": m, "cc_minus_ix_ci95_pct": ci, "pairs": n, "boot_empty_reps": empty,
                          "risk_on": risk(navon, lo, hi), "risk_on_stress": risk(navs, lo, hi), "risk_always_cc": risk(navall, lo, hi),
                          "risk_combined": risk(combined(navon, {r[0] for r in on}, lo, hi), max(lo, "20170201"), hi),
                          "risk_combined_stress": risk(combined(navs, {r[0] for r in ons}, lo, hi), max(lo, "20170201"), hi)}
