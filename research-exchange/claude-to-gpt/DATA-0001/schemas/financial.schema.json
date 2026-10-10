@@ -1,0 +1,20 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "FINANCIAL payload",
+ "type": "object",
+ "required": [
+  "period_end",
+  "filing_record",
+  "values"
+ ],
+ "properties": {
+  "period_end": {
+   "type": "string",
+   "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+  },
+  "filing_record": {
+   "type": "string",
+   "pattern": "^.+@\\d+$"
+  }
+ }
+}

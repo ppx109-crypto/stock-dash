@@ -1,0 +1,1324 @@
+{
+ "task": "DATA-0001",
+ "validator_sha256": "9eb12b9db7fc3afc59ef8759f9a059b03622720e1a8263f46c7df66af6d44c19",
+ "fixtures_sha256": "d6a3deb114a1e9dfa02b986f475834626a11f1cd49f304b9da79e6d294f8450d",
+ "fixtures_total": 42,
+ "fixtures_pass": 42,
+ "fixtures": {
+  "FX01": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "bar@1"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "bar@1"
+    ]
+   }
+  },
+  "FX02": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "bar@1",
+     "bar@2"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "bar@1",
+     "bar@2"
+    ]
+   }
+  },
+  "FX03": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "OVERWRITE_REJECTED"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": [
+     "bar@1"
+    ]
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "OVERWRITE_REJECTED"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": [
+     "bar@1"
+    ]
+   }
+  },
+  "FX04": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 1,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 1,
+    "answers": []
+   }
+  },
+  "FX05": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "NO_TZ"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "NO_TZ"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX06": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "NOT_KST"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "NOT_KST"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX07": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "AVAILABLE_BEFORE_ASOF"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "AVAILABLE_BEFORE_ASOF"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX08": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "FETCHED_BEFORE_AVAILABLE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "FETCHED_BEFORE_AVAILABLE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX09": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX10": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      3,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      3,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX11": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "LINEAGE_BROKEN"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "LINEAGE_BROKEN"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX12": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "LINEAGE_CYCLE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "LINEAGE_CYCLE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX13": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "LINEAGE_BROKEN"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "LINEAGE_BROKEN"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX14": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "ADJUSTED_AS_RAW"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "ADJUSTED_AS_RAW"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX15": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "ADJUSTED_AS_RAW"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "ADJUSTED_AS_RAW"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX16": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "HASH_MISMATCH"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "HASH_MISMATCH"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX17": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     [
+      "S001",
+      "S002"
+     ],
+     "UNKNOWN:NO_SNAPSHOT",
+     "UNKNOWN:NO_SNAPSHOT"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     [
+      "S001",
+      "S002"
+     ],
+     "UNKNOWN:NO_SNAPSHOT",
+     "UNKNOWN:NO_SNAPSHOT"
+    ]
+   }
+  },
+  "FX18": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "UNKNOWN:INCOMPLETE"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "UNKNOWN:INCOMPLETE"
+    ]
+   }
+  },
+  "FX19": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "TRADING",
+     "HALTED",
+     "TRADING",
+     "UNKNOWN"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "TRADING",
+     "HALTED",
+     "TRADING",
+     "UNKNOWN"
+    ]
+   }
+  },
+  "FX20": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "TRADING",
+     "HALTED"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "TRADING",
+     "HALTED"
+    ]
+   }
+  },
+  "FX21": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "NONE_KNOWN",
+     [
+      "SPLIT"
+     ],
+     "NONE_KNOWN"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "NONE_KNOWN",
+     [
+      "SPLIT"
+     ],
+     "NONE_KNOWN"
+    ]
+   }
+  },
+  "FX22": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "CORP_ACTION_INCOMPLETE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "CORP_ACTION_INCOMPLETE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX23": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX24": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_DECISION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX25": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "DATE_ONLY_TOO_EARLY"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "DATE_ONLY_TOO_EARLY"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX26": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "f@1",
+     "f@2"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "f@1",
+     "f@2"
+    ]
+   }
+  },
+  "FX27": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "OBSERVED_NO_EVIDENCE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "OBSERVED_NO_EVIDENCE"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX28": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "EVIDENCE_REF_NOT_PSEUDONYMOUS"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "EVIDENCE_REF_NOT_PSEUDONYMOUS"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX29": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "PRIVACY_FIELD"
+     ],
+     [
+      1,
+      "PRIVACY_FIELD"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "PRIVACY_FIELD"
+     ],
+     [
+      1,
+      "PRIVACY_FIELD"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX30": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "MODEL_FILL_INCOMPLETE"
+     ],
+     [
+      1,
+      "SOURCE_MODE_MIX"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "MODEL_FILL_INCOMPLETE"
+     ],
+     [
+      1,
+      "SOURCE_MODE_MIX"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX31": {
+   "pass": true,
+   "got": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "0.00015",
+     "UNKNOWN:GAP",
+     "UNKNOWN:NONE"
+    ]
+   },
+   "expected": {
+    "rejected": [],
+    "duplicates": 0,
+    "answers": [
+     "0.00015",
+     "UNKNOWN:GAP",
+     "UNKNOWN:NONE"
+    ]
+   }
+  },
+  "FX32": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      2,
+      "COST_SOURCE_MISSING"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": [
+     "UNKNOWN:OVERLAP",
+     "0.00015"
+    ]
+   },
+   "expected": {
+    "rejected": [
+     [
+      2,
+      "COST_SOURCE_MISSING"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": [
+     "UNKNOWN:OVERLAP",
+     "0.00015"
+    ]
+   }
+  },
+  "FX33": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      3,
+      "AMBIGUOUS_ORDER_SEQ"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      3,
+      "AMBIGUOUS_ORDER_SEQ"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX34": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "BAD_ORDER_TRANSITION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "BAD_ORDER_TRANSITION"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX35": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "FLOW_TOO_EARLY"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "FLOW_TOO_EARLY"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX36": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "FINANCIAL_BEFORE_FILING"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "FINANCIAL_BEFORE_FILING"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX37": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "CUTOFF_HASH_MISMATCH"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "CUTOFF_HASH_MISMATCH"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX38": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "SIGNAL_TIME_ORDER"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "SIGNAL_TIME_ORDER"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX39": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_ASOF"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "INPUT_AFTER_ASOF"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX40": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "BASIS_MIX"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "BASIS_MIX"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX41": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      1,
+      "BAD_SECURITY_EVENT"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      1,
+      "BAD_SECURITY_EVENT"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  },
+  "FX42": {
+   "pass": true,
+   "got": {
+    "rejected": [
+     [
+      0,
+      "ENVELOPE_MISSING"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   },
+   "expected": {
+    "rejected": [
+     [
+      0,
+      "ENVELOPE_MISSING"
+     ]
+    ],
+    "duplicates": 0,
+    "answers": []
+   }
+  }
+ },
+ "invariants": {
+  "I1": [],
+  "I2": [],
+  "I3": [],
+  "I4": [],
+  "I5": [],
+  "I6": [],
+  "I7": []
+ },
+ "invariants_ok": true,
+ "schema_check": {
+  "schemas": [
+   "account_state",
+   "corp_action",
+   "cost_schedule",
+   "dart_filing",
+   "envelope",
+   "fill",
+   "financial",
+   "investor_flow",
+   "order_event",
+   "price_bar_adj",
+   "price_bar_raw",
+   "security_event",
+   "signal",
+   "trading_status",
+   "universe_snapshot"
+  ],
+  "accepted_records_checked": 44,
+  "errors": {},
+  "ok": true,
+  "probe_rejected": {
+   "no_tz": true,
+   "adjusted_raw": true,
+   "missing_envelope": true
+  },
+  "probe_ok": true,
+  "engine": "tests/schema_check.py(표준 라이브러리 부분 구현)"
+ },
+ "determinism": {
+  "run1": "70a79e1372faaeab06a2b31e9b46ec8c609100976cff1fab9eec4f8c87034457",
+  "run2": "70a79e1372faaeab06a2b31e9b46ec8c609100976cff1fab9eec4f8c87034457",
+  "same": true
+ },
+ "mutations": {
+  "M01": {
+   "expected_catchers": [
+    "FX03"
+   ],
+   "failed_fixtures": [
+    "FX03"
+   ],
+   "caught_by_expected": [
+    "FX03"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M02": {
+   "expected_catchers": [
+    "FX05",
+    "FX06"
+   ],
+   "failed_fixtures": [
+    "FX05",
+    "FX06"
+   ],
+   "caught_by_expected": [
+    "FX05",
+    "FX06"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M03": {
+   "expected_catchers": [
+    "FX07"
+   ],
+   "failed_fixtures": [
+    "FX07"
+   ],
+   "caught_by_expected": [
+    "FX07"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M04": {
+   "expected_catchers": [
+    "FX08"
+   ],
+   "failed_fixtures": [
+    "FX08"
+   ],
+   "caught_by_expected": [
+    "FX08"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M05": {
+   "expected_catchers": [
+    "FX09",
+    "FX10",
+    "FX24"
+   ],
+   "failed_fixtures": [
+    "FX09",
+    "FX10",
+    "FX24",
+    "FX39"
+   ],
+   "caught_by_expected": [
+    "FX09",
+    "FX10",
+    "FX24"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M06": {
+   "expected_catchers": [
+    "FX11",
+    "FX12",
+    "FX13"
+   ],
+   "failed_fixtures": [
+    "FX11",
+    "FX12",
+    "FX13"
+   ],
+   "caught_by_expected": [
+    "FX11",
+    "FX12",
+    "FX13"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M07": {
+   "expected_catchers": [
+    "FX14",
+    "FX15"
+   ],
+   "failed_fixtures": [
+    "FX14",
+    "FX15"
+   ],
+   "caught_by_expected": [
+    "FX14",
+    "FX15"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M08": {
+   "expected_catchers": [
+    "FX16"
+   ],
+   "failed_fixtures": [
+    "FX16"
+   ],
+   "caught_by_expected": [
+    "FX16"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M09": {
+   "expected_catchers": [
+    "FX17"
+   ],
+   "failed_fixtures": [
+    "FX17"
+   ],
+   "caught_by_expected": [
+    "FX17"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M10": {
+   "expected_catchers": [
+    "FX18"
+   ],
+   "failed_fixtures": [
+    "FX18"
+   ],
+   "caught_by_expected": [
+    "FX18"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M11": {
+   "expected_catchers": [
+    "FX19"
+   ],
+   "failed_fixtures": [
+    "FX19"
+   ],
+   "caught_by_expected": [
+    "FX19"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M12": {
+   "expected_catchers": [
+    "FX20"
+   ],
+   "failed_fixtures": [
+    "FX20"
+   ],
+   "caught_by_expected": [
+    "FX20"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M13": {
+   "expected_catchers": [
+    "FX22"
+   ],
+   "failed_fixtures": [
+    "FX22"
+   ],
+   "caught_by_expected": [
+    "FX22"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M14": {
+   "expected_catchers": [
+    "FX25"
+   ],
+   "failed_fixtures": [
+    "FX25"
+   ],
+   "caught_by_expected": [
+    "FX25"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M15": {
+   "expected_catchers": [
+    "FX27"
+   ],
+   "failed_fixtures": [
+    "FX27",
+    "FX28"
+   ],
+   "caught_by_expected": [
+    "FX27"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M16": {
+   "expected_catchers": [
+    "FX29"
+   ],
+   "failed_fixtures": [
+    "FX29"
+   ],
+   "caught_by_expected": [
+    "FX29"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M17": {
+   "expected_catchers": [
+    "FX31"
+   ],
+   "failed_fixtures": [
+    "FX31"
+   ],
+   "caught_by_expected": [
+    "FX31"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M18": {
+   "expected_catchers": [
+    "FX32"
+   ],
+   "failed_fixtures": [
+    "FX32"
+   ],
+   "caught_by_expected": [
+    "FX32"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M19": {
+   "expected_catchers": [
+    "FX33"
+   ],
+   "failed_fixtures": [
+    "FX33"
+   ],
+   "caught_by_expected": [
+    "FX33"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M20": {
+   "expected_catchers": [
+    "FX35"
+   ],
+   "failed_fixtures": [
+    "FX35"
+   ],
+   "caught_by_expected": [
+    "FX35"
+   ],
+   "caught": true,
+   "crashes": []
+  },
+  "M21": {
+   "expected_catchers": [
+    "FX40"
+   ],
+   "failed_fixtures": [
+    "FX40"
+   ],
+   "caught_by_expected": [
+    "FX40"
+   ],
+   "caught": true,
+   "crashes": []
+  }
+ },
+ "mutations_all_caught": true,
+ "isolation": {
+  "allowed_dirs": [
+   "<DATA-0001>",
+   "<python-stdlib>"
+  ],
+  "opened_outside_allowed": [],
+  "modules_outside_allowed": [],
+  "startup_modules_outside_allowed(실행기 전 파이썬 시작 때 불림 · 검사 제외 · 공개)": [
+   "_distutils_hack",
+   "sitecustomize"
+  ],
+  "network": "socket connect 차단",
+  "ok": true
+ },
+ "budget": {
+  "seconds": 0.06,
+  "max_rss_mb": 15.6,
+  "limit_seconds": 300,
+  "limit_mb": 512,
+  "within": true
+ },
+ "status": "READY",
+ "scope_note": "합성 fixture 검증만. 실제 수집 · 전략 성과 · 모의 준비 · 실전 승인 아님. PAPER_VALIDATION_READY=false"
+}

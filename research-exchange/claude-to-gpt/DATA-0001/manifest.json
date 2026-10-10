@@ -1,0 +1,233 @@
+{
+ "schema_version": 1,
+ "task_id": "DATA-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 4,
+ "stage": "RECOVERY-DATA-CONTRACT",
+ "status": "READY",
+ "verdict": {
+  "fixtures": "42/42",
+  "invariants_ok": true,
+  "schema_executed": true,
+  "schema_ok": true,
+  "mutations_caught": "21/21",
+  "determinism_same": true,
+  "isolation_ok": true,
+  "gap_summary": {
+   "contract_covered": 11,
+   "not_contract_solvable": [
+    "G4"
+   ],
+   "still_needs_external_data": [
+    "G1",
+    "G2",
+    "G5",
+    "G6",
+    "G7",
+    "G8",
+    "G9"
+   ],
+   "still_needs_authority": [
+    "G3",
+    "G4",
+    "G10",
+    "G11",
+    "G12"
+   ]
+  },
+  "first_run_status": "BLOCKED(격리 검사 실행기 결함 · REPORT 5장)",
+  "real_data_collected": false,
+  "strategy_performance": "NOT_RUN",
+  "paper_validation_ready": false,
+  "live_approval": false
+ },
+ "input_pr": 20,
+ "input_head_sha": "8ac5377ac934c67e7909208b1a55b9e9c5a3503d",
+ "source_pr": 19,
+ "source_head_sha": "1d295ee32e16e05bbed6fe41f60b8efe44106bf6",
+ "fixed_refs": {
+  "kernel": "63e47a1bc49f183a692e606d0c55191e716e90a2:research-exchange/claude-to-gpt/REPLAY-0001/account_kernel.py",
+  "gaps": "1d295ee32e16e05bbed6fe41f60b8efe44106bf6:research-exchange/claude-to-gpt/REPLAY-0002/GAPS.md",
+  "collector_code": "5998f42e9acbb0fd3912ae9ebc63c5e1edfb39dc(읽기만)"
+ },
+ "prereg_lock": {
+  "commit": "721bf01814866d4c2ca30e9784e237bb944c51c4",
+  "locked_at_kst": "2026-10-08T08:36:32+09:00",
+  "sha256": {
+   "PREREG-LOCK.md": "561131a38bbd9efdf6a13c7e14e24c9658a976e7bd6a23386c69315517113167",
+   "fixtures/fixtures.json": "d6a3deb114a1e9dfa02b986f475834626a11f1cd49f304b9da79e6d294f8450d",
+   "fixtures/make_fixtures.py": "147b2a29e89653dd0276543e16c9d650c70587a96b5568c2ed4d5cd2e16ae1b0"
+  }
+ },
+ "validator_commit": "789e2d4d",
+ "validator_sha256": "9eb12b9db7fc3afc59ef8759f9a059b03622720e1a8263f46c7df66af6d44c19",
+ "fixtures_sha256": "d6a3deb114a1e9dfa02b986f475834626a11f1cd49f304b9da79e6d294f8450d",
+ "result_runs": [
+  {
+   "n": 1,
+   "file": "TEST-RESULT.run1.json",
+   "status": "BLOCKED",
+   "why": "시작 모듈 2개를 격리 위반으로 셈"
+  },
+  {
+   "n": 2,
+   "status": "READY",
+   "change": "실행기: 시작 뒤 새로 불린 모듈만 검사"
+  },
+  {
+   "n": 3,
+   "file": "TEST-RESULT.json",
+   "status": "READY",
+   "change": "실행기: 결과에서 로컬 절대 경로를 이름표로"
+  }
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "deps": "표준 라이브러리만",
+  "network": "socket connect 차단",
+  "isolation": "허용 디렉터리 기반 파일 열기 · 모듈 검사"
+ },
+ "commands": [
+  "python3 -I fixtures/make_fixtures.py fixtures/fixtures.json  # 잠금 전 1회",
+  "python3 -I tests/run_tests.py . TEST-RESULT.json"
+ ],
+ "budget": {
+  "seconds": 0.06,
+  "max_rss_mb": 15.6,
+  "limit_seconds": 300,
+  "limit_mb": 512,
+  "within": true
+ },
+ "files": [
+  {
+   "path": "COLLECTOR-MAPPING.md",
+   "sha256": "f1b7be1bd5cb96a3818a9dc04f9a8311152468aa8d83fea49719ad01c1f84bdc"
+  },
+  {
+   "path": "EVIDENCE-CONTRACT.md",
+   "sha256": "896ccea89ac7189a36b1eea62ac7bd959345b7987fdb36bde195075ddb7aa144"
+  },
+  {
+   "path": "GAP-TRACEABILITY.json",
+   "sha256": "3994ee8cd2d85e1c02da74f77001a5507789e3ebcfbf08ad45e328888f6c6480"
+  },
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "561131a38bbd9efdf6a13c7e14e24c9658a976e7bd6a23386c69315517113167"
+  },
+  {
+   "path": "PREREG-LOCK.stamp.json",
+   "sha256": "24b390d2d8faa20bf66e0393ce79a1032b0a7821d721c71a95c5469a4656f7fb"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "eb463c218bdbb64772a131344cecc82328e799dc2aefd7fead66a667a4d36648"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "7be2989e33e4f00bbcb860c955dad6822e612cef880e6b1a8d297a8aecb7892f"
+  },
+  {
+   "path": "TEST-RESULT.run1.json",
+   "sha256": "6d5f6f4f9af751f6195e1029a81add9f63a1f508a412bb1c18ca6f057467ab54"
+  },
+  {
+   "path": "fixtures/fixtures.json",
+   "sha256": "d6a3deb114a1e9dfa02b986f475834626a11f1cd49f304b9da79e6d294f8450d"
+  },
+  {
+   "path": "fixtures/make_fixtures.py",
+   "sha256": "147b2a29e89653dd0276543e16c9d650c70587a96b5568c2ed4d5cd2e16ae1b0"
+  },
+  {
+   "path": "schemas/account_state.schema.json",
+   "sha256": "2ae4000920486269a3892e42b3fb68bd5c3f219a4ee14eadf4309aca57d9f29e"
+  },
+  {
+   "path": "schemas/corp_action.schema.json",
+   "sha256": "003ee7ef70ab7c18c8d00d489d6fcf83c755cb7df33f8d08fd76ef96db6b4190"
+  },
+  {
+   "path": "schemas/cost_schedule.schema.json",
+   "sha256": "dfb2473993a0207c94d232264654f9b674da5e83a2fca6adb8b97433ff1ba572"
+  },
+  {
+   "path": "schemas/dart_filing.schema.json",
+   "sha256": "2af400ff952f478de0d47158d839f33949805616c8ff926a66f093e8b95adc23"
+  },
+  {
+   "path": "schemas/envelope.schema.json",
+   "sha256": "1a1ed2caf835624d35eec7b6d452ff0db7b1c8be68bf813a92fa79691ff42620"
+  },
+  {
+   "path": "schemas/fill.schema.json",
+   "sha256": "3b5f3c6492a32ddf9fdb15d199c548f135b95c97afad8a4e41bdeaf3129c4e05"
+  },
+  {
+   "path": "schemas/financial.schema.json",
+   "sha256": "4221745fab4f5d3b7e4695e5aeb3fd4bd5b9c707d45070333ec5ec541879b17f"
+  },
+  {
+   "path": "schemas/investor_flow.schema.json",
+   "sha256": "acb7099f78351deb6b09f6b6345e614d63de5614d4811ddc0bad690c52c20245"
+  },
+  {
+   "path": "schemas/order_event.schema.json",
+   "sha256": "bc33d785a665a13dcfc8c62b237a90d94af97f677df3c4b4b5b73abdcb0fcbcc"
+  },
+  {
+   "path": "schemas/price_bar_adj.schema.json",
+   "sha256": "8630441968fb110e0a016cfc89b9b9550cfa334a94bd8ed2e52d09009b6e9f01"
+  },
+  {
+   "path": "schemas/price_bar_raw.schema.json",
+   "sha256": "302af015bec21ee3ea2a420b6b22df05a2fdd28d2395f2fc0cc51688a357469b"
+  },
+  {
+   "path": "schemas/security_event.schema.json",
+   "sha256": "94191b731842cc857e76f886023ace7b999faf2921ae0655872741f3970a964b"
+  },
+  {
+   "path": "schemas/signal.schema.json",
+   "sha256": "7bd6dbdaf325873c2309a105685578e7e460804d7fb6451ecb788a32bc0b3628"
+  },
+  {
+   "path": "schemas/trading_status.schema.json",
+   "sha256": "9b8258936e874e2ff119d8eebbc434b7a2c37eb86e0f2a69d0d178e7836c3022"
+  },
+  {
+   "path": "schemas/universe_snapshot.schema.json",
+   "sha256": "df2179f1c555d3d1a3264d442d97324eea32d8bdad7f555134a967f7dc51615b"
+  },
+  {
+   "path": "tests/run_tests.py",
+   "sha256": "a02e254eae2271914e6cc5a368687f37b829f8f3935ae92dd2f7293dc0c2d6e1"
+  },
+  {
+   "path": "tests/schema_check.py",
+   "sha256": "ba6e9c8881ffae6bd23cf2ba1bffa99ec12a4c6fed7cc5472d72e72d13c621d5"
+  },
+  {
+   "path": "validator.py",
+   "sha256": "9eb12b9db7fc3afc59ef8759f9a059b03622720e1a8263f46c7df66af6d44c19"
+  }
+ ],
+ "privacy": {
+  "publish_paper_derived": true,
+  "raw_response_public": false,
+  "live_data_public": false,
+  "contains": "합성 fixture · 계약 문서 · 코드 경로 · hash만. 키 · 계좌 · 원 주문번호 · 원문 응답 · 실계좌 · 세션 식별자 없음"
+ },
+ "not_done": [
+  "API · 수집",
+  "주문",
+  "운영 코드 · 워크플로 변경",
+  "과거 495행 보간",
+  "성과 계산",
+  "병합"
+ ],
+ "result_branch": "claude/data-0001-result",
+ "result_pr": null,
+ "created_at_kst": "2026-10-08T08:42:14+09:00"
+}

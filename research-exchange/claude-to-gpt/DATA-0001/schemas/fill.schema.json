@@ -1,0 +1,26 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "FILL payload",
+ "type": "object",
+ "required": [
+  "order_id",
+  "side",
+  "qty",
+  "price"
+ ],
+ "properties": {
+  "side": {
+   "enum": [
+    "BUY",
+    "SELL"
+   ]
+  },
+  "qty": {
+   "type": "integer",
+   "minimum": 1
+  },
+  "price": {
+   "type": "number"
+  }
+ }
+}
