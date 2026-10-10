@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "task_id": "CC-0038",
+ "chain_id": "CC-0038",
+ "round": 2,
+ "status": "BLOCKED",
+ "verdict": "NEEDS_DATA(시험 대상 166400 거래 불가 수준 · 코드 고장)",
+ "source_pr": 182,
+ "source_head_sha": "a8969d7cc2c35f360764ff83fe2ad4cb71362080",
+ "code_commit": "a8969d7cc2c35f360764ff83fe2ad4cb71362080",
+ "runs": {
+  "main": "고장(TypeError · 결과 파일 비어 있음)",
+  "cut": "고장(같은 원인)"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/CC-0038/evidence/run_head.txt",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/full.err",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/cut.err",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/liquidity.json"
+ ],
+ "completed_at_kst": "2026-10-10T15:05:00+09:00",
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ },
+ "sha256": {
+  "research/t008.py": "ebf8a8f073e973f36ed72a48cf0549005d1ebda3f4acfe901acb38ef08207b36",
+  "research-exchange/claude-to-gpt/CC-0038/PREREG.md": "3ebbb1ee713ea83c4e917d19550fb249fee4f38aebda6657e802b00955877fc1",
+  "research-exchange/claude-to-gpt/CC-0038/sha256.json": "7945ba21e7252dbb447f04c701ea724e0ab0a08be001fee3d3d0514798d492f9",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/run_head.txt": "d1407a4fd881319679823a04d5e7cf4c1a8ce42bc811e0f56f423bd1a7082919",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/full.err": "7a34df3e17deb3a33199c623c9c419e3c97db3fab2caa943e31c5f946bd4ca63",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/cut.err": "7a34df3e17deb3a33199c623c9c419e3c97db3fab2caa943e31c5f946bd4ca63",
+  "research-exchange/claude-to-gpt/CC-0038/evidence/liquidity.json": "4aa80c16ce0b2ff469382b78728671920567457213ef9d5375286f469259106b"
+ }
+}

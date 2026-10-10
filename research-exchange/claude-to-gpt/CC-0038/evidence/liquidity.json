@@ -1,0 +1,50 @@
+{
+ "166400": {
+  "2013-2019": {
+   "days": 1719,
+   "median_volume": 2.0,
+   "median_value_mkrw": 0.0,
+   "flat_ohlc_days": 1045,
+   "zero_volume_days": 613
+  },
+  "2020-2026": {
+   "days": 1660,
+   "median_volume": 418.5,
+   "median_value_mkrw": 5.4,
+   "flat_ohlc_days": 287,
+   "zero_volume_days": 152
+  }
+ },
+ "289480": {
+  "2013-2019": {
+   "days": 462,
+   "median_volume": 234.5,
+   "median_value_mkrw": 2.2,
+   "flat_ohlc_days": 77,
+   "zero_volume_days": 17
+  },
+  "2020-2026": {
+   "days": 1660,
+   "median_volume": 13309.0,
+   "median_value_mkrw": 118.8,
+   "flat_ohlc_days": 299,
+   "zero_volume_days": 107
+  }
+ },
+ "069500": {
+  "2013-2019": {
+   "days": 1719,
+   "median_volume": 6148545.0,
+   "median_value_mkrw": 165769.4,
+   "flat_ohlc_days": 0,
+   "zero_volume_days": 0
+  },
+  "2020-2026": {
+   "days": 1660,
+   "median_volume": 7135665.0,
+   "median_value_mkrw": 240584.4,
+   "flat_ohlc_days": 0,
+   "zero_volume_days": 0
+  }
+ }
+}
