@@ -27,7 +27,8 @@ lanes2 = {"A": {"날": days, "closes": [100.0] * 20}, "B": {"날": days, "closes
 led2 = [{"code": "A", "산 날": days[1], "판 날": days[5], "들고": 4, "자리": 2, "손익": 0, "행": {"i": 1}}]
 v0, v1 = F.control(led2, pool, lanes2, 0), F.control(led2, pool, lanes2, 0)
 ok(v0 == v1, "같은 seed면 같은 대조 값")
-ok(abs(v0 - (-0.25 * 2 / 10 / 4)) < 1e-12, "후보가 든 A는 빼고 B를 고름 · 비용 · 자리 · 4해로 나눔")
+ok(abs(v0["annual"] - (-0.25 * 2 / 10 / 4)) < 1e-12 and v0 == {"annual": v0["annual"], "targets": 1, "picked": 1, "skipped": 0},
+   "후보가 든 A는 빼고 B를 고름 · 비용 · 자리 · 4해로 나눔 · 대상 1 · 고름 1 · 건너뜀 0")
 # round 2: 대조 포트폴리오 자기 중복 금지 · 미래 칸 부족 종목 미리 뺌
 pool3 = [{"code": x, "date": days[1], "i": 1} for x in ("A", "B", "C")] + [{"code": x, "date": days[2], "i": 2} for x in ("A", "B", "C")]
 lanes3 = {"A": {"날": days, "closes": [100.0] * 20}, "B": {"날": days, "closes": [100.0] * 20}, "C": {"날": days[:4], "closes": [100.0] * 4}}
@@ -40,8 +41,9 @@ class Spy(orig):
     def choice(self, seq):
         x = super().choice(seq); picks.append([r["code"] for r in seq]); return x
 F.random.Random = Spy
-F.control(led3, pool3, lanes3, 0)
+got3 = F.control(led3, pool3, lanes3, 0)
 F.random.Random = orig
+ok(got3["targets"] == 2 and got3["picked"] == 1 and got3["skipped"] == 1, "round 3: 대상 2 · 고름 1 · 건너뜀 1을 결과에 남김")
 ok(picks and picks[0] == ["B"], "첫 매매: 후보가 든 A는 빼고, 줄이 짧은 C(산 칸 + 5 > 줄 끝)는 미리 뺌 → B만")
 ok(len(picks) == 1, "둘째 매매: 대조가 이미 든 B · 후보가 든 A · 짧은 C를 빼니 후보 없음 → 건너뜀(중복 보유 없음)")
 # round 2: 부트스트랩 = 빈 달 포함 연속 달력 격자
@@ -50,12 +52,39 @@ led4 = [{"판 날": f"2023{m:02d}10", "손익": 1.0} for m in range(1, 13)]
 mm, lo, hi, emp = F.boot(led4, "20230102", "20231229")
 ok(mm == 1.0 and lo == 1.0 and hi == 1.0 and emp == 0, "부트스트랩: 모두 1%면 구간도 1% · 빈 복제 0")
 ok(F.month_grid("20230102", "20230916") == [f"2023{m:02d}" for m in range(1, 10)], "달 격자는 빈 달을 포함해 이어짐")
+# round 3: 45달이면 이은 블록을 45달까지만(48달 아님)
+g45 = F.month_grid("20230102", "20260916")
+led45 = [{"판 날": m + "10", "손익": float(k)} for k, m in enumerate(g45)]
+class Zero(orig):
+    def randrange(self, *a, **k): return 0
+F.random.Random = Zero
+mm, lo, hi, emp = F.boot(led45, "20230102", "20260916")
+F.random.Random = orig
+ok(len(g45) == 45 and abs(lo - 108 / 45) < 1e-12 and abs(hi - 108 / 45) < 1e-12, "시작 달을 늘 0으로 두면 평균 108 ÷ 45 = 2.4(48달이면 2.5) → 45달만 씀")
 led5 = [{"판 날": "20230110", "손익": 5.0}]
 mm, lo, hi, emp = F.boot(led5, "20230102", "20241231")
 ok(lo is None and emp > 0.05 * F.REPS, "매매가 한 달에만 있으면 빈 복제가 많아 구간 없음(조건 5 실패)")
 # round 2: 잠금 · 영수증
-import os, tempfile, json as _j
+import os, tempfile, json as _j, importlib
 tmpd = Path(tempfile.mkdtemp())
+# round 3: 영수증 경로는 환경 값으로 못 바꿈
+os.environ["DIP_H_RECEIPT"] = str(tmpd / "우회.json")
+F2 = importlib.reload(F)
+ok(F2.RECEIPT == F2.BOX / "h_receipt.json" and "DIP_H_RECEIPT" not in open(F2.__file__).read().split("RECEIPT =")[1].split("\n")[0],
+   "환경 값 DIP_H_RECEIPT를 줘도 영수증 경로는 고정")
+F = F2
+F.REPS = 300
+# round 3: 잘못된 스냅샷은 영수증을 만들지 않음(사전검사가 먼저)
+F.RECEIPT = tmpd / "h_receipt_bad.json"
+try:
+    F.prepare_h(str(tmpd / "없음.pkl")); ok(False, "없는 스냅샷이면 멈춰야 함")
+except SystemExit as e:
+    ok("없음" in str(e) and not F.RECEIPT.exists(), "H 스냅샷이 없으면 영수증 없이 멈춤")
+bad = tmpd / "bad.pkl"; bad.write_bytes(b"not a pickle")
+try:
+    F.prepare_h(str(bad)); ok(False, "해시 다르면 멈춰야 함")
+except SystemExit as e:
+    ok("해시 다름" in str(e) and not F.RECEIPT.exists(), "H 스냅샷 해시가 다르면 영수증 없이 멈춤")
 F.RECEIPT = tmpd / "h_receipt.json"
 r1 = F.take_receipt("키")
 ok(r1["status"] == "STARTED" and F.RECEIPT.exists(), "셈 전에 영수증(STARTED)을 원자적으로 만듦")

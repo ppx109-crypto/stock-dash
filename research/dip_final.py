@@ -168,13 +168,14 @@ def control(led, pool, lanes, seed):
         for j in range(i0, min(i0 + t["들고"], len(lane) - 1) + 1):
             held_on[lane[j]].add(t["code"])
     mine = {}                      # 대조가 든 종목 → 판 날
-    w = []
+    w, skipped = [], 0
     for t in sorted(led, key=lambda x: (x["산 날"], x["code"])):
         day = t["산 날"]
         busy = held_on[day] | {c for c, end in mine.items() if end >= day}
         cands = sorted((r for r in by_day[day] if r["code"] not in busy
                         and r["i"] + t["들고"] < len(lanes[r["code"]]["closes"])), key=lambda r: r["code"])
         if not cands:
+            skipped += 1               # 그 매매는 현금(0 수익)으로 남음 — 결과에 수를 적음
             continue
         r = rng.choice(cands)
         c = lanes[r["code"]]["closes"]
@@ -182,7 +183,7 @@ def control(led, pool, lanes, seed):
         mine[r["code"]] = lanes[r["code"]]["날"][j]
         w.append(((c[j] / c[r["i"]] - 1) * 100 - COST) * t["자리"])
     years = max(1, int(H[1][:4]) - int(H[0][:4]) + 1)
-    return sum(w) / SLOTS / years
+    return {"annual": sum(w) / SLOTS / years, "targets": len(led), "picked": len(w), "skipped": skipped}
 
 
 def month_grid(lo, hi):
@@ -195,7 +196,7 @@ def month_grid(lo, hi):
 
 def boot(led, lo=None, hi=None):
     """한 건 순손익 평균 · 달력 달 6달 블록 부트스트랩. round 2: H의 **연속 달력 달 격자(빈 달 포함)**에서 시작 달을
-    0 ~ 달 수 − 6에서 고르게 뽑아 ceil(달 수 ÷ 6)개 블록을 이음(블록 안 매매만 모음 · 조건부 평균). 매매가 0인 복제는 버리고
+    0 ~ 달 수 − 6에서 고르게 뽑아 ceil(달 수 ÷ 6)개 블록을 잇고, **원래 달 수까지만 잘라** 그 달들의 매매만 모음(조건부 평균). 매매가 0인 복제는 버리고
     수를 적음 · 버린 복제가 5% 넘으면 구간 없음(조건 5 실패)."""
     lo, hi = lo or H[0], hi or H[1]
     by = defaultdict(list)
@@ -207,11 +208,11 @@ def boot(led, lo=None, hi=None):
     nb = math.ceil(len(months) / BLOCK)
     ms, empty = [], 0
     for _ in range(REPS):
-        xs = []
+        picked = []
         for _ in range(nb):
             s0 = rng.randrange(0, len(months) - BLOCK + 1)
-            for m in months[s0:s0 + BLOCK]:
-                xs += by.get(m, [])
+            picked += months[s0:s0 + BLOCK]
+        xs = [x for m in picked[:len(months)] for x in by.get(m, [])]      # round 3: 이은 달을 원래 길이(45달)까지만
         if xs:
             ms.append(sum(xs) / len(xs))
         else:
@@ -224,7 +225,7 @@ def boot(led, lo=None, hi=None):
 
 
 LOCK = BOX / "final_lock.json"
-RECEIPT = Path(os.getenv("DIP_H_RECEIPT", str(BOX / "h_receipt.json")))
+RECEIPT = BOX / "h_receipt.json"        # round 3: 고정 경로(환경 값으로 바꿀 수 없음)
 
 
 def file_sha(p):
@@ -258,6 +259,21 @@ def take_receipt(key):
     return rec
 
 
+def prepare_h(path="/tmp/dip-h.pkl"):
+    """H 셈 전 사전검사(셈 없음): 파일 있음 · 해시 · 역직렬화 · cut = H 끝 · H 안 표 줄 · 필요한 칸."""
+    if not Path(path).exists():
+        sys.exit("H 스냅샷 없음 — 영수증을 만들지 않음")
+    d = Data(load(path, "h_snapshot.json"))
+    if d.cut != H[1]:
+        sys.exit("H 스냅샷 cut이 H 끝과 다름 — 영수증을 만들지 않음")
+    inside = [r for r in d.rows if H[0] <= r["date"] <= H[1]]
+    if not inside or any(k not in inside[0] for k in ("code", "date", "i", "price", "시가총액", "시총순위")):
+        sys.exit("H 표 줄 구조 이상 — 영수증을 만들지 않음")
+    if not d.BR or not d.FLOW or not d.IX:
+        sys.exit("H 시장 폭 · 수급 · 069500 없음 — 영수증을 만들지 않음")
+    return d
+
+
 def summary(g):
     return {k: g.get(k) for k in ("매매", "연수익", "폭", "최대낙폭", "골 폭", "가동률", "승률", "해마다")}
 
@@ -276,8 +292,8 @@ def main():
     if mode != "--h":
         sys.exit("--repro-d 또는 --h")
     key = lock_key()
-    receipt = take_receipt(key)
-    d = Data(load("/tmp/dip-h.pkl", "h_snapshot.json"))
+    d = prepare_h()                 # round 3: 스냅샷 존재 · 바이트 해시 · 역직렬화 · 구조 검사를 영수증 **앞**에서 끝냄
+    receipt = take_receipt(key)     # 성과 엔진 바로 앞
     lo, hi = H
     g, pool, lanes = engine(d, lo, hi)
     res = {"task": "DIP-DEEP-0042", "phase": "H", "H": list(H), "lock_key": key, "receipt": receipt}
@@ -290,7 +306,8 @@ def main():
     days = [x for x in lab.trading_days(lanes) if lo <= x <= hi]
     navs = nav(led, lanes, days)
     tw = twr([("시작", 1.0)] + navs)          # 첫날 앞 NAV = 1(현금)
-    ctl = [control(led, pool, lanes, s) for s in range(SEEDS)]
+    ctl_runs = [control(led, pool, lanes, s) for s in range(SEEDS)]
+    ctl = [x["annual"] for x in ctl_runs]
     m, bl, bu, empty = boot(led)
     eng = summary(g)
     c0 = eng["매매"] >= 60
@@ -302,7 +319,7 @@ def main():
     res.update({"engine": {**eng, "행운뺌": a, "큰2건뺌": b, "years_counted": years},
                 "seed0_trades": len(led), "virtual_settle": {k: sum(1 for t in led if t.get("정산") == k) for k in {t.get("정산") for t in led if t.get("정산")}},
                 "nav_twr": {"worst_day": tw["worst_day"], "worst_month": tw["worst_month"], "years": tw["years"], "end_nav": tw["end_nav"]},
-                "control_annual": ctl, "control_median": statistics.median(ctl),
+                "control_annual": ctl, "control_median": statistics.median(ctl), "control_runs": ctl_runs,
                 "boot_trade_mean": [m, bl, bu], "boot_empty_reps": empty,
                 "conditions": {"0_trades_ge_60": c0, "1_annual_and_luck_gt0": c1, "2_beats_random_median": c2,
                                "3_twr_day_month_ge_-15": c3, "4_three_of_four_years": c4, "5_boot_lo_gt0": c5}})
