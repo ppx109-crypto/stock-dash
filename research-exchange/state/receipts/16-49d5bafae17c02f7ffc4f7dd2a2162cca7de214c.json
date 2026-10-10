@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "input_pr": 16,
+  "input_head_sha": "49d5bafae17c02f7ffc4f7dd2a2162cca7de214c",
+  "task_id": "REPLAY-0001",
+  "program_id": "PAPER-READINESS-20261008",
+  "chain_id": "MEAS-20261008",
+  "round": 2,
+  "stage": "REPLAY-1A",
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/REPLAY-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/REPLAY-0001/manifest.json",
+  "result_branch": "claude/replay-0001-result",
+  "result_pr": null,
+  "merged": false,
+  "processed_at_kst": "2026-10-08T08:07:44+09:00"
+}

@@ -1,0 +1,175 @@
+{
+ "schema_version": 1,
+ "task_id": "REPLAY-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 2,
+ "stage": "REPLAY-1A",
+ "status": "READY",
+ "verdict": {
+  "kernel_contract": "VERIFIED_SYNTHETIC",
+  "cases_pass": "20/20",
+  "asis_contrast": [
+   "X8:DEFECT_EXPOSED",
+   "X9:DEFECT_EXPOSED",
+   "X14:DEFECT_EXPOSED"
+  ],
+  "ledger_input_check": "READY",
+  "historical_replay": "BLOCKED_NEEDS_DATA",
+  "strategy_performance": "NOT_RUN",
+  "paper_validation_ready": false,
+  "live_approval": false
+ },
+ "source_pr": 16,
+ "source_head_sha": "49d5bafae17c02f7ffc4f7dd2a2162cca7de214c",
+ "prior_result": {
+  "pr": 15,
+  "head": "6c7e1f0f0bbafcca4d8c0e555b7b5711601fe206",
+  "modified": false
+ },
+ "code_baseline": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+ "code_baseline_read": [
+  "research/a_mtm.py account() 정의만(대조용으로 옮김, import 안 함)"
+ ],
+ "prereg_lock": {
+  "locked_at_kst": "2026-10-08T08:01:12+09:00",
+  "sha256": {
+   "PREREG-LOCK.md": "188180db267f55d6495a150d329e27fde8c15fb47646af2797b1d0f32f25f62c",
+   "fixtures/golden.json": "647e52200a2f406b57091b85d1b274f334f90f66b73250a377a9ba0abf8c97bd",
+   "fixtures/make_golden.py": "b8d80cf5fc18a9b959b44b60e5981e331f637114a734ea5c83b9db16f3430c1d"
+  },
+  "lock_commit_note": "결과 가지 첫 커밋(커널 · 시험 실행기 없음)"
+ },
+ "inputs": [
+  {
+   "path": "RULES-0002@a61f033ecd16ba0976c955a93bfec70c7463ad53:research-exchange/claude-to-gpt/RULES-0002/results/d1_ledger_ASIS.csv",
+   "sha256": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+   "rows": 495,
+   "read": "선형 1회, 스키마 · 필수 필드 · 묶음만"
+  }
+ ],
+ "kernel": {
+  "path": "account_kernel.py",
+  "version": "REPLAY-0001-kernel-v1",
+  "sha256": "38b0227e8ec5403af1be96cb54aaa36dffc6fab9749069eab41816cc2439bbba",
+  "deps": "Python 표준 라이브러리만"
+ },
+ "environment": {
+  "python": "3.11.15",
+  "platform": "Linux-6.18.44-fc-v77-x86_64-with-glibc2.39",
+  "network": "socket connect 차단",
+  "ops_modules_imported": [],
+  "env_removed": [
+   "KIS*",
+   "DART*",
+   "PAPER*",
+   "DISCORD*"
+  ]
+ },
+ "commands": [
+  "python3 -I fixtures/make_golden.py fixtures/golden.json  # 잠금 전 1회",
+  "python3 -I tests/run_golden.py . TEST-RESULT.run1.json  # 첫 실행",
+  "python3 -I tests/run_golden.py . TEST-RESULT.json",
+  "python3 -I tests/mutation_check.py . MUTATION-CHECK.json",
+  "python3 -I tests/input_feasibility.py <d1_ledger_ASIS.csv> INPUT-FEASIBILITY.json"
+ ],
+ "budget": {
+  "seconds": 0.007,
+  "max_rss_mb": 15.8,
+  "limit_seconds": 120,
+  "limit_mb": 256,
+  "within": true
+ },
+ "result_paths": [
+  "REPORT.md",
+  "PREREG-LOCK.md",
+  "PREREG-LOCK.stamp.json",
+  "schema/CONTRACT.md",
+  "schema/events.schema.json",
+  "account_kernel.py",
+  "fixtures/golden.json",
+  "tests/run_golden.py",
+  "TEST-RESULT.run1.json",
+  "TEST-RESULT.json",
+  "MUTATION-CHECK.json",
+  "INPUT-FEASIBILITY.json"
+ ],
+ "files": [
+  {
+   "path": "INPUT-FEASIBILITY.json",
+   "sha256": "d99640f36e27ecfd7c38c5eeebb7fd13a6b52bb3d8013a0f5eb1205e4036be9f"
+  },
+  {
+   "path": "MUTATION-CHECK.json",
+   "sha256": "eb8fad7aa30c69e83374ab5c261d48f4bcf4889a08b6b86e32ed2ef90f6c77fb"
+  },
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "188180db267f55d6495a150d329e27fde8c15fb47646af2797b1d0f32f25f62c"
+  },
+  {
+   "path": "PREREG-LOCK.stamp.json",
+   "sha256": "ee6ac70a82b167aca954f30394cde5e60e9912910a3371970df2c4e7962dad34"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "4f584d6f9eb090b9e59f1d3a2c78cba1b82cfee31daa29f358009b9125a347da"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "410897d0b6294c2fe35dc631dd02244ad1715da8c367eb61a4545e01274685bf"
+  },
+  {
+   "path": "TEST-RESULT.run1.json",
+   "sha256": "d2e4b31fba26fe6489be88354d2745b4ce20764b725cb65abc9f58312c01dfec"
+  },
+  {
+   "path": "account_kernel.py",
+   "sha256": "38b0227e8ec5403af1be96cb54aaa36dffc6fab9749069eab41816cc2439bbba"
+  },
+  {
+   "path": "fixtures/golden.json",
+   "sha256": "647e52200a2f406b57091b85d1b274f334f90f66b73250a377a9ba0abf8c97bd"
+  },
+  {
+   "path": "fixtures/make_golden.py",
+   "sha256": "b8d80cf5fc18a9b959b44b60e5981e331f637114a734ea5c83b9db16f3430c1d"
+  },
+  {
+   "path": "schema/CONTRACT.md",
+   "sha256": "f5a21c148576e737e0971c68446041039a0f8c83315345d604988ac30628df5c"
+  },
+  {
+   "path": "schema/events.schema.json",
+   "sha256": "273a075b8f488a0379be599a0da229e31b0381e1d3ece7cd7e335664cf9e2804"
+  },
+  {
+   "path": "tests/input_feasibility.py",
+   "sha256": "d7171ffa66b7cf953fb033fb27d9c2f5149d0c5859155a427fddb32207cc1a9f"
+  },
+  {
+   "path": "tests/mutation_check.py",
+   "sha256": "6d64f6c6b67fb2d4da7774733c47e6a460430ae5b76d0e8eba78bafc8d04f4fe"
+  },
+  {
+   "path": "tests/run_golden.py",
+   "sha256": "c200d09dab9ca677175949622a3a9b8fa42f427dd20b8da3b4677cef600bfe34"
+  }
+ ],
+ "privacy": {
+  "publish_paper_derived": true,
+  "raw_response_public": false,
+  "live_data_public": false,
+  "contains": "합성 사건 · 공개 종목코드 장부의 스키마 요약만. 키 · 계좌 · 원 주문번호 · 원문 응답 · 실계좌 자료 · 비공개 세션 주소 없음"
+ },
+ "not_done": [
+  "전체 역사 백테스트",
+  "전략 CAGR/PF/승률",
+  "실제 비용 · 결제 · 체결 모형",
+  "API · 새 수집",
+  "운영 변경 · 주문 · 병합"
+ ],
+ "result_branch": "claude/replay-0001-result",
+ "result_pr": null,
+ "created_at_kst": "2026-10-08T08:07:44+09:00"
+}

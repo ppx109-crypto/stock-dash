@@ -1,0 +1,3564 @@
+{
+ "task": "REPLAY-0001",
+ "input_pr": 16,
+ "input_head": "49d5bafae17c02f7ffc4f7dd2a2162cca7de214c",
+ "note": "합성 골든. 비용률은 시험용 값이며 실제 국내 거래비용이 아님. 기대값은 PREREG-LOCK.md 표와 같음(손셈).",
+ "cases": [
+  {
+   "case": "C1",
+   "subs": [
+    {
+     "sub": "C1",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c1_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c1_i",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 1,
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 50000,
+       "model_fill": false
+      },
+      {
+       "id": "c1_a",
+       "type": "ORDER_ACCEPTED",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 2,
+       "order_id": "o1"
+      },
+      {
+       "id": "c1_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 50000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c1_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1000000,
+      "positions": {},
+      "orderable_cash": 499500,
+      "navs": {
+       "2026-01-05": {
+        "nav": 1000000
+       }
+      },
+      "orders": {
+       "o1": {
+        "state": "OPEN",
+        "remaining": 10,
+        "filled": 0
+       }
+      },
+      "fills_count": 0
+     }
+    },
+    {
+     "sub": "C1b",
+     "config": {
+      "source_mode": "OBSERVED_KIS_PAPER",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c1b_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c1b_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c1b_f",
+       "order_id": "o_c1b_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 1,
+       "price": 1000,
+       "evidence": "OBSERVED"
+      },
+      {
+       "id": "c1b_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1000000,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 1000000
+       }
+      },
+      "rejections": [
+       {
+        "event_id": "c1b_f",
+        "reason": "MISSING_EVIDENCE"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C2",
+   "subs": [
+    {
+     "sub": "C2",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c2_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c2_i1",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 1,
+       "order_id": "o1",
+       "trade_id": "T_o1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 50000,
+       "model_fill": false
+      },
+      {
+       "id": "c2_r1",
+       "type": "ORDER_REJECTED",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 2,
+       "order_id": "o1"
+      },
+      {
+       "id": "c2_i2",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 3,
+       "order_id": "o2",
+       "trade_id": "T_o2",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 50000,
+       "model_fill": false
+      },
+      {
+       "id": "c2_a2",
+       "type": "ORDER_ACCEPTED",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 4,
+       "order_id": "o2"
+      },
+      {
+       "id": "c2_c2",
+       "type": "ORDER_CANCELLED",
+       "at": "2026-01-05T10:00:00+09:00",
+       "order_id": "o2"
+      },
+      {
+       "id": "c2_i3",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 5,
+       "order_id": "o3",
+       "trade_id": "T_o3",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 50000,
+       "model_fill": false
+      },
+      {
+       "id": "c2_a3",
+       "type": "ORDER_ACCEPTED",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 6,
+       "order_id": "o3"
+      },
+      {
+       "id": "c2_x3",
+       "type": "ORDER_EXPIRED",
+       "at": "2026-01-05T15:30:00+09:00",
+       "order_id": "o3"
+      },
+      {
+       "id": "c2_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 50000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c2_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1000000,
+      "positions": {},
+      "orderable_cash": 1000000,
+      "navs": {
+       "2026-01-05": {
+        "nav": 1000000
+       }
+      },
+      "orders": {
+       "o1": {
+        "state": "REJECTED"
+       },
+       "o2": {
+        "state": "CANCELLED"
+       },
+       "o3": {
+        "state": "EXPIRED"
+       }
+      },
+      "fills_count": 0
+     }
+    }
+   ]
+  },
+  {
+   "case": "C3",
+   "subs": [
+    {
+     "sub": "C3",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c3_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c3_i",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 1,
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 50,
+       "price": 2000,
+       "model_fill": false
+      },
+      {
+       "id": "c3_a",
+       "type": "ORDER_ACCEPTED",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 2,
+       "order_id": "o1"
+      },
+      {
+       "id": "c3_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c3_f",
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 20,
+       "price": 2000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c3_s",
+       "type": "SNAPSHOT",
+       "at": "2026-01-05T09:30:00+09:00"
+      },
+      {
+       "id": "c3_c",
+       "type": "ORDER_CANCELLED",
+       "at": "2026-01-05T10:00:00+09:00",
+       "order_id": "o1"
+      },
+      {
+       "id": "c3_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 2000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c3_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 959960,
+      "positions": {
+       "S1": 20
+      },
+      "orderable_cash": 959960,
+      "snapshots": [
+       {
+        "event_id": "c3_s",
+        "cash": 959960,
+        "orderable_cash": 899900
+       }
+      ],
+      "navs": {
+       "2026-01-05": {
+        "nav": 999960
+       }
+      },
+      "orders": {
+       "o1": {
+        "state": "CANCELLED",
+        "filled": 20,
+        "remaining": 0,
+        "cancelled_qty": 30
+       }
+      },
+      "fills": [
+       {
+        "fill_id": "c3_f",
+        "notional": 40000,
+        "fee": 40,
+        "tax": 0
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C4",
+   "subs": [
+    {
+     "sub": "C4",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c4_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c4_f1",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "f1",
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 1
+      },
+      {
+       "id": "c4_f1dup",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "f1",
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 2
+      },
+      {
+       "id": "c4_f1bad",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "f1",
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 11,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 3
+      },
+      {
+       "id": "c4_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c4_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 899900,
+      "positions": {
+       "S1": 10
+      },
+      "duplicates_ignored": 1,
+      "rejections": [
+       {
+        "event_id": "c4_f1bad",
+        "reason": "FILL_ID_CONFLICT"
+       }
+      ],
+      "navs": {
+       "2026-01-05": {
+        "nav": 999900
+       }
+      },
+      "fills_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "case": "C5",
+   "subs": [
+    {
+     "sub": "C5",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c5_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c5_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c5_f",
+       "order_id": "o_c5_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c5_r1",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c5_r1",
+       "order_id": "o_c5_r1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 11,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 1
+      },
+      {
+       "id": "c5_r2",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c5_r2",
+       "order_id": "o_c5_r2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": -5,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 2
+      },
+      {
+       "id": "c5_r3",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c5_r3",
+       "order_id": "o_c5_r3",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": "1.5",
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 3
+      },
+      {
+       "id": "c5_r4",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c5_r4",
+       "order_id": "o_c5_r4",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 1,
+       "price": 0,
+       "evidence": "MODEL_FILL",
+       "seq": 4
+      },
+      {
+       "id": "c5_r5",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c5_r5",
+       "order_id": "o_c5_r5",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 1,
+       "price": -100,
+       "evidence": "MODEL_FILL",
+       "seq": 5
+      },
+      {
+       "id": "c5_r6",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c5_r6",
+       "order_id": "o_c5_r6",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 100,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 6
+      },
+      {
+       "id": "c5_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c5_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 899900,
+      "positions": {
+       "S1": 10
+      },
+      "navs": {
+       "2026-01-05": {
+        "nav": 999900
+       }
+      },
+      "rejections": [
+       {
+        "event_id": "c5_r1",
+        "reason": "OVERSELL"
+       },
+       {
+        "event_id": "c5_r2",
+        "reason": "BAD_QTY"
+       },
+       {
+        "event_id": "c5_r3",
+        "reason": "BAD_QTY"
+       },
+       {
+        "event_id": "c5_r4",
+        "reason": "BAD_PRICE"
+       },
+       {
+        "event_id": "c5_r5",
+        "reason": "BAD_PRICE"
+       },
+       {
+        "event_id": "c5_r6",
+        "reason": "INSUFFICIENT_CASH"
+       }
+      ],
+      "fills_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "case": "C6",
+   "subs": [
+    {
+     "sub": "C6",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c6_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c6_i",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "order_id": "o1",
+       "trade_id": "T_o1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 1000000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c6_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 1000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c6_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1,
+      "positions": {
+       "S1": 999
+      },
+      "navs": {
+       "2026-01-05": {
+        "nav": 999001
+       }
+      },
+      "sizing": [
+       {
+        "order_id": "o1",
+        "naive_qty": 1000,
+        "qty": 999,
+        "reason": "REDUCED_FOR_COST"
+       }
+      ],
+      "fills": [
+       {
+        "notional": 999000,
+        "fee": 999,
+        "tax": 0
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C7",
+   "subs": [
+    {
+     "sub": "C7",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c7_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000
+      },
+      {
+       "id": "c7_i",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "order_id": "o1",
+       "trade_id": "T_o1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 1000,
+       "nav_ref_won": 1000,
+       "model_fill": true
+      },
+      {
+       "id": "c7_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 1000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c7_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1000,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 1000
+       }
+      },
+      "fills_count": 0,
+      "sizing": [
+       {
+        "order_id": "o1",
+        "naive_qty": 1,
+        "qty": 0,
+        "reason": "ZERO_CANNOT_AFFORD_ONE_WITH_COST"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C8",
+   "subs": [
+    {
+     "sub": "C8",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c8_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c8_i01",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 1,
+       "order_id": "o01",
+       "trade_id": "T_o01",
+       "strategy_id": "A",
+       "security_id": "S01",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i02",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 2,
+       "order_id": "o02",
+       "trade_id": "T_o02",
+       "strategy_id": "A",
+       "security_id": "S02",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i03",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 3,
+       "order_id": "o03",
+       "trade_id": "T_o03",
+       "strategy_id": "A",
+       "security_id": "S03",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i04",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 4,
+       "order_id": "o04",
+       "trade_id": "T_o04",
+       "strategy_id": "A",
+       "security_id": "S04",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i05",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 5,
+       "order_id": "o05",
+       "trade_id": "T_o05",
+       "strategy_id": "A",
+       "security_id": "S05",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i06",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 6,
+       "order_id": "o06",
+       "trade_id": "T_o06",
+       "strategy_id": "A",
+       "security_id": "S06",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i07",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 7,
+       "order_id": "o07",
+       "trade_id": "T_o07",
+       "strategy_id": "A",
+       "security_id": "S07",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i08",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 8,
+       "order_id": "o08",
+       "trade_id": "T_o08",
+       "strategy_id": "A",
+       "security_id": "S08",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i09",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 9,
+       "order_id": "o09",
+       "trade_id": "T_o09",
+       "strategy_id": "A",
+       "security_id": "S09",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i10",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 10,
+       "order_id": "o10",
+       "trade_id": "T_o10",
+       "strategy_id": "A",
+       "security_id": "S10",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i11",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 11,
+       "order_id": "o11",
+       "trade_id": "T_o11",
+       "strategy_id": "A",
+       "security_id": "S11",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_i12",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "seq": 12,
+       "order_id": "o12",
+       "trade_id": "T_o12",
+       "strategy_id": "A",
+       "security_id": "S12",
+       "side": "BUY",
+       "price": 1000,
+       "alloc_won": 100000,
+       "nav_ref_won": 1000000,
+       "model_fill": true
+      },
+      {
+       "id": "c8_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S01": 1000,
+        "S02": 1000,
+        "S03": 1000,
+        "S04": 1000,
+        "S05": 1000,
+        "S06": 1000,
+        "S07": 1000,
+        "S08": 1000,
+        "S09": 1000,
+        "S10": 1000,
+        "S11": 1000,
+        "S12": 1000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c8_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1,
+      "positions": {
+       "S01": 99,
+       "S02": 99,
+       "S03": 99,
+       "S04": 99,
+       "S05": 99,
+       "S06": 99,
+       "S07": 99,
+       "S08": 99,
+       "S09": 99,
+       "S10": 99,
+       "S11": 9
+      },
+      "total_qty": 999,
+      "navs": {
+       "2026-01-05": {
+        "nav": 999001
+       }
+      },
+      "sizing": [
+       {
+        "order_id": "o01",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o02",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o03",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o04",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o05",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o06",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o07",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o08",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o09",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o10",
+        "naive_qty": 100,
+        "qty": 99,
+        "reason": "REDUCED_FOR_COST"
+       },
+       {
+        "order_id": "o11",
+        "naive_qty": 100,
+        "qty": 9,
+        "reason": "REDUCED_BY_CASH",
+        "shortfall_won": 90990
+       },
+       {
+        "order_id": "o12",
+        "naive_qty": 100,
+        "qty": 0,
+        "reason": "ZERO_BY_CASH",
+        "shortfall_won": 99999
+       }
+      ],
+      "min_cash": 1,
+      "max_gross_exposure": "999000/999001"
+     }
+    }
+   ]
+  },
+  {
+   "case": "C9",
+   "subs": [
+    {
+     "sub": "C9",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c9_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c9_f1",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c9_f1",
+       "order_id": "o_c9_f1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 100,
+       "price": 5000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c9_f2",
+       "type": "FILL",
+       "at": "2026-01-05T14:00:00+09:00",
+       "fill_id": "c9_f2",
+       "order_id": "o_c9_f2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 100,
+       "price": 5100,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c9_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 5100
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c9_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1007970,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 1007970
+       }
+      },
+      "returns": {
+       "2026-01-05": "0.00797"
+      },
+      "trades": {
+       "T1": {
+        "realized": 7970,
+        "open_qty": 0
+       }
+      },
+      "fills": [
+       {
+        "fill_id": "c9_f1",
+        "notional": 500000,
+        "fee": 500,
+        "tax": 0
+       },
+       {
+        "fill_id": "c9_f2",
+        "notional": 510000,
+        "fee": 510,
+        "tax": 1020
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C10",
+   "subs": [
+    {
+     "sub": "C10",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c10_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c10_f1",
+       "type": "FILL",
+       "at": "2026-01-05T10:00:00+09:00",
+       "fill_id": "c10_f1",
+       "order_id": "o_c10_f1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c10_f2",
+       "type": "FILL",
+       "at": "2026-01-05T10:00:00+09:00",
+       "fill_id": "c10_f2",
+       "order_id": "o_c10_f2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c10_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c10_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "AMBIGUOUS",
+      "ambiguous_ids": [
+       "c10_f1",
+       "c10_f2"
+      ],
+      "navs": {}
+     }
+    },
+    {
+     "sub": "C10b",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c10b_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c10b_f1",
+       "type": "FILL",
+       "at": "2026-01-05T10:00:00+09:00",
+       "fill_id": "c10b_f1",
+       "order_id": "o_c10b_f1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 1
+      },
+      {
+       "id": "c10b_f2",
+       "type": "FILL",
+       "at": "2026-01-05T10:00:00+09:00",
+       "fill_id": "c10b_f2",
+       "order_id": "o_c10b_f2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL",
+       "seq": 2
+      },
+      {
+       "id": "c10b_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c10b_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 999600,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 999600
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "case": "C11",
+   "subs": [
+    {
+     "sub": "C11",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c11_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c11_f1",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c11_f1",
+       "order_id": "o_c11_f1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 50,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c11_f2",
+       "type": "FILL",
+       "at": "2026-01-05T10:00:00+09:00",
+       "fill_id": "c11_f2",
+       "order_id": "o_c11_f2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 20,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c11_f3",
+       "type": "FILL",
+       "at": "2026-01-05T11:00:00+09:00",
+       "fill_id": "c11_f3",
+       "order_id": "o_c11_f3",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 30,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c11_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c11_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 998000,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 998000
+       }
+      },
+      "trades": {
+       "T1": {
+        "entry_fills": 1,
+        "exit_fills": 2,
+        "realized": -2000,
+        "open_qty": 0,
+        "exits": [
+         {
+          "fill_id": "c11_f2",
+          "cost_alloc": 200200,
+          "realized": -800
+         },
+         {
+          "fill_id": "c11_f3",
+          "cost_alloc": 300300,
+          "realized": -1200
+         }
+        ]
+       }
+      },
+      "trades_count": 1
+     }
+    }
+   ]
+  },
+  {
+   "case": "C12",
+   "subs": [
+    {
+     "sub": "C12",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c12_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c12_f1",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c12_f1",
+       "order_id": "o_c12_f1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 100,
+       "price": 1000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c12_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 1000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c12_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c12_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 1000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c12_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      },
+      {
+       "id": "c12_f2",
+       "type": "FILL",
+       "at": "2026-01-07T10:00:00+09:00",
+       "fill_id": "c12_f2",
+       "order_id": "o_c12_f2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 100,
+       "price": 1000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c12_p3",
+       "type": "PRICE",
+       "at": "2026-01-07T15:45:00+09:00",
+       "prices": {
+        "S1": 1000
+       },
+       "as_of": "2026-01-07T15:30:00+09:00",
+       "available_at": "2026-01-07T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c12_m3",
+       "type": "MARK",
+       "at": "2026-01-07T16:00:00+09:00",
+       "date": "2026-01-07"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 999600,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 999900
+       },
+       "2026-01-06": {
+        "nav": 999900
+       },
+       "2026-01-07": {
+        "nav": 999600
+       }
+      },
+      "returns": {
+       "2026-01-05": "-0.0001",
+       "2026-01-06": "0",
+       "2026-01-07": "-300/999900"
+      },
+      "costs_by_date": {
+       "2026-01-05": 100,
+       "2026-01-07": 300
+      },
+      "months": {
+       "2026-01": {
+        "ret": "-0.0004",
+        "partial": true
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "case": "C13",
+   "subs": [
+    {
+     "sub": "C13",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      },
+      "slippage": {
+       "bps": "50",
+       "included_in_fill_price": true
+      }
+     },
+     "events": [
+      {
+       "id": "c13_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c13_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c13_f",
+       "order_id": "o_c13_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 1,
+       "price": 100500,
+       "evidence": "MODEL_FILL",
+       "ref_price": 100000,
+       "slippage_in_price": true
+      },
+      {
+       "id": "c13_p",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 100000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c13_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 899399,
+      "positions": {
+       "S1": 1
+      },
+      "navs": {
+       "2026-01-05": {
+        "nav": 999399
+       }
+      },
+      "fills": [
+       {
+        "notional": 100500,
+        "fee": 101,
+        "tax": 0,
+        "slippage_info_won": 500
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C14",
+   "subs": [
+    {
+     "sub": "C14",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c14_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c14_f1",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c14_f1",
+       "order_id": "o_c14_f1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 100,
+       "price": 5000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c14_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 5000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c14_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c14_f2",
+       "type": "FILL",
+       "at": "2026-01-06T10:00:00+09:00",
+       "fill_id": "c14_f2",
+       "order_id": "o_c14_f2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 100,
+       "price": 5150,
+       "evidence": "MODEL_FILL",
+       "ledger_pnl_pct": "3.0"
+      },
+      {
+       "id": "c14_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 5150
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c14_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 1012955,
+      "positions": {},
+      "navs": {
+       "2026-01-05": {
+        "nav": 999500
+       },
+       "2026-01-06": {
+        "nav": 1012955
+       }
+      },
+      "trades": {
+       "T1": {
+        "realized": 12955
+       }
+      },
+      "discrepancies": [
+       {
+        "trade_id": "T1",
+        "ledger_ret": "0.03",
+        "fill_net_ret": "2591/100100"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C15",
+   "subs": [
+    {
+     "sub": "C15",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c15_d1",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c15_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c15_f",
+       "order_id": "o_c15_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 50,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c15_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 11000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c15_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c15_d2",
+       "type": "DEPOSIT",
+       "at": "2026-01-06T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c15_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c15_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      },
+      {
+       "id": "c15_w3",
+       "type": "WITHDRAW",
+       "at": "2026-01-07T08:00:00+09:00",
+       "amount": 500000
+      },
+      {
+       "id": "c15_p3",
+       "type": "PRICE",
+       "at": "2026-01-07T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-07T15:30:00+09:00",
+       "available_at": "2026-01-07T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c15_m3",
+       "type": "MARK",
+       "at": "2026-01-07T16:00:00+09:00",
+       "date": "2026-01-07"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 999500,
+      "positions": {
+       "S1": 50
+      },
+      "navs": {
+       "2026-01-05": {
+        "nav": 1049500
+       },
+       "2026-01-06": {
+        "nav": 1999500
+       },
+       "2026-01-07": {
+        "nav": 1499500
+       }
+      },
+      "returns": {
+       "2026-01-05": "0.0495",
+       "2026-01-06": "-50000/2049500",
+       "2026-01-07": "0"
+      },
+      "twr_total": "195901/8198000",
+      "net_flows": 1500000,
+      "money_pnl": -500,
+      "risk": {
+       "mdd": "-50000/2049500",
+       "raw_nav_mdd": null,
+       "raw_nav_mdd_reason": "FLOWS_PRESENT"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "case": "C16",
+   "subs": [
+    {
+     "sub": "C16a",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0",
+       "sell_fee": "0",
+       "sell_tax": "0"
+      }
+     },
+     "events": [
+      {
+       "id": "C16a_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-29T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "C16a_f",
+       "type": "FILL",
+       "at": "2026-01-29T09:10:00+09:00",
+       "fill_id": "C16a_f",
+       "order_id": "o_C16a_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 100,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "C16a_p1",
+       "type": "PRICE",
+       "at": "2026-01-29T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-29T15:30:00+09:00",
+       "available_at": "2026-01-29T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C16a_m1",
+       "type": "MARK",
+       "at": "2026-01-29T16:00:00+09:00",
+       "date": "2026-01-29"
+      },
+      {
+       "id": "C16a_p2",
+       "type": "PRICE",
+       "at": "2026-01-30T15:45:00+09:00",
+       "prices": {
+        "S1": 8500
+       },
+       "as_of": "2026-01-30T15:30:00+09:00",
+       "available_at": "2026-01-30T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C16a_m2",
+       "type": "MARK",
+       "at": "2026-01-30T16:00:00+09:00",
+       "date": "2026-01-30"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 0,
+      "returns": {
+       "2026-01-29": "0",
+       "2026-01-30": "-0.15"
+      },
+      "months": {
+       "2026-01": {
+        "ret": "-0.15",
+        "partial": true
+       }
+      },
+      "risk": {
+       "day": "-0.15",
+       "month": "-0.15",
+       "mdd": "-0.15",
+       "verdict_day": "PASS",
+       "verdict_month": "PASS",
+       "verdict_mdd": "PASS",
+       "verdict": "PASS"
+      }
+     }
+    },
+    {
+     "sub": "C16b",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0",
+       "sell_fee": "0",
+       "sell_tax": "0"
+      }
+     },
+     "events": [
+      {
+       "id": "C16b_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-29T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "C16b_f",
+       "type": "FILL",
+       "at": "2026-01-29T09:10:00+09:00",
+       "fill_id": "C16b_f",
+       "order_id": "o_C16b_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 100,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "C16b_p1",
+       "type": "PRICE",
+       "at": "2026-01-29T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-29T15:30:00+09:00",
+       "available_at": "2026-01-29T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C16b_m1",
+       "type": "MARK",
+       "at": "2026-01-29T16:00:00+09:00",
+       "date": "2026-01-29"
+      },
+      {
+       "id": "C16b_p2",
+       "type": "PRICE",
+       "at": "2026-01-30T15:45:00+09:00",
+       "prices": {
+        "S1": 8490
+       },
+       "as_of": "2026-01-30T15:30:00+09:00",
+       "available_at": "2026-01-30T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C16b_m2",
+       "type": "MARK",
+       "at": "2026-01-30T16:00:00+09:00",
+       "date": "2026-01-30"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "returns": {
+       "2026-01-30": "-0.151"
+      },
+      "risk": {
+       "day": "-0.151",
+       "month": "-0.151",
+       "mdd": "-0.151",
+       "verdict_day": "FAIL",
+       "verdict_month": "FAIL",
+       "verdict_mdd": "FAIL",
+       "verdict": "FAIL"
+      }
+     }
+    },
+    {
+     "sub": "C16c",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "C16c_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-29T08:00:00+09:00",
+       "amount": 1001000
+      },
+      {
+       "id": "C16c_f",
+       "type": "FILL",
+       "at": "2026-01-29T09:10:00+09:00",
+       "fill_id": "C16c_f",
+       "order_id": "o_C16c_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 1000,
+       "price": 1000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "C16c_p1",
+       "type": "PRICE",
+       "at": "2026-01-29T15:45:00+09:00",
+       "prices": {
+        "S1": 1000
+       },
+       "as_of": "2026-01-29T15:30:00+09:00",
+       "available_at": "2026-01-29T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C16c_m1",
+       "type": "MARK",
+       "at": "2026-01-29T16:00:00+09:00",
+       "date": "2026-01-29"
+      },
+      {
+       "id": "C16c_p2",
+       "type": "PRICE",
+       "at": "2026-01-30T15:45:00+09:00",
+       "prices": {
+        "S1": 850
+       },
+       "as_of": "2026-01-30T15:30:00+09:00",
+       "available_at": "2026-01-30T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C16c_m2",
+       "type": "MARK",
+       "at": "2026-01-30T16:00:00+09:00",
+       "date": "2026-01-30"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 0,
+      "navs": {
+       "2026-01-29": {
+        "nav": 1000000
+       },
+       "2026-01-30": {
+        "nav": 850000
+       }
+      },
+      "returns": {
+       "2026-01-29": "-1/1001",
+       "2026-01-30": "-0.15"
+      },
+      "months": {
+       "2026-01": {
+        "ret": "-151000/1001000",
+        "partial": true
+       }
+      },
+      "risk": {
+       "day": "-0.15",
+       "month": "-151000/1001000",
+       "mdd": "-151000/1001000",
+       "verdict_day": "PASS",
+       "verdict_month": "FAIL",
+       "verdict_mdd": "FAIL",
+       "verdict": "FAIL"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "case": "C17",
+   "subs": [
+    {
+     "sub": "C17",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c17_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c17_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c17_f",
+       "order_id": "o_c17_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c17_pbad",
+       "type": "PRICE",
+       "at": "2026-01-05T15:00:00+09:00",
+       "prices": {
+        "S9": 1
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:00:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c17_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c17_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c17_p1v2",
+       "type": "PRICE",
+       "at": "2026-01-06T10:00:00+09:00",
+       "prices": {
+        "S1": 9000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-06T10:00:00+09:00",
+       "version": 2,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c17_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 12000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c17_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 899900,
+      "navs": {
+       "2026-01-05": {
+        "nav": 999900
+       },
+       "2026-01-06": {
+        "nav": 1019900
+       }
+      },
+      "corrections_after_snapshot": [
+       {
+        "security": "S1",
+        "as_of": "2026-01-05T15:30:00+09:00",
+        "version": 2,
+        "price": 9000,
+        "snapshot_date": "2026-01-05"
+       }
+      ],
+      "rejections": [
+       {
+        "event_id": "c17_pbad",
+        "reason": "BAD_PRICE_TIME"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C18",
+   "subs": [
+    {
+     "sub": "C18a",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c18a_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c18a_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c18a_f",
+       "order_id": "o_c18a_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S2",
+       "side": "BUY",
+       "qty": 10,
+       "price": 5000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c18a_m",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 949950,
+      "navs": {
+       "2026-01-05": {
+        "nav": null,
+        "reason": "MISSING_PRICE:S2"
+       }
+      },
+      "risk": {
+       "verdict": "INCOMPLETE"
+      }
+     }
+    },
+    {
+     "sub": "C18b",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c18b_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c18b_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c18b_f",
+       "order_id": "o_c18b_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c18b_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c18b_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c18b_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      },
+      {
+       "id": "c18b_p3",
+       "type": "PRICE",
+       "at": "2026-01-07T15:45:00+09:00",
+       "prices": {
+        "S1": 11000
+       },
+       "as_of": "2026-01-07T15:30:00+09:00",
+       "available_at": "2026-01-07T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c18b_m3",
+       "type": "MARK",
+       "at": "2026-01-07T16:00:00+09:00",
+       "date": "2026-01-07"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "navs": {
+       "2026-01-05": {
+        "nav": 999900
+       },
+       "2026-01-06": {
+        "nav": null,
+        "reason": "STALE_PRICE:S1"
+       },
+       "2026-01-07": {
+        "nav": 1009900
+       }
+      },
+      "returns": {
+       "2026-01-05": "-0.0001",
+       "2026-01-06": null,
+       "2026-01-07": null
+      },
+      "risk": {
+       "verdict_day": "INCOMPLETE",
+       "verdict_month": "INCOMPLETE",
+       "verdict_mdd": "INCOMPLETE",
+       "verdict": "INCOMPLETE"
+      }
+     }
+    },
+    {
+     "sub": "C18c",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c18c_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c18c_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c18c_w",
+       "type": "WITHDRAW",
+       "at": "2026-01-06T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c18c_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      },
+      {
+       "id": "c18c_m3",
+       "type": "MARK",
+       "at": "2026-01-07T16:00:00+09:00",
+       "date": "2026-01-07"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 0,
+      "navs": {
+       "2026-01-05": {
+        "nav": 1000000
+       },
+       "2026-01-06": {
+        "nav": 0
+       },
+       "2026-01-07": {
+        "nav": 0
+       }
+      },
+      "returns": {
+       "2026-01-05": "0",
+       "2026-01-06": null,
+       "2026-01-07": null
+      },
+      "return_reasons": {
+       "2026-01-06": "NONPOSITIVE_BASE",
+       "2026-01-07": "NONPOSITIVE_BASE"
+      },
+      "risk": {
+       "verdict": "INCOMPLETE"
+      }
+     }
+    },
+    {
+     "sub": "C18d",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c18d_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c18d_f",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c18d_f",
+       "order_id": "o_c18d_f",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 10,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c18d_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c18d_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c18d_ca",
+       "type": "CORP_ACTION",
+       "at": "2026-01-06T08:00:00+09:00",
+       "security_id": "S1",
+       "kind": "SPLIT"
+      },
+      {
+       "id": "c18d_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 5000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c18d_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "navs": {
+       "2026-01-05": {
+        "nav": 999900
+       },
+       "2026-01-06": {
+        "nav": null,
+        "reason": "UNSUPPORTED_CORP_ACTION:S1"
+       }
+      }
+     }
+    }
+   ]
+  },
+  {
+   "case": "C19",
+   "subs": [
+    {
+     "sub": "C19",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.001",
+       "sell_fee": "0.001",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "c19_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 1000000
+      },
+      {
+       "id": "c19_fa",
+       "type": "FILL",
+       "at": "2026-01-05T09:10:00+09:00",
+       "fill_id": "c19_fa",
+       "order_id": "o_c19_fa",
+       "trade_id": "A1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 50,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c19_fb",
+       "type": "FILL",
+       "at": "2026-01-05T09:20:00+09:00",
+       "fill_id": "c19_fb",
+       "order_id": "o_c19_fb",
+       "trade_id": "B1",
+       "strategy_id": "B",
+       "security_id": "S1",
+       "side": "BUY",
+       "qty": 30,
+       "price": 10000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c19_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 10000
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c19_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "c19_fa2",
+       "type": "FILL",
+       "at": "2026-01-06T10:00:00+09:00",
+       "fill_id": "c19_fa2",
+       "order_id": "o_c19_fa2",
+       "trade_id": "A1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 50,
+       "price": 11000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c19_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 11000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c19_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      },
+      {
+       "id": "c19_fa3",
+       "type": "FILL",
+       "at": "2026-01-07T10:00:00+09:00",
+       "fill_id": "c19_fa3",
+       "order_id": "o_c19_fa3",
+       "trade_id": "A1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "qty": 10,
+       "price": 11000,
+       "evidence": "MODEL_FILL"
+      },
+      {
+       "id": "c19_p3",
+       "type": "PRICE",
+       "at": "2026-01-07T15:45:00+09:00",
+       "prices": {
+        "S1": 11000
+       },
+       "as_of": "2026-01-07T15:30:00+09:00",
+       "available_at": "2026-01-07T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c19_m3",
+       "type": "MARK",
+       "at": "2026-01-07T16:00:00+09:00",
+       "date": "2026-01-07"
+      },
+      {
+       "id": "c19_p4",
+       "type": "PRICE",
+       "at": "2026-01-08T15:45:00+09:00",
+       "prices": {
+        "S1": 11000
+       },
+       "as_of": "2026-01-08T15:30:00+09:00",
+       "available_at": "2026-01-08T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "c19_m4",
+       "type": "MARK",
+       "at": "2026-01-08T16:00:00+09:00",
+       "date": "2026-01-08"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 747550,
+      "settled_cash": 747550,
+      "positions": {
+       "S1": 30
+      },
+      "navs": {
+       "2026-01-05": {
+        "nav": 999200,
+        "cash_td": 199200,
+        "settled": 1000000,
+        "payable": 800800,
+        "receivable": 0
+       },
+       "2026-01-06": {
+        "nav": 1077550,
+        "cash_td": 747550,
+        "settled": 1000000,
+        "payable": 800800,
+        "receivable": 548350
+       },
+       "2026-01-07": {
+        "nav": 1077550,
+        "cash_td": 747550,
+        "settled": 199200,
+        "payable": 0,
+        "receivable": 548350
+       },
+       "2026-01-08": {
+        "nav": 1077550,
+        "cash_td": 747550,
+        "settled": 747550,
+        "payable": 0,
+        "receivable": 0
+       }
+      },
+      "trades": {
+       "A1": {
+        "realized": 47850,
+        "open_qty": 0
+       },
+       "B1": {
+        "realized": 0,
+        "open_qty": 30,
+        "open_cost": 300300
+       }
+      },
+      "attribution": {
+       "A": 47850,
+       "B": 29700
+      },
+      "rejections": [
+       {
+        "event_id": "c19_fa3",
+        "reason": "OVERSELL"
+       }
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "case": "C20",
+   "subs": [
+    {
+     "sub": "C20_10M",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.00015",
+       "sell_fee": "0.00015",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "C20_10M_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 10000000
+      },
+      {
+       "id": "C20_10M_i",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "price": 12345,
+       "alloc_won": 1000000,
+       "nav_ref_won": 10000000,
+       "model_fill": true
+      },
+      {
+       "id": "C20_10M_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 12345
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C20_10M_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "C20_10M_s",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-06T10:00:00+09:00",
+       "order_id": "o2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "price": 13000,
+       "sizing": "ALL_HELD",
+       "model_fill": true
+      },
+      {
+       "id": "C20_10M_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 13000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C20_10M_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 10050016,
+      "positions": {},
+      "sizing": [
+       {
+        "order_id": "o1",
+        "qty": 80
+       }
+      ],
+      "fills": [
+       {
+        "notional": 987600,
+        "fee": 148,
+        "tax": 0
+       },
+       {
+        "notional": 1040000,
+        "fee": 156,
+        "tax": 2080
+       }
+      ],
+      "navs": {
+       "2026-01-05": {
+        "nav": 9999852,
+        "cash_td": 9012252
+       },
+       "2026-01-06": {
+        "nav": 10050016
+       }
+      }
+     }
+    },
+    {
+     "sub": "C20_100M",
+     "config": {
+      "source_mode": "SYNTHETIC",
+      "cost": {
+       "buy_fee": "0.00015",
+       "sell_fee": "0.00015",
+       "sell_tax": "0.002"
+      }
+     },
+     "events": [
+      {
+       "id": "C20_100M_d",
+       "type": "DEPOSIT",
+       "at": "2026-01-05T08:00:00+09:00",
+       "amount": 100000000
+      },
+      {
+       "id": "C20_100M_i",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-05T09:00:00+09:00",
+       "order_id": "o1",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "BUY",
+       "price": 12345,
+       "alloc_won": 10000000,
+       "nav_ref_won": 100000000,
+       "model_fill": true
+      },
+      {
+       "id": "C20_100M_p1",
+       "type": "PRICE",
+       "at": "2026-01-05T15:45:00+09:00",
+       "prices": {
+        "S1": 12345
+       },
+       "as_of": "2026-01-05T15:30:00+09:00",
+       "available_at": "2026-01-05T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C20_100M_m1",
+       "type": "MARK",
+       "at": "2026-01-05T16:00:00+09:00",
+       "date": "2026-01-05"
+      },
+      {
+       "id": "C20_100M_s",
+       "type": "ORDER_INTENT",
+       "at": "2026-01-06T10:00:00+09:00",
+       "order_id": "o2",
+       "trade_id": "T1",
+       "strategy_id": "A",
+       "security_id": "S1",
+       "side": "SELL",
+       "price": 13000,
+       "sizing": "ALL_HELD",
+       "model_fill": true
+      },
+      {
+       "id": "C20_100M_p2",
+       "type": "PRICE",
+       "at": "2026-01-06T15:45:00+09:00",
+       "prices": {
+        "S1": 13000
+       },
+       "as_of": "2026-01-06T15:30:00+09:00",
+       "available_at": "2026-01-06T15:45:00+09:00",
+       "version": 1,
+       "source": "SYNTH_FIXTURE",
+       "session": "REGULAR_CLOSE"
+      },
+      {
+       "id": "C20_100M_m2",
+       "type": "MARK",
+       "at": "2026-01-06T16:00:00+09:00",
+       "date": "2026-01-06"
+      }
+     ],
+     "expect": {
+      "status": "OK",
+      "cash": 100505785,
+      "positions": {},
+      "sizing": [
+       {
+        "order_id": "o1",
+        "qty": 809
+       }
+      ],
+      "fills": [
+       {
+        "notional": 9987105,
+        "fee": 1498,
+        "tax": 0
+       },
+       {
+        "notional": 10517000,
+        "fee": 1578,
+        "tax": 21034
+       }
+      ],
+      "navs": {
+       "2026-01-05": {
+        "nav": 99998502,
+        "cash_td": 90011397
+       },
+       "2026-01-06": {
+        "nav": 100505785
+       }
+      }
+     }
+    }
+   ]
+  }
+ ],
+ "asis_contrast": [
+  {
+   "id": "X8",
+   "pairs_with": "C8",
+   "days": [
+    "2026-01-02",
+    "2026-01-05",
+    "2026-01-06"
+   ],
+   "ledger": [
+    [
+     "S01",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S02",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S03",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S04",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S05",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S06",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S07",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S08",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S09",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S10",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S11",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ],
+    [
+     "S12",
+     "2026-01-05",
+     "2026-01-06",
+     0.0,
+     1
+    ]
+   ],
+   "prices": {
+    "S01": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S02": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S03": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S04": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S05": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S06": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S07": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S08": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S09": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S10": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S11": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    },
+    "S12": {
+     "rows": [
+      [
+       "2026-01-05",
+       1000
+      ],
+      [
+       "2026-01-06",
+       1000
+      ]
+     ]
+    }
+   },
+   "expect_defect": {
+    "min_cash_rel": "-0.2",
+    "max_exposure": "1.2"
+   }
+  },
+  {
+   "id": "X9",
+   "pairs_with": "C9",
+   "days": [
+    "2026-01-02",
+    "2026-01-05"
+   ],
+   "ledger": [
+    [
+     "S1",
+     "2026-01-05",
+     "2026-01-05",
+     2.0,
+     10
+    ]
+   ],
+   "prices": {
+    "S1": {
+     "rows": [
+      [
+       "2026-01-05",
+       5000
+      ]
+     ]
+    }
+   },
+   "expect_defect": {
+    "returns": [
+     "0",
+     "0"
+    ],
+    "kernel_day_return": "0.00797"
+   }
+  },
+  {
+   "id": "X14",
+   "pairs_with": "C14",
+   "days": [
+    "2026-01-02",
+    "2026-01-05",
+    "2026-01-06"
+   ],
+   "ledger": [
+    [
+     "S1",
+     "2026-01-05",
+     "2026-01-06",
+     3.0,
+     10
+    ]
+   ],
+   "prices": {
+    "S1": {
+     "rows": [
+      [
+       "2026-01-05",
+       5000
+      ],
+      [
+       "2026-01-06",
+       5150
+      ]
+     ]
+    }
+   },
+   "expect_defect": {
+    "returns": [
+     "0",
+     "0",
+     "0.03"
+    ],
+    "kernel_total_return": "12955/1000000"
+   }
+  }
+ ]
+}
