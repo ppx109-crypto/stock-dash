@@ -1,0 +1,479 @@
+{
+ "schema_version": 1,
+ "task_id": "BACKTEST-REPAIR-0002",
+ "chain_id": "BACKTEST-FIRST-20261008",
+ "round": 2,
+ "status": "READY",
+ "status_meaning": "원장 재가격을 순차 매매 재실행(신호→요청→체결→확정 상태)으로 교체해 5전략 핵심 10판 재계산. 규칙 · 문턱 · 배분 고정. 이미 본 기간 · OOS 아님 · 운영/모의 반영 아님",
+ "source_pr": 39,
+ "source_head_sha": "1f5252cb198944699e62cacb06e7df498cc2768e",
+ "input_pr": 40,
+ "input_head_sha": "3cfac9364e66e68b012ddd631d0059120ddcb50b",
+ "prereg_commit": "1f97ffc5984584724abd56acd40b813660c79737",
+ "code_ref": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "cost_contract": "1e6ed49b9b982ab3ab999082c7455e26cccc0bfd",
+  "etf_rules": "f103323df19b5d63ea279d393f74b10ee15ad6ac",
+  "m15_patch_source": "a61f033ecd16ba0976c955a93bfec70c7463ad53 RULES-0002 intraday_diag.py"
+ },
+ "data_ref": {
+  "nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "bars_and_daily": "00b98ab1 트리의 m15-kis · etf-data · event-data · volume-data · kosdaq-data",
+  "ledgers_read_as_input": 0,
+  "raw_data_published": false
+ },
+ "windows": {
+  "daily": [
+   "20170201",
+   "20260916"
+  ],
+  "m15": [
+   "20250917",
+   "20260831"
+  ],
+  "oos": false
+ },
+ "end_policy": "주 결과 = 끝 열린 포지션 MTM · 청산 시나리오(같은 날 비용 포함) 따로",
+ "cost_stress": [
+  1,
+  2
+ ],
+ "counterfactual_cost0": true,
+ "core_runs": {
+  "D1_next_x1": {
+   "CAGR": 20.43,
+   "MDD_daily": -38.02,
+   "worst_month": -24.47,
+   "month_breach_-15": 3,
+   "day_breach_-15": 0,
+   "PF": 1.847,
+   "positions": 474,
+   "ci95_block20_ann_mean_ret_pct": [
+    3.77,
+    43.71
+   ]
+  },
+  "D1_next_x2": {
+   "CAGR": 12.09,
+   "MDD_daily": -41.57,
+   "worst_month": -25.28,
+   "month_breach_-15": 3,
+   "day_breach_-15": 0,
+   "PF": 1.506,
+   "positions": 474,
+   "ci95_block20_ann_mean_ret_pct": [
+    -3.85,
+    36.19
+   ]
+  },
+  "M15_x1": {
+   "CAGR": 185.91,
+   "MDD_daily": -35.58,
+   "worst_month": -25.04,
+   "month_breach_-15": 1,
+   "day_breach_-15": 0,
+   "PF": 2.503,
+   "positions": 115,
+   "ci95_block20_ann_mean_ret_pct": [
+    17.98,
+    251.58
+   ]
+  },
+  "M15_x2": {
+   "CAGR": 152.37,
+   "MDD_daily": -36.99,
+   "worst_month": -26.32,
+   "month_breach_-15": 1,
+   "day_breach_-15": 0,
+   "PF": 2.191,
+   "positions": 116,
+   "ci95_block20_ann_mean_ret_pct": [
+    4.12,
+    240.0
+   ]
+  },
+  "ETF_engine_next_x1": {
+   "CAGR": 3.99,
+   "MDD_daily": -8.94,
+   "worst_month": -4.66,
+   "month_breach_-15": 0,
+   "day_breach_-15": 0,
+   "PF": 1.581,
+   "positions": 189,
+   "ci95_block20_ann_mean_ret_pct": [
+    0.44,
+    8.34
+   ]
+  },
+  "ETF_engine_next_x2": {
+   "CAGR": 2.55,
+   "MDD_daily": -10.72,
+   "worst_month": -5.09,
+   "month_breach_-15": 0,
+   "day_breach_-15": 0,
+   "PF": 1.342,
+   "positions": 181,
+   "ci95_block20_ann_mean_ret_pct": [
+    -0.89,
+    6.87
+   ]
+  },
+  "ETF_inverse_next_x1": {
+   "CAGR": -3.29,
+   "MDD_daily": -33.92,
+   "worst_month": -10.82,
+   "month_breach_-15": 0,
+   "day_breach_-15": 0,
+   "PF": 0.417,
+   "positions": 42,
+   "ci95_block20_ann_mean_ret_pct": [
+    -7.06,
+    0.14
+   ]
+  },
+  "ETF_inverse_next_x2": {
+   "CAGR": -3.64,
+   "MDD_daily": -35.77,
+   "worst_month": -11.11,
+   "month_breach_-15": 0,
+   "day_breach_-15": 0,
+   "PF": 0.379,
+   "positions": 42,
+   "ci95_block20_ann_mean_ret_pct": [
+    -7.55,
+    -0.18
+   ]
+  },
+  "BASKET_next_x1": {
+   "CAGR": 6.34,
+   "MDD_daily": -26.39,
+   "worst_month": -11.83,
+   "month_breach_-15": 0,
+   "day_breach_-15": 0,
+   "PF": 1.458,
+   "positions": 154,
+   "ci95_block20_ann_mean_ret_pct": [
+    -1.8,
+    19.21
+   ]
+  },
+  "BASKET_next_x2": {
+   "CAGR": 2.82,
+   "MDD_daily": -31.89,
+   "worst_month": -12.37,
+   "month_breach_-15": 0,
+   "day_breach_-15": 0,
+   "PF": 1.189,
+   "positions": 154,
+   "ci95_block20_ann_mean_ret_pct": [
+    -5.28,
+    15.68
+   ]
+  }
+ },
+ "regression": {
+  "synthetic": "11/11 (첫 실행 10/11)",
+  "cut_daily": "4/4 같음",
+  "cut_m15_full_pipeline": "같음",
+  "state_ledger_mismatch_days": 0,
+  "discarded_runs": [
+   "m15 1차(세금 날짜 형식 오류)"
+  ]
+ },
+ "evidence_paths": [
+  "evidence/conservation.json",
+  "evidence/fills_BASKET_next_x1.csv",
+  "evidence/fills_BASKET_next_x2.csv",
+  "evidence/fills_D1_next_x1.csv",
+  "evidence/fills_D1_next_x2.csv",
+  "evidence/fills_ETF_engine_next_x1.csv",
+  "evidence/fills_ETF_engine_next_x2.csv",
+  "evidence/fills_ETF_inverse_next_x1.csv",
+  "evidence/fills_ETF_inverse_next_x2.csv",
+  "evidence/fills_M15_x1.csv",
+  "evidence/fills_M15_x2.csv",
+  "evidence/logs/daily.log",
+  "evidence/logs/daily_run1.log",
+  "evidence/logs/m15.log",
+  "evidence/logs/m15_cut.log",
+  "evidence/logs/m15_run1_DISCARDED.log",
+  "evidence/nav_BASKET_close_x1.csv",
+  "evidence/nav_BASKET_next_x0.csv",
+  "evidence/nav_BASKET_next_x1.csv",
+  "evidence/nav_BASKET_next_x2.csv",
+  "evidence/nav_D1_close_x1.csv",
+  "evidence/nav_D1_next_x0.csv",
+  "evidence/nav_D1_next_x1.csv",
+  "evidence/nav_D1_next_x2.csv",
+  "evidence/nav_ETF_engine_close_x1.csv",
+  "evidence/nav_ETF_engine_next_x0.csv",
+  "evidence/nav_ETF_engine_next_x1.csv",
+  "evidence/nav_ETF_engine_next_x2.csv",
+  "evidence/nav_ETF_inverse_close_x1.csv",
+  "evidence/nav_ETF_inverse_next_x0.csv",
+  "evidence/nav_ETF_inverse_next_x1.csv",
+  "evidence/nav_ETF_inverse_next_x2.csv",
+  "evidence/nav_M15_x0.csv",
+  "evidence/nav_M15_x1.csv",
+  "evidence/nav_M15_x2.csv",
+  "evidence/positions_BASKET_next_x1.csv",
+  "evidence/positions_BASKET_next_x2.csv",
+  "evidence/positions_D1_next_x1.csv",
+  "evidence/positions_D1_next_x2.csv",
+  "evidence/positions_ETF_engine_next_x1.csv",
+  "evidence/positions_ETF_engine_next_x2.csv",
+  "evidence/positions_ETF_inverse_next_x1.csv",
+  "evidence/positions_ETF_inverse_next_x2.csv",
+  "evidence/positions_M15_x1.csv",
+  "evidence/positions_M15_x2.csv",
+  "evidence/regression.json",
+  "evidence/results.json",
+  "evidence/tables.md",
+  "evidence/test_kernel.json"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "9205c725ac84369969308e67794a9ed35e30ecc8afe1fd0148088b480f5f0024"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "77a6507e2c9ec05e97f78cb19d9a933873393490735319162d44a6321cb4ba5a"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/daily_exec.py",
+   "sha256": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/make_report.py",
+   "sha256": "6398958e1ca6a01e0cb7510df2b18c351e97fdc2329e0085f2b1b0f62e1dac1e"
+  },
+  {
+   "path": "code/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "code/test_kernel.py",
+   "sha256": "b327915690cc7452667762c9351605a9b006769e33515fabacfd2472028e5f1e"
+  },
+  {
+   "path": "evidence/conservation.json",
+   "sha256": "b34afdb49f036ce03fba55971864e0f685ca43f574cd7ac43e4cf1e0fe6d0232"
+  },
+  {
+   "path": "evidence/fills_BASKET_next_x1.csv",
+   "sha256": "925a62d6ba8fc84b658e5ba4ea3d2e84146adfcf99edac8ecb16f8d3436bf86e"
+  },
+  {
+   "path": "evidence/fills_BASKET_next_x2.csv",
+   "sha256": "42bd0df7f0d166c344dbb3b5c216661bd728d7f464b74fa7e43784c49e0342f6"
+  },
+  {
+   "path": "evidence/fills_D1_next_x1.csv",
+   "sha256": "0de6e4921398ad8229b199f9c6f216818b6119b6db034c8d4da0f43a512b7dd0"
+  },
+  {
+   "path": "evidence/fills_D1_next_x2.csv",
+   "sha256": "5f1a236be461da479f2b325d70cd6ca0e48650cd4c119a43ceb7829b73605e00"
+  },
+  {
+   "path": "evidence/fills_ETF_engine_next_x1.csv",
+   "sha256": "34659d9182082fed8bc8bb8fb9c2b0a664912248bb9a2351f3a96ec7b99ac6cf"
+  },
+  {
+   "path": "evidence/fills_ETF_engine_next_x2.csv",
+   "sha256": "b6e012caab34b67f64e81cfd39b8ac9f62108549273ef89074b987bdd077602c"
+  },
+  {
+   "path": "evidence/fills_ETF_inverse_next_x1.csv",
+   "sha256": "781ff7112c26fd725943b3d6258f7f8c82e0718ae04362ad371b9f1dffeaa2f7"
+  },
+  {
+   "path": "evidence/fills_ETF_inverse_next_x2.csv",
+   "sha256": "afa9756ffd14c71841abc219fd2d3c895902b29d5686c69aac081314f4190e7e"
+  },
+  {
+   "path": "evidence/fills_M15_x1.csv",
+   "sha256": "15190fb10c7b25c5e38267c5d77b10f90332d24fe681fba8f14ee7512e8ba34a"
+  },
+  {
+   "path": "evidence/fills_M15_x2.csv",
+   "sha256": "cf54e7fb98fbb918c65524261cbfa7be1db17839d25865c068d72cd43da8fba8"
+  },
+  {
+   "path": "evidence/logs/daily.log",
+   "sha256": "c74c098ece456b0747deb10d0732cadfe666fd0dc3196e15c83faac6b03b039e"
+  },
+  {
+   "path": "evidence/logs/daily_run1.log",
+   "sha256": "d647498a84800f2a798d5c8038fd70a7a30c377d3a719d7bca30a4aece92134b"
+  },
+  {
+   "path": "evidence/logs/m15.log",
+   "sha256": "fe9d600ee57c561bbe8b6ce900b341600728b143d4a052f18497de86811bf88b"
+  },
+  {
+   "path": "evidence/logs/m15_cut.log",
+   "sha256": "14478a593c45d8821f60d397ba1abbdd9ab582cc9250b6e803988b9e6bdf0e26"
+  },
+  {
+   "path": "evidence/logs/m15_run1_DISCARDED.log",
+   "sha256": "450b6315aa9e9028d6d2c7e95507db9ee29a714954e93c4075020bb38ea4c6ea"
+  },
+  {
+   "path": "evidence/nav_BASKET_close_x1.csv",
+   "sha256": "d5ba08f46a5bd4b3c9df952e91e17674a1d58cf53a930caafbbadcbe9f023651"
+  },
+  {
+   "path": "evidence/nav_BASKET_next_x0.csv",
+   "sha256": "33c672e4e9c91b189013cdb4e4ac839b5c0028ade86ff59d92e3f58116ed5111"
+  },
+  {
+   "path": "evidence/nav_BASKET_next_x1.csv",
+   "sha256": "c7b0eb15ffd456cdebde4214d19b8cf77d21ff4549720598d602cbdc3702de10"
+  },
+  {
+   "path": "evidence/nav_BASKET_next_x2.csv",
+   "sha256": "bf998f303cc3e33e7e6cfea419300adcbdd7f2d173427eb00359cd871d438260"
+  },
+  {
+   "path": "evidence/nav_D1_close_x1.csv",
+   "sha256": "df21e5bfa570806a3b840d3b44c93a32b396a1859ed64ab94ecb8ea9e4b22c68"
+  },
+  {
+   "path": "evidence/nav_D1_next_x0.csv",
+   "sha256": "e1b6b1d597ef8552535a2fe8e92c6be5d9bfe67b2a5a3698c10f5d84e22c7ca5"
+  },
+  {
+   "path": "evidence/nav_D1_next_x1.csv",
+   "sha256": "37b9f80ac1e2e5c121f32a18f5fc5b6139e13ba9c6dfee3082046132301c8aec"
+  },
+  {
+   "path": "evidence/nav_D1_next_x2.csv",
+   "sha256": "324c3db722629be429f74948ea8351842198e0e8abde8ffaabb0079a1d348a0f"
+  },
+  {
+   "path": "evidence/nav_ETF_engine_close_x1.csv",
+   "sha256": "b5b231f6d6605824c84148c1ea51a6815ed64051fc5a3c0b9ae058e1490321be"
+  },
+  {
+   "path": "evidence/nav_ETF_engine_next_x0.csv",
+   "sha256": "9c6c0c2d2a4c8bd9c5212eb612ad7b66207fe73eaa7d8f17b733aa96497c3210"
+  },
+  {
+   "path": "evidence/nav_ETF_engine_next_x1.csv",
+   "sha256": "55ac9ed4f98a0215bb5ef09caeff0fce25d07542aedae15da4d1f1fd0aa5ad9b"
+  },
+  {
+   "path": "evidence/nav_ETF_engine_next_x2.csv",
+   "sha256": "2d770d923022574f25c6f41cb6d52e8426ab7eadc02b20f8404eaf17c9441bf2"
+  },
+  {
+   "path": "evidence/nav_ETF_inverse_close_x1.csv",
+   "sha256": "9dae6af4137d868250c29b23dacae1279a3a6aa6186c735fbc9cfb7edd5f6ad8"
+  },
+  {
+   "path": "evidence/nav_ETF_inverse_next_x0.csv",
+   "sha256": "691428801d47d58ad16d34f3e58e7285de3a402416b46d6ee4dc51605fd3f292"
+  },
+  {
+   "path": "evidence/nav_ETF_inverse_next_x1.csv",
+   "sha256": "fd7b5f2a84692c734f0c3e0de6da576854b4bd522515506cda64a84904ea1b94"
+  },
+  {
+   "path": "evidence/nav_ETF_inverse_next_x2.csv",
+   "sha256": "667aa05396db5af1e0d0435a11f0ac6554e1fceb9be790deaa418618e4dd8655"
+  },
+  {
+   "path": "evidence/nav_M15_x0.csv",
+   "sha256": "e55f9e849cbd1ffd39eca26bf94a4db288ada0642d2781e2bf17726a64eb90d1"
+  },
+  {
+   "path": "evidence/nav_M15_x1.csv",
+   "sha256": "9172bf3cd931c844808bced0c43e45d064cf99592a9881c74c069e41a48a582c"
+  },
+  {
+   "path": "evidence/nav_M15_x2.csv",
+   "sha256": "a115c22472b13302db943a3150a04bc2830ab9ef5ed029970c4de7615f4122fe"
+  },
+  {
+   "path": "evidence/positions_BASKET_next_x1.csv",
+   "sha256": "d4686ba815b5950f6331940cf5e0bc708eeda7041a8138aa86f149ceb5cfa15c"
+  },
+  {
+   "path": "evidence/positions_BASKET_next_x2.csv",
+   "sha256": "6db0deb850597b83433fec5c9ed617424444f4e79a437929d563bcec181566e0"
+  },
+  {
+   "path": "evidence/positions_D1_next_x1.csv",
+   "sha256": "f0eafbd39ba8d35312867ad571f1be905694575e457cd7cdaa7212d0c1bb1f9f"
+  },
+  {
+   "path": "evidence/positions_D1_next_x2.csv",
+   "sha256": "f1cae1169e9d63b563a05303e6ee715cd83349c5b32fa7e7497f3ffb01951e2f"
+  },
+  {
+   "path": "evidence/positions_ETF_engine_next_x1.csv",
+   "sha256": "7ab97b3ae16f02334c5051ab190226c7eb4eeb17333c60db47f2873575c3637a"
+  },
+  {
+   "path": "evidence/positions_ETF_engine_next_x2.csv",
+   "sha256": "68eb031a5a4a8fa01aef1e8375f8bac5acc07c2cceaad0a829f3caa147187471"
+  },
+  {
+   "path": "evidence/positions_ETF_inverse_next_x1.csv",
+   "sha256": "a6abdb23306bfe2c3d6daa2cd82bf719d8aa82b6e7afc3b3022f67d1c65290ff"
+  },
+  {
+   "path": "evidence/positions_ETF_inverse_next_x2.csv",
+   "sha256": "889a68113c168a412da6321a510351adf475752b13313655267791de5b53b4f8"
+  },
+  {
+   "path": "evidence/positions_M15_x1.csv",
+   "sha256": "48bafb4120e05a3388f3fe14f1284a26287e565922054e6111214b685163467e"
+  },
+  {
+   "path": "evidence/positions_M15_x2.csv",
+   "sha256": "b19083fad15f9d1cc7a19a9b2022801db517f55867555bd3311c8042b44a4d32"
+  },
+  {
+   "path": "evidence/regression.json",
+   "sha256": "4c2016df60a55528767b2deb43f25367190c31648a72e7080288dc8a5312d354"
+  },
+  {
+   "path": "evidence/results.json",
+   "sha256": "364c4a0eb84b78fc6cd5ddb3f7696efccef953508580979ccac75d3d51979a04"
+  },
+  {
+   "path": "evidence/tables.md",
+   "sha256": "e44fc11591225fec70ca0a555862a58392d25bcc436cc11c99777acdd9ddc539"
+  },
+  {
+   "path": "evidence/test_kernel.json",
+   "sha256": "4c8917767c8034e564ad9c9e06303673fe276cd31f4361ac77e2c510b8b8adcb"
+  }
+ ],
+ "api_calls": 0,
+ "account_queries": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "new_threshold_optimization": 0,
+ "result_branch": "claude/backtest-repair-0002-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "completed_at_kst": "2026-10-08T13:55:46+09:00"
+}
