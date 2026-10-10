@@ -1,0 +1,47 @@
+{
+ "schema_version": 1,
+ "task_id": "REV-DOWN-0047",
+ "chain_id": "REV-DOWN-0047",
+ "kind": "PREREG",
+ "round": 1,
+ "status": "READY",
+ "source_pr": 207,
+ "source_head_sha": "9cca272445dd2fc5b16fa753c954efa3d8fc3596",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/rev_down.py": "d7f087c809ed6787647d287519c7996fa205b007bd2c5e0545b083e444cac710"
+ },
+ "lock": {
+  "research/rev_down.py": "d7f087c809ed6787647d287519c7996fa205b007bd2c5e0545b083e444cac710",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "period": [
+  "20060102",
+  "20260915"
+ ],
+ "fixed": {
+  "phase": "069500 60일 < −5%",
+  "topq": "위 20%",
+  "hold_rows": 10,
+  "slice": "NAV 1/10",
+  "buy_cost": 0.0005,
+  "sell_cost": 0.0025
+ },
+ "verdicts": [
+  "NEEDS_DATA",
+  "IMPLEMENTABLE_IN_SEEN_DATA",
+  "REJECTED"
+ ],
+ "independent_validation": "WAITING_DATA",
+ "run_once": "python3 research/rev_down.py --run",
+ "results_seen_in_this_task": "없음",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/PREREG.md",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/lock.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/snapshots.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.py",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.out"
+ ]
+}
