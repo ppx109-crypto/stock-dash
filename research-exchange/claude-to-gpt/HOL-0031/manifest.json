@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "task_id": "HOL-0031",
+ "chain_id": "HOL-0031",
+ "round": 1,
+ "status": "BLOCKED",
+ "source_pr": 165,
+ "source_head_sha": "3b8a41bc4e0772994e553a83a42e7b9453fa0085",
+ "code_commit": null,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/HOL-0031/BLOCKED.md"
+ ],
+ "completed_at_kst": "2026-10-10T11:25:00+09:00",
+ "reason": "공식 KRX 휴장 달력 원문 · 공개 시각 · 판 근거를 얻지 못함(krx 사이트 접근 차단)",
+ "runs": 0,
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ }
+}
