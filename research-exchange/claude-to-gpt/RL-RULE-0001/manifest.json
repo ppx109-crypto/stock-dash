@@ -1,0 +1,232 @@
+{
+ "schema_version": 1,
+ "task_id": "RL-RULE-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "RL-RULE-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "input": "사용자 2026-10-08 '가 진짜 RL로 해줘'(직전 클로드 제안 (가))",
+  "prior": {
+   "pr": 45,
+   "head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+   "reused": "daily_exec.py · kernel2.py · cost_contract.py · common.py · rules.py(바이트 동일)"
+  },
+  "queued_next": {
+   "pr": 56,
+   "head_sha": "e08f16cea69fdca0906d4bd10179e368390f81e6",
+   "status": "대기열 · GPT가 이 결과를 본 뒤 실행/대체 결정"
+  },
+  "base_main_sha": "62d9d363a7b57e390d6e7320b98bc8d31f5c0ef2"
+ },
+ "prereg_commit": "2e85514ad7b5e5db4857b3192bfaf7ffead153e1",
+ "prereg_committed_at_kst": "2026-10-08T18:01:16+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560"
+ },
+ "rl": {
+  "kind": "온라인 문맥 밴딧(한 단계 강화학습) · 표 정책",
+  "states": 8,
+  "actions": [
+   "사기",
+   "건너뛰기"
+  ],
+  "epsilon": 0.1,
+  "n_min": 10,
+  "reward": "포지션 전량 매도 시 pnl_net ÷ invest0(실행 비용 배수)",
+  "episode": "2017-02-01 ~ 2026-09-16 한 번 · 온라인",
+  "seeds": [
+   0,
+   1,
+   2,
+   3
+  ]
+ },
+ "baseline_check": {
+  "train_end_x1": {
+   "ref": 11653611,
+   "claude": 11653611,
+   "same": true
+  },
+  "full_end_x1": {
+   "ref": 80945976,
+   "claude": 80945976,
+   "same": true
+  },
+  "full_end_x2": {
+   "ref": 51761721,
+   "claude": 51761721,
+   "same": true
+  }
+ },
+ "runs": {
+  "B": 2,
+  "RL": 8,
+  "cut_test": 2,
+  "total": 12,
+  "failed": 0
+ },
+ "capital_won": 10000000,
+ "criteria": {
+  "1_wins_ge3": false,
+  "2_median_rate_ge5pct": false,
+  "3_no_day_breach": false,
+  "4_cagr2_median_pos": true,
+  "5_not_concentrated": true,
+  "6_cut_test": true
+ },
+ "median_rate_vs_B_x2": -0.6559448237699169,
+ "verdict": "개선 없음",
+ "verdict_note": "비용 2배 끝 금액 4/4 seed가 B보다 낮음(−25.9 ~ −81.4%) · 대부분 칸을 건너뛰도록 배운 뒤 2025~26 큰 승자(011070)를 놓침 · seed마다 끝 정책이 다름",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/nav_B_x1.csv",
+  "evidence/nav_B_x2.csv",
+  "evidence/nav_RL_x1_s0.csv",
+  "evidence/nav_RL_x1_s1.csv",
+  "evidence/nav_RL_x1_s2.csv",
+  "evidence/nav_RL_x1_s3.csv",
+  "evidence/nav_RL_x2_s0.csv",
+  "evidence/nav_RL_x2_s1.csv",
+  "evidence/nav_RL_x2_s2.csv",
+  "evidence/nav_RL_x2_s3.csv",
+  "evidence/policy_history_RL_x1_s0.json",
+  "evidence/policy_history_RL_x1_s1.json",
+  "evidence/policy_history_RL_x1_s2.json",
+  "evidence/policy_history_RL_x1_s3.json",
+  "evidence/policy_history_RL_x2_s0.json",
+  "evidence/policy_history_RL_x2_s1.json",
+  "evidence/policy_history_RL_x2_s2.json",
+  "evidence/policy_history_RL_x2_s3.json",
+  "evidence/rl_results.json",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "6af24664b3d3fbd885196692c91a2926d6ce57ac875590f89936b5a336d0a78a"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "18e7d2a06a55592d14639d54b5af68ca5b44f3ea5e397430be63dfacf4096bf4"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/daily_exec.py",
+   "sha256": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/rl_d1.py",
+   "sha256": "27d8ba09fd6d16c7275b0da8c940cc9b64fefb6e106759f15502e75a1a5f2578"
+  },
+  {
+   "path": "code/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "evidence/nav_B_x1.csv",
+   "sha256": "e34823b8d33846a391287d386a700f4c0998dd3f1130a7edb3d79ffcca28c332"
+  },
+  {
+   "path": "evidence/nav_B_x2.csv",
+   "sha256": "ec1d77d14f752672f16a896d056a2a24c535028bd17374dabd55ab7c5680cd33"
+  },
+  {
+   "path": "evidence/nav_RL_x1_s0.csv",
+   "sha256": "a30d41efbb8b95dcf39df9d612f4fcac27db6204366b82e43e5f314eec3b04c7"
+  },
+  {
+   "path": "evidence/nav_RL_x1_s1.csv",
+   "sha256": "cdd4b3c180e78fa40fce01cb31eab8ab841da1dce9637a88d2adcf2ba3ef4c28"
+  },
+  {
+   "path": "evidence/nav_RL_x1_s2.csv",
+   "sha256": "92dc63776f718838c805a610798c531202ac9323821c7dea36228e2bdd25dab3"
+  },
+  {
+   "path": "evidence/nav_RL_x1_s3.csv",
+   "sha256": "8986bfa2097d04f624ab54b13a9d2ebbf334e8230e26064f9c3b84273dde97e5"
+  },
+  {
+   "path": "evidence/nav_RL_x2_s0.csv",
+   "sha256": "4c571703ea3c239f6b07ef4306d901f84d8830b9a333df5ff91831e1e92501ee"
+  },
+  {
+   "path": "evidence/nav_RL_x2_s1.csv",
+   "sha256": "c1246349add983db4cb3dac1489e194b2bfc0e9eee8deb762fbd0bb0afd1ccef"
+  },
+  {
+   "path": "evidence/nav_RL_x2_s2.csv",
+   "sha256": "cae53e68dea7626bbf45fd1834d8e445d4708d4c5e92cc84b233cb023238bab0"
+  },
+  {
+   "path": "evidence/nav_RL_x2_s3.csv",
+   "sha256": "2cad38b858817f08de2f1edf2b512fc043180db19612861843da4af912f5fb12"
+  },
+  {
+   "path": "evidence/policy_history_RL_x1_s0.json",
+   "sha256": "41c8a9775451e1cee84bbb3291e5067af067aff37b4bb6e6fbd64fb59d853505"
+  },
+  {
+   "path": "evidence/policy_history_RL_x1_s1.json",
+   "sha256": "393d03daa7ac8e3722351bf2c2e19eef8a15e2402880f23297c684e6905cfdbb"
+  },
+  {
+   "path": "evidence/policy_history_RL_x1_s2.json",
+   "sha256": "cfee3208daf2e20afb0e9536c8667078474d91d7f80a8f62bf73d55289390601"
+  },
+  {
+   "path": "evidence/policy_history_RL_x1_s3.json",
+   "sha256": "531c02e47cf2219db18ec7822b0285f0ca601ff4b714d2145f927853052190c7"
+  },
+  {
+   "path": "evidence/policy_history_RL_x2_s0.json",
+   "sha256": "e82e3aba87e954262f34a7fa2d1f91e4369ac52642a9b7dba73c16ce12469a32"
+  },
+  {
+   "path": "evidence/policy_history_RL_x2_s1.json",
+   "sha256": "79431905f068eaa721ca7efdd4f30a18c011a30bd27983428c1c82b6b00527fd"
+  },
+  {
+   "path": "evidence/policy_history_RL_x2_s2.json",
+   "sha256": "924412bd5f1a52a9de780e4e7c98d1586c2486ecbec370a9ca797a4a582dd530"
+  },
+  {
+   "path": "evidence/policy_history_RL_x2_s3.json",
+   "sha256": "4847c008fff2b6d4179d39850da9afebcf45ce8bbea4cb05c04372f91eb28f77"
+  },
+  {
+   "path": "evidence/rl_results.json",
+   "sha256": "1ec73fb378c6b4a20c871b6c88f288e6f476eb36f37020adf9eeb54020d155a2"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "cebfb89d7ba8c227c1a702b33b6460b4b1ec2b80372201d4017fce68e7dd66ac"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "eb9cf5d69efd7f85a6742814bc0f162fb9ac7da9bcd286f24af5f3d23a024c8e"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 1,
+ "result_branch": "research-exchange/rl-rule-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T18:04:25+09:00"
+}

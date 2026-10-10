@@ -1,0 +1,17 @@
+{
+ "schema_version": 1,
+ "task_id": "RL-RULE-0001",
+ "chain_id": "MAX-RETURN-20261008",
+ "input": "사용자 2026-10-08 '가 진짜 RL로 해줘'(직전 클로드 제안 (가))",
+ "prior": {
+  "pr": 45,
+  "head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+  "reused": "daily_exec.py · kernel2.py · cost_contract.py · common.py · rules.py(바이트 동일)"
+ },
+ "queued_next": {
+  "pr": 56,
+  "head_sha": "e08f16cea69fdca0906d4bd10179e368390f81e6",
+  "status": "대기열 · GPT가 이 결과를 본 뒤 실행/대체 결정"
+ },
+ "base_main_sha": "62d9d363a7b57e390d6e7320b98bc8d31f5c0ef2"
+}
