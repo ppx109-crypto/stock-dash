@@ -31,4 +31,19 @@ ok(t.exit_rule(ema2)(lane, 290, up[290], 10, up[300]) is True, "정배열 깨진
 down = up[:300] + [up[299] * 0.85] * 100
 ok(t.exit_rule({"X": [True] * 400}, -10.0)({"code": "X", "closes": down}, 299, up[299], 1, up[299]) is True, "S2: −15%면 손절")
 ok(t.exit_rule({"X": [True] * 400})({"code": "X", "closes": down}, 299, up[299], 1, up[299]) is False, "S1: 손절 없음")
+# round 2: 판정 코드(엔진 출력 둘째 자리 값 · ≥ 0.5 같으면 통과)
+B = {"앞": {"연수익": 13.86, "행운뺌": 12.65}, "뒤": {"연수익": 58.37, "행운뺌": 18.30}}
+S = {"앞": {"연수익": 6.93, "행운뺌": 6.33}, "뒤": {"연수익": 29.19, "행운뺌": 9.15}}
+c, l = t.label(B, S); ok(l == "CORE_RETAINED" and c["앞_연수익"]["pass"], "딱 절반(6.93 ÷ 13.86 = 0.5)은 통과 · 넷 모두면 CORE_RETAINED")
+S2 = {"앞": {"연수익": 6.92, "행운뺌": 6.33}, "뒤": {"연수익": 29.19, "행운뺌": 9.15}}
+c, l = t.label(B, S2); ok(l == "CORE_WEAK" and not c["앞_연수익"]["pass"], "6.92(절반 아래)면 CORE_WEAK")
+c, l = t.label({"앞": {"연수익": -1.0, "행운뺌": 1}, "뒤": {"연수익": 1, "행운뺌": 1}}, S); ok(l == "CORE_WEAK", "B가 0 이하면 그 칸 실패")
+c, l = t.label(B, {"앞": None, "뒤": S["뒤"]}); ok(l == "CORE_WEAK", "S1 결과 없음(60건 미만)이면 실패")
+# round 2: 자료 해시가 다르면 멈춤
+import types
+t.CACHE_SHA = "0" * 64
+try:
+    t.lock_check(); ok(False, "해시 다르면 멈춰야 함")
+except SystemExit as e:
+    ok("해시 다름" in str(e), "캐시 해시가 다르면 셈 없이 멈춤")
 print(f"합계: 실패 {len(fails)}"); sys.exit(1 if fails else 0)

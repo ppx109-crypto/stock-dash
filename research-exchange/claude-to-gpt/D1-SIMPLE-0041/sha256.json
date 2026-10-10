@@ -1,7 +1,8 @@
 {
- "research/t011.py": "e72a0fda550373bc836d804d174f88c485c59d85265670a535f0b0af35df9cbe",
+ "research/t011.py": "fc5736519f7e7c8cf6cbb573c84d22258f8248759f570bda02b6a7feba10fa42",
  "nrl.py": "18a653db8d9e6698e1fe8b8c2cefeb1ae785a9834fdaf4180958bbb55963718f",
  "lab.py": "36e5fdf019af181ff191bdb6bd2a0aa98d90ee0d09b7df2102d4842b59966810",
  "rule.py": "a52b695123aa2bced7fedbb130f43b586c86c24274760cbed13f7c9fb4e8b9ed",
- "/tmp/nrl-cache.pkl(저장소 밖 · 크기 바이트)": "354873965"
+ "/tmp/nrl-cache.pkl(저장소 밖)": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+ "study/features.json(저장소 밖 · git 무시)": "9e5818196117059980750de779eebb28981971465cfc0875c9b6f9ca03e1a82e"
 }
