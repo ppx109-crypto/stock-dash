@@ -298,7 +298,8 @@ def stats(navs, nst):
     for m, v in mo.items():
         kind[YEAR_KIND[m[:4]]]["months"][m] = v - 1
     kinds = {k: {"worst_day_pct": round(g["worst_day"] * 100, 3), "worst_month_pct": round(min(g["months"].values()) * 100, 3),
-                 "ok": g["worst_day"] >= -0.15 and min(g["months"].values()) >= -0.15} for k, g in kind.items()}
+                 "ok": g["worst_day"] >= -0.15 and min(g["months"].values()) >= -0.15,
+                 "worst_day_raw": g["worst_day"], "worst_month_raw": min(g["months"].values())} for k, g in kind.items()}
     half = {}
     for name, a, b in (("2017~2021", "20170101", "20211231"), ("2022~2026", "20220101", "20261231")):
         sub = [d for d in ds if a <= d <= b]
