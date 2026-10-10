@@ -188,5 +188,16 @@
  ],
  "started_at_kst": "2026-10-10 20:09:14",
  "completed_at_kst": "2026-10-10 20:09:37",
- "answering": "203+d629056f3e4b385ba2cf4eb1339f5ab160439890+PREREG+SIG-MAP-0045(6096865701)"
+ "answering": "203+d629056f3e4b385ba2cf4eb1339f5ab160439890+PREREG+SIG-MAP-0045(6096865701)",
+ "round": 1,
+ "days_by_signal": {
+  "S1_MOM20": 3934,
+  "S2_REV5": 3934,
+  "S3_HIGH120": 3934,
+  "S4_LOWVOL60": 3934,
+  "S5_FLOW_FT10": 3925,
+  "S6_RETAIL_CONTRA10": 3925,
+  "S7_EMA_ALIGN": 3535,
+  "S8_MOM120_SKIP20": 3934
+ }
 }
