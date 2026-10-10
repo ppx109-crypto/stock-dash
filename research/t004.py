@@ -4,8 +4,10 @@
 - 가격: etf-ohlc/069500.json의 원주가(raw · FID_ORG_ADJ_PRC=1) 시가 · 종가. 거래일 = 그 파일의 날(다음 줄 = 다음 거래일).
 - 분배금: OVN-0032/dist.json(분배락 날 · 1주당 현금). N이 분배락 날 앞날 종가에 들고 있으면(= 분배락 날 시가에 팖) 현금을 받음.
   주 판정은 세후(배당소득세 15.4% 원천징수 → 84.6%) 현금 · 보조표는 가격만(분배금 0) · 세전.
-- 비용(편도, 그날 체결 가격 P 원주가): 수수료 0.015% + 미끄러짐 k호가 × 5원 ÷ P. 주 k = 1 · 스트레스 k = 3(수수료 0.03%).
-  ETF 매도 거래세 없음(국내 주식형 ETF 면제).
+- 비용(편도, 그날 체결 가격 P 원주가): 수수료 0.015% + 미끄러짐 k호가 × 호가 상한(그해) ÷ P. 주 k = 1 · 스트레스 k = 3(수수료 0.03%).
+  호가 상한 = 그해 원주가 시가 · 고가 · 저가 · 종가 전부의 최대공약수(호가 단위는 모든 체결 가격을 나누므로 단위 ≤ 최대공약수):
+  2002 ~ 2004 10원 · 2005 ~ 5원(2025 ~ 2026은 최대공약수 1이지만 5원으로 둠 · 더 보수적). ETF 매도 거래세 없음(국내 주식형 ETF 면제).
+- 2002 ~ 2010 분배금(한투 수정 계수 역산 · 독립 원천 없음)은 두 가지로 셈: est = 역산값 · zero = 0원. 판정은 둘 다 통과해야 함(GPT #167 6092887504 (c)).
 - 계좌 NAV: N은 날마다 '앞날 종가 → 오늘 시가' 한 번 · 그 밖은 현금(이자 0). 하루 수익은 판 날(오늘)에 둠.
 python3 research/t004.py            (T_TO=YYYYMMDD면 가격 · 분배금(분배락 날 기준)을 그날까지만 읽음 — 자르기 시험)"""
 import hashlib
@@ -22,7 +24,7 @@ SRC = ROOT / "etf-ohlc/069500.json"
 DIST = ROOT / "research-exchange/claude-to-gpt/OVN-0032/dist.json"
 SHA = json.loads((ROOT / "research-exchange/claude-to-gpt/OVN-0032/sha256.json").read_text())
 TO = os.getenv("T_TO", "")
-FEE, TICK = 0.00015, 5.0
+FEE = 0.00015
 MAIN, STRESS = (FEE, 1), (0.0003, 3)
 TAX = 0.154
 PERIODS = {"A": ("20021014", "20121231"), "B": ("20130101", "20191231"), "C": ("20200101", "20260930"), "ALL": ("20021014", "20260930")}
@@ -38,16 +40,23 @@ def check():
 
 def load():
     raw = [x for x in json.loads(SRC.read_text())["raw"] if not TO or x[0] <= TO]
-    dist = {x["ex_date"]: x["cash"] for x in json.loads(DIST.read_text())["rows"] if not TO or x["ex_date"] <= TO}
+    rows = [x for x in json.loads(DIST.read_text())["rows"] if not TO or x["ex_date"] <= TO]
+    dist = {"est": {x["ex_date"]: x["cash"] for x in rows},
+            "zero": {x["ex_date"]: x["cash"] for x in rows if x["record_date"] is not None}}  # 2002 ~ 2010 역산분 0원
     for x in raw:
         if not (x[1] and x[1] > 0 and x[4] > 0):
             sys.exit(f"NEEDS_DATA: 시가 · 종가 없음 {x[0]}")
     return raw, dist
 
 
-def side(price, cost):
+def tick(day):
+    """그해 호가 단위 상한(원) — PREREG 3절 · 해마다 원주가 값들의 최대공약수에서."""
+    return 10.0 if day < "20050101" else 5.0
+
+
+def side(price, cost, day):
     fee, ticks = cost
-    return fee + ticks * TICK / price
+    return fee + ticks * tick(day) / price
 
 
 def trades(raw, dist, cost, mode):
@@ -60,11 +69,11 @@ def trades(raw, dist, cost, mode):
             b, s = y[4], t[1]
             cash = dist.get(t[0], 0.0)
             cash = 0.0 if mode == "N_price" else cash if mode == "N_pre" else cash * (1 - TAX)
-            ret = (s * (1 - side(s, cost)) + cash) / (b * (1 + side(b, cost))) - 1
+            ret = (s * (1 - side(s, cost, t[0])) + cash) / (b * (1 + side(b, cost, y[0]))) - 1
             out.append((y[0], t[0], ret))
         else:
             b, s = t[1], t[4]
-            out.append((t[0], t[0], s * (1 - side(s, cost)) / (b * (1 + side(b, cost))) - 1))
+            out.append((t[0], t[0], s * (1 - side(s, cost, t[0])) / (b * (1 + side(b, cost, t[0]))) - 1))
     return out
 
 
@@ -73,12 +82,12 @@ def hold(raw, dist, lo, hi, cost):
     rows = [x for x in raw if lo <= x[0] <= hi]
     if not rows:
         return []
-    b = rows[0][4] * (1 + side(rows[0][4], cost))
+    b = rows[0][4] * (1 + side(rows[0][4], cost, rows[0][0]))
     cash, nav = 0.0, []
     for n, x in enumerate(rows):
         if n and x[0] in dist:
             cash += dist[x[0]] * (1 - TAX)
-        px = x[4] * (1 - side(x[4], cost)) if n == len(rows) - 1 else x[4]
+        px = x[4] * (1 - side(x[4], cost, x[0])) if n == len(rows) - 1 else x[4]
         nav.append((x[0], (px + cash) / b))
     return nav
 
@@ -149,11 +158,8 @@ def boot(pairs):
     return [round(q(ma, .025) * 100, 5), round(q(ma, .975) * 100, 5)], [round(q(md, .025) * 100, 5), round(q(md, .975) * 100, 5)]
 
 
-def main():
-    check()
-    raw, dist = load()
-    out = {"task": "OVN-0032", "round": 1, "first": raw[0][0], "last": raw[-1][0], "T_TO": TO or None, "days": len(raw),
-           "dist_used": len(dist), "sha256": SHA}
+def evaluate(raw, dist):
+    out = {}
     n, ns, d_ = trades(raw, dist, MAIN, "N"), trades(raw, dist, STRESS, "N"), trades(raw, dist, MAIN, "D")
     npx, npre = trades(raw, dist, MAIN, "N_price"), trades(raw, dist, MAIN, "N_pre")
     dmap = {s: r for _, s, r in d_}
@@ -170,8 +176,18 @@ def main():
                   "N_mean_ci95_pct": ci_n, "N_minus_D_ci95_pct": ci_nd, "N_minus_hold_daily_ci95_pct": ci_nh,
                   "risk_N": risk(nav_of(a, raw, lo, hi)), "risk_N_stress": risk(nav_of(s, raw, lo, hi)),
                   "risk_D": risk(nav_of(dd, raw, lo, hi)), "risk_hold": risk(hn)}
-    out["trades_N"] = [[b, s_, round(x * 100, 7)] for b, s_, x in n]
-    out["navs_all_N"] = [[d, round(v, 12)] for d, v in nav_of(n, raw, raw[0][0], raw[-1][0])]
+    return out, n
+
+
+def main():
+    check()
+    raw, dists = load()
+    out = {"task": "OVN-0032", "round": 2, "first": raw[0][0], "last": raw[-1][0], "T_TO": TO or None, "days": len(raw),
+           "dist_used": {k: len(v) for k, v in dists.items()}, "sha256": SHA}
+    for k in ("est", "zero"):
+        out[k], n = evaluate(raw, dists[k])
+        out[k]["trades_N"] = [[b, s_, round(x * 100, 7)] for b, s_, x in n]
+        out[k]["navs_all_N"] = [[d, round(v, 12)] for d, v in nav_of(n, raw, raw[0][0], raw[-1][0])]
     print(json.dumps(out, ensure_ascii=False))
 
 
