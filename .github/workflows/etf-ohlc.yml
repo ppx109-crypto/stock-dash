@@ -8,6 +8,10 @@ on:
         description: '종목코드(공백). 비우면 069500'
         required: false
         default: '069500'
+      names_only:
+        description: '1이면 종목 이름만 확인'
+        required: false
+        default: '0'
 permissions:
   contents: write
 concurrency:
@@ -44,6 +48,7 @@ jobs:
           KIS_ENV: real
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           CODES: ${{ inputs.codes || '069500' }}
+          OHLC_NAMES_ONLY: ${{ inputs.names_only || '0' }}
       - if: always()
         uses: ./.github/actions/kis-token-close
         continue-on-error: true

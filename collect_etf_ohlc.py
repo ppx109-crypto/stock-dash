@@ -107,6 +107,18 @@ def dividends(c, code):
 def main(codes):
     c = broker_kis.market()
     OUT.mkdir(exist_ok=True)
+    if os.getenv("OHLC_NAMES_ONLY") == "1":
+        # 종목 이름만 확인(조회 1번씩 · 저장은 이름 · 코드만)
+        names = {}
+        for code in codes:
+            try:
+                names[code] = c.quote(code).get("name") or ""
+            except broker_kis.BrokerError as e:
+                names[code] = f"조회 실패 {str(e)[:30]}"
+            time.sleep(0.3)
+        (OUT / "_names.json").write_text(json.dumps(names, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(names)
+        return 0
     for code in codes:
         adj, calls_a = daily(c, code, "0")
         raw, calls_r = daily(c, code, "1")
