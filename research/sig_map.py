@@ -6,10 +6,11 @@
   해 값 = 그해 날마다 벌어짐의 평균. 국면 = 스냅샷 안 069500 그날까지 60일 수익(> +5% 오름 · < −5% 내림 · 그 사이 횡보).
 - 꾸준함(STABLE) = ① 16해 가운데 12해 이상 + ② 세 국면 평균 모두 + ③ 2006 ~ 2013 · 2014 ~ 2021 평균 모두 +.
 - 시험(T = 2022-01-03 ~ 2026-09-15 · /tmp/sig-t.pkl): STABLE 가운데 '두 시대 평균의 작은 쪽'이 가장 큰 신호 하나만 한 번(S5 · S6 수급은 이미 T 값을 봤으므로 고르지 않음).
-  통과 = T 평균 > 0 · 5해(2026은 9월까지) 가운데 3해 이상 +.
-python3 research/sig_map.py --map            지도만(M)
-python3 research/sig_map.py --t              잠금 확인 · 영수증 · 지도 다시 셈 · 고른 신호 하나만 T
-python3 research/sig_map.py --cut-test       자르기 시험(/tmp/sig-cut.pkl = 2013-12-30에서 자른 굽기와 날마다 벌어짐 비교)"""
+  통과 = T 평균 > 0 · 5해(2026은 9월까지) 가운데 3해 이상 + → STABLE_IN_REUSED_T(재사용 구간 안 확인 · 독립 확인은 WAITING_DATA).
+- round 2(GPT #202 6096764654): 영수증을 잠금 확인 바로 뒤 · 어떤 성과 셈보다 먼저 만듦 · 영수증 없는 지도 출력 길을 없앰.
+python3 research/sig_map.py --t              잠금 확인 → O_EXCL 영수증 → 지도(M) → 고르기 → 고른 신호 하나만 T(이 한 번뿐)
+python3 research/sig_map.py --cut-test       자르기 시험(같음 · 다름 수만 출력 · 값 출력 없음)
+python3 research/sig_map.py --lock           잠금 파일 쓰기(성과 셈 없음)"""
 import bisect
 import hashlib
 import json
@@ -220,17 +221,21 @@ def run_t():
     if want != have:
         sys.exit("잠금이 다름(멈춤): " + json.dumps({k: (want.get(k), v) for k, v in have.items() if want.get(k) != v}, ensure_ascii=False))
     key = hashlib.sha256(LOCK.read_bytes()).hexdigest()
-    table, pick = map_table(merge(M_PARTS))
     import subprocess
-    head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
     import time
-    body = {"status": "STARTED", "lock_key": key, "git_head": head, "pick": pick, "at": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}
-    fd = os.open(str(RECEIPT), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    body = {"status": "STARTED", "lock_key": key, "git_head": head, "pick": None, "at": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())}
+    try:
+        fd = os.open(str(RECEIPT), os.O_CREAT | os.O_EXCL | os.O_WRONLY)     # 어떤 성과 셈보다 먼저(round 2)
+    except FileExistsError:
+        sys.exit("영수증이 이미 있음(멈춤) — 한 번만 돌림")
     with os.fdopen(fd, "w") as fh:
         fh.write(json.dumps(body, ensure_ascii=False))
         fh.flush()
         os.fsync(fh.fileno())
-    out = {"task": "SIG-MAP-0045", "phase": "T", "lock_key": key, "receipt": body, "map": table, "pick": pick}
+    table, pick = map_table(merge(M_PARTS))
+    out = {"task": "SIG-MAP-0045", "phase": "T", "lock_key": key, "receipt": body, "map": table, "pick": pick,
+           "independent_validation": "WAITING_DATA"}
     if pick is None:
         out["verdict"] = "NO_STABLE_SIGNAL"
         print(json.dumps(out, ensure_ascii=False))
@@ -244,7 +249,7 @@ def run_t():
                 "years_pct": {y: (round(v * 100, 3) if v is not None else None) for y, v in ys.items()},
                 "phase_pct": {p: (round(v * 100, 3) if v is not None else None) for p, v in ph.items()}, "phase_days": n,
                 "boot95_report_only": boot_month(daily) if daily else None}
-    out["verdict"] = "STABLE_SIGNAL_CONFIRMED" if m is not None and m > 0 and pos >= 3 else "STABLE_IN_MAP_ONLY"
+    out["verdict"] = "STABLE_IN_REUSED_T" if m is not None and m > 0 and pos >= 3 else "STABLE_IN_MAP_ONLY"
     print(json.dumps(out, ensure_ascii=False))
 
 
@@ -273,8 +278,7 @@ def main():
         LOCK.write_text(json.dumps(lock_body(), ensure_ascii=False, indent=1))
         print(LOCK.read_text())
         return
-    table, pick = map_table(merge(M_PARTS))
-    print(json.dumps({"task": "SIG-MAP-0045", "phase": "M", "map": table, "pick_for_T": pick}, ensure_ascii=False))
+    sys.exit("영수증 없는 성과 셈은 없음 — --t(한 번) · --cut-test · --lock만 됩니다")
 
 
 if __name__ == "__main__":

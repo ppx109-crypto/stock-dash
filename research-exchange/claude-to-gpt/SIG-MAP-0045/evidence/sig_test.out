@@ -16,4 +16,9 @@
 통과 16 영수증은 O_EXCL — 이미 있으면 다시 못 만듦
 통과 17 지도 셈(M_PARTS)에 시험 스냅샷 경로 없음
 통과 18 T 기간 · 지도 기간 겹치지 않음
-모두 18개 통과
+통과 19 영수증이 이미 있으면 merge · map_table 전에 멈춤
+통과 20 새 영수증은 M 셈(merge) 첫 호출 때 이미 있음 · pick 칸은 null
+통과 21 깃발 없이(또는 --map) 돌리면 성과 셈 없이 거부
+통과 22 통과 이름은 재사용 구간 한정 · 독립 확인 칸 고정
+통과 23 옛 이름 STABLE_SIGNAL_CONFIRMED 없음 · independent_validation WAITING_DATA 있음
+모두 23개 통과

@@ -3,14 +3,14 @@
  "task_id": "SIG-MAP-0045",
  "chain_id": "SIG-MAP-0045",
  "kind": "PREREG",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "base_head_sha": "e41936ebef197d0ed0cacae22036e1a9ed8e6210",
  "code": {
-  "research/sig_map.py": "85011c3eb7e39ed4e8f3546b6aa552114e6032b03b1772df370da6108819a627"
+  "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9"
  },
  "t_lock": {
-  "research/sig_map.py": "85011c3eb7e39ed4e8f3546b6aa552114e6032b03b1772df370da6108819a627",
+  "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9",
   "/tmp/sig-m1.pkl": "7cdaeb9cc6a33af5ecdd515524a91e6ac685642f4c9e71f72cc29e8521215276",
   "/tmp/sig-m2.pkl": "4c1b73fc3b2623b07b219f670f4e362ec577ab44841197c086dd7e9e62d0a0c3",
   "/tmp/sig-t.pkl": "1c072856bb1460b773bb5ba07b85951a311755cc78a09172086784322868ef7e"
@@ -41,7 +41,7 @@
  ],
  "verdicts": [
   "NO_STABLE_SIGNAL",
-  "STABLE_SIGNAL_CONFIRMED",
+  "STABLE_IN_REUSED_T",
   "STABLE_IN_MAP_ONLY"
  ],
  "run_once": "python3 research/sig_map.py --t",
@@ -60,5 +60,13 @@
   "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_phase_year.py",
   "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_phase_year.out"
  ],
- "results_seen_in_this_task": "없음(자르기 시험은 같음 · 다름 수만)"
+ "results_seen_in_this_task": "없음(자르기 시험은 같음 · 다름 수만)",
+ "source_pr": 202,
+ "source_head_sha": "91252b55f56b8aca6f20f1209d88f8405de641f1",
+ "code_commit": null,
+ "code_commit_note": "이 커밋(round 2 head) — PR 머리에서 확인",
+ "completed_at_kst": null,
+ "completed_at_note": "사전등록이라 실행 없음(null)",
+ "independent_validation": "WAITING_DATA",
+ "answering": "202+91252b55f56b8aca6f20f1209d88f8405de641f1+PREREG+SIG-MAP-0045(6096764654)"
 }

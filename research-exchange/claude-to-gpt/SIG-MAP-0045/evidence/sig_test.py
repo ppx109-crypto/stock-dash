@@ -90,4 +90,35 @@ check("16 영수증은 O_EXCL — 이미 있으면 다시 못 만듦", not again
 src = Path(G.__file__).read_text()
 check("17 지도 셈(M_PARTS)에 시험 스냅샷 경로 없음", "sig-t" not in json.dumps(G.M_PARTS) and G.T_PART[0] == "/tmp/sig-t.pkl")
 check("18 T 기간 · 지도 기간 겹치지 않음", G.M_PARTS[-1][2] < G.T_PART[1])
+# round 2(GPT #202 6096764654): 순서 시험 — 영수증이 어떤 성과 셈보다 먼저
+G.LOCK = tmp / "lock2.json"; G.LOCK.write_text(json.dumps(G.lock_body()))
+calls = []
+real_merge = G.merge
+def spy(parts, only=None):
+    calls.append(G.RECEIPT.exists())
+    raise RuntimeError("셈 멈춤(시험)")
+G.merge = spy
+G.RECEIPT = tmp / "rc_exist.json"; G.RECEIPT.write_text("{}")
+try:
+    G.run_t(); why = ""
+except SystemExit as e:
+    why = str(e)
+check("19 영수증이 이미 있으면 merge · map_table 전에 멈춤", "영수증이 이미 있음" in why and calls == [])
+G.RECEIPT = tmp / "rc_new.json"
+try:
+    G.run_t()
+except RuntimeError:
+    pass
+rc = json.loads(G.RECEIPT.read_text())
+check("20 새 영수증은 M 셈(merge) 첫 호출 때 이미 있음 · pick 칸은 null", calls == [True] and rc["status"] == "STARTED" and rc["pick"] is None)
+sys.argv = ["sig_map.py"]
+try:
+    G.main(); why = ""
+except SystemExit as e:
+    why = str(e)
+check("21 깃발 없이(또는 --map) 돌리면 성과 셈 없이 거부", "영수증 없는 성과 셈은 없음" in why and calls == [True])
+G.merge = real_merge
+check("22 통과 이름은 재사용 구간 한정 · 독립 확인 칸 고정", "STABLE_IN_REUSED_T" in src or "STABLE_IN_REUSED_T" in Path(G.__file__).read_text())
+src2 = Path(G.__file__).read_text()
+check("23 옛 이름 STABLE_SIGNAL_CONFIRMED 없음 · independent_validation WAITING_DATA 있음", "STABLE_SIGNAL_CONFIRMED" not in src2 and '"independent_validation": "WAITING_DATA"' in src2)
 print(f"모두 {ok}개 통과")
