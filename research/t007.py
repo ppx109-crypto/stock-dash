@@ -26,9 +26,11 @@ LOAN = ROOT / "loan-data"
 LOOK, HOLD, TOPQ, PICK = 20, 20, 0.30, 10
 COST, STRESS = 0.005, 0.010
 W, MOVE = 0.20, 0.0025
-PERIODS = {"A": ("20200101", "20221231"), "B": ("20230101", "20260930"), "ALL": ("20200101", "20260930")}
+END = "20260916"   # 결합 기준 A(base_m1.csv)의 마지막 날 — B · ALL · 모든 판정을 여기서 끊음(round 2 고침)
+PERIODS = {"A": ("20200101", "20221231"), "B": ("20230101", END), "ALL": ("20200101", END)}
 BLOCK, REPS, SEED = 3, 10000, 20261010
 LOCK = json.loads((BOX / "inputs_sha256.json").read_text())
+DUPS = []   # [종목, 날, 값이 같은지] — 같은 값 중복은 하나로 · 다른 값이면 멈춤
 
 
 def check_inputs():
@@ -44,7 +46,17 @@ def load_loan():
         if not f.stem.isdigit():
             continue
         rows = json.loads(f.read_text()).get("rows", [])
-        out[f.stem] = {r["date"]: r.get("잔고주수") for r in rows if not S.TO or r["date"] <= S.TO}
+        m = {}
+        for r in rows:
+            if S.TO and r["date"] > S.TO:
+                continue
+            if r["date"] in m:
+                DUPS.append([f.stem, r["date"], m[r["date"]] == r.get("잔고주수")])
+            m[r["date"]] = r.get("잔고주수")
+        out[f.stem] = m
+    conflict = [d for d in DUPS if not d[2]]
+    if conflict:
+        sys.exit(f"대차 중복일 값 상충 {len(conflict)}건(예: {conflict[:3]}) — 멈춤")
     return out
 
 
@@ -82,9 +94,14 @@ def cohorts(loan, sh, cal):
         chg = {c: rs[c] / r0 - 1 for c in top if (r0 := ratio(loan, sh, c, q)) is not None}
         down = [c for c in sorted(chg, key=lambda c: (chg[c], c))][:PICK]
         up = [c for c in sorted(chg, key=lambda c: (-chg[c], c))][:PICK]
-        i, j = x + 1, x + 1 + HOLD
-        out.append((i, j if j < len(cal) else None, down, top, up, t))
-    return out
+        i = x + 1
+        out.append([i, i + HOLD if i + HOLD < len(cal) else None, down, top, up, t])
+    # round 2 고침: 판 날 = min(산 날 + 20칸, 다음 바구니 산 날) — 겹쳐 들지 않음 · 같은 날이면 그 종가에 팔고 삼
+    for k in range(len(out) - 1):
+        nxt = out[k + 1][0]
+        if out[k][1] is None or out[k][1] > nxt:
+            out[k][1] = nxt
+    return [tuple(o) for o in out]
 
 
 def run(cap, vol, g, cal, cos, c, mode, which):
@@ -103,7 +120,12 @@ def run(cap, vol, g, cal, cos, c, mode, which):
         basket = [sum(r[s] for r in rows) / n for s in range(len(xs))] if n else [1.0] * len(xs)
         start = V
         for s in range(len(xs)):
-            nav.append((cal[xs[s]], start * basket[s]))
+            day = cal[xs[s]]
+            if nav and nav[-1][0] == day:      # 앞 바구니 판 날 = 이 바구니 산 날: 한 줄로(판 비용 뒤 값 × 산 비용)
+                nav[-1] = (day, start * basket[s])
+            else:
+                nav.append((day, start * basket[s]))
+        assert all(nav[z][0] < nav[z + 1][0] for z in range(len(nav) - 1)), "NAV 날짜 순서"
         V = start * basket[-1]
         if j is not None:
             trades.append((cal[i], cal[j], basket[-1] - 1))
@@ -120,7 +142,11 @@ def base_a():
 
 
 def combine(navc, base, reb, lo, hi):
-    days = [d for d, _ in navc if lo <= d <= hi and d in base]
+    need = [d for d, _ in navc if lo <= d <= hi]
+    miss = [d for d in need if d not in base]
+    if miss:
+        sys.exit(f"결합 기준 A에 없는 날 {len(miss)}개(예: {miss[:3]}) — 멈춤")
+    days = need
     cv = dict(navc)
     out, a, b, prev = [], 1 - W, None, None
     for d in days:
@@ -162,7 +188,7 @@ def paired_boot(a, c):
 
 
 def receipt(loan):
-    rep = {"files": len(loan), "start": {}, "end": {}, "zero_or_missing": 0, "dup": 0}
+    rep = {"files": len(loan), "start": {}, "end": {}, "zero_or_missing": 0, "dup_same_value": sum(1 for d in DUPS if d[2])}
     for c, m in loan.items():
         ds = sorted(m)
         rep["start"][c], rep["end"][c] = (ds[0], ds[-1]) if ds else (None, None)
@@ -184,7 +210,7 @@ def main():
     loan, sh, base = load_loan(), load_shares(), base_a()
     cos = cohorts(loan, sh, cal)
     reb = {cal[co[0]] for co in cos}
-    out = {"task": "LOAN-0037", "round": 1, "T_TO": S.TO or None, "cohorts": len(cos), "receipt": receipt(loan),
+    out = {"task": "LOAN-0037", "round": 2, "dups": DUPS, "T_TO": S.TO or None, "cohorts": len(cos), "receipt": receipt(loan),
            "first_signal": cos[0][5] if cos else None, "last_signal": cos[-1][5] if cos else None}
     for mode in ("lo", "hi"):
         tp, navp, logs = run(cap, vol, g, cal, cos, COST, mode, "pick")
