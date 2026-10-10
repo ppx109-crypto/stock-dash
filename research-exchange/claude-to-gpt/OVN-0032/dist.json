@@ -1,0 +1,373 @@
+{
+"code": "069500",
+"rows": [
+{
+"ex_date": "20030429",
+"record_date": null,
+"cash": 220.1,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20050428",
+"record_date": null,
+"cash": 200.0,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20060127",
+"record_date": null,
+"cash": 50.0,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20060427",
+"record_date": null,
+"cash": 274.7,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20061030",
+"record_date": null,
+"cash": 29.7,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20070427",
+"record_date": null,
+"cash": 359.5,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20070730",
+"record_date": null,
+"cash": 250.3,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20071030",
+"record_date": null,
+"cash": 49.9,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20080429",
+"record_date": null,
+"cash": 400.4,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20090429",
+"record_date": null,
+"cash": 200.4,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20090730",
+"record_date": null,
+"cash": 50.2,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20100429",
+"record_date": null,
+"cash": 299.4,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20100729",
+"record_date": null,
+"cash": 49.8,
+"source": "한투 수정 계수에서 거꾸로 셈(예탁원 목록 없음)"
+},
+{
+"ex_date": "20110428",
+"record_date": "20110429",
+"cash": 400.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20110728",
+"record_date": "20110729",
+"cash": 50.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20120427",
+"record_date": "20120430",
+"cash": 310.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20120730",
+"record_date": "20120731",
+"cash": 20.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20130429",
+"record_date": "20130430",
+"cash": 198.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20130730",
+"record_date": "20130731",
+"cash": 30.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20140429",
+"record_date": "20140430",
+"cash": 235.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20140730",
+"record_date": "20140731",
+"cash": 9.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20150429",
+"record_date": "20150430",
+"cash": 320.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20150730",
+"record_date": "20150731",
+"cash": 5.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20160428",
+"record_date": "20160429",
+"cash": 456.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20160728",
+"record_date": "20160729",
+"cash": 10.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20170427",
+"record_date": "20170428",
+"cash": 475.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20170728",
+"record_date": "20170731",
+"cash": 100.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20171030",
+"record_date": "20171031",
+"cash": 30.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20180427",
+"record_date": "20180430",
+"cash": 460.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20180730",
+"record_date": "20180731",
+"cash": 65.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20181030",
+"record_date": "20181031",
+"cash": 80.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20190429",
+"record_date": "20190430",
+"cash": 465.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20190730",
+"record_date": "20190731",
+"cash": 60.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20191030",
+"record_date": "20191031",
+"cash": 70.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20200130",
+"record_date": "20200131",
+"cash": 50.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20200428",
+"record_date": "20200429",
+"cash": 425.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20200730",
+"record_date": "20200731",
+"cash": 55.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20201029",
+"record_date": "20201030",
+"cash": 50.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20210128",
+"record_date": "20210129",
+"cash": 50.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20210429",
+"record_date": "20210430",
+"cash": 670.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20210729",
+"record_date": "20210730",
+"cash": 55.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20211028",
+"record_date": "20211029",
+"cash": 85.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20220127",
+"record_date": "20220128",
+"cash": 60.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20220428",
+"record_date": "20220429",
+"cash": 500.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20220728",
+"record_date": "20220729",
+"cash": 70.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20221028",
+"record_date": "20221031",
+"cash": 105.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20230130",
+"record_date": "20230131",
+"cash": 75.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20230427",
+"record_date": "20230428",
+"cash": 445.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20230728",
+"record_date": "20230731",
+"cash": 75.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20231030",
+"record_date": "20231031",
+"cash": 100.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20240130",
+"record_date": "20240131",
+"cash": 95.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20240429",
+"record_date": "20240430",
+"cash": 440.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20240730",
+"record_date": "20240731",
+"cash": 150.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20241030",
+"record_date": "20241031",
+"cash": 120.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20250124",
+"record_date": "20250131",
+"cash": 110.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20250429",
+"record_date": "20250430",
+"cash": 429.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20250730",
+"record_date": "20250731",
+"cash": 176.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20251030",
+"record_date": "20251031",
+"cash": 140.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20260129",
+"record_date": "20260130",
+"cash": 80.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20260429",
+"record_date": "20260430",
+"cash": 446.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+},
+{
+"ex_date": "20260730",
+"record_date": "20260731",
+"cash": 183.0,
+"source": "예탁원(한투 HHKDB669102C0)"
+}
+],
+"ksd_check_max_abs": 0.000165,
+"ksd_n": 48
+}
