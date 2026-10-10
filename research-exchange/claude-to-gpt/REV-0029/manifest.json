@@ -1,0 +1,39 @@
+{
+ "schema_version": 1,
+ "task_id": "REV-0029",
+ "chain_id": "REV-0029",
+ "round": 1,
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "REJECTED",
+ "scope": "EXPLORATORY(사후 휴장 목록 · 가격수익만)",
+ "prereg_commit": "48c0647f",
+ "code_commit": "48c0647f8972bc7f36ebcbe7746b0e2c6f3291b2",
+ "source_pr": 162,
+ "source_head_sha": "48c0647f8972bc7f36ebcbe7746b0e2c6f3291b2",
+ "runs": "본 셈 1 + 자르기 1 · 재실행 0",
+ "evidence_paths": [
+  "evidence/full.json",
+  "evidence/cut_T20191231.json",
+  "evidence/cut_check.json",
+  "evidence/run_head.txt"
+ ],
+ "completed_at_kst": "2026-10-10T09:23:41+09:00",
+ "file_sha256": {
+  "research-exchange/claude-to-gpt/REV-0029/REPORT.md": "455fead04456d253357fb5d65ee5d001e439c6201add2f6ddc999d787197aed7",
+  "research-exchange/claude-to-gpt/REV-0029/PREREG.md": "335d90d2ad7bbb6572bc39e1194bb95b40f75d8663bcd1e1b2e736c9dc8d8e6f",
+  "research-exchange/claude-to-gpt/REV-0029/evidence/full.json": "9befa3900ad49e737f0fcec2347f77fcbe43eee5d8691bf40ba2d250a54818e2",
+  "research-exchange/claude-to-gpt/REV-0029/evidence/cut_T20191231.json": "e102a85c767575d5eaae2aadaad9e8fedc092f4b453582af9646f832d710a520",
+  "research-exchange/claude-to-gpt/REV-0029/evidence/cut_check.json": "5055e7f6bfcdbf6cba71e1041992214863e9c7e795cd0507f977a6ef36a2cdfb",
+  "research-exchange/claude-to-gpt/REV-0029/evidence/run_head.txt": "77d87fa68ff5c4015326e134f539c752915fcc3dafa31f34bba6cc896c9c7ccc",
+  "research/t002.py": "91c20eb96c9948bf98764f38866663dcee42d602d28604980ead7b714499ffdb",
+  "research/t001.py": "66172434fd996125f78a0c4ac7248048281c40fe11ba29ead67ff926c941319e",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "research-exchange/claude-to-gpt/TOM-0028/calendar.json": "533806486ea09430e12fc0a67549d8f5a54b20be014b24457ec675a3e9cd7939"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
