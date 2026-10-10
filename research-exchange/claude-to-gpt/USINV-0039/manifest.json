@@ -1,0 +1,14 @@
+{
+ "task_id": "USINV-0039",
+ "kind": "RESULT",
+ "verdict": "REJECTED",
+ "prereg_head": "52f028da42995ddc18e672410e0bee7f8e6b83de",
+ "code_sha256": "a40038888f0c3684218030746c339c113c1a7e0fafafa209ff4d03c26ecc59c0",
+ "runs": ["python3 research/t009.py > evidence/main.json", "T_TO=20211230 python3 research/t009.py > evidence/cut_20211230.json", "python3 research/t009.py --compare evidence/main.json evidence/cut_20211230.json > evidence/cut_compare.json"],
+ "pick": "V70",
+ "pick_train_gain_raw": -0.00684253967454751,
+ "validation_opened": false,
+ "cut_same": true,
+ "started_at_kst": "2026-10-10 15:48:14",
+ "completed_at_kst": "2026-10-10 15:50:07"
+}
