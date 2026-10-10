@@ -142,25 +142,33 @@ def base_a():
 
 
 def combine(navc, base, reb, lo, hi):
-    need = [d for d, _ in navc if lo <= d <= hi]
-    miss = [d for d in need if d not in base]
-    if miss:
-        sys.exit(f"결합 기준 A에 없는 날 {len(miss)}개(예: {miss[:3]}) — 멈춤")
-    days = need
-    cv = dict(navc)
-    out, a, b, prev = [], 1 - W, None, None
+    """결합 계좌(round 2 고침 2): 기준 A의 거래일을 하나의 시간축으로 씀.
+    후보 몫은 첫 매수 전 현금(1.0) · 후보 NAV가 없는 날은 앞 값 유지. 기간 첫날 수익은 기간 앞 마지막 기준 거래일에서 셈.
+    후보 바꿔 담는 날(reb)마다 80:20으로 되돌림(옮긴 돈 편도 MOVE)."""
+    bdays = sorted(base)
+    days = [d for d in bdays if lo <= d <= hi]
+    miss = [d for d, _ in navc if lo <= d <= hi and d not in base]
+    if miss or not days:
+        sys.exit(f"결합 기준 A에 없는 후보 날 {len(miss)}개(예: {miss[:3]}) 또는 기간 날 없음 — 멈춤")
+    cmap, cv, last = dict(navc), {}, 1.0
+    for d in bdays:
+        if d in cmap:
+            last = cmap[d]
+        cv[d] = last
+    prev = [d for d in bdays if d < lo]
+    p0 = prev[-1] if prev else days[0]
+    a, b, pa, pc = (1 - W), W, base[p0], cv[p0]
+    out = []
     for d in days:
-        if prev is None:
-            b = W * cv[d]
-        else:
-            a *= base[d] / base[prev]
-            b *= cv[d] / cv[prev]
-            if d in reb:
-                tot = a + b
-                tot -= abs(b - W * tot) * MOVE
-                a, b = (1 - W) * tot, W * tot
+        a *= base[d] / pa
+        b *= cv[d] / pc
+        pa, pc = base[d], cv[d]
+        if d in reb:
+            tot = a + b
+            tot -= abs(b - W * tot) * MOVE
+            a, b = (1 - W) * tot, W * tot
         out.append((d, a + b))
-        prev = d
+    assert all(out[z][0] < out[z + 1][0] for z in range(len(out) - 1)), "결합 NAV 날짜 순서"
     return out
 
 
@@ -237,8 +245,8 @@ def main():
                             "excess_vs_ctl2_pct": round((mean(a) - mean(u_)) * 100, 4),
                             "paired_ci95_vs_ctl1_pct": paired_boot(a, c_),
                             "risk_alone": S.risk(rebase(na)), "risk_alone_stress": S.risk(rebase(ns)),
-                            "risk_combined": S.risk(combine(rebase(na), base, reb, lo, hi)),
-                            "risk_combined_stress": S.risk(combine(rebase(ns), base, reb, lo, hi))}
+                            "risk_combined": S.risk(combine(na, base, reb, lo, hi)),
+                            "risk_combined_stress": S.risk(combine(ns, base, reb, lo, hi))}
         out[mode]["trades"] = [[b, s, round(x * 100, 6)] for b, s, x in tp]
         out[mode]["navs_all"] = [[d, round(v, 12)] for d, v in navp]
         if mode == "lo":
