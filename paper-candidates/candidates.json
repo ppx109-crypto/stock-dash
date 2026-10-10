@@ -114,7 +114,7 @@
     }
    },
    "warning": "작은 규칙 이웃 6개 중 4개가 달 −10% 넘음(1개는 −15%도) · 레버리지 0.30은 격자 가장 작은 끝",
-   "pr": "결과 PR(이 커밋 뒤 번호 기록)",
+   "pr": "https://github.com/ppx109-crypto/stock-dash/pull/216",
    "source_head": "44de593b205aeac6ba74d1cdbad2c6d9403d4d12",
    "orders": false,
    "saved_at": "2026-10-10 23:56:01 KST"
