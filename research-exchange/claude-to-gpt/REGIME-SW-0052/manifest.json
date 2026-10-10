@@ -1,0 +1,40 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-SW-0052",
+ "chain_id": "REGIME-SW-0052",
+ "kind": "PLAN",
+ "round": 1,
+ "status": "READY",
+ "source_pr": 218,
+ "source_head_sha": "5b839fe792565fc28055fdae05b0f3325f2ace3a",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/regime_dev.py": "7f47b04336d2ed73f6b3f28d9a3ccbeb2a9dcac087fc35fb13bb69915d4da56a",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research/regime_rules5.py": "ac4791a3530705bb3a2e65e0a16dbd0b95cdcc6e3d760ed0b5fc32fc2dd35b00"
+ },
+ "limits": {
+  "day": -0.15,
+  "month": -0.1
+ },
+ "grid": 18,
+ "eval_cap": 300,
+ "evals_started": 0,
+ "verdicts": [
+  "ROBUST_CANDIDATE",
+  "NO_ROBUST"
+ ],
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0052/PLAN.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0052/evidence/reg5_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0052/evidence/reg5_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0052/evidence/cut_test5.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0052/evidence/cut_test5.out"
+ ]
+}
