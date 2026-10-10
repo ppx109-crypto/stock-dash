@@ -226,7 +226,7 @@
     }
    },
    "warning": "같은 10년에서 고름(다중 시험) · 가장 나쁜 이웃 달 −9.795%(잣대와 0.2%p) · 레버리지 0.25는 격자 끝 · 2016-01 ~ 2017-01 NEEDS_DATA",
-   "pr": "결과 PR(아래 커밋 뒤 채움)",
+   "pr": "https://github.com/ppx109-crypto/stock-dash/pull/220",
    "source_head": "5405898a80dce3c758e5fff4ad38871ea8dcac53",
    "orders": false,
    "saved_at": "2026-10-11 00:5x KST"
