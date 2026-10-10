@@ -91,6 +91,25 @@ def vol20(r):
     return statistics.pstdev([c[j] / c[j - 1] - 1 for j in range(i - 19, i + 1)]) * 100
 
 
+def ma_exit(n, stop=7, days=20):
+    def go(lane, start, price, step, peak, row=None):
+        c = lane["closes"]
+        i = start + step
+        now = (c[i] / price - 1) * 100
+        if now <= -stop or step >= days:
+            return True
+        return i >= n - 1 and c[i] < sum(c[i - n + 1:i + 1]) / n
+    return go
+
+
+def flow_power(r):
+    f, t = D.flow_sum(r, 5, "외국인"), D.flow_sum(r, 5, "투신")
+    cap = r.get("시가총액") or 0
+    if f is None or t is None or not cap:
+        return None
+    return (f + t) * (r.get("price") or 0) / cap * 100
+
+
 def deeper_first(r):
     v = D.ret(r, 5)
     return v if v is not None else 0.0
@@ -172,6 +191,15 @@ WAYS = {
     "R2-fresh": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and
                    D.LANES[r["code"]]["closes"][r["i"]] <= 1.03 * max(D.LANES[r["code"]]["closes"][r["i"] - 60:r["i"]]), note="R2 갓 돌파(≤ 1.03배)"),
     "R2-brband": hb(60, side=None, extra=lambda r: 40 <= D.BR.get(r["date"], 0) <= 65, note="횡보 판단을 시장 폭 40 ~ 65로 바꿈"),
+    # 56 ~
+    "R2-ma10x": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), exits=ma_exit(10), note="R2 팔기 = 종가 < 10일선(−7 · 20일)"),
+    "R2-ma20x": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), exits=ma_exit(20), note="R2 팔기 = 종가 < 20일선(−7 · 20일)"),
+    "R2-fp05": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and (flow_power(r) or 0) >= 0.05, note="R2 + 수급 강도 ≥ 0.05%"),
+    "R2-fp10": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and (flow_power(r) or 0) >= 0.10, note="R2 + 수급 강도 ≥ 0.1%"),
+    "R2-fp20": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and (flow_power(r) or 0) >= 0.20, note="R2 + 수급 강도 ≥ 0.2%"),
+    "R2-sw40": hb(60, side=None, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and sideways(r, 3, 40), note="R2 횡보 판단 창 40"),
+    "R2-sw90": hb(60, side=None, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and sideways(r, 3, 90), note="R2 횡보 판단 창 90"),
+    "R2-norank": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), rank=lambda r: 0, note="R2 − 순서(덜어냄 · 같으면 표 순서)"),
     "R1-ma120": dict(holds=lambda r: sideways(r, 3) and dip(r) and above_ma(r) and smart(r), exits=D.fixed_exit(5, 7, 10),
                      size=lambda r: 2, rank=deeper_first, note="R1 + 120일선 위(오름 추세 안 눌림)"),
 }
