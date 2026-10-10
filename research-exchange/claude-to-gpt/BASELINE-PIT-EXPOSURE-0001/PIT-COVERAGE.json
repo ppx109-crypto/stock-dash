@@ -1,0 +1,816 @@
+{
+ "units": {
+  "D1_signal_rows": {
+   "n": 563,
+   "codes": 66,
+   "days": 121
+  },
+  "D1_control_fills": {
+   "n": 87,
+   "codes": 33,
+   "days": 46
+  },
+  "BASKET_control_fills": {
+   "n": 15,
+   "codes": 9,
+   "days": 13
+  },
+  "M15_control_fills": {
+   "n": 164,
+   "codes": 46,
+   "days": 73
+  },
+  "ETF_control_fills": {
+   "n": 0,
+   "codes": null,
+   "days": 0
+  },
+  "D1_candidate_locks": {
+   "n": 542,
+   "codes": 33,
+   "days": 125
+  },
+  "D1_candidate_lock_events": {
+   "n": 126,
+   "codes": null,
+   "days": 126
+  },
+  "D1_candidate_fills": {
+   "n": 123,
+   "codes": 28,
+   "days": 70
+  },
+  "ETF_candidate_locks": {
+   "n": 0,
+   "codes": null,
+   "days": 0
+  },
+  "ETF_candidate_lock_events": {
+   "n": 126,
+   "codes": null,
+   "days": 126
+  },
+  "ETF_candidate_fills": {
+   "n": 0,
+   "codes": null,
+   "days": 0
+  },
+  "BASKET_candidate_locks": {
+   "n": 154,
+   "codes": 9,
+   "days": 62
+  },
+  "BASKET_candidate_lock_events": {
+   "n": 126,
+   "codes": null,
+   "days": 126
+  },
+  "BASKET_candidate_fills": {
+   "n": 25,
+   "codes": 8,
+   "days": 20
+  },
+  "M15_candidate_locks": {
+   "n": 725,
+   "codes": 46,
+   "days": 126
+  },
+  "M15_candidate_fills": {
+   "n": 189,
+   "codes": 41,
+   "days": 77
+  }
+ },
+ "fields": {
+  "price-data": {
+   "files": 507,
+   "file_level_keys": {
+    "code": 507,
+    "name": 507,
+    "closes": 507,
+    "fetched": 507
+   },
+   "record_level_keys(dict 행)": {}
+  },
+  "volume-data": {
+   "files": 507,
+   "file_level_keys": {
+    "code": 507,
+    "칸": 507,
+    "날": 507,
+    "fetched": 507
+   },
+   "record_level_keys(dict 행)": {}
+  },
+  "investor-data": {
+   "files": 440,
+   "file_level_keys": {
+    "code": 440,
+    "cols": 440,
+    "처음까지": 440,
+    "rows": 440
+   },
+   "record_level_keys(dict 행)": {}
+  },
+  "share-data": {
+   "files": 499,
+   "file_level_keys": {
+    "code": 499,
+    "칸": 499,
+    "날": 499,
+    "fetched": 499
+   },
+   "record_level_keys(dict 행)": {}
+  },
+  "opinion-data": {
+   "files": 416,
+   "file_level_keys": {
+    "code": 416,
+    "rows": 416,
+    "fetched": 416,
+    "과거까지": 173
+   },
+   "record_level_keys(dict 행)": {
+    "date": 404,
+    "member": 404,
+    "target": 404,
+    "opinion": 404,
+    "prior_opinion": 404
+   }
+  },
+  "event-data": {
+   "files": 509,
+   "file_level_keys": {
+    "code": 509,
+    "fetched": 509,
+    "rows": 509,
+    "recent": 278
+   },
+   "record_level_keys(dict 행)": {
+    "date": 509,
+    "kind": 509,
+    "title": 509
+   }
+  },
+  "dart-events": {
+   "files": 437,
+   "file_level_keys": {
+    "code": 437,
+    "rows": 437,
+    "받은날": 437
+   },
+   "record_level_keys(dict 행)": {
+    "rcept_no": 411,
+    "corp_cls": 411,
+    "bddd": 85,
+    "od_a_at_t": 351,
+    "od_a_at_b": 351,
+    "adt_a_atn": 351,
+    "aq_wtn_div_ostk": 298,
+    "aq_wtn_div_ostk_rt": 298,
+    "aq_wtn_div_estk": 298,
+    "aq_wtn_div_estk_rt": 298,
+    "eaq_ostk": 298,
+    "eaq_ostk_rt": 298,
+    "eaq_estk": 298,
+    "eaq_estk_rt": 298,
+    "ctr_prc_bfcc": 3,
+    "ctr_prc_atcc": 3,
+    "ctr_pd_bfcc_bgd": 3,
+    "ctr_pd_bfcc_edd": 3,
+    "cc_pp": 3,
+    "cc_int": 3,
+    "cc_prd": 3,
+    "tp_rm_atcc": 3,
+    "aqpln_stk_ostk": 140,
+    "aqpln_stk_estk": 140,
+    "aqpln_prc_ostk": 140,
+    "aqpln_prc_estk": 140,
+    "aqexpd_bgd": 140,
+    "aqexpd_edd": 140,
+    "hdexpd_bgd": 140,
+    "hdexpd_edd": 140,
+    "aq_pp": 140,
+    "aq_mth": 140,
+    "cs_iv_bk": 295,
+    "aq_dd": 140,
+    "d1_prodlm_ostk": 140,
+    "d1_prodlm_estk": 140,
+    "dppln_stk_ostk": 126,
+    "dppln_stk_estk": 126,
+    "dpstk_prc_ostk": 126,
+    "dpstk_prc_estk": 126,
+    "dppln_prc_ostk": 126,
+    "dppln_prc_estk": 126,
+    "dpprpd_bgd": 126,
+    "dpprpd_edd": 126,
+    "dp_pp": 126,
+    "dp_m_mkt": 126,
+    "dp_m_ovtm": 126,
+    "dp_m_otc": 126,
+    "dp_m_etc": 126,
+    "dp_dd": 126,
+    "d1_slodlm_ostk": 126,
+    "d1_slodlm_estk": 126,
+    "nstk_ostk_cnt": 70,
+    "nstk_estk_cnt": 70,
+    "fv_ps": 72,
+    "bfic_tisstk_ostk": 70,
+    "bfic_tisstk_estk": 70,
+    "fdpp_fclt": 70,
+    "fdpp_bsninh": 70,
+    "fdpp_op": 70,
+    "fdpp_dtrp": 70,
+    "fdpp_ocsa": 70,
+    "fdpp_etc": 70,
+    "ic_mthn": 58,
+    "ssl_at": 60,
+    "ssl_bgd": 60,
+    "ssl_edd": 60,
+    "ftc_stt_atn": 29,
+    "dlptn_cmpnm": 15,
+    "dlptn_cpt": 15,
+    "dlptn_mbsn": 15,
+    "dlptn_hoadd": 15,
+    "dlptn_rl_cmpn": 15,
+    "exevl_atn": 23,
+    "exevl_bs_rs": 23,
+    "exevl_intn": 23,
+    "exevl_pd": 23,
+    "exevl_op": 18,
+    "popt_ctr_atn": 24,
+    "popt_ctr_cn": 24,
+    "trf_pp": 4,
+    "dl_pym": 13,
+    "trfdtl_trfprc": 4,
+    "trfdtl_tast": 4,
+    "trfdtl_tast_vs": 4,
+    "iscmp_cmpnm": 5,
+    "iscmp_nt": 5,
+    "iscmp_rp": 5,
+    "iscmp_cpt": 5,
+    "iscmp_rl_cmpn": 5,
+    "iscmp_tisstk": 5,
+    "iscmp_mbsn": 5,
+    "trfdtl_stkcnt": 2,
+    "trfdtl_ecpt": 2,
+    "trfdtl_ecpt_vs": 2,
+    "attrf_owstkcnt": 2,
+    "attrf_eqrt": 2,
+    "trf_prd": 2,
+    "ctr_prc": 29,
+    "ctr_pd_bgd": 29,
+    "ctr_pd_edd": 29,
+    "ctr_pp": 29,
+    "ctr_cns_int": 29,
+    "ctr_cns_prd": 29,
+    "rs_sm_atn": 21,
+    "ex_sm_r": 21,
+    "aprskh_plnprc": 18,
+    "aprskh_pym_plpd_mth": 18,
+    "aprskh_ctref": 18,
+    "bdlst_atn": 13,
+    "otcpr_bdlst_sf_atn": 10,
+    "mg_mth": 8,
+    "mg_stn": 8,
+    "mg_pp": 8,
+    "mg_rt": 8,
+    "mg_rt_bs": 8,
+    "mgnstk_ostk_cnt": 8,
+    "mgnstk_cstk_cnt": 8,
+    "mgptncmp_cmpnm": 8,
+    "mgptncmp_mbsn": 8,
+    "mgptncmp_rl_cmpn": 8,
+    "rbsnfdtl_tast": 8,
+    "rbsnfdtl_tdbt": 8,
+    "rbsnfdtl_teqt": 8,
+    "rbsnfdtl_cpt": 8,
+    "rbsnfdtl_sl": 8,
+    "rbsnfdtl_nic": 8,
+    "eadtat_intn": 8,
+    "eadtat_op": 8,
+    "nmgcmp_cmpnm": 8,
+    "ffdtl_tast": 9,
+    "ffdtl_tdbt": 9,
+    "ffdtl_teqt": 9,
+    "ffdtl_cpt": 9,
+    "ffdtl_std": 9,
+    "nmgcmp_nbsn_rsl": 8,
+    "nmgcmp_mbsn": 8,
+    "nmgcmp_rlst_atn": 8,
+    "mgsc_mgctrd": 8,
+    "mgsc_shddstd": 8,
+    "mgsc_shclspd_bgd": 8,
+    "mgsc_shclspd_edd": 8,
+    "mgsc_mgop_rcpd_bgd": 8,
+    "mgsc_mgop_rcpd_edd": 8,
+    "mgsc_gmtsck_prd": 8,
+    "mgsc_aprskh_expd_bgd": 8,
+    "mgsc_aprskh_expd_edd": 8,
+    "mgsc_osprpd_bgd": 8,
+    "mgsc_osprpd_edd": 8,
+    "mgsc_trspprpd_bgd": 8,
+    "mgsc_trspprpd_edd": 8,
+    "mgsc_cdobprpd_bgd": 8,
+    "mgsc_cdobprpd_edd": 8,
+    "mgsc_mgdt": 8,
+    "mgsc_ergmd": 8,
+    "mgsc_mgrgsprd": 8,
+    "mgsc_nstkdlprd": 8,
+    "mgsc_nstklstprd": 8,
+    "nstk_asstd": 12,
+    "nstk_ascnt_ps_ostk": 12,
+    "nstk_ascnt_ps_estk": 12,
+    "nstk_dividrk": 12,
+    "nstk_dlprd": 12,
+    "nstk_lstprd": 12,
+    "inh_pp": 11,
+    "n6m_tpai_plann": 5,
+    "inhdtl_inhprc": 9,
+    "inhdtl_tast": 9,
+    "inhdtl_tast_vs": 9,
+    "l6m_tpa_nstkaq_atn": 3,
+    "inhdtl_stkcnt": 3,
+    "inhdtl_ecpt": 3,
+    "inhdtl_ecpt_vs": 3,
+    "atinh_owstkcnt": 3,
+    "atinh_eqrt": 3,
+    "inh_prd": 3,
+    "iscmp_bdlst_sf_atn": 3,
+    "bd_tm": 12,
+    "bd_knd": 12,
+    "bd_fta": 12,
+    "atcsc_rmislmt": 10,
+    "ovis_fta": 12,
+    "ovis_fta_crn": 12,
+    "ovis_ster": 12,
+    "ovis_isar": 12,
+    "ovis_mktnm": 12,
+    "bd_intr_ex": 12,
+    "bd_intr_sf": 12,
+    "bd_mtd": 12,
+    "bdis_mthn": 12,
+    "cv_rt": 10,
+    "cv_prc": 10,
+    "cvisstk_knd": 10,
+    "cvisstk_cnt": 10,
+    "cvisstk_tisstk_vs": 10,
+    "cvrqpd_bgd": 10,
+    "cvrqpd_edd": 10,
+    "act_mktprcfl_cvprc_lwtrsprc": 10,
+    "act_mktprcfl_cvprc_lwtrsprc_bs": 10,
+    "rmislmt_lt70p": 10,
+    "abmg": 10,
+    "sbd": 12,
+    "pymd": 12,
+    "rpmcmp": 12,
+    "grint": 12,
+    "ovis_ltdtl": 12,
+    "inh_bsn": 2,
+    "inh_bsn_mc": 2,
+    "inh_prc": 2,
+    "absn_inh_atn": 2,
+    "ast_inh_bsn": 2,
+    "ast_cmp_all": 2,
+    "ast_rt": 2,
+    "sl_inh_bsn": 2,
+    "sl_cmp_all": 2,
+    "sl_rt": 2,
+    "dbt_inh_bsn": 2,
+    "dbt_cmp_all": 2,
+    "dbt_rt": 2,
+    "inh_af": 8,
+    "inh_prd_ctr_cnsd": 8,
+    "inh_prd_inh_std": 8,
+    "inh_pym": 2,
+    "gmtsck_spd_atn": 10,
+    "gmtsck_prd": 11,
+    "aprskh_lmt": 10,
+    "bsnsp_rm": 3,
+    "bsnsp_amt": 3,
+    "rsl": 3,
+    "sl_vs": 3,
+    "ls_atn": 3,
+    "krx_stt_atn": 3,
+    "bsnsp_cn": 3,
+    "bsnsp_rs": 3,
+    "ft_ctp": 3,
+    "bsnsp_af": 3,
+    "bsnspd": 3,
+    "ex_rt": 2,
+    "ex_prc": 2,
+    "ex_prc_dmth": 2,
+    "extg": 2,
+    "extg_stkcnt": 2,
+    "extg_tisstk_vs": 2,
+    "exrqpd_bgd": 2,
+    "exrqpd_edd": 2,
+    "crstk_ostk_cnt": 2,
+    "crstk_estk_cnt": 2,
+    "bfcr_cpt": 2,
+    "atcr_cpt": 2,
+    "bfcr_tisstk_ostk": 2,
+    "atcr_tisstk_ostk": 2,
+    "bfcr_tisstk_estk": 2,
+    "atcr_tisstk_estk": 2,
+    "cr_rt_ostk": 2,
+    "cr_rt_estk": 2,
+    "cr_std": 2,
+    "cr_mth": 2,
+    "cr_rs": 2,
+    "crsc_gmtsck_prd": 2,
+    "crsc_trnmsppd": 2,
+    "crsc_osprpd": 2,
+    "crsc_trspprpd": 2,
+    "crsc_osprpd_bgd": 2,
+    "crsc_osprpd_edd": 2,
+    "crsc_trspprpd_bgd": 2,
+    "crsc_trspprpd_edd": 2,
+    "crsc_nstkdlprd": 2,
+    "crsc_nstklstprd": 2,
+    "cdobprpd_bgd": 3,
+    "cdobprpd_edd": 3,
+    "ospr_nstkdl_pl": 2,
+    "trf_af": 2,
+    "trf_prd_ctr_cnsd": 2,
+    "trf_prd_trf_std": 2,
+    "ast_sen": 8,
+    "ast_nm": 8,
+    "aprskh_exrq": 8,
+    "aprskh_ex_pc_mth_pd_pl": 8,
+    "trf_prd_rgs_prd": 2,
+    "inh_prd_rgs_prd": 6,
+    "piic_nstk_ostk_cnt": 2,
+    "piic_nstk_estk_cnt": 2,
+    "piic_fv_ps": 2,
+    "piic_bfic_tisstk_ostk": 2,
+    "piic_bfic_tisstk_estk": 2,
+    "piic_fdpp_fclt": 2,
+    "piic_fdpp_bsninh": 2,
+    "piic_fdpp_op": 2,
+    "piic_fdpp_dtrp": 2,
+    "piic_fdpp_ocsa": 2,
+    "piic_fdpp_etc": 2,
+    "piic_ic_mthn": 2,
+    "fric_nstk_ostk_cnt": 2,
+    "fric_nstk_estk_cnt": 2,
+    "fric_fv_ps": 2,
+    "fric_bfic_tisstk_ostk": 2,
+    "fric_bfic_tisstk_estk": 2,
+    "fric_nstk_asstd": 2,
+    "fric_nstk_ascnt_ps_ostk": 2,
+    "fric_nstk_ascnt_ps_estk": 2,
+    "fric_nstk_dividrk": 2,
+    "fric_nstk_dlprd": 2,
+    "fric_nstk_lstprd": 2,
+    "fric_bddd": 2,
+    "fric_od_a_at_t": 2,
+    "fric_od_a_at_b": 2,
+    "fric_adt_a_atn": 2,
+    "dv_mth": 1,
+    "dv_impef": 1,
+    "dv_rt": 1,
+    "dv_trfbsnprt_cn": 1,
+    "atdv_excmp_cmpnm": 1,
+    "atdvfdtl_tast": 1,
+    "atdvfdtl_tdbt": 1,
+    "atdvfdtl_teqt": 1,
+    "atdvfdtl_cpt": 1,
+    "atdvfdtl_std": 1,
+    "atdv_excmp_exbsn_rsl": 1,
+    "atdv_excmp_mbsn": 1,
+    "atdv_excmp_atdv_lstmn_atn": 1,
+    "dvfcmp_cmpnm": 1,
+    "dvfcmp_nbsn_rsl": 1,
+    "dvfcmp_mbsn": 1,
+    "dvfcmp_rlst_atn": 1,
+    "abcr_crrt": 1,
+    "abcr_osprpd_bgd": 1,
+    "abcr_osprpd_edd": 1,
+    "abcr_trspprpd_bgd": 1,
+    "abcr_trspprpd_edd": 1,
+    "abcr_nstkascnd": 1,
+    "abcr_shstkcnt_rt_at_rs": 1,
+    "abcr_nstkasstd": 1,
+    "abcr_nstkdlprd": 1,
+    "abcr_nstklstprd": 1,
+    "dvdt": 1,
+    "dvrgsprd": 1
+   }
+  },
+  "etf-data": {
+   "files": 29,
+   "file_level_keys": {
+    "code": 29,
+    "name": 29,
+    "closes": 29,
+    "fetched": 29
+   },
+   "record_level_keys(dict 행)": {}
+  }
+ },
+ "first_seen_in_repo(005930)": {
+  "price-data": "2026-09-21T21:59:14+00:00",
+  "volume-data": "2026-09-23T00:42:10+00:00",
+  "investor-data": "2026-09-28T06:38:34+00:00",
+  "share-data": "2026-09-22T22:35:00+00:00",
+  "opinion-data": "2026-09-22T12:16:48+00:00",
+  "event-data": "2026-09-22T17:13:20+00:00",
+  "dart-events": "2026-09-29T13:29:34+00:00",
+  "etf-data": null,
+  "m15-kis": "2026-10-01T06:40:48+00:00"
+ },
+ "price_vintages": {
+  "records": 747,
+  "first_seen_before_decision": 0,
+  "value_changed_across_vintages": 0,
+  "used_equals_first_vintage": 747,
+  "used_not_in_any_vintage": 0,
+  "codes": 71,
+  "codes_with_any_change": 0,
+  "vintages_per_code_median": 11
+ },
+ "d1_signal_timing": {
+  "flow_gap_2": 563,
+  "opinion_used": 563,
+  "share_before": 561,
+  "rank_date_has_any_same_day_share_filing": 73,
+  "share_same_day_own": 2
+ },
+ "basket_event_timing": {
+  "buy_with_event": 9,
+  "event_VIOLATION": 0,
+  "event_gap_days_min": 1
+ },
+ "halt_gaps": {
+  "codes": 39,
+  "codes_with_missing_train_days": 0,
+  "missing_code_days": 0
+ },
+ "corporate_action_filings": {
+  "codes_with_dart_file": 39,
+  "codes_with_CA_filing_20250918_20261007": 8
+ },
+ "m15_context_timing": {
+  "buys": 82,
+  "ctx_day_before_signal_bar_day": 82,
+  "ctx_VIOLATION": 0,
+  "flow_end_before_ctx_day": 82,
+  "flow_VIOLATION": 0,
+  "in_universe_prev_day_rank": 82,
+  "fill_day_bar_close_eq_daily_close": 78,
+  "fill_day_compared": 82
+ },
+ "classification_per_unit": {
+  "D1_signal_rows": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 563,
+   "VIOLATION": 0
+  },
+  "D1_control_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 87,
+   "VIOLATION": 0
+  },
+  "BASKET_control_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 15,
+   "VIOLATION": 0
+  },
+  "M15_control_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 164,
+   "VIOLATION": 0
+  },
+  "ETF_control_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 0,
+   "VIOLATION": 0
+  },
+  "D1_candidate_locks": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 542,
+   "VIOLATION": 0
+  },
+  "D1_candidate_lock_events": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 126,
+   "VIOLATION": 0
+  },
+  "D1_candidate_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 123,
+   "VIOLATION": 0
+  },
+  "ETF_candidate_locks": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 0,
+   "VIOLATION": 0
+  },
+  "ETF_candidate_lock_events": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 126,
+   "VIOLATION": 0
+  },
+  "ETF_candidate_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 0,
+   "VIOLATION": 0
+  },
+  "BASKET_candidate_locks": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 154,
+   "VIOLATION": 0
+  },
+  "BASKET_candidate_lock_events": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 126,
+   "VIOLATION": 0
+  },
+  "BASKET_candidate_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 25,
+   "VIOLATION": 0
+  },
+  "M15_candidate_locks": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 725,
+   "VIOLATION": 0
+  },
+  "M15_candidate_fills": {
+   "PROVEN_PIT": 0,
+   "CONSERVATIVE_ASSUMPTION": 0,
+   "UNKNOWN_EVIDENCE": 189,
+   "VIOLATION": 0
+  }
+ },
+ "unknown_causes_non_exclusive": {
+  "D1_signal_rows": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 563,
+   "U2_가격_BASIS(원/수정)_증거_없음": 563,
+   "U3_거래정지·기업행동_상태_증거_없음": 563,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 563,
+   "U5_같은날_접수_주식수(시각_없음)": 73
+  },
+  "D1_control_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 87,
+   "U2_가격_BASIS(원/수정)_증거_없음": 87,
+   "U3_거래정지·기업행동_상태_증거_없음": 87,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 87
+  },
+  "BASKET_control_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 15,
+   "U2_가격_BASIS(원/수정)_증거_없음": 15,
+   "U3_거래정지·기업행동_상태_증거_없음": 15,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 15
+  },
+  "M15_control_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 164,
+   "U2_가격_BASIS(원/수정)_증거_없음": 164,
+   "U3_거래정지·기업행동_상태_증거_없음": 164,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 164
+  },
+  "ETF_control_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 0,
+   "U2_가격_BASIS(원/수정)_증거_없음": 0,
+   "U3_거래정지·기업행동_상태_증거_없음": 0,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 0
+  },
+  "D1_candidate_locks": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 542,
+   "U2_가격_BASIS(원/수정)_증거_없음": 542,
+   "U3_거래정지·기업행동_상태_증거_없음": 542,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 542
+  },
+  "D1_candidate_lock_events": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 126,
+   "U2_가격_BASIS(원/수정)_증거_없음": 126,
+   "U3_거래정지·기업행동_상태_증거_없음": 126,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 126
+  },
+  "D1_candidate_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 123,
+   "U2_가격_BASIS(원/수정)_증거_없음": 123,
+   "U3_거래정지·기업행동_상태_증거_없음": 123,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 123
+  },
+  "ETF_candidate_locks": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 0,
+   "U2_가격_BASIS(원/수정)_증거_없음": 0,
+   "U3_거래정지·기업행동_상태_증거_없음": 0,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 0
+  },
+  "ETF_candidate_lock_events": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 126,
+   "U2_가격_BASIS(원/수정)_증거_없음": 126,
+   "U3_거래정지·기업행동_상태_증거_없음": 126,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 126
+  },
+  "ETF_candidate_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 0,
+   "U2_가격_BASIS(원/수정)_증거_없음": 0,
+   "U3_거래정지·기업행동_상태_증거_없음": 0,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 0
+  },
+  "BASKET_candidate_locks": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 154,
+   "U2_가격_BASIS(원/수정)_증거_없음": 154,
+   "U3_거래정지·기업행동_상태_증거_없음": 154,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 154
+  },
+  "BASKET_candidate_lock_events": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 126,
+   "U2_가격_BASIS(원/수정)_증거_없음": 126,
+   "U3_거래정지·기업행동_상태_증거_없음": 126,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 126
+  },
+  "BASKET_candidate_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 25,
+   "U2_가격_BASIS(원/수정)_증거_없음": 25,
+   "U3_거래정지·기업행동_상태_증거_없음": 25,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 25
+  },
+  "M15_candidate_locks": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 725,
+   "U2_가격_BASIS(원/수정)_증거_없음": 725,
+   "U3_거래정지·기업행동_상태_증거_없음": 725,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 725
+  },
+  "M15_candidate_fills": {
+   "U1_UNIVERSE_T_SNAPSHOT_없음": 189,
+   "U2_가격_BASIS(원/수정)_증거_없음": 189,
+   "U3_거래정지·기업행동_상태_증거_없음": 189,
+   "U4_레코드_판·처음_도착시각_없음(저장소 처음 들어온 때가 결정 뒤)": 189
+  }
+ },
+ "primary_cause_rule": "원인 순서 U1 > U2 > U3 > U4 > U5 중 처음 해당하는 것 하나(모든 단위가 U1에 해당 → 1차 원인 전부 U1)",
+ "input_types": {
+  "가격 종가(price-data)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(그날 종가 · 판단은 종가 뒤 · 체결은 다음 날 종가)",
+   "value_basis": "UNKNOWN_EVIDENCE",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "고가/저가/거래량(volume-data)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(그날까지)",
+   "value_basis": "UNKNOWN_EVIDENCE",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "주식수(share-data · 접수일)": {
+   "timing": "접수일 < 판단일 CONSERVATIVE · 같은 날 UNKNOWN_EVIDENCE(시각 없음)",
+   "value_basis": "UNKNOWN_EVIDENCE(수정주가 × 그때 주식수 · caps.py 주석)",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "수급(investor-data)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(T−2 · 실측 위반 0)",
+   "value_basis": "해당 없음",
+   "version": "UNKNOWN_EVIDENCE(정정 판 없음)"
+  },
+  "목표가(opinion-data)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(판단일 앞 날짜만 · 실측 위반 0)",
+   "value_basis": "해당 없음",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "사건(event-data · 바구니)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(판단 전 거래일까지 접수 · 실측 위반 0)",
+   "value_basis": "해당 없음",
+   "version": "UNKNOWN_EVIDENCE(정정 연결 없음)"
+  },
+  "15분봉(m15-kis)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(봉 닫힌 뒤 판단 · 다음 봉 시가)",
+   "value_basis": "UNKNOWN_EVIDENCE",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "15분봉 일봉 맥락(전 거래일)": {
+   "timing": "CONSERVATIVE_ASSUMPTION(prev_day · 수급 끝 당김 · 실측)",
+   "value_basis": "가격과 같음",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "Universe(t) · 시총 순위": {
+   "timing": "UNKNOWN_EVIDENCE(지금 남은 종목만 · 상장폐지 종목 없음)",
+   "value_basis": "UNKNOWN_EVIDENCE",
+   "version": "UNKNOWN_EVIDENCE"
+  },
+  "거래정지 · 기업행동 상태": {
+   "timing": "UNKNOWN_EVIDENCE(상태 자료 없음)",
+   "value_basis": "-",
+   "version": "-"
+  }
+ },
+ "proven_violations_found": 0,
+ "seconds": 381
+}

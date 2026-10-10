@@ -1,0 +1,198 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-PIT-EXPOSURE-0001",
+ "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+ "note": "줄 번호: b2/b3 고정 스냅샷 · PR #41/#68 daily_exec.py · PR #68 rr_m15.py · PR #76 et_replay.py · PR #78 et_m15.py",
+ "sleeves": {
+  "D1": {
+   "decision": "통제: t 종가 뒤 신호(PICKS = nrl.inside 줄 중 HOLD) → t+1 종가 체결(daily_exec L92-93, L131 run_d1). 후보: t 종가 뒤 목표 잠금 → t+1 종가(et_replay.py replay_lag)",
+   "inputs": {
+    "가격 종가(price-data → nrl 캐시)": [
+     "REQUIRED",
+     "특징 줄 lab.build L274(그날까지 종가) · 체결/평가 CL · 상하한가 lab.locked L1271 · daily_exec L150/L169",
+     "cutoff: 그날 종가 포함"
+    ],
+    "고가 · 저가 · 거래량(volume-data)": [
+     "REQUIRED",
+     "lab.build 거래량비 · 전고점(L240 volume_line · L164 price_range) → nrl.BASE_SIZE L202(거래량비)",
+     "cutoff: 그날까지"
+    ],
+    "주식수(share-data 접수일) · 시총 순위": [
+     "REQUIRED",
+     "caps.tag L151 · caps.known_by L136(접수일 ≤ 그날) → rule.holds L189 caps.inside",
+     "cutoff: 같은 날 접수 포함"
+    ],
+    "수급(investor-data)": [
+     "REQUIRED",
+     "nrl.flow_sum L87 · daily_exec flow_patch L56(lag 2 · shift 1) → teacher · steady",
+     "cutoff: t−2 거래일"
+    ],
+    "목표가(opinion-data)": [
+     "REQUIRED",
+     "nrl.target_cut L189 · target_before(판단일 앞 날짜만)",
+     "cutoff: t−1 이전 날짜"
+    ],
+    "실적(public-data)": [
+     "NOT_USED",
+     "특징 줄 칸에만 있고 HOLD/SIZE/EXIT에 안 씀(PR #72에서 확인)",
+     "-"
+    ],
+    "DART 사건(dart-events)": [
+     "NOT_USED",
+     "D1 경로에 없음",
+     "-"
+    ],
+    "시장 폭 BR · 정배열(shape)": [
+     "REQUIRED",
+     "nrl.aligned L107(F.breadth_by_day · F.shapes: 가격 · 상위100)",
+     "cutoff: 그날까지"
+    ],
+    "조용함 문턱(달별)": [
+     "REQUIRED",
+     "daily_exec holds_monthly L74(nrl.CALM_MONTH: 그 달 첫날 앞 줄)",
+     "cutoff: 달 첫날 앞"
+    ],
+    "같이 담기 금지(kin)": [
+     "REQUIRED",
+     "nrl L61 rule.apart L303(lab.moves: 그날까지 수익률)",
+     "cutoff: 그날까지"
+    ],
+    "청산 규칙(반익절 · 정배열 깨짐)": [
+     "REQUIRED",
+     "nrl L131 half_rule · L112 broken · L145 BASE_EXIT(lanes 종가 · 중기선)",
+     "cutoff: 그날까지"
+    ],
+    "Universe(t)": [
+     "REQUIRED",
+     "상위100 = 저장소에 남은 종목끼리 순위(caps.tag) — 상장폐지 종목 없음",
+     "증거 없음"
+    ],
+    "거래정지 · 기업행동 상태": [
+     "UNKNOWN_CODE_PATH",
+     "상태 자료를 읽는 코드 경로 없음. 값이 없으면 '체결 날 값 없음' 거절(daily_exec L167)로만 처리",
+     "-"
+    ],
+    "노출 E_t(후보)": [
+     "REQUIRED",
+     "통제 P4 NAV(t 마감까지) → PR #68 저장 exposure",
+     "cutoff: t 마감"
+    ]
+   }
+  },
+  "BASKET": {
+   "decision": "통제: 판단일 d에 t0 = d 앞 거래일 사건 · 반응(daily_exec run_basket L424, basket_live.step L70) → 다음 날 종가. 후보: PR #76 계약",
+   "inputs": {
+    "가격 종가": [
+     "REQUIRED",
+     "basket_live.reactions L47(t0 · prev 종가) · 체결/평가 CL",
+     "cutoff: t0"
+    ],
+    "주식수 · 시총 순위(상위 200)": [
+     "REQUIRED",
+     "basket_live.reactions → caps.tag(t0 종가 × t0까지 접수 주식수)",
+     "cutoff: t0(같은 날 접수 포함)"
+    ],
+    "사건(event-data: 자사주취득 · 무상증자)": [
+     "REQUIRED",
+     "daily_exec load_events · basket_live.todays_events L65(prev < 접수일 ≤ t0)",
+     "cutoff: 판단일 앞 거래일"
+    ],
+    "수급 · 목표가 · 실적": [
+     "NOT_USED",
+     "바구니 경로에 없음",
+     "-"
+    ],
+    "Universe(t)": [
+     "REQUIRED",
+     "상위 200 = 저장소에 남은 종목",
+     "증거 없음"
+    ],
+    "거래정지 · 기업행동 상태": [
+     "UNKNOWN_CODE_PATH",
+     "상태 자료 경로 없음(값 없음 → 체결 거절)",
+     "-"
+    ]
+   }
+  },
+  "ETF": {
+   "decision": "빈칸 엔진 rules.decide L27(ETF 종가 · 시장 폭 · D1 사용률) · Train 통제 체결 0건",
+   "inputs": {
+    "ETF 종가(etf-data)": [
+     "REQUIRED",
+     "daily_exec run_etf L300 px · ETF L287",
+     "cutoff: 그날까지"
+    ],
+    "시장 폭 BR": [
+     "REQUIRED",
+     "run_etf breadth = BR(주식 상위100)",
+     "cutoff: 그날"
+    ],
+    "D1 사용률(used)": [
+     "REQUIRED",
+     "rr_daily used(전날 D1 x1 투자 비중)",
+     "cutoff: 전날"
+    ],
+    "Universe(t)": [
+     "REQUIRED",
+     "ETF 목록 고정(ER.CODES) · BR이 주식 Universe에 기댐",
+     "증거 없음"
+    ],
+    "거래정지 · 기업행동 상태": [
+     "UNKNOWN_CODE_PATH",
+     "경로 없음",
+     "-"
+    ]
+   }
+  },
+  "M15": {
+   "decision": "통제: 봉 k 닫힌 뒤 신호 → 봉 k+1 시가(rr_m15 L197-214 · L114-188). 후보: PR #78 완료 봉 뒤 잠금 → 다음 봉 시가",
+   "inputs": {
+    "15분봉 OHLCV(m15-kis)": [
+     "REQUIRED",
+     "신호 entry3(q023) · 순위 · 청산 q_rule L74 · 체결 시가 rr_m15 L186",
+     "cutoff: 봉 k 종가"
+    ],
+    "일봉 맥락(전 거래일)": [
+     "REQUIRED",
+     "hlab.daily_context L208 → attach L303(prev_day) → q_rule door L35 · ok L45 · size L69 · stale90 L96",
+     "cutoff: 전 거래일 종가"
+    ],
+    "수급(investor-data)": [
+     "REQUIRED",
+     "daily_context 수급5 · 가르침 · 3일연속(m15_exec SHIFT=1 L44/L47 당김) · q_rule raw L118(당김)",
+     "cutoff: 전 거래일 − 1"
+    ],
+    "시총 순위 · 추세문(hourly_tables)": [
+     "REQUIRED",
+     "hlab.cached_tables L149 / daily_tables L110(calm_by_month) · Universe L315(전 거래일 순위)",
+     "cutoff: 전 거래일"
+    ],
+    "DART(dart-events)": [
+     "NOT_USED",
+     "hlab.daily_context L208 · _had L297이 자사주20 · 희석20 칸을 만들지만, 실행 사슬 q023 → q009 → q005 → q002 → q_rule 어디에도 그 칸을 읽는 줄이 0개(grep)",
+     "-"
+    ],
+    "가격 종가 · 거래량(일봉)": [
+     "REQUIRED",
+     "q_rule ROWS L104 · raw L118(판단일 앞)",
+     "cutoff: 전 거래일"
+    ],
+    "Universe(t)": [
+     "REQUIRED",
+     "IN = 전 거래일 시총 상위100(hlab.Universe) — 저장소에 남은 종목",
+     "증거 없음"
+    ],
+    "거래정지 · 기업행동 상태": [
+     "UNKNOWN_CODE_PATH",
+     "봉이 없으면 그 시각 체결 없음(자료 빈칸)",
+     "-"
+    ],
+    "노출 E_t · k(후보)": [
+     "REQUIRED",
+     "통제 P4 · 15분봉 NAV(전날 마감 · 날 마감 잠금)",
+     "cutoff: 잠금 시각"
+    ]
+   }
+  }
+ }
+}
