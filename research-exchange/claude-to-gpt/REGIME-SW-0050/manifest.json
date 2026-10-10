@@ -1,0 +1,182 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-SW-0050",
+ "chain_id": "REGIME-SW-0050",
+ "kind": "RESULT",
+ "round": 1,
+ "status": "READY",
+ "verdict": "ADOPT_CANDIDATE",
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "source_pr": 215,
+ "source_head_sha": "44de593b205aeac6ba74d1cdbad2c6d9403d4d12",
+ "code_commit": "44de593b205aeac6ba74d1cdbad2c6d9403d4d12",
+ "code": {
+  "research/regime_dev.py": "7f47b04336d2ed73f6b3f28d9a3ccbeb2a9dcac087fc35fb13bb69915d4da56a",
+  "research/regime_rules2.py": "5684ae8ae57402aeb3931bec85175c8a97095133a31097f6a0a7393247002396",
+  "research/regime_rules3.py": "e3274e8539130003f25d4d5855eccde8cb2af5f986ac300f8c5224ae5626c088"
+ },
+ "limits": {
+  "day": -0.15,
+  "month": -0.1
+ },
+ "evals": {
+  "started": 238,
+  "done": 238,
+  "failed": 0,
+  "cap": 300
+ },
+ "grid_within_limits": "73/231",
+ "final": {
+  "n": 30,
+  "confirm": "r10m5",
+  "persist": 2,
+  "down_base": 1.0,
+  "down_inv": 0.0,
+  "inv": "114800",
+  "up_lev": 0.3,
+  "side_inv": 0.2,
+  "up_need": "above_only",
+  "exit_buf": 0.0,
+  "band": null,
+  "lev_vt": null
+ },
+ "final_res": {
+  "annual_pct": 32.699,
+  "annual_raw": 0.3269897921612426,
+  "worst_day_pct": -9.894,
+  "worst_month_pct": -9.336,
+  "loss_ok": true,
+  "mdd_report_pct": -18.61,
+  "years_pct": {
+   "2017": 16.79,
+   "2018": 4.65,
+   "2019": 7.61,
+   "2020": 57.31,
+   "2021": 1.98,
+   "2022": 19.72,
+   "2023": 55.49,
+   "2024": 10.05,
+   "2025": 70.54,
+   "2026": 95.8
+  },
+  "by_kind": {
+   "상승": {
+    "worst_day_pct": -9.894,
+    "worst_month_pct": -9.336,
+    "ok": true,
+    "worst_day_raw": -0.09894194617429197,
+    "worst_month_raw": -0.09335871262746553
+   },
+   "하락": {
+    "worst_day_pct": -2.999,
+    "worst_month_pct": -4.634,
+    "ok": true,
+    "worst_day_raw": -0.0299906298996514,
+    "worst_month_raw": -0.04634220580400217
+   },
+   "횡보": {
+    "worst_day_pct": -4.515,
+    "worst_month_pct": -9.034,
+    "ok": true,
+    "worst_day_raw": -0.04515103251076691,
+    "worst_month_raw": -0.09034160923635026
+   }
+  },
+  "kinds_ok": true,
+  "halves_report": {
+   "2017~2021": 16.7,
+   "2022~2026": 51.87
+  },
+  "state_share_pct": {
+   "상승": 58.3,
+   "횡보": 35.1,
+   "하락": 6.6
+  },
+  "period": "실제 셈 기간 2017-02-01 ~ 2026-09-15(1일봉 장부가 2017-02-01부터) · 사용자 지정 2016 ~ 2026 가운데 2016-01 ~ 2017-01은 장부 없음 → NEEDS_DATA 칸",
+  "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+  "etf_trims": 60,
+  "base_trims": 0,
+  "min_cash_slack": -2.220446049250313e-16
+ },
+ "base_res_annual_pct": 20.045,
+ "plateau_ok": true,
+ "plateau": {
+  "n=26": {
+   "annual_pct": 31.839,
+   "worst_day_pct": -9.894,
+   "worst_month_pct": -10.625,
+   "loss_ok_report": true,
+   "ok": true,
+   "within_10_report": false
+  },
+  "n=34": {
+   "annual_pct": 31.073,
+   "worst_day_pct": -9.894,
+   "worst_month_pct": -14.155,
+   "loss_ok_report": true,
+   "ok": true,
+   "within_10_report": false
+  },
+  "persist=1": {
+   "annual_pct": 29.073,
+   "worst_day_pct": -9.894,
+   "worst_month_pct": -12.31,
+   "loss_ok_report": true,
+   "ok": true,
+   "within_10_report": false
+  },
+  "persist=3": {
+   "annual_pct": 30.401,
+   "worst_day_pct": -9.894,
+   "worst_month_pct": -16.808,
+   "loss_ok_report": false,
+   "ok": true,
+   "within_10_report": false
+  },
+  "confirm=r10m4": {
+   "annual_pct": 32.841,
+   "worst_day_pct": -9.894,
+   "worst_month_pct": -9.336,
+   "loss_ok_report": true,
+   "ok": true,
+   "within_10_report": true
+  },
+  "confirm=r10m6": {
+   "annual_pct": 32.482,
+   "worst_day_pct": -9.894,
+   "worst_month_pct": -9.336,
+   "loss_ok_report": true,
+   "ok": true,
+   "within_10_report": true
+  }
+ },
+ "grid_edge_report": {
+  "up_lev": true,
+  "lev_vt": true,
+  "side_inv": true
+ },
+ "temp_save": {
+  "file": "paper-candidates/candidates.json",
+  "orders": false,
+  "status": "별도 커밋(결과 PR 댓글에 증거)"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/REPORT.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/dev_main.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/dev_run.log",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evals.jsonl",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/LOG.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/reg3_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/reg3_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/cut_test3.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/cut_test3.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/PLAN.md"
+ ],
+ "started_at_kst": "2026-10-10 23:54:24",
+ "completed_at_kst": "2026-10-10 23:54:39",
+ "answering": "215+44de593b205aeac6ba74d1cdbad2c6d9403d4d12+PREREG+REGIME-SW-0050(6098768577)"
+}
