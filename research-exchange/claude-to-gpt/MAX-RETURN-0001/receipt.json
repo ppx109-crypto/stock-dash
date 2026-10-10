@@ -1,0 +1,12 @@
+{
+ "schema_version": 1,
+ "task_id": "MAX-RETURN-0001",
+ "input": "사용자 2026-10-08T15:56+09:00 목표 변경(1천만 원 · 비용 뒤 복리 최대 · 월 −15% 탈락 해제) + GPT 공동 검토 16:01(하루 −15% 유지 · MDD 비교 항목)",
+ "prior": {
+  "pr": 41,
+  "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+  "reused": "kernel2.py · daily_exec.py · m15_exec.py(바꾸지 않음)"
+ },
+ "base_main_sha": "ec44c4dd703cd2e547b0749cc805faca95340da0",
+ "received_at_kst": "2026-10-08T16:00:00+09:00"
+}

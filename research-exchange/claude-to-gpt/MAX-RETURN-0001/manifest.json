@@ -1,0 +1,154 @@
+{
+ "schema_version": 1,
+ "task_id": "MAX-RETURN-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "MAX-RETURN-0001",
+  "input": "사용자 2026-10-08T15:56+09:00 목표 변경(1천만 원 · 비용 뒤 복리 최대 · 월 −15% 탈락 해제) + GPT 공동 검토 16:01(하루 −15% 유지 · MDD 비교 항목)",
+  "prior": {
+   "pr": 41,
+   "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+   "reused": "kernel2.py · daily_exec.py · m15_exec.py(바꾸지 않음)"
+  },
+  "base_main_sha": "ec44c4dd703cd2e547b0749cc805faca95340da0",
+  "received_at_kst": "2026-10-08T16:00:00+09:00"
+ },
+ "prereg_commit": "d097cbdcd3aba927ecafbaf35f07bc60f0d9467d",
+ "prereg_committed_at_kst": "2026-10-08T16:02+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b"
+ },
+ "experiments": 9,
+ "capital_won": 10000000,
+ "cost_stress": [
+  1,
+  2
+ ],
+ "elimination": "하루 TWR −15% 넘음(1배 · 2배) · 2배 CAGR ≤ 0 · 최대 이익 종목 제외 1배 CAGR ≤ 0",
+ "not_elimination": [
+  "달력월 −15%(사용자 15:56 해제)",
+  "MDD(비교 항목)"
+ ],
+ "chosen": {
+  "D": "D1",
+  "M": "M0"
+ },
+ "passed": {
+  "D": [
+   "D1",
+   "D3",
+   "D0"
+  ],
+  "M": [
+   "M0",
+   "M2",
+   "M3"
+  ]
+ },
+ "outcome": "1일봉 D1 선택(Train 개선 · 전 기간/같은 시작은 기준선보다 나쁨) · 15분봉 기준선 M0 유지(개선 없음) · M4는 2배 판 하루 −15.09%로 탈락",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/d1.log",
+  "evidence/d1_picks.json",
+  "evidence/d1_results.json",
+  "evidence/m15.log",
+  "evidence/m15_results.json",
+  "evidence/nav_D0_x1_1e7.csv",
+  "evidence/nav_D1_x1_1e7.csv",
+  "evidence/nav_M0_x1_1e7.csv"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "356cf1ca0a39f5d87a13ca32bea136d8d951d31eeb51e6b5af139640adb6b455"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "323b73a8097f5448fe2c3373caa659d9e3aa16df9e1fe66ac6bb4c2a0d7dc570"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/daily_exec.py",
+   "sha256": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/mr_d1.py",
+   "sha256": "2a4a1a8358d291dbbcc20b2220d6dc6f577d5301a4d4db4226d652a9a5d5516d"
+  },
+  {
+   "path": "code/mr_m15.py",
+   "sha256": "2abfa1f40d81fcef15284b5970988fc2232639b94289636dd741ecf47ac4e599"
+  },
+  {
+   "path": "code/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "code/test_kernel.py",
+   "sha256": "b327915690cc7452667762c9351605a9b006769e33515fabacfd2472028e5f1e"
+  },
+  {
+   "path": "evidence/d1.log",
+   "sha256": "f289b445bda34c15039fc3d54e0d38fdbdf261c0d29e3d071215c644c356532f"
+  },
+  {
+   "path": "evidence/d1_picks.json",
+   "sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+  },
+  {
+   "path": "evidence/d1_results.json",
+   "sha256": "e58431133c3ad00298a123b598f3114065c164d5c1036b89e7d07a93743dcd8b"
+  },
+  {
+   "path": "evidence/m15.log",
+   "sha256": "7471215419b25fb28dfdec8f46a6f4448bd57288a7767389cba4f29cfc9c3a42"
+  },
+  {
+   "path": "evidence/m15_results.json",
+   "sha256": "af8b976226b5e67559aef0c2cb23263361ef58f2c0975be1717462ae3d7f075a"
+  },
+  {
+   "path": "evidence/nav_D0_x1_1e7.csv",
+   "sha256": "0e7e8399d9afbdd8ca8bf4b530c6815ffe0335b408066da2bd1d604e54a0089f"
+  },
+  {
+   "path": "evidence/nav_D1_x1_1e7.csv",
+   "sha256": "65a698f80499a9fd8ef976836498c73d47eebe995df5d620662313730bfe2c94"
+  },
+  {
+   "path": "evidence/nav_M0_x1_1e7.csv",
+   "sha256": "1300e58943ed5ff9335656bf4723a3e0a6c5b1d1e5dbee1b6a838139b750d0bc"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "a9da88ee6df79c0a35d17514653f3a9d5d2bd4fee58cb6c8b5bc7251df26c35c"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/max-return-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T16:10:53+09:00"
+}
