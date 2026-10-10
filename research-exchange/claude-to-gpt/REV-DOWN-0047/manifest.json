@@ -1,0 +1,99 @@
+{
+ "schema_version": 1,
+ "task_id": "REV-DOWN-0047",
+ "chain_id": "REV-DOWN-0047",
+ "kind": "RESULT",
+ "round": 3,
+ "status": "READY",
+ "verdict": "REJECTED",
+ "independent_validation": "WAITING_DATA",
+ "source_pr": 209,
+ "source_head_sha": "e76a553a05071183aaecab44cdc7022c527ef0ae",
+ "code_commit": "e76a553a05071183aaecab44cdc7022c527ef0ae",
+ "code": {
+  "research/rev_down.py": "9be73203c1571512b4867012234a09548c5360d3083becebfbf97dc4450f9cf0"
+ },
+ "lock": {
+  "research/rev_down.py": "9be73203c1571512b4867012234a09548c5360d3083becebfbf97dc4450f9cf0",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "lock_key": "31f6403be3b0b872fcb4c8a13d510c3490b7598d9b233045dc57a9d6ee857e9b",
+ "receipt": {
+  "status": "STARTED",
+  "lock_key": "31f6403be3b0b872fcb4c8a13d510c3490b7598d9b233045dc57a9d6ee857e9b",
+  "git_head": "e76a553a05071183aaecab44cdc7022c527ef0ae",
+  "at": "2026-10-10 12:26:46"
+ },
+ "conditions": {
+  "0_cohorts_ge_60": true,
+  "1_annual_gt0": true,
+  "2_beats_random_median": true,
+  "3_day_month_ge_-15": false,
+  "4_active_years_pos_ge_60pct": true,
+  "5_boot_lo_gt0": true
+ },
+ "stats": {
+  "end_nav": 2.1862898100845607,
+  "annual_pct": 3.904,
+  "worst_day": [
+   "20081024",
+   -11.485
+  ],
+  "worst_month": [
+   "200810",
+   -26.553
+  ],
+  "years_pct": {
+   "2006": 7.102,
+   "2007": -0.005,
+   "2008": -11.468,
+   "2009": 6.732,
+   "2010": 2.974,
+   "2011": -2.81,
+   "2012": 9.296,
+   "2013": 6.273,
+   "2014": 2.296,
+   "2015": -2.813,
+   "2016": -0.657,
+   "2017": 0.0,
+   "2018": 1.374,
+   "2019": -6.129,
+   "2020": 40.702,
+   "2021": -2.564,
+   "2022": 10.433,
+   "2023": 5.173,
+   "2024": 9.473,
+   "2025": 7.025,
+   "2026": 5.995
+  },
+  "mtm_mdd_report_only_pct": -43.765,
+  "cohorts": 1066,
+  "trades": 21201,
+  "cohort_mean_net_pct": 1.047
+ },
+ "active_years_pos": "13/20",
+ "control_median_pct": 0.763,
+ "boot95_cohort_net_pct": [
+  0.268,
+  1.843
+ ],
+ "boot95_lo_raw": 0.002680839871323105,
+ "end_open_positions": 200,
+ "blocked_buy_limit_up": 119,
+ "delayed_sell_limit_down_rows": 88,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/REPORT.md",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/run_main.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/run.log",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/receipt.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/lock.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/snapshots.json",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.py",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/rev_test.out",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/REV-DOWN-0047/PREREG.md"
+ ],
+ "started_at_kst": "2026-10-10 21:26:46",
+ "completed_at_kst": "2026-10-10 21:27:11",
+ "answering": "209+e76a553a05071183aaecab44cdc7022c527ef0ae+PREREG+REV-DOWN-0047(6097477736)"
+}

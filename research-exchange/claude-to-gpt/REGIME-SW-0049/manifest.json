@@ -1,0 +1,176 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-SW-0049",
+ "chain_id": "REGIME-SW-0049",
+ "kind": "RESULT",
+ "round": 2,
+ "status": "READY",
+ "verdict": "ADOPT_CANDIDATE",
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "source_pr": 213,
+ "source_head_sha": "49ddda2823bb89fe245447d510131c758c9abcde",
+ "code_commit": "49ddda2823bb89fe245447d510131c758c9abcde",
+ "code": {
+  "research/regime_dev.py": "4b13c9009395e01e31674bba9067c8af600dbaea4e6f2f74030b20b616564f93",
+  "research/regime_rules2.py": "5684ae8ae57402aeb3931bec85175c8a97095133a31097f6a0a7393247002396"
+ },
+ "plateau_definition": "사용자 2026-10-10: 몫 축 제외 · 규칙 숫자 아주 조금(n ×0.85/×1.15 · persist ±1 · 문턱 ±작은 값 · lev_vt/band ±0.02 · exit_buf ±0.01) · 이웃마다 더 번 몫의 절반 이상 · 손실 한도는 최종만(이웃 손실은 보고)",
+ "evals": {
+  "started": 175,
+  "done": 175,
+  "failed": 0,
+  "cap": 300
+ },
+ "final": {
+  "n": 30,
+  "confirm": "r10m5",
+  "persist": 2,
+  "down_base": 1.0,
+  "down_inv": 0.0,
+  "inv": "114800",
+  "up_lev": 0.8,
+  "side_inv": 0.2,
+  "up_need": "above_only",
+  "exit_buf": 0.0,
+  "lev_vt": 0.25,
+  "band": null
+ },
+ "final_res": {
+  "annual_pct": 40.371,
+  "annual_raw": 0.4037074659905999,
+  "worst_day_pct": -12.346,
+  "worst_month_pct": -14.887,
+  "loss_ok": true,
+  "mdd_report_pct": -24.11,
+  "years_pct": {
+   "2017": 24.06,
+   "2018": -0.13,
+   "2019": 3.62,
+   "2020": 98.24,
+   "2021": -0.51,
+   "2022": 19.17,
+   "2023": 46.83,
+   "2024": 7.02,
+   "2025": 114.71,
+   "2026": 140.93
+  },
+  "by_kind": {
+   "상승": {
+    "worst_day_pct": -12.346,
+    "worst_month_pct": -14.887,
+    "ok": true
+   },
+   "하락": {
+    "worst_day_pct": -5.027,
+    "worst_month_pct": -6.567,
+    "ok": true
+   },
+   "횡보": {
+    "worst_day_pct": -4.532,
+    "worst_month_pct": -11.229,
+    "ok": true
+   }
+  },
+  "kinds_ok": true,
+  "halves_report": {
+   "2017~2021": 21.18,
+   "2022~2026": 63.8
+  },
+  "state_share_pct": {
+   "상승": 58.3,
+   "횡보": 35.1,
+   "하락": 6.6
+  },
+  "period": "실제 셈 기간 2017-02-01 ~ 2026-09-15(1일봉 장부가 2017-02-01부터) · 사용자 지정 2016 ~ 2026 가운데 2016-01 ~ 2017-01은 장부 없음 → NEEDS_DATA 칸",
+  "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+  "etf_trims": 141,
+  "base_trims": 0,
+  "min_cash_slack": -4.440892098500626e-16
+ },
+ "base_res_annual_pct": 20.045,
+ "plateau_ok": true,
+ "plateau": {
+  "n=26": {
+   "annual_pct": 39.662,
+   "worst_day_pct": -12.346,
+   "worst_month_pct": -15.794,
+   "loss_ok_report": false,
+   "ok": true
+  },
+  "n=34": {
+   "annual_pct": 39.197,
+   "worst_day_pct": -12.346,
+   "worst_month_pct": -20.553,
+   "loss_ok_report": false,
+   "ok": true
+  },
+  "persist=1": {
+   "annual_pct": 36.565,
+   "worst_day_pct": -12.346,
+   "worst_month_pct": -17.31,
+   "loss_ok_report": false,
+   "ok": true
+  },
+  "persist=3": {
+   "annual_pct": 38.422,
+   "worst_day_pct": -12.346,
+   "worst_month_pct": -23.657,
+   "loss_ok_report": false,
+   "ok": true
+  },
+  "confirm=r10m4": {
+   "annual_pct": 40.698,
+   "worst_day_pct": -12.346,
+   "worst_month_pct": -14.887,
+   "loss_ok_report": true,
+   "ok": true
+  },
+  "confirm=r10m6": {
+   "annual_pct": 40.142,
+   "worst_day_pct": -12.346,
+   "worst_month_pct": -14.887,
+   "loss_ok_report": true,
+   "ok": true
+  },
+  "lev_vt=0.23": {
+   "annual_pct": 39.884,
+   "worst_day_pct": -12.01,
+   "worst_month_pct": -14.617,
+   "loss_ok_report": true,
+   "ok": true
+  },
+  "lev_vt=0.27": {
+   "annual_pct": 40.657,
+   "worst_day_pct": -13.127,
+   "worst_month_pct": -15.157,
+   "loss_ok_report": false,
+   "ok": true
+  }
+ },
+ "neighbors_loss_breach_report": [
+  "n=26",
+  "n=34",
+  "persist=1",
+  "persist=3",
+  "lev_vt=0.27"
+ ],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/REPORT.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/dev_main.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/dev_run.log",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evals.jsonl",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/LOG.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/cut_test2.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/cut_test2.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/reg2_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/evidence/reg2_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0049/PLAN.md"
+ ],
+ "started_at_kst": "2026-10-10 23:35:48",
+ "completed_at_kst": "2026-10-10 23:36:00",
+ "answering": "213+49ddda2823bb89fe245447d510131c758c9abcde+PREREG+REGIME-SW-0049(6098599274)"
+}
