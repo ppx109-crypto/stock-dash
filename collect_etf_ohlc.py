@@ -113,6 +113,17 @@ def main(codes):
         for code in codes:
             try:
                 names[code] = c.quote(code).get("name") or ""
+                if not names[code]:
+                    # 주식기본조회 → 상품기본조회 차례로(이름 칸만 뽑음)
+                    for path, tr in (("search-stock-info", "CTPF1002R"), ("search-info", "CTPF1604R")):
+                        out = call(c, "/uapi/domestic-stock/v1/quotations/" + path, tr,
+                                   {"PRDT_TYPE_CD": "300", "PDNO": code}).get("output") or {}
+                        out = out[0] if isinstance(out, list) and out else out
+                        nm = str(out.get("prdt_abrv_name") or out.get("prdt_name") or "").strip() if isinstance(out, dict) else ""
+                        if nm:
+                            names[code] = nm
+                            break
+                        time.sleep(0.3)
             except broker_kis.BrokerError as e:
                 names[code] = f"조회 실패 {str(e)[:30]}"
             time.sleep(0.3)
