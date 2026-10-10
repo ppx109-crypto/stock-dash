@@ -1,0 +1,64 @@
+{
+ "schema_version": 1,
+ "task_id": "SIG-MAP-0045",
+ "chain_id": "SIG-MAP-0045",
+ "kind": "PREREG",
+ "round": 1,
+ "status": "READY",
+ "base_head_sha": "e41936ebef197d0ed0cacae22036e1a9ed8e6210",
+ "code": {
+  "research/sig_map.py": "85011c3eb7e39ed4e8f3546b6aa552114e6032b03b1772df370da6108819a627"
+ },
+ "t_lock": {
+  "research/sig_map.py": "85011c3eb7e39ed4e8f3546b6aa552114e6032b03b1772df370da6108819a627",
+  "/tmp/sig-m1.pkl": "7cdaeb9cc6a33af5ecdd515524a91e6ac685642f4c9e71f72cc29e8521215276",
+  "/tmp/sig-m2.pkl": "4c1b73fc3b2623b07b219f670f4e362ec577ab44841197c086dd7e9e62d0a0c3",
+  "/tmp/sig-t.pkl": "1c072856bb1460b773bb5ba07b85951a311755cc78a09172086784322868ef7e"
+ },
+ "periods": {
+  "M": [
+   "20060102",
+   "20211230"
+  ],
+  "T": [
+   "20220103",
+   "20260915"
+  ]
+ },
+ "signals": [
+  "S1_MOM20",
+  "S2_REV5",
+  "S3_HIGH120",
+  "S4_LOWVOL60",
+  "S5_FLOW_FT10",
+  "S6_RETAIL_CONTRA10",
+  "S7_EMA_ALIGN",
+  "S8_MOM120_SKIP20"
+ ],
+ "excluded_from_T_pick": [
+  "S5_FLOW_FT10",
+  "S6_RETAIL_CONTRA10"
+ ],
+ "verdicts": [
+  "NO_STABLE_SIGNAL",
+  "STABLE_SIGNAL_CONFIRMED",
+  "STABLE_IN_MAP_ONLY"
+ ],
+ "run_once": "python3 research/sig_map.py --t",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/PREREG.md",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/snapshots.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/t_lock.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/sig_test.py",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/sig_test.out",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_year.py",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_year.out",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_year.json",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_phase.py",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_phase.out",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_phase_year.py",
+  "research-exchange/claude-to-gpt/SIG-MAP-0045/evidence/flow_era_phase_year.out"
+ ],
+ "results_seen_in_this_task": "없음(자르기 시험은 같음 · 다름 수만)"
+}
