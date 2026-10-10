@@ -154,7 +154,9 @@ def twr(navs):
 
 
 def control(led, pool, lanes, seed):
-    """매매마다 같은 산 날 · 그날 Universe(시총 100위 안 · 그날 후보가 들고 있지 않은 종목)에서 1종목 무작위 · 같은 보유 일수 · 자리 · 비용."""
+    """매매마다 같은 산 날 · 그날 Universe(시총 100위 안)에서 1종목 무작위 · 같은 보유 거래일 수 · 같은 자리 · 왕복 0.25%.
+    round 2(GPT #196 6096300527): ① 후보가 그날 든 종목과 **대조 포트폴리오가 그날 든 종목**을 함께 뺌(한 종목 한 보유)
+    ② 산 칸 + 보유 일수가 그 종목 줄 안에 없는 종목(미래 칸 부족)은 미리 뺌(보유 일수를 줄이지 않음)."""
     rng = random.Random(seed)
     by_day = defaultdict(list)
     for r in pool:
@@ -165,37 +167,95 @@ def control(led, pool, lanes, seed):
         i0 = t["행"]["i"]
         for j in range(i0, min(i0 + t["들고"], len(lane) - 1) + 1):
             held_on[lane[j]].add(t["code"])
+    mine = {}                      # 대조가 든 종목 → 판 날
     w = []
     for t in sorted(led, key=lambda x: (x["산 날"], x["code"])):
-        cands = sorted((r for r in by_day[t["산 날"]] if r["code"] not in held_on[t["산 날"]]), key=lambda r: r["code"])
+        day = t["산 날"]
+        busy = held_on[day] | {c for c, end in mine.items() if end >= day}
+        cands = sorted((r for r in by_day[day] if r["code"] not in busy
+                        and r["i"] + t["들고"] < len(lanes[r["code"]]["closes"])), key=lambda r: r["code"])
         if not cands:
             continue
         r = rng.choice(cands)
         c = lanes[r["code"]]["closes"]
-        j = min(r["i"] + t["들고"], len(c) - 1)
+        j = r["i"] + t["들고"]
+        mine[r["code"]] = lanes[r["code"]]["날"][j]
         w.append(((c[j] / c[r["i"]] - 1) * 100 - COST) * t["자리"])
     years = max(1, int(H[1][:4]) - int(H[0][:4]) + 1)
     return sum(w) / SLOTS / years
 
 
-def boot(led):
+def month_grid(lo, hi):
+    y, m, out = int(lo[:4]), int(lo[4:6]), []
+    while f"{y:04d}{m:02d}" <= hi[:6]:
+        out.append(f"{y:04d}{m:02d}")
+        y, m = (y + 1, 1) if m == 12 else (y, m + 1)
+    return out
+
+
+def boot(led, lo=None, hi=None):
+    """한 건 순손익 평균 · 달력 달 6달 블록 부트스트랩. round 2: H의 **연속 달력 달 격자(빈 달 포함)**에서 시작 달을
+    0 ~ 달 수 − 6에서 고르게 뽑아 ceil(달 수 ÷ 6)개 블록을 이음(블록 안 매매만 모음 · 조건부 평균). 매매가 0인 복제는 버리고
+    수를 적음 · 버린 복제가 5% 넘으면 구간 없음(조건 5 실패)."""
+    lo, hi = lo or H[0], hi or H[1]
     by = defaultdict(list)
     for t in led:
         by[t["판 날"][:6]].append(t["손익"])
-    months = sorted(by)
-    allx = [x for m in months for x in by[m]]
+    months = month_grid(lo, hi)
+    allx = [x for m in months for x in by.get(m, [])]
     rng = random.Random(BSEED)
     nb = math.ceil(len(months) / BLOCK)
-    ms = []
+    ms, empty = [], 0
     for _ in range(REPS):
         xs = []
         for _ in range(nb):
             s0 = rng.randrange(0, len(months) - BLOCK + 1)
             for m in months[s0:s0 + BLOCK]:
-                xs += by[m]
-        ms.append(sum(xs) / len(xs))
+                xs += by.get(m, [])
+        if xs:
+            ms.append(sum(xs) / len(xs))
+        else:
+            empty += 1
+    mean = sum(allx) / len(allx) if allx else None
+    if empty > 0.05 * REPS or not ms:
+        return mean, None, None, empty
     ms.sort()
-    return sum(allx) / len(allx), ms[int(.025 * (REPS - 1))], ms[int(.975 * (REPS - 1))]
+    return mean, ms[int(.025 * (len(ms) - 1))], ms[int(.975 * (len(ms) - 1))], empty
+
+
+LOCK = BOX / "final_lock.json"
+RECEIPT = Path(os.getenv("DIP_H_RECEIPT", str(BOX / "h_receipt.json")))
+
+
+def file_sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def lock_key():
+    """final_lock.json(dip_final.py · lab.py · H 스냅샷 해시)을 다시 세어 견줌 · 다르면 멈춤. 잠금 키 = 잠금 파일 내용 sha256."""
+    want = json.loads(LOCK.read_text())
+    got = {"research/dip_final.py": file_sha(ROOT / "research/dip_final.py"), "lab.py": file_sha(ROOT / "lab.py"),
+           "h_snapshot_sha256": json.loads((BOX / "h_snapshot.json").read_text())["snapshot_sha256"]}
+    bad = [k for k in want if want[k] != got.get(k)]
+    if bad:
+        sys.exit(f"마지막 시험 잠금 다름 {bad} — 셈하지 않음")
+    return hashlib.sha256(LOCK.read_bytes()).hexdigest()
+
+
+def take_receipt(key):
+    """셈 전에 영수증(STARTED)을 원자적으로 만듦(O_EXCL). 이미 있으면 다시 셈하지 않고 멈춤(H는 한 번)."""
+    import subprocess
+    head = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    rec = {"status": "STARTED", "lock_key": key, "git_head": head, "at": __import__("time").strftime("%Y-%m-%d %H:%M:%S")}
+    try:
+        fd = os.open(str(RECEIPT), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        sys.exit("영수증이 이미 있음 — H는 한 번만 셈(다시 셈하지 않음)")
+    with os.fdopen(fd, "w") as fh:
+        fh.write(json.dumps(rec, ensure_ascii=False))
+        fh.flush()
+        os.fsync(fh.fileno())
+    return rec
 
 
 def summary(g):
@@ -215,10 +275,12 @@ def main():
         return 0
     if mode != "--h":
         sys.exit("--repro-d 또는 --h")
+    key = lock_key()
+    receipt = take_receipt(key)
     d = Data(load("/tmp/dip-h.pkl", "h_snapshot.json"))
     lo, hi = H
     g, pool, lanes = engine(d, lo, hi)
-    res = {"task": "DIP-DEEP-0042", "phase": "H", "H": list(H)}
+    res = {"task": "DIP-DEEP-0042", "phase": "H", "H": list(H), "lock_key": key, "receipt": receipt}
     if not g:
         res["verdict"] = "NEEDS_DATA(매매 60건 미만)"
         print(json.dumps(res, ensure_ascii=False))
@@ -229,19 +291,19 @@ def main():
     navs = nav(led, lanes, days)
     tw = twr([("시작", 1.0)] + navs)          # 첫날 앞 NAV = 1(현금)
     ctl = [control(led, pool, lanes, s) for s in range(SEEDS)]
-    m, bl, bu = boot(led)
+    m, bl, bu, empty = boot(led)
     eng = summary(g)
     c0 = eng["매매"] >= 60
     c1 = eng["연수익"] > 0 and a > 0
     c2 = eng["연수익"] > statistics.median(ctl)
     c3 = tw["worst_day"][1] >= -0.15 and tw["worst_month"][1] >= -0.15
     c4 = sum(1 for v in tw["years"].values() if v > 0) >= 3
-    c5 = bl > 0
+    c5 = bl is not None and bl > 0
     res.update({"engine": {**eng, "행운뺌": a, "큰2건뺌": b, "years_counted": years},
                 "seed0_trades": len(led), "virtual_settle": {k: sum(1 for t in led if t.get("정산") == k) for k in {t.get("정산") for t in led if t.get("정산")}},
                 "nav_twr": {"worst_day": tw["worst_day"], "worst_month": tw["worst_month"], "years": tw["years"], "end_nav": tw["end_nav"]},
                 "control_annual": ctl, "control_median": statistics.median(ctl),
-                "boot_trade_mean": [m, bl, bu],
+                "boot_trade_mean": [m, bl, bu], "boot_empty_reps": empty,
                 "conditions": {"0_trades_ge_60": c0, "1_annual_and_luck_gt0": c1, "2_beats_random_median": c2,
                                "3_twr_day_month_ge_-15": c3, "4_three_of_four_years": c4, "5_boot_lo_gt0": c5}})
     res["verdict"] = ("NEEDS_DATA" if not c0 else "EXPLORATORY_CANDIDATE" if all((c1, c2, c3, c4, c5)) else "REJECTED")
