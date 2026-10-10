@@ -1,0 +1,21 @@
+자료 준비 225 초 · 430 종목
+Train B 1.0 237.59 -19.32 -14.63 20260331 0 포지션 66 체결 138 H 0 0
+Train B 2.0 213.46 -19.49 -15.09 20260331 1 포지션 66 체결 138 H 0 0
+기준 맞춤 B 같음
+Train R 1.0 247.47 -19.35 -12.58 20260304 0 포지션 66 체결 151 H 0 0
+Train R 2.0 220.87 -19.45 -12.64 20260304 0 포지션 66 체결 151 H 0 0
+기준 맞춤 R 같음
+Train H 1.0 306.33 -19.47 -14.86 20260331 0 포지션 63 체결 129 H 3 3
+Train H 2.0 253.76 -19.41 -14.33 20260331 0 포지션 63 체결 129 H 3 3
+Train RH 1.0 319.7 -19.43 -12.59 20260304 0 포지션 63 체결 145 H 3 3
+Train RH 2.0 274.5 -19.37 -12.56 20260304 0 포지션 63 체결 145 H 3 3
+선택표 B 213.4633 {'day_ok': False, 'cagr2_pos': np.True_, 'ex_top_pos': True} 000250 112.08
+선택표 R 220.8655 {'day_ok': True, 'cagr2_pos': np.True_, 'ex_top_pos': True} 000250 112.99
+선택표 H 253.7596 {'day_ok': True, 'cagr2_pos': np.True_, 'ex_top_pos': np.True_} 000250 153.83358580186712
+선택표 RH 274.501 {'day_ok': True, 'cagr2_pos': np.True_, 'ex_top_pos': np.True_} 000250 159.51483730113733
+선택 RH ['R', 'H', 'RH']
+자르기 H 20260102 {'nav_days': 68, 'nav_same': True, 'fills_same': True, 'fills': 73}
+자르기 H 20260303 {'nav_days': 106, 'nav_same': True, 'fills_same': True, 'fills': 107}
+자르기 RH 20260102 {'nav_days': 68, 'nav_same': True, 'fills_same': True, 'fills': 82}
+자르기 RH 20260303 {'nav_days': 106, 'nav_same': True, 'fills_same': True, 'fills': 117}
+끝 train

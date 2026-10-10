@@ -1,0 +1,226 @@
+{
+ "schema_version": 1,
+ "task_id": "WINNER-HOLD-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "WINNER-HOLD-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 5,
+  "input": {
+   "pr": 52,
+   "head_sha": "1abbe1674264808e5e0167350258d9819c24f388",
+   "read_files": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "receipt.json"
+   ]
+  },
+  "prior": {
+   "pr": 49,
+   "head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4",
+   "reused": "m15_exec.py · kernel2.py · cost_contract.py · common.py(바이트 동일) · lc_m15.py에 H 갈고리를 더해 wh_m15.py"
+  },
+  "base_main_sha": "319eea3da0cfaba8d414d4981b5c739a8dd405d1",
+  "received_at_kst": "2026-10-08T17:24:36+09:00 이후(입력 head 커밋 시각) · 17:27:31 PREREG 커밋 전"
+ },
+ "prereg_commit": "ab31b32b6d01044bb2c3a2c9c6db47c54d48c0c0",
+ "prereg_committed_at_kst": "2026-10-08T17:27:31+09:00",
+ "lock_commit": "47d725ac625761d782235474de8504c87d165aeb",
+ "lock_committed_at_kst": "2026-10-08T17:38:12+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "baseline_same_as_pr49": true,
+ "rules": [
+  "B",
+  "R",
+  "H",
+  "RH"
+ ],
+ "runs": {
+  "train": 8,
+  "ex_top": 2,
+  "cut_test": 4,
+  "post_selection": 6,
+  "total": 20,
+  "failed_first_attempt": "B · R 4판 뒤 H 첫 판에서 KeyError로 멈춤 · H/RH 결과 없음 · 기록 공개"
+ },
+ "capital_won": 10000000,
+ "cost_stress": [
+  1,
+  2
+ ],
+ "train": [
+  "2025-09-17",
+  "2026-03-31"
+ ],
+ "passed": [
+  "R",
+  "H",
+  "RH"
+ ],
+ "chosen": "RH",
+ "cut_test_all_pass": true,
+ "h_events": {
+  "train": 3,
+  "full_2025_09_to_2026_08": 3,
+  "after_2026_04": 0,
+  "direct_effect_won_approx": {
+   "H_x1": -32500,
+   "RH_x1": 82500
+  }
+ },
+ "verdict": "개선 없음",
+ "verdict_note": "RH가 Train · 전체에서 높지만 차이의 78~98%가 보류와 무관한 298380 경로 변화 · H 사건 3건 · 2026-04~08 H 0건이고 RH < R · TASK 규칙(한 종목 의존) 적용",
+ "rl_note": "결과 피드백 공동 연구 · 강화학습 모델 학습 아님",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/LOCK.json",
+  "evidence/diag.log",
+  "evidence/nav_full_B_x1.csv",
+  "evidence/nav_full_B_x2.csv",
+  "evidence/nav_full_RH_x1.csv",
+  "evidence/nav_full_RH_x2.csv",
+  "evidence/nav_full_R_x1.csv",
+  "evidence/nav_full_R_x2.csv",
+  "evidence/nav_train_B_x1.csv",
+  "evidence/nav_train_B_x2.csv",
+  "evidence/nav_train_H_x1.csv",
+  "evidence/nav_train_H_x2.csv",
+  "evidence/nav_train_RH_x1.csv",
+  "evidence/nav_train_RH_x2.csv",
+  "evidence/nav_train_R_x1.csv",
+  "evidence/nav_train_R_x2.csv",
+  "evidence/train.log",
+  "evidence/train_first_run_crashed.log",
+  "evidence/wh_diag.json",
+  "evidence/wh_train.json"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "cb9e9a993a56cc2b91cdac81f4a9b2452161c88b276bc2d37d87d6978b4369b8"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "2bbde0dda8df93994747c77d08954804d485c77b378f0556763e54eca699444f"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/wh_m15.py",
+   "sha256": "0429f09e84fcd8ccbd7ab49617dc9f2c8b5e5b0d2135fae9057132a1021c833e"
+  },
+  {
+   "path": "evidence/LOCK.json",
+   "sha256": "fe11c6a07fdca2fc237f88f3baccc90d7b7585bff3b5559a8d2a2b879931e467"
+  },
+  {
+   "path": "evidence/diag.log",
+   "sha256": "13c81ec72f2b1e78863a08c830d1756c48b4fa5b4da0a44ad0fbdf1e3f2b6148"
+  },
+  {
+   "path": "evidence/nav_full_B_x1.csv",
+   "sha256": "3e5e4204cd2bef74bd71dba8ccd383cc4b8013e054b7e6e31d35c4660c4722b7"
+  },
+  {
+   "path": "evidence/nav_full_B_x2.csv",
+   "sha256": "d8e267ecddc205bf2f32e56a7ed1683067b83e0890286566d9ae2401ae30139e"
+  },
+  {
+   "path": "evidence/nav_full_RH_x1.csv",
+   "sha256": "13d29e75d383685846df74126cace73de03b12221e35ca02e3a6dbe47b6681af"
+  },
+  {
+   "path": "evidence/nav_full_RH_x2.csv",
+   "sha256": "a3c4d57cab3ce0e39b3894bd11974605dcf5e482702a77c230b139cf586b83a0"
+  },
+  {
+   "path": "evidence/nav_full_R_x1.csv",
+   "sha256": "fc4fafbe339f35feb4f9f0d48654c0ddb655c08f87486a4b3fbf2ec4e4e3ab35"
+  },
+  {
+   "path": "evidence/nav_full_R_x2.csv",
+   "sha256": "a50e2df6bf1bfe99228e03a9c16bf2bc63b1c8f368bf48e03dc8039f5a909879"
+  },
+  {
+   "path": "evidence/nav_train_B_x1.csv",
+   "sha256": "794a5b994f896488058af3ea1eced7bae8828ce928097602be5610f8e1462f39"
+  },
+  {
+   "path": "evidence/nav_train_B_x2.csv",
+   "sha256": "148d7de7979f96cb45db0a5dfa399c40fc1b981e637c58e1c49cecd62e3268e1"
+  },
+  {
+   "path": "evidence/nav_train_H_x1.csv",
+   "sha256": "8a4b9c2b3c22f17d383a9d2f7a19f1dfd2c381001198ad06faa54c7108d70421"
+  },
+  {
+   "path": "evidence/nav_train_H_x2.csv",
+   "sha256": "4e012190cd827557aea51de9f2b6acfa5bd2827cc3667d93d3b3d571d711dc9e"
+  },
+  {
+   "path": "evidence/nav_train_RH_x1.csv",
+   "sha256": "d8cd9f071f2c7276fb89149669407ba79f283d4b192a404cb85ba85f3e1b4797"
+  },
+  {
+   "path": "evidence/nav_train_RH_x2.csv",
+   "sha256": "d5b56c43159fa1575b1e77e2f55ab17241fd1e5f48514d4f1e98b0addf8c72bc"
+  },
+  {
+   "path": "evidence/nav_train_R_x1.csv",
+   "sha256": "b95202937c5a436565869d33cae6a3a4b100addb426af1fb9c2be42b6c4c0e69"
+  },
+  {
+   "path": "evidence/nav_train_R_x2.csv",
+   "sha256": "4f7afd1a7bac6b3e3cbe65f8748a56cc37757a87ee31123cc916598bf08f0bb3"
+  },
+  {
+   "path": "evidence/train.log",
+   "sha256": "696425a51c62aca9202a293d357c6e843903fbfead986b4a7d1c41984603e9ea"
+  },
+  {
+   "path": "evidence/train_first_run_crashed.log",
+   "sha256": "209ef47155f94270d1b57d488c3cd5cd15bc59aa4ad279d6ba7b2f18ba667876"
+  },
+  {
+   "path": "evidence/wh_diag.json",
+   "sha256": "67bb2c1b55ebf862985d3b5caa8a89117fe96e400a372d758cd893ce1e3b92cf"
+  },
+  {
+   "path": "evidence/wh_train.json",
+   "sha256": "7d96009bcfde4365406a344961cc32fe7ef825d871936832f5ffdca4b0b2228e"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "2170c1f96509ca8b45f0cb2d9dbc6fe878525815600ee1c09b24a7af75e3f889"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/winner-hold-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T17:44:13+09:00"
+}

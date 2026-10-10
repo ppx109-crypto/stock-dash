@@ -1,0 +1,23 @@
+{
+ "schema_version": 1,
+ "task_id": "WINNER-HOLD-0001",
+ "chain_id": "MAX-RETURN-20261008",
+ "round": 5,
+ "input": {
+  "pr": 52,
+  "head_sha": "1abbe1674264808e5e0167350258d9819c24f388",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "receipt.json"
+  ]
+ },
+ "prior": {
+  "pr": 49,
+  "head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4",
+  "reused": "m15_exec.py · kernel2.py · cost_contract.py · common.py(바이트 동일) · lc_m15.py에 H 갈고리를 더해 wh_m15.py"
+ },
+ "base_main_sha": "319eea3da0cfaba8d414d4981b5c739a8dd405d1",
+ "received_at_kst": "2026-10-08T17:24:36+09:00 이후(입력 head 커밋 시각) · 17:27:31 PREREG 커밋 전"
+}
