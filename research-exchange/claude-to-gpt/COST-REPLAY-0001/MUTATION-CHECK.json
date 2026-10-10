@@ -1,0 +1,47 @@
+{
+ "kind": "mutation_check(합성)",
+ "mutations": [
+  {
+   "mutation": "M1 2026 코스닥 0.0015(기존 결함)",
+   "caught": true,
+   "failed_cases": [
+    "날짜 경계",
+    "매수 비과세 · 배율",
+    "부분체결",
+    "old 재현 · 2026 차"
+   ]
+  },
+  {
+   "mutation": "M2 2019-06-03 경계 하루 밀림",
+   "caught": true,
+   "failed_cases": [
+    "날짜 경계"
+   ]
+  },
+  {
+   "mutation": "M3 매수에도 세금",
+   "caught": true,
+   "failed_cases": [
+    "매수 비과세 · 배율"
+   ]
+  },
+  {
+   "mutation": "M4 모르는 기간 기본값 0.0015",
+   "caught": true,
+   "failed_cases": [
+    "날짜 경계",
+    "UNKNOWN 거부",
+    "가정 시나리오"
+   ]
+  },
+  {
+   "mutation": "M5 ETF도 주식 표",
+   "caught": true,
+   "failed_cases": [
+    "상품 구분"
+   ]
+  }
+ ],
+ "caught": 5,
+ "total": 5
+}

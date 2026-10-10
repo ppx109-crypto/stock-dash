@@ -1,0 +1,112 @@
+{
+ "schema_version": 1,
+ "task_id": "COST-REPLAY-0001",
+ "status": "NEEDS_DATA(금액 · NAV 지표)",
+ "computed_instead": "수익률 단위 고정 원장 진단(results/DELTA-SUMMARY.json)",
+ "minimum_fill_input": {
+  "per_fill_fields": [
+   {
+    "name": "asset_id",
+    "type": "string",
+    "note": "종목코드 6자리 등"
+   },
+   {
+    "name": "instrument_type",
+    "type": "enum",
+    "values": [
+     "STOCK",
+     "ETF",
+     "ETN",
+     "INVERSE_ETF",
+     "OTHER"
+    ]
+   },
+   {
+    "name": "market",
+    "type": "enum",
+    "values": [
+     "KOSPI",
+     "KOSDAQ",
+     "KONEX"
+    ],
+    "note": "체결 당시 시장(이전상장 반영)"
+   },
+   {
+    "name": "fill_at_kst",
+    "type": "datetime",
+    "note": "체결 시각(날짜만이면 세율 경계는 되지만 순서 · 시각 판단 불가)"
+   },
+   {
+    "name": "side",
+    "type": "enum",
+    "values": [
+     "BUY",
+     "SELL"
+    ]
+   },
+   {
+    "name": "quantity",
+    "type": "integer>0"
+   },
+   {
+    "name": "fill_price",
+    "type": "number>0",
+    "note": "원"
+   },
+   {
+    "name": "costs",
+    "type": "object",
+    "fields": [
+     "commission",
+     "sell_tax",
+     "farm_tax",
+     "exchange_fees",
+     "slippage_assumed"
+    ],
+    "note": "실측 · 가정 구분 표시"
+   },
+   {
+    "name": "ledger_provenance",
+    "type": "object",
+    "fields": [
+     "source(research_replay|paper|other)",
+     "generator_commit",
+     "file_sha256",
+     "seed"
+    ]
+   }
+  ],
+  "not_required": [
+   "원 주문번호",
+   "계좌번호",
+   "키 · 토큰"
+  ]
+ },
+ "separately_required_for_NAV": [
+  "입출금(날짜 · 금액)",
+  "일별 평가 가격(종가 등 · 출처 · 수정주가 여부)",
+  "기업행동(분할 · 병합 · 권리락 · 배당락 · 상장폐지)",
+  "시작 현금 · 시작 보유"
+ ],
+ "existing_ledger_gap": {
+  "file": "RULES-0002 d1_ledger_ASIS.csv",
+  "has": [
+   "code",
+   "entry(날짜)",
+   "exit(날짜)",
+   "pnl_pct_engine",
+   "slots"
+  ],
+  "missing": [
+   "instrument_type",
+   "market(시점 기준)",
+   "fill_at_kst(시각)",
+   "quantity",
+   "fill_price",
+   "costs",
+   "fill/trade id"
+  ]
+ },
+ "paper_validation_ready": false,
+ "live_approval": false
+}

@@ -1,0 +1,367 @@
+{
+ "kind": "fixed_ledger_diagnostic(수익률 단위 · 가정 비용)",
+ "ledger_sha256": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+ "rows": 495,
+ "codes": 136,
+ "entry_range": [
+  "20170126",
+  "20260803"
+ ],
+ "exit_range": [
+  "20170210",
+  "20260904"
+ ],
+ "market_rows": {
+  "KOSDAQ": 34,
+  "KOSPI": 461
+ },
+ "assumptions": {
+  "account_krw": 100000000.0,
+  "order": "계좌 × 칸/10",
+  "fee": 0.00015,
+  "slip": 0.0005,
+  "impact_k": 0.1,
+  "engine_roundtrip_backout": 0.0025,
+  "market": "kosdaq-data 현재 목록(시점 기준 아님)",
+  "instrument": "STOCK(저장소 기대)"
+ },
+ "perf2_copy_max_abs_diff": 0.0,
+ "scenarios": {
+  "STRICT": {
+   "computable_rows": 86,
+   "unknown_rows": 409,
+   "unknown_by_market_year": {
+    "KOSPI-2017": 61,
+    "KOSPI-2018": 29,
+    "KOSPI-2019": 5,
+    "KOSPI-2020": 29,
+    "KOSPI-2021": 91,
+    "KOSPI-2022": 5,
+    "KOSPI-2023": 23,
+    "KOSPI-2024": 85,
+    "KOSPI-2025": 81
+   },
+   "scales": {
+    "BASE": {
+     "rows": 86,
+     "codes": 51,
+     "mean_trade_pct_old": 4.808321091878503,
+     "mean_trade_pct_new": 4.773120346715085,
+     "mean_trade_delta_pctpt": -0.03520074516341861,
+     "acct_pct_sum_old": 107.13503213902338,
+     "acct_pct_sum_new": 106.50704620044324,
+     "acct_pct_sum_delta": -0.627985938580183,
+     "trade_PF_old": 2.1211252896073893,
+     "trade_PF_new": 2.108148850127927,
+     "win_rate_old": 0.3488372093023256,
+     "win_rate_new": 0.3488372093023256,
+     "sign_flips": 0,
+     "by_exit_year": {
+      "2017": {
+       "rows": 3,
+       "acct_pct_sum_delta": -0.030126296166954523
+      },
+      "2020": {
+       "rows": 1,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2021": {
+       "rows": 5,
+       "acct_pct_sum_delta": 0.019854434806991606
+      },
+      "2023": {
+       "rows": 4,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2024": {
+       "rows": 6,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2025": {
+       "rows": 12,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2026": {
+       "rows": 55,
+       "acct_pct_sum_delta": -0.6177140772202201
+      }
+     }
+    },
+    "STRESS": {
+     "rows": 86,
+     "codes": 51,
+     "mean_trade_pct_old": 4.477621885291082,
+     "mean_trade_pct_new": 4.4248783831794265,
+     "mean_trade_delta_pctpt": -0.05274350211165663,
+     "acct_pct_sum_old": 101.13365542990614,
+     "acct_pct_sum_new": 100.1927195493038,
+     "acct_pct_sum_delta": -0.940935880602354,
+     "trade_PF_old": 1.9967536820251928,
+     "trade_PF_new": 1.9789482550334843,
+     "win_rate_old": 0.313953488372093,
+     "win_rate_new": 0.313953488372093,
+     "sign_flips": 0,
+     "by_exit_year": {
+      "2017": {
+       "rows": 3,
+       "acct_pct_sum_delta": -0.04509093329294381
+      },
+      "2020": {
+       "rows": 1,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2021": {
+       "rows": 5,
+       "acct_pct_sum_delta": 0.02973804222551344
+      },
+      "2023": {
+       "rows": 4,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2024": {
+       "rows": 6,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2025": {
+       "rows": 12,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2026": {
+       "rows": 55,
+       "acct_pct_sum_delta": -0.9255829895349236
+      }
+     }
+    },
+    "EXTREME": {
+     "rows": 86,
+     "codes": 51,
+     "mean_trade_pct_old": 4.147467110554597,
+     "mean_trade_pct_new": 4.077219261917013,
+     "mean_trade_delta_pctpt": -0.07024784863758303,
+     "acct_pct_sum_old": 95.14232346820249,
+     "acct_pct_sum_new": 93.88913299708982,
+     "acct_pct_sum_delta": -1.2531904711126336,
+     "trade_PF_old": 1.8827734247009238,
+     "trade_PF_new": 1.8610289458289215,
+     "win_rate_old": 0.313953488372093,
+     "win_rate_new": 0.313953488372093,
+     "sign_flips": 0,
+     "by_exit_year": {
+      "2017": {
+       "rows": 3,
+       "acct_pct_sum_delta": -0.059989896447270395
+      },
+      "2020": {
+       "rows": 1,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2021": {
+       "rows": 5,
+       "acct_pct_sum_delta": 0.03959257632070381
+      },
+      "2023": {
+       "rows": 4,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2024": {
+       "rows": 6,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2025": {
+       "rows": 12,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2026": {
+       "rows": 55,
+       "acct_pct_sum_delta": -1.232793150986067
+      }
+     }
+    }
+   }
+  },
+  "S_KOSPI_FARM015": {
+   "computable_rows": 495,
+   "unknown_rows": 0,
+   "unknown_by_market_year": {},
+   "scales": {
+    "BASE": {
+     "rows": 495,
+     "codes": 136,
+     "mean_trade_pct_old": 3.072655763711999,
+     "mean_trade_pct_new": 3.0610717131750165,
+     "mean_trade_delta_pctpt": -0.011584050536980283,
+     "acct_pct_sum_old": 354.47010621039396,
+     "acct_pct_sum_new": 353.28703785154227,
+     "acct_pct_sum_delta": -1.1830683588517263,
+     "trade_PF_old": 2.0762965735370433,
+     "trade_PF_new": 2.0699927118494066,
+     "win_rate_old": 0.4161616161616162,
+     "win_rate_new": 0.4161616161616162,
+     "sign_flips": 0,
+     "by_exit_year": {
+      "2017": {
+       "rows": 64,
+       "acct_pct_sum_delta": -0.6189789528850285
+      },
+      "2018": {
+       "rows": 29,
+       "acct_pct_sum_delta": -0.3237738358017997
+      },
+      "2019": {
+       "rows": 5,
+       "acct_pct_sum_delta": -0.029033449974120808
+      },
+      "2020": {
+       "rows": 30,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2021": {
+       "rows": 96,
+       "acct_pct_sum_delta": 0.3815679357110825
+      },
+      "2022": {
+       "rows": 5,
+       "acct_pct_sum_delta": 0.02486402131836076
+      },
+      "2023": {
+       "rows": 27,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2024": {
+       "rows": 91,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2025": {
+       "rows": 93,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2026": {
+       "rows": 55,
+       "acct_pct_sum_delta": -0.6177140772202201
+      }
+     }
+    },
+    "STRESS": {
+     "rows": 495,
+     "codes": 136,
+     "mean_trade_pct_old": 2.6810718957962396,
+     "mean_trade_pct_new": 2.6637207584683793,
+     "mean_trade_delta_pctpt": -0.01735113732786106,
+     "acct_pct_sum_old": 313.34202572590306,
+     "acct_pct_sum_new": 311.5699845500654,
+     "acct_pct_sum_delta": -1.7720411758374934,
+     "trade_PF_old": 1.8729321899486542,
+     "trade_PF_new": 1.8647555383573517,
+     "win_rate_old": 0.397979797979798,
+     "win_rate_new": 0.397979797979798,
+     "sign_flips": 0,
+     "by_exit_year": {
+      "2017": {
+       "rows": 64,
+       "acct_pct_sum_delta": -0.9269887342169008
+      },
+      "2018": {
+       "rows": 29,
+       "acct_pct_sum_delta": -0.4847670704037023
+      },
+      "2019": {
+       "rows": 5,
+       "acct_pct_sum_delta": -0.04342150304328811
+      },
+      "2020": {
+       "rows": 30,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2021": {
+       "rows": 96,
+       "acct_pct_sum_delta": 0.571472517004034
+      },
+      "2022": {
+       "rows": 5,
+       "acct_pct_sum_delta": 0.03724660435728851
+      },
+      "2023": {
+       "rows": 27,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2024": {
+       "rows": 91,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2025": {
+       "rows": 93,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2026": {
+       "rows": 55,
+       "acct_pct_sum_delta": -0.9255829895349236
+      }
+     }
+    },
+    "EXTREME": {
+     "rows": 495,
+     "codes": 136,
+     "mean_trade_pct_old": 2.2902839228749605,
+     "mean_trade_pct_new": 2.2671823244079587,
+     "mean_trade_delta_pctpt": -0.02310159846700187,
+     "acct_pct_sum_old": 272.3006782367573,
+     "acct_pct_sum_new": 269.9413718188942,
+     "acct_pct_sum_delta": -2.359306417863116,
+     "trade_PF_old": 1.6950185401333564,
+     "trade_PF_new": 1.6854086267873027,
+     "win_rate_old": 0.3797979797979798,
+     "win_rate_new": 0.37777777777777777,
+     "sign_flips": 1,
+     "by_exit_year": {
+      "2017": {
+       "rows": 64,
+       "acct_pct_sum_delta": -1.2340120521416513
+      },
+      "2018": {
+       "rows": 29,
+       "acct_pct_sum_delta": -0.6451645161395778
+      },
+      "2019": {
+       "rows": 5,
+       "acct_pct_sum_delta": -0.05772377483384439
+      },
+      "2020": {
+       "rows": 30,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2021": {
+       "rows": 96,
+       "acct_pct_sum_delta": 0.7607908405886359
+      },
+      "2022": {
+       "rows": 5,
+       "acct_pct_sum_delta": 0.049596235649387664
+      },
+      "2023": {
+       "rows": 27,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2024": {
+       "rows": 91,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2025": {
+       "rows": 93,
+       "acct_pct_sum_delta": 0.0
+      },
+      "2026": {
+       "rows": 55,
+       "acct_pct_sum_delta": -1.232793150986067
+      }
+     }
+    }
+   }
+  }
+ },
+ "not_computed_NEEDS_DATA": [
+  "원 단위 비용 차액 · 금액 PF(수량 · 체결가 없음)",
+  "일별 NAV · TWR · 일별 MTM MDD · 월별 · CAGR(입출금 · 일별 평가 · 체결 시각 · 수량 없음)",
+  "1천만 / 1억 용량(주문 크기 · 유동성 없음)",
+  "현금 보존 · 불가능 체결(현금 흐름 없음)"
+ ]
+}
