@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "task_id": "RULES-0002",
+  "chain_id": "RULES-20261008",
+  "round": 2,
+  "status": "READY",
+  "status_meaning": "진단 재생 완료(diagnostic in-sample) · OOS 아님 · 실전 판정 아님",
+  "source_pr": 10,
+  "source_head_sha": "bdc82e254eeba54489bdeeb390e190e535719195",
+  "prior_result_pr": 9,
+  "prior_result_head_sha": "d39c6fc1606d712aafe02c9bc6214246f7a5d723",
+  "code_commit": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "code_note": "b2 = git worktree --detach 00b98ab1 · b3 = b2 코드 파일 350개의 절대 경로 글자만 바꾼 복사본(다른 차이 0줄 · 자료 폴더는 b2 링크)",
+  "data_versions": {
+    "git_trees@00b98ab1": {
+      "investor-data": "83d241cb2a9ac962420330a82253db5ec4a62ba8",
+      "price-data": "ede403bc756ec7e409872d263c842954942ab417",
+      "volume-data": "c3815a396db3397e9b065afb2d5efeae72c3741d",
+      "m15-kis": "a51cd93f6697251cd715e9e506cd1a17f16b645f",
+      "hourly-data": "bb4ed73100272dc45a988a3c5492e60327eb1aa7",
+      "hourly-live": "7eed337336c6960554486dd54c82edccde4bb7c8",
+      "share-data": "5b8fdc00d462f552a0e433f9c8d1a0e30cfea349",
+      "opinion-data": "83b6904a73c7655e67a24ec2337d33df3764cb52",
+      "study": "829001c5a5646c19cca2ff92f9432f210757338b",
+      "market-data": "590019758582f14baa2e4ac8f792c352dbac8dda"
+    },
+    "derived_caches_sha256": {
+      "nrl-cache.pkl": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+      "features.json": "9e5818196117059980750de779eebb28981971465cfc0875c9b6f9ca03e1a82e",
+      "hourly_tables.pkl": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b"
+    },
+    "cache_notes": {
+      "nrl-cache.pkl": "2026-10-01 11:05 UTC 생성 · git 밖 · 만든 때 커밋 기록 없음",
+      "features.json": "2026-09-25 · git 밖 · 캐시 유효 판단용 링크",
+      "hourly_tables.pkl": "2026-10-01 15:39 UTC · 추세 문 · 순위 표(수급 없음) · 운영 폴더 .cache에서 복사"
+    },
+    "coverage": {
+      "D1": "20170101 ~ 20260930(캐시 마지막 거래일)",
+      "M15_H1": "20250917 ~ 20260831(x004 기간)"
+    }
+  },
+  "environment": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "pandas": "3.0.6",
+    "jsonschema": "4.26.0",
+    "os": "Linux-6.18.44-fc-v77-x86_64-with-glibc2.39"
+  },
+  "runs": [
+    {
+      "name": "D1 4판",
+      "command": "python3 diag/d1_diag.py <b2> <nrl-cache.pkl> results",
+      "stdout_tail": [
+        "FLOW-LAG3 끝 122 초",
+        "끝 157 초 · 모듈 출처 위반 0",
+        "exit 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "m15 ASIS",
+      "command": "python3 diag/intraday_diag.py <b3> m15 ASIS results",
+      "stdout_tail": [
+        "m15 ASIS 끝 444 초 · 매매 104 · 다른 판단 0 · 옮김 확인 {'same_as_original_functions': True, 'n': 104} · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "m15 FLOAT-V1",
+      "command": "python3 diag/intraday_diag.py <b3> m15 FLOAT-V1 results",
+      "stdout_tail": [
+        "m15 FLOAT-V1 끝 428 초 · 매매 104 · 다른 판단 0 · 옮김 확인 None · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "m15 FLOW-LAG2",
+      "command": "python3 diag/intraday_diag.py <b3> m15 FLOW-LAG2 results",
+      "stdout_tail": [
+        "m15 FLOW-LAG2 끝 421 초 · 매매 121 · 다른 판단 0 · 옮김 확인 None · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "m15 FLOW-LAG3",
+      "command": "python3 diag/intraday_diag.py <b3> m15 FLOW-LAG3 results",
+      "stdout_tail": [
+        "m15 FLOW-LAG3 끝 425 초 · 매매 143 · 다른 판단 0 · 옮김 확인 None · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "h1k ASIS",
+      "command": "python3 diag/intraday_diag.py <b3> h1k ASIS results",
+      "stdout_tail": [
+        "h1k ASIS 끝 160 초 · 매매 128 · 다른 판단 0 · 옮김 확인 {'same_as_original_functions': True, 'n': 128} · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "h1k FLOAT-V1",
+      "command": "python3 diag/intraday_diag.py <b3> h1k FLOAT-V1 results",
+      "stdout_tail": [
+        "h1k FLOAT-V1 끝 149 초 · 매매 128 · 다른 판단 0 · 옮김 확인 None · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "h1k FLOW-LAG2",
+      "command": "python3 diag/intraday_diag.py <b3> h1k FLOW-LAG2 results",
+      "stdout_tail": [
+        "h1k FLOW-LAG2 끝 147 초 · 매매 138 · 다른 판단 0 · 옮김 확인 None · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "h1k FLOW-LAG3",
+      "command": "python3 diag/intraday_diag.py <b3> h1k FLOW-LAG3 results",
+      "stdout_tail": [
+        "h1k FLOW-LAG3 끝 154 초 · 매매 163 · 다른 판단 0 · 옮김 확인 None · 출처 위반 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "RULES-0001 기준선 124",
+      "command": "run_fixtures.py · run_asis.py <b2> · merge_results.py (PR #9 head d39c6fc 파일)",
+      "stdout_tail": [
+        "asis exit 0",
+        "124 114 10",
+        "merge exit 0"
+      ],
+      "stderr_tail": []
+    },
+    {
+      "name": "RULES-0002 합성 40",
+      "command": "python3 -I diag/run_r2_fixtures.py <b2> results/r2_fixtures.json",
+      "stdout_tail": [],
+      "stderr_tail": []
+    },
+    {
+      "name": "요약",
+      "command": "python3 diag/summarize.py <b2> results",
+      "stdout_tail": [
+        "요약 끝 2 18"
+      ],
+      "stderr_tail": []
+    }
+  ],
+  "intraday_exit_codes": [
+    "h1k ASIS exit 0",
+    "h1k FLOAT-V1 exit 0",
+    "m15 FLOAT-V1 exit 0",
+    "h1k FLOW-LAG2 exit 0",
+    "h1k FLOW-LAG3 exit 0",
+    "m15 FLOW-LAG2 exit 0",
+    "m15 FLOW-LAG3 exit 0"
+  ],
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/RULES-0002/REVIEW.md",
+    "research-exchange/gpt-to-claude/RULES-0002/TASK.md",
+    "research-exchange/gpt-to-claude/RULES-0002/PREREG.md",
+    "research-exchange/gpt-to-claude/RULES-0002/receipt.json",
+    "research-exchange/claude-to-gpt/RULES-0001/(REPORT · manifest · RULES-LOCK · test-result · fixtures)@d39c6fc",
+    "nrl.py · lab.py · ntools.py · hlab.py · m15lab.py · research/q_rule.py · q023.py · q009.py · x004.py · a_mtm.py · z058.py · perf2.py @00b98ab1"
+  ],
+  "evidence_versions": [
+    {
+      "path": "research-exchange/gpt-to-claude/RULES-0002/*",
+      "ref": "bdc82e254eeba54489bdeeb390e190e535719195",
+      "range": "전체"
+    },
+    {
+      "path": "research-exchange/claude-to-gpt/RULES-0001/*",
+      "ref": "d39c6fc1606d712aafe02c9bc6214246f7a5d723",
+      "range": "REPORT · manifest · RULES-LOCK · test-result · fixtures 전체"
+    },
+    {
+      "path": "nrl.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-165(자료 · flow_sum · teacher · broken · half_rule · steady)"
+    },
+    {
+      "path": "research/q_rule.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-160(exit_rule · stale90 · raw · tiers)"
+    },
+    {
+      "path": "hlab.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "149-330(cached_tables · daily_context · attach)"
+    },
+    {
+      "path": "m15lab.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "88-105(setup · simulate)"
+    },
+    {
+      "path": "research/x004.py · q023.py · q009.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "재생 호출 부분"
+    },
+    {
+      "path": "lab.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "594-615(lanes) · 1084-1145(exit_per_tier · wobble)"
+    }
+  ],
+  "result_files_sha256": {
+    "FLOAT-IMPACT.md": "8ab610a37332e6c646628d72d8dfbc4fc55594bf592108107dc1f33158404b6d",
+    "FLOW-LAG-IMPACT.md": "f4bfd7f21a73b7e73a7ea78288ff5b6396ead0d61141af904cb977bcff84a271",
+    "PREREG-LOCK.md": "7313a76696b7c50221e6f0638dc6c150fa52f75ba65fbf094cb527b40273f7a9",
+    "REPORT.md": "a4e103ed966d9fae4a2c0f658d2dab0c84b807a6b0c64157015c916d3ce54172",
+    "diag/common.py": "5938874452cbcc7e1e2e9848863b09c0755f5757e40ba84e8ab894555ad530ae",
+    "diag/d1_diag.py": "76ec7ad7565eae26258e245a4d59125a40efb1f6b1352193a7b93aae3fe4972e",
+    "diag/intraday_diag.py": "9c46b9b6e048d6b5e1c26ce43d54f8902c69cd97661191fd52ae699a854349cd",
+    "diag/run_r2_fixtures.py": "0c25332f745392a4235a38c7f89a83a0ba154c927661cdb8efb0f42970dbe232",
+    "diag/summarize.py": "3abf64bc07c44e130713da5beec86da9c599b21bf12244b5d47a4425d4f767ec",
+    "results/d1_float_mismatch_log.csv": "3e8bbe3382b2950fd4061f48bd429b1965da5994a5afde7884f372c7ed8f1ff0",
+    "results/d1_flow_candidate_changes.csv": "2155ffca1096fca08ee9f97adecc9123c784fa83751cec33685492fb048f1c5e",
+    "results/d1_ledger_ASIS.csv": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+    "results/d1_ledger_FLOAT-V1.csv": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+    "results/d1_ledger_FLOW-LAG2.csv": "b298ce4a60ffde0ff25e01b3304d997b71dae9097712bec6c6049ce9ed4ecc65",
+    "results/d1_ledger_FLOW-LAG3.csv": "1b410ebcbadd594ae9f022be8dd52dc2bd05adfb68c9836d3c2ec51663817f44",
+    "results/d1_result.json": "5f56bd4b256a3aa52d2b5ffb389d7fe5c3ccd29a37d6f3ece4fc41b88a116d4b",
+    "results/d1_run1_DISCARDED.log": "6ca2c9e8e14c85c66b995b3aa0cd864cb020df272cee89ef7906a43fefeae0a7",
+    "results/discarded_run1/d1_float_mismatch_log.csv": "3e8bbe3382b2950fd4061f48bd429b1965da5994a5afde7884f372c7ed8f1ff0",
+    "results/discarded_run1/d1_flow_candidate_changes.csv": "2155ffca1096fca08ee9f97adecc9123c784fa83751cec33685492fb048f1c5e",
+    "results/discarded_run1/d1_ledger_ASIS.csv": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+    "results/discarded_run1/d1_ledger_FLOAT-V1.csv": "86c5f56df56d8a7ac5b691152343568d8436f1bea90c10add318bbd9b354209b",
+    "results/discarded_run1/d1_ledger_FLOW-LAG2.csv": "b298ce4a60ffde0ff25e01b3304d997b71dae9097712bec6c6049ce9ed4ecc65",
+    "results/discarded_run1/d1_ledger_FLOW-LAG3.csv": "1b410ebcbadd594ae9f022be8dd52dc2bd05adfb68c9836d3c2ec51663817f44",
+    "results/discarded_run1/d1_result.json": "77d322bd5a1b314425a1063f2792a3a575fbee4afd55d4aecfb952175d0e672b",
+    "results/float_impact.json": "de65dc2cd1dd0e223a73779e6d4b5370b5d130590234f2c4c8ec9bb3ede9540a",
+    "results/float_impact_decisions.csv": "5315cf9a7b5078b1222bd446e9be6b9309a8afd2bfd8ee8b4654c1d066179573",
+    "results/flow_lag_impact.json": "4afce78016e9f29b1efbfb73b3bad885d020dd70239fd418a6cc62a7e4f05ec4",
+    "results/flow_lag_impact_summary.csv": "272e2460aab6f915ab788325fe1211081eb0f5edb96da3e1482bce613c590871",
+    "results/h1k_ASIS.json": "47a0fd8ea27fb7a39c6e795d90aec9472706ce2811da0d5d89c84d67731af6dc",
+    "results/h1k_FLOAT-V1.json": "62edb491c9d56b500f3a1da8b5e197096e158de7788b4577203aeb0fcb704530",
+    "results/h1k_FLOW-LAG2.json": "d0f70bbc35c720633db647e0f604b5b4541d519889578f09641b0a38e286c16a",
+    "results/h1k_FLOW-LAG3.json": "62ad481d472b8d4b1739387e40668c29a586d1cbff0febb347feb4d4301ed133",
+    "results/logs/baseline_run.log": "6ef4d440b1b8ef87b6fa970bb09327a10f0c41fcd14611c3d9ab466f50c1ac1f",
+    "results/logs/d1_run.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "results/logs/d1_run.log": "4ca66e579b48dc31b10daec2949608652f6e212367b273e6c756c4dc895a8bd8",
+    "results/logs/h1k_ASIS.log": "1a5b8badb377e8002da7456b5f834114e7b0c6946aad27f604d9c520f020bf79",
+    "results/logs/h1k_FLOAT-V1.log": "409849229b63678282836dcbf3f41c710ced2b779d59a3cc38c5de31f7dba209",
+    "results/logs/h1k_FLOW-LAG2.log": "50ad2df832d297192951234356a4dd974a79d0415d5e048485b937a1c5932242",
+    "results/logs/h1k_FLOW-LAG3.log": "de3efef8d22f565eee4da00a2dd6c971f599aa1a3ba2fd3e9cacc5d93b581ebd",
+    "results/logs/intraday_exit.log": "f31de6a4c98c72e386a113a85980f843d52bbbe237dc31a7dd65757cbe1da156",
+    "results/logs/m15_ASIS.log": "d85b6bf406e0e1cff546f2892f82323c849534a614fe93354c1842b4f26d793c",
+    "results/logs/m15_FLOAT-V1.log": "1edda91ba72e94d05fc6046bade8042ac34da2ecf3a1d41ec3457e3149011f68",
+    "results/logs/m15_FLOW-LAG2.log": "44b8799cde785f1fdcfaf6b715c1f9125864fae853f5fbf8cba70ba663dce1ed",
+    "results/logs/m15_FLOW-LAG3.log": "9a4845a64b9e7c5ce89b103275265307b1dced1dd02ccdd3dbb405119ee698b4",
+    "results/logs/summarize.log": "b4bbac1bc209a090cac3bc9bd64445873a9bcf96a4d5704df4f7e25a01ad7fc1",
+    "results/m15_ASIS.json": "6c564cb41911519efdf58418cf2f05b883436ee039bc0deedd708ef483dc38ce",
+    "results/m15_FLOAT-V1.json": "add43e75f1ba029396941940c57956fc4d1ae2a86019c6451d2b4c2fa5187c1a",
+    "results/m15_FLOW-LAG2.json": "dec65bb287b0e87d07d7ce797a2308547c4af0b95dd4c574f8e97bbeef8e27aa",
+    "results/m15_FLOW-LAG3.json": "f73f06ec3e3309de508bccd9ef06d8142467f75006e55203a12e9236e5690bb3",
+    "results/r2_fixtures.json": "5303df019e0188029648afd659af6dce1874a783e920adccf8daeee02682b9cb",
+    "results/rules0001_baseline_test-result.json": "4d0d39dc75957e594e5848888bec09f94cfa002ec1349d30aa3c8084fa4178fb",
+    "test-result.json": "45f23f20252ea409ee9dbe180de115ad0c6e045277a950a2932511c750bf33fc"
+  },
+  "result_pr": null,
+  "new_threshold_search": false,
+  "ops_change": false,
+  "api_calls": false,
+  "completed_at_kst": "2026-10-08T07:09:04+09:00",
+  "constraints_reference": {
+    "doc": "research-exchange/gpt-to-claude/USER-CONSTRAINTS-20261008.md",
+    "pr": 11,
+    "head": "bdea8ac118e44f912ffce0288dc4830430e86e2d",
+    "use": "참조만 · 세 위험 기준 표(FLOW-LAG-IMPACT §2) · 새 계산 없음"
+  }
+}

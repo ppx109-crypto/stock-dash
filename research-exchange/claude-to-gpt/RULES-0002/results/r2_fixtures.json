@@ -1,0 +1,514 @@
+{
+ "runner": "diag/run_r2_fixtures.py",
+ "cases": [
+  {
+   "name": "f1.float_tp13_exact_tick",
+   "group": "F1",
+   "input": {
+    "price": 1000,
+    "close": 1130
+   },
+   "expected": [
+    false,
+    true
+   ],
+   "actual": [
+    false,
+    true
+   ],
+   "pass": true
+  },
+  {
+   "name": "f1.float_sl10_exact_tick",
+   "group": "F1",
+   "input": {
+    "price": 1000,
+    "close": 900
+   },
+   "expected": [
+    false,
+    true
+   ],
+   "actual": [
+    false,
+    true
+   ],
+   "pass": true
+  },
+  {
+   "name": "f1.float_now1_exact_tick",
+   "group": "F1",
+   "input": {
+    "price": 1000,
+    "close": 1010
+   },
+   "expected": [
+    false,
+    true
+   ],
+   "actual": [
+    false,
+    true
+   ],
+   "pass": true
+  },
+  {
+   "name": "f1.stale_lt4_boundary",
+   "group": "F1",
+   "input": {
+    "price": 1000,
+    "close": [
+     1039,
+     1040
+    ]
+   },
+   "expected": [
+    true,
+    false
+   ],
+   "actual": [
+    true,
+    false
+   ],
+   "pass": true
+  },
+  {
+   "name": "f1.exact_agrees_off_boundary",
+   "group": "F1",
+   "input": {
+    "price": 1000,
+    "close": 1131
+   },
+   "expected": [
+    true,
+    true
+   ],
+   "actual": [
+    true,
+    true
+   ],
+   "pass": true
+  },
+  {
+   "name": "f1.numpy_float_ok",
+   "group": "F1",
+   "input": {
+    "price": "np.float64(290000)",
+    "close": "np.float64(261000)"
+   },
+   "expected": true,
+   "actual": true,
+   "pass": true
+  },
+  {
+   "name": "f1.real_case_003670",
+   "group": "F1",
+   "input": {
+    "price": 290000,
+    "close": 261000,
+    "note": "D1 재생에서 실제로 나온 정확 −10% 경계"
+   },
+   "expected": [
+    false,
+    true
+   ],
+   "actual": [
+    false,
+    true
+   ],
+   "pass": true
+  },
+  {
+   "name": "f1.real_case_009240",
+   "group": "F1",
+   "input": {
+    "price": 100000,
+    "close": 101000,
+    "peak": ">= +8%"
+   },
+   "expected": [
+    false,
+    true
+   ],
+   "actual": [
+    false,
+    true
+   ],
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_1000_13",
+   "group": "F1-tick",
+   "input": {
+    "price": 1000,
+    "pct": 13
+   },
+   "expected": true,
+   "actual": true,
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_15000_13",
+   "group": "F1-tick",
+   "input": {
+    "price": 15000,
+    "pct": 13
+   },
+   "expected": true,
+   "actual": true,
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_1234_13",
+   "group": "F1-tick",
+   "input": {
+    "price": 1234,
+    "pct": 13
+   },
+   "expected": false,
+   "actual": false,
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_4990_1",
+   "group": "F1-tick",
+   "input": {
+    "price": 4990,
+    "pct": 1
+   },
+   "expected": false,
+   "actual": false,
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_290000_-10",
+   "group": "F1-tick",
+   "input": {
+    "price": 290000,
+    "pct": -10
+   },
+   "expected": true,
+   "actual": true,
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_100000_1",
+   "group": "F1-tick",
+   "input": {
+    "price": 100000,
+    "pct": 1
+   },
+   "expected": true,
+   "actual": true,
+   "pass": true
+  },
+  {
+   "name": "tick.on_grid_1995_5",
+   "group": "F1-tick",
+   "input": {
+    "price": 1995,
+    "pct": 5
+   },
+   "expected": false,
+   "actual": false,
+   "pass": true
+  },
+  {
+   "name": "f2.lag1_value",
+   "group": "F2",
+   "input": {
+    "date": "d8",
+    "rows": "d3..d7"
+   },
+   "expected": 25,
+   "actual": 25.0,
+   "pass": true
+  },
+  {
+   "name": "f2.lag2_value",
+   "group": "F2",
+   "input": {
+    "date": "d8",
+    "rows": "d2..d6"
+   },
+   "expected": 20,
+   "actual": 20.0,
+   "pass": true
+  },
+  {
+   "name": "f2.lag3_value",
+   "group": "F2",
+   "input": {
+    "date": "d8",
+    "rows": "d1..d5"
+   },
+   "expected": 15,
+   "actual": 15.0,
+   "pass": true
+  },
+  {
+   "name": "f2.lag3_too_few_none",
+   "group": "F2",
+   "input": {
+    "date": "d6",
+    "need": 5,
+    "note": "모자라면 None — 0으로 안 채움"
+   },
+   "expected": null,
+   "actual": null,
+   "pass": true
+  },
+  {
+   "name": "f2.date_not_in_rows_uses_before",
+   "group": "F2",
+   "input": {
+    "date": "20260110(줄 없음)",
+    "lag": 1,
+    "rows": "d4..d8"
+   },
+   "expected": 30,
+   "actual": 30.0,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260103",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260103"
+   },
+   "expected": 0,
+   "actual": 0,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260103",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260103"
+   },
+   "expected": 0,
+   "actual": 0,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260104",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260104"
+   },
+   "expected": 3,
+   "actual": 3,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260104",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260104"
+   },
+   "expected": 2,
+   "actual": 2,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260105",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260105"
+   },
+   "expected": 3,
+   "actual": 3,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260105",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260105"
+   },
+   "expected": 1,
+   "actual": 1,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260106",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260106"
+   },
+   "expected": 3,
+   "actual": 3,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260106",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260106"
+   },
+   "expected": 2,
+   "actual": 2,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260107",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260107"
+   },
+   "expected": 3,
+   "actual": 3,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260107",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260107"
+   },
+   "expected": 1,
+   "actual": 1,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260108",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260108"
+   },
+   "expected": 3,
+   "actual": 3,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260108",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260108"
+   },
+   "expected": 2,
+   "actual": 2,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_A_20260110",
+   "group": "F2",
+   "input": {
+    "code": "A",
+    "date": "20260110"
+   },
+   "expected": 3,
+   "actual": 3,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift0_equals_original_B_20260110",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "20260110"
+   },
+   "expected": 1,
+   "actual": 1,
+   "pass": true
+  },
+  {
+   "name": "f2.steady_shift1_uses_t4_t2",
+   "group": "F2",
+   "input": {
+    "code": "B",
+    "date": "d8",
+    "외국인": "+ on d1,d3,d5,d7"
+   },
+   "expected": 1,
+   "actual": 1,
+   "pass": true
+  },
+  {
+   "name": "f2.qrule_raw_line_unique",
+   "group": "F2",
+   "input": {
+    "old": "f = bisect.bisect_left(fd, day) - 1"
+   },
+   "expected": 1,
+   "actual": 1,
+   "pass": true
+  },
+  {
+   "name": "f2.qrule_raw_shift_changes_flow_sum",
+   "group": "F2",
+   "input": {
+    "day": "d8",
+    "orig rows": "d3..d7",
+    "shift1 rows": "d2..d6",
+    "note": "av 결측이라 둘 다 nan → 비교는 s 값으로"
+   },
+   "expected": [
+    25,
+    20
+   ],
+   "actual": [
+    25.0,
+    20.0
+   ],
+   "pass": true
+  },
+  {
+   "name": "f2.hlab_line_unique",
+   "group": "F2",
+   "input": {
+    "old": "k = bisect.bisect_right(fdays, day)"
+   },
+   "expected": 1,
+   "actual": 1,
+   "pass": true
+  },
+  {
+   "name": "f2.hlab_shift_last_row",
+   "group": "F2",
+   "input": {
+    "context day": "d7",
+    "orig last": "d7",
+    "shift1 last": "d6"
+   },
+   "expected": [
+    "20260107",
+    "20260106"
+   ],
+   "actual": [
+    "20260107",
+    "20260106"
+   ],
+   "pass": true
+  },
+  {
+   "name": "sandbox.network_blocked",
+   "group": "sandbox",
+   "input": {},
+   "expected": {
+    "error": "RuntimeError: 네트워크 금지(진단 재생)"
+   },
+   "actual": {
+    "error": "RuntimeError: 네트워크 금지(진단 재생)"
+   },
+   "pass": true
+  }
+ ],
+ "summary": {
+  "total": 40,
+  "pass": 40,
+  "fail": 0
+ }
+}

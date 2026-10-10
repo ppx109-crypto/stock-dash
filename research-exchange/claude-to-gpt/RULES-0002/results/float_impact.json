@@ -1,0 +1,208 @@
+{
+ "D1": {
+  "evaluations_with_repeats": {
+   "ASIS:trend_eval": 3737,
+   "ASIS:aligned_eval": 36103,
+   "FLOAT-V1:trend_eval": 3737,
+   "FLOAT-V1:aligned_eval": 36109,
+   "FLOW-LAG2:trend_eval": 4162,
+   "FLOW-LAG2:aligned_eval": 35398,
+   "FLOW-LAG3:trend_eval": 4158,
+   "FLOW-LAG3:aligned_eval": 33647
+  },
+  "mismatch_unique_by_rule": {
+   "aligned_peak8_now1": 1,
+   "aligned_sl10": 1
+  },
+  "trade_compare_seed0": {
+   "asis_rows": 495,
+   "variant_rows": 495,
+   "asis_trades": 466,
+   "variant_trades": 466,
+   "common": 466,
+   "only_asis": 0,
+   "only_variant": 0,
+   "common_changed": 0,
+   "only_asis_acctpct_sum": 0,
+   "only_variant_acctpct_sum": 0
+  },
+  "engine_8seed_identical": true,
+  "daily_mtm_delta": {
+   "BASE": {
+    "paired_daily_diff": {
+     "n": 2388,
+     "mean": 0.0,
+     "median": 0.0,
+     "std": 0.0
+    },
+    "paired_daily_diff_ci_block20": [
+     0.0,
+     0.0
+    ],
+    "delta_MDD": 0.0,
+    "delta_worst_day": 0.0,
+    "delta_worst_month": 0.0,
+    "delta_CAGR": 0.0
+   },
+   "STRESS": {
+    "paired_daily_diff": {
+     "n": 2388,
+     "mean": 0.0,
+     "median": 0.0,
+     "std": 0.0
+    },
+    "paired_daily_diff_ci_block20": [
+     0.0,
+     0.0
+    ],
+    "delta_MDD": 0.0,
+    "delta_worst_day": 0.0,
+    "delta_worst_month": 0.0,
+    "delta_CAGR": 0.0
+   },
+   "EXTREME": {
+    "paired_daily_diff": {
+     "n": 2388,
+     "mean": 0.0,
+     "median": 0.0,
+     "std": 0.0
+    },
+    "paired_daily_diff_ci_block20": [
+     0.0,
+     0.0
+    ],
+    "delta_MDD": 0.0,
+    "delta_worst_day": 0.0,
+    "delta_worst_month": 0.0,
+    "delta_CAGR": 0.0
+   }
+  },
+  "tick_exposure_seed0_entries": {
+   "13": {
+    "entries": 495,
+    "boundary_on_tick": 4,
+    "float_misjudges_at_boundary": 4
+   },
+   "-5": {
+    "entries": 495,
+    "boundary_on_tick": 35,
+    "float_misjudges_at_boundary": 0
+   },
+   "5": {
+    "entries": 495,
+    "boundary_on_tick": 32,
+    "float_misjudges_at_boundary": 0
+   },
+   "-10": {
+    "entries": 495,
+    "boundary_on_tick": 71,
+    "float_misjudges_at_boundary": 71
+   },
+   "8": {
+    "entries": 495,
+    "boundary_on_tick": 21,
+    "float_misjudges_at_boundary": 0
+   },
+   "1": {
+    "entries": 495,
+    "boundary_on_tick": 5,
+    "float_misjudges_at_boundary": 5
+   }
+  },
+  "nonint_price_rows": 0
+ },
+ "M15": {
+  "evaluations_asis": {
+   "trend": 1137,
+   "aligned": 17884,
+   "stale": 1585
+  },
+  "evaluations_v1": {
+   "trend": 1137,
+   "aligned": 17884,
+   "stale": 1585
+  },
+  "mismatch_unique_by_rule": {},
+  "trade_compare": {
+   "asis_trades": 99,
+   "variant_trades": 99,
+   "common": 99,
+   "only_asis": 0,
+   "only_variant": 0,
+   "common_changed": 0,
+   "changed_acctpct_diff": {
+    "n": 0
+   },
+   "changed_ci_cluster_code": null,
+   "acctpct_sum_asis": 119.29499999999999,
+   "acctpct_sum_variant": 119.29499999999999,
+   "changed": []
+  },
+  "transcription_check": {
+   "same_as_original_functions": true,
+   "n": 104
+  },
+  "cost_scaled_acctpct_sum": {
+   "BASE": {
+    "asis": 112.49138299005338,
+    "variant": 112.49138299005338
+   },
+   "STRESS": {
+    "asis": 105.70573536934307,
+    "variant": 105.70573536934307
+   },
+   "EXTREME": {
+    "asis": 98.9302882846475,
+    "variant": 98.9302882846475
+   }
+  },
+  "daily_mtm": "검증하지 못함(장중 진입 · 청산가가 일봉 종가와 달라 날마다 평가를 재구성할 수 없음)"
+ },
+ "H1": {
+  "evaluations_asis": {
+   "trend": 314,
+   "aligned": 3987,
+   "stale": 1780
+  },
+  "evaluations_v1": {
+   "trend": 314,
+   "aligned": 3987,
+   "stale": 1780
+  },
+  "mismatch_unique_by_rule": {},
+  "trade_compare": {
+   "asis_trades": 122,
+   "variant_trades": 122,
+   "common": 122,
+   "only_asis": 0,
+   "only_variant": 0,
+   "common_changed": 0,
+   "changed_acctpct_diff": {
+    "n": 0
+   },
+   "changed_ci_cluster_code": null,
+   "acctpct_sum_asis": 28.235999999999994,
+   "acctpct_sum_variant": 28.235999999999994,
+   "changed": []
+  },
+  "transcription_check": {
+   "same_as_original_functions": true,
+   "n": 128
+  },
+  "cost_scaled_acctpct_sum": {
+   "BASE": {
+    "asis": 19.794158890384203,
+    "variant": 19.794158890384203
+   },
+   "STRESS": {
+    "asis": 11.503207007303176,
+    "variant": 11.503207007303176
+   },
+   "EXTREME": {
+    "asis": 3.2253161511104995,
+    "variant": 3.2253161511104995
+   }
+  },
+  "daily_mtm": "검증하지 못함(장중 진입 · 청산가가 일봉 종가와 달라 날마다 평가를 재구성할 수 없음)"
+ }
+}

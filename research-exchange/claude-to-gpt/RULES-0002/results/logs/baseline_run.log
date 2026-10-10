@@ -1,0 +1,16 @@
+{'total': 43, 'pass': 43, 'fail': 0}
+contract exit 0
+{'total': 81, 'pass': 71, 'fail': 10}
+FAIL m15.trend_tp_13_exact_tick 2
+FAIL m15.aligned_sl_10_exact_tick 0
+FAIL m15.aligned_breakeven_peak8_now1_exact 0
+FAIL h1.trend_tp_13_exact_tick 2
+FAIL h1.aligned_sl_10_exact_tick 0
+FAIL h1.aligned_breakeven_peak8_now1_exact 0
+FAIL d1.size_age0_quirk 2
+FAIL d1.trend_tp_13_exact_tick 2
+FAIL d1.aligned_sl_10_exact_tick 0
+FAIL d1.aligned_breakeven_exact_1 0
+asis exit 0
+124 114 10
+merge exit 0
