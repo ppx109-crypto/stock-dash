@@ -1,0 +1,48 @@
+{
+ "보통": {
+  "cut": "20221229",
+  "snapshot_sha256": "882e431276eab8121438ba62dec6ba8e2fef28d918db6462ab79f14527129115",
+  "snapshot_bytes": 227964355,
+  "rows": 153800,
+  "codes": 453,
+  "flow_codes": 194,
+  "sources": {
+   "price-data/*.json": "622504c8ff0dcddc8411e158ac152989b1f33b8476f2d8ff14f1d34f914903ba",
+   "share-data/*.json": "628951f83223391549875d1be04786b3fc0217ec5871cedcf288391377cf9db4",
+   "investor-data/*.json": "65a996bcfc86cf55732e2472a8a362088f116040dde06c76cacf14f2acfd7507",
+   "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+  },
+  "code": {
+   "research/dip_build.py": "c04a4da3121e4d778092e823226a96595c61efbb86f69679e62f5d3bafb1925c",
+   "lab.py": "6732cdbcc18894e035fd963608719f1f4a80c78982c401754465b6c82aa05534",
+   "caps.py": "8da24e031c222c5a9eca7ff4859c993baaac449d1c74664a9e84208812f90c78",
+   "final_study.py": "989b915c481a5aaddb7aef97459c1fdeae02caf99e4db1205b0eda4f615e91d2",
+   "final_group.py": "130abf9c7e840acf3d8d28bb21a497297715823632bedafb178e349cc15a167a"
+  },
+  "sentinel": false
+ },
+ "센티널": {
+  "cut": "20221229",
+  "snapshot_sha256": "882e431276eab8121438ba62dec6ba8e2fef28d918db6462ab79f14527129115",
+  "snapshot_bytes": 227964355,
+  "rows": 153800,
+  "codes": 453,
+  "flow_codes": 194,
+  "sources": {
+   "price-data/*.json": "622504c8ff0dcddc8411e158ac152989b1f33b8476f2d8ff14f1d34f914903ba",
+   "share-data/*.json": "628951f83223391549875d1be04786b3fc0217ec5871cedcf288391377cf9db4",
+   "investor-data/*.json": "65a996bcfc86cf55732e2472a8a362088f116040dde06c76cacf14f2acfd7507",
+   "etf-ohlc/069500.json": "a29e65143fa1494ec8406fbb8893939720e6b2a90cbeb6801b75a6129b20d7de"
+  },
+  "code": {
+   "research/dip_build.py": "c04a4da3121e4d778092e823226a96595c61efbb86f69679e62f5d3bafb1925c",
+   "lab.py": "6732cdbcc18894e035fd963608719f1f4a80c78982c401754465b6c82aa05534",
+   "caps.py": "8da24e031c222c5a9eca7ff4859c993baaac449d1c74664a9e84208812f90c78",
+   "final_study.py": "989b915c481a5aaddb7aef97459c1fdeae02caf99e4db1205b0eda4f615e91d2",
+   "final_group.py": "130abf9c7e840acf3d8d28bb21a497297715823632bedafb178e349cc15a167a"
+  },
+  "sentinel": true
+ },
+ "스냅샷_바이트까지_같음": true,
+ "앞선_판(순서 고정 전)": "0b0c3d0e…(보통) · f7c1b596…(센티널): 칸별 내용은 모두 같고 수급 표 순서만 달랐음(파이썬 집합 순서) → 굽기 코드에서 순서를 고정한 뒤 다시 구움"
+}
