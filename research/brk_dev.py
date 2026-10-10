@@ -161,6 +161,17 @@ def shift_rank(rank):
     return go
 
 
+def next_exit(take, stop, days):
+    """round 3(GPT #199 6096512278): t 종가로 판단 → t + 1 종가에 팖. step 칸에서는 바로 앞 칸(step − 1) 종가가 +take% 이상 ·
+    −stop% 이하이거나 앞 칸까지 보유 거래일 ≥ days면 참(그 칸 = 다음 바 종가에 팖). 산 날 다음 칸(step 1)은 산 날 종가 = 산 값이라 걸리지 않음."""
+    def go(lane, start, price, step, peak, row=None):
+        if step < 2:
+            return False
+        prev = (lane["closes"][start + step - 1] / price - 1) * 100
+        return prev >= take or prev <= -stop or step - 1 >= days
+    return go
+
+
 def fixed_exit(take, stop, days):
     def go(lane, start, price, step, peak, row=None):
         now = (lane["closes"][start + step] / price - 1) * 100
@@ -191,7 +202,7 @@ def run_way(holds, exits, size=lambda r: 2, rank=None, tries=8):
         g = lab.wobble(pool, p, no_last_day(shift(holds), hi), settle(exits), tries=tries,
                        rank=shift_rank(rank or (lambda r: 0)), slots=SLOTS,
                        since=lo, per_day=None, apart=kin, realistic=True, cap=CAP, detail=True, size=size, cost=COST,
-                       settle_end=True)   # 엔진 끝 정산: 끝 날 하한가 · 보유 한도 넘음 · 줄 끝 · 기간 끝도 가상 정산 기록
+                       settle_end=True, align_days=True)   # 엔진 끝 정산 · 날짜 맞추기(정지 · 결측일에 칸 진행 안 함): 끝 날 하한가 · 보유 한도 넘음 · 줄 끝 · 기간 끝도 가상 정산 기록
         if not g:
             out[tag] = None
             continue

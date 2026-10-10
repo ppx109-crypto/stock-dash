@@ -746,7 +746,7 @@ def streak(gains):
 def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
         cap=90, detail=False, cooldown=0, cooldown_after="모두", size=None,
         greedy=False, per_day=None, delay=0, busy_cap=None,
-        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None, cosell=None, settle_end=False):
+        per_window=None, apart=None, realistic=False, brake=None, fill=None, swap=None, stop_run=None, cosell=None, settle_end=False, align_days=False):
     """청산 방법을 갈아 끼우며 같은 판에서 굴려 봅니다.
 
     cooldown을 두면 한 번 나간 종목을 그 종목 기준 며칠 동안 다시 사지
@@ -846,6 +846,9 @@ def run(rows, prices, holds, exit_at, slots=3, rank=None, since=None, cost=COST,
             closes = lane[code]["closes"]
             step = spot["step"] + 1
             index = spot["i"] + step
+            if align_days and index < len(closes) and lane[code]["날"][index] > day:
+                # align_days: 이 종목은 오늘 바가 없음(정지 · 결측) → 보유 그대로 · 칸 · 보유 일수 진행 안 함(미래 종가 앞당김 막기)
+                continue
             if index >= len(closes) or step > cap:
                 if settle_end:
                     _settle(code, spot, index, day, step, "보유 한도 정산" if step > cap else "줄 끝 정산")
