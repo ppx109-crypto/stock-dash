@@ -1,0 +1,26 @@
+1 R0 출발점(1일봉만) 20.045 -7.265
+2 격자 n 24 버팀 3 lev 0.15 side 0.0 25.735 -8.372
+3 격자 n 24 버팀 3 lev 0.15 side 0.1 25.522 -7.619
+4 격자 n 24 버팀 3 lev 0.15 side 0.2 25.275 -7.5
+5 격자 n 24 버팀 3 lev 0.15 side 0.3 24.967 -8.053
+6 격자 n 24 버팀 3 lev 0.15 side 0.4 24.634 -8.606
+7 격자 n 24 버팀 3 lev 0.15 side 0.5 24.435 -9.16
+8 격자 n 24 버팀 3 lev 0.2 side 0.0 27.595 -10.047
+9 격자 n 24 버팀 3 lev 0.2 side 0.1 27.379 -9.307
+10 격자 n 24 버팀 3 lev 0.2 side 0.2 27.129 -8.567
+11 격자 n 24 버팀 3 lev 0.2 side 0.3 26.816 -8.243
+12 격자 n 24 버팀 3 lev 0.2 side 0.4 26.478 -8.585
+13 격자 n 24 버팀 3 lev 0.2 side 0.5 26.276 -8.93
+14 격자 n 24 버팀 3 lev 0.25 side 0.0 29.423 -11.658
+15 격자 n 24 버팀 3 lev 0.25 side 0.1 29.204 -10.932
+16 격자 n 24 버팀 3 lev 0.25 side 0.2 28.95 -10.206
+17 격자 n 24 버팀 3 lev 0.25 side 0.3 28.633 -9.48
+18 격자 n 24 버팀 3 lev 0.25 side 0.4 28.29 -9.147
+19 격자 n 24 버팀 3 lev 0.25 side 0.5 28.085 -9.49
+20 손실 고원 이웃 n=20 (n 24 버팀 3 lev 0.25 side 0.3) 27.392 -8.807
+21 손실 고원 이웃 n=28 (n 24 버팀 3 lev 0.25 side 0.3) 29.226 -9.48
+22 손실 고원 이웃 persist=2 (n 24 버팀 3 lev 0.25 side 0.3) 27.752 -8.061
+23 손실 고원 이웃 persist=4 (n 24 버팀 3 lev 0.25 side 0.3) 25.125 -9.795
+24 손실 고원 이웃 confirm=r10m4 (n 24 버팀 3 lev 0.25 side 0.3) 29.544 -9.48
+25 손실 고원 이웃 confirm=r10m6 (n 24 버팀 3 lev 0.25 side 0.3) 28.016 -9.48
+{"verdict": "ROBUST_CANDIDATE", "final": {"n": 24, "confirm": "r10m5", "persist": 3, "down_base": 1.0, "down_inv": 0.0, "inv": "114800", "up_lev": 0.25, "side_inv": 0.3, "up_need": "above_only", "exit_buf": 0.0, "band": null, "lev_vt": null}, "final_res": {"annual_pct": 28.633, "annual_raw": 0.28632768250355833, "worst_day_pct": -8.677, "worst_month_pct": -9.48, "loss_ok": true, "mdd_report_pct": -17.57, "years_pct": {"2017": 12.6, "2018": 2.5, "2019": 13.04, "2020": 40.83, "2021": 8.45, "2022": 17.69, "2023": 55.69, "2024": 7.15, "2025": 48.5, "2026": 85.24}, "by_kind": {"상승": {"worst_day_pct": -8.677, "worst_month_pct": -9.48, "ok": true, "worst_day_raw": -0.08676586376643758, "worst_month_raw": -0.09479748252020792}, "하락": {"worst_day_pct": -2.678, "worst_month_pct": -5.59, "ok": true, "worst_day_raw": -0.026782870346932386, "worst_month_raw": -0.05589900964230621}, "횡보": {"worst_day_pct": -5.084, "worst_month_pct": -8.807, "ok": true, "worst_day_raw": -0.050836466340865916, "worst_month_raw": -0.08807393404806119}}, "kinds_ok": true, "halves_report": {"2017~2021": 15.32, "2022~2026": 44.26}, "state_share_pct": {"상승": 58.1, "횡보": 35.1, "하락": 6.8}, "period": "실제 셈 기간 2017-02-01 ~ 2026-09-15(1일봉 장부가 2017-02-01부터) · 사용자 지정 2016 ~ 2026 가운데 2016-01 ~ 2017-01은 장부 없음 → NEEDS_DATA 칸", "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)", "etf_trims": 62, "base_trims": 0, "min_cash_slack": -1.6653345369377348e-16}, "base_res": {"annual_pct": 20.045, "annual_raw": 0.2004509597727433, "worst_day_pct": -4.665, "worst_month_pct": -7.265, "loss_ok": true, "mdd_report_pct": -14.07, "years_pct": {"2017": 4.87, "2018": 12.7, "2019": 10.67, "2020": 28.68, "2021": 3.84, "2022": 13.16, "2023": 58.36, "2024": 12.21, "2025": 22.42, "2026": 30.3}, "by_kind": {"상승": {"worst_day_pct": -3.296, "worst_month_pct": -7.265, "ok": true, "worst_day_raw": -0.032962464422567006, "worst_month_raw": -0.07264699366299365}, "하락": {"worst_day_pct": -1.728, "worst_month_pct": -3.644, "ok": true, "worst_day_raw": -0.017277793283996923, "worst_month_raw": -0.036438768850124426}, "횡보": {"worst_day_pct": -4.665, "worst_month_pct": -4.935, "ok": true, "worst_day_raw": -0.04664791589098416, "worst_month_raw": -0.04934508422711392}}, "kinds_ok": true, "halves_report": {"2017~2021": 12.24, "2022~2026": 28.81}, "state_share_pct": {"상승": 51.0, "횡보": 9.7, "하락": 39.3}, "period": "실제 셈 기간 2017-02-01 ~ 2026-09-15(1일봉 장부가 2017-02-01부터) · 사용자 지정 2016 ~ 2026 가운데 2016-01 ~ 2017-01은 장부 없음 → NEEDS_DATA 칸", "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)", "etf_trims": 0, "base_trims": 0, "min_cash_slack": 0.0}, "grid_within": 14, "checked": [{"cfg": {"n": 24, "confirm": "r10m5", "persist": 3, "down_base": 1.0, "down_inv": 0.0, "inv": "114800", "up_lev": 0.25, "side_inv": 0.3, "up_need": "above_only", "exit_buf": 0.0, "band": null, "lev_vt": null}, "annual_pct": 28.633, "worst_month_pct": -9.48, "neighbors": {"n=20": {"annual_pct": 27.392, "worst_month_pct": -8.807, "worst_day_pct": -8.677, "within": true, "half_gain": true}, "n=28": {"annual_pct": 29.226, "worst_month_pct": -9.48, "worst_day_pct": -8.677, "within": true, "half_gain": true}, "persist=2": {"annual_pct": 27.752, "worst_month_pct": -8.061, "worst_day_pct": -8.677, "within": true, "half_gain": true}, "persist=4": {"annual_pct": 25.125, "worst_month_pct": -9.795, "worst_day_pct": -8.677, "within": true, "half_gain": true}, "confirm=r10m4": {"annual_pct": 29.544, "worst_month_pct": -9.48, "worst_day_pct": -8.677, "within": true, "half_gain": true}, "confirm=r10m6": {"annual_pct": 28.016, "worst_month_pct": -9.48, "worst_day_pct": -8.677, "within": true, "half_gain": true}}, "robust": true}], "evals": 25, "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)", "limits": {"day": -0.15, "month": -0.1}}
