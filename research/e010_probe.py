@@ -37,7 +37,17 @@ def pop(c):
     return bool(re.fullmatch(r"[0-9]{6}", c)) and not c.endswith(("5", "7", "9"))
 
 
+GONE = ["033270", "200230", "056080", "297890", "019210", "093050", "348950", "419530", "348150", "450140"]
+NOW = ["006800", "004370", "010140", "105560", "005690", "028670", "002790", "086520", "003380", "003490",
+       "000210", "005440", "108490", "090460", "006280", "030610", "079160", "328130", "026960", "161890"]
+
+
 def sample():
+    """사전등록 2절에 고정한 30개를 그대로 씀(CSV를 다시 훑은 값은 '일치 여부' 기록에만 씀 · 대체 실행 없음)."""
+    return [(c, "gone") for c in GONE] + [(c, "now") for c in NOW]
+
+
+def sample_from_csv():
     seen, last = set(), set()
     for f in sorted((ROOT / "public-daily-v2").glob("*.csv")):
         for r in csv.DictReader(f.open(encoding="utf-8")):
@@ -148,8 +158,10 @@ def parse(xml_text):
             a_, b_ = cells[cur].replace(" ", ""), cells[prev].replace(" ", "")
             if NUM.fullmatch(a_) and NUM.fullmatch(b_):
                 got[key] = [to_num(a_), to_num(b_)]
+    m = (re.search(r"당해\s*사업\s*연도\D{0,30}?(20[0-9]{2})", plain)
+         or re.search(r"(20[0-9]{2})\s*[.년]\s*0?1\s*[.월]\s*0?1\s*일?\s*~\s*(?:20[0-9]{2})\s*[.년]\s*12\s*[.월]\s*31", plain))
     return {"unit": unit.group(1) if unit else None, "kind": kind.group(1) if kind else None, "values": got,
-            "header_ok": header_ok}
+            "header_ok": header_ok, "period_year": m.group(1) if m else None}
 
 
 def body_xml(z):
@@ -174,8 +186,16 @@ def compare(code, rcept_dt, parsed):
         out["why"] = "quarter-data 파일 없음"
         return out
     y = str(int(rcept_dt[:4]) - 1)
-    row = (json.loads(f.read_text()).get("rows") or {}).get(f"{y}-사업")
     out["compare_year"] = y
+    out["period_year"] = parsed.get("period_year")
+    out["period_error"] = int(parsed.get("period_year") is not None and parsed.get("period_year") != y)
+    if parsed.get("period_year") is None:
+        out["why"] = "공시 기간 못 뽑음(미확인)"
+        return out
+    if out["period_error"]:
+        out["why"] = f"기간 다름(공시 {parsed.get('period_year')} / 비교 {y})"
+        return out
+    row = (json.loads(f.read_text()).get("rows") or {}).get(f"{y}-사업")
     if not row:
         out["why"] = "그해 사업보고서 값 없음"
         return out
@@ -204,7 +224,7 @@ def compare(code, rcept_dt, parsed):
     return out
 
 
-def verdict(items):
+def verdict(items, stopped=None):
     """사전등록 4절 판정(분자 · 분모 · 사유)."""
     now = [i for i in items if i["group"] == "now"]
     gone = [i for i in items if i["group"] == "gone"]
@@ -225,9 +245,14 @@ def verdict(items):
         why.append(f"단위 오류 {ue}")
     if not gone_corp[1] or gone_corp[0] / gone_corp[1] < 0.5:
         why.append(f"gone 고유번호 {gone_corp[0]}/{gone_corp[1]} < 50%")
-    if any(i.get("status") == "미수행" for i in items):
-        why.append("호출 상한으로 미수행 표본 있음")
-    return {"steps_now": steps, "compare_firms": len(comp), "compare_values": [cm, cn], "unit_errors": ue,
+    pe = sum(i.get("compare", {}).get("period_error", 0) for i in now)
+    if pe:
+        why.append(f"기간 오류 {pe}")
+    if stopped or any(str(i.get("status", "")).startswith("미수행") for i in items):
+        why.append("호출 상한 · 멈춤으로 미수행 표본 있음")
+    if len(now) != 20 or len(gone) != 10 or [i["code"] for i in items] != GONE + NOW:
+        why.append("표본 수 · 명단이 고정 명단과 다름")
+    return {"steps_now": steps, "compare_firms": len(comp), "compare_values": [cm, cn], "unit_errors": ue, "period_errors": pe,
             "gone_corp": gone_corp, "pass": not why, "why": why,
             "note": "gone 고유번호 회수율은 '과거 등장 · 지금 위 400 밖 코드' 범위의 값이고, 상장폐지 포괄성은 따로 NEEDS_DATA"}
 
@@ -237,7 +262,8 @@ def main():
         print("DART_CRTFC_KEY 없음")
         return 1
     smp = sample()
-    out = {"task": "ERN-0036", "stage": "feasibility", "started_kst": datetime.now(ZoneInfo("Asia/Seoul")).isoformat(timespec="seconds"),
+    csv_smp = sample_from_csv()
+    out = {"sample_matches_csv": csv_smp == smp, "task": "ERN-0036", "stage": "feasibility", "started_kst": datetime.now(ZoneInfo("Asia/Seoul")).isoformat(timespec="seconds"),
            "sample": smp, "items": []}
     try:
         cmap = corp_map()
@@ -277,8 +303,9 @@ def main():
             it["doc_sha256"] = hashlib.sha256(raw).hexdigest()
             it["parsed"] = parse(text)
             v = it["parsed"]["values"]
-            ok = all(k in v for k in ("매출", "영업이익", "순이익")) and it["parsed"]["unit"] and it["parsed"]["header_ok"]
-            it["status"] = "숫자 뽑음" if ok else "숫자 일부 · 단위 · 열 머리 없음"
+            ok = (all(k in v for k in ("매출", "영업이익", "순이익")) and it["parsed"]["unit"] and it["parsed"]["header_ok"]
+                  and it["parsed"]["period_year"])
+            it["status"] = "숫자 뽑음" if ok else "숫자 일부 · 단위 · 열 머리 · 기간 없음"
             if grp == "now":
                 it["compare"] = compare(code, pick["rcept_dt"], it["parsed"])
     except RuntimeError as e:
@@ -289,7 +316,7 @@ def main():
     for code, grp in smp:
         if code not in done:
             out["items"].append({"code": code, "group": grp, "status": "미수행"})
-    out["verdict"] = verdict(out["items"])
+    out["verdict"] = verdict(out["items"], out.get("stopped"))
     out["calls"] = calls
     out["calls_n"] = len(calls)
     out["ended_kst"] = datetime.now(ZoneInfo("Asia/Seoul")).isoformat(timespec="seconds")
