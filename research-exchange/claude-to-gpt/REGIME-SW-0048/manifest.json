@@ -1,0 +1,38 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-SW-0048",
+ "chain_id": "REGIME-SW-0048",
+ "kind": "PLAN",
+ "round": 1,
+ "status": "READY",
+ "method": "사용자 2026-10-10 새 방식(10년 백테스트 최고 · 장마다 선수 바꾸기 · −15% 세 장 각각 · 미래 참조 차단 · 고원)",
+ "source_pr": 210,
+ "source_head_sha": "e3d4e2f1448fdc74f8bb17485a84e678f6be6814",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/regime_dev.py": "2b284eee26c8e779db3f67e6fc07c81782d15f90a4039e71adc22a85041ab6eb",
+  "research/regime_rules.py": "69300a7738c98ca3c3188e50ac66a1fe625f64b79a4d176dd83410da85b68da1"
+ },
+ "data": {
+  "base_m1.csv": "998ffd2f117967b9fe4f5c3ca39a766699d992ebb0151ba767c1b30f0a9633e7",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "/tmp/reg-cut.pkl": "9fc1febde27a4d73b5b5c1e0719e4d73501aab9f24df2335269a8093b76bac84",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980"
+ },
+ "eval_cap": 300,
+ "evals_started": 0,
+ "verdicts": [
+  "ADOPT_CANDIDATE",
+  "PEAK_ONLY",
+  "NO_IMPROVEMENT"
+ ],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/PLAN.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0048/evidence/reg_test.out"
+ ]
+}
