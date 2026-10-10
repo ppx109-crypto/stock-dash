@@ -1,0 +1,115 @@
+{
+ "B4": {
+  "end_nav": "18918651.9575",
+  "CAGR_pct": 232.13145294809655,
+  "MDD_pct": -19.5064922530649,
+  "worst_day_pct": -15.060065865467953,
+  "worst_day_at": "20260331",
+  "day_breach_-15": 1,
+  "worst_month_pct": -11.475303167105345,
+  "worst_month_at": "202603",
+  "month_breach_-15": 0,
+  "avg_invest_ratio_pct": 88.7024605225091,
+  "terminal_sleeve_share_pct": [
+   24.243536420055207,
+   27.607284886011414,
+   24.15556911912179,
+   23.99360957481159
+  ],
+  "first_day": "20250918",
+  "last_day": "20260331",
+  "days": 127,
+  "reverse_sum_max_diff_won_decimal": 0.0,
+  "reverse_sum_max_diff_won_float": 3.725290298461914e-09,
+  "vs_gpt": {
+   "end": {
+    "gpt": 18918651.9575,
+    "claude": 18918651.9575,
+    "same": true
+   },
+   "mdd": {
+    "gpt": -19.5064922531,
+    "claude": -19.5064922530649,
+    "same": true
+   },
+   "worst": {
+    "gpt": -15.0600658655,
+    "claude": -15.060065865467953,
+    "same": true
+   },
+   "worst_at": {
+    "gpt": "20260331",
+    "claude": "20260331",
+    "same": true
+   },
+   "breach": {
+    "gpt": 1,
+    "claude": 1,
+    "same": true
+   }
+  }
+ },
+ "R4": {
+  "end_nav": "18924457.1650",
+  "CAGR_pct": 232.32335732204638,
+  "MDD_pct": -19.449700274715987,
+  "worst_day_pct": -12.624760937671986,
+  "worst_day_at": "20260304",
+  "day_breach_-15": 0,
+  "worst_month_pct": -10.364235401014433,
+  "worst_month_at": "202603",
+  "month_breach_-15": 0,
+  "avg_invest_ratio_pct": 85.72815768674435,
+  "terminal_sleeve_share_pct": [
+   24.538415102275405,
+   27.92169799867546,
+   24.417305261183696,
+   23.122581637865437
+  ],
+  "first_day": "20250918",
+  "last_day": "20260331",
+  "days": 127,
+  "reverse_sum_max_diff_won_decimal": 0.0,
+  "reverse_sum_max_diff_won_float": 3.725290298461914e-09,
+  "vs_gpt": {
+   "end": {
+    "gpt": 18924457.165,
+    "claude": 18924457.165,
+    "same": true
+   },
+   "mdd": {
+    "gpt": -19.4497002747,
+    "claude": -19.449700274715987,
+    "same": true
+   },
+   "worst": {
+    "gpt": -12.6247609377,
+    "claude": -12.624760937671986,
+    "same": true
+   },
+   "worst_at": {
+    "gpt": "20260304",
+    "claude": "20260304",
+    "same": true
+   },
+   "breach": {
+    "gpt": 0,
+    "claude": 0,
+    "same": true
+   }
+  }
+ },
+ "R4_minus_B4": {
+  "won": 5805.2075,
+  "pct": 0.030685101206159762,
+  "same_as_gpt": true
+ },
+ "criteria": {
+  "R4_end_ge_B4": true,
+  "R4_no_day_breach": true,
+  "R4_max_sleeve_share_lt_30": true,
+  "reverse_sum_ok": true,
+  "matches_gpt": true
+ },
+ "verdict": "SHADOW_SPEC_READY"
+}

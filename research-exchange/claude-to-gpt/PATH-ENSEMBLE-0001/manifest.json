@@ -1,0 +1,154 @@
+{
+ "schema_version": 1,
+ "task_id": "PATH-ENSEMBLE-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "PATH-ENSEMBLE-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 8,
+  "input": {
+   "pr": 59,
+   "head_sha": "40e07a6491d4e37c4daf7be9350db581523162b7",
+   "read_files": [
+    "TASK.md",
+    "REVIEW.md",
+    "PREREG.md",
+    "receipt.json"
+   ]
+  },
+  "data_source": {
+   "pr": 55,
+   "head_sha": "b4166452e95778dd892fce3a793aea652401492a",
+   "files": 8,
+   "sha256_match": true
+  },
+  "base_main_sha": "64c25e937f156d683bd8e066cc4f72c4e4a2205a"
+ },
+ "prereg_commit": "8f9e79ace01945a31f5a4d5b135a3a2bc0bbf7ca",
+ "prereg_committed_at_kst": "2026-10-08T18:25:09+09:00",
+ "runs": {
+  "arithmetic": 2,
+  "engine_reruns": 0
+ },
+ "criteria": {
+  "R4_end_ge_B4": true,
+  "R4_no_day_breach": true,
+  "R4_max_sleeve_share_lt_30": true,
+  "reverse_sum_ok": true,
+  "matches_gpt": true
+ },
+ "verdict": "SHADOW_SPEC_READY",
+ "B4_end": "18918651.9575",
+ "R4_end": "18924457.1650",
+ "R4_minus_B4": {
+  "won": 5805.2075,
+  "pct": 0.030685101206159762,
+  "same_as_gpt": true
+ },
+ "shadow_spec": "SHADOW_SPEC.md(연구용 · 운영 반영 없음)",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/contrib_B4_EQUAL.csv",
+  "evidence/contrib_R4_EQUAL.csv",
+  "evidence/ens_B4_EQUAL.csv",
+  "evidence/ens_R4_EQUAL.csv",
+  "evidence/input/nav_B_x2_s0.csv",
+  "evidence/input/nav_B_x2_s1.csv",
+  "evidence/input/nav_B_x2_s2.csv",
+  "evidence/input/nav_B_x2_s3.csv",
+  "evidence/input/nav_R_x2_s0.csv",
+  "evidence/input/nav_R_x2_s1.csv",
+  "evidence/input/nav_R_x2_s2.csv",
+  "evidence/input/nav_R_x2_s3.csv",
+  "evidence/pe_results.json",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "5c19d34da41570c1952230fd1d9ee72d7c373cde6a991e977d3f8f3f88474f54"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "cdce12c835bf54969ba7ed7481ad28e4e8549c74f73bcb7049a2680a0693f298"
+  },
+  {
+   "path": "SHADOW_SPEC.md",
+   "sha256": "c2bcfdc96b815f61128363b895b857b8e7dbe74ea944f52f5e633d893248f241"
+  },
+  {
+   "path": "code/pe_sum.py",
+   "sha256": "2959e7f2654e3a641fe7185f3eb783a3550dad33648562bed9c68a8db9682784"
+  },
+  {
+   "path": "evidence/contrib_B4_EQUAL.csv",
+   "sha256": "baa3d228818e40a968c24778aa7d9f9e00a3e8553108a363ef1fc50f13bca87b"
+  },
+  {
+   "path": "evidence/contrib_R4_EQUAL.csv",
+   "sha256": "0bdb12b72601af9343cbd8b01327ffac19fd723bd273b23727ca96860b0969cd"
+  },
+  {
+   "path": "evidence/ens_B4_EQUAL.csv",
+   "sha256": "4d0b70f6a0483f2971bc8891368cf5078ec862ff953a8a2612c5ae37f1b172b5"
+  },
+  {
+   "path": "evidence/ens_R4_EQUAL.csv",
+   "sha256": "afa59db0f6500c6c314ca6136db7cf0c3bf068af75a1819ab4752fa197d029a2"
+  },
+  {
+   "path": "evidence/input/nav_B_x2_s0.csv",
+   "sha256": "148d7de7979f96cb45db0a5dfa399c40fc1b981e637c58e1c49cecd62e3268e1"
+  },
+  {
+   "path": "evidence/input/nav_B_x2_s1.csv",
+   "sha256": "694b75259f0ff487e5296cb62ae7f23d736956b67b09e93d9b0dbf21f07f26cd"
+  },
+  {
+   "path": "evidence/input/nav_B_x2_s2.csv",
+   "sha256": "5b65b3887569441c717c94113737b24348cd52623f8c4116179449e3570b44bb"
+  },
+  {
+   "path": "evidence/input/nav_B_x2_s3.csv",
+   "sha256": "07b17150181d8082fcbd923fe3a60e65fd697dee20baf6cfa3b8d7aff3161790"
+  },
+  {
+   "path": "evidence/input/nav_R_x2_s0.csv",
+   "sha256": "4f7afd1a7bac6b3e3cbe65f8748a56cc37757a87ee31123cc916598bf08f0bb3"
+  },
+  {
+   "path": "evidence/input/nav_R_x2_s1.csv",
+   "sha256": "4dd73642f7a2f0a123a79917a227ad8fd82c012cae3a1ce9091408d508f56c4d"
+  },
+  {
+   "path": "evidence/input/nav_R_x2_s2.csv",
+   "sha256": "1241092ecff310749ff79c4fd652eafe7ecc421ab0fed66baeaa0aa044672189"
+  },
+  {
+   "path": "evidence/input/nav_R_x2_s3.csv",
+   "sha256": "9c223d8a7503e11d3d50c8df17a119390b2f476fa4e1064a2e30c1bff695d3ba"
+  },
+  {
+   "path": "evidence/pe_results.json",
+   "sha256": "712963722ebf467dfc90d9580af2890331fe438c6b83276534402f3ce596a2a7"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "b9de7c83bd32715078be4251b1e973103fae871de0f0c9a33c534763b0fb057b"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "7d5b378972179db04bf3836191a5c436c066d32c4e2e6dccd2d1dadc824956a5"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/path-ensemble-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T18:26:46+09:00"
+}
