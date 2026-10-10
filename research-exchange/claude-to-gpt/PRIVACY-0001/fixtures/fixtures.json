@@ -1,0 +1,502 @@
+{
+ "task": "PRIVACY-0001",
+ "note": "자리표시자만 담은 합성 fixture. 값은 시험 때 메모리에서 만듦.",
+ "attack": [
+  {
+   "id": "A01",
+   "kind": "json",
+   "data": {
+    "ODNO": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:odno"
+   ]
+  },
+  {
+   "id": "A02",
+   "kind": "json",
+   "data": {
+    "odno": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:odno"
+   ]
+  },
+  {
+   "id": "A03",
+   "kind": "json",
+   "data": {
+    "order_no": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:orderno"
+   ]
+  },
+  {
+   "id": "A04",
+   "kind": "json",
+   "data": {
+    "ORDER-NO": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:orderno"
+   ]
+  },
+  {
+   "id": "A05",
+   "kind": "json",
+   "data": {
+    "orderNo": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:orderno"
+   ]
+  },
+  {
+   "id": "A06",
+   "kind": "json",
+   "data": {
+    "broker_order_no": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:brokerorderno"
+   ]
+  },
+  {
+   "id": "A07",
+   "kind": "json",
+   "data": {
+    "account_no": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:accountno"
+   ]
+  },
+  {
+   "id": "A08",
+   "kind": "json",
+   "data": {
+    "acctNo": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:acctno"
+   ]
+  },
+  {
+   "id": "A09",
+   "kind": "json",
+   "data": {
+    "CANO": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:cano"
+   ]
+  },
+  {
+   "id": "A10",
+   "kind": "json",
+   "data": {
+    "acnt_prdt_cd": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:acntprdtcd"
+   ]
+  },
+  {
+   "id": "A11",
+   "kind": "json",
+   "data": {
+    "appkey": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:appkey"
+   ]
+  },
+  {
+   "id": "A12",
+   "kind": "json",
+   "data": {
+    "APP_SECRET": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:appsecret"
+   ]
+  },
+  {
+   "id": "A13",
+   "kind": "json",
+   "data": {
+    "access-key": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:accesskey"
+   ]
+  },
+  {
+   "id": "A14",
+   "kind": "json",
+   "data": {
+    "secretKey": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:secretkey"
+   ]
+  },
+  {
+   "id": "A15",
+   "kind": "json",
+   "data": {
+    "private_key": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:privatekey"
+   ]
+  },
+  {
+   "id": "A16",
+   "kind": "json",
+   "data": {
+    "access_token": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:accesstoken"
+   ]
+  },
+  {
+   "id": "A17",
+   "kind": "json",
+   "data": {
+    "refreshToken": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:refreshtoken"
+   ]
+  },
+  {
+   "id": "A18",
+   "kind": "json",
+   "data": {
+    "Authorization": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:authorization"
+   ]
+  },
+  {
+   "id": "A19",
+   "kind": "json",
+   "data": {
+    "note": "Bearer {{TOKEN}}"
+   },
+   "expect_rules": [
+    "TEXT_BEARER"
+   ]
+  },
+  {
+   "id": "A20",
+   "kind": "json",
+   "data": {
+    "raw_response": {
+     "rt_cd": "0",
+     "msg": "{{SYN}}"
+    }
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:rawresponse"
+   ]
+  },
+  {
+   "id": "A21",
+   "kind": "json",
+   "data": {
+    "rawPayload": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:rawpayload"
+   ]
+  },
+  {
+   "id": "A22",
+   "kind": "json",
+   "data": {
+    "session_url": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:sessionurl"
+   ]
+  },
+  {
+   "id": "A23",
+   "kind": "json",
+   "data": {
+    "sessionId": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:sessionid"
+   ]
+  },
+  {
+   "id": "A24",
+   "kind": "json",
+   "data": {
+    "link": "{{SURL}}"
+   },
+   "expect_rules": [
+    "TEXT_SESSION_URL"
+   ]
+  },
+  {
+   "id": "A25",
+   "kind": "json",
+   "data": {
+    "a": {
+     "b": {
+      "ODNO": "{{SYN}}"
+     }
+    }
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:odno"
+   ]
+  },
+  {
+   "id": "A26",
+   "kind": "json",
+   "data": {
+    "orders": [
+     {
+      "x": 1
+     },
+     {
+      "order_no": "{{SYN}}"
+     }
+    ]
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:orderno"
+   ]
+  },
+  {
+   "id": "A27",
+   "kind": "json",
+   "data": {
+    "book": {
+     "orders": [
+      {
+       "meta": {
+        "acct_no": "{{SYN}}"
+       }
+      }
+     ]
+    }
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:acctno"
+   ]
+  },
+  {
+   "id": "A28",
+   "kind": "json",
+   "data": [
+    {
+     "access_token": "{{SYN}}"
+    }
+   ],
+   "expect_rules": [
+    "KEY_FORBIDDEN:accesstoken"
+   ]
+  },
+  {
+   "id": "A29",
+   "kind": "text",
+   "data": "주문 기록 ODNO = {{SYN}} 이었음",
+   "expect_rules": [
+    "TEXT_KEY_ASSIGN:odno"
+   ]
+  },
+  {
+   "id": "A30",
+   "kind": "text",
+   "data": "Authorization: Bearer {{TOKEN}}",
+   "expect_rules": [
+    "TEXT_BEARER",
+    "TEXT_KEY_ASSIGN:authorization"
+   ]
+  },
+  {
+   "id": "A31",
+   "kind": "text",
+   "data": "결과 링크는 {{SURL}} 입니다",
+   "expect_rules": [
+    "TEXT_SESSION_URL"
+   ]
+  },
+  {
+   "id": "A32",
+   "kind": "json",
+   "data": {
+    "kis_app_key": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:appkey"
+   ]
+  },
+  {
+   "id": "A33",
+   "kind": "json",
+   "data": {
+    "ＯＤＮＯ": "{{SYN}}"
+   },
+   "expect_rules": [
+    "KEY_FORBIDDEN:odno"
+   ]
+  },
+  {
+   "id": "A34",
+   "kind": "text",
+   "data": "{\"orderNo\": \"{{SYN}}\", \"qty\": 1}",
+   "expect_rules": [
+    "TEXT_KEY_ASSIGN:orderno"
+   ]
+  }
+ ],
+ "allow": [
+  {
+   "id": "P01",
+   "kind": "json",
+   "data": {
+    "order_id": "o_000123",
+    "trade_id": "t_01",
+    "record_id": "r_01"
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P02",
+   "kind": "json",
+   "data": {
+    "evidence_ref": "ev_0123456789abcdef"
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P03",
+   "kind": "json",
+   "data": {
+    "normalized_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "raw_payload_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P04",
+   "kind": "json",
+   "data": {
+    "strategy_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "cutoff_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P05",
+   "kind": "text",
+   "data": "1일봉 전략은 정배열과 수급을 보고 다음 거래일에 산다.",
+   "expect_rules": []
+  },
+  {
+   "id": "P06",
+   "kind": "text",
+   "data": "`order_no` 필드는 원 주문번호를 담을 수 있으므로 공개하지 않는다.",
+   "expect_rules": []
+  },
+  {
+   "id": "P07",
+   "kind": "text",
+   "data": "authorization 헤더와 토큰은 기록하지 않는다.",
+   "expect_rules": []
+  },
+  {
+   "id": "P08",
+   "kind": "json",
+   "data": {
+    "volcano_count": 3,
+    "session": "REGULAR"
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P09",
+   "kind": "text",
+   "data": "새 세션을 만들지 않는다. session_url 키는 금지 목록에 있다.",
+   "expect_rules": []
+  },
+  {
+   "id": "P10",
+   "kind": "json",
+   "data": {
+    "order_no": null
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P11",
+   "kind": "json",
+   "data": {
+    "orders": [
+     {
+      "order_id": "o1",
+      "qty": 10
+     }
+    ],
+    "public_ok": true
+   },
+   "expect_rules": []
+  },
+  {
+   "id": "P12",
+   "kind": "text",
+   "data": "ODNO 같은 키는 대소문자와 상관없이 막는다.",
+   "expect_rules": []
+  }
+ ],
+ "mutants": {
+  "M1": [
+   "A01",
+   "A09",
+   "A12"
+  ],
+  "M2": [
+   "A03",
+   "A04",
+   "A06"
+  ],
+  "M3": [
+   "A01",
+   "A03",
+   "A05"
+  ],
+  "M4": [
+   "A25",
+   "A27"
+  ],
+  "M5": [
+   "A26",
+   "A28"
+  ],
+  "M6": [
+   "A24",
+   "A31"
+  ],
+  "M7": [
+   "A18",
+   "A19",
+   "A30"
+  ],
+  "M8": [
+   "REDACTION"
+  ],
+  "M9": [
+   "REDACTION"
+  ]
+ }
+}

@@ -1,0 +1,15 @@
+{
+ "task": "PRIVACY-0001",
+ "locked_at_kst": "2026-10-08T08:50:30+09:00",
+ "input_pr": 22,
+ "input_head": "c55fdb388edc683466f515630544b5f8e19a3474",
+ "sha256": {
+  "PREREG-LOCK.md": "f2cf5b595e304d59f950eb147fa1d58631e0707c64de624a9dd018e7d4b82c10",
+  "fixtures/fixtures.json": "90b08411dbd29bdc5bb050af1fca3a624651b68b667849167a66f3267dd0b36c",
+  "fixtures/make_fixtures.py": "4efd4506d7bbb545e239e064309a6599fa80cdae77e8f2dfcca9db9e89708fb1",
+  "tests/materialize.py": "4f99d32f46dfd0489e3e5afb0675310ee4ac18176266644426fdafc0e820c230"
+ },
+ "gate_exists_at_lock": false,
+ "runner_exists_at_lock": false,
+ "note": "게이트 · 시험 실행기 작성 전에 잠금"
+}

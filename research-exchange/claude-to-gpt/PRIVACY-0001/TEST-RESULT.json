@@ -1,0 +1,724 @@
+{
+ "task": "PRIVACY-0001",
+ "guard_sha256": "d072715a8689fd39339d0e23a6948cda7e8726ed546790f661479da1c29c8524",
+ "fixtures_sha256": "90b08411dbd29bdc5bb050af1fca3a624651b68b667849167a66f3267dd0b36c",
+ "attack_total": 34,
+ "attack_blocked_exact": 34,
+ "allow_total": 12,
+ "allow_false_positive": 0,
+ "fixtures": {
+  "A01": {
+   "rules": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A02": {
+   "rules": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A03": {
+   "rules": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A04": {
+   "rules": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A05": {
+   "rules": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A06": {
+   "rules": [
+    "KEY_FORBIDDEN:brokerorderno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:brokerorderno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A07": {
+   "rules": [
+    "KEY_FORBIDDEN:accountno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:accountno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A08": {
+   "rules": [
+    "KEY_FORBIDDEN:acctno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:acctno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A09": {
+   "rules": [
+    "KEY_FORBIDDEN:cano"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:cano"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A10": {
+   "rules": [
+    "KEY_FORBIDDEN:acntprdtcd"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:acntprdtcd"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A11": {
+   "rules": [
+    "KEY_FORBIDDEN:appkey"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:appkey"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A12": {
+   "rules": [
+    "KEY_FORBIDDEN:appsecret"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:appsecret"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A13": {
+   "rules": [
+    "KEY_FORBIDDEN:accesskey"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:accesskey"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A14": {
+   "rules": [
+    "KEY_FORBIDDEN:secretkey"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:secretkey"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A15": {
+   "rules": [
+    "KEY_FORBIDDEN:privatekey"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:privatekey"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A16": {
+   "rules": [
+    "KEY_FORBIDDEN:accesstoken"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:accesstoken"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A17": {
+   "rules": [
+    "KEY_FORBIDDEN:refreshtoken"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:refreshtoken"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A18": {
+   "rules": [
+    "KEY_FORBIDDEN:authorization"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:authorization"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A19": {
+   "rules": [
+    "TEXT_BEARER"
+   ],
+   "expected": [
+    "TEXT_BEARER"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A20": {
+   "rules": [
+    "KEY_FORBIDDEN:rawresponse"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:rawresponse"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A21": {
+   "rules": [
+    "KEY_FORBIDDEN:rawpayload"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:rawpayload"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A22": {
+   "rules": [
+    "KEY_FORBIDDEN:sessionurl"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:sessionurl"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A23": {
+   "rules": [
+    "KEY_FORBIDDEN:sessionid"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:sessionid"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A24": {
+   "rules": [
+    "TEXT_SESSION_URL"
+   ],
+   "expected": [
+    "TEXT_SESSION_URL"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A25": {
+   "rules": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A26": {
+   "rules": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:orderno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A27": {
+   "rules": [
+    "KEY_FORBIDDEN:acctno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:acctno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A28": {
+   "rules": [
+    "KEY_FORBIDDEN:accesstoken"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:accesstoken"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A29": {
+   "rules": [
+    "TEXT_KEY_ASSIGN:odno"
+   ],
+   "expected": [
+    "TEXT_KEY_ASSIGN:odno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A30": {
+   "rules": [
+    "TEXT_BEARER",
+    "TEXT_KEY_ASSIGN:authorization"
+   ],
+   "expected": [
+    "TEXT_BEARER",
+    "TEXT_KEY_ASSIGN:authorization"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 2
+  },
+  "A31": {
+   "rules": [
+    "TEXT_SESSION_URL"
+   ],
+   "expected": [
+    "TEXT_SESSION_URL"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A32": {
+   "rules": [
+    "KEY_FORBIDDEN:appkey"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:appkey"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A33": {
+   "rules": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "expected": [
+    "KEY_FORBIDDEN:odno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "A34": {
+   "rules": [
+    "TEXT_KEY_ASSIGN:orderno"
+   ],
+   "expected": [
+    "TEXT_KEY_ASSIGN:orderno"
+   ],
+   "pass": true,
+   "self_check": true,
+   "count": 1
+  },
+  "P01": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P02": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P03": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P04": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P05": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P06": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P07": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P08": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P09": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P10": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P11": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  },
+  "P12": {
+   "rules": [],
+   "expected": [],
+   "pass": true,
+   "self_check": true,
+   "count": 0
+  }
+ },
+ "gate_self_check_all": true,
+ "redaction_leaks_baseline": 0,
+ "determinism": {
+  "run1": "b2b9bfd83cabca64fa5b56dd242435c349a7a6b28dda386482be9b42b66a73f1",
+  "run2": "b2b9bfd83cabca64fa5b56dd242435c349a7a6b28dda386482be9b42b66a73f1",
+  "same": true
+ },
+ "mutants": {
+  "M1": {
+   "expected_catchers": [
+    "A01",
+    "A09",
+    "A12"
+   ],
+   "caught_by": [
+    "A01",
+    "A09",
+    "A12"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A01",
+    "A04",
+    "A05",
+    "A08",
+    "A09",
+    "A12",
+    "A14",
+    "A17",
+    "A18",
+    "A21",
+    "A23",
+    "A25",
+    "A29",
+    "A30",
+    "A33",
+    "A34"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M2": {
+   "expected_catchers": [
+    "A03",
+    "A04",
+    "A06"
+   ],
+   "caught_by": [
+    "A03",
+    "A04",
+    "A06"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A03",
+    "A04",
+    "A06",
+    "A07",
+    "A10",
+    "A12",
+    "A13",
+    "A15",
+    "A16",
+    "A20",
+    "A22",
+    "A26",
+    "A27",
+    "A28",
+    "A32"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M3": {
+   "expected_catchers": [
+    "A01",
+    "A03",
+    "A05"
+   ],
+   "caught_by": [
+    "A01",
+    "A03",
+    "A05"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A25",
+    "A26",
+    "A29",
+    "A33",
+    "A34"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M4": {
+   "expected_catchers": [
+    "A25",
+    "A27"
+   ],
+   "caught_by": [
+    "A25",
+    "A27"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A25",
+    "A27"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M5": {
+   "expected_catchers": [
+    "A26",
+    "A28"
+   ],
+   "caught_by": [
+    "A26",
+    "A28"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A26",
+    "A27",
+    "A28"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M6": {
+   "expected_catchers": [
+    "A24",
+    "A31"
+   ],
+   "caught_by": [
+    "A24",
+    "A31"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A24",
+    "A31"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M7": {
+   "expected_catchers": [
+    "A18",
+    "A19",
+    "A30"
+   ],
+   "caught_by": [
+    "A18",
+    "A19",
+    "A30"
+   ],
+   "caught": true,
+   "failed_fixtures": [
+    "A18",
+    "A19",
+    "A30"
+   ],
+   "redaction_leak_count": 0,
+   "gate_self_check_failed": []
+  },
+  "M8": {
+   "expected_catchers": [
+    "REDACTION"
+   ],
+   "caught_by": [
+    "REDACTION"
+   ],
+   "caught": true,
+   "failed_fixtures": [],
+   "redaction_leak_count": 32,
+   "gate_self_check_failed": [
+    "A01",
+    "A02",
+    "A03",
+    "A04",
+    "A05",
+    "A06",
+    "A07",
+    "A08",
+    "A09",
+    "A10",
+    "A11",
+    "A12",
+    "A13",
+    "A14",
+    "A15",
+    "A16",
+    "A17",
+    "A18",
+    "A19",
+    "A20",
+    "A21",
+    "A22",
+    "A23",
+    "A24",
+    "A25",
+    "A26",
+    "A27",
+    "A28",
+    "A29",
+    "A30",
+    "A31",
+    "A32",
+    "A33",
+    "A34"
+   ]
+  },
+  "M9": {
+   "expected_catchers": [
+    "REDACTION"
+   ],
+   "caught_by": [
+    "REDACTION"
+   ],
+   "caught": true,
+   "failed_fixtures": [],
+   "redaction_leak_count": 32,
+   "gate_self_check_failed": []
+  }
+ },
+ "mutants_caught": 9,
+ "mutants_total": 9,
+ "isolation": {
+  "allowed_dirs": [
+   "<PRIVACY-0001>",
+   "<python-stdlib>"
+  ],
+  "reads_outside_allowed": 0,
+  "writes_outside_folder": 0,
+  "new_modules_outside_allowed": [],
+  "env_cleared": true,
+  "network": "socket connect 차단",
+  "ok": true
+ },
+ "budget": {
+  "seconds": 0.024,
+  "max_rss_mb": 15.9
+ },
+ "status": "READY",
+ "scope_note": "합성 공개 차단 게이트 검증만. 과거 이력 청정 · 실제 자료 · 전략 · PAPER_VALIDATION_READY · 실전 승인 아님"
+}
