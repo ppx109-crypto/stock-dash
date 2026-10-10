@@ -1,0 +1,205 @@
+{
+ "schema_version": 1,
+ "task_id": "BASELINE-EXEC-TIMING-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 16,
+ "status": "READY",
+ "source_pr": 74,
+ "source_head_sha": "4629a8aa40dbe5d4205426ecd9e967dd078f0bbd",
+ "code_commit": "98a9d3eb94c8cb0d3cfe9469bce0f0fa29780bf8",
+ "evidence_paths": [
+  "PREREG.md",
+  "REPORT.md",
+  "code/cost_contract.py",
+  "code/daily_exec.py",
+  "code/et_replay.py",
+  "code/kernel2.py",
+  "code/rules.py",
+  "evidence/dryrun/dryrun1_et_results.json",
+  "evidence/dryrun/dryrun2_et_results.json",
+  "evidence/et_results.json",
+  "evidence/lag_attribution.json",
+  "evidence/nav_train_control_old_fixed.csv",
+  "evidence/run.log"
+ ],
+ "completed_at_kst": "2026-10-08T23:13:18+09:00",
+ "input": {
+  "pr": 75,
+  "head_sha": "98dc0d4a6e04b10645cae0728208b92a35f7eb48",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "receipt.json"
+  ]
+ },
+ "prereg_commit": "88bd24f7b96e815e52b9fec5404472d392b5ca79",
+ "prereg_committed_at_kst": "2026-10-08T23:11:12+09:00",
+ "verdict": "READY / 결함 확인 · 고친 t+1 계약 Train 1회(재사용 진단)",
+ "inputs": {
+  "pr68_control_trades_sha256": "880a277bad0fa0eaebd34cdd9dc9c7acab9a4d4c511f97570e488190c5561ad3",
+  "pr68_candidate_trades_sha256": "1be20f8faa80afb07a5a257031707c8cceb921655be9fd1db6808a2ce455efc3",
+  "pr68_nav_control_candidate_sha256": "2c3b4bceccf7a5f45fe0f46e0197dac437bca8dbe5c56c6e71e23acfef1577b1",
+  "pr68_rr_daily_sha256": "bad2f70617c00d77c414ffa018ded0d98e8916bcde9f4d0a2a174aeee55bf12a",
+  "pr68_m15_natural_sha256": "61101d86b2032f4a9394830006f69afc48f5c9fdf3dc52da71b42e3550877a02",
+  "old_nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f"
+ },
+ "code_sha256": {
+  "cost_contract.py": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae",
+  "daily_exec.py": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9",
+  "et_replay.py": "eae97c63ea98f55003f51927d5892079489952f732f575ddcdacb58eec01deec",
+  "kernel2.py": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac",
+  "rules.py": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+ },
+ "commands": [
+  "python3 -E -P code/et_replay.py <b2> <옛 nrl-cache.pkl> <출력> <PR68 evidence 폴더> <PR68 m15_natural.pkl>"
+ ],
+ "environment": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "os": "Linux x86_64"
+ },
+ "pass": {
+  "synthetic": true,
+  "reconstruction": true,
+  "conservation": true,
+  "timing_audit": true
+ },
+ "table": {
+  "control": {
+   "end_won": 12840979.299999999,
+   "return_pct": 28.409792999999993,
+   "MDD_pct": -15.851315479700556,
+   "MDD_at": "20260304",
+   "worst_day_pct": -9.882227500799512,
+   "worst_day_at": "20260304",
+   "worst_month_pct": -11.386659655466136,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 503045.6974847606,
+   "turnover_per_year": 11.666456110263377,
+   "cash_share_avg_pct": 50.527091272919066,
+   "cash_share_min_pct": 20.386184323117224,
+   "trades": {
+    "D1": {
+     "buy": 45,
+     "sell": 42
+    },
+    "M15": {
+     "buy": 82,
+     "sell": 82
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 9,
+     "sell": 6
+    }
+   }
+  },
+  "old_candidate": {
+   "end_won": 13071169.469999999,
+   "return_pct": 30.711694699999992,
+   "MDD_pct": -4.7851301008621006,
+   "MDD_at": "20260304",
+   "worst_day_pct": -3.7027833499272744,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.881041162682164,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 371226.53020495066,
+   "turnover_per_year": 8.74886192761797,
+   "cash_share_avg_pct": 64.91180584396095,
+   "cash_share_min_pct": 39.31024980657875,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 77
+    },
+    "M15": {
+     "buy": 81,
+     "sell": 105
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 11,
+     "sell": 16
+    }
+   }
+  },
+  "fixed_candidate": {
+   "end_won": 12196224.605424643,
+   "return_pct": 21.962246054246414,
+   "MDD_pct": -4.718566697175386,
+   "MDD_at": "20260304",
+   "worst_day_pct": -3.353872436376204,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.606342675996621,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 341103.3934444541,
+   "turnover_per_year": 8.421617960900777,
+   "cash_share_avg_pct": 67.51193804015432,
+   "cash_share_min_pct": 44.33067198418243,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 71
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 12,
+     "sell": 13
+    },
+    "M15": {
+     "buy": 81,
+     "sell": 105
+    }
+   }
+  }
+ },
+ "timing_audit": {
+  "decisions": 378,
+  "decided_before_fill": 378
+ },
+ "runs": {
+  "fixed_candidate_train_runs": 1,
+  "control_rerun": 0,
+  "old_candidate_rerun": 0,
+  "m15_rerun": 0,
+  "dryruns_synthetic_only_before_prereg": 2,
+  "failed": 1,
+  "failed_note": "사전등록 전 --synthetic-only 1회째: 합성 장치 결함(나눠 판 매도를 중복으로 셈 · 현금 부족 사례가 부족하지 않음) → 고침"
+ },
+ "local_only": {
+  "fixed_local_only.json": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8"
+ },
+ "unverified": [
+  "수급 · 공시 available_at",
+  "수정주가",
+  "생존자 편향",
+  "15분봉 후보 복제 시점(같은 구조 · 범위 밖)"
+ ],
+ "oos": false,
+ "paper_validation_ready": false,
+ "no": [
+  "통제 · 옛 후보 · M15 재실행",
+  "threshold · grid · seed",
+  "9월 재실행 · 10월 열기",
+  "새 API · 수집 · 주문",
+  "운영 · 워크플로 · 인증 변경",
+  "자동 병합 · 레버리지",
+  "원가격 · 비밀 공개"
+ ]
+}

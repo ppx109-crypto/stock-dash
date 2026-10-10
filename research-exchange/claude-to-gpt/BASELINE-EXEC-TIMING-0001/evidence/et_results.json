@@ -1,0 +1,241 @@
+{
+ "synthetic": {
+  "t+1 종가 +10%(A)": {
+   "new_decisions_before_t+1_same": true,
+   "new_target_for_t+1_same": true,
+   "new_fill_qty_t+1_same": true,
+   "old_contract_target_t+1_same": false
+  },
+  "t+1 통제 체결 수량 +7(A)": {
+   "new_decisions_before_t+1_same": true,
+   "new_target_for_t+1_same": true,
+   "new_fill_qty_t+1_same": true,
+   "old_contract_target_t+1_same": false
+  },
+  "보존 · 정수 · 중복 · 음수 현금": {
+   "checks": 7,
+   "max_gap": [
+    0.0,
+    8.003553375601768e-11
+   ],
+   "all_int": true,
+   "dup": [],
+   "min_cash": 263827.304
+  },
+  "거래정지 · 값 없음(B, 5번째 날)": {
+   "no_price_skips": 1,
+   "B_traded_on_halt_day": false
+  },
+  "현금 부족(k≈3.3)": {
+   "buy_reduced_or_unfilled": 2,
+   "min_cash": 19.193000000086613,
+   "checks": 7
+  },
+  "첫날 주문 없음": {
+   "trades_day0": 0
+  },
+  "pass": true
+ },
+ "reconstruction_max_gap_won": {
+  "control": {
+   "D1": 0.0047407737001776695,
+   "M15": 0.004978646989911795,
+   "ETF": 0.0,
+   "BASKET": 0.004610988777130842
+  },
+  "old_candidate": {
+   "D1": 0.0048448676243424416,
+   "M15": 0.004997123032808304,
+   "ETF": 0.0,
+   "BASKET": 0.004798248875886202
+  }
+ },
+ "reconstruction_ok(≤1원)": true,
+ "table": {
+  "control": {
+   "end_won": 12840979.299999999,
+   "return_pct": 28.409792999999993,
+   "MDD_pct": -15.851315479700556,
+   "MDD_at": "20260304",
+   "worst_day_pct": -9.882227500799512,
+   "worst_day_at": "20260304",
+   "worst_month_pct": -11.386659655466136,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 503045.6974847606,
+   "turnover_per_year": 11.666456110263377,
+   "cash_share_avg_pct": 50.527091272919066,
+   "cash_share_min_pct": 20.386184323117224,
+   "trades": {
+    "D1": {
+     "buy": 45,
+     "sell": 42
+    },
+    "M15": {
+     "buy": 82,
+     "sell": 82
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 9,
+     "sell": 6
+    }
+   }
+  },
+  "old_candidate": {
+   "end_won": 13071169.469999999,
+   "return_pct": 30.711694699999992,
+   "MDD_pct": -4.7851301008621006,
+   "MDD_at": "20260304",
+   "worst_day_pct": -3.7027833499272744,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.881041162682164,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 371226.53020495066,
+   "turnover_per_year": 8.74886192761797,
+   "cash_share_avg_pct": 64.91180584396095,
+   "cash_share_min_pct": 39.31024980657875,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 77
+    },
+    "M15": {
+     "buy": 81,
+     "sell": 105
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 11,
+     "sell": 16
+    }
+   }
+  },
+  "fixed_candidate": {
+   "end_won": 12196224.605424643,
+   "return_pct": 21.962246054246414,
+   "MDD_pct": -4.718566697175386,
+   "MDD_at": "20260304",
+   "worst_day_pct": -3.353872436376204,
+   "worst_day_at": "20260202",
+   "worst_month_pct": -3.606342675996621,
+   "worst_month_at": "202603",
+   "day_breach_-15": 0,
+   "month_breach_-15": 0,
+   "cost_won": 341103.3934444541,
+   "turnover_per_year": 8.421617960900777,
+   "cash_share_avg_pct": 67.51193804015432,
+   "cash_share_min_pct": 44.33067198418243,
+   "trades": {
+    "D1": {
+     "buy": 52,
+     "sell": 71
+    },
+    "ETF": {
+     "buy": 0,
+     "sell": 0
+    },
+    "BASKET": {
+     "buy": 12,
+     "sell": 13
+    },
+    "M15": {
+     "buy": 81,
+     "sell": 105
+    }
+   }
+  }
+ },
+ "sleeve_end": {
+  "control": {
+   "D1": 4318740.02,
+   "M15": 3432312.88,
+   "ETF": 2500000.0,
+   "BASKET": 2589926.4
+  },
+  "old_candidate": {
+   "D1": 4462651.24,
+   "M15": 3436151.71,
+   "ETF": 2500000.0,
+   "BASKET": 2672366.52
+  },
+  "fixed_candidate": {
+   "D1": 3638765.0974924956,
+   "M15": 3436151.71,
+   "ETF": 2500000.0,
+   "BASKET": 2621307.7979321484
+  }
+ },
+ "fixed_notes": {
+  "D1": {
+   "locked": 2
+  },
+  "ETF": {},
+  "BASKET": {}
+ },
+ "fixed_conservation": {
+  "D1": {
+   "checks": 127,
+   "max_gap_cash": 1.3969838619232178e-09,
+   "max_gap_nav": 1.3969838619232178e-09,
+   "min_cash": 32029.317201379105,
+   "dup": [],
+   "buy_counts": {
+    "buy_filled": 52
+   }
+  },
+  "ETF": {
+   "checks": 127,
+   "max_gap_cash": 0.0,
+   "max_gap_nav": 0.0,
+   "min_cash": 2500000.0,
+   "dup": [],
+   "buy_counts": {}
+  },
+  "BASKET": {
+   "checks": 127,
+   "max_gap_cash": 4.656612873077393e-10,
+   "max_gap_nav": 3.5652192309498787e-10,
+   "min_cash": 1504769.6865706886,
+   "dup": [],
+   "buy_counts": {
+    "buy_filled": 12
+   }
+  }
+ },
+ "timing_audit": {
+  "decisions": 378,
+  "decided_before_fill": 378
+ },
+ "pass": {
+  "synthetic": true,
+  "reconstruction": true,
+  "conservation": true,
+  "timing_audit": true
+ },
+ "verdict": "READY",
+ "decision_summary": {
+  "D1": {
+   "n": 126,
+   "nonzero_target_days": 125
+  },
+  "ETF": {
+   "n": 126,
+   "nonzero_target_days": 0
+  },
+  "BASKET": {
+   "n": 126,
+   "nonzero_target_days": 61
+  }
+ },
+ "fixed_local_only_sha256": "0619fd234ef9386e419d3641add36b62acee8f03b848896da9e0e19a781e51d8"
+}
