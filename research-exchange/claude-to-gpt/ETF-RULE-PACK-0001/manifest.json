@@ -1,0 +1,64 @@
+{
+ "schema_version": 1,
+ "task_id": "ETF-RULE-PACK-0001",
+ "chain_id": "CONSOLIDATED-DECISION-20261008",
+ "round": 2,
+ "status": "READY",
+ "tool_status": "RULE_PACKAGE_READY",
+ "data_status": "WAITING_DATA",
+ "status_meaning": "원 규칙 판정기 · 입력 계약 · 코드 계약 시험 완료. 전략 검증 아님",
+ "source_code": {
+  "ref": "841b657e1c4a13f56854125f0d4c37568a99d49b",
+  "files": [
+   "idle_live.py",
+   "research/idle_signal.py"
+  ],
+  "changed_only": "idle_signal.decide → decide"
+ },
+ "tests": {
+  "final": "14/14 PASS",
+  "first_run": "12/14 PASS",
+  "synthetic_examples": 12
+ },
+ "performance_experiments": 0,
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "input_pr": 37,
+ "input_head_sha": "3078a5f84a8e40a307d1c5baba0ff99a07f30b61",
+ "source_pr": 36,
+ "source_head_sha": "841b657e1c4a13f56854125f0d4c37568a99d49b",
+ "repo_commit": "b9db6d2d",
+ "files": [
+  {
+   "path": "REPORT.md",
+   "sha256": "c35f2b6f9dc2ccf557674b4a4d0cb0ed4d5cbccac3bd92fcb1023983d05b92e1"
+  },
+  {
+   "path": "TEST-RESULT.json",
+   "sha256": "dea51a1c9689da9dfa90d17b8935d0da689a9a1ded64a0cb98c785adf66e52bb"
+  },
+  {
+   "path": "TEST-RESULT.run1.json",
+   "sha256": "b2d4790eb65a956e2418642ef0da64c5572715c1f4d4619bf5dfd4d915a5a938"
+  },
+  {
+   "path": "contracts.json",
+   "sha256": "73d48e8ca1b98d45c9e39c51d42ebc1e2144224b487c1db70b250c091a8a9463"
+  },
+  {
+   "path": "rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "tests/test_rules.py",
+   "sha256": "055a39ad79059ed5b789b859ad449d92d420a2236abe867483f1488f55da619e"
+  }
+ ],
+ "receipt": "research-exchange/state/receipts/37-3078a5f84a8e40a307d1c5baba0ff99a07f30b61.json",
+ "result_branch": "claude/etf-rule-pack-0001-result",
+ "result_pr": null,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "created_at_kst": "2026-10-08T12:38:29+09:00"
+}

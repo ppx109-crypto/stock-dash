@@ -1,0 +1,66 @@
+{
+ "kind": "code_contract_test(합성 · 전략 성과 아님)",
+ "examples": 12,
+ "cases": [
+  {
+   "case": "원본 보존(함수 몸통 AST · 상수)",
+   "result": "PASS"
+  },
+  {
+   "case": "네트워크 · 증권사 모듈 import 없음",
+   "result": "PASS"
+  },
+  {
+   "case": "E01 엔진 경계(used 0.2 · 폭 50)",
+   "result": "PASS"
+  },
+  {
+   "case": "E02 돌리기 양수 2개",
+   "result": "PASS"
+  },
+  {
+   "case": "E03 돌리기 양수 1개(몫 0.5)",
+   "result": "PASS"
+  },
+  {
+   "case": "E04 돌리기 양수 0개 → 현금",
+   "result": "PASS"
+  },
+  {
+   "case": "E05 하락 추세 달러",
+   "result": "PASS"
+  },
+  {
+   "case": "E06 인버스 우선 · 익절 폭 산 날 고정",
+   "result": "PASS"
+  },
+  {
+   "case": "E07 인버스 익절(고정 폭) · 같은 날 재진입 없음",
+   "result": "FAIL",
+   "why": "AssertionError: "
+  },
+  {
+   "case": "E08 인버스 10일 보유 청산",
+   "result": "FAIL",
+   "why": "AssertionError: "
+  },
+  {
+   "case": "E09 같은 날 재실행(중복일)",
+   "result": "PASS"
+  },
+  {
+   "case": "E10 현금 부족",
+   "result": "PASS"
+  },
+  {
+   "case": "E11 미래 입력 · 당일 값 아닌 가격 거부(계약)",
+   "result": "PASS"
+  },
+  {
+   "case": "E12 출처 · 입력 · 측정 종류 누락 거부(계약)",
+   "result": "PASS"
+  }
+ ],
+ "passed": 12,
+ "total": 14
+}
