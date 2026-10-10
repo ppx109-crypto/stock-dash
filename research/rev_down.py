@@ -13,7 +13,9 @@
 - round 2(GPT #208 6097323248):
   · 기간 끝 정산 돈을 현금에 넣고 마지막 날 NAV를 정산 뒤(파는 비용 뺀) 값으로 고침.
   · 판정 ④는 반올림 전 해 수익으로 셈(출력만 반올림).
-  · 같은 날 종가 순서 고정: ㉠ 어제 정한 것 사기(그 시각 현금까지) → ㉡ 팔 것 팔기. 그날 판 돈은 다음 날 판단부터 씀(보수적). 계좌 · 대조 8개 모두 같은 함수.
+  · 같은 날 종가 순서 고정: ㉠ 어제 정한 것 사기(그 시각 현금까지) → ㉡ 팔 것 팔기 → ㉢ 그날 장 끝 판단(판 돈 포함한 현금 · NAV로 무리 크기) → 다음 날 삼.
+    즉 그날 판 돈은 같은 날 보류 매수에는 못 쓰고, 그날 장 끝 판단 → 다음 날 매수부터 씀. 계좌 · 대조 8개 모두 같은 함수.
+  · round 3(GPT #208 6097363711): 판정 ⑤도 반올림 전 부트스트랩 아래 끝으로 셈.
   · 가격 제한: 그 종목 그날 종가가 앞 줄 종가 대비 하한가(2015-06-15 전 −15% · 그 뒤 −30% · 0.5%p 여유)면 그날 못 팖 → 다음 줄로 미룸.
     상한가(+15% · +30% · 같은 여유)면 그날 못 삼 → 그 몫은 현금.
   · 판정 이름: CLOSE_MODEL_PASS_IN_SEEN_DATA(비용 · 가격 제한 넣은 종가 모형 · 이미 본 자료 안) — 모의 운영 근거로 바로 쓰지 않음.
@@ -207,10 +209,12 @@ def boot_cohort(sim):
         flat = [x for b in (blocks[rnd.randrange(len(blocks))] for _ in blocks) for x in b]
         got.append(sum(flat) / len(flat))
     got.sort()
-    return [round(got[int(BOOT_REPS * 0.025)] * 100, 3), round(got[int(BOOT_REPS * 0.975)] * 100, 3)]
+    lo, hi = got[int(BOOT_REPS * 0.025)], got[int(BOOT_REPS * 0.975)]
+    return {"lo_raw": lo, "hi_raw": hi, "pct": [round(lo * 100, 3), round(hi * 100, 3)]}      # 판정은 lo_raw(round 3)
 
 
 def judge(st, ctrl, boot):
+    lo = boot["lo_raw"] if isinstance(boot, dict) else boot[0]                               # 판정 ⑤는 반올림 전 아래 끝
     yr = st.get("years_raw", st["years_pct"])          # 판정은 반올림 전 값(round 2)
     active = [y for y, v in yr.items() if v != 0.0]
     pos = sum(1 for y in active if yr[y] > 0)
@@ -221,7 +225,7 @@ def judge(st, ctrl, boot):
     wm = st["worst_month_raw"] * 100 if "worst_month_raw" in st else st["worst_month"][1]
     c = {"0_cohorts_ge_60": st["cohorts"] >= 60, "1_annual_gt0": ann > 0, "2_beats_random_median": ann > med,
          "3_day_month_ge_-15": wd >= -15 and wm >= -15,
-         "4_active_years_pos_ge_60pct": bool(active) and pos / len(active) >= 0.6, "5_boot_lo_gt0": boot[0] > 0}
+         "4_active_years_pos_ge_60pct": bool(active) and pos / len(active) >= 0.6, "5_boot_lo_gt0": lo > 0}
     verdict = "NEEDS_DATA" if not c["0_cohorts_ge_60"] else ("CLOSE_MODEL_PASS_IN_SEEN_DATA" if all(c.values()) else "REJECTED")
     return c, verdict, med, f"{pos}/{len(active)}"
 
@@ -261,7 +265,7 @@ def run():
     cond, verdict, med, ypos = judge(st, [x["annual_raw_pct"] for x in ctrl_runs], boot)
     st_out = {k: v for k, v in st.items() if not k.endswith("_raw")}
     out = {"task": "REV-DOWN-0047", "lock_key": key, "receipt": body, "stats": st_out, "annual_raw_pct": st["annual_raw"] * 100, "active_years_pos": ypos, "control": ctrl_runs,
-           "control_median_pct": round(med, 3), "boot95_cohort_net_pct": boot, "conditions": cond, "verdict": verdict,
+           "control_median_pct": round(med, 3), "boot95_cohort_net_pct": boot["pct"], "boot95_lo_raw": boot["lo_raw"], "conditions": cond, "verdict": verdict,
            "end_open_positions": sim["end_open"], "blocked_buy_limit_up": sim["blocked_buy_limit_up"],
            "delayed_sell_limit_down_rows": sim["delayed_sell_limit_down_rows"], "independent_validation": "WAITING_DATA",
            "verdict_meaning": "비용 · 가격 제한을 넣은 종가 모형 · 이미 본 자료 안 · 모의 운영 근거로 바로 쓰지 않음",

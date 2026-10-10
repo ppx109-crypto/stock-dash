@@ -151,4 +151,15 @@ p7 = lim_snap(131, -0.10)
 check("30 −10%는 하한가 아님(그대로 팖)", R.simulate((p7, days[0], days[-1]))["delayed_sell_limit_down_rows"] == 0)
 simr7 = R.simulate((p5, days[0], days[-1]), "random", 3)
 check("31 무작위 대조도 같은 가격 제한 · 정산 규칙(같은 함수 · 칸 있음)", "delayed_sell_limit_down_rows" in simr7 and "blocked_buy_limit_up" in simr7)
+# round 3(GPT #208 6097363711): 판정 ⑤는 반올림 전 아래 끝
+stp = {"cohorts": 100, "annual_pct": 5.5, "worst_day": ["d", -3.0], "worst_month": ["m", -10.0], "years_pct": {"2010": 1.0}, "years_raw": {"2010": 0.01}}
+b_pos = {"lo_raw": 0.000004, "hi_raw": 0.01, "pct": [0.0, 1.0]}       # +0.0004% → 출력은 0.000
+check("32 아래 끝 +0.0004%(출력 0.000)도 통과", R.judge(stp, [0] * 8, b_pos)[0]["5_boot_lo_gt0"] and R.judge(stp, [0] * 8, b_pos)[1] == "CLOSE_MODEL_PASS_IN_SEEN_DATA")
+check("33 아래 끝 0 · −0.0004%는 탈락", not R.judge(stp, [0] * 8, {"lo_raw": 0.0, "hi_raw": 0.01, "pct": [0.0, 1.0]})[0]["5_boot_lo_gt0"]
+      and not R.judge(stp, [0] * 8, {"lo_raw": -0.000004, "hi_raw": 0.01, "pct": [-0.0, 1.0]})[0]["5_boot_lo_gt0"])
+bc = R.boot_cohort(sim2)
+check("34 boot_cohort는 반올림 전 lo_raw · hi_raw와 출력용 pct를 함께 냄 · pct = 반올림(raw × 100)",
+      set(bc) == {"lo_raw", "hi_raw", "pct"} and bc["pct"] == [round(bc["lo_raw"] * 100, 3), round(bc["hi_raw"] * 100, 3)])
+src3 = Path(R.__file__).read_text()
+check("35 run()은 judge에 boot 사전(반올림 전 포함)을 넘김", "judge(st, [x[\"annual_raw_pct\"] for x in ctrl_runs], boot)" in src3 and "boot[\"lo_raw\"]" in src3)
 print(f"모두 {ok}개 통과")
