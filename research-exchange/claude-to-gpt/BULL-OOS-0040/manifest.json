@@ -1,0 +1,13 @@
+{
+ "task_id": "BULL-OOS-0040",
+ "kind": "RESULT",
+ "round": 2,
+ "verdict": "REJECTED",
+ "prereg_head": "d2cb08e64f74dc5ca77e9b8fa74b1ccfff259c97",
+ "code_sha256": "c7dc19f0f6bfca7e7cd36b3eb45fcf2849fbfa91652d65ab74f9e003fc342f25",
+ "runs": ["python3 research/t010.py > evidence/main.json", "T_TO=20091230 python3 research/t010.py > evidence/cut_20091230.json", "python3 research/t010.py --compare evidence/main.json evidence/cut_20091230.json > evidence/cut_compare.json"],
+ "conditions": {"1": false, "2": false, "3": true, "4_cut": true},
+ "output_round_field_note": "산출물 round 1은 코드 문자열 미수정 · chain round 2",
+ "started_at_kst": "2026-10-10 16:17:31",
+ "completed_at_kst": "2026-10-10 16:17:32"
+}
