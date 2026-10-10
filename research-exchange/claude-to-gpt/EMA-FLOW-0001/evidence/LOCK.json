@@ -1,0 +1,88 @@
+{
+ "task_id": "EMA-FLOW-0001",
+ "chosen": "I",
+ "passed": [
+  "B",
+  "I",
+  "P",
+  "IP"
+ ],
+ "selection_rows": [
+  {
+   "cfg": "B",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 3.9917985469273054,
+   "CAGR_x2": 0.3435452665680794,
+   "turnover_x2": 7.679698238538017,
+   "MDD_x2": -30.596809550465963,
+   "top": "006280",
+   "CAGR_ex_top": 0.8423681897161917
+  },
+  {
+   "cfg": "I",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 6.473511330750292,
+   "CAGR_x2": 2.81861069469882,
+   "turnover_x2": 6.983661132354314,
+   "MDD_x2": -25.534126625864317,
+   "top": "006280",
+   "CAGR_ex_top": 3.0738519741598136
+  },
+  {
+   "cfg": "P",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 4.274052404152329,
+   "CAGR_x2": 0.31763018027919365,
+   "turnover_x2": 7.748366608939068,
+   "MDD_x2": -27.405436065367596,
+   "top": "006280",
+   "CAGR_ex_top": 0.6578951265643118
+  },
+  {
+   "cfg": "IP",
+   "day_ok": true,
+   "cagr2_pos": true,
+   "ex_top_pos": true,
+   "CAGR_x1": 6.392796753636931,
+   "CAGR_x2": 2.5933115071891333,
+   "turnover_x2": 7.021013685472153,
+   "MDD_x2": -23.276520096502786,
+   "top": "207940",
+   "CAGR_ex_top": 5.7732138507601505
+  }
+ ],
+ "cut_test": {
+  "B_20191231": {
+   "fills_equal": true,
+   "n_fills": 199,
+   "nav_equal": true,
+   "n_days": 713
+  },
+  "I_20191231": {
+   "fills_equal": true,
+   "n_fills": 171,
+   "nav_equal": true,
+   "n_days": 713
+  },
+  "B_20200930": {
+   "fills_equal": true,
+   "n_fills": 229,
+   "nav_equal": true,
+   "n_days": 900
+  },
+  "I_20200930": {
+   "fills_equal": true,
+   "n_fills": 199,
+   "nav_equal": true,
+   "n_days": 900
+  }
+ },
+ "baseline_same": true,
+ "note": "Train만 보고 고른 판. 이 파일을 원격에 커밋한 뒤에 뒤 구간 진단을 돌림."
+}

@@ -1,0 +1,253 @@
+{
+ "schema_version": 1,
+ "task_id": "EMA-FLOW-0001",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "EMA-FLOW-0001",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 4,
+  "input": {
+   "pr": 50,
+   "head_sha": "48ecbfc44f2a2f48f04035402260c5334925e8ab",
+   "read_files": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "receipt.json",
+    "COLLABORATION.md"
+   ]
+  },
+  "prior": {
+   "pr": 45,
+   "head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+   "reused": "daily_exec.py · mr_d1.py · kernel2.py · cost_contract.py · common.py · rules.py(바이트 동일) · ef_d1.py 새로 씀"
+  },
+  "base_main_sha": "319eea3da0cfaba8d414d4981b5c739a8dd405d1",
+  "received_at_kst": "2026-10-08T17:06:54+09:00 이후(입력 head 커밋 시각) · 17:12:49 PREREG 커밋 전"
+ },
+ "prereg_commit": "d1725d3497826e405872faa765ae4c995abf92c3",
+ "prereg_committed_at_kst": "2026-10-08T17:12:49+09:00",
+ "lock_commit": "6aabf45248137362a07817edf5b9a5e3b862a6e9",
+ "lock_committed_at_kst": "2026-10-08T17:15:45+09:00",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "nrl_cache_sha256": "84030fcf259288dc4e0c698f7694a99a8231f49d5ca0e726380ec443dcb94560",
+  "investor_data_tree": "83d241cb2a9a",
+  "volume_data_tree": "c3815a396db3",
+  "price_data_tree": "ede403bc756e"
+ },
+ "baseline_check": {
+  "pr45": {
+   "end_nav_won": 11653611,
+   "CAGR_x1": 3.99,
+   "CAGR_x2": 0.34,
+   "MDD": -24.4,
+   "worst_day": -4.5,
+   "positions": 123,
+   "top": "006280",
+   "CAGR_ex_top": 0.84
+  },
+  "mine": {
+   "end_nav_won": 11653611,
+   "CAGR_x1": 3.99,
+   "CAGR_x2": 0.34,
+   "MDD": -24.4,
+   "worst_day": -4.5,
+   "positions": 123,
+   "top": "006280",
+   "CAGR_ex_top": 0.84
+  },
+  "same": true
+ },
+ "rules": [
+  "B",
+  "I",
+  "P",
+  "IP"
+ ],
+ "scope": "I · P는 진입 행 nrl.tier == '정배열' 분기에만 적용 · 추세 분기 그대로",
+ "runs": {
+  "baseline_shared_with_train": 3,
+  "train": 6,
+  "ex_top": 3,
+  "cut_test": 4,
+  "post_selection": 4,
+  "total": 20
+ },
+ "capital_won": 10000000,
+ "cost_stress": [
+  1,
+  2
+ ],
+ "train": [
+  "2017-02-01",
+  "2020-12-31"
+ ],
+ "elimination": "하루 TWR −15% 넘음(1배 · 2배) · 2배 CAGR ≤ 0 · 최대 이익 종목 제외 1배 CAGR ≤ 0",
+ "selection_rule": "통과판 중 비용 2배 CAGR 최고(반올림 전) · 1%p 안이면 비용 2배 회전율 → 비용 2배 MDD → B,I,P,IP",
+ "not_elimination": [
+  "달력월 −15%",
+  "MDD(비교 항목)"
+ ],
+ "passed": [
+  "B",
+  "I",
+  "P",
+  "IP"
+ ],
+ "chosen": "I",
+ "cut_test_all_pass": true,
+ "verdict": "개선 없음",
+ "verdict_note": "Train 선택 I는 전체 비용 뒤 복리가 B보다 낮음(1배 22.33 vs 24.28 · 2배 16.77 vs 18.64) · P는 Train에서도 효과 없음 · 가설 종료",
+ "rl_note": "결과 피드백 공동 개선 · 강화학습 모델 학습 아님",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/LOCK.json",
+  "evidence/diag.log",
+  "evidence/ef_diag.json",
+  "evidence/ef_train.json",
+  "evidence/fills_train_B_x1.json",
+  "evidence/fills_train_IP_x1.json",
+  "evidence/fills_train_I_x1.json",
+  "evidence/fills_train_P_x1.json",
+  "evidence/nav_full_B_x1.csv",
+  "evidence/nav_full_I_x1.csv",
+  "evidence/nav_train_B_x1.csv",
+  "evidence/nav_train_B_x2.csv",
+  "evidence/nav_train_IP_x1.csv",
+  "evidence/nav_train_IP_x2.csv",
+  "evidence/nav_train_I_x1.csv",
+  "evidence/nav_train_I_x2.csv",
+  "evidence/nav_train_P_x1.csv",
+  "evidence/nav_train_P_x2.csv",
+  "evidence/train.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "d41a3db149e5d8d8f508d0a9fd5a1f0842a5dc985b7937f413270b036bbbf465"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "da0dfbe88ee97a4fe4bae7082de6cd25a91a01f930225b4ec33e72e51368b846"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/daily_exec.py",
+   "sha256": "152af023325adbddf97c7d07104339fdb5046248e37a4632b60d0376e99d4ef9"
+  },
+  {
+   "path": "code/ef_d1.py",
+   "sha256": "0620c3f54231d0e69b7bb98f8a296bd13eae1e95e194c3958f976e639daf6e59"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/mr_d1.py",
+   "sha256": "2a4a1a8358d291dbbcc20b2220d6dc6f577d5301a4d4db4226d652a9a5d5516d"
+  },
+  {
+   "path": "code/rules.py",
+   "sha256": "121852ad8de4b275a379d5c479d60bd9d82d96ef52bfab9a594c9a7e78a74eff"
+  },
+  {
+   "path": "evidence/LOCK.json",
+   "sha256": "e5dda3ca06607fa7197dbebe4e1b8c324a24b84194046cb57bbcefe868b9d017"
+  },
+  {
+   "path": "evidence/diag.log",
+   "sha256": "fc0ee43b128d8d534ffab3466c17185267c0f09f8c67c337ea566a27c2c39de5"
+  },
+  {
+   "path": "evidence/ef_diag.json",
+   "sha256": "8a677c2a9ac17c3aa394e98661473709cbd429998a96f76ba445c972077aa2f1"
+  },
+  {
+   "path": "evidence/ef_train.json",
+   "sha256": "41f94dffbd275ab5d31fb8b60f0fa03b104327330c5d5c236d57c25d43609085"
+  },
+  {
+   "path": "evidence/fills_train_B_x1.json",
+   "sha256": "8cb78af0fa8a1edf9621a4bab1e322535f8f655a71d7e3c19baa91e472a1f71e"
+  },
+  {
+   "path": "evidence/fills_train_IP_x1.json",
+   "sha256": "fdcc906e6da728781b068833ccee6fa8e0ad43dc8559df9aabb547b4f88d862d"
+  },
+  {
+   "path": "evidence/fills_train_I_x1.json",
+   "sha256": "370017549f980809ebcd53f50698a8e59c9340cfe883cc032e249559287b5ba0"
+  },
+  {
+   "path": "evidence/fills_train_P_x1.json",
+   "sha256": "1d45d796fce1c54c053509fc4ea9da27dd5dd8df37d6f2b2fff5a007e7d4b547"
+  },
+  {
+   "path": "evidence/nav_full_B_x1.csv",
+   "sha256": "e34823b8d33846a391287d386a700f4c0998dd3f1130a7edb3d79ffcca28c332"
+  },
+  {
+   "path": "evidence/nav_full_I_x1.csv",
+   "sha256": "30e842275a6e5e73e75e4fc1e9534135d7cb4226c1d5761cc5537c74fd834603"
+  },
+  {
+   "path": "evidence/nav_train_B_x1.csv",
+   "sha256": "d90f57a8629cd3b1135c0c282b2c9ca2b80aceb4ceee23bd43fc3bcc3e0d4e77"
+  },
+  {
+   "path": "evidence/nav_train_B_x2.csv",
+   "sha256": "a24962d81fe8737ec027db37451d5a810183277d4c092764521b8a0f9141ac4b"
+  },
+  {
+   "path": "evidence/nav_train_IP_x1.csv",
+   "sha256": "67cb3a387f8bde6553c0f8692b56634f9357b9d2042e1d74e3566fb8ee6a17d8"
+  },
+  {
+   "path": "evidence/nav_train_IP_x2.csv",
+   "sha256": "308e2f4779ccc078471c8e479888fb90d50d49e9caff2748421b1a71b4c66bf9"
+  },
+  {
+   "path": "evidence/nav_train_I_x1.csv",
+   "sha256": "5828c38240da5e2605f841830bb925b58b2faf020b770d9d91ab95cc5b0eef33"
+  },
+  {
+   "path": "evidence/nav_train_I_x2.csv",
+   "sha256": "6ee0e84d189ae2ee68442c039ff1839433be77786d79fb6ba4ec02abb4babeae"
+  },
+  {
+   "path": "evidence/nav_train_P_x1.csv",
+   "sha256": "1aed07b1f78b07e2ccff0068b8db5a86101b71f8416a26ff46ae2cd65facf06c"
+  },
+  {
+   "path": "evidence/nav_train_P_x2.csv",
+   "sha256": "2a8b69d3d29f2404c52968969881a4c434a99f0c51bbdad1740aece4d1ee728d"
+  },
+  {
+   "path": "evidence/train.log",
+   "sha256": "9e8dec8b7513d09529bbf27d54c215a37e76c85e22bdb001a321dab229546934"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "91b28c3417848461a04fd485d45934aadd11d315ee55c74f0617310a17c6899c"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/ema-flow-0001",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T17:18:50+09:00"
+}

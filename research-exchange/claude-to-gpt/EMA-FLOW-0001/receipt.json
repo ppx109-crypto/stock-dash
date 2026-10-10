@@ -1,0 +1,24 @@
+{
+ "schema_version": 1,
+ "task_id": "EMA-FLOW-0001",
+ "chain_id": "MAX-RETURN-20261008",
+ "round": 4,
+ "input": {
+  "pr": 50,
+  "head_sha": "48ecbfc44f2a2f48f04035402260c5334925e8ab",
+  "read_files": [
+   "REVIEW.md",
+   "TASK.md",
+   "PREREG.md",
+   "receipt.json",
+   "COLLABORATION.md"
+  ]
+ },
+ "prior": {
+  "pr": 45,
+  "head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+  "reused": "daily_exec.py · mr_d1.py · kernel2.py · cost_contract.py · common.py · rules.py(바이트 동일) · ef_d1.py 새로 씀"
+ },
+ "base_main_sha": "319eea3da0cfaba8d414d4981b5c739a8dd405d1",
+ "received_at_kst": "2026-10-08T17:06:54+09:00 이후(입력 head 커밋 시각) · 17:12:49 PREREG 커밋 전"
+}

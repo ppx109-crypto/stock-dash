@@ -1,0 +1,21 @@
+준비 36 초 {'days': ['20170201', '20260916'], 'n_days': 2360, 'picks_days': 1116, 'picks_rows': 3712, 'row_i_date_mismatch': 0, 'br_days_equal': True}
+거래량 결합 235 / 235
+기준 맞춤 {'end_nav_won': 11653611, 'CAGR_x1': 3.99, 'CAGR_x2': 0.34, 'MDD': -24.4, 'worst_day': -4.5, 'positions': 123, 'top': '006280', 'CAGR_ex_top': 0.84} 같음
+Train B 1.0 3.99 -24.4 -4.5 20171130 0 포지션 123 P 0 0 I {}
+Train B 2.0 0.34 -30.6 -4.31 20171130 0 포지션 123 P 0 0 I {}
+제외 B 006280 0.8424 {'day_ok': True, 'cagr2_pos': True, 'ex_top_pos': True}
+Train I 1.0 6.47 -21.01 -4.12 20171130 0 포지션 109 P 0 0 I {'i_passed': 2772, 'i_rejected': 614}
+Train I 2.0 2.82 -25.53 -4.21 20171130 0 포지션 109 P 0 0 I {'i_passed': 2772, 'i_rejected': 614}
+제외 I 006280 3.0739 {'day_ok': True, 'cagr2_pos': True, 'ex_top_pos': True}
+Train P 1.0 4.27 -19.72 -4.5 20171130 0 포지션 123 P 35 34 I {}
+Train P 2.0 0.32 -27.41 -4.57 20171130 0 포지션 123 P 29 28 I {}
+제외 P 006280 0.6579 {'day_ok': True, 'cagr2_pos': True, 'ex_top_pos': True}
+Train IP 1.0 6.39 -18.77 -4.1 20171130 0 포지션 109 P 30 29 I {'i_passed': 2772, 'i_rejected': 614}
+Train IP 2.0 2.59 -23.28 -4.03 20171130 0 포지션 109 P 26 25 I {'i_passed': 2772, 'i_rejected': 614}
+제외 IP 207940 5.7732 {'day_ok': True, 'cagr2_pos': True, 'ex_top_pos': True}
+선택 I ['B', 'I', 'P', 'IP']
+자르기 B 20191231 {'fills_equal': True, 'n_fills': 199, 'nav_equal': True, 'n_days': 713}
+자르기 I 20191231 {'fills_equal': True, 'n_fills': 171, 'nav_equal': True, 'n_days': 713}
+자르기 B 20200930 {'fills_equal': True, 'n_fills': 229, 'nav_equal': True, 'n_days': 900}
+자르기 I 20200930 {'fills_equal': True, 'n_fills': 199, 'nav_equal': True, 'n_days': 900}
+끝 train
