@@ -1,0 +1,26 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-FORWARD-0002",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 14,
+ "status": "READY",
+ "input": {
+  "pr": 71,
+  "head_sha": "9199574f94e5347a2d617ad05d1135e3a587e32f",
+  "read_files": [
+   "TASK.md",
+   "PREREG.md",
+   "receipt.json"
+  ]
+ },
+ "source": {
+  "pr": 70,
+  "head_sha": "5f32f9a31aedb061f2a2c67c963227849ef18ef5"
+ },
+ "fixed_rule": {
+  "pr": 68,
+  "head_sha": "2142e181245cacfca669ba3bdae8b41154cc1c86"
+ },
+ "approval": "2026-10-08 20:52 KST user go: existing-data rebuild and September holdout single use",
+ "base_main_sha": "438ade6d017cec576f2bfbb599b7bab22202db13"
+}

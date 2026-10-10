@@ -1,0 +1,14 @@
+준비 28 초 {'days': ['20170201', '20260930'], 'n_days': 2368, 'picks_days': 1116, 'picks_rows': 3712, 'row_i_date_mismatch': 0, 'br_days_equal': True}
+달력 20170201 20260930 2368
+신호 경로 P4 20250918 20260930 250 17273778
+연속성 {'pr68_days': 230, 'first_day': '20250918', 'last_day': '20260831', 'identical_to_pr68': True} []
+9월 공통 {'calendar_sep': ['20260901', '20260902', '20260903', '20260904', '20260907', '20260908', '20260909', '20260910', '20260911', '20260914', '20260915', '20260916', '20260917', '20260918', '20260921', '20260922', '20260923', '20260928', '20260929', '20260930'], 'n_calendar': 20, 'd1_window': 20, 'etf_complete': 20, 'm15_days': 20, 'common': 20, 'missing_by_sleeve': {'D1/BASKET': [], 'ETF': [], 'M15': []}}
+통제 P4(9월) 9938875 {'D1': 2500000, 'M15': 2500000, 'ETF': 2472492, 'BASKET': 2466382} · E [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+후보 D1 2500000 매매 0 {'locked': 0, 'no_price': 0}
+후보 ETF 2469298 매매 8 {'locked': 0, 'no_price': 0}
+후보 BASKET 2466382 매매 2 {'locked': 0, 'no_price': 8}
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/rf/rf_daily.py", line 308, in <module>
+    assert len(navC["M15"]) == len(WIN), len(navC["M15"])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1
