@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-HALF-BREAKEVEN-0001",
+ "chain_id": "D1-IMPROVEMENT",
+ "lead": "claude",
+ "round": 1,
+ "status": "READY",
+ "verdict": "REJECTED_TRAIN(앞 반 탈락 · 뒤 반 미실행)",
+ "base_commit": "b5aef09c91ebfbb27b9fb3799cca7147194267a8",
+ "prereg_commit": "0075dcfa4cbaf8945bb85cc76c5cd7ca314a4cb1",
+ "code_commit": "3363f8cf1df04e36244e4753e5878dea70e75d36",
+ "result_commit": "0d89a29ae428966dd0a08fd12eee169f76eb20ff",
+ "completed_at_kst": "2026-10-09T09:34:32+09:00",
+ "data": {"nrl_cache_sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57", "features_json_bytes": 4256874748},
+ "train_side": {"V0": {"연수익": 13.86, "폭": 1.42, "골": -6.6, "행운뺌": 12.65, "큰2건뺌": 8.9},
+                "V1": {"연수익": 11.7, "폭": 1.1, "골": -7.0, "행운뺌": 10.49, "큰2건뺌": 6.74},
+                "V2": {"연수익": 11.7, "폭": 1.1, "골": -7.0, "행운뺌": 10.49, "큰2건뺌": 6.74}},
+ "test_side_run": false,
+ "executions": {"engine_runs_official": 1, "data_format_check": 1, "guard_py": "unknown_but_nonzero", "repo_strategy_code_executed": "research/z076.py 1회(엔진 시험)", "tests_executed": 0, "workflow_executed": 0, "external_calls": 0},
+ "file_sha256": {
+  "PREREG.md": "cd71ea6c491ff3efb12e363564e844cae71cdb17804a2a2cc5b01474c0a7a44a",
+  "REPORT.md": "bf6f124442effeb5a40738427c77c6f44d9a4e5cb228ff1027b8cd0c96d3693a",
+  "code/z076.py": "87e761f1e2e6401c622235cb62da18f0ef60c782882a961b9e046e0529ef81bb",
+  "evidence/stage1.json": "42933bafef3fdaffba8cf9f26b228cd0cb8e60f9a25549368b2a13a5212569fb",
+  "evidence/run.log": "9b27bca1f9fbc4c75484947dac9a98e2e685c112f21f349dc272779f5730635f"
+ },
+ "performance_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}
