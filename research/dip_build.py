@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path("/home/user/stock-dash")
 os.chdir(ROOT)
-CUT = "20221229"
+CUT = os.getenv("DIP_CUT", "20221229")      # 개발 = 2022-12-29 · 마지막 시험(H) 굽기만 20260916(FINAL-PREREG)
 FROM = "20161001"
 WARM = 120
 TOP = 100
