@@ -1,0 +1,30 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-BEAR-0010",
+ "chain_id": "D1-ROBUST",
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "REJECTED",
+ "source_pr": 133,
+ "code_commit": "1bc57e86",
+ "completed_at_kst": "2026-10-09T15:01:33+09:00",
+ "evidence_paths": [
+  "evidence/cushion_raw.json",
+  "evidence/cushion_adj.json",
+  "evidence/run-raw.log",
+  "evidence/run-adj.log"
+ ],
+ "file_sha256": {
+  "evidence/cushion_raw.json": "aaf38581cc5e10c832086afcd733d44db3c4592f593fb488aafdd3f738ccc687",
+  "evidence/cushion_adj.json": "67c81595c349688e945f753a98420449e9b27f3bc76e4e371a737275f0681431",
+  "evidence/run-raw.log": "29e2268e22f43de0ce6647bca03f012fdcd75ac883292adcf9d1df4d20452fc3",
+  "evidence/run-adj.log": "4fbce98756862d1b47edf3a0649740579430a0219ee96e66a35aed6bda5e0eec",
+  "REPORT.md": "3fb198676322df983a25dfe6ab97ba1b7643e4eddeef082a5fed55c9a0c9141a",
+  "PREREG.md": "d7c30efdc6b0d9d61edc748815a2d6f7367f15ee40170959902b8d2da6277985"
+ },
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0
+}

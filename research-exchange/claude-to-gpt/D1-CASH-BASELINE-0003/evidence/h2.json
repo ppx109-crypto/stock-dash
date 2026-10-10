@@ -1,0 +1,794 @@
+{
+ "task": "D1-CASH-BASELINE-0003 H2",
+ "cap": 0.4,
+ "trim_cost": 0.0025,
+ "앞": {
+  "seeds": {
+   "V0": [
+    {
+     "seed": 0,
+     "cagr": 19.88,
+     "end_nav": 2.0668,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20180328",
+      -11.261
+     ],
+     "capped_buys": 42,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 1,
+     "cagr": 20.41,
+     "end_nav": 2.1035,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.224
+     ],
+     "capped_buys": 39,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 2,
+     "cagr": 21.48,
+     "end_nav": 2.1792,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.224
+     ],
+     "capped_buys": 42,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 3,
+     "cagr": 19.88,
+     "end_nav": 2.0668,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20180328",
+      -11.261
+     ],
+     "capped_buys": 42,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 4,
+     "cagr": 18.69,
+     "end_nav": 1.9859,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20180328",
+      -12.052
+     ],
+     "capped_buys": 41,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 5,
+     "cagr": 20.0,
+     "end_nav": 2.0752,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20180328",
+      -11.261
+     ],
+     "capped_buys": 42,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 6,
+     "cagr": 19.88,
+     "end_nav": 2.0668,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20180328",
+      -11.261
+     ],
+     "capped_buys": 42,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    },
+    {
+     "seed": 7,
+     "cagr": 19.38,
+     "end_nav": 2.0329,
+     "worst_day": [
+      "20201208",
+      -5.851
+     ],
+     "worst_month": [
+      "201802",
+      -4.073
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.224
+     ],
+     "capped_buys": 35,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 981
+    }
+   ],
+   "V1": [
+    {
+     "seed": 0,
+     "cagr": 20.05,
+     "end_nav": 2.0787,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 42,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 1,
+     "cagr": 20.58,
+     "end_nav": 2.1155,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 38,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 2,
+     "cagr": 21.65,
+     "end_nav": 2.1915,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 41,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 3,
+     "cagr": 20.05,
+     "end_nav": 2.0787,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 42,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 4,
+     "cagr": 18.86,
+     "end_nav": 1.9973,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20180328",
+      -11.642
+     ],
+     "capped_buys": 41,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 5,
+     "cagr": 20.17,
+     "end_nav": 2.087,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 41,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 6,
+     "cagr": 20.05,
+     "end_nav": 2.0787,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 42,
+     "trims": 42,
+     "trim_value_sum_nav": 0.152,
+     "days": 981
+    },
+    {
+     "seed": 7,
+     "cagr": 19.54,
+     "end_nav": 2.0436,
+     "worst_day": [
+      "20201208",
+      -5.711
+     ],
+     "worst_month": [
+      "201802",
+      -3.991
+     ],
+     "mdd_daily": [
+      "20201027",
+      -11.189
+     ],
+     "capped_buys": 34,
+     "trims": 44,
+     "trim_value_sum_nav": 0.157,
+     "days": 981
+    }
+   ]
+  },
+  "summary": {
+   "V0": {
+    "cagr_median": 19.88,
+    "cagr_spread": 2.79,
+    "worst_day": [
+     "20201208",
+     -5.851
+    ],
+    "worst_month": [
+     "201802",
+     -4.073
+    ],
+    "mdd": [
+     "20180328",
+     -12.052
+    ],
+    "trims_median": 0
+   },
+   "V1": {
+    "cagr_median": 20.05,
+    "cagr_spread": 2.79,
+    "worst_day": [
+     "20201208",
+     -5.711
+    ],
+    "worst_month": [
+     "201802",
+     -3.991
+    ],
+    "mdd": [
+     "20180328",
+     -11.642
+    ],
+    "trims_median": 42
+   }
+  },
+  "v0_equals_baseline": true,
+  "cut_check_V1_seed0": [
+   {
+    "T": "20190630",
+    "days": 608,
+    "ok": true,
+    "max_diff": 0.0
+   }
+  ]
+ },
+ "뒤": {
+  "seeds": {
+   "V0": [
+    {
+     "seed": 0,
+     "cagr": 61.31,
+     "end_nav": 15.3363,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -27.642
+     ],
+     "mdd_daily": [
+      "20260729",
+      -36.709
+     ],
+     "capped_buys": 138,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 1,
+     "cagr": 60.02,
+     "end_nav": 14.6515,
+     "worst_day": [
+      "20260304",
+      -12.998
+     ],
+     "worst_month": [
+      "202606",
+      -27.643
+     ],
+     "mdd_daily": [
+      "20260729",
+      -36.71
+     ],
+     "capped_buys": 136,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 2,
+     "cagr": 59.42,
+     "end_nav": 14.3404,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -27.635
+     ],
+     "mdd_daily": [
+      "20260729",
+      -36.692
+     ],
+     "capped_buys": 137,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 3,
+     "cagr": 60.99,
+     "end_nav": 15.1652,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -27.635
+     ],
+     "mdd_daily": [
+      "20260729",
+      -36.692
+     ],
+     "capped_buys": 135,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 4,
+     "cagr": 58.85,
+     "end_nav": 14.0497,
+     "worst_day": [
+      "20260304",
+      -12.876
+     ],
+     "worst_month": [
+      "202606",
+      -28.063
+     ],
+     "mdd_daily": [
+      "20260729",
+      -37.077
+     ],
+     "capped_buys": 138,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 5,
+     "cagr": 60.72,
+     "end_nav": 15.0193,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -27.635
+     ],
+     "mdd_daily": [
+      "20260729",
+      -36.692
+     ],
+     "capped_buys": 138,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 6,
+     "cagr": 59.65,
+     "end_nav": 14.459,
+     "worst_day": [
+      "20260304",
+      -12.876
+     ],
+     "worst_month": [
+      "202606",
+      -28.063
+     ],
+     "mdd_daily": [
+      "20260729",
+      -37.077
+     ],
+     "capped_buys": 134,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    },
+    {
+     "seed": 7,
+     "cagr": 58.73,
+     "end_nav": 13.9907,
+     "worst_day": [
+      "20260304",
+      -12.876
+     ],
+     "worst_month": [
+      "202606",
+      -27.642
+     ],
+     "mdd_daily": [
+      "20260729",
+      -36.709
+     ],
+     "capped_buys": 139,
+     "trims": 0,
+     "trim_value_sum_nav": 0.0,
+     "days": 1399
+    }
+   ],
+   "V1": [
+    {
+     "seed": 0,
+     "cagr": 58.5,
+     "end_nav": 13.873,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -22.634
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.529
+     ],
+     "capped_buys": 127,
+     "trims": 72,
+     "trim_value_sum_nav": 0.801,
+     "days": 1399
+    },
+    {
+     "seed": 1,
+     "cagr": 57.41,
+     "end_nav": 13.3363,
+     "worst_day": [
+      "20260304",
+      -12.998
+     ],
+     "worst_month": [
+      "202606",
+      -22.634
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.529
+     ],
+     "capped_buys": 125,
+     "trims": 81,
+     "trim_value_sum_nav": 0.873,
+     "days": 1399
+    },
+    {
+     "seed": 2,
+     "cagr": 56.63,
+     "end_nav": 12.9661,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -22.634
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.529
+     ],
+     "capped_buys": 123,
+     "trims": 70,
+     "trim_value_sum_nav": 0.788,
+     "days": 1399
+    },
+    {
+     "seed": 3,
+     "cagr": 58.14,
+     "end_nav": 13.6937,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -22.634
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.529
+     ],
+     "capped_buys": 122,
+     "trims": 71,
+     "trim_value_sum_nav": 0.803,
+     "days": 1399
+    },
+    {
+     "seed": 4,
+     "cagr": 55.98,
+     "end_nav": 12.662,
+     "worst_day": [
+      "20260304",
+      -12.876
+     ],
+     "worst_month": [
+      "202606",
+      -23.081
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.925
+     ],
+     "capped_buys": 126,
+     "trims": 76,
+     "trim_value_sum_nav": 0.818,
+     "days": 1399
+    },
+    {
+     "seed": 5,
+     "cagr": 57.92,
+     "end_nav": 13.5861,
+     "worst_day": [
+      "20260304",
+      -12.869
+     ],
+     "worst_month": [
+      "202606",
+      -22.634
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.529
+     ],
+     "capped_buys": 125,
+     "trims": 74,
+     "trim_value_sum_nav": 0.812,
+     "days": 1399
+    },
+    {
+     "seed": 6,
+     "cagr": 56.85,
+     "end_nav": 13.0676,
+     "worst_day": [
+      "20260304",
+      -12.876
+     ],
+     "worst_month": [
+      "202606",
+      -23.081
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.925
+     ],
+     "capped_buys": 122,
+     "trims": 72,
+     "trim_value_sum_nav": 0.801,
+     "days": 1399
+    },
+    {
+     "seed": 7,
+     "cagr": 55.97,
+     "end_nav": 12.6557,
+     "worst_day": [
+      "20260304",
+      -12.876
+     ],
+     "worst_month": [
+      "202606",
+      -22.634
+     ],
+     "mdd_daily": [
+      "20260729",
+      -31.529
+     ],
+     "capped_buys": 128,
+     "trims": 72,
+     "trim_value_sum_nav": 0.801,
+     "days": 1399
+    }
+   ]
+  },
+  "summary": {
+   "V0": {
+    "cagr_median": 60.02,
+    "cagr_spread": 2.58,
+    "worst_day": [
+     "20260304",
+     -12.998
+    ],
+    "worst_month": [
+     "202606",
+     -28.063
+    ],
+    "mdd": [
+     "20260729",
+     -37.077
+    ],
+    "trims_median": 0
+   },
+   "V1": {
+    "cagr_median": 57.41,
+    "cagr_spread": 2.53,
+    "worst_day": [
+     "20260304",
+     -12.998
+    ],
+    "worst_month": [
+     "202606",
+     -23.081
+    ],
+    "mdd": [
+     "20260729",
+     -31.925
+    ],
+    "trims_median": 72
+   }
+  },
+  "v0_equals_baseline": true,
+  "cut_check_V1_seed0": [
+   {
+    "T": "20231231",
+    "days": 739,
+    "ok": true,
+    "max_diff": 0.0
+   },
+   {
+    "T": "20250630",
+    "days": 1101,
+    "ok": true,
+    "max_diff": 0.0
+   }
+  ]
+ },
+ "limits_ok": false,
+ "positive": true,
+ "cuts_ok": true,
+ "better_than_v0": true,
+ "verdict": "NOT_ENOUGH(손실은 줄었으나 한도 밖)"
+}

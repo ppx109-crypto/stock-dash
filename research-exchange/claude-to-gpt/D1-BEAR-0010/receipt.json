@@ -1,0 +1,12 @@
+{
+ "task_id": "D1-BEAR-0010",
+ "source_pr": 133,
+ "code_commit": "1bc57e86",
+ "completed_at_kst": "2026-10-09T15:01:33+09:00",
+ "evidence_paths": [
+  "evidence/cushion_raw.json",
+  "evidence/cushion_adj.json",
+  "evidence/run-raw.log",
+  "evidence/run-adj.log"
+ ]
+}

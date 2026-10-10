@@ -1,0 +1,14 @@
+{
+ "task_id": "ACC-VOL-0006",
+ "source_pr": 133,
+ "source_head_sha": "e81adfc87cb06d1753fc6928008a61aa5ef83ae0",
+ "completed_at_kst": "2026-10-09T14:36:49+09:00",
+ "evidence_paths": [
+  "evidence/run-a2.log",
+  "evidence/run-a0.log",
+  "evidence/regime-acc.log",
+  "code/z085.py",
+  "code/regime_acc.py"
+ ],
+ "note": "manifest 공통 계약 필드 보충(GPT 검토 지적) · 결과 수치는 바꾸지 않음"
+}

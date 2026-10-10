@@ -1,0 +1,15 @@
+{
+ "task_id": "D1-VOL2-VALIDATE-0005",
+ "source_pr": 133,
+ "source_head_sha": "6e8b4703cf6cf52df7c450574133abb5fabea2d6",
+ "completed_at_kst": "2026-10-09T14:20:56+09:00",
+ "evidence_paths": [
+  "evidence/validate_raw.json",
+  "evidence/validate_adj.json",
+  "evidence/check1515.json",
+  "evidence/run-v1-raw.log",
+  "evidence/run-v2-adj.log",
+  "evidence/run-v3-1515.log"
+ ],
+ "note": "manifest 공통 계약 필드 보충(GPT 검토 지적) · 결과 수치는 바꾸지 않음"
+}

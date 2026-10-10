@@ -1,0 +1,23 @@
+{
+ "schema_version": 1,
+ "task_id": "D1-REGIME-0004",
+ "chain_id": "D1-ROBUST",
+ "lead": "claude",
+ "status": "READY",
+ "verdict": "H4 REJECTED · R1 하루·달 통과 / 고점 대비 포함 시 실패 · 진단은 관찰",
+ "performance_verified": false,
+ "nav_verified": false,
+ "paper_validation_ready": false,
+ "orders": 0,
+ "operations_changed": 0,
+ "round": 102,
+ "source_pr": 133,
+ "source_head_sha": "edc254babfff36b14615a42f75cc25ac9ef1d4d2",
+ "code_commit": "c823063f",
+ "prereg_commits_kst": {
+  "c823063f": "2026-10-09T14:09:33+09:00",
+  "aacdfd01": "2026-10-09T14:12:03+09:00"
+ },
+ "completed_at_kst": "2026-10-09T14:13:26+09:00",
+ "result_pr": 133
+}
