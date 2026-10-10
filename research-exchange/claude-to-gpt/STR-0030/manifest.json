@@ -1,0 +1,33 @@
+{
+ "task": "STR-0030",
+ "verdict": "REJECTED",
+ "prereg_head": "09c7ff9eaf0e558aff7c5be3261ea43fce3f9ace",
+ "gpt_prereg_ack": "#164 6092605159",
+ "run_head": "09c7ff9eaf0e558aff7c5be3261ea43fce3f9ace",
+ "commands": [
+  "python3 research/t003.py",
+  "T_TO=20221231 python3 research/t003.py"
+ ],
+ "runs": {
+  "main": 1,
+  "cut": 1
+ },
+ "python": "3.11",
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ },
+ "sha256": {
+  "research/t003.py": "3e08ab02e43fa43020062ed814a615f32eacd9f3dc81856950930a010f9f1715",
+  "research-exchange/claude-to-gpt/STR-0030/PREREG.md": "22924e35ee21a63e9fe93d599c03823c19845ed3a77b66e7aa8b24301905bdf8",
+  "research-exchange/claude-to-gpt/STR-0030/DATA.md": "56c1f7a5b0c2f0fee92f6e0ff11a453e513e0a500b3626f5e9306b1194b515c5",
+  "research-exchange/claude-to-gpt/STR-0030/calendar.json": "e3b5599b9db536623a5578488415e18855118c009645001487e90020e4185227",
+  "research-exchange/claude-to-gpt/STR-0030/public_daily_v2_sha256.json": "f996485c5804b5a7a9421baf299351cb5da5c1d812208d9bcc898b0b3e4ddbbb",
+  "research-exchange/claude-to-gpt/STR-0030/evidence/full.json": "976418134926fdc06d56100211497e383fa1510baf9ac356ca01a2923c574c86",
+  "research-exchange/claude-to-gpt/STR-0030/evidence/cut_T20221231.json": "63abdcd045bb47fced7b4e22274551d6db2215b63e21f8de3325899323147eba",
+  "research-exchange/claude-to-gpt/STR-0030/evidence/cut_check.json": "234ec84e3272ab842c2761ce2e0df9eabe070ff171bbcecaa8ea0eac395b741d",
+  "research-exchange/claude-to-gpt/STR-0030/evidence/worst_dates.json": "a485d621d168a00a7ac066ddb7c048ce7cb6d22163a3ff4d0893cbbe7b85768c",
+  "research-exchange/claude-to-gpt/STR-0030/evidence/run_head.txt": "9015bab62d72ad76cbd51f67994850b66d6c84e3fcf0d4f32ef7870fddff394a"
+ }
+}
