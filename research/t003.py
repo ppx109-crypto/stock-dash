@@ -1,13 +1,16 @@
-"""STR-0030(NEW-BOT-0027 C1) — 종목 단기 반전: 5거래일마다, 전날 기준 시총 100위(상장폐지 포함 · public-daily) 가운데
-전날까지 5거래일 시총 변화가 가장 나쁜 10종목을 그날 종가에 똑같이 사서 다음 바꿔 담는 날(5거래일 뒤) 종가에 팖.
-- 대상 Universe(t) = t−1 거래일 public-daily 시총 순위 100위(모집단: 6자리 숫자 코드 · 끝자리 5/7/9 제외 · KOSPI + KOSDAQ). t−1 장 끝 뒤 자료라 t에 씀.
-- 신호 r5 = 시총(t−1) ÷ 시총(t−6) − 1(두 날 모두 위 400에 있어야 함). 수익 = 시총(판 날) ÷ 시총(산 날)(쪼개기에 흔들리지 않음 · 증자는 부풀림 — 한계).
-- 산 날 시총이 없거나 거래량 0(정지)인 종목은 건너뛰고 다음 순위로 채움. 판 날(또는 들고 있는 날) 시총이 없으면 두 가정: lo = 그 몫 0원 · hi = 마지막으로 값이 있는 날 값.
-- 대조: 같은 Universe(t) 전체를 똑같이(같은 날 · 같은 비용 · 같은 결손 가정).
-- 비용: 왕복 0.35%(편도 c = 1 − √(1 − 왕복)) · 스트레스 0.60%. 날마다 평가 NAV · 하루 · 달력 월 TWR.
-- 달력: TOM-0028 규칙 달력(가격 파일과 따로 · sha256 고정). 자료: public-daily/*.csv(sha256 고정).
+"""STR-0030(NEW-BOT-0027 C1) round 2 — 종목 단기 반전: 5거래일마다, 전날 시총 100위(상장폐지 포함 · public-daily-v2) 가운데
+전날까지 5거래일 수정 수익이 가장 나쁜 10종목을 그날 종가에 똑같이 사서 다음 바꿔 담는 날(5거래일 뒤) 종가에 팖.
+round 2(GPT #164 6091687311 고칠 것 4개 반영):
+- 수익 · NAV는 시총 비율이 아니라 거래소 기준가로 맞춘 날마다 수익 g = 종가 ÷ (종가 − 대비)를 이은 값(분할 · 무상증자 · 권리락 맞춤 · 배당 빠짐).
+  시총은 Universe 순위에만 씀. 신호 r5도 같은 g를 5일 이은 값.
+- 고른 10종목은 전날 p까지 자료로만 고정(대체 없음). 산 날 t에 줄이 없거나 거래량 0이면 '못 삼': lo = 그 몫 0원 · hi = 그 몫 현금.
+- NAV는 모든 유효 거래일 종가 뒤 값을 적고, 바꿔 담는 날에는 판 비용 · 새로 산 비용을 그날 NAV에 모두 넣음.
+- 달력: TOM-0028 규칙 달력에서 공식 휴장 20260717을 뺀 유효 거래일 달력(STR-0030/calendar.json · sha256 고정)에서 5칸 간격.
+  유효 거래일인데 자료가 통째로 없으면 NEEDS_DATA로 멈춤.
+- 들고 있는 날 · 판 날 줄이 없으면(상장폐지 · 흡수합병 · 위 400 밖 · 대비 빈칸 · 정지 뒤 기준가를 새로 정한 거래재개 날) lo = 그 뒤 0원 · hi = 그 앞 값에서 멈춤.
+  판 날 거래량 0(정지)이면 lo = 0원 · hi = 그날 종가 값(판 비용은 냄).
 사전등록: research-exchange/claude-to-gpt/STR-0030/PREREG.md
-python3 research/t003.py            (T_TO=YYYYMMDD면 public-daily를 그날까지만 읽음 — 자르기 시험)"""
+python3 research/t003.py            (T_TO=YYYYMMDD면 public-daily-v2를 그날까지만 읽음 — 자르기 시험)"""
 import csv
 import hashlib
 import json
@@ -20,10 +23,11 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-CAL = ROOT / "research-exchange/claude-to-gpt/TOM-0028/calendar.json"
-PD = ROOT / "public-daily"
-SHA = {"calendar.json": "533806486ea09430e12fc0a67549d8f5a54b20be014b24457ec675a3e9cd7939"}
-SHA_PD = json.loads((ROOT / "research-exchange/claude-to-gpt/STR-0030/public_daily_sha256.json").read_text())
+BOX = ROOT / "research-exchange/claude-to-gpt/STR-0030"
+CAL = BOX / "calendar.json"
+PD = ROOT / "public-daily-v2"
+SHA_CAL = "e3b5599b9db536623a5578488415e18855118c009645001487e90020e4185227"
+SHA_PD = json.loads((BOX / "public_daily_v2_sha256.json").read_text())
 TO = os.getenv("T_TO", "")
 TOP, PICK, LOOK, STEP = 100, 10, 5, 5
 COST, STRESS = 0.0035, 0.0060
@@ -42,133 +46,146 @@ def pop(code):
 
 def check():
     got = hashlib.sha256(CAL.read_bytes()).hexdigest()
-    if got != SHA["calendar.json"]:
+    if got != SHA_CAL:
         sys.exit(f"달력 해시 다름 {got}")
     for name, h in SHA_PD.items():
         g = hashlib.sha256((PD / name).read_bytes()).hexdigest()
         if g != h:
-            sys.exit(f"public-daily 해시 다름 {name} {g}")
+            sys.exit(f"public-daily-v2 해시 다름 {name} {g}")
 
 
 def load():
-    cap, vol, rank_rows = defaultdict(dict), defaultdict(dict), defaultdict(list)
+    """cap[d][c] 시총 · vol[d][c] 거래량 · g[d][c] 그날 수정 수익 · top[d] 그날 순위 100.
+    g 없음(= 그날 줄 없음과 같게 셈): 대비 빈칸 · 기준가(종가 − 대비) ≤ 0 · **앞날 거래량 0(정지)이고 오늘 기준가 ≠ 앞날 종가**
+    (감자 · 재상장 뒤 거래재개는 기준가를 시초가로 새로 정해 대비가 그 틈을 못 담음 — 예: 020560 20210115)."""
+    cap, vol, g, rank_rows, raw = defaultdict(dict), defaultdict(dict), defaultdict(dict), defaultdict(list), defaultdict(dict)
     for name in sorted(SHA_PD):
         with (PD / name).open(encoding="utf-8") as fh:
             for r in csv.DictReader(fh):
                 d = r["날"]
                 if TO and d > TO:
                     continue
-                c = r["코드"]
-                v = float(r["시가총액(억)"])
-                if v > 0:
-                    cap[d][c] = v
-                    vol[d][c] = float(r["거래량"])
-                    if pop(c):
-                        rank_rows[d].append((v, c))
+                c, v, px = r["코드"], float(r["시가총액(억)"]), float(r["종가"])
+                if v <= 0 or px <= 0:
+                    continue
+                cap[d][c] = v
+                vol[d][c] = float(r["거래량"])
+                raw[d][c] = (px, float(r["대비"]) if r["대비"] != "" else None)
+                if pop(c):
+                    rank_rows[d].append((v, c))
     top = {d: [c for _, c in sorted(xs, key=lambda x: (-x[0], x[1]))[:TOP]] for d, xs in rank_rows.items()}
-    cal = [d for d in json.loads(CAL.read_text())["days"] if START <= d <= max(cap)]
-    return cap, vol, top, cal
+    last = max(cap)
+    cal = [d for d in json.loads(CAL.read_text())["days"] if START <= d <= last]
+    hole = [d for d in cal if d not in cap]
+    if hole:
+        sys.exit(f"NEEDS_DATA: 유효 거래일인데 자료가 통째로 없음 {hole}")
+    extra = sorted(d for d in set(cap) - set(cal) if d >= START)
+    if extra:
+        sys.exit(f"NEEDS_DATA: 달력에 없는 날 자료 {extra}")
+    no_vs, resume = 0, []
+    for x, d in enumerate(cal):
+        prev = cal[x - 1] if x else None
+        for c, (px, vs) in raw[d].items():
+            if vs is None or px - vs <= 0:
+                no_vs += 1
+                continue
+            base = px - vs
+            if prev and c in raw[prev] and vol[prev][c] == 0 and abs(base / raw[prev][c][0] - 1) > 1e-9:
+                resume.append([d, c])
+                continue
+            g[d][c] = px / base
+    return cap, vol, g, top, cal, no_vs, resume
 
 
-def schedule(cal, cap):
-    """바꿔 담는 날: 달력 칸 6부터 5칸마다. 그 칸 날 자료가 통째로 없으면(달력에 없는 휴장 · 예: 20260717) 자료 있는 다음 칸으로 미룸."""
+def r5(g, cal, p, c):
+    """p 앞 5거래일(p−4 ~ p) 수정 수익을 이은 값 − 1. 하루라도 없으면 None."""
+    x = 1.0
+    for k in range(p - LOOK + 1, p + 1):
+        if c not in g[cal[k]]:
+            return None
+        x *= g[cal[k]][c]
+    return x - 1
+
+
+def cohorts(g, top, cal):
+    """[(산 날 칸 i, 판 날 칸 j 또는 None, 고른 10종목, 대조 종목)]. 고르기는 p = i − 1까지 자료만 씀(t 자료로 바꾸지 않음)."""
+    idx = list(range(LOOK + 1, len(cal), STEP))
     out = []
-    for i in range(LOOK + 1, len(cal), STEP):
-        while i < len(cal) and cal[i] not in cap:
-            i += 1
-        if i < len(cal) and (not out or i > out[-1]):
-            out.append(i)
-    return out
-
-
-def back(cal, cap, i):
-    """칸 i 이하에서 자료가 있는 가장 가까운 칸."""
-    while i >= 0 and cal[i] not in cap:
-        i -= 1
-    return i
-
-
-def cohorts(cap, vol, top, cal):
-    """[(산 날 칸, 판 날 칸, 고른 종목, 대조 종목)]. 다음 바꿔 담는 날이 없으면 열린 채로(판 날 None).
-    전날 = 산 날 앞에서 자료 있는 가장 가까운 칸 · 기준날 = 그 칸에서 달력 5칸 앞(자료 없으면 그 앞 가장 가까운 칸)."""
-    out = []
-    idx = schedule(cal, cap)
     for k, i in enumerate(idx):
-        p = back(cal, cap, i - 1)
-        q = back(cal, cap, p - LOOK)
-        if p < 0 or q < 0:
-            continue
-        t, prev, base = cal[i], cal[p], cal[q]
-        uni = top.get(prev, [])
-        r5 = [(cap[prev][c] / cap[base][c] - 1, c) for c in uni if c in cap[base]]
-        ok = lambda c: c in cap[t] and vol[t][c] > 0  # 산 날 하루 내내 거래 없음(정지) = 못 삼 → 건너뜀(장중에 알 수 있음)
-        picks = [c for _, c in sorted(r5) if ok(c)][:PICK]
-        ctl = [c for c in uni if ok(c)]
+        p = i - 1
+        uni = top[cal[p]]
+        sig = [(s, c) for c in uni if (s := r5(g, cal, p, c)) is not None]
+        picks = [c for _, c in sorted(sig)][:PICK]
         j = idx[k + 1] if k + 1 < len(idx) else None
-        out.append((i, j, picks, ctl))
+        out.append((i, j, picks, list(uni)))
     return out
 
 
-def basket_path(cap, cal, i, j, names, mode, last):
-    """산 날 i 종가 1.0에서 날마다 바구니 값(똑같이 · 결손: lo = 0, hi = 마지막 값). j가 None이면 last 칸까지."""
+def slots(cap, vol, g, cal, i, j, names, mode, c, last):
+    """칸 i ~ end 날마다 각 몫의 값(산 날 몫 1 → 산 비용 뒤). 반환: (날 칸 목록, 몫마다 값 목록, 기록)."""
+    k = side(c)
     end = j if j is not None else last
-    vals = []
-    for c in names:
-        b = cap[cal[i]][c]
-        seq, lastv = [], 1.0
+    t = cal[i]
+    rows, info = [], {"unfilled": [], "gap": [], "sell_halt": []}
+    for nm in names:
+        if not (nm in cap[t] and vol[t][nm] > 0):
+            info["unfilled"].append(nm)
+            rows.append([0.0 if mode == "lo" else 1.0] * (end - i + 1))
+            continue
+        v, seq, dead = 1 - k, [1 - k], False
         for x in range(i + 1, end + 1):
             d = cal[x]
-            if d not in cap:
-                seq.append(lastv)  # 자료가 통째로 없는 날 = 휴장으로 봄(그 종목 결손 아님)
-            elif c in cap[d]:
-                lastv = cap[d][c] / b
-                seq.append(lastv)
-            else:
-                seq.append(0.0 if mode == "lo" else lastv)
-        vals.append(seq)
-    n = len(names)
-    return [sum(v[s] for v in vals) / n for s in range(end - i)] if n else [1.0] * (end - i)
+            if not dead and nm in g[d]:
+                v *= g[d][nm]
+            elif not dead:
+                dead = True
+                info["gap"].append([t, nm, d])
+                if mode == "lo":
+                    v = 0.0
+            if x == j:
+                if not dead and vol[d].get(nm, 0) == 0:
+                    info["sell_halt"].append([t, nm, d])
+                    if mode == "lo":
+                        v = 0.0
+                v *= 1 - k
+            seq.append(v)
+        rows.append(seq)
+    return list(range(i, end + 1)), rows, info
 
 
-def trade_ret(path, c):
-    k = side(c)
-    return path[-1] * (1 - k) * (1 - k) - 1
-
-
-def run(cap, cal, cos, c, mode, which):
-    """기간마다 쓸 매매 목록 [(산 날, 판 날, 순수익)]과 날마다 NAV(전체)."""
+def run(cap, vol, g, cal, cos, c, mode, which):
+    """바구니를 이어서: 매매 [(산 날, 판 날, 순수익)] · NAV [(날, 값)](모든 유효 거래일 · 바꿔 담는 날 판 · 산 비용 그날 반영) · 기록."""
     last = len(cal) - 1
-    while cal[last] not in cap:
-        last -= 1
-    trades, nav, v = [], [], 1.0
-    k = side(c)
+    trades, nav, V, logs = [], [], 1.0, []
     for i, j, picks, ctl in cos:
         names = picks if which == "pick" else ctl
-        path = basket_path(cap, cal, i, j, names, mode, last)
+        xs, rows, info = slots(cap, vol, g, cal, i, j, names, mode, c, last)
+        n = len(rows)
+        basket = [sum(r[s] for r in rows) / n for s in range(len(xs))] if n else [1.0] * len(xs)
+        start = V
+        if nav and nav[-1][0] == cal[i]:
+            nav[-1] = (cal[i], start * basket[0])
+        else:
+            nav.append((cal[i], start * basket[0]))
+        for s in range(1, len(xs)):
+            nav.append((cal[xs[s]], start * basket[s]))
+        V = start * basket[-1]
         if j is not None:
-            trades.append((cal[i], cal[j], trade_ret(path, c)))
-        v *= 1 - k
-        start = v
-        for s, x in enumerate(path):
-            day = cal[i + 1 + s]
-            v = start * x
-            if j is not None and i + 1 + s == j:
-                v *= 1 - k
-            if day in cap:
-                nav.append((day, v))
+            trades.append((cal[i], cal[j], basket[-1] - 1))
+        logs.append(info)
         if j is None:
             break
-    return trades, nav
+    return trades, nav, logs
 
 
 def within(rows, lo, hi):
     return [r for r in rows if lo <= r[0] and r[1] <= hi]
 
 
-def nav_period(cap, cal, cos, c, mode, lo, hi):
-    """그 기간 안에서 산 날 · 판 날이 모두 든 바구니만으로 현금 1에서 다시(기간 경계 넘는 바구니는 뺌)."""
+def nav_period(cap, vol, g, cal, cos, c, mode, lo, hi):
+    """그 기간 안에서 산 날 · 판 날이 모두 든 바구니만으로 현금 1에서 다시."""
     sub = [x for x in cos if x[1] is not None and lo <= cal[x[0]] and cal[x[1]] <= hi]
-    return run(cap, cal, sub, c, mode, "pick")[1]
+    return run(cap, vol, g, cal, sub, c, mode, "pick")[1]
 
 
 def risk(navs):
@@ -200,6 +217,7 @@ def summary(xs):
 
 
 def boot(t, ctl):
+    """달력 달 블록 부트스트랩(블록 3달): 같은 달 블록에서 고른 바구니 · 대조를 함께 다시 뽑음."""
     months = sorted({r[0][:6] for r in t})
     bt, bc = defaultdict(list), defaultdict(list)
     for r in t:
@@ -227,15 +245,14 @@ def boot(t, ctl):
 
 def main():
     check()
-    cap, vol, top, cal = load()
-    cos = cohorts(cap, vol, top, cal)
-    out = {"task": "STR-0030", "round": 1, "first": min(cap), "last": max(cap), "T_TO": TO or None, "cohorts": len(cos),
-           "calendar_days_without_data": sorted(d for d in cal if d <= max(cap) and d not in cap)}
-    miss = {"lo": 0, "hi": 0}
+    cap, vol, g, top, cal, no_vs, resume = load()
+    cos = cohorts(g, top, cal)
+    out = {"task": "STR-0030", "round": 2, "first": min(cap), "last": max(cap), "T_TO": TO or None, "cohorts": len(cos),
+           "rows_without_vs": no_vs, "resume_adjusted": resume}
     for mode in ("lo", "hi"):
-        tp, _ = run(cap, cal, cos, COST, mode, "pick")
-        tps, _ = run(cap, cal, cos, STRESS, mode, "pick")
-        tc, _ = run(cap, cal, cos, COST, mode, "ctl")
+        tp, navp, logs = run(cap, vol, g, cal, cos, COST, mode, "pick")
+        tps = run(cap, vol, g, cal, cos, STRESS, mode, "pick")[0]
+        tc = run(cap, vol, g, cal, cos, COST, mode, "ctl")[0]
         out[mode] = {}
         for p, (lo, hi) in PERIODS.items():
             a, s, c = within(tp, lo, hi), within(tps, lo, hi), within(tc, lo, hi)
@@ -244,24 +261,14 @@ def main():
             ma, mc = sum(r[2] for r in a) / len(a), sum(r[2] for r in c) / len(c)
             out[mode][p] = {"pick": summary([r[2] for r in a]), "pick_stress": summary([r[2] for r in s]), "control": summary([r[2] for r in c]),
                             "diff_pct": round((ma - mc) * 100, 4), **boot(a, c),
-                            "risk": risk(nav_period(cap, cal, cos, COST, mode, lo, hi)),
-                            "risk_stress": risk(nav_period(cap, cal, cos, STRESS, mode, lo, hi))}
+                            "risk": risk(nav_period(cap, vol, g, cal, cos, COST, mode, lo, hi)),
+                            "risk_stress": risk(nav_period(cap, vol, g, cal, cos, STRESS, mode, lo, hi))}
         out[mode]["trades"] = [[b, s_, round(x * 100, 6)] for b, s_, x in tp]
-        out[mode]["navs_all"] = [[d, round(v, 12)] for d, v in run(cap, cal, cos, COST, mode, "pick")[1]]
-    # 결손(판 날 · 들고 있는 날 시총 없음) 세기
-    gaps = []
-    last = max(i for i, d in enumerate(cal) if d in cap)
-    for i, j, picks, _ in cos:
-        end = j if j is not None else last
-        for c in picks:
-            for x in range(i + 1, end + 1):
-                if cal[x] in cap and c not in cap[cal[x]]:
-                    gaps.append([cal[i], c, cal[x]])
-                    break
-    out["pick_gaps"] = gaps
-    # 판 날 거래량 0(정지 · 실제로는 못 팔았을 수 있음) 세기 — 판정에는 안 넣고 보고만
-    out["pick_sell_halt"] = [[cal[i], c, cal[j]] for i, j, picks, _ in cos if j is not None for c in picks
-                             if c in cap[cal[j]] and vol[cal[j]][c] == 0]
+        out[mode]["navs_all"] = [[d, round(v, 12)] for d, v in navp]
+        if mode == "lo":
+            out["pick_unfilled"] = [[cal[i], nm] for (i, *_), lg in zip(cos, logs) for nm in lg["unfilled"]]
+            out["pick_gaps"] = [x for lg in logs for x in lg["gap"]]
+            out["pick_sell_halt"] = [x for lg in logs for x in lg["sell_halt"]]
     out["picks"] = [[cal[i], cal[j] if j is not None else None, p] for i, j, p, _ in cos]
     print(json.dumps(out, ensure_ascii=False))
 
