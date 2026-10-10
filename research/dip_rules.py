@@ -164,6 +164,14 @@ WAYS = {
     "R2-lowvol": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and (vol20(r) or 99) < 2.5, note="R2 + 20일 변동성 < 2.5%"),
     "R2-top50": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and r.get("시총순위", 999) <= 50, note="R2 + 시총 50위 안"),
     "R2-rel60": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), rank=lambda r: -(rel(r, 60) or 0), note="R2 순서 = 60일 상대 강세"),
+    # 51 ~
+    "R2-noflow": dict(holds=lambda r: sideways(r, 3) and high_break(r, 60) and D.BR.get(r["date"], 0) >= 40,
+                      exits=D.fixed_exit(5, 7, 10), size=lambda r: 2, rank=lambda r: -(rel(r) or 0), note="R2 − 수급(덜어냄)"),
+    "R2-sz1": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), size=lambda r: 1, note="R2 칸 1"),
+    "R2-sz3": dict(hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40), size=lambda r: 3, note="R2 칸 3"),
+    "R2-fresh": hb(60, extra=lambda r: D.BR.get(r["date"], 0) >= 40 and
+                   D.LANES[r["code"]]["closes"][r["i"]] <= 1.03 * max(D.LANES[r["code"]]["closes"][r["i"] - 60:r["i"]]), note="R2 갓 돌파(≤ 1.03배)"),
+    "R2-brband": hb(60, side=None, extra=lambda r: 40 <= D.BR.get(r["date"], 0) <= 65, note="횡보 판단을 시장 폭 40 ~ 65로 바꿈"),
     "R1-ma120": dict(holds=lambda r: sideways(r, 3) and dip(r) and above_ma(r) and smart(r), exits=D.fixed_exit(5, 7, 10),
                      size=lambda r: 2, rank=deeper_first, note="R1 + 120일선 위(오름 추세 안 눌림)"),
 }
