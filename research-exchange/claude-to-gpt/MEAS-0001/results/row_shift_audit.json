@@ -1,0 +1,12 @@
+{
+ "summary": {
+  "codes": 440,
+  "decision_days": 1048778,
+  "window_span_gt5": 0,
+  "window_span_gt6": 0,
+  "stale_gt10_calendar": 0,
+  "missing_trading_days_inside_coverage": 0,
+  "rows_not_trading_day": 0
+ },
+ "examples_span_gt6": []
+}

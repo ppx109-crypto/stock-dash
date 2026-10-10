@@ -1,0 +1,339 @@
+{
+ "snapshot": "54bf28c2d52a5f21d135ead7892735c06c417e5e",
+ "observed_kst": "2026-10-08T07:29:43+09:00",
+ "items": [
+  {
+   "alias": "KIS_PAPER_ORDERS_IDLE",
+   "path": "idle-live/paper-orders.json",
+   "mode": "paper",
+   "provenance": "KIS 모의투자 주문 '접수' 기록 — paper_trade.PaperBroker(모의 서버 주소 고정)가 씀(코드 확인) · 체결 아님",
+   "source": "paper_trade.py:24-30 · :395-410",
+   "blob_sha1": "5fb32fdcd76a9c84302be28b55f087c7b1bc4d84",
+   "commits": 2,
+   "first_commit": "2026-10-06T06:14:14+00:00",
+   "last_commit": "2026-10-07T06:13:28+00:00",
+   "coverage": "2026-10-06 ~ 2026-10-07",
+   "rows": 2,
+   "available_at_fields": [
+    "at(분 단위 KST · 주문 시각)"
+   ],
+   "missing": [
+    "체결 시각 · 가격 · 수량",
+    "수수료 · 세금",
+    "예수금 · 잔고",
+    "취소 · 미체결 상태 갱신"
+   ],
+   "gaps": "10-03 · 10-05 무주문(신호 없음 · 휴일)"
+  },
+  {
+   "alias": "PRACTICE_STATE_1D",
+   "path": "daily-live/state.json",
+   "mode": "paper-practice(virtual)",
+   "provenance": "봇 연습 장부(15:32 현재가로 '종가 체결'을 가정해 적음 · 체결 아님)",
+   "source": "각 봇 HOME/STATE",
+   "blob_sha1": "424fe862f2279792afa7bea0af7373e5a4ccfb50",
+   "commits": 3,
+   "first_commit": "2026-10-02T06:32:12+00:00",
+   "last_commit": "2026-10-07T06:32:14+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "last_day/last_bar(날짜)"
+   ],
+   "missing": [
+    "현금",
+    "체결가",
+    "비용"
+   ],
+   "gaps": "state는 덮어씀 — 이력은 git 커밋뿐"
+  },
+  {
+   "alias": "PRACTICE_STATE_15M",
+   "path": "m15-live/state.json",
+   "mode": "paper-practice(virtual)",
+   "provenance": "봇 연습 장부(봉 시가 가정)",
+   "source": "각 봇 HOME/STATE",
+   "blob_sha1": "e980aa2db83a086d07db43fba3c6c4246a9ce654",
+   "commits": 66,
+   "first_commit": "2026-10-02T00:33:56+00:00",
+   "last_commit": "2026-10-07T06:35:48+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "last_day/last_bar(날짜)"
+   ],
+   "missing": [
+    "현금",
+    "체결가",
+    "비용"
+   ],
+   "gaps": "state는 덮어씀 — 이력은 git 커밋뿐"
+  },
+  {
+   "alias": "PRACTICE_STATE_H1",
+   "path": "hourly-live/state.json",
+   "mode": "paper-practice(virtual)",
+   "provenance": "봇 연습 장부(주문 몫 0 · PAPER_TRADING off)",
+   "source": "각 봇 HOME/STATE",
+   "blob_sha1": "1d5e5621eeb1d87f15e6eeebf8beda7d27b98e2d",
+   "commits": 25,
+   "first_commit": "2026-10-02T00:14:16+00:00",
+   "last_commit": "2026-10-07T06:38:41+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "last_day/last_bar(날짜)"
+   ],
+   "missing": [
+    "현금",
+    "체결가",
+    "비용"
+   ],
+   "gaps": "state는 덮어씀 — 이력은 git 커밋뿐"
+  },
+  {
+   "alias": "PRACTICE_STATE_IDLE",
+   "path": "idle-live/state.json",
+   "mode": "paper-practice(virtual)",
+   "provenance": "엔진 · 인버스 상태(산 값 = 주문 때 현재가)",
+   "source": "각 봇 HOME/STATE",
+   "blob_sha1": "b495efa47d22aef38c1bd096b44953499d0e8621",
+   "commits": 3,
+   "first_commit": "2026-10-03T09:55:21+00:00",
+   "last_commit": "2026-10-07T06:13:28+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "last_day/last_bar(날짜)"
+   ],
+   "missing": [
+    "현금",
+    "체결가",
+    "비용"
+   ],
+   "gaps": "state는 덮어씀 — 이력은 git 커밋뿐"
+  },
+  {
+   "alias": "SIGNAL_LOG_1D",
+   "path": "daily-live/today.json",
+   "mode": "paper-derived log",
+   "provenance": "그날 판단 기록(후보 · 사기 · 팔기 · 폭)",
+   "source": "코드 경로",
+   "blob_sha1": "3c7b70ff642f9cb831102187af13222742d62a95",
+   "commits": 3,
+   "first_commit": "2026-10-02T06:32:12+00:00",
+   "last_commit": "2026-10-07T06:32:14+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "made/at(분)"
+   ],
+   "missing": [
+    "이전 판(덮어씀 · git 이력만)"
+   ],
+   "gaps": null
+  },
+  {
+   "alias": "SIGNAL_LOG_IDLE",
+   "path": "idle-live/today.json",
+   "mode": "paper-derived log",
+   "provenance": "엔진 · 인버스 그날 판단(까닭 · 주문)",
+   "source": "코드 경로",
+   "blob_sha1": "1ffe365dc1d82b95fadfd584bdfb84ef2b5f431c",
+   "commits": 2,
+   "first_commit": "2026-10-06T06:14:14+00:00",
+   "last_commit": "2026-10-07T06:13:28+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "made/at(분)"
+   ],
+   "missing": [
+    "이전 판(덮어씀 · git 이력만)"
+   ],
+   "gaps": null
+  },
+  {
+   "alias": "PLAN_H1_15M",
+   "path": "hourly-live/plan.json",
+   "mode": "paper-derived log",
+   "provenance": "전날 저녁 후보(1시간봉 · 15분봉 공용)",
+   "source": "코드 경로",
+   "blob_sha1": "d4536be9667dd86ff2e530324289b6392b6436d3",
+   "commits": 7,
+   "first_commit": "2026-10-01T12:20:40+00:00",
+   "last_commit": "2026-10-07T10:11:49+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "날짜"
+   ],
+   "missing": [
+    "이전 판(덮어씀 · git 이력만)"
+   ],
+   "gaps": null
+  },
+  {
+   "alias": "RECONCILE",
+   "path": "reconcile/state.json",
+   "mode": "paper-derived log",
+   "provenance": "장 뒤 검산(연구 재생 vs 운영 연습 장부)",
+   "source": "코드 경로",
+   "blob_sha1": "e59d6b9a43291a85ddfd57e5e12459116ad827c6",
+   "commits": 3,
+   "first_commit": "2026-10-02T16:28:29+00:00",
+   "last_commit": "2026-10-07T12:06:06+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "날짜"
+   ],
+   "missing": [
+    "이전 판(덮어씀 · git 이력만)"
+   ],
+   "gaps": null
+  },
+  {
+   "alias": "FIX_RECENT",
+   "path": "fix-recent/last.json",
+   "mode": "paper-derived log",
+   "provenance": "아침 종가 교정 기록(마지막 1회만)",
+   "source": "코드 경로",
+   "blob_sha1": "09d5e81b3ae7f6787fa8d69b3b5813a2bc9e8877",
+   "commits": 3,
+   "first_commit": "2026-10-05T23:40:21+00:00",
+   "last_commit": "2026-10-07T22:25:28+00:00",
+   "rows": null,
+   "available_at_fields": [
+    "날짜"
+   ],
+   "missing": [
+    "이전 판(덮어씀 · git 이력만)"
+   ],
+   "gaps": null
+  },
+  {
+   "alias": "BASKET_PAPER",
+   "path": "basket-live/*",
+   "mode": "paper",
+   "provenance": "없음 — 바구니 코드 첫 커밋 2026-10-07 21:24 KST(그날 15:10 실행 뒤)",
+   "source": "basket_live.py:25-27",
+   "blob_sha1": null,
+   "commits": 0,
+   "first_commit": null,
+   "last_commit": null,
+   "coverage": null,
+   "rows": 0,
+   "available_at_fields": [],
+   "missing": [
+    "전부"
+   ],
+   "gaps": "아직 한 번도 안 돎"
+  },
+  {
+   "alias": "BALANCE_SNAPSHOTS",
+   "path": null,
+   "mode": "paper",
+   "provenance": "저장하는 코드 없음",
+   "source": "broker_kis.py:736-742",
+   "blob_sha1": null,
+   "commits": 0,
+   "first_commit": null,
+   "last_commit": null,
+   "coverage": null,
+   "rows": 0,
+   "available_at_fields": [],
+   "missing": [
+    "예수금 · 보유 · 평가 · NAV 전부"
+   ],
+   "gaps": null
+  },
+  {
+   "alias": "INVESTOR_DATA",
+   "path": "investor-data/*.json",
+   "mode": "market data(KIS/DART 파생)",
+   "provenance": "수집기 저장 · 덮어씀",
+   "source": "collect_*",
+   "tree": "83d241cb2a9ac962420330a82253db5ec4a62ba8",
+   "available_at_fields": [
+    "없음(날짜만 · fetched 날짜)"
+   ],
+   "received_at_proxy": "git 커밋 시각(파일 첫 커밋 뒤 줄만)",
+   "missing": [
+    "received_at · finalized_at · corrected_at"
+   ],
+   "gaps": "git 이력은 2026-09-09부터"
+  },
+  {
+   "alias": "PRICE_DATA",
+   "path": "price-data/*.json",
+   "mode": "market data(KIS/DART 파생)",
+   "provenance": "수집기 저장 · 덮어씀",
+   "source": "collect_*",
+   "tree": "a8f70a114d0572f86012a5e057dbb3280f121c51",
+   "available_at_fields": [
+    "없음(날짜만 · fetched 날짜)"
+   ],
+   "received_at_proxy": "git 커밋 시각(파일 첫 커밋 뒤 줄만)",
+   "missing": [
+    "received_at · finalized_at · corrected_at"
+   ],
+   "gaps": "git 이력은 2026-09-09부터"
+  },
+  {
+   "alias": "EVENT_DATA",
+   "path": "event-data/*.json",
+   "mode": "market data(KIS/DART 파생)",
+   "provenance": "수집기 저장 · 덮어씀",
+   "source": "collect_*",
+   "tree": "52e5183d89b60bd24e320e8e455e997de8fd2fb1",
+   "available_at_fields": [
+    "없음(날짜만 · fetched 날짜)"
+   ],
+   "received_at_proxy": "git 커밋 시각(파일 첫 커밋 뒤 줄만)",
+   "missing": [
+    "received_at · finalized_at · corrected_at"
+   ],
+   "gaps": "git 이력은 2026-09-09부터"
+  },
+  {
+   "alias": "NRL_CACHE",
+   "path": "(git 밖) nrl-cache.pkl",
+   "mode": "research simulation cache",
+   "provenance": "생성 커밋 기록 없음 · 2026-10-01 11:05 UTC · 참조 numpy 둘뿐(정적 검사)",
+   "sha256": "4ec07fae1acb8ec516ee98befb89c25961171a78dc4d8b9e54a9a44f31cfda57",
+   "coverage": "20170102 ~ 20260916(BR) · 가격 끝 20260930",
+   "rows": 238000,
+   "available_at_fields": [],
+   "missing": [
+    "생성 커밋 · 입력 판"
+   ],
+   "gaps": "rule._calm = 전 기간 문턱(2.1763) — 미래 행 포함"
+  },
+  {
+   "alias": "HOURLY_TABLES",
+   "path": "(git 밖) .cache/hourly_tables.pkl",
+   "mode": "research cache",
+   "provenance": "2026-10-01 15:39 UTC · 생성 커밋 기록 없음",
+   "sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+   "missing": [
+    "생성 입력 판"
+   ]
+  },
+  {
+   "alias": "FEATURES_TABLE",
+   "path": "(git 밖) study/features.json",
+   "mode": "research table",
+   "provenance": "2026-09-25 · 생성 커밋 기록 없음",
+   "sha256": "9e5818196117059980750de779eebb28981971465cfc0875c9b6f9ca03e1a82e",
+   "missing": [
+    "생성 입력 판"
+   ]
+  },
+  {
+   "alias": "RULES0002_D1_MTM",
+   "path": "research-exchange/claude-to-gpt/RULES-0002/results/d1_result.json @a61f033",
+   "mode": "research simulation",
+   "provenance": "a_mtm(현금 제약 없음)",
+   "missing": [
+    "날마다 NAV 벡터",
+    "전 씨앗 장부"
+   ],
+   "gaps": "현금 음수 672/2388일 · 최대 노출 1.222"
+  }
+ ],
+ "secrets_or_env_read": false,
+ "live_account_records_read": false
+}
