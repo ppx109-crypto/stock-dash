@@ -1,0 +1,41 @@
+{
+ "schema_version": 1,
+ "task_id": "PHASE-SWITCH-0046",
+ "chain_id": "PHASE-SWITCH-0046",
+ "kind": "PREREG",
+ "round": 1,
+ "status": "READY",
+ "source_pr": null,
+ "source_head_sha": null,
+ "base_head_sha": "59485b3a5",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "t_lock": {
+  "research/phase_switch.py": "c1e758d91c30670765a8eb86ffc812894f6b923b1ba7203d767d2b45916070bd",
+  "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9",
+  "/tmp/sig-t.pkl": "1c072856bb1460b773bb5ba07b85951a311755cc78a09172086784322868ef7e",
+  "SIG-MAP-0045/evidence/t_main.json": "3629ac41ee88f58806f1149b3d5652803e7583049d7a04dc6b23287c02d51515"
+ },
+ "plan": {
+  "오름": "S8_MOM120_SKIP20",
+  "횡보": "S7_EMA_ALIGN",
+  "내림": "S2_REV5"
+ },
+ "period_T": [
+  "20220103",
+  "20260915"
+ ],
+ "verdicts": [
+  "PHASE_SWITCH_IN_REUSED_T",
+  "PHASE_SWITCH_REJECTED"
+ ],
+ "independent_validation": "WAITING_DATA",
+ "run_once": "python3 research/phase_switch.py --t",
+ "results_seen_in_this_task": "없음",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/PREREG.md",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/t_lock.json",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.py",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.out"
+ ]
+}
