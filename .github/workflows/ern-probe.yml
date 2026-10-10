@@ -1,0 +1,32 @@
+name: ERN-0036 DART feasibility probe (research)
+# DART 손익구조 공시 원문 · 판 복원 타당성 시험(research/e010_probe.py · 조회 전용 · 원문 · 키 저장 안 함 · 사전등록 ERN-0036 r2 · GPT #176 인정).
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ern-probe
+  cancel-in-progress: false
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python research/e010_probe.py
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+      - name: Save
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A research-exchange/claude-to-gpt/ERN-0036/feas
+          if ! git diff --cached --quiet; then
+            git commit -q -m 'ERN-0036 feasibility probe result'
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; sleep $((try * 7)); done
+          fi
