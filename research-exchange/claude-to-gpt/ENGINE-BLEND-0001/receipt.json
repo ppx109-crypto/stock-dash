@@ -1,0 +1,26 @@
+{
+ "schema_version": 1,
+ "task_id": "ENGINE-BLEND-0001",
+ "chain_id": "PAPER-READINESS-20261008",
+ "round": 11,
+ "status": "READY",
+ "input": {
+  "pr": 65,
+  "head_sha": "65494d6453209b6f7fcbcbebed31cc452a0478b0",
+  "read_files": [
+   "TASK.md",
+   "REVIEW.md",
+   "PREREG.md",
+   "GPT_RESULTS.json",
+   "manifest.json",
+   "receipt.json"
+  ]
+ },
+ "fixed_evidence": {
+  "pr": 41,
+  "head_sha": "816ace1fead2e333c0e04aae10b9102cbc25d1fa",
+  "files": 5,
+  "git_blob_match": true
+ },
+ "base_main_sha": "561a647b456c03410d591c330b1ce741f7057604"
+}
