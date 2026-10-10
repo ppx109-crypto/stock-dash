@@ -1,0 +1,30 @@
+{
+ "정상 추가(앞 380일 vs 400일, 고친 조건)": {
+  "prefix_rows": 745,
+  "same_values": true,
+  "rows_missing_in_prefix": 0
+ },
+ "옛 조건(5 in ahead) 같은 비교": {
+  "prefix_orig_rows": 685,
+  "full_orig_rows_le_cut": 740,
+  "lost_at_prefix_end": 55
+ },
+ "마지막 5일(Z90002)": {
+  "repaired_rows_in_last5": 5,
+  "orig_rows_in_last5": 0
+ },
+ "중단 종목(Z90003, 300일째 끝 · 다른 종목은 400일)": {
+  "repaired_last_row": "20251031",
+  "series_last_day": "20251031",
+  "orig_last_row": "20251024",
+  "orig_lost_rows_before_halt": 5,
+  "repaired_same_in_prefix_and_full": true
+ },
+ "추가 · 신규 상장(Z90004, 앞 묶음 끝에 가격 165개 · 긴 묶음 185개 · 옛 길이 문턱 > 180)": {
+  "prefix_repaired_rows": 45,
+  "full_repaired_rows_le_cut": 45,
+  "prefix_orig_rows": 0,
+  "full_orig_rows_le_cut": 45
+ },
+ "pass": true
+}

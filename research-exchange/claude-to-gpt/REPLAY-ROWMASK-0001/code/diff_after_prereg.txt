@@ -1,0 +1,85 @@
+### rm_rows_try1.py → rm_rows.py(사전등록 뒤 · 구조 비교 전)
+--- rm_rows_try1.py	2026-10-08 13:44:26.758493189 +0000
++++ rm_rows.py	2026-10-08 13:44:26.781259509 +0000
+@@ -1,9 +1,11 @@
+ """REPLAY-ROWMASK-0001 · 줄 만들기(잘라낸 입력 하나) — 고정 엔진 코드(b2 · 00b98ab1) + 옛 표 시점 저장소 자료(V · git b8365547).
+ python3 -E -P rm_rows.py <b2> <V> <CUT YYYYMMDD | full> <옛 nrl-cache.pkl> <출력.pkl>
+ 
+-- 가격을 CUT까지 자른 뒤 lab.build(horizons=(0, 5, 10, 20, 60))를 종목 20개씩 한 번 돌림. 특징 계산식은 그대로.
+-  · 고친 존재 조건(repaired): 그날까지 가격만 있으면 줄 있음 = horizons=(0,) 와 같음
+-  · 옛 존재 조건(orig): 앞으로 5일 가격이 있어야 줄 있음(5 in ahead) — 비교용 표시만, 고친 표에는 안 씀
++- 가격을 CUT까지 자른 뒤 종목 20개씩 lab.build를 두 번 돌림. 특징 계산식은 그대로.
++  · 고친 존재 조건(repaired): lab.build(horizons=(0,)) — 그날까지 가격만 있으면 줄 있음(종목 길이 문턱도 120 + 0)
++  · 옛 존재 조건(orig): lab.build(horizons=(5,10,20,60)) — 원 표 그대로(앞으로 5일 가격 · 종목 길이 > 180) — 비교용, 고친 표에는 안 씀
++  · 두 빌드에 함께 있는 줄은 'ahead' 말고 모든 칸이 같아야 함(assert)
++  · 첫 시도(rm_rows_try1.py)는 horizons=(0,5,10,20,60) 한 번에 5 in ahead만 표시해, 종목 길이 문턱(> 180)이 남아 horizons=(0,)와 달랐음
+   · 'ahead'(앞날 수익)는 저장 전에 지움
+ - 2025-08-01 ~ CUT(최대 2026-03-31) 줄만 남김. 시총 순위(caps.tag)는 repaired 묶음 · orig 묶음 따로, 날마다 그날 줄끼리만.
+ - D1 신호용 캐시(repaired)도 같이 씀: (가격 ≤ CUT, lanes, shape, 시장 폭, 상위100 줄, 옛 calm · 옛 달별 calm 숫자 그대로).
+@@ -50,14 +52,18 @@
+ rep, orig, codes = [], [], sorted(P)
+ for s in range(0, len(codes), 20):
+     part = {c: P[c] for c in codes[s:s + 20]}
+-    for r in lab.build(part, horizons=(0, 5, 10, 20, 60)):
+-        if not (LO <= r["date"] <= HI):
+-            continue
+-        o = 5 in r["ahead"]
+-        del r["ahead"]
+-        rep.append(r)
+-        if o:
+-            orig.append(dict(r))
++    got = {}
++    for r in lab.build(part, horizons=(0,)):
++        if LO <= r["date"] <= HI:
++            del r["ahead"]
++            rep.append(r)
++            got[(r["code"], r["date"])] = r
++    for r in lab.build(part, horizons=(5, 10, 20, 60)):
++        if LO <= r["date"] <= HI:
++            del r["ahead"]
++            a = got.get((r["code"], r["date"]))
++            assert a is not None and a == r, ("옛 조건 줄이 고친 줄에 없거나 칸이 다름", r["code"], r["date"])
++            orig.append(r)
+ print("만듦", CUT, len(P), "종목 · 마지막 가격", last, "· repaired", len(rep), "· orig", len(orig), round(time.time() - t0), "초", flush=True)
+ caps.tag(rep, rule.TOP)
+ caps.tag(orig, rule.TOP)
+
+### rm_synth_try1.py → rm_synth.py
+--- rm_synth_try1.py	2026-10-08 13:44:26.760755740 +0000
++++ rm_synth.py	2026-10-08 13:44:53.271910652 +0000
+@@ -1,4 +1,4 @@
+-"""REPLAY-ROWMASK-0001 · 합성 3사례(손익 없음) — 정상 추가 · 마지막 5일 · 중단 종목.
++"""REPLAY-ROWMASK-0001 · 합성 3사례(손익 없음) — 정상 추가 · 마지막 5일 · 중단 종목(+ 추가 사례: 신규 상장 · 종목 길이 문턱).
+ python3 -E -P rm_synth.py <b2> <V> <출력.json>
+ 가짜 종목(Z9000x · 자료 파일 없음)의 종가만 만들어 고정 엔진 lab.build로 줄을 만들고, 잘라낸 입력(앞 380일)과 긴 입력(400일)을 견줌."""
+ import json, os, sys
+@@ -13,15 +13,15 @@
+ walk = lambda n: [round(10000 * float(x), 2) for x in np.exp(np.cumsum(rng.normal(0.0005, 0.02, n)))]
+ P = {"Z90001": {"name": "정상", "rows": list(zip(cal, walk(400)))},
+      "Z90002": {"name": "마지막5일", "rows": list(zip(cal, walk(400)))},
+-     "Z90003": {"name": "중단", "rows": list(zip(cal[:300], walk(300)))}}
++     "Z90003": {"name": "중단", "rows": list(zip(cal[:300], walk(300)))},
++     "Z90004": {"name": "신규 상장(추가 사례)", "rows": list(zip(cal[215:], walk(185)))}}
+ cut = cal[379]
+ 
+ 
+ def build(prices, upto):
+     pp = {c: {"name": b["name"], "rows": [x for x in b["rows"] if x[0] <= upto]} for c, b in prices.items()}
+-    rows = lab.build(pp, horizons=(0, 5, 10, 20, 60))
+-    rep = {(r["code"], r["date"]): {k: v for k, v in r.items() if k != "ahead"} for r in rows}
+-    orig = {(r["code"], r["date"]) for r in rows if 5 in r["ahead"]}
++    rep = {(r["code"], r["date"]): {k: v for k, v in r.items() if k != "ahead"} for r in lab.build(pp, horizons=(0,))}
++    orig = {(r["code"], r["date"]) for r in lab.build(pp, horizons=(5, 10, 20, 60))}
+     return rep, orig
+ 
+ 
+@@ -42,6 +42,9 @@
+     "orig_last_row": max(d for c, d in full_orig if c == "Z90003"),
+     "orig_lost_rows_before_halt": sum(1 for d in z3[-5:] if ("Z90003", d) not in full_orig),
+     "repaired_same_in_prefix_and_full": all(full_rep.get(k) == v for k, v in pre_rep.items() if k[0] == "Z90003")}
++res["추가 · 신규 상장(Z90004, 앞 묶음 끝에 가격 165개 · 긴 묶음 185개 · 옛 길이 문턱 > 180)"] = {
++    "prefix_repaired_rows": sum(1 for k in pre_rep if k[0] == "Z90004"), "full_repaired_rows_le_cut": sum(1 for k in full_rep if k[0] == "Z90004" and k[1] <= cut),
++    "prefix_orig_rows": sum(1 for k in pre_orig if k[0] == "Z90004"), "full_orig_rows_le_cut": sum(1 for k in full_orig if k[0] == "Z90004" and k[1] <= cut)}
+ res["pass"] = (same_pre and not miss_pre and res["마지막 5일(Z90002)"]["repaired_rows_in_last5"] == 5
+                and res["중단 종목(Z90003, 300일째 끝 · 다른 종목은 400일)"]["repaired_last_row"] == z3[-1])
+ Path(OUTF).write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")

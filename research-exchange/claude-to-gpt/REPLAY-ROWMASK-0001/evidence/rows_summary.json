@@ -1,0 +1,38 @@
+{
+ "20260130": {
+  "rows_pkl_sha256": "91f84d1ade7e468063dce23b89b00ff4b51634b0d1af049c76df7e49cc6e89cd",
+  "cache_sha256": "f4de314827f8395c5179ae476777745f100da84b54ab13e63e4d152b9be0a5ed",
+  "last_price": "20260130",
+  "hi": "20260130",
+  "repaired_rows": 60232,
+  "orig_rows": 57650,
+  "BR_days": 122
+ },
+ "20260227": {
+  "rows_pkl_sha256": "f29ea0b5560422f7f0303c9a147c979e363e3486d096698394b3001ec0632c53",
+  "cache_sha256": "72e9f63f58f763731d2901ed35f1c7686cb29e6567fc2301cd03b25544885ff6",
+  "last_price": "20260227",
+  "hi": "20260227",
+  "repaired_rows": 68698,
+  "orig_rows": 66165,
+  "BR_days": 139
+ },
+ "20260331": {
+  "rows_pkl_sha256": "3a8853419a35933dfd5f050d84d29934c1576f0eacd3e9394b2cf444f0a15c5e",
+  "cache_sha256": "4f0faf68e1d4f183d1c6312c5eed4c41371bf7e953f22a73be0aecce059cf26a",
+  "last_price": "20260331",
+  "hi": "20260331",
+  "repaired_rows": 79192,
+  "orig_rows": 76560,
+  "BR_days": 160
+ },
+ "full": {
+  "rows_pkl_sha256": "7b6f46f9e4984994d842f38233d466b7418264184331ca6a7b42424bd85ec536",
+  "cache_sha256": "ddcfd6615dada85e9705a88b68a18ad304a09ac389050b0ddfcff3c5a002e210",
+  "last_price": "20260923",
+  "hi": "20260331",
+  "repaired_rows": 79192,
+  "orig_rows": 79192,
+  "BR_days": 160
+ }
+}
