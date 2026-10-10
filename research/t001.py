@@ -1,10 +1,11 @@
 """TOM-0028(NEW-BOT-0027 C2) — 월말 · 월초: 달력의 그 달 마지막 거래일 종가에 KODEX 200(069500)을 사서 다음 달 셋째 거래일 종가에 팖.
-사전등록: research-exchange/claude-to-gpt/TOM-0028/PREREG.md(round 2 · GPT #160 6091400672 반영).
+사전등록: research-exchange/claude-to-gpt/TOM-0028/PREREG.md(round 3 · GPT #160 6091400672 · 6091438066 반영).
+- 달력은 research/t001_cal.py가 가격 파일 없이 규칙(공휴일 패키지 0.57 · 근로자의 날 · 연말 마지막 평일 · 공지 휴장)으로 만든 파일.
 - 자료 · 달력은 저장소 상대 경로 · 전체 sha256이 다르면 멈춤. 신호는 달력 파일만 봄(가격 줄로 월말을 정하지 않음).
 - 비용: 왕복 C를 편도 c = 1 − √(1 − C)로 나눠 산 날 · 판 날에 각각 뺌(거래 수익 · NAV · 스트레스 같은 규칙).
 - 기간(A · B · C)마다 산 날 · 판 날이 모두 그 안인 매매만 쓰고, NAV도 그 매매로 현금 1에서 새로 셈. 대조도 같은 경계.
 - 신뢰구간: 달력 달 블록 부트스트랩(블록 6달 · 10,000번 · 씨앗 20261010) — 같은 달 블록에서 TOM과 대조를 함께 다시 뽑음.
-- 가격 수익만(분배금 미포함 · 근거 미확인) → 판정 이름은 가격수익 현상 후보(PRICE_CANDIDATE).
+- 가격 수익만(분배금 미포함 · 근거 미확인) · 과거 휴장 목록이 시점별 공지가 아님 → 판정 이름은 탐색적 가격 패턴 후보(EXPLORATORY_CANDIDATE).
 python3 research/t001.py            (T_TO=YYYYMMDD면 그날까지 가격만 읽음 — 자르기 시험 · 달력은 그대로)"""
 import hashlib
 import json
@@ -19,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "etf-data" / "069500.json"
 CAL = ROOT / "research-exchange" / "claude-to-gpt" / "TOM-0028" / "calendar.json"
 SHA = {SRC: "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
-       CAL: "18d6d921a4d401eb3c9bbef79f7b0d705fc1c28447954a2ca2a45d89a4e710b1"}
+       CAL: "533806486ea09430e12fc0a67549d8f5a54b20be014b24457ec675a3e9cd7939"}
 TO = os.getenv("T_TO", "")
 COST, STRESS = 0.0010, 0.0030
 PERIODS = {"A": ("20021014", "20121231"), "B": ("20130101", "20191231"), "C": ("20200101", "20260930"), "ALL": ("20021014", "20260930")}
@@ -170,6 +171,9 @@ def main():
                   "diff_pct": round((mt - mc) * 100, 4), **boot(t, c),
                   "risk": risk(nav(px, cal, t, lo, hi, COST)), "risk_stress": risk(nav(px, cal, ts, lo, hi, STRESS))}
     out["trades"] = [[b, s, round(x * 100, 6)] for b, s, x in t_all]
+    last = max(px)
+    out["plan_without_price"] = [[b, s] for b, s in plan(cal) if s <= last and (b not in px or s not in px)]
+    out["calendar_days_without_price"] = sorted(d for d in cal if d <= last and d not in px)
     lo, hi = PERIODS["ALL"]
     # 자르기 비교용 전체 NAV: 달력 계획 가운데 산 날 값이 있는 것 모두(판 날 값이 아직 없으면 열린 자리로 그날 종가 평가)
     out["navs_all"] = [[d, round(v, 12)] for d, v in nav(px, cal, [(b, s, None) for b, s in plan(cal) if b in px], lo, max(px), COST)]
