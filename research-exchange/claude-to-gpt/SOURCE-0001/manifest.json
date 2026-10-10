@@ -1,0 +1,67 @@
+{
+ "schema_version": 1,
+ "task_id": "SOURCE-0001",
+ "program_id": "PAPER-READINESS-20261008",
+ "chain_id": "MEAS-20261008",
+ "round": 7,
+ "stage": "DATA-SOURCE-FEASIBILITY",
+ "status": "READY",
+ "status_meaning": "출처 · 결손 · 최소 승인 목록 완전(자료 확보 · 전략 검증 아님)",
+ "summary": {
+  "AVAILABLE_EXISTING_READONLY": [],
+  "AVAILABLE_PUBLIC_OFFICIAL": [],
+  "NEEDS_USER_APPROVAL": [
+   "A1-2",
+   "A1-3",
+   "A2-1",
+   "A2-2",
+   "A2-3",
+   "A3-1",
+   "A4-1",
+   "A4-2",
+   "A6-3"
+  ],
+  "NEEDS_PAID_OR_LICENSED_SOURCE": [],
+  "NOT_VERIFIED": [
+   "A1-1",
+   "A5-1",
+   "A5-2",
+   "A5-3",
+   "A5-4",
+   "A6-1",
+   "A6-2"
+  ]
+ },
+ "rows": 16,
+ "data_api_calls": 0,
+ "input_pr": 26,
+ "input_head_sha": "9bfc62720e1e89b10552268a997bbb6766c9aa48",
+ "source_pr": 25,
+ "source_head_sha": "bb188d57827341463efc24aec9a05c9cd88329f8",
+ "repo_commit": "e9a22eea26871fa2a1d8221b04c304d6a3805382",
+ "prereg_lock": {
+  "commit": "cd3a0b6a",
+  "sha256": "d7bf4f3ca45c833e4d44f14dd6f1c23d53deef86aa2d53c9189888d50c954829"
+ },
+ "evidence_note": "opendart.fss.or.kr · openapi.krx.co.kr 직접 열람은 이 환경의 네트워크 정책으로 차단 — 공식 페이지 검색 요약(E2s)으로 대신, 한국투자증권 공식 GitHub는 직접 열람(E2)",
+ "files": [
+  {
+   "path": "PREREG-LOCK.md",
+   "sha256": "d7bf4f3ca45c833e4d44f14dd6f1c23d53deef86aa2d53c9189888d50c954829"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "ece3ad29feffe04b16fe32ceb2f45d36ed6556a705073c0a8bed49b310c46ce0"
+  },
+  {
+   "path": "SOURCE-MATRIX.json",
+   "sha256": "4d0c16c74b2c43d2f5ed77212ef60f2e7f670212cf3823cf31aa194b2d361c73"
+  }
+ ],
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "privacy": "값 · 키 · 계좌 · 원 주문번호 · 세션 식별자 없음",
+ "result_branch": "claude/source-0001-result",
+ "result_pr": null,
+ "created_at_kst": "2026-10-08T09:22:19+09:00"
+}
