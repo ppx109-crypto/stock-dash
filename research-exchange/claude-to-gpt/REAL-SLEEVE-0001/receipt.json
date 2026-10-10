@@ -1,0 +1,27 @@
+{
+ "schema_version": 1,
+ "task_id": "REAL-SLEEVE-0001",
+ "chain_id": "MAX-RETURN-20261008",
+ "round": 9,
+ "status": "READY",
+ "input": {
+  "pr": 61,
+  "head_sha": "efcca99fc0496da74f5d0251593ae5e395347de9",
+  "read_files": [
+   "TASK.md",
+   "REVIEW.md",
+   "PREREG.md",
+   "manifest.json",
+   "receipt.json"
+  ]
+ },
+ "fixed_source": {
+  "pr": 55,
+  "head_sha": "b4166452e95778dd892fce3a793aea652401492a"
+ },
+ "compared_with": {
+  "pr": 60,
+  "head_sha": "24b12632560c7e4c911ce72a20df43fef004cb89"
+ },
+ "base_main_sha": "3c03588d485923dce26d4b063f0b232318899431"
+}
