@@ -1,0 +1,39 @@
+자격 있음 여부(값 안 읽음): KIS 앱 키 없음 · KIS 앱 시크릿 없음 · DART 인증키 없음  [원 출력 줄은 비밀 검사 규칙(키 이름: 값 꼴)에 걸려 같은 뜻으로 바꿔 적음 · 원래 값은 모두 False]
+API {"kis": {"credential_present": false, "auth_calls": 0, "quote_calls": 0, "status": "BLOCKED: KIS_APP_KEY · KIS_APP_SECRET 이 실행환경에 없음"}, "dart": {"credential_present": false, "calls": 0, "status": "BLOCKED: DART_CRTFC_KEY 가 실행환경에 없음"}, "call_caps": {"KIS(인증 포함)": 500, "DART": 250, "retry_per_request": 2}, "calls_used": {"KIS_auth": 0, "KIS_quote": 0, "DART": 0, "retries": 0}}
+가격 basis {"denominator_price_records(PR80)": 747, "denominator_codes": 71, "queried_ok": 0, "query_unavailable": 747, "stored_eq_official_raw": 0, "stored_eq_official_adjusted": 0, "neither": 0, "UNKNOWN": 747, "repo_claim(코드 주장 · 응답 아님)": "price-data는 collect_prices.py → broker_kis.daily(FHKST03010100 · FID_ORG_ADJ_PRC='0' = 수정주가 · broker_kis.py L300 주석)"}
+15분봉 4건(로컬) [{"bars": 26, "last_bar": "1515", "diff_pct_last_vs_daily": 0.0, "daily_close_within_day_range": true, "daily_close_within_last_bar_range": true, "adjacent_days_ratio_last_over_daily": [1.0, 1.0], "local_hint": ["앞뒤 날은 일치 → basis 차이 아님 쪽", "1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"], "final_class": "UNKNOWN(공식 응답 없음)"}, {"bars": 26, "last_bar": "1515", "diff_pct_last_vs_daily": 0.001, "daily_close_within_day_range": true, "daily_close_within_last_bar_range": true, "adjacent_days_ratio_last_over_daily": [1.000006, 1.0], "local_hint": ["1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"], "final_class": "UNKNOWN(공식 응답 없음)"}, {"bars": 26, "last_bar": "1515", "diff_pct_last_vs_daily": 0.0, "daily_close_within_day_range": true, "daily_close_within_last_bar_range": true, "adjacent_days_ratio_last_over_daily": [1.0, 1.000005], "local_hint": ["1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"], "final_class": "UNKNOWN(공식 응답 없음)"}, {"bars": 26, "last_bar": "1515", "diff_pct_last_vs_daily": 0.001, "daily_close_within_day_range": true, "daily_close_within_last_bar_range": true, "adjacent_days_ratio_last_over_daily": [1.0, 1.0], "local_hint": ["앞뒤 날은 일치 → basis 차이 아님 쪽", "1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"], "final_class": "UNKNOWN(공식 응답 없음)"}]
+기업행동(로컬) {"denominator_codes": 8, "dart_queried_ok": 0, "query_unavailable": 8, "UNKNOWN": 8, "price_link_checked": 0, "note": "효력일 · 정정 연결은 공식 응답 없이 확인 불가. 접수일만으로 같은 날 사용을 PIT로 올리지 않음."} {'감자': 4, '분할': 1, '유상증자': 3, '합병': 1}
+추가 로컬 실측(tick_check.py)
+{
+ "denominator_records": 747,
+ "price_missing": 0,
+ "on_tick(UNKNOWN: 원 또는 수정)": 673,
+ "off_tick(원주가 아님 증명)": 74,
+ "codes": 71,
+ "codes_with_any_off_tick": 5,
+ "codes_all_on_tick": 66,
+ "ca_codes_with_off_tick": "2/8",
+ "m15_mismatch_4": [
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": false,
+   "bar_on_tick": false
+  },
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": false,
+   "bar_on_tick": false
+  },
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": false,
+   "bar_on_tick": false
+  },
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": true,
+   "bar_on_tick": false
+  }
+ ],
+ "rule": "호가 단위 <2천 1 · <5천 5 · <2만 10 · <5만 50 · <20만 100 · <50만 500 · 그 위 1000(2023-01-25 뒤). 저장값 기준으로 구간을 정함."
+}

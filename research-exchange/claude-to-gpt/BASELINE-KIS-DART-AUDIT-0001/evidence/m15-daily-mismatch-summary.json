@@ -1,0 +1,106 @@
+{
+ "denominator": 82,
+ "mismatch": 4,
+ "classified_by_official_response": 0,
+ "classes_allowed": [
+  "마감 동시호가",
+  "봉 누락",
+  "basis 차이",
+  "timezone/장구분",
+  "기타 UNKNOWN"
+ ],
+ "final": {
+  "UNKNOWN": 4
+ },
+ "local_prediagnosis(공식 응답 아님)": [
+  {
+   "case": "d4bd579277f34652",
+   "bars": 26,
+   "last_bar": "1515",
+   "diff_pct_last_vs_daily": 0.0,
+   "daily_close_within_day_range": true,
+   "daily_close_within_last_bar_range": true,
+   "adjacent_days_ratio_last_over_daily": [
+    1.0,
+    1.0
+   ],
+   "local_hint": [
+    "앞뒤 날은 일치 → basis 차이 아님 쪽",
+    "1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"
+   ],
+   "final_class": "UNKNOWN(공식 응답 없음)"
+  },
+  {
+   "case": "8487c8cda46928e8",
+   "bars": 26,
+   "last_bar": "1515",
+   "diff_pct_last_vs_daily": 0.001,
+   "daily_close_within_day_range": true,
+   "daily_close_within_last_bar_range": true,
+   "adjacent_days_ratio_last_over_daily": [
+    1.000006,
+    1.0
+   ],
+   "local_hint": [
+    "1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"
+   ],
+   "final_class": "UNKNOWN(공식 응답 없음)"
+  },
+  {
+   "case": "58f2e93ba33535d5",
+   "bars": 26,
+   "last_bar": "1515",
+   "diff_pct_last_vs_daily": 0.0,
+   "daily_close_within_day_range": true,
+   "daily_close_within_last_bar_range": true,
+   "adjacent_days_ratio_last_over_daily": [
+    1.0,
+    1.000005
+   ],
+   "local_hint": [
+    "1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"
+   ],
+   "final_class": "UNKNOWN(공식 응답 없음)"
+  },
+  {
+   "case": "2a4d81782d35ad75",
+   "bars": 26,
+   "last_bar": "1515",
+   "diff_pct_last_vs_daily": 0.001,
+   "daily_close_within_day_range": true,
+   "daily_close_within_last_bar_range": true,
+   "adjacent_days_ratio_last_over_daily": [
+    1.0,
+    1.0
+   ],
+   "local_hint": [
+    "앞뒤 날은 일치 → basis 차이 아님 쪽",
+    "1515 봉까지 있음 · 15:30 단일가 빠짐 의심(저장소 2026-10-05 탐색 기록과 같은 모양)"
+   ],
+   "final_class": "UNKNOWN(공식 응답 없음)"
+  }
+ ],
+ "local_tick_check(사전등록 밖)": [
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": false,
+   "bar_on_tick": false
+  },
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": false,
+   "bar_on_tick": false
+  },
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": false,
+   "bar_on_tick": false
+  },
+  {
+   "abs_diff_won": 1.0,
+   "daily_on_tick": true,
+   "bar_on_tick": false
+  }
+ ],
+ "local_hint_summary": "4건 모두 차이 정확히 1원 · 저장 봉 종가 4/4가 호가 배수 아님 · 일봉 3/4 배수 아님 → 둘 다 수정(배율) 계열 값의 반올림 차이로 보임(힌트 · 최종 분류는 UNKNOWN)"
+}
