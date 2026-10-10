@@ -1,0 +1,26 @@
+{
+ "schema_version": 1,
+ "task_id": "BATCH-DIVERSIFY-0001",
+ "chain_id": "MAX-RETURN-20261008",
+ "round": 7,
+ "input": {
+  "pr": 56,
+  "head_sha": "8feafeeace53e9d0297a5b56ac6bd816f1212fb8",
+  "read_files": [
+   "TASK.md",
+   "REVIEW.md",
+   "PREREG.md",
+   "receipt.json"
+  ]
+ },
+ "prior": {
+  "pr": 49,
+  "head_sha": "ba7e05a3ec1aa5db2a09043af3da5a03a8102fc4",
+  "reused": "m15_exec.py · kernel2.py · cost_contract.py · common.py(바이트 동일) · lc_m15.py ②단계만 바꿔 bd_m15.py"
+ },
+ "benchmarks_reused": {
+  "pr55": "b4166452 fr_results.json",
+  "pr53": "11c63dcb wh_diag.json"
+ },
+ "base_main_sha": "64c25e937f156d683bd8e066cc4f72c4e4a2205a"
+}
