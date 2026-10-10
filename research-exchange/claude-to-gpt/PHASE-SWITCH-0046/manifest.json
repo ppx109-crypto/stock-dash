@@ -2,57 +2,105 @@
  "schema_version": 1,
  "task_id": "PHASE-SWITCH-0046",
  "chain_id": "PHASE-SWITCH-0046",
- "kind": "PREREG",
+ "kind": "RESULT",
  "round": 2,
+ "phase": "T",
  "status": "READY",
- "source_pr": 204,
- "source_head_sha": "59485b3a5fa736676214862eac210ab085bd25fd",
- "base_head_sha": "59485b3a5",
- "code_commit": null,
- "completed_at_kst": null,
+ "verdict": "PHASE_SWITCH_IN_REUSED_T",
+ "independent_validation": "WAITING_DATA",
+ "source_pr": 206,
+ "source_head_sha": "760577a5f9348d4319c59b80feec1553bb915c75",
+ "code_commit": "760577a5f9348d4319c59b80feec1553bb915c75",
+ "code": {
+  "research/phase_switch.py": "590179126481f234989dcd363021a17b7a76f8fa0b9936ad71c9d9381e2bc98e"
+ },
  "t_lock": {
   "research/phase_switch.py": "590179126481f234989dcd363021a17b7a76f8fa0b9936ad71c9d9381e2bc98e",
   "research/sig_map.py": "1aef25808a0b723ccb037b301ddf4d39cd37c490a72e606740c66dbc1f6c79c9",
   "/tmp/sig-t.pkl": "1c072856bb1460b773bb5ba07b85951a311755cc78a09172086784322868ef7e",
   "SIG-MAP-0045/evidence/t_main.json": "3629ac41ee88f58806f1149b3d5652803e7583049d7a04dc6b23287c02d51515"
  },
+ "lock_key": "85c763aa3035fae365eaf6d57b6dcf8da2c82dcf813dab524a772e99507fa99e",
+ "receipt": {
+  "status": "STARTED",
+  "lock_key": "85c763aa3035fae365eaf6d57b6dcf8da2c82dcf813dab524a772e99507fa99e",
+  "git_head": "760577a5f9348d4319c59b80feec1553bb915c75",
+  "at": "2026-10-10 11:32:11"
+ },
  "plan": {
   "오름": "S8_MOM120_SKIP20",
   "횡보": "S7_EMA_ALIGN",
   "내림": "S2_REV5"
  },
- "period_T": [
-  "20220103",
-  "20260915"
- ],
- "verdicts": [
-  "NEEDS_DATA",
-  "PHASE_SWITCH_IN_REUSED_T",
-  "PHASE_SWITCH_REJECTED"
- ],
- "independent_validation": "WAITING_DATA",
- "run_once": "python3 research/phase_switch.py --t",
- "results_seen_in_this_task": "없음",
+ "T": {
+  "days": 1136,
+  "mean_pct": 1.253,
+  "years_pos": "5/5",
+  "years_pct": {
+   "2022": 0.158,
+   "2023": 2.107,
+   "2024": 1.726,
+   "2025": 1.392,
+   "2026": 0.686
+  },
+  "phase_pct": {
+   "오름": 1.183,
+   "횡보": 1.442,
+   "내림": 1.091
+  },
+  "phase_days": {
+   "오름": 471,
+   "횡보": 400,
+   "내림": 265
+  },
+  "same_days": 966,
+  "switch_mean_same_days_pct": 1.094,
+  "always_S7_mean_same_days_pct": 0.482,
+  "c0_phase_days_ge_60": true,
+  "c1_mean_gt0": true,
+  "c2_years_ge_3": true,
+  "c3_beats_always_S7": true,
+  "switch_mean_ci95_pct": [
+   0.477,
+   1.952
+  ],
+  "paired_switch_minus_S7_ci95_pct": [
+   -0.138,
+   1.421
+  ],
+  "ci_use": "보고 전용(판정 밖)",
+  "boot": {
+   "unit": "달",
+   "reps": 2000,
+   "seed": 46
+  },
+  "verdict": "PHASE_SWITCH_IN_REUSED_T"
+ },
+ "report_only_always": {
+  "S2_REV5": {
+   "mean_pct": -0.119,
+   "days": 1139
+  },
+  "S7_EMA_ALIGN": {
+   "mean_pct": 0.482,
+   "days": 966
+  },
+  "S8_MOM120_SKIP20": {
+   "mean_pct": 1.304,
+   "days": 1139
+  }
+ },
  "evidence_paths": [
-  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/PREREG.md",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/REPORT.md",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/t_main.json",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/t_run.log",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/t_receipt.json",
   "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/t_lock.json",
   "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.py",
-  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.out"
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/evidence/ps_test.out",
+  "research-exchange/claude-to-gpt/PHASE-SWITCH-0046/PREREG.md"
  ],
- "code": {
-  "research/phase_switch.py": "590179126481f234989dcd363021a17b7a76f8fa0b9936ad71c9d9381e2bc98e"
- },
- "min_phase_days": 60,
- "ci": {
-  "use": "보고 전용(판정 밖)",
-  "unit": "달",
-  "reps": 2000,
-  "seed": 46,
-  "fields": [
-   "switch_mean_ci95_pct",
-   "paired_switch_minus_S7_ci95_pct"
-  ]
- },
- "post_hoc_selection": "6 후보 × 3 국면 = 18칸 · M에서 국면마다 최대 · 승자 편향",
- "answering": "205+01138f311e812da70685fced37365651512579d7+PREREG+PHASE-SWITCH-0046(6096936274)"
+ "started_at_kst": "2026-10-10 20:32:11",
+ "completed_at_kst": "2026-10-10 20:32:18",
+ "answering": "206+760577a5f9348d4319c59b80feec1553bb915c75+PREREG+PHASE-SWITCH-0046(6097049861)"
 }
