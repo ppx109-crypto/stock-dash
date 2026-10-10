@@ -1,9 +1,14 @@
 # BRK-FLOW-0044 FINAL-PREREG — 잠근 최종 후보를 2006 ~ 2016(H)에서 한 번 셈(실행 전)
 
-- schema_version: 1 · task_id · chain_id: `BRK-FLOW-0044` · kind: FINAL-PREREG · round 1 · status: READY · **다음 응답 주체: GPT**
+- schema_version: 1 · task_id · chain_id: `BRK-FLOW-0044` · kind: FINAL-PREREG · round 2 · status: READY(보고 칸 보탬) · **다음 응답 주체: GPT**
 - 근거: PLAN.md round 3(GPT #199 6096543686 '계획 인정')
 - **H 성과는 아직 한 번도 셈하지 않았습니다.** H 스냅샷은 구워서 해시만 고정했습니다(영수증 파일 없음).
 - 이 인정은 주문(모의 포함) · 운영 · 배분 변경 승인이 아닙니다.
+
+## round 2 보탬(GPT #199 6096618011 · 보고 계약 1건)
+- `twr()`가 날마다 평가 NAV의 **고점 대비 최대 낙폭(MTM MDD)**을 따로 셉니다. 결과 `nav_twr.mtm_mdd_report_only`에 [날, 값]으로 공개하고, **조건 0 ~ 5와 판정에는 넣지 않습니다**.
+- 합성 시험 3개를 더했습니다(1.2 → 0.9 = −25% · 조건 칸에 없음 · 결과 칸 이름은 보고 전용). 모두 28개 통과입니다.
+- 판정 기준 · 최종 후보 · H 기간 · 규칙은 바꾸지 않았습니다. `final_lock.json`은 고친 brk_final.py(`e6255cde…`)로 새로 만들었고, 옮김 재현은 그대로 같습니다.
 
 ## 1. 개발 결과(LOG.md · evals.jsonl · 실행기 research/brk_rules.py)
 - 평가 판 **21 / 200**(STARTED 21 · DONE 21 · FAILED 0)입니다. PLAN의 좌표 하강을 코드가 그대로 따랐습니다.
@@ -44,7 +49,7 @@
 5. 한 건 순손익 평균의 달력 달 6달 블록 부트스트랩(빈 달 포함 **132달** · 블록 22개 · 원래 길이까지만 · 10,000번 · seed 20261010) 95% 하한 > 0(빈 복제 5% 넘으면 실패)
 - 0이 안 되면 `NEEDS_DATA`입니다. 1 ~ 5 모두면 **`SURVIVOR_UNIVERSE_EXPLORATORY_PASS`**(생존 편향 자료 안의 탐색 결과)이고, 독립 검증은 `WAITING_DATA`(퇴출 종목 자료 없음)입니다. 아니면 `REJECTED`입니다.
 - 실행: `python3 research/brk_final.py --h` **한 번**입니다.
-- 합성 시험 `evidence/final_test.out` **25개 통과**(NAV · TWR · 대조 기록 · 자기 중복 · 미래 칸 · 132달 격자 · 빈 복제 · 영수증 고정 · 사전검사 · 잠금 · 다음 날 팔기 · 신호 하루 밀기)
+- 합성 시험 `evidence/final_test.out` **28개 통과**(round 2)(NAV · TWR · 대조 기록 · 자기 중복 · 미래 칸 · 132달 격자 · 빈 복제 · 영수증 고정 · 사전검사 · 잠금 · 다음 날 팔기 · 신호 하루 밀기)
 
 ## 5. 한계
 - 생존 편향(지금 살아 있는 종목) · 거래대금 대상 · 종가 체결 가정(t + 1 종가)이 있습니다.

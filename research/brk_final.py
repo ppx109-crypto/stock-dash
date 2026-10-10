@@ -161,8 +161,13 @@ def twr(navs):
         yr[d_[:4]] *= 1 + r
     wd = min(rets, key=lambda z: z[1])
     wm = min(mon.items(), key=lambda z: z[1])
+    peak, mdd, at = navs[0][1], 0.0, navs[0][0]       # 보고만(판정 아님 · GPT #199 6096618011): 날마다 평가 NAV의 고점 대비 최대 낙폭
+    for d_, v in navs:
+        peak = max(peak, v)
+        if v / peak - 1 < mdd:
+            mdd, at = v / peak - 1, d_
     return {"worst_day": [wd[0], wd[1]], "worst_month": [wm[0], wm[1] - 1],
-            "years": {k: v - 1 for k, v in sorted(yr.items())}, "end_nav": navs[-1][1]}
+            "years": {k: v - 1 for k, v in sorted(yr.items())}, "end_nav": navs[-1][1], "mtm_mdd": [at, mdd]}
 
 
 def control(led, pool, lanes, seed):
@@ -330,7 +335,8 @@ def main():
     c5 = bl is not None and bl > 0
     res.update({"engine": {**eng, "행운뺌": a, "큰2건뺌": b, "years_counted": years},
                 "seed0_trades": len(led), "virtual_settle": {k: sum(1 for t in led if t.get("정산") == k) for k in {t.get("정산") for t in led if t.get("정산")}},
-                "nav_twr": {"worst_day": tw["worst_day"], "worst_month": tw["worst_month"], "years": tw["years"], "end_nav": tw["end_nav"]},
+                "nav_twr": {"worst_day": tw["worst_day"], "worst_month": tw["worst_month"], "years": tw["years"], "end_nav": tw["end_nav"],
+                            "mtm_mdd_report_only": tw["mtm_mdd"]},
                 "control_annual": ctl, "control_median": statistics.median(ctl), "control_runs": ctl_runs,
                 "boot_trade_mean": [m, bl, bu], "boot_empty_reps": empty,
                 "conditions": {"0_trades_ge_60": c0, "1_annual_and_luck_gt0": c1, "2_beats_random_median": c2,

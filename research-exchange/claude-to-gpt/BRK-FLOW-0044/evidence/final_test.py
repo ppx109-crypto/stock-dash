@@ -119,4 +119,11 @@ ok(dm.holds({"code": "X", "i": 61, "date": "d061"}) is True, "어제(60칸) 고�
 ok(dm.holds({"code": "X", "i": 60, "date": "d060"}) is False, "앞 칸(59) 줄이 대상 밖이면 안 삼")
 dm.flow_sum = lambda r, n, col: -1.0 if col == "투신" else 5.0
 ok(dm.holds({"code": "X", "i": 61, "date": "d061"}) is False, "투신 순매도면 안 삼")
+# MTM MDD(보고만)
+tw3 = F.twr([("시작", 1.0), ("20060102", 1.2), ("20060103", 0.9), ("20060104", 1.3), ("20060105", 1.04)])
+ok(abs(tw3["mtm_mdd"][1] - (0.9 / 1.2 - 1)) < 1e-12 and tw3["mtm_mdd"][0] == "20060103", "날마다 평가 NAV 고점 대비 최대 낙폭 = −25%(1.2 → 0.9)")
+src = open(F.__file__).read()
+cond_lines = [ln for ln in src.splitlines() if ln.strip().startswith(("c0 =", "c1 =", "c2 =", "c3 =", "c4 =", "c5 ="))]
+ok(len(cond_lines) == 6 and not any("mdd" in ln for ln in cond_lines), "낙폭은 조건(c0 ~ c5) 줄에 들어가지 않음")
+ok('"mtm_mdd_report_only"' in src and "mdd" not in src[src.index('"conditions": {"0_trades_ge_60"'):src.index('res["verdict"]')], "결과 칸 이름은 보고 전용 · 판정 칸에 없음")
 print(f"합계: 실패 {len(fails)}"); sys.exit(1 if fails else 0)
