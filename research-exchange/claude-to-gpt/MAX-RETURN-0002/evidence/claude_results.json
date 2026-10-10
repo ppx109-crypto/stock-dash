@@ -1,0 +1,397 @@
+{
+ "M0_x1.0": {
+  "engine_report": {
+   "CAGR": 175.7,
+   "MDD_daily": -17.25,
+   "worst_day": -11.29,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 0,
+   "positions": 81,
+   "end_nav_won": 17136940,
+   "worst_month": -12.65,
+   "turnover_per_year": 24.54
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 17136940,
+   "CAGR": 175.7,
+   "MDD_daily": -17.25,
+   "worst_day_unrounded_pct": -11.28664193428105,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "0"
+  },
+  "fills": 171,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 28,
+   "buy_signal_no_slot": 246,
+   "skip_weak": 0,
+   "skip_no_d1": 0,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 28,
+  "max_gap_cash": 1.257285475730896e-08
+ },
+ "M0_x2.0": {
+  "engine_report": {
+   "CAGR": 138.84,
+   "MDD_daily": -17.19,
+   "worst_day": -10.94,
+   "worst_day_at": "20260304",
+   "day_breach_-15": 0,
+   "positions": 81,
+   "end_nav_won": 15879230,
+   "worst_month": -14.04,
+   "turnover_per_year": 24.81
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 15879230,
+   "CAGR": 138.84,
+   "MDD_daily": -17.19,
+   "worst_day_unrounded_pct": -10.940847413061993,
+   "worst_day_at": "20260304",
+   "day_breach_-15": "0"
+  },
+  "fills": 171,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 28,
+   "buy_signal_no_slot": 246,
+   "skip_weak": 0,
+   "skip_no_d1": 0,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 23,
+  "max_gap_cash": 1.7695128917694092e-08
+ },
+ "M0_ex_top": {
+  "excluded": "000250",
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 15107823,
+   "CAGR": 117.46,
+   "MDD_daily": -17.44,
+   "worst_day_unrounded_pct": -10.317395632898762,
+   "worst_day_at": "20260304",
+   "day_breach_-15": "0"
+  },
+  "CAGR_engine": 117.46
+ },
+ "M4_x1.0": {
+  "engine_report": {
+   "CAGR": 237.59,
+   "MDD_daily": -19.32,
+   "worst_day": -14.63,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 0,
+   "positions": 66,
+   "end_nav_won": 19083078,
+   "worst_month": -11.01,
+   "turnover_per_year": 22.4
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 19083078,
+   "CAGR": 237.59,
+   "MDD_daily": -19.32,
+   "worst_day_unrounded_pct": -14.625802277693701,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "0"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 21,
+  "max_gap_cash": 9.313225746154785e-09
+ },
+ "M4_x2.0": {
+  "engine_report": {
+   "CAGR": 213.46,
+   "MDD_daily": -19.49,
+   "worst_day": -15.09,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 1,
+   "positions": 66,
+   "end_nav_won": 18346201,
+   "worst_month": -11.5,
+   "turnover_per_year": 22.17
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 18346201,
+   "CAGR": 213.46,
+   "MDD_daily": -19.49,
+   "worst_day_unrounded_pct": -15.093762533530086,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "1"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 17,
+  "max_gap_cash": 9.313225746154785e-09
+ },
+ "M4_ex_top": {
+  "excluded": "000250",
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 14907905,
+   "CAGR": 112.08,
+   "MDD_daily": -20.2,
+   "worst_day_unrounded_pct": -12.059709299090526,
+   "worst_day_at": "20260304",
+   "day_breach_-15": "0"
+  },
+  "CAGR_engine": 112.08
+ },
+ "C20_x1.0": {
+  "engine_report": {
+   "CAGR": 217.61,
+   "MDD_daily": -19.41,
+   "worst_day": -15.0,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 1,
+   "positions": 66,
+   "end_nav_won": 18474783,
+   "worst_month": -12.17,
+   "turnover_per_year": 21.2
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 18474783,
+   "CAGR": 217.61,
+   "MDD_daily": -19.41,
+   "worst_day_unrounded_pct": -15.004474290975335,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "1"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 9,
+  "max_gap_cash": 7.450580596923828e-09
+ },
+ "C20_x2.0": {
+  "engine_report": {
+   "CAGR": 194.29,
+   "MDD_daily": -19.48,
+   "worst_day": -15.45,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 1,
+   "positions": 66,
+   "end_nav_won": 17741242,
+   "worst_month": -12.83,
+   "turnover_per_year": 21.2
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 17741242,
+   "CAGR": 194.29,
+   "MDD_daily": -19.48,
+   "worst_day_unrounded_pct": -15.45445392467406,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "1"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 12,
+  "max_gap_cash": 7.916241884231567e-09
+ },
+ "C20_ex_top": {
+  "excluded": "000250",
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 14494048,
+   "CAGR": 101.13,
+   "MDD_daily": -20.35,
+   "worst_day_unrounded_pct": -12.216519153750305,
+   "worst_day_at": "20260304",
+   "day_breach_-15": "0"
+  },
+  "CAGR_engine": 101.13
+ },
+ "C25_x1.0": {
+  "engine_report": {
+   "CAGR": 221.63,
+   "MDD_daily": -19.42,
+   "worst_day": -14.93,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 0,
+   "positions": 66,
+   "end_nav_won": 18598561,
+   "worst_month": -12.07,
+   "turnover_per_year": 21.67
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 18598561,
+   "CAGR": 221.63,
+   "MDD_daily": -19.42,
+   "worst_day_unrounded_pct": -14.93469087331356,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "0"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 9,
+  "max_gap_cash": 7.741618901491165e-09
+ },
+ "C25_x2.0": {
+  "engine_report": {
+   "CAGR": 198.43,
+   "MDD_daily": -19.49,
+   "worst_day": -15.36,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 1,
+   "positions": 66,
+   "end_nav_won": 17873572,
+   "worst_month": -12.81,
+   "turnover_per_year": 21.6
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 17873572,
+   "CAGR": 198.43,
+   "MDD_daily": -19.49,
+   "worst_day_unrounded_pct": -15.357606295787951,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "1"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 11,
+  "max_gap_cash": 1.3969838619232178e-08
+ },
+ "C25_ex_top": {
+  "excluded": "000250",
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 14607563,
+   "CAGR": 104.11,
+   "MDD_daily": -20.31,
+   "worst_day_unrounded_pct": -12.19946281580916,
+   "worst_day_at": "20260304",
+   "day_breach_-15": "0"
+  },
+  "CAGR_engine": 104.11
+ },
+ "C30_x1.0": {
+  "engine_report": {
+   "CAGR": 225.23,
+   "MDD_daily": -19.39,
+   "worst_day": -14.86,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 0,
+   "positions": 66,
+   "end_nav_won": 18708756,
+   "worst_month": -11.88,
+   "turnover_per_year": 22.21
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 18708756,
+   "CAGR": 225.23,
+   "MDD_daily": -19.39,
+   "worst_day_unrounded_pct": -14.859796765819489,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "0"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 9,
+  "max_gap_cash": 1.3969838619232178e-08
+ },
+ "C30_x2.0": {
+  "engine_report": {
+   "CAGR": 200.52,
+   "MDD_daily": -19.47,
+   "worst_day": -15.31,
+   "worst_day_at": "20260331",
+   "day_breach_-15": 1,
+   "positions": 66,
+   "end_nav_won": 17939878,
+   "worst_month": -12.56,
+   "turnover_per_year": 22.0
+  },
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 17939878,
+   "CAGR": 200.52,
+   "MDD_daily": -19.47,
+   "worst_day_unrounded_pct": -15.3095341459607,
+   "worst_day_at": "20260331",
+   "day_breach_-15": "1"
+  },
+  "fills": 138,
+  "notes": {
+   "cant_split": 0,
+   "stale_bumped": 21,
+   "buy_signal_no_slot": 177,
+   "skip_weak": 0,
+   "skip_no_d1": 98,
+   "partial_suppressed": 0
+  },
+  "reduced_buys": 13,
+  "max_gap_cash": 8.381903171539307e-09
+ },
+ "C30_ex_top": {
+  "excluded": "000250",
+  "independent_arith": {
+   "first_nav_day": "20250918",
+   "end_nav_won": 14697583,
+   "CAGR": 106.48,
+   "MDD_daily": -20.29,
+   "worst_day_unrounded_pct": -12.191268549688983,
+   "worst_day_at": "20260304",
+   "day_breach_-15": "0"
+  },
+  "CAGR_engine": 106.48
+ }
+}

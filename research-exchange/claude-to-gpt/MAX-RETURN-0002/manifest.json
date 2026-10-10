@@ -1,0 +1,190 @@
+{
+ "schema_version": 1,
+ "task_id": "MAX-RETURN-0002",
+ "status": "READY",
+ "source": {
+  "schema_version": 1,
+  "task_id": "MAX-RETURN-0002",
+  "chain_id": "MAX-RETURN-20261008",
+  "round": 2,
+  "input": {
+   "pr": 46,
+   "head_sha": "5308ae74ce0d01096158c3005699d0945b025570",
+   "read_files": [
+    "REVIEW.md",
+    "TASK.md",
+    "PREREG.md",
+    "GPT_RESULTS.json",
+    "GPT_PATCH.md",
+    "receipt.json"
+   ],
+   "gpt_prereg_commit": "d7fd02f71a549d36e4a46eee17bf12c0cee7213a"
+  },
+  "prior": {
+   "pr": 45,
+   "head_sha": "3403423c660f6b72970ace4864147da013ea0a23",
+   "reused": "kernel2.py · m15_exec.py · cost_contract.py · common.py(바이트 동일) · mr_m15.py에서 매수 금액 한 줄만 변경"
+  },
+  "base_main_sha": "ec44c4dd703cd2e547b0749cc805faca95340da0",
+  "received_at_kst": "2026-10-08T16:25:29+09:00 이후(입력 head 커밋 시각) · 16:27:27 PREREG 커밋 전"
+ },
+ "prereg_commit": "8f4cbd5664f9b3dd9f78fc14b37dcc8760316d38",
+ "gpt_prereg_commit": "d7fd02f71a549d36e4a46eee17bf12c0cee7213a",
+ "inputs": {
+  "engine": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "hourly_tables_sha256": "8dab7750362d2edfd3ab19b5538ab85fcf9d090bd851410734faa26b9c32d47b",
+  "d1_picks_sha256": "d02fec2eaaa1637370e5ea2619765fd0aff317a17ead75062bfe19b4d7da58b1"
+ },
+ "rules": [
+  "M0",
+  "M4",
+  "C20",
+  "C25",
+  "C30"
+ ],
+ "capital_won": 10000000,
+ "cost_stress": [
+  1,
+  2
+ ],
+ "train": {
+  "first_bar": "2025-09-17",
+  "first_nav_day": "2025-09-18",
+  "last_day": "2026-03-31"
+ },
+ "elimination": "하루 TWR −15% 넘음(1배 · 2배) · 2배 CAGR ≤ 0 · 최대 이익 종목 제외 1배 CAGR ≤ 0",
+ "not_elimination": [
+  "달력월 −15%",
+  "MDD(비교 항목)"
+ ],
+ "crosscheck": {
+  "items": 120,
+  "value_mismatch": 0,
+  "format_only_mismatch": 8,
+  "format_note": "따로 산술의 하루 −15% 넘음이 문자열로 저장됨(numpy 정수 default=str) · 값은 같음",
+  "kind": "같은 공유 엔진 재실행 + 일별 NAV에서 따로 한 지표 산술 · 독립 엔진 구현 아님",
+  "not_compared": "GPT_RESULTS에 체결 수 · 일별 NAV 파일이 없어 날마다 대조는 못 함"
+ },
+ "passed": [
+  "M0"
+ ],
+ "chosen": "M0",
+ "verdict": "개선 없음",
+ "outcome": "C20(1배 · 2배) · C25 · C30 · M4(2배) 하루 −15% 넘음으로 탈락 · M0 유지 · 상한을 낮출수록 최악 하루가 나빠져 가설 방향과 반대 · 가설 종료",
+ "oos": false,
+ "paper_validation_ready": false,
+ "live_approval": false,
+ "evidence_paths": [
+  "evidence/claude_results.json",
+  "evidence/compare_gpt.txt",
+  "evidence/nav_train_C20_x1.csv",
+  "evidence/nav_train_C20_x2.csv",
+  "evidence/nav_train_C25_x1.csv",
+  "evidence/nav_train_C25_x2.csv",
+  "evidence/nav_train_C30_x1.csv",
+  "evidence/nav_train_C30_x2.csv",
+  "evidence/nav_train_M0_x1.csv",
+  "evidence/nav_train_M0_x2.csv",
+  "evidence/nav_train_M4_x1.csv",
+  "evidence/nav_train_M4_x2.csv",
+  "evidence/run.log"
+ ],
+ "files": [
+  {
+   "path": "PREREG.md",
+   "sha256": "939b22d5bca36a584570d0e88bed4cf87230d1d55b1f7ffdf65307d958e3e2a7"
+  },
+  {
+   "path": "REPORT.md",
+   "sha256": "bf34a9c2da017d939d46e8d1fc937f4da8aa69f9243c05e3fb7a876caa88c7ff"
+  },
+  {
+   "path": "code/common.py",
+   "sha256": "2f6e61a730e9e3ae61daea34b2644656aadb89727a8a26044f5bcb5c0001f362"
+  },
+  {
+   "path": "code/compare_gpt.py",
+   "sha256": "608c537d684cf6b9613e60324c7df8e7044aff4eedce8d17d54c3ddc16c0a6e5"
+  },
+  {
+   "path": "code/cost_contract.py",
+   "sha256": "c8c006c10fead5db60861f89c8e50304dfe9918c03ce11c32c74beec3496aaae"
+  },
+  {
+   "path": "code/kernel2.py",
+   "sha256": "a1b0802865656ed98eaf98bd347f0c174d8895f26d97bd85836cfcebf6ae80ac"
+  },
+  {
+   "path": "code/m15_exec.py",
+   "sha256": "a49f4965a9c517a29bf7c8d79ecbe91d1c75fb178ed4b9db3aa28f62889734a1"
+  },
+  {
+   "path": "code/mr2_m15.py",
+   "sha256": "45b04b60948668ff8ba4716c202e07e4054efa8ef00a22b124e24940890feabe"
+  },
+  {
+   "path": "evidence/claude_results.json",
+   "sha256": "c43a425914b9b73fa17aa21fbd3047ba5ce7ca05fa5d770d136d49d122268561"
+  },
+  {
+   "path": "evidence/compare_gpt.txt",
+   "sha256": "68cdb7a84e10b79b194400876bef45e4ffb29aacb012235e35ddf46507fa9e51"
+  },
+  {
+   "path": "evidence/nav_train_C20_x1.csv",
+   "sha256": "2d689384e85d3bb036f3a73bd852a6f9bb8263fe0529c6512accdbe2745340d1"
+  },
+  {
+   "path": "evidence/nav_train_C20_x2.csv",
+   "sha256": "6b0f0316f03e2cea836a8fa1d6531f062623427bb5f3bdcc4f883b68581af7a5"
+  },
+  {
+   "path": "evidence/nav_train_C25_x1.csv",
+   "sha256": "09c44ee05f3b555178132e12828278c1e5177ae8477a7d2d4686bf0e79db887e"
+  },
+  {
+   "path": "evidence/nav_train_C25_x2.csv",
+   "sha256": "36f6f4fde7bfd984958860423c351cb2be707a606a1e226008d3fb35e60c218d"
+  },
+  {
+   "path": "evidence/nav_train_C30_x1.csv",
+   "sha256": "ec1f2b2c353595d5179e0c6645e231337040ba7e2316722e9ba41a1815c0fa24"
+  },
+  {
+   "path": "evidence/nav_train_C30_x2.csv",
+   "sha256": "67dcfca06bcdcdc7a54ad2e7f4ac9e4b4a8e2f04ed42266c64c225d57a2a37e9"
+  },
+  {
+   "path": "evidence/nav_train_M0_x1.csv",
+   "sha256": "b377de7ab1a79512dfde9f2600fa79c9324419100af3df0f2e4a58943e6e13f3"
+  },
+  {
+   "path": "evidence/nav_train_M0_x2.csv",
+   "sha256": "36d10bb4cbc4d90e3091c03fa55291acca52602cc94007a67402605381b3e362"
+  },
+  {
+   "path": "evidence/nav_train_M4_x1.csv",
+   "sha256": "794a5b994f896488058af3ea1eced7bae8828ce928097602be5610f8e1462f39"
+  },
+  {
+   "path": "evidence/nav_train_M4_x2.csv",
+   "sha256": "148d7de7979f96cb45db0a5dfa399c40fc1b981e637c58e1c49cecd62e3268e1"
+  },
+  {
+   "path": "evidence/run.log",
+   "sha256": "d5034479f7567ce5407ad262a1fa2ae36cca6f997285637320eb447d7582f0bb"
+  },
+  {
+   "path": "receipt.json",
+   "sha256": "42232189cad304f9322c71c282b72b9d190a5c2fa2e5f2dff3833cca5ef4e052"
+  }
+ ],
+ "api_calls": 0,
+ "orders": 0,
+ "operational_changes": 0,
+ "rl_model_training": 0,
+ "result_branch": "research-exchange/max-return-0002",
+ "result_pr": null,
+ "completed_at_kst": "2026-10-08T16:34:55+09:00",
+ "prereg_committed_at_kst": "2026-10-08T16:27:27+09:00"
+}
