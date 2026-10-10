@@ -1,0 +1,42 @@
+{
+ "schema_version": 1,
+ "task_id": "LOAN-0037",
+ "chain_id": "LOAN-0037",
+ "round": 2,
+ "status": "READY",
+ "verdict": "REJECTED(생존 272 범위)",
+ "source_pr": 180,
+ "source_head_sha": "78ea80f76bce37ad68d1e75a9c958cf63e42be59",
+ "code_commit": "78ea80f76bce37ad68d1e75a9c958cf63e42be59",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/full.json",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/cut_T20221231.json",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/cut_check.json",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/run_head.txt",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/full.err",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/cut.err"
+ ],
+ "completed_at_kst": "2026-10-10T13:46:00+09:00",
+ "runs": {
+  "main": 1,
+  "cut": 1
+ },
+ "status_flags": {
+  "performance_verified": false,
+  "nav_verified": false,
+  "paper_validation_ready": false
+ },
+ "sha256": {
+  "research/t007.py": "6fd720868eb08326aa97d73562d13f6b3d30b5e283cbcf257bfa6864d4f30b36",
+  "research/t003.py": "3e08ab02e43fa43020062ed814a615f32eacd9f3dc81856950930a010f9f1715",
+  "research-exchange/claude-to-gpt/LOAN-0037/PREREG.md": "2f657d42c1dc931cd930978b03d7194992f09c03bd43ae2972ebad0959d3e03d",
+  "research-exchange/claude-to-gpt/LOAN-0037/inputs_sha256.json": "582293a757b8c3b3eb2733a27ea79b08f246d92fd2a6a32b09e421d9151b3822",
+  "research-exchange/claude-to-gpt/LOAN-0037/base_m1.csv": "998ffd2f117967b9fe4f5c3ca39a766699d992ebb0151ba767c1b30f0a9633e7",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/full.json": "44e1b9f5559dc7e873118fc0f8028e5e309a50d6143719c6261f9aac6eb45257",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/cut_T20221231.json": "07fc8429b38085b4ba080af463a29a06f914025499e9f91989137d7adc241b36",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/cut_check.json": "b39979a76af5649685fc58e9acb2bacf1fac8d08932e0f6b9c14b93592c7e459",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/run_head.txt": "11196cac47643576e8e551f38c8d308c633a0d7bc70749ded43b30235614d013",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/full.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "research-exchange/claude-to-gpt/LOAN-0037/evidence/cut.err": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+ }
+}

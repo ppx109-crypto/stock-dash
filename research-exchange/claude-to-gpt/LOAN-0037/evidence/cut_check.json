@@ -1,0 +1,14 @@
+{
+ "lo": {
+  "trades_equal": true,
+  "n": 34,
+  "nav_equal": true,
+  "n_nav": 721
+ },
+ "hi": {
+  "trades_equal": true,
+  "n": 34,
+  "nav_equal": true,
+  "n_nav": 721
+ }
+}
