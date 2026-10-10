@@ -1,0 +1,46 @@
+{
+ "schema_version": 1,
+ "task_id": "REGIME-SW-0050",
+ "chain_id": "REGIME-SW-0050",
+ "kind": "PLAN",
+ "round": 1,
+ "status": "READY",
+ "user_instruction": "2026-10-10 가장 나쁜 달 −10% 이내로 몫 다시 · 모의투자 임시저장 · 최종후보들로 추후 운영 재계산",
+ "source_pr": 214,
+ "source_head_sha": "a0b02d3a0fb995a45badc2534a7833b27da01f00",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/regime_dev.py": "7f47b04336d2ed73f6b3f28d9a3ccbeb2a9dcac087fc35fb13bb69915d4da56a",
+  "research/regime_rules2.py": "5684ae8ae57402aeb3931bec85175c8a97095133a31097f6a0a7393247002396",
+  "research/regime_rules3.py": "e3274e8539130003f25d4d5855eccde8cb2af5f986ac300f8c5224ae5626c088"
+ },
+ "limits": {
+  "day": -0.15,
+  "month": -0.1
+ },
+ "grid": 231,
+ "eval_cap": 300,
+ "evals_started": 0,
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "verdicts": [
+  "ADOPT_CANDIDATE",
+  "PEAK_ONLY",
+  "NO_IMPROVEMENT"
+ ],
+ "temp_save": {
+  "file": "paper-candidates/candidates.json",
+  "orders": false
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/PLAN.md",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/reg3_test.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/reg3_test.out",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/cut_test3.py",
+  "research-exchange/claude-to-gpt/REGIME-SW-0050/evidence/cut_test3.out"
+ ]
+}
