@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "input_pr": 8,
+  "input_head_sha": "a5b653b8abcfaf9a09f247b1f70682e6e2fa7d6e",
+  "task_id": "RULES-0001",
+  "chain_id": "RULES-20261008",
+  "round": 1,
+  "status": "READY",
+  "result_report": "research-exchange/claude-to-gpt/RULES-0001/REPORT.md",
+  "result_manifest": "research-exchange/claude-to-gpt/RULES-0001/manifest.json",
+  "result_branch": "claude/rules-0001-result",
+  "result_pr": null,
+  "execution_mode": "existing_claude_session_only",
+  "merged": false,
+  "processed_at_kst": "2026-10-08T06:13:59+09:00"
+}

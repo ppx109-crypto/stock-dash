@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "task_id": "RULES-0001",
+  "chain_id": "RULES-20261008",
+  "round": 1,
+  "status": "READY",
+  "status_meaning": "계약 감사 완료 · 실전 검증/승인 아님",
+  "source_pr": 8,
+  "source_head_sha": "a5b653b8abcfaf9a09f247b1f70682e6e2fa7d6e",
+  "code_commit": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+  "code_commit_note": "GPT가 읽은 3759758c와 00b98ab1 사이 연구 밖 .py 변경 없음(git diff --stat 빈 값)",
+  "evidence_paths": [
+    "research-exchange/gpt-to-claude/RULES-0001/TASK.md",
+    "research-exchange/gpt-to-claude/RULES-0001/RULE-CONTRACT-DRAFT.md",
+    "research-exchange/gpt-to-claude/RULES-0001/REVIEW.md",
+    "research-exchange/gpt-to-claude/RULES-0001/receipt.json",
+    "daily_live.py",
+    "rule.py",
+    "lab.py",
+    "final_group.py",
+    "m15_live.py",
+    "hourly_a.py",
+    "idle_live.py",
+    "research/idle_signal.py",
+    "basket_live.py",
+    "collect_events.py",
+    "paper_trade.py",
+    "collect_investor_history.py",
+    ".github/workflows/daily-prices.yml",
+    "price-data/*.json · investor-data/*.json",
+    "broker_kis.py · collect_*.py · .github/workflows/*.yml · docs/DATA-CATALOG.md · docs/DATA-INCIDENT-20261002.md"
+  ],
+  "evidence_versions": [
+    {
+      "path": "research-exchange/gpt-to-claude/RULES-0001/TASK.md",
+      "ref": "a5b653b8abcfaf9a09f247b1f70682e6e2fa7d6e",
+      "range": "전체",
+      "level": "문서(지시)"
+    },
+    {
+      "path": "research-exchange/gpt-to-claude/RULES-0001/RULE-CONTRACT-DRAFT.md",
+      "ref": "a5b653b8abcfaf9a09f247b1f70682e6e2fa7d6e",
+      "range": "전체",
+      "level": "문서(대조 대상)"
+    },
+    {
+      "path": "research-exchange/gpt-to-claude/RULES-0001/REVIEW.md",
+      "ref": "a5b653b8abcfaf9a09f247b1f70682e6e2fa7d6e",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "research-exchange/gpt-to-claude/RULES-0001/receipt.json",
+      "ref": "a5b653b8abcfaf9a09f247b1f70682e6e2fa7d6e",
+      "range": "전체",
+      "level": "문서"
+    },
+    {
+      "path": "daily_live.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-50(머리말 · 상수 · size_of), 54-79(exit_decision), 그 밖 부록 1D 줄",
+      "level": "코드(✔ 재확인 + 부록 추출)"
+    },
+    {
+      "path": "rule.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "97, 176, 207(✔ grep) · 나머지 부록 1D 줄",
+      "level": "코드(✔ 일부 + 에이전트 추출)"
+    },
+    {
+      "path": "lab.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "28-32, 58-65, 280-292",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "final_group.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "37, 41, 50-56, 170-275",
+      "level": "코드(✔ 37 · 41 · 274)"
+    },
+    {
+      "path": "m15_live.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-74, 151",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "hourly_a.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "21-63, 96-122",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "idle_live.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-60, 368-376, 부록 줄",
+      "level": "코드(✔ 일부)"
+    },
+    {
+      "path": "research/idle_signal.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-40",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "basket_live.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "1-152",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "collect_events.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "10-63(KINDS · kind_of)",
+      "level": "코드(✔ · 두 정의만 떼어 실행)"
+    },
+    {
+      "path": "paper_trade.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "36-37, 119-128, 370-410",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "collect_investor_history.py",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "140-156",
+      "level": "코드(✔)"
+    },
+    {
+      "path": ".github/workflows/daily-prices.yml",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "94-111",
+      "level": "코드(✔)"
+    },
+    {
+      "path": "price-data/*.json · investor-data/*.json",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "마지막 날짜만(값 안 읽음)",
+      "level": "자료 상태(✔)"
+    },
+    {
+      "path": "broker_kis.py · collect_*.py · .github/workflows/*.yml · docs/DATA-CATALOG.md · docs/DATA-INCIDENT-20261002.md",
+      "ref": "00b98ab1655c84806357f44f2de6f1509ef1447f",
+      "range": "부록 DATA-AVAILABILITY-DETAIL 줄",
+      "level": "코드 · 문서(에이전트 추출)"
+    }
+  ],
+  "result_files": {
+    "DATA-AVAILABILITY-DETAIL.md": "e6cae300fca18d776105c6f7a8d11e4832864c705cfbdca9bf21a57271f11bd2",
+    "DATA-AVAILABILITY.md": "a81611bb8e377d3af52aa2bb5de0bc619acc5cb8fd749e71158c213d2236059e",
+    "MEASUREMENT-CONTRACT.md": "1fd6e432eac212a84440d97d25782b43525e48332ae6d9ec6e5c7b9a410c56f8",
+    "REPORT.md": "2497d563b3c5322eb5ac2d03177aaf5a48fbb2a3377c3e71351785217d900887",
+    "RULES-LOCK-1D.md": "59552b5be0e535de28569f0bd8bf678d220fdb6c3a3ec26bb8bf697cf4d771b0",
+    "RULES-LOCK-ENGINE-BASKET.md": "4502916b8eba084654ddee5ae55c5430e1d892c07baa7670576e7b1548f78cea",
+    "RULES-LOCK-M15-1H.md": "841f5b346226a1ac7249971b9fbb5fa7733e341d8f8f58fd6446e21930701399",
+    "RULES-LOCK.md": "7ccd85fe8544e2359b1fcad0f49c9ab224e8bb41cc5a3211fd60d30da6173ced",
+    "fixtures/contract.py": "3ce897e491bf9794cc10dfe8445c6896c5d998fe25c52c84ab037da8e789a7d9",
+    "fixtures/merge_results.py": "211fdc841815d642ddd0a8d3480a03a49adecfb87cc3a3a10b5ab5ea096b7eeb",
+    "fixtures/run_asis.py": "cf0a3dc6e2b4c7239da9bb2102e405ba1ce973b2bfa10291bc528fc8009c1af1",
+    "fixtures/run_fixtures.py": "6fe7908bffb89d0931477a036fd4ded720e80d75a094120d02ead3d691df5e35",
+    "measurement.schema.json": "582c94b8f0b4be48c68f4f9d6307f9367c5090693a029af29e1ffa39a69a43ee",
+    "test-result.json": "2002011a67eb0f281e8b942375ed01c0d62a4d3bb362e6a2dd21747dc07373dc"
+  },
+  "tests": {
+    "total": 124,
+    "pass": 114,
+    "fail": 10,
+    "fail_meaning": "as-is 규칙 글 vs 코드 출력 차이(경계 부동소수점 9 · 의도 미확인 1)"
+  },
+  "new_backtest": false,
+  "orders_or_account_calls": false,
+  "result_pr": null,
+  "completed_at_kst": "2026-10-08T06:13:59+09:00"
+}

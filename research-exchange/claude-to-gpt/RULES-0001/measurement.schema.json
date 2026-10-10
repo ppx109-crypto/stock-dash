@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rules-0001/measurement.schema.json",
+  "title": "RULES-0001 실측 계약(설계 · 비활성) — 공개 저장소에는 이 schema와 합성 fixture만",
+  "description": "실제 값은 비공개 목적지(미정)에만. 시각은 KST ISO-8601. 이번 단계에서 수집하지 않음.",
+  "type": "object",
+  "$defs": {
+    "ts": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(\\+09:00)?$"},
+    "money": {"type": "number"},
+    "event_base": {
+      "type": "object",
+      "required": ["pseudonymous_account_id", "strategy_id", "rule_version", "data_version"],
+      "properties": {
+        "pseudonymous_account_id": {"type": "string", "description": "계좌번호가 아닌 가명 키"},
+        "strategy_id": {"enum": ["1d_new82", "m15_r22", "h1_a90", "idle_engine", "kosdaq_inverse", "basket_c", "f5_research_only", "manual", "unknown"]},
+        "rule_version": {"type": "string", "description": "RULES-LOCK의 rule_id@commit"},
+        "data_version": {"type": "string", "description": "입력 자료 판(정정 전/후 구분)"}
+      }
+    },
+    "signal": {
+      "allOf": [{"$ref": "#/$defs/event_base"}],
+      "type": "object",
+      "required": ["signal_id", "decision_at", "max_feature_available_at", "signal_quote_at", "code", "side", "requested_slots"],
+      "properties": {
+        "signal_id": {"type": "string"},
+        "decision_at": {"$ref": "#/$defs/ts"},
+        "max_feature_available_at": {"$ref": "#/$defs/ts", "description": "쓴 입력 가운데 가장 늦은 available_at ≤ decision_at 이어야 함"},
+        "signal_quote_at": {"$ref": "#/$defs/ts", "description": "판단에 쓴 실시간 값의 시각(예: 15:20 잠정 종가)"},
+        "code": {"type": "string"},
+        "side": {"enum": ["buy", "sell"]},
+        "requested_slots": {"type": "integer", "minimum": 0},
+        "assigned_slots": {"type": "integer", "minimum": 0},
+        "theoretical_price": {"$ref": "#/$defs/money"},
+        "skip_reason": {"type": ["string", "null"]}
+      }
+    },
+    "order": {
+      "type": "object",
+      "required": ["signal_id", "order_id_hash", "order_submitted_at", "order_type", "qty", "order_status"],
+      "properties": {
+        "signal_id": {"type": "string"},
+        "order_id_hash": {"type": "string", "description": "증권사 주문번호의 해시(원값 금지)"},
+        "order_submitted_at": {"$ref": "#/$defs/ts"},
+        "broker_received_at": {"$ref": "#/$defs/ts"},
+        "order_type": {"enum": ["market", "limit", "closing_auction_market", "closing_auction_limit"]},
+        "limit_price": {"type": ["number", "null"]},
+        "qty": {"type": "integer", "minimum": 0},
+        "qty_after_buyable_check": {"type": "integer", "minimum": 0},
+        "order_status": {"enum": ["accepted", "rejected", "partially_filled", "filled", "cancelled", "expired"]},
+        "reject_reason_code": {"type": ["string", "null"]}
+      }
+    },
+    "fill": {
+      "type": "object",
+      "required": ["order_id_hash", "fill_time", "fill_price", "fill_qty"],
+      "properties": {
+        "order_id_hash": {"type": "string"},
+        "fill_time": {"$ref": "#/$defs/ts"},
+        "fill_price": {"$ref": "#/$defs/money"},
+        "fill_qty": {"type": "integer", "minimum": 1},
+        "fees": {"$ref": "#/$defs/money"},
+        "taxes": {"$ref": "#/$defs/money"},
+        "venue": {"enum": ["KRX", "NXT", "unknown"]}
+      }
+    },
+    "daily_valuation": {
+      "type": "object",
+      "required": ["date", "valuation_at", "price_source", "cash", "positions", "nav", "external_cashflows"],
+      "properties": {
+        "date": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "valuation_at": {"$ref": "#/$defs/ts"},
+        "price_source": {"enum": ["KRX_close_finalized", "KRX_close_provisional", "broker_eval", "unknown"]},
+        "cash": {"$ref": "#/$defs/money"},
+        "cash_includes_settlement": {"type": "boolean"},
+        "receivable": {"$ref": "#/$defs/money"},
+        "payable": {"$ref": "#/$defs/money"},
+        "positions": {"type": "array", "items": {"type": "object", "required": ["code", "qty", "price", "strategy_id"],
+          "properties": {"code": {"type": "string"}, "qty": {"type": "integer"}, "price": {"type": "number"}, "cost": {"type": "number"}, "strategy_id": {"type": "string"}}}},
+        "corporate_actions": {"type": "array", "items": {"type": "object"}},
+        "external_cashflows": {"type": "array", "items": {"type": "object", "required": ["at", "amount"],
+          "properties": {"at": {"$ref": "#/$defs/ts"}, "amount": {"type": "number"}}}},
+        "nav": {"$ref": "#/$defs/money"},
+        "twr_day": {"type": ["number", "null"]},
+        "twr_is_approximation": {"type": "boolean"},
+        "month_to_date_twr": {"type": ["number", "null"]},
+        "partial_month": {"type": "boolean"},
+        "mtm_drawdown": {"type": ["number", "null"]},
+        "strategy_attribution": {"type": "object", "additionalProperties": {"type": "number"}},
+        "attribution_gap": {"type": "number"}
+      }
+    }
+  },
+  "properties": {
+    "signals": {"type": "array", "items": {"$ref": "#/$defs/signal"}},
+    "orders": {"type": "array", "items": {"$ref": "#/$defs/order"}},
+    "fills": {"type": "array", "items": {"$ref": "#/$defs/fill"}},
+    "daily": {"type": "array", "items": {"$ref": "#/$defs/daily_valuation"}}
+  }
+}
