@@ -5,6 +5,7 @@ os.environ["REG_BOX"] = "MIX-0054"
 sys.path.insert(0, "/home/user/stock-dash/research")
 import mix54_run as M
 import regime_dev as D
+import regime_rules4  # noqa: F401  (고르기 시험에서 가짜 계좌 셈으로 바꾸기 전에 먼저 불러 둠)
 ROOT = Path("/home/user/stock-dash")
 SPD = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad")
 ok = 0
@@ -71,6 +72,41 @@ except SystemExit as e:
 M.DATA_DIRS = old_dirs
 check("15 자료 폴더에 커밋 안 된 바뀜이 있으면 멈춤", dirty_stop)
 s54 = (ROOT / "research/mix54_run.py").read_text()
-check("16 더 번 몫의 기준 = 15분봉만 뺀 지금 몫 · 덧붙임 없음 · 이웃 상한 300 · 하루 −15 · 달 −10",
-      'tuple(x["g"]) == NOW and x["overlay"] == "none"' in s54 and M.NB_CAP == 300 and M.DAY_LIM == -0.15 and M.MONTH_LIM == -0.10)
+check("16 더 번 몫의 기준 = 15분봉만 뺀 지금 몫 · 덧붙임 없음 · 이웃 상한 갈래마다 300 · 하루 −15 · 달 두 갈래 T10 −10 / T15 −15",
+      'tuple(x["g"]) == NOW and x["overlay"] == "none"' in s54 and M.NB_CAP == 300 and M.DAY_LIM == -0.15 and M.TRACKS == {"T10": -0.10, "T15": -0.15})
+fk = {"by_kind": {"상승": {"worst_day_raw": -0.05, "worst_month_raw": -0.12}, "하락": {"worst_day_raw": -0.01, "worst_month_raw": -0.01}, "횡보": {"worst_day_raw": -0.151, "worst_month_raw": -0.02}}}
+fk2 = {"by_kind": {"상승": {"worst_day_raw": -0.05, "worst_month_raw": -0.12}}}
+check("17 달 −12%는 T10 밖 · T15 안 · 하루 −15.1%는 두 갈래 모두 밖", not M.within(fk2, -0.10) and M.within(fk2, -0.15) and not M.within(fk, -0.15))
+# 18 고르기 전체(가짜 계좌 셈): C(연 45 · 달 −9.5 · persist 이웃 달 −13) · B(연 40 · 달 −12) · A(연 30 · 달 −9) · 없음(연 20 · 달 −5)
+import types
+F = types.ModuleType("regime_dev"); F.R0 = {"n": 0}; F.DATA = None; F.FEAT = None
+TAB = {None: (0.20, -0.05), 0.2: (0.30, -0.09), 0.4: (0.40, -0.12), 0.3: (0.45, -0.095)}
+calls = []
+def _acc(cfg):
+    calls.append(json.dumps(cfg, sort_keys=True))
+    return (cfg,)
+def _stats(cfg):
+    a, m = TAB[cfg.get("up_lev")]
+    if cfg.get("up_lev") == 0.3 and cfg.get("persist") != 3:
+        m = -0.13
+    return {"annual_raw": a, "annual_pct": a * 100, "worst_day_pct": -3.0, "worst_month_pct": m * 100, "mdd_report_pct": -20.0, "years_pct": {}, "halves_report": {},
+            "by_kind": {"상승": {"worst_day_raw": -0.03, "worst_month_raw": m}}}
+F.account, F.stats = _acc, _stats
+T2 = Path(tempfile.mkdtemp()); M.BASES = T2; M.EVALS_LOG = T2 / "evals.jsonl"; M.BOX = T2
+(T2 / f"{M.name(M.NOW)}.csv").write_text("날,NAV,현금\n20170201,100,50\n")
+old = (M.grid, M.OVERLAYS, M.verify_all, sys.modules["regime_dev"])
+M.grid = lambda: [M.NOW]
+M.OVERLAYS = {"none": None, "A": dict(M.RULE, up_lev=0.2, side_inv=0.2), "B": dict(M.RULE, up_lev=0.4, side_inv=0.2), "C": dict(M.RULE, up_lev=0.3, side_inv=0.2)}
+M.verify_all = lambda: ({}, {})
+sys.modules["regime_dev"] = F
+import io, contextlib
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    M.select()
+M.grid, M.OVERLAYS, M.verify_all, sys.modules["regime_dev"] = old
+o = json.loads(buf.getvalue())
+t10, t15 = o["tracks"]["T10"], o["tracks"]["T15"]
+check("18 고르기(가짜 셈): T10은 C(이웃 달 −13 → 탈락) 다음 A가 최종 · T15는 C가 최종 · 같은 이웃은 한 번만 셈(고유 이웃 12 · T10 확인 12 · T15 확인 6)",
+      t10["final"]["overlay"] == "A" and t15["final"]["overlay"] == "C" and t10["checked"][0]["robust"] is False and o["neighbor_evals_unique"] == 12
+      and t10["neighbor_checks"] == 12 and t15["neighbor_checks"] == 6 and len(calls) == 4 + 12 and t10["within_count"] == 3 and t15["within_count"] == 4)
 print(f"모두 {ok}개 통과")
