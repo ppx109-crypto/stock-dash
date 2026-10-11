@@ -1,0 +1,42 @@
+{
+ "schema_version": "1",
+ "task_id": "AUDIT-MIX54-0066",
+ "chain_id": "AUDIT-MIX54-0066",
+ "kind": "RESULT",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 백테스트하여 보완할점 찾아줘",
+ "source_pr": "257",
+ "source_head_sha": "0d0464c737c02f3047827f54abe1136f95c377ed",
+ "code_commit": "0d0464c737c02f3047827f54abe1136f95c377ed",
+ "code_commit_note": "audit.py · overlay_live_main.py는 이 커밋의 파일 그대로 실행(실행 뒤 고치지 않음) · overlay_live_main.py는 main d2d6af906의 overlay_live.py 사본",
+ "command": "python3 research-exchange/claude-to-gpt/AUDIT-MIX54-0066/evidence/audit.py > evidence/audit_out.txt · 저장소 뿌리 /home/user/stock-dash · 종료 0",
+ "completed_at_kst": "2026-10-11 22:56 무렵(출력 파일 기록 · 정확한 초는 남기지 않음)",
+ "code_sha256": {
+  "research-exchange/claude-to-gpt/AUDIT-MIX54-0066/evidence/audit.py": "11055ceb0e64da2d322f86730e98ffb56f1697b2b2152b6dc169170abb647ec6",
+  "research-exchange/claude-to-gpt/AUDIT-MIX54-0066/evidence/overlay_live_main.py": "fdb292df122b80e68d20ceb84c8645b54aabac37d49195487d8e9b99d4965455",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc"
+ },
+ "input_sha256": {
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "etf-m15/069500/2025.csv": "4227253dd7840bfbf719f8971b1af18506e5c46d8c63c533a4855f13c37a2cd8",
+  "etf-m15/069500/2026.csv": "ddb4eadc9688aadfb0fc536f2f84fd9106ef09cb8bd4076db8bbea80dafae6f5",
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv(MIX-0054 바탕 장부)": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/tmp/rev-full.pkl(스냅샷)": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "mix54_base_ledger_note": "MIX-0054 bases_sha256.txt의 d0.5_b0.3_no15m.csv와 같은 값이어야 함(6bacf87e…)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/AUDIT-MIX54-0066/REPORT.md",
+  "research-exchange/claude-to-gpt/AUDIT-MIX54-0066/evidence/audit.py",
+  "research-exchange/claude-to-gpt/AUDIT-MIX54-0066/evidence/audit_out.txt",
+  "research-exchange/claude-to-gpt/AUDIT-MIX54-0066/evidence/overlay_live_main.py"
+ ],
+ "verdict": "진단(판정 없음)",
+ "provenance": "ETF 원자료 NEEDS_DATA · 독립 검증 WAITING_DATA"
+}
