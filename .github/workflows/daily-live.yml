@@ -60,9 +60,9 @@ jobs:
           PAPER_START: '20261002'
           IDLE_START: '20261005'
           # MIX-0054 최종 판(사용자 2026-10-11 승인 · #224 · 운영 계산 #226): 덧붙임(레버리지 · 횡보 인버스) · 바구니 몫 0.3 · 15분봉 뺌.
-          # 시작 날은 사용자가 정함 → MIX54를 'on'으로, MIX54_START에 그 날(YYYYMMDD)을 넣으면 켜짐. 세 작업(이것 · 1일봉 · 15분봉)에 같은 값.
-          MIX54: 'off'
-          MIX54_START: ''
+          # 사용자 2026-10-11 "오늘 일요일이지만 오늘부터 키자" → 켬(첫 거래일 10-12). 끄려면 세 작업(이것 · 1일봉 · 15분봉) 모두 'off'.
+          MIX54: 'on'
+          MIX54_START: '20261011'
           LIVE_GIT_SYNC: '1'               # 15:10 판단 직전에 저장소를 최신으로(장중 상주가 올린 장부와 부딪히지 않게)
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
@@ -98,8 +98,8 @@ jobs:
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
           DAILY_START: '20261002'          # 종가 출격도 2026-10-02부터
-          MIX54: 'off'                     # MIX-0054(위 단계와 같은 값)
-          MIX54_START: ''
+          MIX54: 'on'                     # MIX-0054(위 단계와 같은 값)
+          MIX54_START: '20261011'
           LIVE_GIT_SYNC: '1'               # 15:20 판단 직전에 저장소를 최신으로
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
