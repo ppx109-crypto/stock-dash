@@ -3,22 +3,17 @@
  "task_id": "MONTH-POS-0055",
  "chain_id": "MONTH-POS-0055",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-11 이제 손실달을 양수달로 전환하는 연구해줘",
  "source_pr": "224",
  "source_head_sha": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
  "code": {
-  "research/month_guard.py": "345acc1da796e0401f87829b2d69caeb6a0182f34b7c959044ba8697352c1983",
+  "research/month_guard.py": "b8a4f892ff135d6eb3b61e4e59051f6b4049d1bd3b6639b048f82ac38aed04a2",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
   "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
   "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
-  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py": "7f512a82448a157837f3480513e71ac022a15a12120a9e62cf4321c9a44033bc"
- },
- "inputs": {
-  "base_ledger d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
-  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
-  "etf-data/069500.json(git blob)": "309d09603cb9d36b4795d7dee0a0686eae004896"
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py": "ca38e40a9510e9b01a5d115d9100f3d7ef3b857d69c9bd3d4b7e4ca1446fa4e6"
  },
  "grid": {
   "count": 68,
@@ -52,11 +47,21 @@
   "verdicts": [
    "POS_MONTH_CANDIDATE",
    "NO_IMPROVEMENT"
-  ]
+  ],
+  "loss_months_max": 36,
+  "month_basis": "완료된 달력월만(2017-03 ~ 2026-08)"
  },
  "baseline": {
-  "loss_months": 41,
-  "months": 116,
+  "loss_months_full": 40,
+  "full_months": 114,
+  "full_month_range": [
+   "201703",
+   "202608"
+  ],
+  "partial_months_ref": {
+   "201702": 1.458,
+   "202609": -3.386
+  },
   "annual_pct": 34.113
  },
  "lookahead_cut_test": {
@@ -67,7 +72,7 @@
  },
  "tests": {
   "file": "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.out",
-  "passed": 9,
+  "passed": 12,
   "exit": 0
  },
  "pre_reg_disclosure": "손실 41달 원인 나눔(바탕 · 덧붙임)을 사전등록 전에 봄 · 지킴이 결과는 보지 않음",
@@ -78,10 +83,32 @@
  "independent_validation": "WAITING_DATA",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/MONTH-POS-0055/PLAN.md",
-  "research-exchange/claude-to-gpt/MONTH-POS-0055/manifest.json",
-  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py",
-  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.out",
   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.out",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/input_lock.json",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/manifest.json",
   "research/month_guard.py"
- ]
+ ],
+ "input_lock_file": "research-exchange/claude-to-gpt/MONTH-POS-0055/input_lock.json",
+ "input_lock_sha256": "678bc3042c802eb8ca7935c12d7bc16c97a2707a22655229757759042bc0338b",
+ "input_lock": {
+  "research/month_guard.py": "b8a4f892ff135d6eb3b61e4e59051f6b4049d1bd3b6639b048f82ac38aed04a2",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "code_commit": null,
+ "code_commit_note": "이 파일을 담은 커밋이 실행기 고정 커밋(자기 해시는 적을 수 없음 · 결과 PR에 적음)",
+ "completed_at_kst": null,
+ "completed_note": "실행 전(PLAN)",
+ "answering": "227+b26231bb92ae2c63ab83dcba1bd0dcfdb14ee36b+PREREG+MONTH-POS-0055"
 }

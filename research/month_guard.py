@@ -6,7 +6,10 @@
   a = A0 덧붙임 0 · A1 덧붙임 0 + 바탕 몫 0.5 · A2 덧붙임 0 + 바탕 몫 0(현금)
   내림장 인버스 d(regime_dev down_inv · 0 또는 0.4)도 함께 시험.
 계좌 셈은 regime_dev.account와 같은 식(빚 없음 · 비용 ETF 0.05% · 바탕 줄일 때 0.30% · 늘릴 때 0.05%)에 지킴이만 더함.
-python3 research/month_guard.py run       → 고정 격자 + 고르기 + 이웃(기록 evals.jsonl)
+round 2(GPT #227): 손실 달은 **완료된 달력월만**(2017-03 ~ 2026-08 · 114달) · 부분 달 2017-02 · 2026-09는 참고표만.
+  실행 전 verify_inputs(): input_lock.json(코드 · 바탕 장부 · 스냅샷 · ETF 넷 · 시장 자료 둘)의 sha256이 하나라도 다르면 첫 STARTED 전에 멈춤.
+python3 research/month_guard.py lock      → input_lock.json 쓰기(성과 셈 없음)
+python3 research/month_guard.py run       → 잠금 검사 → 고정 격자 + 고르기 + 이웃(기록 evals.jsonl)
 python3 research/month_guard.py cut       → 자르기 시험(REG_CUT로 자료를 그날까지만 읽고 앞날까지 같아야 함)"""
 import json
 import os
@@ -33,6 +36,11 @@ DOWN_INV = [0.0, 0.4]
 DAY_LIM, MONTH_LIM = -0.15, -0.15
 NB_CAP = 300
 LOSS_CUT, ANN_FLOOR = 4, 0.9                            # 손실 달 4개 이상 줄고 · 연수익 ≥ 최종 × 0.9
+FIRST_FULL, LAST_FULL = "201703", "202608"              # 완료된 달력월만 공식 셈(2017-02 · 2026-09는 부분 달)
+LOCK = BOX / "input_lock.json"
+LOCK_FILES = ["research/month_guard.py", "research/regime_dev.py", "research/mix54_run.py", "research/regime_rules4.py",
+              "etf-data/069500.json", "etf-data/114800.json", "etf-data/252670.json", "etf-data/122630.json",
+              "market-data/investor_KSP.json", "market-data/index_KOSPI.json"]
 
 
 def account_guard(cfg, guard, lo=D.LO, hi=D.HI):
@@ -122,13 +130,25 @@ def months(navs):
     return {m: v - 1 for m, v in mo.items()}
 
 
+def full_months(mo):
+    return {m: v for m, v in mo.items() if FIRST_FULL <= m <= LAST_FULL}
+
+
 def score(navs, nst):
     r = D.stats(navs, nst)
-    mo = months(navs)
+    allm = months(navs)
+    mo = full_months(allm)
     neg = sorted(m for m, v in mo.items() if v < 0)
     r.update({"loss_months": len(neg), "months": len(mo), "neg_list": neg,
+              "partial_months_ref": {m: round(v * 100, 3) for m, v in allm.items() if m not in mo},
               "loss_months_front": sum(1 for m in neg if m < "202201"), "loss_months_back": sum(1 for m in neg if m >= "202201"),
-              "within": all(v["worst_day_raw"] >= DAY_LIM and v["worst_month_raw"] >= MONTH_LIM for v in r["by_kind"].values()),
+              # 월 손실 잣대도 완료된 달만(GPT #227) · 하루 잣대는 모든 날 · 부분 달 포함 값은 참고
+              "within": all(v["worst_day_raw"] >= DAY_LIM for v in r["by_kind"].values())
+                        and all(v >= MONTH_LIM for v in mo.values()),
+              "worst_full_month_by_kind_pct": {k: round(min(v for m, v in mo.items() if D.YEAR_KIND[m[:4]] == k) * 100, 3)
+                                               for k in set(D.YEAR_KIND.values())},
+              "worst_full_month_pct": round(min(mo.values()) * 100, 3),
+              "within_incl_partial_ref": all(v["worst_day_raw"] >= DAY_LIM and v["worst_month_raw"] >= MONTH_LIM for v in r["by_kind"].values()),
               "guard_days": getattr(account_guard, "guard_days", 0), "min_cash_slack": D.account.min_slack})
     return r
 
@@ -179,7 +199,27 @@ def neighbors(cfg, guard):
     return out
 
 
+def lock_body():
+    import hashlib
+    sha = lambda f: hashlib.sha256(Path(f).read_bytes()).hexdigest()
+    body = {f: sha(ROOT / f) for f in LOCK_FILES}
+    body["base_ledger:" + M.name(BASE) + ".csv"] = sha(M.BASES / f"{M.name(BASE)}.csv")
+    body["snapshot:" + Path(D.SNAP).name] = sha(D.SNAP)
+    return body
+
+
+def verify_inputs(lock_path=None):
+    """사전등록 잠금과 지금 입력이 하나라도 다르면 멈춤(첫 STARTED 전)."""
+    want = json.loads(Path(lock_path or LOCK).read_text())
+    have = lock_body()
+    bad = {k: (want.get(k), have.get(k)) for k in set(want) | set(have) if want.get(k) != have.get(k)}
+    if bad:
+        sys.exit("입력 잠금이 다름(멈춤): " + json.dumps(sorted(bad), ensure_ascii=False))
+    return want
+
+
 def run():
+    verify_inputs()                                     # 첫 STARTED보다 먼저
     D.BASE_CSV = M.BASES / f"{M.name(BASE)}.csv"
     D.DATA, D.FEAT = None, None
     rows = []
@@ -188,7 +228,7 @@ def run():
         r = evaluate(cfg, gd, "고정")
         rows.append({"name": name, "cfg_extra": cx, "guard": gd, **{k: r[k] for k in ("annual_pct", "annual_raw", "worst_day_pct", "worst_month_pct",
                      "mdd_report_pct", "loss_months", "loss_months_front", "loss_months_back", "within", "years_pct", "halves_report", "guard_days",
-                     "min_cash_slack", "neg_list")}})
+                     "min_cash_slack", "neg_list", "partial_months_ref", "worst_full_month_pct", "worst_full_month_by_kind_pct")}})
     base = rows[0]
     floor = base["annual_raw"] * ANN_FLOOR
     ok = sorted([x for x in rows[1:] if x["within"] and x["annual_raw"] >= floor and x["loss_months"] <= base["loss_months"] - LOSS_CUT],
@@ -218,7 +258,7 @@ def run():
     out = {"verdict": "POS_MONTH_CANDIDATE" if final else "NO_IMPROVEMENT", "final": final, "base": base, "checked": checked,
            "eligible_count": len(ok), "rows_count": len(rows), "neighbor_evals": used,
            "rules": {"loss_cut": LOSS_CUT, "annual_floor_ratio": ANN_FLOOR, "day": DAY_LIM, "month": MONTH_LIM},
-           "period": "2017-02-01 ~ 2026-09-15 · 116달(2017-02 · 2026-09는 부분 달)"}
+           "period": "2017-02-01 ~ 2026-09-15 · 공식 손실 달은 완료된 114달(2017-03 ~ 2026-08) · 부분 달 2017-02 · 2026-09는 참고"}
     print(json.dumps(out, ensure_ascii=False))
 
 
@@ -243,5 +283,11 @@ def cut():
     print(json.dumps({"pass": all(r["diff_days"] == 0 for r in res), "runs": res}, ensure_ascii=False))
 
 
+def write_lock():
+    BOX.mkdir(parents=True, exist_ok=True)
+    LOCK.write_text(json.dumps(lock_body(), ensure_ascii=False, indent=1))
+    print(LOCK.read_text())
+
+
 if __name__ == "__main__":
-    {"run": run, "cut": cut}[sys.argv[1]]()
+    {"run": run, "cut": cut, "lock": write_lock}[sys.argv[1]]()
