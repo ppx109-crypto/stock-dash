@@ -49,5 +49,5 @@
  "code_commit": "603e5e7c528b7764c90859a8218aac3657b9e288",
  "code_commit_note": "research/mix54_ops.py와 ops_out.json은 이 커밋 뒤 바뀌지 않음 · 제출 head는 PR #226의 head(이 파일을 담은 커밋은 자기 해시를 적을 수 없음)",
  "command_at_kst": null,
- "time_note": "정확한 실행 시각을 기록하지 않아 만들어 넣지 않음(null) · 출력 파일은 커밋 603e5e7c5(2026-10-11 13:1x KST 이전)에 처음 담김"
+ "time_note": "정확한 실행 시각을 기록하지 않아 만들어 넣지 않음(null) · 출력 파일은 커밋 603e5e7c5(커밋 시각 2026-10-11 13:17:18 KST)에 처음 담김 · 실행은 그 전"
 }
