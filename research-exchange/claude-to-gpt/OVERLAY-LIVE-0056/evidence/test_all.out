@@ -1,0 +1,137 @@
+2026-10-11 05:29:57.065 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.066 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.067 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.067 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.068 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.069 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.069 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.070 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.071 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.072 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.073 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.073 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+2026-10-11 05:29:57.076 WARNING streamlit.runtime.caching.cache_data_api: No runtime found, using MemoryCacheStorageManager
+...계좌 흔들림 상한 셈 실패 → 오늘 새 매수 멈춤(팔기는 그대로) · ValueError
+.계좌 흔들림 상한 셈 실패 → 오늘 새 매수 멈춤(팔기는 그대로) · ValueError
+......................................................................최근 5일 · 시장 전체 2쪽 · 대상 종목 1 · 새 공시 1건
+.....  A · 빈 날 40 · 받은 봉 40 · 부른 수 160
+  B · 빈 날 40 · 받은 봉 0 · 부른 수 280
+  B · 거절이 이어져 건너뜀 · 분봉 조회가 거절되었습니다.
+  C · 빈 날 40 · 받은 봉 0 · 부른 수 400
+  C · 거절이 이어져 건너뜀 · 분봉 조회가 거절되었습니다.
+  D · 빈 날 40 · 받은 봉 0 · 부른 수 520
+  D · 거절이 이어져 건너뜀 · 분봉 조회가 거절되었습니다.
+여러 종목이 이어서 거절되어 멈춥니다.
+.  A · 빈 날 40 · 받은 봉 40 · 부른 수 160
+  B · 빈 날 40 · 받은 봉 0 · 부른 수 280
+  B · 거절이 이어져 건너뜀 · 분봉 조회가 거절되었습니다.
+  C · 빈 날 40 · 받은 봉 40 · 부른 수 440
+  D · 빈 날 40 · 받은 봉 40 · 부른 수 600
+  E · 빈 날 40 · 받은 봉 40 · 부른 수 760
+끝 · 다 받은 종목 4/5 · 부른 수 760
+............................E...............시장 공시 0건 · 2026-07-04 ~ 2026-10-01
+공시만 붙인 종목 0 · 처음부터 받을 종목 2
+시간(0분)이 다 되어 2종목은 다음 날로 넘깁니다.
+갱신 0 · 변화 없음 0 · 실패 0 · 대상 2종목 · 0.0분
+.시장 공시 2건 · 2026-09-29 ~ 2026-10-01
+공시만 붙인 종목 1 · 처음부터 받을 종목 0
+갱신 1 · 변화 없음 0 · 실패 0 · 대상 1종목 · 0.0분
+.시장 공시 1건 · 2026-09-29 ~ 2026-10-01
+공시만 붙인 종목 0 · 처음부터 받을 종목 2
+000010 갱신 · 정기보고서 새로 나옴
+000020 갱신 · 파일 없음
+갱신 2 · 변화 없음 0 · 실패 0 · 대상 2종목 · 0.0분
+......................2026-10-11 05:29:57.356 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.420 
+  [33m[1mWarning:[0m to view this Streamlit app on a browser, run it with the following
+  command:
+
+    streamlit run python3 -m unittest [ARGUMENTS]
+2026-10-11 05:29:57.420 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.420 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.420 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.420 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+.2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.421 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+.2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.422 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.423 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.423 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.423 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.423 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.423 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-11 05:29:57.423 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+.............................................확정 값으로 확인한 마지막 날: 20261006
+최근 5줄 다시 확인 · 고친 종목 {'price-data': 0, 'volume-data': 0, 'kosdaq-data': 0, 'investor-data': 0} · 고친 날 [] · 못 물음 0 · 오래된 날 다름 0종목
+확정 값으로 확인한 마지막 날: 20261006
+최근 5줄 다시 확인 · 고친 종목 {'price-data': 0, 'volume-data': 0, 'kosdaq-data': 0, 'investor-data': 0} · 고친 날 [] · 못 물음 0 · 오래된 날 다름 0종목
+최근 5줄 다시 확인 · 고친 종목 {'price-data': 0, 'volume-data': 0, 'kosdaq-data': 0, 'investor-data': 0} · 고친 날 [] · 못 물음 0 · 오래된 날 다름 0종목
+.................................................................................처리한 봉 [] · 알림 0건 · 들고 있는 종목 0개
+.처리한 봉 [] · 알림 0건 · 들고 있는 종목 1개
+.자료 확인 · 1시간봉 후보 기준일 2026-09-30이 어제 거래일 2026-10-01과 달라(낡은 후보) 오늘은 새로 사지 않습니다.
+처리한 봉 ['2026100209', '2026100210'] · 알림 0건 · 들고 있는 종목 0개
+.충족 미달 다시 셈 · 2026-10-02 10:18 · 1개 모자람 0 · 지금 값이면 충족 2
+.장중이 아니라 충족 미달 다시 세기는 넘어갑니다.
+장중이 아니라 충족 미달 다시 세기는 넘어갑니다.
+.충족 미달 다시 셈 · 2026-10-02 11:01 · 1개 모자람 1 · 지금 값이면 충족 1
+..............................맡은 창(0855~1200)이 이미 지나 끝냅니다.
+.[11:40:00] 늦게 시작 — 1103 hourly 따라잡기
+1103 hourly: 뜻밖의 오류 RuntimeError
+[11:40:00] 늦게 시작 — 1133 m15 따라잡기
+[11:48:00] 1148 m15
+끝 · 말썽 난 회차: ['1103 hourly']
+.[11:40:00] 늦게 시작 — 1103 hourly 따라잡기
+[11:40:00] 늦게 시작 — 1133 m15 따라잡기
+[11:48:00] 1148 m15
+끝 · 말썽 난 회차: 없음
+.[11:47:00] 늦게 시작 — 1103 hourly 따라잡기
+[12:01:00] 늦게 시작 — 1133 m15 따라잡기
+[12:01:00] 1148 m15
+맡은 창이 끝나 멈춥니다(다음 작업이 이어 맡음).
+끝 · 말썽 난 회차: 없음
+.....m15: 저장소를 최신으로 맞추지 못해 이번 회차는 건너뜀(다음 회차가 밀린 봉을 처리)
+.......  토큰 발급 제한 · 65초 쉬고 다시
+  토큰 발급 제한 · 65초 쉬고 다시
+..................................................................................................................디스코드 웹훅이 설정되지 않아 보내지 않습니다.
+..............................................................끄기 파일(hourly-live/paper-off)이 있어 모의투자 주문을 넣지 않습니다.
+.................................................................................................................20261006 검산 · 확정 뒤에도 4종목 다름 → 그 종목 일봉을 한 번 더 물어 고침
+20261006 검산(확정 뒤) 다름 4/5
+.20261006 검산 · 확정 뒤에도 4종목 다름 → 그 종목 일봉을 한 번 더 물어 고침
+20261006 검산(확정 뒤) 다름 0/5
+.20261006 검산(확정 뒤) 다름 1/5
+.................................................20261119은 장 시간이 다른 날(수능날 · 10:00 ~ 16:30)이라 봇 자동 판단 · 주문을 쉽니다(시각표가 09:00 ~ 15:30 기준).
+.......................................................
+======================================================================
+ERROR: test_existing_calendar_event_is_updated (test_core.CoreTests.test_existing_calendar_event_is_updated)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/stock-dash/tests/test_core.py", line 36, in test_existing_calendar_event_is_updated
+    from googleapiclient.errors import HttpError
+ModuleNotFoundError: No module named 'googleapiclient'
+
+----------------------------------------------------------------------
+Ran 721 tests in 97.492s
+
+FAILED (errors=1)
+종료 상태 1

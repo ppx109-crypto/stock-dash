@@ -177,10 +177,19 @@ def _quote(code):
         return None
 
 
+def _acct_qty(broker, code):
+    try:
+        return {p["code"]: int(p["quantity"]) for p in broker.balance(raw=True).get("positions", [])}.get(code, 0)
+    except Exception:
+        return None
+
+
 def sell_for(broker, need, now=None, why="바탕 봇에 자리 내줌", quote=_quote):
-    """실제 현금이 need(원)만큼 더 필요할 때 덧붙임을 그만큼 팖. B는 순수입만큼 줄어듦. 판 금액(원)을 돌려줌."""
+    """실제 현금이 need(원)만큼 더 필요할 때 덧붙임을 그만큼 팖. 장부(held · B)는 **확인된 체결 수량**으로만 고침
+    (주문 앞뒤 실제 잔고 수량 차 · 0주 체결이면 그대로 두고 '미확인'으로 남김 → 다음 실행의 reconcile이 실제 잔고와 맞춤).
+    꺼져 있으면(active 아님) 아무것도 안 함. 체결 확인된 판 금액(원)을 돌려줌."""
     now = now or datetime.now(KST)
-    if need <= 0 or now.strftime("%H%M") >= AUCTION:
+    if need <= 0 or now.strftime("%H%M") >= AUCTION or not active(now.strftime("%Y%m%d")):
         return 0.0
     st = load_state()
     held = {c: int(q) for c, q in st["held"].items() if int(q) > 0}
@@ -193,31 +202,62 @@ def sell_for(broker, need, now=None, why="바탕 봇에 자리 내줌", quote=_q
     qty = min(held[code], math.ceil(need / (px * (1 - COST_ETF))))
     if qty < 1:
         return 0.0
+    before = _acct_qty(broker, code)
+    if before is None:
+        return 0.0
     broker._overlay_selling = True
     try:
         no = broker.order(code, "sell", qty)
         status = "접수"
     except Exception as e:
         no, status = "", f"실패 · {type(e).__name__}"
-        qty = 0
     finally:
         broker._overlay_selling = False
-    if qty:
-        held[code] -= qty
+    filled = 0
+    if status == "접수":
+        for _ in range(int(os.getenv("OVERLAY_FILL_TRIES", "5"))):
+            time.sleep(float(os.getenv("PAPER_ROOM_WAIT", "2")))
+            after = _acct_qty(broker, code)
+            if after is None:
+                continue
+            filled = max(0, min(qty, before - after))
+            if filled >= qty:
+                break
+        status = f"접수 · 체결 확인 {filled}/{qty}주" + ("" if filled == qty else " · 나머지 미확인(다음 실행에 실제 잔고와 맞춤)")
+    if filled:
+        held[code] -= filled
         st["held"] = {c: q for c, q in held.items() if q > 0}
-        st["B"] = float(st["B"]) - qty * px * (1 - COST_ETF)
-        save_state(st)
+        st["B"] = float(st["B"]) - filled * px * (1 - COST_ETF)
+    if status.startswith("접수") and filled < qty:
+        st["unconfirmed"] = {"code": code, "qty": qty - filled, "at": now.strftime("%Y-%m-%d %H:%M")}
+    save_state(st)
     log_order({"key": f"{now.strftime('%Y%m%d%H%M%S')}:yield:{code}", "at": now.strftime("%Y-%m-%d %H:%M"), "code": code, "side": "sell",
-               "qty": qty, "status": status, "order_no": no, "why": why, "price": px})
-    if qty:
-        time.sleep(float(os.getenv("PAPER_ROOM_WAIT", "2")))
-    return qty * px
+               "qty": qty, "filled": filled, "status": status, "order_no": no, "why": why, "price": px})
+    return filled * px
+
+
+def reconcile(st, raw, quote=_quote):
+    """장부 수량이 실제 잔고(다른 장부 몫 뺀 것)보다 많으면 줄이고, 사라진 수량은 판 것으로 보고 B를 순수입(지금 값)만큼 줄임."""
+    acct = {p["code"]: (int(p["quantity"]), float(p.get("price") or 0)) for p in raw.get("positions", [])}
+    for code, q in list(st.get("held", {}).items()):
+        real = max(0, acct.get(code, (0, 0))[0] - other_books_held(code))
+        if real < int(q):
+            px = acct.get(code, (0, 0))[1] or quote(code) or 0.0
+            st["B"] = float(st.get("B") or 0) - (int(q) - real) * px * (1 - COST_ETF)
+            if real:
+                st["held"][code] = real
+            else:
+                st["held"].pop(code)
+    st.pop("unconfirmed", None)
+    return st
 
 
 def yield_for(broker, code, qty, now=None, quote=_quote):
     """PaperBroker.order(매수) 앞에서 부름: 매수가능 수량이 모자라면 모자란 금액만큼 덧붙임을 먼저 팖(연구: ETF부터 덜기)."""
     now = now or datetime.now(KST)
     if getattr(broker, "_overlay_selling", False) or getattr(broker, "_overlay_buying", False) or now.strftime("%H%M") >= AUCTION:
+        return 0.0
+    if not active(now.strftime("%Y%m%d")):          # 꺼져 있으면(MIX54 off · 시작 전 · off 파일) 새 주문 없음
         return 0.0
     st = load_state()
     if not any(int(q) > 0 for q in st["held"].values()):
@@ -234,7 +274,8 @@ def yield_for(broker, code, qty, now=None, quote=_quote):
 
 def prepare(broker, reserve, now=None, quote=_quote):
     """15:10 엔진 뒤: 15:20 1일봉이 살 몫(reserve · 원)만큼 실제 현금이 남게 덧붙임을 덜어 둠(연속 매매 중)."""
-    if reserve <= 0:
+    now = now or datetime.now(KST)
+    if reserve <= 0 or not active(now.strftime("%Y%m%d")):
         return 0.0
     import paper_trade as P
     raw = broker.balance(raw=True)
@@ -275,6 +316,7 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
         return []
     lines = []
     raw = broker.balance(raw=True)
+    st = reconcile(st, raw, quote)                   # 지난 미확인 매도 · 다른 까닭으로 줄어든 수량을 실제 잔고와 맞춤
     nav = float(raw.get("cash") or 0) + float(raw.get("value") or 0)
     warn, st = nav_watch(st, day, nav)
     lines += warn

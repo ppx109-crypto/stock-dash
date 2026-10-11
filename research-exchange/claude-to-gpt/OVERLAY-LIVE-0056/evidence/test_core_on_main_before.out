@@ -1,0 +1,14 @@
+.E...
+======================================================================
+ERROR: test_existing_calendar_event_is_updated (tests.test_core.CoreTests.test_existing_calendar_event_is_updated)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/user/stock-dash/tests/test_core.py", line 36, in test_existing_calendar_event_is_updated
+    from googleapiclient.errors import HttpError
+ModuleNotFoundError: No module named 'googleapiclient'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.011s
+
+FAILED (errors=1)
+종료 상태 1

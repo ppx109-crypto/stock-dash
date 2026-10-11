@@ -22,6 +22,7 @@ class FakeBroker:
         self.pos = dict(positions or {})
         self.px = dict(prices or {})
         self.orders = []
+        self.fill = 1.0                     # 매도 체결 비율(0 = 접수만 · 0.5 = 절반)
 
     def raw(self):
         ps = [{"code": c, "name": c, "quantity": q, "price": self.px[c], "value": q * self.px[c]} for c, q in self.pos.items() if q > 0]
@@ -43,8 +44,9 @@ class FakeBroker:
             self.pos[code] = self.pos.get(code, 0) + qty
         else:
             qty = min(qty, self.pos.get(code, 0))
-            self.cash += qty * self.px[code] * (1 - O.COST_ETF)
-            self.pos[code] -= qty
+            got = int(qty * self.fill)
+            self.cash += got * self.px[code] * (1 - O.COST_ETF)
+            self.pos[code] -= got
         self.last_qty = qty
         self.orders.append((code, side, qty))
         return "1"
@@ -235,6 +237,70 @@ class Run(Env):
         self.assertGreater(sold, 0)
         self.assertGreaterEqual(b.cash * 0.98 + 1e-6, 600_000 * 1.36)
         self.assertGreater(b.cash, cash)
+
+
+class OffAndFills(Env):
+    NOW = Run.NOW
+    go = Run.go
+
+    def setup_held(self):
+        b = FakeBroker(1_000_000, prices={"122630": 100.0, "114800": 50.0, "005930": 1000.0})
+        self.go(b, "상승")
+        b.orders.clear()
+        return b
+
+    def test_off_blocks_new_yield_sells(self):
+        """덧붙임을 든 채로 꺼도(MIX54 off · 시작 전 · off 파일) 바탕 매수 때 덧붙임 매도가 새로 나가지 않음 · prepare도 0."""
+        for case in ("off", "before", "file"):
+            with self.subTest(case=case):
+                b = self.setup_held() if case == "off" else b
+                st0 = O.load_state()
+                patch = {"off": {"MIX54": "off"}, "before": {"MIX54_START": "20261101"}, "file": {}}[case]
+                if case == "file":
+                    Path("overlay-live/off").write_text("")
+                with mock.patch.dict(os.environ, patch):
+                    want = b.buyable("005930") + 100
+                    b.order("005930", "buy", want)
+                    self.assertFalse(any(o[0] == "122630" for o in b.orders), case)
+                    self.assertEqual(O.prepare(b, reserve=900_000, now=self.NOW, quote=b.px.get), 0.0)
+                    self.assertEqual(O.sell_for(b, 1e9, now=self.NOW, quote=b.px.get), 0.0)
+                self.assertEqual(O.load_state()["held"], st0["held"])
+                b.orders.clear()
+        Path("overlay-live/off").unlink()
+
+    def test_accepted_but_not_filled(self):
+        b = self.setup_held()
+        st0 = O.load_state()
+        b.fill = 0.0
+        got = O.sell_for(b, 100_000, now=self.NOW, quote=b.px.get)
+        st = O.load_state()
+        self.assertEqual(got, 0.0)
+        self.assertEqual((st["held"], st["B"]), (st0["held"], st0["B"]), "0주 체결이면 장부 그대로")
+        self.assertEqual(st["unconfirmed"]["code"], "122630")
+        book = json.loads(Path("overlay-live/paper-orders.json").read_text(encoding="utf-8"))
+        self.assertEqual(book["orders"][-1]["filled"], 0)
+
+    def test_partial_fill(self):
+        b = self.setup_held()
+        st0 = O.load_state()
+        b.fill = 0.5
+        O.sell_for(b, 100_000, now=self.NOW, quote=b.px.get)
+        st = O.load_state()
+        asked = math.ceil(100_000 / (100.0 * (1 - O.COST_ETF)))
+        got = int(asked * 0.5)
+        self.assertEqual(st["held"]["122630"], 4000 - got)
+        self.assertAlmostEqual(st["B"], st0["B"] - got * 100.0 * (1 - O.COST_ETF))
+        self.assertEqual(st["unconfirmed"]["qty"], asked - got)
+
+    def test_reconcile_with_real_balance(self):
+        """미확인 매도가 나중에 체결돼 실제 잔고가 줄었으면, 다음 실행 앞에서 장부를 실제 수량으로 줄이고 B도 순수입만큼 줄임."""
+        b = self.setup_held()
+        st = O.load_state()
+        b.pos["122630"] = 3000
+        st2 = O.reconcile(dict(st, unconfirmed={"code": "122630", "qty": 1000}), b.raw(), quote=b.px.get)
+        self.assertEqual(st2["held"], {"122630": 3000})
+        self.assertAlmostEqual(st2["B"], st["B"] - 1000 * 100.0 * (1 - O.COST_ETF))
+        self.assertNotIn("unconfirmed", st2)
 
 
 class NavWatch(unittest.TestCase):

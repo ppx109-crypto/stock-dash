@@ -1,0 +1,31 @@
+test_contract (tests.test_overlay_live.BaseView.test_contract)
+NAV_b = 계좌 NAV − 덧붙임 평가액 + B · 바탕 현금 = 실제 현금 + B · 수량 단위로 뺌(다른 장부의 같은 종목은 남김). ... ok
+test_identity_without_overlay (tests.test_overlay_live.BaseView.test_identity_without_overlay) ... ok
+test_target_and_rebalance_rule (tests.test_overlay_live.BaseView.test_target_and_rebalance_rule) ... ok
+test_day_and_month (tests.test_overlay_live.NavWatch.test_day_and_month) ... ok
+test_accepted_but_not_filled (tests.test_overlay_live.OffAndFills.test_accepted_but_not_filled) ... ok
+test_off_blocks_new_yield_sells (tests.test_overlay_live.OffAndFills.test_off_blocks_new_yield_sells)
+덧붙임을 든 채로 꺼도(MIX54 off · 시작 전 · off 파일) 바탕 매수 때 덧붙임 매도가 새로 나가지 않음 · prepare도 0. ... ok
+test_partial_fill (tests.test_overlay_live.OffAndFills.test_partial_fill) ... ok
+test_reconcile_with_real_balance (tests.test_overlay_live.OffAndFills.test_reconcile_with_real_balance)
+미확인 매도가 나중에 체결돼 실제 잔고가 줄었으면, 다음 실행 앞에서 장부를 실제 수량으로 줄이고 B도 순수입만큼 줄임. ... ok
+test_order_calls_yield_before_buyable_and_balance_view (tests.test_overlay_live.PaperHooks.test_order_calls_yield_before_buyable_and_balance_view) ... ok
+test_shares_switch (tests.test_overlay_live.PaperHooks.test_shares_switch) ... ok
+test_first_rebalance_up (tests.test_overlay_live.Run.test_first_rebalance_up) ... ok
+test_off_does_nothing (tests.test_overlay_live.Run.test_off_does_nothing) ... ok
+test_prepare_reserve (tests.test_overlay_live.Run.test_prepare_reserve) ... ok
+test_room_caps_size (tests.test_overlay_live.Run.test_room_caps_size) ... ok
+test_stale_data_no_rebalance (tests.test_overlay_live.Run.test_stale_data_no_rebalance) ... ok
+test_switch_up_to_side_and_down (tests.test_overlay_live.Run.test_switch_up_to_side_and_down) ... ok
+test_yield_for_base_buy_and_auction (tests.test_overlay_live.Run.test_yield_for_base_buy_and_auction)
+바탕 봇이 사는데 현금이 모자라면 덧붙임을 먼저 팖 · B는 순수입만큼 줄어듦 · 15:20(동시호가)부터는 안 팖. ... ok
+test_persist_three_days (tests.test_overlay_live.States.test_persist_three_days) ... ok
+test_raw_state_rules (tests.test_overlay_live.States.test_raw_state_rules) ... ok
+test_same_as_research_every_day (tests.test_overlay_live.States.test_same_as_research_every_day)
+연구 regime_dev.features · states(MIX-0054 최종 규칙)로 만든 기준표와 5,919일 모두 같음. ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.190s
+
+OK
+종료 상태 0
