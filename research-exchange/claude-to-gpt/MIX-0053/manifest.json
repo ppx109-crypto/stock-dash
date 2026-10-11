@@ -2,14 +2,14 @@
  "schema_version": 1,
  "task_id": "MIX-0053",
  "chain_id": "MIX-0053",
- "kind": "PLAN",
- "round": "3",
+ "kind": "RESULT",
+ "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 봇 몫까지 함께 다시 골라줘",
- "source_pr": 220,
- "source_head_sha": "6d7f9ce4269dbaf45f3019f45e4320a4c6ef0cd9",
- "code_commit": null,
- "completed_at_kst": null,
+ "source_pr": "221",
+ "source_head_sha": "f5d04243cfb00d087c806c7e5725a501e360570d",
+ "code_commit": "f5d04243cfb00d087c806c7e5725a501e360570d",
+ "completed_at_kst": "2026-10-11 12:18:09",
  "code": {
   "research/z100.py": "47b85d2aee5743db81aa82166581156480801f5ab492df1a74c367f0ce28840d",
   "research/mix_run.py": "a1c324d4fb0ea9832d12174e243482ccd68cae27383615d39bc53333fe6c9eff",
@@ -49,8 +49,15 @@
  "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/MIX-0053/PLAN.md",
+  "research-exchange/claude-to-gpt/MIX-0053/REPORT.md",
+  "research-exchange/claude-to-gpt/MIX-0053/bases.jsonl",
+  "research-exchange/claude-to-gpt/MIX-0053/evals.jsonl",
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/bases_run.log",
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/bases_sha256.txt",
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.out",
   "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.py",
-  "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.out"
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/select_out.json"
  ],
  "inputs": {
   "/tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
@@ -64,7 +71,7 @@
   "evals": "research-exchange/claude-to-gpt/MIX-0053/evals.jsonl",
   "all_rows": "research-exchange/claude-to-gpt/MIX-0053/evidence/all_rows.json"
  },
- "answering": "221+6d7f9ce4269dbaf45f3019f45e4320a4c6ef0cd9+PREREG+MIX-0053",
+ "answering": "221+f5d04243cfb00d087c806c7e5725a501e360570d+PREREG+MIX-0053",
  "base_lock": {
   "acc_cap.py": "f0454f5f409272c5d82ccea156c376c84458e870adc274a1d8470b068f0b6e6b",
   "ai_brief.py": "f8fa065a6129f3680cd1964642992b62323ec18065433e42208288a19d9e78df",
@@ -233,5 +240,51 @@
    "TZ",
    "TMPDIR"
   ]
- }
+ },
+ "verdict": "ROBUST_MIX",
+ "plan_prev_head": "6d7f9ce4269dbaf45f3019f45e4320a4c6ef0cd9",
+ "provenance_note": "round 3 계획 PR #221 · 동의 6104684866(reviewed head f5d04243c). 계획의 출발 결과는 #220(source head 97acd0711).",
+ "command": [
+  "python3 research/mix_run.py bases (2026-10-11 11:36:39 ~ 12:11:31 KST · 72 STARTED / 72 DONE / 0 FAILED)",
+  "python3 research/mix_run.py select (2026-10-11 12:11:46 ~ 12:18:09 KST · 종료 코드 0 · 오류 출력 없음)"
+ ],
+ "evals": {
+  "fixed": 288,
+  "neighbors": 138,
+  "started": 426,
+  "done": 426,
+  "failed": 0
+ },
+ "within_count": 248,
+ "final": "d0.5_m0.5_b0.3_xnone + 0052",
+ "final_res": {
+  "annual_pct": 29.321,
+  "worst_day_pct": -8.677,
+  "worst_month_pct": -9.483,
+  "mdd_report_pct": -17.92,
+  "years_pct": {
+   "2017": 11.83,
+   "2018": 1.79,
+   "2019": 12.2,
+   "2020": 51.66,
+   "2021": 15.74,
+   "2022": 12.87,
+   "2023": 54.4,
+   "2024": 3.54,
+   "2025": 50.44,
+   "2026": 85.94
+  },
+  "halves": {
+   "2017~2021": 18.17,
+   "2022~2026": 42.06
+  }
+ },
+ "now_res": {
+  "annual_pct": 20.045,
+  "worst_day_pct": -4.665,
+  "worst_month_pct": -7.265,
+  "mdd_report_pct": -14.07
+ },
+ "runner_sha256_unchanged": true,
+ "independent_validation": "WAITING_DATA"
 }
