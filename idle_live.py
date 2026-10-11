@@ -373,7 +373,7 @@ def run(now=None):
             # 바구니 돈 = 1일봉 몫 가운데 1일봉이 안 쓰는 돈(연구 P4b · 15분봉 몫은 안 씀 → 15분봉이 살 때 강제 매도 없게)
             d1_book = _load(paper_trade.DAILY_BOOK, {}) or {}
             d1_value = sum(int(q) * float(account.get(c, {}).get("price") or 0) for c, q in (d1_book.get("held") or {}).items())
-            b_capital = max(0.0, total * paper_trade.SHARES["1d"] - d1_value)
+            b_capital = max(0.0, total * paper_trade.BASKET_SHARE - d1_value)       # MIX-0054: 바구니 몫 0.3(켜기 전엔 0.5 = 예전)
             others = set()
             for bk in (paper_trade.DAILY_BOOK, paper_trade.M15_BOOK, paper_trade.BOOK, paper_trade.IDLE_BOOK):
                 others |= {c for c, q in ((_load(bk, {}) or {}).get("held") or {}).items() if int(q) > 0}
@@ -455,10 +455,19 @@ def run(now=None):
     book["orders"] = book["orders"][-5000:]
     _save(paper_trade.IDLE_BOOK, book)
     _save(STATE, new_state)
+    ov = []
+    try:                                 # 덧붙임(MIX-0054 · 레버리지 · 횡보 인버스) — 엔진 뒤 연속 매매 중 · 꺼져 있으면 아무것도 안 함
+        import overlay_live
+        if not late:
+            ov = overlay_live.run(broker, client, day, reserve=reserve)
+    except Exception as e:               # 덧붙임이 말썽이어도 엔진 기록은 그대로
+        print("덧붙임 실패 ·", type(e).__name__, e)
+        ov = ["⚠️ 덧붙임 단계 실패(엔진은 그대로)"]
+    short += ov
     _save(TODAY, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "late": late, "breadth": breadth, "used": round(used, 3),
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
-    if orders or new_state.get("positions") or b_short:
+    if orders or new_state.get("positions") or b_short or ov:
         if not orders:
             short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
         send(short)

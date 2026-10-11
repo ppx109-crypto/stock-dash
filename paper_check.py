@@ -59,7 +59,7 @@ def main(mode="check", code=TEST_CODE):
     try:
         broker.authorize()
         print("✅ 토큰 받음")
-        bal = broker.balance()
+        bal = broker.balance(raw=True)
     except broker_kis.BrokerError as e:
         print("❌ 연결 · 잔고 조회 실패 ·", e)
         print("까닭 짐작:", why_refused(broker))
@@ -85,7 +85,7 @@ def main(mode="check", code=TEST_CODE):
     for _ in range(10):
         time.sleep(3)
         try:
-            held = {p["code"]: int(p["quantity"]) for p in broker.balance()["positions"]}.get(code, 0)
+            held = {p["code"]: int(p["quantity"]) for p in broker.balance(raw=True)["positions"]}.get(code, 0)
         except broker_kis.BrokerError as e:
             print("잔고 다시 조회 실패 ·", e)
             continue
@@ -96,7 +96,7 @@ def main(mode="check", code=TEST_CODE):
         print("체결이 아직 안 보여 매도는 넣지 않았습니다(장 시간인지 확인).")
         return 1
     try:                                   # 산 뒤(팔기 전) 현금 — D+2는 산 값만큼 줄고 오늘 예수금은 그대로여야 함
-        b1 = broker.balance()
+        b1 = broker.balance(raw=True)
         print(f"ℹ️ 산 뒤 · 오늘 예수금 {fmt(b1.get('cash_today'))} · D+2 예수금 {fmt(b1.get('cash_d2'))} · 총평가 {fmt(b1.get('eval_total'))}")
     except broker_kis.BrokerError:
         pass
@@ -110,14 +110,14 @@ def main(mode="check", code=TEST_CODE):
     for _ in range(10):
         time.sleep(3)
         try:
-            after = {p["code"]: int(p["quantity"]) for p in broker.balance()["positions"]}.get(code, 0)
+            after = {p["code"]: int(p["quantity"]) for p in broker.balance(raw=True)["positions"]}.get(code, 0)
         except broker_kis.BrokerError:
             continue
         if after < held:
             break
     print(f"{'✅' if after < held else '⚠️'} 매도 체결 확인 · 보유 {held}주 → {after}주")
     try:                                   # 사고판 뒤 현금 세 가지가 어떻게 바뀌었나(금액만 · 2026-10-06 확인용)
-        b2 = broker.balance()
+        b2 = broker.balance(raw=True)
         print(f"ℹ️ 사고판 뒤 · 오늘 예수금 {fmt(b2.get('cash_today'))} · D+2 예수금 {fmt(b2.get('cash_d2'))} · 총평가 {fmt(b2.get('eval_total'))}")
     except broker_kis.BrokerError:
         pass
