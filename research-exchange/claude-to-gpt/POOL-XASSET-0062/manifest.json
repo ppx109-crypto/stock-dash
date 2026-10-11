@@ -1,0 +1,62 @@
+{
+ "schema_version": "1",
+ "task_id": "POOL-XASSET-0062",
+ "chain_id": "POOL-XASSET-0062",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 최종 자본 분배는 봇개발이 더 이상 안될때하자",
+ "source_pr": "247",
+ "source_head_sha": "61fcef3f9f9783161e10dc846598445a7e7b3d4c",
+ "code_commit": null,
+ "code_commit_note": "사전등록 PR head",
+ "completed_at_kst": "2026-10-11 20:23:45",
+ "completed_note": "실행 전(PLAN) · KST",
+ "code": {
+  "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/pool_test.py": "6630c3f978e64630b48c85d3d054f55432452b4b4b16a411fa9fe7f8c365f7c2"
+ },
+ "input_lock": {
+  "root": "/home/user/stock-dash",
+  "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/132030.json": "820e9eb647500d1a5ec1cef75488eec66a0d5a1f833c0a5a95592b4af8f78833",
+  "etf-data/133690.json": "cc8a99b3f37c3b159ec5c4842400e9c687676f2cc3f075b5424082f75e207576",
+  "etf-data/148070.json": "3507ba57a40e842f6f6412cfcb1413140dcbdf6b174b623b1ffb455da9c2fb1f",
+  "etf-data/153130.json": "403462f344808726aabcb20779ea7f73023a90dd892f4fa628a1d4f37216505d",
+  "etf-data/261240.json": "451b91d9355368ced96c8dcfb560cc39f2ae2852071f84839f913cf9b130190e",
+  "mix54_rows:VOL-SIZE-0057/all_rows.json": "b92e51f80541edcea0a48a9d79b71b674a85ba8520a31237b3361f350dc86573"
+ },
+ "input_lock_sha256": "ab2adecbb111f65cc6c0e4fa65864eec48fba1fd87e7379a814904735d61d20b",
+ "grid": {
+  "count": 5,
+  "compare": "153130 단기채 계속 들기",
+  "cells": [
+   "U4_n6",
+   "U4_n10",
+   "U3_n6",
+   "U3_n10"
+  ]
+ },
+ "pool_rule": {
+  "day": -0.15,
+  "full_month": -0.15,
+  "bond_gain_pp": 3,
+  "corr_mix54_max": 0.5,
+  "need_cells": 3
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/PLAN.md",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/input_lock.json",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/pool_test.py",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/pool_test.out",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/cut_test.out"
+ ],
+ "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
+ "independent_check": "WAITING_DATA",
+ "data_provenance": "ETF 원자료 NEEDS_DATA"
+}
