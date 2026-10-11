@@ -280,8 +280,9 @@
    "pr": "https://github.com/ppx109-crypto/stock-dash/pull/222",
    "plan_pr": "https://github.com/ppx109-crypto/stock-dash/pull/221",
    "source_head": "f5d04243cfb00d087c806c7e5725a501e360570d",
-   "gpt_review": "결과 검토 대기",
-   "orders": false
+   "gpt_review": "인정 ROBUST_MIX(#222 6104992161) · 독립 확인 WAITING_DATA · 배분 변경 · 주문 승인 아님",
+   "orders": false,
+   "saved_at": "2026-10-11 12:24 KST"
   }
  ]
 }
