@@ -1,0 +1,77 @@
+{
+ "schema_version": "1",
+ "task_id": "FLOW-GATE-0059",
+ "chain_id": "FLOW-GATE-0059",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 손실달의 공통점을 파악하고 거기서 엣지를 만드는건 어떨까?",
+ "source_pr": "241",
+ "source_note": "D1-LOSS-DIAG-0058(손실 달 줄기 닫음) 뒤 사용자 직접 지시로 새 과제 · 출발 판 MIX-0054 최종(#224)",
+ "source_head_sha": null,
+ "code_commit": null,
+ "code_commit_note": "이 파일을 담은 커밋이 실행기 고정 커밋(사전등록 PR head)",
+ "completed_at_kst": "2026-10-11 19:33:43",
+ "completed_note": "실행 전(PLAN) · 성과 셈 없음 · KST",
+ "code": {
+  "research/flow_gate.py": "b57966bb8e9261f853b38042c0d8735ef79809b8916809e530f9e2a3e59ca9f4",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/flow_test.py": "7628990367f5cedeba468dc9407dbf5d2213abb8ec25df2dbd65085083ddd9aa",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/diag/lossm_diag.py": "e6a3d89e1066881b6d6c6e781e315d6dfcd0f75b86c43c3366d7b3b5f510729d"
+ },
+ "input_lock": {
+  "root": "/home/user/stock-dash",
+  "research/flow_gate.py": "b57966bb8e9261f853b38042c0d8735ef79809b8916809e530f9e2a3e59ca9f4",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "input_lock_sha256": "301f43c9edd3addb59581503ceb2d9c420c2191d15abcdf1f99e0655fe8daa77",
+ "grid": {
+  "count": 13,
+  "base": "MIX-0054 최종",
+  "f_thr": [
+   -0.2,
+   -0.15,
+   -0.1
+  ],
+  "gate_k": [
+   0.0,
+   0.5
+  ],
+  "up_lev": [
+   0.4,
+   0.5
+  ]
+ },
+ "selection": {
+  "day": -0.15,
+  "full_month": -0.15,
+  "ann_slack_pp": 0.5,
+  "loss_cut": 3,
+  "month_gain_pp": 2,
+  "ann_gain_pp": 2,
+  "neighbor_cap": 100
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/PLAN.md",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/input_lock.json",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/flow_test.py",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/flow_test.out",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/diag/lossm_diag.py",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/diag/lossm_diag_out.txt"
+ ],
+ "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
+ "independent_check": "WAITING_DATA(같은 구간 재사용 · 진단도 같은 구간)"
+}
