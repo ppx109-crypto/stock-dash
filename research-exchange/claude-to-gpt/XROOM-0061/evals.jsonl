@@ -1,0 +1,28 @@
+{"status": "STARTED", "key": "{\"base\": \"d0.5\"}", "label": "고정", "at": "2026-10-11 11:18:09"}
+{"status": "DONE", "key": "{\"base\": \"d0.5\"}", "annual_pct": 34.113, "loss_months": 40, "worst_day_pct": -12.958, "worst_full_month_pct": -14.043}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\"}", "label": "고정", "at": "2026-10-11 11:18:14"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\"}", "annual_pct": 31.23, "loss_months": 42, "worst_day_pct": -12.632, "worst_full_month_pct": -13.797}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U4\", \"w\": 0.2}}", "label": "고정", "at": "2026-10-11 11:18:18"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U4\", \"w\": 0.2}}", "annual_pct": 32.026, "loss_months": 41, "worst_day_pct": -12.898, "worst_full_month_pct": -14.416}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U4\", \"w\": 0.3}}", "label": "고정", "at": "2026-10-11 11:18:19"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U4\", \"w\": 0.3}}", "annual_pct": 32.202, "loss_months": 41, "worst_day_pct": -13.03, "worst_full_month_pct": -14.772}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U4\", \"w\": 0.4}}", "label": "고정", "at": "2026-10-11 11:18:19"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U4\", \"w\": 0.4}}", "annual_pct": 32.073, "loss_months": 41, "worst_day_pct": -13.148, "worst_full_month_pct": -14.99}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U4\", \"w\": 0.2}}", "label": "고정", "at": "2026-10-11 11:18:19"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U4\", \"w\": 0.2}}", "annual_pct": 32.169, "loss_months": 40, "worst_day_pct": -12.828, "worst_full_month_pct": -14.246}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U4\", \"w\": 0.3}}", "label": "고정", "at": "2026-10-11 11:18:19"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U4\", \"w\": 0.3}}", "annual_pct": 32.475, "loss_months": 40, "worst_day_pct": -12.927, "worst_full_month_pct": -14.517}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U4\", \"w\": 0.4}}", "label": "고정", "at": "2026-10-11 11:18:20"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U4\", \"w\": 0.4}}", "annual_pct": 32.394, "loss_months": 41, "worst_day_pct": -13.014, "worst_full_month_pct": -14.669}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U3\", \"w\": 0.2}}", "label": "고정", "at": "2026-10-11 11:18:20"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U3\", \"w\": 0.2}}", "annual_pct": 32.34, "loss_months": 41, "worst_day_pct": -12.898, "worst_full_month_pct": -14.416}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U3\", \"w\": 0.3}}", "label": "고정", "at": "2026-10-11 11:18:20"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U3\", \"w\": 0.3}}", "annual_pct": 32.657, "loss_months": 41, "worst_day_pct": -13.03, "worst_full_month_pct": -14.772}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U3\", \"w\": 0.4}}", "label": "고정", "at": "2026-10-11 11:18:20"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 6, \"u\": \"U3\", \"w\": 0.4}}", "annual_pct": 32.534, "loss_months": 41, "worst_day_pct": -13.148, "worst_full_month_pct": -14.99}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U3\", \"w\": 0.2}}", "label": "고정", "at": "2026-10-11 11:18:21"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U3\", \"w\": 0.2}}", "annual_pct": 32.439, "loss_months": 40, "worst_day_pct": -12.828, "worst_full_month_pct": -14.246}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U3\", \"w\": 0.3}}", "label": "고정", "at": "2026-10-11 11:18:21"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U3\", \"w\": 0.3}}", "annual_pct": 32.844, "loss_months": 40, "worst_day_pct": -12.927, "worst_full_month_pct": -14.517}
+{"status": "STARTED", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U3\", \"w\": 0.4}}", "label": "고정", "at": "2026-10-11 11:18:21"}
+{"status": "DONE", "key": "{\"base\": \"d0.3\", \"sleeve\": {\"n\": 10, \"u\": \"U3\", \"w\": 0.4}}", "annual_pct": 32.765, "loss_months": 41, "worst_day_pct": -13.014, "worst_full_month_pct": -14.669}
