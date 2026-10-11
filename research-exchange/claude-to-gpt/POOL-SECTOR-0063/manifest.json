@@ -11,7 +11,7 @@
  "code_commit": "b45c9a55f225b1ce5c74e1761945f15d354ddec4",
  "code_commit_note": "사전등록 PR head",
  "completed_at_kst": "2026-10-11 20:56:14",
- "completed_note": "실행 전(PLAN) · KST · 성과 셈 없음(진단도 하지 않음)",
+ "completed_note": "run 20:56:11 ~ 20:56:14 KST · 종료 0(GPT #251 표기 정정)",
  "code": {
   "research/pool_sector.py": "b02b2a08a6bcea14a222dc401c6054e39771c6a2ea69a8cafe9f8eb8057a74ea",
   "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
