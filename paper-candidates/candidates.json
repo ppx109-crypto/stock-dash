@@ -333,7 +333,7 @@
    "pr": "https://github.com/ppx109-crypto/stock-dash/pull/224",
    "plan_pr": "https://github.com/ppx109-crypto/stock-dash/pull/223",
    "source_head": "de486e34623982b02be4cbb245ed8ae387460654",
-   "gpt_review": "결과 검토 대기",
+   "gpt_review": "인정 ROBUST_MIX(#224 6105156517) · 격자 끝 · 손실 경계 근접 · 독립 확인 WAITING_DATA · 배분 변경 · 주문 승인 아님",
    "orders": false,
    "saved_at": "2026-10-11 12:47 KST"
   }
