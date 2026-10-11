@@ -2,16 +2,16 @@
  "schema_version": "1",
  "task_id": "GUARD-ROB-0070",
  "chain_id": "GUARD-ROB-0070",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 '백테스트하고 약점을 보완방법 연구해줘 지피티와'",
- "source_pr": "263",
- "source_head_sha": "003f974fc7df895a961df47e5878ed58d975fc59",
- "code_commit": null,
- "code_commit_note": "사전등록 PR head",
- "completed_at_kst": "2026-10-12 00:27",
- "completed_note": "실행 전(PLAN) · 지킴이 켠 n 24 · p 3 밖 칸 성과 셈 안 함",
+ "source_pr": "264",
+ "source_head_sha": "64c17d85b88b11b05bba64fb73a4a2a0982c2a4b",
+ "code_commit": "64c17d85b88b11b05bba64fb73a4a2a0982c2a4b",
+ "code_commit_note": "사전등록 동의 head · 실행 뒤 실행기 고치지 않음",
+ "completed_at_kst": "2026-10-12 00:31:34",
+ "completed_note": "실행 끝 · KST",
  "code": {
   "research/guard_robust.py": "4c9dda79db9aed58c9092d1fd9f96f0b110ec8b2069af80a6f436659a9e2c0be",
   "research/month_guard.py": "b8a4f892ff135d6eb3b61e4e59051f6b4049d1bd3b6639b048f82ac38aed04a2",
@@ -69,7 +69,31 @@
   "research-exchange/claude-to-gpt/GUARD-ROB-0070/input_lock.json",
   "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/guard_test.py",
   "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/guard_test.out",
-  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/REPORT.md",
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/run_time.txt",
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evals.jsonl",
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/GUARD-ROB-0070/evidence/run_out.json"
  ],
- "independent_check": "WAITING_DATA"
+ "independent_check": "WAITING_DATA",
+ "verdict": "GUARD_ROBUST_A0_k4",
+ "run": {
+  "command": "python3 research/guard_robust.py run",
+  "start_kst": "2026-10-12 00:31:28",
+  "end_kst": "2026-10-12 00:31:34",
+  "exit": 0,
+  "stderr_bytes": 0,
+  "started": 60,
+  "done_unique": 60,
+  "failed": 0,
+  "unique_settings": 60,
+  "cap": 66
+ },
+ "outputs": {
+  "evals.jsonl": "6a3a4600b87778fd5a53f150e4e7eebd989b30db531d1f3727e4baa428694735",
+  "evidence/all_rows.json": "1d488207a3ff2ac03dbaeaba2d2e2766aae6fba27297805b0a9b217a412dc749",
+  "evidence/run_out.json": "dd9c2e01b6b1e5015c9f5a92c76c82059805123405dfab3891465f541d864186"
+ }
 }
