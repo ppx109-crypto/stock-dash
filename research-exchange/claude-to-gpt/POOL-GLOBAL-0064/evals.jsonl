@@ -1,0 +1,12 @@
+{"status": "STARTED", "key": "{\"hold\": \"153130\"}", "at": "2026-10-11 12:22:11"}
+{"status": "DONE", "key": "{\"hold\": \"153130\"}", "annual_pct": 1.92, "corr_mix54": 0.014}
+{"status": "STARTED", "key": "{\"hold\": \"133690\"}", "at": "2026-10-11 12:22:11"}
+{"status": "DONE", "key": "{\"hold\": \"133690\"}", "annual_pct": 22.623, "corr_mix54": 0.293}
+{"status": "STARTED", "key": "{\"k\": 1, \"l\": 6}", "at": "2026-10-11 12:22:11"}
+{"status": "DONE", "key": "{\"k\": 1, \"l\": 6}", "annual_pct": 10.066, "corr_mix54": 0.384}
+{"status": "STARTED", "key": "{\"k\": 1, \"l\": 12}", "at": "2026-10-11 12:22:11"}
+{"status": "DONE", "key": "{\"k\": 1, \"l\": 12}", "annual_pct": 13.759, "corr_mix54": 0.47}
+{"status": "STARTED", "key": "{\"k\": 2, \"l\": 6}", "at": "2026-10-11 12:22:12"}
+{"status": "DONE", "key": "{\"k\": 2, \"l\": 6}", "annual_pct": 9.601, "corr_mix54": 0.426}
+{"status": "STARTED", "key": "{\"k\": 2, \"l\": 12}", "at": "2026-10-11 12:22:12"}
+{"status": "DONE", "key": "{\"k\": 2, \"l\": 12}", "annual_pct": 11.624, "corr_mix54": 0.389}

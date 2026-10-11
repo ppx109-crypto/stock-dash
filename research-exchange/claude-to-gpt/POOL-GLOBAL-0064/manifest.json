@@ -2,17 +2,17 @@
  "schema_version": "1",
  "task_id": "POOL-GLOBAL-0064",
  "chain_id": "POOL-GLOBAL-0064",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 최종 자본 분배는 봇개발이 더 이상 안될때하자(새 봇 후보 목록 쌓기)",
- "source_pr": "251",
- "source_head_sha": "dbd1ff748d5bcbcea98bb762f81f8840200a4dba",
+ "source_pr": "252",
+ "source_head_sha": "d6bb4d2b99c643672958a97ada1383fd0cdbf5c9",
  "source_note": "POOL-SECTOR-0063 결과 head(그 뒤 manifest 표기만 고친 커밋 있음)",
- "code_commit": null,
+ "code_commit": "d6bb4d2b99c643672958a97ada1383fd0cdbf5c9",
  "code_commit_note": "사전등록 PR head",
- "completed_at_kst": "2026-10-11 21:18:32",
- "completed_note": "실행 전(PLAN) · KST · 성과 셈 없음(진단 없음 · 자르기는 차이만)",
+ "completed_at_kst": "2026-10-11 21:22:12",
+ "completed_note": "run 21:22:11 ~ 21:22:12 KST · 종료 0",
  "code": {
   "research/pool_global.py": "107ed10c2db0a878556ea15c83707fdb70bb0eb532fcf1cc5f04b84502653c3e",
   "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
@@ -70,12 +70,34 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/PLAN.md",
-  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/input_lock.json",
-  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/global_test.py",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/REPORT.md",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evals.jsonl",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/global_test.out",
-  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/global_test.py",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/run_time.txt",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/input_lock.json"
  ],
  "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
  "independent_check": "WAITING_DATA",
- "data_provenance": "ETF 원자료 NEEDS_DATA"
+ "data_provenance": "ETF 원자료 NEEDS_DATA",
+ "plan_source_pr": "251",
+ "prereg_ack": "GPT #252 동의",
+ "verdict": "POOL_CANDIDATE",
+ "eligible": [
+  "K1_L6",
+  "K1_L12",
+  "K2_L6",
+  "K2_L12"
+ ],
+ "flag": "약한 후보 · POOL-1과 상관 0.49 ~ 0.56 · 나스닥 들기보다 못함",
+ "evals": {
+  "STARTED": 6,
+  "DONE": 6,
+  "FAILED": 0
+ },
+ "ci": "산출 안 함"
 }
