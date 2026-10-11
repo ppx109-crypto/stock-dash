@@ -6,7 +6,7 @@
   상승 국면 목표 레버리지 = F20(판정 전날 장 끝까지 · 수급은 장 끝난 뒤 자료라 다음 거래일 종가에 실행) < thr 이면 up_lev × k, 아니면 up_lev.
   맞춤 때는 지금과 같음(국면이 바뀐 날 · 달 첫날 · band 없음) → 달 첫날 판단이 진단(전달 끝 값)과 같은 꼴.
 python3 research/flow_gate.py lock   → input_lock.json(성과 셈 없음)
-python3 research/flow_gate.py run    → 잠금 검사 → 고정 13판 + 고르기 + 이웃(기록 evals.jsonl)
+python3 research/flow_gate.py run    → 잠금 검사 → 고정 7판 + 고르기 + 이웃(기록 evals.jsonl)
 python3 research/flow_gate.py cut    → 자르기 시험"""
 import hashlib
 import json
@@ -30,7 +30,7 @@ BASE = (0.5, 0.3)
 FINAL = dict(D.R0, **M.OVERLAYS["L0.4_S0.4"])                   # lev_vt None · band None
 THR = [-0.20, -0.15, -0.10]
 GATE_K = [0.0, 0.5]
-UP_LEV = [0.4, 0.5]
+UP_LEV = [0.4]                                                   # round 2(GPT #242 지적 1): 문 효과만 보도록 0.4 고정
 _ORIG_TARGETS = D.targets
 
 
@@ -132,12 +132,11 @@ def eligible(x, base):
 
 
 def neighbors(cfg):
-    """덧붙임 규칙 이웃(n × 0.85 · × 1.15 · persist ± 1 · r10m4 · r10m6) + 문턱 한 칸씩 + k 반대쪽 + up_lev 반대쪽."""
+    """덧붙임 규칙 이웃(n × 0.85 · × 1.15 · persist ± 1 · r10m4 · r10m6) + 문턱 한 칸씩 + k 반대쪽(up_lev는 0.4 고정)."""
     out = list(R4.neighbors(cfg))
     i = THR.index(cfg["f_thr"])
     out += [("f_thr", THR[j]) for j in (i - 1, i + 1) if 0 <= j < len(THR)]
     out.append(("gate_k", GATE_K[1 - GATE_K.index(cfg["gate_k"])]))
-    out.append(("up_lev", UP_LEV[1 - UP_LEV.index(cfg["up_lev"])]))
     return out
 
 
@@ -211,7 +210,7 @@ def cut():
             "D.BASE_CSV=M.BASES/f'{M.name(V.BASE)}.csv';D.DATA,D.FEAT=None,None;"
             "c=dict(V.FINAL,**json.loads(os.environ['FX_CFG']));n,s=D.account(c);print(json.dumps([n,s]))")
     res = []
-    for extra in ({"f_thr": -0.15, "gate_k": 0.0, "up_lev": 0.5}, {"f_thr": -0.10, "gate_k": 0.5, "up_lev": 0.4},
+    for extra in ({"f_thr": -0.15, "gate_k": 0.0, "up_lev": 0.4}, {"f_thr": -0.10, "gate_k": 0.5, "up_lev": 0.4},
                   {"f_thr": -0.20, "gate_k": 0.0, "up_lev": 0.4}):
         env = dict(os.environ, FX_CFG=json.dumps(extra), REG_CUT="")
         fn, fs = json.loads(subprocess.run([sys.executable, "-c", code], env=env, cwd=ROOT, capture_output=True, text=True, check=True).stdout)

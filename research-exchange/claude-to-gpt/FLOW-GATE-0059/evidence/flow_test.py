@@ -12,7 +12,7 @@ def check(name, cond):
     assert cond, name
     ok += 1
     print("통과", name)
-c = dict(V.FINAL, f_thr=-0.15, gate_k=0.0, up_lev=0.5)
+c = dict(V.FINAL, f_thr=-0.15, gate_k=0.0, up_lev=0.5)                # 셈 시험용(격자 밖 값)
 check("1 수급 문: 상승 · F20 −0.2(< −0.15)면 레버리지 0.5 × 0 = 0 · F20 −0.1이면 0.5 · F20 −0.15(같음)은 줄이지 않음 · F20 없으면 0.5",
       D.targets("상승", c, {"F20": -0.2})[2] == 0.0 and D.targets("상승", c, {"F20": -0.1})[2] == 0.5
       and D.targets("상승", c, {"F20": -0.15})[2] == 0.5 and D.targets("상승", c, {})[2] == 0.5)
@@ -27,13 +27,15 @@ check("3 지금 판 그대로(f_thr 없음) = MIX-0054 최종 · 연 34.113% · 
       r0["annual_pct"] == 34.113 and r0["loss_months"] == 40 and r0["months"] == 114 and r0["worst_full_month_pct"] == -14.043)
 n1, s1 = D.account(dict(V.FINAL, f_thr=-99.0, gate_k=0.0))
 check("4 문턱이 아주 낮으면(−99 · 걸리는 날 없음) 지금 판과 NAV · 국면이 하루도 다르지 않음", n1 == n0 and s1 == s0)
-check("5 격자 13 = 기준 + 문턱 {−0.20, −0.15, −0.10} × k {0, 0.5} × up_lev {0.4, 0.5}",
-      len(V.grid()) == 13 and V.grid()[0][1].get("f_thr") is None and len({V.cname(g) for _, g in V.grid()[1:]}) == 12)
+check("5 격자 7 = 기준 + 문턱 {−0.20, −0.15, −0.10} × k {0, 0.5} · up_lev는 모두 0.4(기준과 같음 · 문 효과만)",
+      len(V.grid()) == 7 and V.grid()[0][1].get("f_thr") is None and len({V.cname(g) for _, g in V.grid()[1:]}) == 6
+      and all(g["up_lev"] == 0.4 for _, g in V.grid()))
 nb = V.neighbors(dict(V.FINAL, f_thr=-0.20, gate_k=0.0, up_lev=0.4))
-nb2 = V.neighbors(dict(V.FINAL, f_thr=-0.15, gate_k=0.5, up_lev=0.5))
-check("6 이웃: (−0.20 · 0 · 0.4) = 규칙 6 + 문턱 −0.15 + k 0.5 + up_lev 0.5 = 9 · (−0.15 · 0.5 · 0.5) = 6 + 문턱 둘 + k 0 + up_lev 0.4 = 10",
-      len(nb) == 9 and ("f_thr", -0.15) in nb and ("gate_k", 0.5) in nb and ("up_lev", 0.5) in nb
-      and len(nb2) == 10 and ("f_thr", -0.20) in nb2 and ("f_thr", -0.10) in nb2 and ("gate_k", 0.0) in nb2 and ("up_lev", 0.4) in nb2)
+nb2 = V.neighbors(dict(V.FINAL, f_thr=-0.15, gate_k=0.5, up_lev=0.4))
+check("6 이웃: (−0.20 · 0) = 규칙 6 + 문턱 −0.15 + k 0.5 = 8 · (−0.15 · 0.5) = 6 + 문턱 둘 + k 0 = 9 · up_lev 이웃 없음",
+      len(nb) == 8 and ("f_thr", -0.15) in nb and ("gate_k", 0.5) in nb
+      and len(nb2) == 9 and ("f_thr", -0.20) in nb2 and ("f_thr", -0.10) in nb2 and ("gate_k", 0.0) in nb2
+      and not any(a == "up_lev" for a, _ in nb + nb2))
 b = {"within": True, "annual_raw": 0.34, "loss_months": 40, "worst_full_month_raw": -0.14}
 check("7 채택 잣대: 손실 달 −3(연 −0.4%p)은 채택 · 연 −0.6%p는 탈락 · 가장 나쁜 달이 나빠지면 탈락 · 나아진 게 없으면 탈락 · 잣대 밖이면 탈락",
       V.eligible(dict(b, loss_months=37, annual_raw=0.336), b) and not V.eligible(dict(b, loss_months=37, annual_raw=0.334), b)
