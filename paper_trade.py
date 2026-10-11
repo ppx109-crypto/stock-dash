@@ -425,7 +425,8 @@ def execute(done, state, prices, bar_id, broker=None, now=None, strategy="1h"):
         if x["type"] == "sell":
             why = "이 규칙이 모의 계좌에서 산 수량이 없음" if x["code"] not in have else "팔 수량이 0주"
         else:
-            why = ("시가를 몰라서" if not prices.get(x["code"]) else
+            why = ("최종 판(MIX-0054)에서 이 규칙은 새 매수를 끔(든 것만 제 규칙대로 팖)" if SHARES.get(strategy, 1.0) <= 0 else
+                   "시가를 몰라서" if not prices.get(x["code"]) else
                    "계좌 흔들림 상한에 걸림" if cap is not None and cap < (prices.get(x["code"]) or 0) else "살 돈이 모자람(1주 미만)")
         lines.append(f"🧪 모의투자({tag}) {'매수' if x['type'] == 'buy' else '매도'} 건너뜀 · {name}({x['code']}) · {why}")
     for x in (done_buys if stop_buys else []):

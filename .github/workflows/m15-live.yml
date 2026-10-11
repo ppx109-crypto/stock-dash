@@ -79,8 +79,8 @@ jobs:
           ACC_CAP_START: '20261012'
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'
-          MIX54: 'off'                     # MIX-0054 켜면 15분봉 새 매수 멈춤(몫 0 · 든 것은 제 규칙대로 팖) · 일봉 작업과 같은 값
-          MIX54_START: ''
+          MIX54: 'on'                     # MIX-0054 켜면 15분봉 새 매수 멈춤(몫 0 · 든 것은 제 규칙대로 팖) · 일봉 작업과 같은 값
+          MIX54_START: '20261011'
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}

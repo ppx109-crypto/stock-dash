@@ -370,6 +370,29 @@ class SwitchFills(Env):
         self.assertNotIn("pending", st)
 
 
+class SkipNote(unittest.TestCase):
+    def test_zero_share_rule_says_turned_off(self):
+        """15분봉 몫이 0(최종 판)이면 매수 신호를 '살 돈이 모자람'이 아니라 '새 매수를 끔'으로 알림."""
+        import paper_trade as P
+
+        class B:
+            def balance(self, raw=False):
+                return {"cash": 1_000_000.0, "value": 0.0, "positions": []}
+
+        tmp = tempfile.TemporaryDirectory()
+        old = os.getcwd()
+        os.chdir(tmp.name)
+        try:
+            with mock.patch.dict(os.environ, {"PAPER_TRADING": "on", "KIS_PAPER_APP_KEY": "k", "PAPER_START": ""}), \
+                    mock.patch.dict(P.SHARES, {"15m": 0.0}):
+                lines = P.execute([{"type": "buy", "code": "005930", "칸": 2, "name": "삼성전자"}], {"positions": {}}, {"005930": 70000.0},
+                                  "b1", broker=B(), strategy="15m")
+        finally:
+            os.chdir(old)
+            tmp.cleanup()
+        self.assertTrue(any("새 매수를 끔" in x for x in lines), lines)
+
+
 class NavWatch(unittest.TestCase):
     def test_day_and_month(self):
         st = {}
