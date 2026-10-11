@@ -33,7 +33,8 @@ shutil.copy("/tmp/mix0053-bases/d0.5_m0.5_b0.5_xnone.csv", TMP / f"{M.name(M.NOW
 r = M.evaluate(M.NOW, M.OVERLAYS["L0.25_S0.3"], D)
 check("6 바탕 장부를 바꿔 끼우는 셈: MIX-0053 지금 조합 장부 + 0052 = 28.633%(앞 결과 그대로)", abs(r["annual_pct"] - 28.633) < 1e-9)
 fake = {"by_kind": {"상승": {"worst_day_raw": -0.15, "worst_month_raw": -0.10}, "하락": {"worst_day_raw": -0.01, "worst_month_raw": -0.01}, "횡보": {"worst_day_raw": -0.01, "worst_month_raw": -0.1000001}}}
-check("7 잣대는 반올림 전 · 세 장 모두(횡보 −0.1000001 → 밖)", not M.within(fake))
+fake = {"by_kind": {"상승": {"worst_day_raw": -0.15, "worst_month_raw": -0.15}, "하락": {"worst_day_raw": -0.01, "worst_month_raw": -0.01}, "횡보": {"worst_day_raw": -0.01, "worst_month_raw": -0.1500001}}}
+check("7 공식 잣대는 하루 · 달 각각 −15% · 반올림 전 · 세 장 모두(횡보 −0.1500001 → 밖 · −0.15 정확히는 안)", not M.within(fake) and M.within({"by_kind": {"상승": {"worst_day_raw": -0.15, "worst_month_raw": -0.15}}}))
 smoke = SPD / "smoke54.csv"
 check("8 15분봉 뺀 바탕 한 판(z100 · 1일봉 0.5 · 바구니 0.5)이 끝까지 돌고 장부 점검 통과(성적은 보지 않음)", M.check_csv(smoke)[0])
 syn = TMP / "syn.csv"; syn.write_text("날,NAV,현금\n20170201,100,40\n20170202,100,20\n")
@@ -72,15 +73,14 @@ except SystemExit as e:
 M.DATA_DIRS = old_dirs
 check("15 자료 폴더에 커밋 안 된 바뀜이 있으면 멈춤", dirty_stop)
 s54 = (ROOT / "research/mix54_run.py").read_text()
-check("16 더 번 몫의 기준 = 15분봉만 뺀 지금 몫 · 덧붙임 없음 · 이웃 상한 갈래마다 300 · 하루 −15 · 달 두 갈래 T10 −10 / T15 −15",
-      'tuple(x["g"]) == NOW and x["overlay"] == "none"' in s54 and M.NB_CAP == 300 and M.DAY_LIM == -0.15 and M.TRACKS == {"T10": -0.10, "T15": -0.15})
-fk = {"by_kind": {"상승": {"worst_day_raw": -0.05, "worst_month_raw": -0.12}, "하락": {"worst_day_raw": -0.01, "worst_month_raw": -0.01}, "횡보": {"worst_day_raw": -0.151, "worst_month_raw": -0.02}}}
+check("16 더 번 몫의 기준 = 15분봉만 뺀 지금 몫 · 덧붙임 없음 · 이웃 총상한 300 · 공식 잣대 하루 −15 · 달 −15 하나 · 달 −10은 참고만",
+      'tuple(x["g"]) == NOW and x["overlay"] == "none"' in s54 and M.NB_CAP == 300 and M.DAY_LIM == -0.15 and M.MONTH_LIM == -0.15 and M.REF_MONTH == -0.10 and "TRACKS" not in s54)
 fk2 = {"by_kind": {"상승": {"worst_day_raw": -0.05, "worst_month_raw": -0.12}}}
-check("17 달 −12%는 T10 밖 · T15 안 · 하루 −15.1%는 두 갈래 모두 밖", not M.within(fk2, -0.10) and M.within(fk2, -0.15) and not M.within(fk, -0.15))
-# 18 고르기 전체(가짜 계좌 셈): C(연 45 · 달 −9.5 · persist 이웃 달 −13) · B(연 40 · 달 −12) · A(연 30 · 달 −9) · 없음(연 20 · 달 −5)
+check("17 달 −12%는 공식 잣대 안 · 참고(−10%) 밖", M.within(fk2) and not M.within(fk2, M.REF_MONTH))
+# 18 고르기 전체(가짜 계좌 셈): D(연 50 · 달 −16) · C(연 45 · 달 −9.5 · persist 이웃 달 −13) · B(연 40 · 달 −12) · A(연 30 · 달 −9) · 없음(연 20 · 달 −5)
 import types
 F = types.ModuleType("regime_dev"); F.R0 = {"n": 0}; F.DATA = None; F.FEAT = None
-TAB = {None: (0.20, -0.05), 0.2: (0.30, -0.09), 0.4: (0.40, -0.12), 0.3: (0.45, -0.095)}
+TAB = {None: (0.20, -0.05), 0.2: (0.30, -0.09), 0.4: (0.40, -0.12), 0.3: (0.45, -0.095), 0.35: (0.50, -0.16)}
 calls = []
 def _acc(cfg):
     calls.append(json.dumps(cfg, sort_keys=True))
@@ -96,7 +96,8 @@ T2 = Path(tempfile.mkdtemp()); M.BASES = T2; M.EVALS_LOG = T2 / "evals.jsonl"; M
 (T2 / f"{M.name(M.NOW)}.csv").write_text("날,NAV,현금\n20170201,100,50\n")
 old = (M.grid, M.OVERLAYS, M.verify_all, sys.modules["regime_dev"])
 M.grid = lambda: [M.NOW]
-M.OVERLAYS = {"none": None, "A": dict(M.RULE, up_lev=0.2, side_inv=0.2), "B": dict(M.RULE, up_lev=0.4, side_inv=0.2), "C": dict(M.RULE, up_lev=0.3, side_inv=0.2)}
+M.OVERLAYS = {"none": None, "A": dict(M.RULE, up_lev=0.2, side_inv=0.2), "B": dict(M.RULE, up_lev=0.4, side_inv=0.2), "C": dict(M.RULE, up_lev=0.3, side_inv=0.2),
+              "D": dict(M.RULE, up_lev=0.35, side_inv=0.2)}
 M.verify_all = lambda: ({}, {})
 sys.modules["regime_dev"] = F
 import io, contextlib
@@ -105,8 +106,7 @@ with contextlib.redirect_stdout(buf):
     M.select()
 M.grid, M.OVERLAYS, M.verify_all, sys.modules["regime_dev"] = old
 o = json.loads(buf.getvalue())
-t10, t15 = o["tracks"]["T10"], o["tracks"]["T15"]
-check("18 고르기(가짜 셈): T10은 C(이웃 달 −13 → 탈락) 다음 A가 최종 · T15는 C가 최종 · 같은 이웃은 한 번만 셈(고유 이웃 12 · T10 확인 12 · T15 확인 6)",
-      t10["final"]["overlay"] == "A" and t15["final"]["overlay"] == "C" and t10["checked"][0]["robust"] is False and o["neighbor_evals_unique"] == 12
-      and t10["neighbor_checks"] == 12 and t15["neighbor_checks"] == 6 and len(calls) == 4 + 12 and t10["within_count"] == 3 and t15["within_count"] == 4)
+check("18 고르기(가짜 셈): D(달 −16)는 잣대 밖 · C가 첫 칸이고 이웃(달 −13)이 −15 안이라 최종 · 이웃 6번만 셈 · 달 −10 참고는 C · A · 없음(이웃 셈 없음)",
+      o["verdict"] == "ROBUST_MIX" and o["final"]["overlay"] == "C" and o["within_count"] == 4 and o["neighbor_evals"] == 6 and len(calls) == 5 + 6
+      and [x["cell"] for x in o["ref_m10"]["top5_by_annual"]] == ["d0.5_b0.5_no15m+C", "d0.5_b0.5_no15m+A", "d0.5_b0.5_no15m+none"] and "tracks" not in o)
 print(f"모두 {ok}개 통과")

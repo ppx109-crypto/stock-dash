@@ -29,10 +29,10 @@ ACC_VOL = "0.010911"
 S1D = [0.3, 0.5, 0.7, 1.0]
 SBA = [0.3, 0.5, 0.7, 1.0]
 NOW = (0.5, 0.5)                     # 15분봉만 뺀 지금 몫(1일봉 0.5 · 바구니 0.5)
-DAY_LIM, MONTH_LIM, NB_CAP = -0.15, -0.10, 300
-# round 2(GPT #223): 달 잣대 두 갈래를 같은 무게로 함께 판정 · 보고 — T10 = 사용자 2026-10-10 '가장 나쁜 달 −10% 이내로 몫 다시 골라줘'(0050 ~ 0053과 같음) ·
-# T15 = 사용자 2026-10-07 손실 한도(하루 · 달 각각 −15%). 어느 쪽을 쓸지는 사용자가 정함. 이웃 평가 상한은 갈래마다 300(같은 이웃은 한 번만 셈 · 기록).
-TRACKS = {"T10": -0.10, "T15": -0.15}
+DAY_LIM, MONTH_LIM, NB_CAP = -0.15, -0.15, 300
+# round 3(GPT #223 round 2): 공식 판정 · 채택 · 후보 등록은 하루 · 달력월 TWR 각각 −15% 하나(사용자 2026-10-07 손실 한도) · 이웃 총상한 300.
+# 달 −10%(사용자 2026-10-10 0050 다시 고르기 때 잣대)는 이미 센 288칸의 비구속 참고 통계로만 냄(이웃 탐색 · 판정 · 후보 선택 없음).
+REF_MONTH = -0.10
 FIX = {"down_base": 1.0, "down_inv": 0.0, "inv": "114800", "exit_buf": 0.0, "band": None, "up_need": "above_only", "confirm": "r10m5", "lev_vt": None}
 RULE = dict(FIX, n=24, persist=3)
 OVERLAYS = {"none": None,
@@ -234,50 +234,45 @@ def select():
             r = evaluate(g, cfg, D)
             rows.append({"base": name(g), "g": list(g), "overlay": ov, "annual_raw": r["annual_raw"], "annual_pct": r["annual_pct"],
                          "worst_day_pct": r["worst_day_pct"], "worst_month_pct": r["worst_month_pct"], "mdd_report_pct": r["mdd_report_pct"],
-                         "within": {tk: within(r, m) for tk, m in TRACKS.items()}, "years_pct": r["years_pct"], "halves": r["halves_report"],
+                         "within": within(r), "within_m10_ref": within(r, REF_MONTH), "years_pct": r["years_pct"], "halves": r["halves_report"],
                          "by_kind": {k: {"worst_day_pct": round(v["worst_day_raw"] * 100, 3), "worst_month_pct": round(v["worst_month_raw"] * 100, 3)} for k, v in r["by_kind"].items()},
                          "base_money_use": money_use(g)})
     now = next(x for x in rows if tuple(x["g"]) == NOW and x["overlay"] == "none")
     import regime_rules4 as R4
-    memo, tracks = {}, {}
-    for tk, mlim in TRACKS.items():
-        ok = sorted([x for x in rows if x["within"][tk]], key=lambda x: (-x["annual_raw"], x["base"], x["overlay"]))
-        checked, final, nb_used = [], None, 0
-        for x in ok:
-            if x["overlay"] == "none":
-                final = x
-                checked.append({"cell": x["base"] + "+" + x["overlay"], "robust": "덧붙임 없음(이웃 검사 없음)"})
-                break
-            cfg = OVERLAYS[x["overlay"]]
-            nbs = R4.neighbors(cfg)
-            if nb_used + len(nbs) > NB_CAP:
-                break
-            res, good = {}, True
-            for a, v in nbs:
-                ncfg = dict(cfg, **{a: v})
-                mk = json.dumps({"base": x["base"], "overlay": ncfg}, sort_keys=True, ensure_ascii=False)
-                if mk not in memo:
-                    memo[mk] = evaluate(tuple(x["g"]), ncfg, D, label="이웃")
-                nr = memo[mk]
-                nb_used += 1
-                w = within(nr, mlim)
-                gain = (nr["annual_raw"] - now["annual_raw"]) >= (x["annual_raw"] - now["annual_raw"]) / 2
-                res[f"{a}={v}"] = {"annual_pct": nr["annual_pct"], "worst_day_pct": nr["worst_day_pct"], "worst_month_pct": nr["worst_month_pct"], "within": w, "half_gain": gain}
-                good = good and w and gain
-            checked.append({"cell": x["base"] + "+" + x["overlay"], "annual_pct": x["annual_pct"], "worst_month_pct": x["worst_month_pct"], "neighbors": res, "robust": good})
-            if good:
-                final = x
-                break
-        tracks[tk] = {"month_limit": mlim, "verdict": ("ROBUST_MIX" if final else "NO_MIX"), "final": final, "checked": checked,
-                      "within_count": len(ok), "neighbor_checks": nb_used}
+    ok = sorted([x for x in rows if x["within"]], key=lambda x: (-x["annual_raw"], x["base"], x["overlay"]))
+    checked, final, nb_used = [], None, 0
+    for x in ok:
+        if x["overlay"] == "none":
+            final = x
+            checked.append({"cell": x["base"] + "+" + x["overlay"], "robust": "덧붙임 없음(이웃 검사 없음)"})
+            break
+        cfg = OVERLAYS[x["overlay"]]
+        nbs = R4.neighbors(cfg)
+        if nb_used + len(nbs) > NB_CAP:
+            break
+        res, good = {}, True
+        for a, v in nbs:
+            nr = evaluate(tuple(x["g"]), dict(cfg, **{a: v}), D, label="이웃")
+            nb_used += 1
+            w = within(nr)
+            gain = (nr["annual_raw"] - now["annual_raw"]) >= (x["annual_raw"] - now["annual_raw"]) / 2
+            res[f"{a}={v}"] = {"annual_pct": nr["annual_pct"], "worst_day_pct": nr["worst_day_pct"], "worst_month_pct": nr["worst_month_pct"], "within": w, "half_gain": gain}
+            good = good and w and gain
+        checked.append({"cell": x["base"] + "+" + x["overlay"], "annual_pct": x["annual_pct"], "worst_month_pct": x["worst_month_pct"], "neighbors": res, "robust": good})
+        if good:
+            final = x
+            break
+    ref = sorted([x for x in rows if x["within_m10_ref"]], key=lambda x: (-x["annual_raw"], x["base"], x["overlay"]))
+    ref_m10 = {"use": "비구속 참고 통계(이웃 탐색 · 판정 · 후보 선택 없음)", "month_limit": REF_MONTH, "count": len(ref),
+               "top5_by_annual": [{"cell": x["base"] + "+" + x["overlay"], "annual_pct": x["annual_pct"], "worst_month_pct": x["worst_month_pct"]} for x in ref[:5]]}
     for x in rows:
         x["eff_month"] = x["annual_pct"] / abs(x["worst_month_pct"]) if x["worst_month_pct"] < 0 else None
         x["eff_mdd"] = x["annual_pct"] / abs(x["mdd_report_pct"]) if x["mdd_report_pct"] < 0 else None
     (BOX / "evidence").mkdir(parents=True, exist_ok=True)
     (BOX / "evidence/all_rows.json").write_text(json.dumps(rows, ensure_ascii=False, indent=0))
-    out = {"tracks": tracks, "now": now, "rows_count": len(rows), "lock": lk,
+    out = {"verdict": ("ROBUST_MIX" if final else "NO_MIX"), "final": final, "now": now, "checked": checked, "rows_count": len(rows), "lock": lk,
            "bases_sha256": {k: v["sha256"] for k, v in done.items()},
-           "neighbor_evals_unique": len(memo), "limits": {"day": DAY_LIM, "month": TRACKS},
+           "within_count": len(ok), "neighbor_evals": nb_used, "limits": {"day": DAY_LIM, "month": MONTH_LIM}, "ref_m10": ref_m10,
            "period_note": "덧붙임 판정 구간 2017-02-01 ~ 2026-09-15(regime_dev LO · HI 고정) · 바탕 장부는 20260916 줄까지 있어 점검은 그 줄까지(마지막 하루는 판정에 안 씀)",
            "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)", "mix0053_final_with_15m_annual_pct": 29.321}
     print(json.dumps(out, ensure_ascii=False))
