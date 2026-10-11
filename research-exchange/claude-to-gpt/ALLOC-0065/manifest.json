@@ -2,16 +2,16 @@
  "schema_version": "1",
  "task_id": "ALLOC-0065",
  "chain_id": "ALLOC-0065",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 '가' — 최종 분배 연구로 넘어감(앞서 '최종 자본 분배는 봇개발이 더 이상 안될때하자')",
- "source_pr": "253",
- "source_head_sha": "64b5fe0b7271929987f44cf2aedb9190b5795137",
- "code_commit": null,
+ "source_pr": "254",
+ "source_head_sha": "bb2ec04bd8ad07d22ef059eaf4fd623d92f83443",
+ "code_commit": "bb2ec04bd8ad07d22ef059eaf4fd623d92f83443",
  "code_commit_note": "사전등록 PR head",
- "completed_at_kst": "2026-10-11 21:57:11",
- "completed_note": "실행 전(PLAN) · KST · 기준 칸만 재현 시험으로 셈(이미 인정된 값)",
+ "completed_at_kst": "2026-10-11 22:01:45",
+ "completed_note": "run 22:01:33 ~ 22:01:45 KST · 종료 0",
  "code": {
   "research/alloc.py": "0bdc8eb6b6d39f0ef38933de7e9afa1381bcbc6cfe60a06dd22c786955ce7ca7",
   "research/pool_global.py": "107ed10c2db0a878556ea15c83707fdb70bb0eb532fcf1cc5f04b84502653c3e",
@@ -82,11 +82,28 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/ALLOC-0065/PLAN.md",
-  "research-exchange/claude-to-gpt/ALLOC-0065/input_lock.json",
-  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/alloc_test.py",
+  "research-exchange/claude-to-gpt/ALLOC-0065/REPORT.md",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evals.jsonl",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/all_rows.json",
   "research-exchange/claude-to-gpt/ALLOC-0065/evidence/alloc_test.out",
-  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/alloc_test.py",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/run_time.txt",
+  "research-exchange/claude-to-gpt/ALLOC-0065/input_lock.json"
  ],
  "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
- "independent_check": "WAITING_DATA"
+ "independent_check": "WAITING_DATA",
+ "plan_source_pr": "253",
+ "prereg_ack": "GPT #254 동의",
+ "recommend_return": "A 100%",
+ "recommend_balance": "A 90% + B(U3_n6) 10%",
+ "evals": {
+  "STARTED": 30,
+  "DONE": 30,
+  "FAILED": 0
+ },
+ "ci": "산출 안 함",
+ "authority": "추천까지만 · 실제 변경은 사용자 직접 승인"
 }
