@@ -1,0 +1,77 @@
+{
+ "schema_version": "1",
+ "task_id": "TAILBOX-0067",
+ "chain_id": "TAILBOX-0067",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 '가, 나 진행해줘'(AUDIT-MIX54-0066 #257 보완 후보: 가 급락일 꼬리 줄이기 · 나 박스권 감지)",
+ "source_pr": "257",
+ "source_head_sha": "4e88bc6f825796306b9a071926c82d4904c07ae3",
+ "code_commit": null,
+ "code_commit_note": "사전등록 PR head",
+ "completed_at_kst": "2026-10-11 23:30:29",
+ "completed_note": "실행 전(PLAN) · KST · 기준 칸만 재현 시험으로 셈",
+ "code": {
+  "research/tailbox.py": "5daded0d2132b6ff77d47665069883f9159acf10cc766558c0d2fd8165e80523",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/tailbox_test.py": "5b472d0da99b25d30f0d5493245b2821220a8c69a6d112cc840a1af90600c83a"
+ },
+ "input_lock": {
+  "root": "/home/user/stock-dash",
+  "research/tailbox.py": "5daded0d2132b6ff77d47665069883f9159acf10cc766558c0d2fd8165e80523",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "input_lock_sha256": "ed8b19ad0f7785c613fde83689be4a7cebaeb8fde7a0a9ebbda45e79bc8b8f98",
+ "grid": {
+  "count": 19,
+  "가": {
+   "up_lev": [
+    0.4,
+    0.5,
+    0.6
+   ],
+   "lev_vt": [
+    0.15,
+    0.2,
+    0.25,
+    0.3
+   ]
+  },
+  "나": {
+   "er_n": [
+    60,
+    120
+   ],
+   "er_thr": [
+    0.1,
+    0.15,
+    0.2
+   ]
+  }
+ },
+ "periods": {
+  "full": "2017-02-01 ~ 2026-09-15 · 완료 114달",
+  "dev": "2010-03-01 ~ 2016-12-31 · 덧붙임만(바탕 현금) · 개발 구간"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/TAILBOX-0067/PLAN.md",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/input_lock.json",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/tailbox_test.py",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/tailbox_test.out",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/cut_test.out"
+ ],
+ "independent_check": "WAITING_DATA"
+}
