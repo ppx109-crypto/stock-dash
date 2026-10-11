@@ -283,6 +283,59 @@
    "gpt_review": "인정 ROBUST_MIX(#222 6104992161) · 독립 확인 WAITING_DATA · 배분 변경 · 주문 승인 아님",
    "orders": false,
    "saved_at": "2026-10-11 12:24 KST"
+  },
+  {
+   "id": "MIX-0054",
+   "verdict": "ROBUST_MIX",
+   "loss_basis": "세 장 각각 하루 · 달력월 TWR −15% · 덧붙임 규칙 이웃 6개 모두 같은 잣대",
+   "bots_share": {
+    "1일봉": 0.5,
+    "15분봉": "뺌(장부 104건 · 1년 미만)",
+    "바구니": 0.3,
+    "빈칸 엔진 · 인버스": "둘 다 켬",
+    "계좌 흔들림 상한": "m1(0.010911)"
+   },
+   "base_code": "research/z100.py(Z_DROP 15m · Z_SHARE_1D 0.5 · Z_SHARE_BASKET 0.3 · Z_ACC_VOL 0.010911) + research/mix0053(얼린 봇 판)",
+   "config": {
+    "n": 24,
+    "confirm": "r10m5",
+    "persist": 3,
+    "down_base": 1.0,
+    "down_inv": 0.0,
+    "inv": "114800",
+    "up_lev": 0.4,
+    "side_inv": 0.4,
+    "up_need": "above_only",
+    "exit_buf": 0.0,
+    "lev_vt": null,
+    "band": null
+   },
+   "summary": {
+    "annual_pct": 34.113,
+    "worst_day_pct": -12.958,
+    "worst_month_pct": -14.043,
+    "mdd_report_pct": -21.77,
+    "money_use_pct_approx": 80,
+    "years_pct": {
+     "2017": 16.55,
+     "2018": -2.27,
+     "2019": 12.67,
+     "2020": 62.67,
+     "2021": 18.26,
+     "2022": 12.84,
+     "2023": 53.14,
+     "2024": 0.78,
+     "2025": 84.9,
+     "2026": 100.67
+    }
+   },
+   "warning": "한도 −15%에 가까움(하루 −13.0 · 달 −14.0) · 레버리지 · 인버스 몫 둘 다 격자 끝 · 이웃 가장 나쁜 달 −14.513%",
+   "pr": "https://github.com/ppx109-crypto/stock-dash/pull/224",
+   "plan_pr": "https://github.com/ppx109-crypto/stock-dash/pull/223",
+   "source_head": "de486e34623982b02be4cbb245ed8ae387460654",
+   "gpt_review": "결과 검토 대기",
+   "orders": false,
+   "saved_at": "2026-10-11 12:47 KST"
   }
  ]
 }
