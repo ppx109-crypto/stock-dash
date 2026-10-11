@@ -23,7 +23,7 @@ from pathlib import Path
 
 ROOT = Path("/home/user/stock-dash")
 BOX = ROOT / "research-exchange/claude-to-gpt" / os.getenv("REG_BOX", "REGIME-SW-0048")      # 기록 칸(과제마다)
-BASE_CSV = ROOT / "research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv"                   # 1일봉 장부(같은 파일)
+BASE_CSV = Path(os.getenv("REG_BASE", str(ROOT / "research-exchange/claude-to-gpt/REGIME-SW-0048/base_m1.csv")))   # 바탕 계좌 장부(MIX-0053: 봇 몫마다 다른 장부)
 SNAP = os.getenv("REG_SNAP", "/tmp/rev-full.pkl")
 CUT = os.getenv("REG_CUT", "")
 LO, HI = "20170201", "20260915"

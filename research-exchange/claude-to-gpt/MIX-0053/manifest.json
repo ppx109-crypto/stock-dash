@@ -1,0 +1,51 @@
+{
+ "schema_version": 1,
+ "task_id": "MIX-0053",
+ "chain_id": "MIX-0053",
+ "kind": "PLAN",
+ "round": 1,
+ "status": "READY",
+ "user_instruction": "2026-10-11 봇 몫까지 함께 다시 골라줘",
+ "source_pr": 220,
+ "source_head_sha": "97acd0711d100d30c216592a5d76ffb6b6ad0ef3",
+ "code_commit": null,
+ "completed_at_kst": null,
+ "code": {
+  "research/z100.py": "47b85d2aee5743db81aa82166581156480801f5ab492df1a74c367f0ce28840d",
+  "research/mix_run.py": "4089385662279f237cd3c005540987c3a5fffaa0718538b568e02032a77fba1c",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research/mix0053/basket_live.py": "e962d5914201feb98b3adfa67c351bf6f229b2863fdee77cdd4bfbba0f36846c",
+  "research/mix0053/idle_live.py": "bd299046ae71ecf8dc424f4efea5960bb7db996a88d872c3d60b321f7cf3ecac"
+ },
+ "cache": {
+  "/tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7"
+ },
+ "base_reproduce": "z100 기본값 = base_m1.csv 2,360줄 같음",
+ "grid_bases": 72,
+ "overlays": [
+  "none",
+  "0050",
+  "0051",
+  "0052"
+ ],
+ "limits": {
+  "day": -0.15,
+  "month": -0.1
+ },
+ "neighbor_cap": 300,
+ "verdicts": [
+  "ROBUST_MIX",
+  "NO_MIX"
+ ],
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/MIX-0053/PLAN.md",
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.py",
+  "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.out"
+ ]
+}
