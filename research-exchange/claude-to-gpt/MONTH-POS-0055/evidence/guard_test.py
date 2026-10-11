@@ -68,4 +68,24 @@ except SystemExit as e:
     stopped = "122630" in str(e)
 G.LOCK, G.EVALS = old
 check("11 잠금이 하나라도 다르면(122630) run이 첫 STARTED 전에 멈춤(평가 기록 파일이 안 생김)", stopped and not (T / "evals.jsonl").exists())
+# round 2 결과 보완(GPT #229): 다시 셈 실행기는 뿌리가 다르거나 잠금 v2가 다르면 평가 전에 멈춤
+T3 = Path(tempfile.mkdtemp())
+old = (G.ROOT, G.LOCK2, G.BOX)
+G.ROOT = T3 / "other-checkout"; G.BOX = T3
+try:
+    G.rerun(); stopped = False
+except SystemExit as e:
+    stopped = "뿌리가 서로 다름" in str(e)
+G.ROOT = old[0]
+check("13 다시 셈: 잠금 checkout과 계산 뿌리(regime_dev.ROOT · mix54_run.ROOT)가 다르면 평가 전에 멈춤", stopped and not (T3 / "evals_rerun.jsonl").exists())
+lk2 = G.lock_body_v2()
+(T3 / "lock2.json").write_text(json.dumps(dict(lk2, **{"etf-data/114800.json": "0" * 64})))
+G.LOCK2 = T3 / "lock2.json"
+try:
+    G.rerun(); stopped = False
+except SystemExit as e:
+    stopped = "114800" in str(e)
+G.ROOT, G.LOCK2, G.BOX = old
+check("14 다시 셈: 잠금 v2(뿌리 · 코드 4 · load가 읽는 ETF 4 · 시장 자료 2 · 바탕 장부 · 스냅샷 = 13칸)가 하나라도 다르면 평가 전에 멈춤",
+      stopped and not (T3 / "evals_rerun.jsonl").exists() and len(lk2) == 13 and lk2["root"] == str(D.ROOT))
 print(f"모두 {ok}개 통과")

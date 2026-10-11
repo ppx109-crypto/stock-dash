@@ -1,0 +1,31 @@
+{
+ "root": "/home/user/stock-dash",
+ "modules": {
+  "month_guard": "/home/user/stock-dash/research/month_guard.py",
+  "regime_dev": "/home/user/stock-dash/research/regime_dev.py",
+  "mix54_run": "/home/user/stock-dash/research/mix54_run.py"
+ },
+ "opened_at_run": {
+  "/home/user/stock-dash/etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "/home/user/stock-dash/etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "/home/user/stock-dash/etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "/home/user/stock-dash/etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "/home/user/stock-dash/market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "/home/user/stock-dash/market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "loader_matches_lock": {
+  "/home/user/stock-dash/etf-data/069500.json": true,
+  "/home/user/stock-dash/etf-data/114800.json": true,
+  "/home/user/stock-dash/etf-data/252670.json": true,
+  "/home/user/stock-dash/etf-data/122630.json": true,
+  "/home/user/stock-dash/market-data/investor_KSP.json": true,
+  "/home/user/stock-dash/market-data/index_KOSPI.json": true,
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": true,
+  "/tmp/rev-full.pkl": true
+ },
+ "unlocked_opened": [],
+ "rerun_rows": 68,
+ "rows_differ_from_first_run": []
+}

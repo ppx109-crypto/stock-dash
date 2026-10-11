@@ -114,7 +114,7 @@
  "code_commit_note": "사전등록 동의 head = 실행 head",
  "completed_at_kst": "2026-10-11 13:53:00",
  "completed_note": "evals.jsonl 첫 STARTED 13:52:55 · 마지막 13:53:00(KST)",
- "answering": "227+02174f0a41776f15e122b337ff585f08542475ed+PREREG+MONTH-POS-0055",
+ "answering": "229+020c449e8f5245d7520ee61a149b0633b39cc155+RESULT+MONTH-POS-0055",
  "verdict": "NO_IMPROVEMENT",
  "command": "python3 research/month_guard.py run",
  "command_at_kst": "2026-10-11 13:52:54",
@@ -133,5 +133,32 @@
   "annual_pct": 32.179,
   "worst_full_month_pct": -7.064,
   "note": "판정 밖 · 새 사전등록 필요"
+ },
+ "result_round": "2",
+ "provenance_addendum": {
+  "first_run_limit": "처음 실행은 잠금 checkout = regime_dev.ROOT 기록 없음(당시 증거 없음 · 한계)",
+  "rerun": {
+   "command": "python3 research/month_guard.py rerun",
+   "at_kst": "2026-10-11 17:12:31 ~ 17:12:41",
+   "exit": 0,
+   "rows": 68,
+   "rows_differ_from_first_run": 0,
+   "loader_files_match_lock_v2": true,
+   "unlocked_opened": [],
+   "root": "/home/user/stock-dash(regime_dev.ROOT · mix54_run.ROOT 같음)"
+  },
+  "lock_v1_vs_v2": "공통 12칸 중 다른 것은 research/month_guard.py(rerun 더함)뿐 · 자료 · 장부 · 스냅샷 · 다른 코드 같음",
+  "files": [
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/input_lock_v2.json",
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/evals_rerun.jsonl",
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/all_rows_rerun.json",
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/provenance_rerun.json",
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/rerun_out.json",
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test_r2.out"
+  ],
+  "code_sha256": {
+   "research/month_guard.py": "6bc0c0948b363508fd0c36309074656d8a54471aeb34fe683d80f461c1e8db46",
+   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py": "a1e03cf9af9f14b74b1c4b93d29f61e88e2689d610a1d8369055361dbb76dd2d"
+  }
  }
 }

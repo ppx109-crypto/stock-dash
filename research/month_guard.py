@@ -10,7 +10,12 @@ round 2(GPT #227): 손실 달은 **완료된 달력월만**(2017-03 ~ 2026-08 ·
   실행 전 verify_inputs(): input_lock.json(코드 · 바탕 장부 · 스냅샷 · ETF 넷 · 시장 자료 둘)의 sha256이 하나라도 다르면 첫 STARTED 전에 멈춤.
 python3 research/month_guard.py lock      → input_lock.json 쓰기(성과 셈 없음)
 python3 research/month_guard.py run       → 잠금 검사 → 고정 격자 + 고르기 + 이웃(기록 evals.jsonl)
-python3 research/month_guard.py cut       → 자르기 시험(REG_CUT로 자료를 그날까지만 읽고 앞날까지 같아야 함)"""
+python3 research/month_guard.py cut       → 자르기 시험(REG_CUT로 자료를 그날까지만 읽고 앞날까지 같아야 함)
+round 2 결과 보완(GPT #229 6106827838 · 입력 출처): 처음 실행(run)은 잠금 checkout과 계산 뿌리(regime_dev.ROOT)가 같다는 기록을 남기지 않았음.
+  → 고정 실행기 rerun: 뿌리 셋이 같아야 시작(check_root) · 잠금 v2는 regime_dev.load와 같은 경로 식으로 만든 파일을 해시 ·
+    실행 중 실제로 연 자료 파일 경로를 기록하고 그때 해시를 남김 · 같은 68판 · 같은 채택 기준 · 처음 결과(all_rows.json)와 칸마다 견줌.
+python3 research/month_guard.py lock2     → input_lock_v2.json(성과 셈 없음)
+python3 research/month_guard.py rerun     → 뿌리 · 잠금 v2 검사 → 68판 다시 셈(evals_rerun.jsonl · all_rows_rerun.json · provenance_rerun.json)"""
 import json
 import os
 import subprocess
@@ -283,6 +288,99 @@ def cut():
     print(json.dumps({"pass": all(r["diff_days"] == 0 for r in res), "runs": res}, ensure_ascii=False))
 
 
+LOCK2 = BOX / "input_lock_v2.json"
+CODE_FILES = ["research/month_guard.py", "research/regime_dev.py", "research/mix54_run.py", "research/regime_rules4.py"]
+MARKET_FILES = ["market-data/investor_KSP.json", "market-data/index_KOSPI.json"]
+
+
+def check_root():
+    """이 파일의 checkout · regime_dev.ROOT · mix54_run.ROOT가 모두 같은 곳인지(아니면 멈춤)."""
+    roots = {"month_guard": ROOT.resolve(), "regime_dev": Path(D.ROOT).resolve(), "mix54_run": Path(M.ROOT).resolve()}
+    if len(set(roots.values())) != 1:
+        sys.exit("저장소 뿌리가 서로 다름(멈춤): " + json.dumps({k: str(v) for k, v in roots.items()}, ensure_ascii=False))
+    return roots["regime_dev"]
+
+
+def loader_files():
+    root = Path(D.ROOT)
+    return {f"etf-data/{c}.json": root / f"etf-data/{c}.json" for c in D.ETF} | {f: root / f for f in MARKET_FILES}
+
+
+def lock_body_v2():
+    import hashlib
+    root = check_root()
+    sha = lambda f: hashlib.sha256(Path(f).read_bytes()).hexdigest()
+    body = {"root": str(root)}
+    body.update({f: sha(root / f) for f in CODE_FILES})
+    body.update({k: sha(v) for k, v in loader_files().items()})
+    body["base_ledger:" + M.name(BASE) + ".csv"] = sha(M.BASES / f"{M.name(BASE)}.csv")
+    body["snapshot:" + Path(D.SNAP).name] = sha(D.SNAP)
+    return body
+
+
+def write_lock2():
+    BOX.mkdir(parents=True, exist_ok=True)
+    LOCK2.write_text(json.dumps(lock_body_v2(), ensure_ascii=False, indent=1))
+    print(LOCK2.read_text())
+
+
+def rerun():
+    """고정 실행기: 뿌리 같음 · 잠금 v2 같음 → 실제로 연 자료 파일을 기록하며 68판 다시 셈 → 처음 결과와 칸마다 견줌."""
+    import builtins
+    import hashlib
+    global EVALS
+    root = check_root()
+    want = json.loads(LOCK2.read_text())
+    have = lock_body_v2()
+    bad = sorted(k for k in set(want) | set(have) if want.get(k) != have.get(k))
+    if bad:
+        sys.exit("입력 잠금 v2가 다름(멈춤): " + json.dumps(bad, ensure_ascii=False))
+    EVALS = BOX / "evals_rerun.jsonl"
+    opened, real_open = [], builtins.open
+
+    def spy(file, *a, **k):
+        fp = str(Path(file).resolve()) if isinstance(file, (str, Path)) else str(file)
+        if fp.endswith((".json", ".csv", ".pkl")) and "evals" not in fp:
+            opened.append(fp)
+        return real_open(file, *a, **k)
+    builtins.open = spy
+    try:
+        D.BASE_CSV = M.BASES / f"{M.name(BASE)}.csv"
+        D.DATA, D.FEAT = None, None
+        D.data()
+        D.short_breadth()
+    finally:
+        builtins.open = real_open
+    sha = lambda f: hashlib.sha256(Path(f).read_bytes()).hexdigest()
+    seen = sorted(set(opened))
+    prov = {"root": str(root), "modules": {"month_guard": str(Path(__file__).resolve()), "regime_dev": str(Path(D.__file__).resolve()),
+                                           "mix54_run": str(Path(M.__file__).resolve())},
+            "opened_at_run": {f: sha(f) for f in seen}}
+    expect = {str(Path(v).resolve()): want[k] for k, v in loader_files().items()}
+    expect[str((M.BASES / f"{M.name(BASE)}.csv").resolve())] = want["base_ledger:" + M.name(BASE) + ".csv"]
+    expect[str(Path(D.SNAP).resolve())] = want["snapshot:" + Path(D.SNAP).name]
+    prov["loader_matches_lock"] = {f: prov["opened_at_run"].get(f) == h for f, h in expect.items()}
+    prov["unlocked_opened"] = [f for f in seen if f not in expect]
+    if not all(prov["loader_matches_lock"].values()) or prov["unlocked_opened"]:
+        (BOX / "evidence").mkdir(parents=True, exist_ok=True)
+        (BOX / "evidence/provenance_rerun.json").write_text(json.dumps(prov, ensure_ascii=False, indent=1))
+        sys.exit("실제로 연 자료가 잠금과 다르거나 잠그지 않은 자료를 읽음(멈춤)")
+    rows = []
+    for name, cx, gd in grid():
+        r = evaluate(dict(FINAL, **cx), gd, "고정 · 다시 셈")
+        rows.append({"name": name, **{k: r[k] for k in ("annual_raw", "annual_pct", "worst_day_pct", "worst_full_month_pct", "loss_months",
+                                                        "within", "neg_list")}})
+    old = {x["name"]: x for x in json.loads((BOX / "evidence/all_rows.json").read_text())}
+    diff = [x["name"] for x in rows if any(x[k] != old[x["name"]][k] for k in ("annual_raw", "worst_day_pct", "worst_full_month_pct",
+                                                                                  "loss_months", "within", "neg_list"))]
+    prov.update({"rerun_rows": len(rows), "rows_differ_from_first_run": diff})
+    (BOX / "evidence").mkdir(parents=True, exist_ok=True)
+    (BOX / "evidence/all_rows_rerun.json").write_text(json.dumps(rows, ensure_ascii=False, indent=0))
+    (BOX / "evidence/provenance_rerun.json").write_text(json.dumps(prov, ensure_ascii=False, indent=1))
+    print(json.dumps({"rows": len(rows), "differ": diff, "loader_matches_lock": all(prov["loader_matches_lock"].values()),
+                      "unlocked_opened": prov["unlocked_opened"]}, ensure_ascii=False))
+
+
 def write_lock():
     BOX.mkdir(parents=True, exist_ok=True)
     LOCK.write_text(json.dumps(lock_body(), ensure_ascii=False, indent=1))
@@ -290,4 +388,4 @@ def write_lock():
 
 
 if __name__ == "__main__":
-    {"run": run, "cut": cut, "lock": write_lock}[sys.argv[1]]()
+    {"run": run, "cut": cut, "lock": write_lock, "lock2": write_lock2, "rerun": rerun}[sys.argv[1]]()

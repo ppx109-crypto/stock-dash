@@ -112,3 +112,18 @@
 ## 다음 방향
 - 손실 달 수 자체를 줄이려면 그달 지킴이가 아니라, 손실 달을 만드는 바탕 봇(1일봉 · 엔진 · 바구니)의 손실 원인을 봐야 합니다.
 - '손실 깊이 절반'(그달 −4%면 남은 날 현금)은 사용자가 원하면 새 사전등록으로 따로 검증할 수 있습니다.
+
+## 결과 round 2 보완 — 실행 입력 출처(GPT #229 6106827838)
+- **한계(그대로 밝힘):** 처음 실행(2026-10-11 13:52:54 KST · head `02174f0a4`)은 '잠금을 만든 checkout = 계산이 자료를 읽은 뿌리(`regime_dev.ROOT`)'라는 기록을 남기지 않았습니다. 그래서 당시 실행 입력을 그 기록만으로 증명할 수는 없습니다.
+  - 정황: 실행은 `/home/user/stock-dash` checkout(= `regime_dev.ROOT` · `mix54_run.ROOT`의 고정 경로)에서 했습니다. 이 세션의 다른 worktree 셋(main · claude/inspiring-newton-afr321 · state-after-0012 갈래)에는 `research/month_guard.py`가 없습니다. 다만 이것은 지금 확인한 정황이지, 당시 기록은 아닙니다.
+- **보완(고정 실행기 `month_guard.py rerun`):**
+  - 뿌리 셋(이 파일의 checkout · `regime_dev.ROOT` · `mix54_run.ROOT`)이 같아야 시작합니다.
+  - 잠금 v2(`input_lock_v2.json` · 13칸)는 `regime_dev.load`와 같은 경로 식으로 만든 파일을 해시합니다.
+  - 실행 중 **실제로 연 자료 파일**의 경로와 그때 해시를 `evidence/provenance_rerun.json`에 남깁니다.
+  - 같은 68판 · 같은 채택 기준으로 다시 셈합니다. 기록은 `evals_rerun.jsonl` · `evidence/all_rows_rerun.json`입니다.
+- **다시 셈 결과(2026-10-11 17:12:31 ~ 17:12:41 KST · 종료 코드 0)**
+  - 뿌리: `/home/user/stock-dash` 하나 · 모듈 셋 모두 그 아래
+  - 실제로 연 자료 8개(ETF 4 · 시장 자료 2 · 바탕 장부 · 스냅샷)의 해시가 잠금 v2와 모두 같고, 잠그지 않은 자료는 읽지 않았습니다.
+  - **68판 모두 처음 결과와 같습니다**(연수익 원시값 · 하루 · 완료 달 · 손실 달 · 잣대 안 여부 · 손실 달 목록 · 다른 칸 0). 판정 `NO_IMPROVEMENT`는 그대로입니다.
+  - 처음 잠금 v1과 잠금 v2의 공통 12칸 가운데 다른 것은 `research/month_guard.py` 하나입니다(이번에 rerun을 더함). ETF · 시장 자료 · 바탕 장부 · 스냅샷 · 다른 코드 해시는 같습니다.
+- 시험: 14개 통과(`evidence/guard_test_r2.out` · 13 뿌리가 다르면 멈춤 · 14 잠금 v2가 다르면 멈춤). 처음 결과 · 실패 이력(`evals.jsonl` · `all_rows.json`)은 그대로 둡니다.
