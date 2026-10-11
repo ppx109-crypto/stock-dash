@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "MONTH-POS-0055",
  "chain_id": "MONTH-POS-0055",
- "kind": "PLAN",
- "round": "2",
+ "kind": "RESULT",
+ "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 이제 손실달을 양수달로 전환하는 연구해줘",
- "source_pr": "224",
- "source_head_sha": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
+ "source_pr": "227",
+ "source_head_sha": "02174f0a41776f15e122b337ff585f08542475ed",
  "code": {
   "research/month_guard.py": "b8a4f892ff135d6eb3b61e4e59051f6b4049d1bd3b6639b048f82ac38aed04a2",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
@@ -83,9 +83,13 @@
  "independent_validation": "WAITING_DATA",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/MONTH-POS-0055/PLAN.md",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/REPORT.md",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evals.jsonl",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/all_rows.json",
   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.out",
   "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/run_out.json",
   "research-exchange/claude-to-gpt/MONTH-POS-0055/input_lock.json",
   "research-exchange/claude-to-gpt/MONTH-POS-0055/manifest.json",
   "research/month_guard.py"
@@ -106,9 +110,28 @@
   "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
   "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
  },
- "code_commit": null,
- "code_commit_note": "이 파일을 담은 커밋이 실행기 고정 커밋(자기 해시는 적을 수 없음 · 결과 PR에 적음)",
- "completed_at_kst": null,
- "completed_note": "실행 전(PLAN)",
- "answering": "227+b26231bb92ae2c63ab83dcba1bd0dcfdb14ee36b+PREREG+MONTH-POS-0055"
+ "code_commit": "02174f0a41776f15e122b337ff585f08542475ed",
+ "code_commit_note": "사전등록 동의 head = 실행 head",
+ "completed_at_kst": "2026-10-11 13:53:00",
+ "completed_note": "evals.jsonl 첫 STARTED 13:52:55 · 마지막 13:53:00(KST)",
+ "answering": "227+02174f0a41776f15e122b337ff585f08542475ed+PREREG+MONTH-POS-0055",
+ "verdict": "NO_IMPROVEMENT",
+ "command": "python3 research/month_guard.py run",
+ "command_at_kst": "2026-10-11 13:52:54",
+ "evals": {
+  "fixed": 68,
+  "neighbors": 0,
+  "started": 68,
+  "done": 68,
+  "failed": 0
+ },
+ "eligible_count": 0,
+ "official_month_metric": "worst_full_month_pct(완료된 달) · worst_month_pct는 부분 달 포함 참고",
+ "side_finding": {
+  "cell": "d0.0_k0.04_gNone_A2",
+  "loss_months": 40,
+  "annual_pct": 32.179,
+  "worst_full_month_pct": -7.064,
+  "note": "판정 밖 · 새 사전등록 필요"
+ }
 }
