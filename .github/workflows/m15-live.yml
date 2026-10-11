@@ -51,7 +51,7 @@ jobs:
       - if: steps.gate.outputs.skip != '1'
         run: pip install requests numpy
       - if: steps.gate.outputs.skip != '1'
-        run: python -m unittest tests.test_m15_live tests.test_paper_trade tests.test_acc_cap -v
+        run: python -m unittest tests.test_m15_live tests.test_paper_trade tests.test_acc_cap tests.test_overlay_live -v
       - if: steps.gate.outputs.skip != '1'
         name: 15분봉 판단 · 디스코드 알림 · 연습 계좌 저장
         run: |
@@ -79,6 +79,8 @@ jobs:
           ACC_CAP_START: '20261012'
           PAPER_TRADING: 'on'
           PAPER_START: '20261002'
+          MIX54: 'off'                     # MIX-0054 켜면 15분봉 새 매수 멈춤(몫 0 · 든 것은 제 규칙대로 팖) · 일봉 작업과 같은 값
+          MIX54_START: ''
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}

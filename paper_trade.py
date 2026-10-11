@@ -35,6 +35,19 @@ LABEL = {"1h": "1시간봉 매수 후보", "1d": "1일봉 매수 후보", "15m":
 #   (한투 1시간봉은 1년 연 +43 · 골 −12로 약함 · docs/RL-INVERSE-LOG.md '모의투자 최종 조합').
 SHARES = {"1h": float(os.getenv("PAPER_SHARE_1H", "0.0")), "1d": float(os.getenv("PAPER_SHARE_1D", "0.5")),
           "15m": float(os.getenv("PAPER_SHARE_15M", "0.5"))}
+BASKET_SHARE = float(os.getenv("PAPER_SHARE_BASKET", "0.5"))     # 바구니 돈 = 계좌 × 이 몫 − 1일봉 평가액(예전엔 1일봉 몫 0.5를 같이 씀 · 같은 값)
+
+
+def mix54_on(day=None):
+    """MIX-0054 최종 판(사용자 2026-10-11 승인)을 켤 날인지: MIX54='on'이고 MIX54_START(YYYYMMDD) 이후."""
+    if os.getenv("MIX54", "").strip().lower() != "on":
+        return False
+    start = os.getenv("MIX54_START", "").strip()
+    return bool(start) and (day or datetime.now(KST).strftime("%Y%m%d")) >= start
+
+
+if mix54_on():                         # 15분봉 뺌(장부 1년 미만) · 바구니 몫 0.3(MIX-0054 #224 · 운영 계산 #226)
+    SHARES["15m"], BASKET_SHARE = 0.0, 0.3
 SHARE = SHARES["1h"]
 OFF = Path("hourly-live/paper-off")
 SLOTS = 10
@@ -118,14 +131,19 @@ class PaperBroker(broker_kis.KIS):
         # 모의투자는 초당 호출 한도가 낮음(약 2번) → 0.6초 간격
         time.sleep(float(os.getenv("KIS_PAPER_CALL_GAP", "0.6")))
 
-    def balance(self):
+    def balance(self, raw=False):
         """모의 계좌 잔고. 'cash'는 D+2 예수금(오늘 사고판 것까지 반영)으로 바꿔 줌 — 오늘 예수금(dnca_tot_amt)은 이틀 뒤에야 바뀌어,
-        산 날엔 같은 돈을 두 번 세고(현금 그대로 + 평가에도) 판 날엔 판 돈이 빠졌음(2026-10-06 검토). 받은 값이 없으면 예전 그대로."""
+        산 날엔 같은 돈을 두 번 세고(현금 그대로 + 평가에도) 판 날엔 판 돈이 빠졌음(2026-10-06 검토). 받은 값이 없으면 예전 그대로.
+        raw=False(기본)면 덧붙임(overlay_live) 몫을 뺀 '바탕 가상 계좌'를 돌려줌(MIX-0054-OPS §5-4 · 덧붙임이 없으면 그대로) —
+        1일봉 · 바구니 · 엔진 · 계좌 흔들림 상한이 덧붙임 없을 때와 같은 수를 봄. 실제 계좌가 필요하면 raw=True."""
         b = super().balance()
         b["cash_today"] = b.get("cash")
         if b.get("cash_d2") is not None:
             b["cash"] = b["cash_d2"]
-        return b
+        if raw:
+            return b
+        import overlay_live
+        return overlay_live.base_view(b)
 
     def buyable(self, code):
         """시장가로 지금 살 수 있는 수량(미수 없이). 물어보지 못하면 None(그때는 원래 수량 그대로 주문)."""
@@ -157,6 +175,11 @@ class PaperBroker(broker_kis.KIS):
             raise broker_kis.BrokerError("주문 내용이 올바르지 않아 넣지 않았습니다.")
         qty = int(qty)
         if side == "buy":
+            try:                                   # 바탕 봇이 사는데 실제 현금이 모자라면 덧붙임을 먼저 팖(연구: ETF부터 덜기)
+                import overlay_live
+                overlay_live.yield_for(self, code, qty)
+            except Exception as e:                 # 덧붙임이 말썽이어도 바탕 봇 주문은 그대로
+                print("덧붙임 자리 내주기 실패 ·", type(e).__name__)
             can = self.buyable(code)
             if can is not None and can < qty:
                 if can < 1:
