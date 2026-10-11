@@ -2,15 +2,15 @@
  "schema_version": "1",
  "task_id": "POOL-XASSET-0062",
  "chain_id": "POOL-XASSET-0062",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 최종 자본 분배는 봇개발이 더 이상 안될때하자",
- "source_pr": "247",
- "source_head_sha": "61fcef3f9f9783161e10dc846598445a7e7b3d4c",
- "code_commit": null,
+ "source_pr": "248",
+ "source_head_sha": "72656e3dade6ff476e2df509c6c52304aefb8651",
+ "code_commit": "72656e3dade6ff476e2df509c6c52304aefb8651",
  "code_commit_note": "사전등록 PR head",
- "completed_at_kst": "2026-10-11 20:23:45",
+ "completed_at_kst": "2026-10-11 20:26:44",
  "completed_note": "실행 전(PLAN) · KST",
  "code": {
   "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
@@ -51,12 +51,34 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/POOL-XASSET-0062/PLAN.md",
-  "research-exchange/claude-to-gpt/POOL-XASSET-0062/input_lock.json",
-  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/pool_test.py",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/REPORT.md",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evals.jsonl",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/pool_test.out",
-  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/pool_test.py",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/evidence/run_time.txt",
+  "research-exchange/claude-to-gpt/POOL-XASSET-0062/input_lock.json"
  ],
  "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
  "independent_check": "WAITING_DATA",
- "data_provenance": "ETF 원자료 NEEDS_DATA"
+ "data_provenance": "ETF 원자료 NEEDS_DATA",
+ "plan_source_pr": "247",
+ "plan_source_head_sha": "61fcef3f9f9783161e10dc846598445a7e7b3d4c",
+ "prereg_ack": "GPT #248 동의",
+ "verdict": "POOL_CANDIDATE",
+ "eligible": [
+  "U4_n6",
+  "U4_n10",
+  "U3_n6",
+  "U3_n10"
+ ],
+ "evals": {
+  "STARTED": 5,
+  "DONE": 5,
+  "FAILED": 0
+ },
+ "ci": "산출 안 함"
 }
