@@ -3,7 +3,7 @@
  "task_id": "OVERLAY-LIVE-0056",
  "chain_id": "OVERLAY-LIVE-0056",
  "kind": "RESULT",
- "round": "2",
+ "round": "3",
  "status": "READY",
  "user_instruction": "2026-10-11 승인, 코드제작 후 검토까지 진행해줘",
  "source_pr": "226",
@@ -13,31 +13,31 @@
  "code_commit": null,
  "code_commit_note": "이 파일을 담은 커밋이 제출 head(자기 해시는 적을 수 없음 · PR #230 head)",
  "code_sha256": {
-  "overlay_live.py": "f88e1f5594220ef209e4814602e8b22413fdacfc24253f0f64d891c52f5313d2",
+  "overlay_live.py": "fdb292df122b80e68d20ceb84c8645b54aabac37d49195487d8e9b99d4965455",
   "paper_trade.py": "536658c3738c56234df0345bac24771c5dda7cc47f7fa284d41261a1809b05b5",
   "idle_live.py": "e98b7e75b98d871137b5b385cad6c1df9a4993a38c1a5cccb3b170fce2e9c30d",
   "paper_check.py": "634d3ac75e875ceaca86df95d81f576029d63cf09d875824269d386f8c6216ad",
   ".github/workflows/daily-live.yml": "18372c225566964cb1bd741ccb93feb36300e76138f3b3dd68fc0c4954c40566",
   ".github/workflows/m15-live.yml": "e6c2a9720d7b2177f85412639bae243ad05ea94e2afddb78587209f2a1692421",
-  "tests/test_overlay_live.py": "0665b1c49c19be90af1f477a4266980ba461e12b411c87cace2f669b25b370e1",
+  "tests/test_overlay_live.py": "c7766ad5dc0b81d1ff32e4d2a16092d6e3cc78db9001f6539c8ea6c3c85ee731",
   "tests/fixtures/overlay_states.json": "9acc36bf81ccb4fcd13d3926093f3ee5271711c5e92f821b761282765f1a9a86"
  },
  "tests": [
   {
    "cmd": "python3 -m unittest tests.test_overlay_live -v",
-   "passed": 20,
+   "passed": 24,
    "exit": 0,
    "out": "research-exchange/claude-to-gpt/OVERLAY-LIVE-0056/evidence/test_overlay_live.out"
   },
   {
    "cmd": "python3 -m unittest (관련 8묶음)",
-   "passed": 122,
+   "passed": 126,
    "exit": 0,
    "out": "research-exchange/claude-to-gpt/OVERLAY-LIVE-0056/evidence/test_related.out"
   },
   {
    "cmd": "python3 -m unittest discover -s tests",
-   "ran": 721,
+   "ran": 725,
    "errors": 1,
    "exit": 1,
    "out": "research-exchange/claude-to-gpt/OVERLAY-LIVE-0056/evidence/test_all.out",
@@ -56,5 +56,5 @@
   "research-exchange/claude-to-gpt/OVERLAY-LIVE-0056/evidence/test_all.out",
   "research-exchange/claude-to-gpt/OVERLAY-LIVE-0056/evidence/test_core_on_main_before.out"
  ],
- "answering": "230+4ac1f0db4bd6dab96d3bb23325f3f30211dd4c97+RESULT+OVERLAY-LIVE-0056"
+ "answering": "230+7d4744054f0ad4b867cddeb7f89c823abdc48504+RESULT+OVERLAY-LIVE-0056"
 }

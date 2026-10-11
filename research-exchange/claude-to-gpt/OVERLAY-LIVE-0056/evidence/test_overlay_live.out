@@ -23,9 +23,13 @@ test_persist_three_days (tests.test_overlay_live.States.test_persist_three_days)
 test_raw_state_rules (tests.test_overlay_live.States.test_raw_state_rules) ... ok
 test_same_as_research_every_day (tests.test_overlay_live.States.test_same_as_research_every_day)
 연구 regime_dev.features · states(MIX-0054 최종 규칙)로 만든 기준표와 5,919일 모두 같음. ... ok
+test_reconcile_pending_adds_bought (tests.test_overlay_live.SwitchFills.test_reconcile_pending_adds_bought) ... ok
+test_up_to_down_zero_fill_then_retry (tests.test_overlay_live.SwitchFills.test_up_to_down_zero_fill_then_retry) ... ok
+test_up_to_side_partial (tests.test_overlay_live.SwitchFills.test_up_to_side_partial) ... ok
+test_up_to_side_zero_fill_then_retry (tests.test_overlay_live.SwitchFills.test_up_to_side_zero_fill_then_retry) ... ok
 
 ----------------------------------------------------------------------
-Ran 20 tests in 0.190s
+Ran 24 tests in 0.147s
 
 OK
 종료 상태 0

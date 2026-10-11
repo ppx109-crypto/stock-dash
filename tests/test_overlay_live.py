@@ -303,6 +303,74 @@ class OffAndFills(Env):
         self.assertNotIn("unconfirmed", st2)
 
 
+class SwitchFills(Env):
+    """국면 바뀌는 날 옛 ETF 매도가 0주 · 일부만 체결돼도 실제 잔량을 장부에 남기고(B 포함) 다음 날 다시 맞춤(GPT #230 round 2)."""
+    NOW = Run.NOW
+    go = Run.go
+
+    def start_up(self):
+        b = FakeBroker(1_000_000, prices={"122630": 100.0, "114800": 50.0})
+        self.go(b, "상승")
+        b.orders.clear()
+        return b
+
+    def check_view(self, b):
+        v, raw = b.balance(), b.raw()
+        st = O.load_state()
+        ov = sum(q * b.px[c] for c, q in st["held"].items())
+        self.assertAlmostEqual(v["cash"] + v["value"], raw["cash"] + raw["value"] - ov + st["B"], places=4)
+        self.assertAlmostEqual(st["B"], ov, places=4, msg="맞춘 날 B = 덧붙임 평가액(남은 옛 종목 포함)")
+
+    def test_up_to_side_zero_fill_then_retry(self):
+        b = self.start_up()
+        b.fill = 0.0
+        lines = self.go(b, "횡보", day="20261013", prev="20261012")
+        st = O.load_state()
+        self.assertEqual(st["held"]["122630"], 4000, "못 판 옛 종목은 장부에 그대로")
+        self.assertIn("114800", st["held"])
+        self.assertIsNone(st["applied"])
+        self.assertTrue(any("다 체결되지 않음" in x for x in lines))
+        self.check_view(b)
+        b.fill = 1.0
+        b.orders.clear()
+        self.go(b, "횡보", day="20261014", prev="20261013")
+        st = O.load_state()
+        self.assertEqual(b.orders[0], ("122630", "sell", 4000))
+        self.assertEqual(list(st["held"]), ["114800"])
+        self.assertEqual(st["applied"], "횡보")
+        self.check_view(b)
+
+    def test_up_to_side_partial(self):
+        b = self.start_up()
+        b.fill = 0.5
+        self.go(b, "횡보", day="20261013", prev="20261012")
+        st = O.load_state()
+        self.assertEqual(st["held"]["122630"], 2000)
+        self.assertIsNone(st["applied"])
+        self.check_view(b)
+
+    def test_up_to_down_zero_fill_then_retry(self):
+        b = self.start_up()
+        b.fill = 0.0
+        self.go(b, "하락", day="20261013", prev="20261012")
+        st = O.load_state()
+        self.assertEqual(st["held"], {"122630": 4000})
+        self.assertAlmostEqual(st["B"], 4000 * 100.0)
+        self.assertIsNone(st["applied"])
+        self.check_view(b)
+        b.fill = 1.0
+        self.go(b, "하락", day="20261014", prev="20261013")
+        st = O.load_state()
+        self.assertEqual((st["held"], st["B"], st["applied"]), ({}, 0.0, "하락"))
+
+    def test_reconcile_pending_adds_bought(self):
+        b = FakeBroker(100_000, positions={"114800": 500}, prices={"114800": 50.0})
+        st = O.reconcile({"held": {}, "B": 0.0, "pending": ["114800"]}, b.raw(), quote=b.px.get)
+        self.assertEqual(st["held"], {"114800": 500})
+        self.assertAlmostEqual(st["B"], 500 * 50.0)
+        self.assertNotIn("pending", st)
+
+
 class NavWatch(unittest.TestCase):
     def test_day_and_month(self):
         st = {}

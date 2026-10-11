@@ -248,7 +248,15 @@ def reconcile(st, raw, quote=_quote):
                 st["held"][code] = real
             else:
                 st["held"].pop(code)
+    for code in st.get("pending", []):                # 지난 맞춤에서 잔고 확인을 못 한 종목: 실제로 더 있으면 덧붙임 몫으로(B도 그만큼 · NAV_b 그대로)
+        real = max(0, acct.get(code, (0, 0))[0] - other_books_held(code))
+        have = int(st["held"].get(code, 0))
+        if real > have:
+            px = acct.get(code, (0, 0))[1] or quote(code) or 0.0
+            st["held"][code] = real
+            st["B"] = float(st.get("B") or 0) + (real - have) * px
     st.pop("unconfirmed", None)
+    st.pop("pending", None)
     return st
 
 
@@ -360,7 +368,8 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             orders.append((code_new, "sell", -diff))
         elif diff > 0:
             orders.append((code_new, "buy", diff))
-    done = []
+    before = {p["code"]: int(p["quantity"]) for p in raw.get("positions", [])}
+    done, sells = [], {}
     for c, side, q in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저(연속 매매라 판 돈이 바로 풀림)
         broker._overlay_buying = side == "buy"
         try:
@@ -368,6 +377,8 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             q = int(getattr(broker, "last_qty", q) or q) if side == "buy" else q
             status = "접수"
             done.append((c, side, q))
+            if side == "sell":
+                sells[c] = q
         except Exception as e:
             no, status = "", f"실패 · {type(e).__name__}"
         finally:
@@ -376,23 +387,39 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
                    "qty": q, "status": status, "order_no": no, "why": f"국면 {state} · 목표 몫 {f:.2f}", "price": quote(c) if c != code_new else px_new})
         lines.append(f"🧪 모의투자(덧붙임) {'매수' if side == 'buy' else '매도'} · {NAME.get(c, c)}({c}) {q:,}주 · {status}")
         time.sleep(0.3)
-    time.sleep(float(os.getenv("PAPER_ROOM_WAIT", "2")))
-    # 체결 뒤 실제 수량(다른 장부가 든 같은 종목 수량은 빼고) · B = 맞춘 뒤 덧붙임 평가액(그때 값)
-    try:
-        after = {p["code"]: int(p["quantity"]) for p in broker.balance(raw=True).get("positions", [])}
-    except Exception:
-        after = None
-    held = {}
-    if code_new:
-        if after is not None:
-            q = max(0, after.get(code_new, 0) - other_books_held(code_new))
-        else:
-            q = cur.get(code_new, 0) + sum(n if s == "buy" else -n for c, s, n in done if c == code_new)
-        if q > 0:
-            held[code_new] = q
+    # 체결 확인: 판 종목은 실제 잔고가 판 만큼 줄었는지(최대 OVERLAY_FILL_TRIES번) · 장부는 확인된 실제 수량으로만
+    after = None
+    for _ in range(int(os.getenv("OVERLAY_FILL_TRIES", "5"))):
+        time.sleep(float(os.getenv("PAPER_ROOM_WAIT", "2")))
+        try:
+            after = {p["code"]: int(p["quantity"]) for p in broker.balance(raw=True).get("positions", [])}
+        except Exception:
+            continue
+        if all(after.get(c, 0) <= before.get(c, 0) - q for c, q in sells.items()):
+            break
     keep = {k: st[k] for k in ("nav_day", "nav", "month_start_nav") if k in st}
-    st = {"held": held, "B": round(sum(q * px_new for q in held.values()), 2) if held else 0.0, "applied": state,
-          "rebalanced_month": day[:6], "last_day": day, "signal_day": rows[-1][0], **keep}
+    codes = set(cur) | ({code_new} if code_new else set())
+    if after is None:                                # 잔고를 못 읽음 → 추정하지 않고 맞춤 전 장부 그대로 · 다음 실행이 실제 잔고와 맞추고 다시 맞춤
+        st = {"held": cur, "B": float(st.get("B") or 0), "applied": None, "rebalanced_month": st.get("rebalanced_month"),
+              "last_day": day, "pending": sorted(codes), **keep}
+        save_state(st)
+        return lines + ["⚠️ 덧붙임: 주문 뒤 잔고를 못 읽어 장부를 그대로 두고 내일 다시 맞춤"]
+    held, px = {}, {}
+    for c in codes:
+        real = max(0, after.get(c, 0) - other_books_held(c))
+        q = real if c == code_new else min(cur.get(c, 0), real)          # 옛 종목은 못 판 잔량만 남김(덧붙임 몫 그대로)
+        if q > 0:
+            held[c] = q
+            px[c] = px_new if c == code_new else (quote(c) or 0.0)
+    left = {c: q for c, q in held.items() if c != code_new}
+    complete = not left
+    # B = 맞춘 뒤 덧붙임 평가액(남은 옛 종목 포함 · 그때 값) · 다 못 팔았으면 '맞춤 끝'으로 적지 않아 다음 실행에 다시 맞춤
+    st = {"held": held, "B": round(sum(q * px[c] for c, q in held.items()), 2) if held else 0.0,
+          "applied": state if complete else None, "rebalanced_month": day[:6] if complete else st.get("rebalanced_month"),
+          "last_day": day, "signal_day": rows[-1][0], **keep}
+    if left:
+        st["unconfirmed"] = {"left": left, "at": now.strftime("%Y-%m-%d %H:%M")}
+        lines.append("⚠️ 덧붙임: 옛 종목 " + " · ".join(f"{NAME.get(c, c)} {q:,}주" for c, q in left.items()) + " 매도가 다 체결되지 않음 → 장부에 남기고 내일 다시 맞춤")
     save_state(st)
     lines.insert(0, f"🪜 **덧붙임 {day[4:6]}-{day[6:]}** · 국면 {state}(어제 장 끝) · 목표 {NAME.get(code_new, '없음')} 몫 {f:.2f}")
     return lines
