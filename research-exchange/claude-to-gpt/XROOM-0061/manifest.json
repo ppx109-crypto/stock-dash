@@ -1,0 +1,93 @@
+{
+ "schema_version": "1",
+ "task_id": "XROOM-0061",
+ "chain_id": "XROOM-0061",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 '가' — 1일봉 몫(지금 0.5)을 조금 덜어 새 봇 자리를 만드는 판을 연구",
+ "source_pr": "245",
+ "source_head_sha": "3144805ce856812fa340950f33767b6f6c47bedd",
+ "source_note": "XASSET-0060 인정 뒤 사용자 선택",
+ "code_commit": null,
+ "code_commit_note": "이 파일을 담은 커밋이 실행기 고정 커밋(사전등록 PR head)",
+ "completed_at_kst": "2026-10-11 20:15:04",
+ "completed_note": "실행 전(PLAN) · KST · 기준 · 대조 2칸은 재현 시험으로 이미 셈(이미 인정된 MIX-0054 값)",
+ "code": {
+  "research/xroom.py": "7771bf2b82df314ee598e6b6fda2205922b4ca8336c481d3a2166641f042077c",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research-exchange/claude-to-gpt/XROOM-0061/evidence/xroom_test.py": "e5d9c046e5984f5fdb01268925ed385e5af84d0fee1131456965644223f5c3be"
+ },
+ "input_lock": {
+  "root": "/home/user/stock-dash",
+  "research/xroom.py": "7771bf2b82df314ee598e6b6fda2205922b4ca8336c481d3a2166641f042077c",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "etf-data/132030.json": "820e9eb647500d1a5ec1cef75488eec66a0d5a1f833c0a5a95592b4af8f78833",
+  "etf-data/133690.json": "cc8a99b3f37c3b159ec5c4842400e9c687676f2cc3f075b5424082f75e207576",
+  "etf-data/148070.json": "3507ba57a40e842f6f6412cfcb1413140dcbdf6b174b623b1ffb455da9c2fb1f",
+  "etf-data/261240.json": "451b91d9355368ced96c8dcfb560cc39f2ae2852071f84839f913cf9b130190e",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "base_ledger:d0.3_b0.3_no15m.csv": "41a57ccbf72a2ec25490472a9490b07ee5d7ed5f7e9a85133212b860c7dfb2a4",
+  "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "input_lock_sha256": "cd34a24edd2b833159f8e41c792f282dc4064c621b8c611acbdabf59d0001f41",
+ "grid": {
+  "count": 14,
+  "base": "d0.5(지금 판)",
+  "control": "d0.3 · 새 봇 없음",
+  "universe": {
+   "U4": [
+    "133690",
+    "132030",
+    "261240",
+    "148070"
+   ],
+   "U3": [
+    "133690",
+    "132030",
+    "261240"
+   ]
+  },
+  "n_months": [
+   6,
+   10
+  ],
+  "w": [
+   0.2,
+   0.3,
+   0.4
+  ]
+ },
+ "selection": {
+  "day": -0.15,
+  "full_month": -0.15,
+  "ann_gain_pp_vs_base": 1.0,
+  "month_slack_pp": 1.0,
+  "loss_months_slack": 2,
+  "ann_gain_pp_vs_control": 1.0,
+  "neighbor_cap": 100
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/XROOM-0061/PLAN.md",
+  "research-exchange/claude-to-gpt/XROOM-0061/input_lock.json",
+  "research-exchange/claude-to-gpt/XROOM-0061/evidence/xroom_test.py",
+  "research-exchange/claude-to-gpt/XROOM-0061/evidence/xroom_test.out",
+  "research-exchange/claude-to-gpt/XROOM-0061/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/XROOM-0061/evidence/slack_check.out"
+ ],
+ "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
+ "independent_check": "WAITING_DATA",
+ "data_provenance": "ETF 원자료 출처 · 정정 NEEDS_DATA(XASSET-0060과 같음)"
+}
