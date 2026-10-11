@@ -3,7 +3,7 @@
  "task_id": "MIX-0053",
  "chain_id": "MIX-0053",
  "kind": "PLAN",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "user_instruction": "2026-10-11 봇 몫까지 함께 다시 골라줘",
  "source_pr": 220,
@@ -12,11 +12,14 @@
  "completed_at_kst": null,
  "code": {
   "research/z100.py": "47b85d2aee5743db81aa82166581156480801f5ab492df1a74c367f0ce28840d",
-  "research/mix_run.py": "4089385662279f237cd3c005540987c3a5fffaa0718538b568e02032a77fba1c",
+  "research/mix_run.py": "35c073979a3c4870bc48fbe6ba584ef9ceb4cf7c1425d33029c32c55f892a2cc",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
   "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
   "research/mix0053/basket_live.py": "e962d5914201feb98b3adfa67c351bf6f229b2863fdee77cdd4bfbba0f36846c",
-  "research/mix0053/idle_live.py": "bd299046ae71ecf8dc424f4efea5960bb7db996a88d872c3d60b321f7cf3ecac"
+  "research/mix0053/idle_live.py": "bd299046ae71ecf8dc424f4efea5960bb7db996a88d872c3d60b321f7cf3ecac",
+  "research/perf2.py": "551e83f1053af7599dbc93422e5a08de456b319e05e73c42da44aaff027e0dd3",
+  "research/idle_signal.py": "e87dea82a952b512a4e35913c0248a2d7bbd1738fd7b9ec067d62bcfeec893ec",
+  "nrl.py": "18a653db8d9e6698e1fe8b8c2cefeb1ae785a9834fdaf4180958bbb55963718f"
  },
  "cache": {
   "/tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7"
@@ -47,5 +50,18 @@
   "research-exchange/claude-to-gpt/MIX-0053/PLAN.md",
   "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.py",
   "research-exchange/claude-to-gpt/MIX-0053/evidence/mix_test.out"
- ]
+ ],
+ "inputs": {
+  "/tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "REGIME-SW-0048/base_m1.csv": "998ffd2f117967b9fe4f5c3ca39a766699d992ebb0151ba767c1b30f0a9633e7",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980"
+ },
+ "logs": {
+  "bases": "research-exchange/claude-to-gpt/MIX-0053/bases.jsonl",
+  "evals": "research-exchange/claude-to-gpt/MIX-0053/evals.jsonl",
+  "all_rows": "research-exchange/claude-to-gpt/MIX-0053/evidence/all_rows.json"
+ },
+ "answering": "221+5dff6d067ecedb232768df45040bea942419eef7+PREREG+MIX-0053"
 }

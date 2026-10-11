@@ -6,6 +6,11 @@
   더 번 몫 절반 이상)을 넘은 첫 칸이 최종(ROBUST_MIX). 덧붙임 없는 칸이 먼저 오면 그 칸이 최종(이웃 검사 없음 · 덧붙임 규칙이 없으므로).
   봇 몫 축은 몫 축이라 고원에서 뺌(사용자 2026-10-10 정의). 이웃 평가 상한 300판.
 보고: 효율(연수익 ÷ |가장 나쁜 달| · 연수익 ÷ |고점 대비|) 상위 · 지금 조합(0.5 · 0.5 · 0.5 · 둘 다 · 덧붙임 없음) 대비.
+round 2(GPT #221 · 무결성):
+- 1단계: 칸마다 BASES_LOG(STARTED · DONE · FAILED)에 명령 · 환경 · 코드 / 입력 해시를 적음. z100 출력은 .part.csv로 쓰고, 종료 코드 0이며 점검(2,360줄 ·
+  첫날 20170201 · 마지막 20260916 · 날짜 고유 · 정렬)을 넘을 때만 .csv로 바꿔 DONE(파일 sha256 포함). 아니면 FAILED · 파일 격리. 다시 돌리면 같은 잠금(코드 · 캐시 해시)의 DONE만 건너뜀.
+- 2단계: 72개 모두 같은 잠금의 DONE이고 파일 sha가 기록과 같을 때만 시작. 288 고정 평가와 이웃 평가는 EVALS_LOG에 (바탕 · 덧붙임 설정) 열쇠로 STARTED · DONE · FAILED.
+  모든 고정 격자 결과는 evidence/all_rows.json에 씀.
 python3 research/mix_run.py bases   → 1단계(4개씩 나란히)
 python3 research/mix_run.py select  → 2단계 + 고르기"""
 import itertools
@@ -51,39 +56,120 @@ def base_cmd(g):
     return env
 
 
+BASES_LOG = BOX / "bases.jsonl"
+EVALS_LOG = BOX / "evals.jsonl"
+N_ROWS, FIRST, LAST = 2360, "20170201", "20260916"
+
+
+def sha(p):
+    import hashlib
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def lock():
+    return {"research/z100.py": sha(ROOT / "research/z100.py"), "research/mix0053/basket_live.py": sha(ROOT / "research/mix0053/basket_live.py"),
+            "research/mix0053/idle_live.py": sha(ROOT / "research/mix0053/idle_live.py"), "research/perf2.py": sha(ROOT / "research/perf2.py"),
+            "research/idle_signal.py": sha(ROOT / "research/idle_signal.py"), "nrl.py": sha(ROOT / "nrl.py"), CACHE: sha(CACHE)}
+
+
+def log(path, rec):
+    with open(path, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        fh.flush()
+        os.fsync(fh.fileno())
+
+
+def check_csv(p):
+    import csv
+    rows = list(csv.DictReader(open(p)))
+    ds = [r["날"] for r in rows]
+    ok = len(rows) == N_ROWS and ds[0] == FIRST and ds[-1] == LAST and len(set(ds)) == len(ds) and ds == sorted(ds)
+    return ok, {"rows": len(rows), "first": ds[0] if ds else None, "last": ds[-1] if ds else None, "unique": len(set(ds)) == len(ds), "sorted": ds == sorted(ds)}
+
+
+def done_bases(lk):
+    if not BASES_LOG.exists():
+        return {}
+    out = {}
+    for r in map(json.loads, BASES_LOG.read_text().splitlines()):
+        if r["status"] == "DONE" and r["lock"] == lk:
+            out[r["cell"]] = r
+    return out
+
+
 def bases():
     BASES.mkdir(parents=True, exist_ok=True)
-    todo = [g for g in grid() if not (BASES / f"{name(g)}.csv").exists()]
+    lk = lock()
+    done = done_bases(lk)
+    todo = [g for g in grid() if name(g) not in done or not (BASES / f"{name(g)}.csv").exists() or sha(BASES / f"{name(g)}.csv") != done[name(g)]["sha256"]]
     running = []
     while todo or running:
         while todo and len(running) < 4:
             g = todo.pop(0)
-            log = open(BASES / f"{name(g)}.log", "w")
-            running.append((g, subprocess.Popen([sys.executable, str(ROOT / "research/z100.py")], env=base_cmd(g), cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)))
+            env = base_cmd(g)
+            part = BASES / f"{name(g)}.part.csv"
+            if part.exists():
+                part.unlink()
+            env["Z_OUT"] = str(part)
+            keep = {k: env[k] for k in ("NRL_CACHE", "Z_ACC_VOL", "Z_SHARE_1D", "Z_SHARE_15M", "Z_SHARE_BASKET", "Z_DROP", "Z_OUT")}
+            log(BASES_LOG, {"status": "STARTED", "cell": name(g), "g": list(g), "env": keep, "lock": lk, "at": time.strftime("%Y-%m-%d %H:%M:%S")})
+            lg = open(BASES / f"{name(g)}.log", "w")
+            running.append((g, part, subprocess.Popen([sys.executable, str(ROOT / "research/z100.py")], env=env, cwd=ROOT, stdout=lg, stderr=subprocess.STDOUT)))
         time.sleep(5)
-        for g, p in list(running):
-            if p.poll() is not None:
-                running.remove((g, p))
-                print(time.strftime("%H:%M:%S"), name(g), "끝", p.returncode, flush=True)
+        for g, part, p in list(running):
+            if p.poll() is None:
+                continue
+            running.remove((g, part, p))
+            final = BASES / f"{name(g)}.csv"
+            if p.returncode == 0 and part.exists():
+                ok, info = check_csv(part)
+            else:
+                ok, info = False, {"missing_or_rc": p.returncode}
+            if ok:
+                part.rename(final)
+                log(BASES_LOG, {"status": "DONE", "cell": name(g), "rc": p.returncode, "lock": lk, "sha256": sha(final), **info})
+            else:
+                if part.exists():
+                    part.rename(BASES / f"{name(g)}.failed.csv")
+                log(BASES_LOG, {"status": "FAILED", "cell": name(g), "rc": p.returncode, "lock": lk, **info})
+            print(time.strftime("%H:%M:%S"), name(g), "끝" if ok else "실패", p.returncode, flush=True)
+
+
+def verify_all():
+    lk = lock()
+    done = done_bases(lk)
+    bad = [name(g) for g in grid() if name(g) not in done or not (BASES / f"{name(g)}.csv").exists() or sha(BASES / f"{name(g)}.csv") != done[name(g)]["sha256"]]
+    if bad:
+        sys.exit(f"바탕 장부 {len(bad)}개가 잠금 · 점검을 못 넘음(멈춤): {bad[:5]}")
+    return lk, done
 
 
 def within(r):
     return all(k["worst_day_raw"] >= DAY_LIM and k["worst_month_raw"] >= MONTH_LIM for k in r["by_kind"].values())
 
 
-def evaluate(g, ov_cfg, D):
-    D.BASE_CSV = BASES / f"{name(g)}.csv"
-    if D.DATA is None or getattr(D, "_mix_base", None) != str(D.BASE_CSV):
-        D.DATA, D.FEAT = None, None
-        D._mix_base = str(D.BASE_CSV)
-    cfg = dict(D.R0) if ov_cfg is None else dict(D.R0, **ov_cfg)
-    return D.stats(*D.account(cfg))
+def evaluate(g, ov_cfg, D, label="고정"):
+    key = json.dumps({"base": name(g), "overlay": ov_cfg}, sort_keys=True, ensure_ascii=False)
+    log(EVALS_LOG, {"status": "STARTED", "key": key, "label": label, "at": time.strftime("%Y-%m-%d %H:%M:%S")})
+    try:
+        D.BASE_CSV = BASES / f"{name(g)}.csv"
+        if D.DATA is None or getattr(D, "_mix_base", None) != str(D.BASE_CSV):
+            D.DATA, D.FEAT = None, None
+            D._mix_base = str(D.BASE_CSV)
+        cfg = dict(D.R0) if ov_cfg is None else dict(D.R0, **ov_cfg)
+        r = D.stats(*D.account(cfg))
+    except Exception as e:
+        log(EVALS_LOG, {"status": "FAILED", "key": key, "error": repr(e)})
+        raise
+    log(EVALS_LOG, {"status": "DONE", "key": key, "annual_pct": r["annual_pct"], "worst_day_pct": r["worst_day_pct"], "worst_month_pct": r["worst_month_pct"]})
+    return r
 
 
 def select():
     os.environ.setdefault("REG_BOX", "MIX-0053")
     sys.path.insert(0, str(ROOT / "research"))
     import regime_dev as D
+    lk, done = verify_all()                       # 72개 모두 잠금 · 점검 통과해야 시작
     rows = []
     for g in grid():
         for ov, cfg in OVERLAYS.items():
@@ -106,7 +192,7 @@ def select():
             break
         res, good = {}, True
         for a, v in nbs:
-            nr = evaluate(tuple(x["g"]), dict(cfg, **{a: v}), D)
+            nr = evaluate(tuple(x["g"]), dict(cfg, **{a: v}), D, label="이웃")
             nb_used += 1
             w = within(nr)
             gain = (nr["annual_raw"] - now["annual_raw"]) >= (x["annual_raw"] - now["annual_raw"]) / 2
@@ -119,7 +205,10 @@ def select():
     for x in rows:
         x["eff_month"] = x["annual_pct"] / abs(x["worst_month_pct"]) if x["worst_month_pct"] < 0 else None
         x["eff_mdd"] = x["annual_pct"] / abs(x["mdd_report_pct"]) if x["mdd_report_pct"] < 0 else None
-    out = {"verdict": ("ROBUST_MIX" if final else "NO_MIX"), "final": final, "now": now, "checked": checked, "rows": rows,
+    (BOX / "evidence").mkdir(parents=True, exist_ok=True)
+    (BOX / "evidence/all_rows.json").write_text(json.dumps(rows, ensure_ascii=False, indent=0))
+    out = {"verdict": ("ROBUST_MIX" if final else "NO_MIX"), "final": final, "now": now, "checked": checked, "rows_count": len(rows), "lock": lk,
+           "bases_sha256": {k: v["sha256"] for k, v in done.items()},
            "within_count": len(ok), "neighbor_evals": nb_used, "limits": {"day": DAY_LIM, "month": MONTH_LIM},
            "designated_period_gap": "NEEDS_DATA(2016-01 ~ 2017-01 장부 없음)"}
     print(json.dumps(out, ensure_ascii=False))
