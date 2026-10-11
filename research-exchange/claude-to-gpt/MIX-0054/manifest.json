@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "MIX-0054",
  "chain_id": "MIX-0054",
- "kind": "PLAN",
- "round": "3",
+ "kind": "RESULT",
+ "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 15m은 빼자 연구기간이 너무 짧아 · 15m 제외 후 최종 후보와 모의투자 후보로 시드를 최대로 효율적으로 · 지피티도 같이 하여 결과 인정받자",
- "source_pr": "222",
- "source_head_sha": "79579e3ec82c39703e08a4eaafd9c82d7997ac47",
+ "source_pr": "223",
+ "source_head_sha": "de486e34623982b02be4cbb245ed8ae387460654",
  "code": {
   "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
   "research/z100.py": "47b85d2aee5743db81aa82166581156480801f5ab492df1a74c367f0ce28840d",
@@ -469,11 +469,123 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/MIX-0054/PLAN.md",
-  "research-exchange/claude-to-gpt/MIX-0054/evidence/mix54_test.py",
+  "research-exchange/claude-to-gpt/MIX-0054/REPORT.md",
+  "research-exchange/claude-to-gpt/MIX-0054/bases.jsonl",
+  "research-exchange/claude-to-gpt/MIX-0054/evals.jsonl",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/bases_run.log",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/bases_sha256.txt",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/final_detail.out",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/final_detail.py",
   "research-exchange/claude-to-gpt/MIX-0054/evidence/mix54_test.out",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/mix54_test.py",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/report_evals.jsonl",
+  "research-exchange/claude-to-gpt/MIX-0054/evidence/select_out.json",
   "research/mix54_run.py"
  ],
- "answering": "223+f68e49f09dcb0e0ec4b00a2c28c077e6f7219f20+PREREG+MIX-0054",
+ "answering": "223+de486e34623982b02be4cbb245ed8ae387460654+PREREG+MIX-0054",
  "source_head_sha_prev_review": "f68e49f09dcb0e0ec4b00a2c28c077e6f7219f20",
- "period_note": "판정 2017-02-01 ~ 2026-09-15(regime_dev LO · HI) · 바탕 장부 점검은 20260916 줄까지"
+ "period_note": "판정 2017-02-01 ~ 2026-09-15(regime_dev LO · HI) · 바탕 장부 점검은 20260916 줄까지",
+ "verdict": "ROBUST_MIX",
+ "code_commit": "de486e34623982b02be4cbb245ed8ae387460654",
+ "prereg_agreement": "6105118812",
+ "command": [
+  "python3 research/mix54_run.py bases (2026-10-11 12:32:46 ~ 12:41:22 KST · 16 STARTED / 16 DONE / 0 FAILED · 첫 STARTED는 round 1 head 커밋 12:32:27 뒤 · 바탕 잠금은 round 1 ~ 3 같음)",
+  "python3 research/mix54_run.py select (2026-10-11 12:42:42 ~ 12:44:00 KST · 종료 코드 0 · 오류 출력 없음)"
+ ],
+ "evals": {
+  "fixed": 288,
+  "neighbors": 18,
+  "started": 306,
+  "done": 306,
+  "failed": 0,
+  "report_only_reruns": 5
+ },
+ "within_count": 261,
+ "final": "d0.5_b0.3_no15m + L0.4_S0.4",
+ "final_res": {
+  "annual_pct": 34.113,
+  "worst_day_pct": -12.958,
+  "worst_month_pct": -14.043,
+  "mdd_report_pct": -21.77,
+  "years_pct": {
+   "2017": 16.55,
+   "2018": -2.27,
+   "2019": 12.67,
+   "2020": 62.67,
+   "2021": 18.26,
+   "2022": 12.84,
+   "2023": 53.14,
+   "2024": 0.78,
+   "2025": 84.9,
+   "2026": 100.67
+  },
+  "halves": {
+   "2017~2021": 20.55,
+   "2022~2026": 49.9
+  },
+  "by_kind": {
+   "상승": {
+    "worst_day_pct": -12.958,
+    "worst_month_pct": -14.043
+   },
+   "하락": {
+    "worst_day_pct": -3.685,
+    "worst_month_pct": -7.347
+   },
+   "횡보": {
+    "worst_day_pct": -5.363,
+    "worst_month_pct": -10.643
+   }
+  },
+  "base_money_use": 0.48849830294108937
+ },
+ "now_res": {
+  "annual_pct": 19.905,
+  "worst_day_pct": -4.665,
+  "worst_month_pct": -6.597,
+  "mdd_report_pct": -14.01
+ },
+ "grid_edge": "최종 칸 레버리지 0.4 · 횡보 인버스 0.4 둘 다 몫 격자 끝(사전등록 §3대로 밝힘)",
+ "official_limits": {
+  "day": -0.15,
+  "month": -0.15,
+  "basis": "하루 · 달력월 TWR · 세 장 각각 · 반올림 전"
+ },
+ "ref_m10": {
+  "use": "비구속 참고 통계(이웃 탐색 · 판정 · 후보 선택 없음)",
+  "month_limit": -0.1,
+  "count": 111,
+  "top5_by_annual": [
+   {
+    "cell": "d0.5_b0.3_no15m+0050",
+    "annual_pct": 33.036,
+    "worst_month_pct": -9.98
+   },
+   {
+    "cell": "d0.5_b0.5_no15m+0050",
+    "annual_pct": 32.635,
+    "worst_month_pct": -9.755
+   },
+   {
+    "cell": "d0.5_b0.7_no15m+0050",
+    "annual_pct": 32.321,
+    "worst_month_pct": -9.626
+   },
+   {
+    "cell": "d0.3_b0.5_no15m+0050",
+    "annual_pct": 32.117,
+    "worst_month_pct": -9.508
+   },
+   {
+    "cell": "d0.5_b1.0_no15m+0050",
+    "annual_pct": 31.855,
+    "worst_month_pct": -9.836
+   }
+  ]
+ },
+ "stale_note": "research/mix54_run.py 맨 위 설명 문자열의 '달 ≥ −10%'는 낡은 설명(GPT #223 round 3 비차단 지적) · 공식은 MONTH_LIM −0.15",
+ "runner_sha256_unchanged": true,
+ "completed_at_kst": "2026-10-11 12:44:00",
+ "independent_validation": "WAITING_DATA"
 }

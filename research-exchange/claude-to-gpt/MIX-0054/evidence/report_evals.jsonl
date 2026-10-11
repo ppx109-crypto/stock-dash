@@ -1,0 +1,10 @@
+{"status": "STARTED", "key": "d0.5_b0.5_no15m+none", "at": "2026-10-11 03:44:24"}
+{"status": "DONE", "key": "d0.5_b0.5_no15m+none", "annual_pct": 19.905, "worst_day_pct": -4.665, "worst_month_pct": -6.597, "mdd_report_pct": -14.01, "min_cash_slack": 0.0, "etf_trims": 0, "base_trims": 0, "base_money_use_pct": 50.06, "etf_target_weight_avg_pct_approx": 0.0, "state_days": {"상승": 1203, "횡보": 229, "하락": 926}}
+{"status": "STARTED", "key": "d0.5_b0.3_no15m+none", "at": "2026-10-11 03:44:28"}
+{"status": "DONE", "key": "d0.5_b0.3_no15m+none", "annual_pct": 19.968, "worst_day_pct": -4.693, "worst_month_pct": -6.084, "mdd_report_pct": -15.42, "min_cash_slack": 0.0, "etf_trims": 0, "base_trims": 0, "base_money_use_pct": 48.85, "etf_target_weight_avg_pct_approx": 0.0, "state_days": {"상승": 1203, "횡보": 229, "하락": 926}}
+{"status": "STARTED", "key": "d0.5_b0.3_no15m+L0.4_S0.4", "at": "2026-10-11 03:44:32"}
+{"status": "DONE", "key": "d0.5_b0.3_no15m+L0.4_S0.4", "annual_pct": 34.113, "worst_day_pct": -12.958, "worst_month_pct": -14.043, "mdd_report_pct": -21.77, "min_cash_slack": -2.220446049250313e-16, "etf_trims": 73, "base_trims": 0, "base_money_use_pct": 48.85, "etf_target_weight_avg_pct_approx": 30.95, "state_days": {"상승": 1370, "횡보": 827, "하락": 161}}
+{"status": "STARTED", "key": "d0.5_b0.3_no15m+L0.2_S0.2", "at": "2026-10-11 03:44:36"}
+{"status": "DONE", "key": "d0.5_b0.3_no15m+L0.2_S0.2", "annual_pct": 27.22, "worst_day_pct": -8.088, "worst_month_pct": -9.198, "mdd_report_pct": -14.8, "min_cash_slack": -2.220446049250313e-16, "etf_trims": 47, "base_trims": 0, "base_money_use_pct": 48.85, "etf_target_weight_avg_pct_approx": 17.02, "state_days": {"상승": 1370, "횡보": 827, "하락": 161}}
+{"status": "STARTED", "key": "d0.5_b0.3_no15m+L0.25_S0.3", "at": "2026-10-11 03:44:39"}
+{"status": "DONE", "key": "d0.5_b0.3_no15m+L0.25_S0.3", "annual_pct": 28.955, "worst_day_pct": -9.305, "worst_month_pct": -10.114, "mdd_report_pct": -15.99, "min_cash_slack": -2.220446049250313e-16, "etf_trims": 59, "base_trims": 0, "base_money_use_pct": 48.85, "etf_target_weight_avg_pct_approx": 21.92, "state_days": {"상승": 1370, "횡보": 827, "하락": 161}}
