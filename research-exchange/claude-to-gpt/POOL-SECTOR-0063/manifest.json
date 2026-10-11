@@ -2,15 +2,15 @@
  "schema_version": "1",
  "task_id": "POOL-SECTOR-0063",
  "chain_id": "POOL-SECTOR-0063",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 최종 자본 분배는 봇개발이 더 이상 안될때하자(새 봇 후보 목록 쌓기)",
- "source_pr": "249",
- "source_head_sha": "babcb2f4155d71dc2057c5868c7965b5bdc71616",
- "code_commit": null,
+ "source_pr": "250",
+ "source_head_sha": "b45c9a55f225b1ce5c74e1761945f15d354ddec4",
+ "code_commit": "b45c9a55f225b1ce5c74e1761945f15d354ddec4",
  "code_commit_note": "사전등록 PR head",
- "completed_at_kst": "2026-10-11 20:52:42",
+ "completed_at_kst": "2026-10-11 20:56:14",
  "completed_note": "실행 전(PLAN) · KST · 성과 셈 없음(진단도 하지 않음)",
  "code": {
   "research/pool_sector.py": "b02b2a08a6bcea14a222dc401c6054e39771c6a2ea69a8cafe9f8eb8057a74ea",
@@ -74,12 +74,30 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/POOL-SECTOR-0063/PLAN.md",
-  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/input_lock.json",
-  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/sector_test.py",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/REPORT.md",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evals.jsonl",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/run_time.txt",
   "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/sector_test.out",
-  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/evidence/sector_test.py",
+  "research-exchange/claude-to-gpt/POOL-SECTOR-0063/input_lock.json"
  ],
  "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
  "independent_check": "WAITING_DATA",
- "data_provenance": "ETF 원자료 NEEDS_DATA"
+ "data_provenance": "ETF 원자료 NEEDS_DATA",
+ "plan_source_pr": "249",
+ "plan_source_head_sha_note": "babcb2f(문구 정정 00f7671 이전)",
+ "prereg_ack": "GPT #250 동의",
+ "verdict": "NOT_POOLED",
+ "eligible": [],
+ "evals": {
+  "STARTED": 6,
+  "DONE": 6,
+  "FAILED": 0
+ },
+ "ci": "산출 안 함",
+ "limits": "재사용 구간 · 고정 9 ETF 생존 · 선정 편향 · ETF 출처 NEEDS_DATA"
 }
