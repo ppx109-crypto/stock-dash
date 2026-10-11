@@ -3,11 +3,11 @@
  "task_id": "SAFE-LEV-0069",
  "chain_id": "SAFE-LEV-0069",
  "kind": "RESULT",
- "round": "2",
+ "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 '백테스트하고 약점을 보완방법 연구해줘 지피티와'",
  "source_pr": "262",
- "source_head_sha": "8629c614f8d4563a9a559919f311e844a34767d1",
+ "source_head_sha": "08c3d2c8cfac0858da094d11a43ef1601e227279",
  "code_commit": "08c3d2c8cfac0858da094d11a43ef1601e227279",
  "code_commit_note": "사전등록 round 2 동의 head · 실행 뒤 실행기 고치지 않음",
  "completed_at_kst": "2026-10-12 00:18:14",
@@ -76,7 +76,9 @@
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/run_err.txt",
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/evals.jsonl",
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/all_rows.json",
-  "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/run_out.json"
+  "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/report_worst_month.py",
+  "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/report_worst_month_out.txt"
  ],
  "independent_check": "WAITING_DATA",
  "round2_note": "GPT #262 6110460054: 평가 상한 코드 집행 · 이어 하기 · 시험 11 ~ 14",
@@ -96,6 +98,11 @@
  "outputs": {
   "evals.jsonl": "96575a44eb2236a287665b69e1efe7b8c64fdbf0adaaa3a47dbb460f6939204d",
   "evidence/all_rows.json": "bb440e3ccd4db1e353160d551990e9b89b413c3617459c5162e2c68bc07f9ade",
-  "evidence/run_out.json": "a8dea6938e279cd5355126fb8576d757e10d17288551bf7e6b7bce40601b3f67"
- }
+  "evidence/run_out.json": "a8dea6938e279cd5355126fb8576d757e10d17288551bf7e6b7bce40601b3f67",
+  "evidence/report_worst_month.py": "41935ad24e25743fe0aa7f452cc1fa50d4fa980f666f719355d48c22af41be8b",
+  "evidence/report_worst_month_out.txt": "6f2f003cb4423a40b973b8dcb687afb828f19ecaec46748314c8572767af71d7"
+ },
+ "source_head_note": "#262 동의 head(GPT #263 정정 · 앞서 적은 8629c614f는 선행 의존 코드 head)",
+ "prereg_round": "2",
+ "round_note": "RESULT round 1 · 사전등록은 round 2"
 }
