@@ -1,0 +1,375 @@
+[
+{
+"name": "기준(지금 판)",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.4,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null
+},
+"full": {
+"annual_raw": 0.34112922192523665,
+"annual_pct": 34.113,
+"worst_day_raw": -0.12958027736138777,
+"worst_day_pct": -12.958,
+"worst_full_month_raw": -0.14043371612882594,
+"worst_full_month_pct": -14.043,
+"mdd_report_pct": -21.77,
+"loss_months": 40,
+"months": 114,
+"within": true
+},
+"dev": {
+"annual_raw": -0.019824643885656412,
+"annual_pct": -1.982,
+"worst_day_raw": -0.040445072412575,
+"worst_day_pct": -4.045,
+"worst_full_month_raw": -0.10402300544226173,
+"worst_full_month_pct": -10.402,
+"mdd_report_pct": -32.57,
+"loss_months": 42,
+"months": 81,
+"within": true
+}
+},
+{
+"name": "frac_np_L0.4",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.4,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null,
+"ens": {
+"mode": "frac",
+"n": [
+17,
+20,
+24,
+28,
+32
+],
+"p": [
+2,
+3,
+4
+]
+}
+},
+"full": {
+"annual_raw": 0.3194466805564853,
+"annual_pct": 31.945,
+"worst_day_raw": -0.12958027736138766,
+"worst_day_pct": -12.958,
+"worst_full_month_raw": -0.1499293900347849,
+"worst_full_month_pct": -14.993,
+"mdd_report_pct": -21.77,
+"loss_months": 45,
+"months": 114,
+"within": true
+},
+"dev": {
+"annual_raw": -0.0330364277091002,
+"annual_pct": -3.304,
+"worst_day_raw": -0.03726204941271771,
+"worst_day_pct": -3.726,
+"worst_full_month_raw": -0.09242134685349579,
+"worst_full_month_pct": -9.242,
+"mdd_report_pct": -33.52,
+"loss_months": 44,
+"months": 81,
+"within": true
+}
+},
+{
+"name": "frac_n_L0.4",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.4,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null,
+"ens": {
+"mode": "frac",
+"n": [
+17,
+20,
+24,
+28,
+32
+],
+"p": [
+3
+]
+}
+},
+"full": {
+"annual_raw": 0.339881737618394,
+"annual_pct": 33.988,
+"worst_day_raw": -0.129580277361388,
+"worst_day_pct": -12.958,
+"worst_full_month_raw": -0.16280669191449182,
+"worst_full_month_pct": -16.281,
+"mdd_report_pct": -21.77,
+"loss_months": 43,
+"months": 114,
+"within": false
+},
+"dev": {
+"annual_raw": -0.03856954927516576,
+"annual_pct": -3.857,
+"worst_day_raw": -0.037262049412717824,
+"worst_day_pct": -3.726,
+"worst_full_month_raw": -0.10402300544226195,
+"worst_full_month_pct": -10.402,
+"mdd_report_pct": -34.77,
+"loss_months": 43,
+"months": 81,
+"within": true
+}
+},
+{
+"name": "vote_np_L0.4",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.4,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null,
+"ens": {
+"mode": "vote",
+"n": [
+17,
+20,
+24,
+28,
+32
+],
+"p": [
+2,
+3,
+4
+]
+}
+},
+"full": {
+"annual_raw": 0.3240229035071509,
+"annual_pct": 32.402,
+"worst_day_raw": -0.12958027736138777,
+"worst_day_pct": -12.958,
+"worst_full_month_raw": -0.14043371612882627,
+"worst_full_month_pct": -14.043,
+"mdd_report_pct": -21.77,
+"loss_months": 42,
+"months": 114,
+"within": true
+},
+"dev": {
+"annual_raw": -0.029809312989681036,
+"annual_pct": -2.981,
+"worst_day_raw": -0.040445072412575,
+"worst_day_pct": -4.045,
+"worst_full_month_raw": -0.10402300544226173,
+"worst_full_month_pct": -10.402,
+"mdd_report_pct": -32.72,
+"loss_months": 42,
+"months": 81,
+"within": true
+}
+},
+{
+"name": "frac_np_L0.5",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.5,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null,
+"ens": {
+"mode": "frac",
+"n": [
+17,
+20,
+24,
+28,
+32
+],
+"p": [
+2,
+3,
+4
+]
+}
+},
+"full": {
+"annual_raw": 0.34225097152488604,
+"annual_pct": 34.225,
+"worst_day_raw": -0.15393244217709667,
+"worst_day_pct": -15.393,
+"worst_full_month_raw": -0.1800698653646049,
+"worst_full_month_pct": -18.007,
+"mdd_report_pct": -25.33,
+"loss_months": 47,
+"months": 114,
+"within": false
+},
+"dev": {
+"annual_raw": -0.03749573251981708,
+"annual_pct": -3.75,
+"worst_day_raw": -0.046605876393110535,
+"worst_day_pct": -4.661,
+"worst_full_month_raw": -0.113274887287802,
+"worst_full_month_pct": -11.327,
+"mdd_report_pct": -38.92,
+"loss_months": 44,
+"months": 81,
+"within": true
+}
+},
+{
+"name": "frac_n_L0.5",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.5,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null,
+"ens": {
+"mode": "frac",
+"n": [
+17,
+20,
+24,
+28,
+32
+],
+"p": [
+3
+]
+}
+},
+"full": {
+"annual_raw": 0.36812815169546553,
+"annual_pct": 36.813,
+"worst_day_raw": -0.15393244217709667,
+"worst_day_pct": -15.393,
+"worst_full_month_raw": -0.19299814312234187,
+"worst_full_month_pct": -19.3,
+"mdd_report_pct": -25.33,
+"loss_months": 44,
+"months": 114,
+"within": false
+},
+"dev": {
+"annual_raw": -0.04403570624911757,
+"annual_pct": -4.404,
+"worst_day_raw": -0.046605876393110424,
+"worst_day_pct": -4.661,
+"worst_full_month_raw": -0.12768082762033917,
+"worst_full_month_pct": -12.768,
+"mdd_report_pct": -40.12,
+"loss_months": 43,
+"months": 81,
+"within": true
+}
+},
+{
+"name": "vote_np_L0.5",
+"cfg": {
+"n": 24,
+"confirm": "r10m5",
+"persist": 3,
+"down_base": 1.0,
+"down_inv": 0.0,
+"inv": "114800",
+"up_lev": 0.5,
+"side_inv": 0.4,
+"up_need": "above_only",
+"exit_buf": 0.0,
+"band": null,
+"lev_vt": null,
+"ens": {
+"mode": "vote",
+"n": [
+17,
+20,
+24,
+28,
+32
+],
+"p": [
+2,
+3,
+4
+]
+}
+},
+"full": {
+"annual_raw": 0.35029733682269315,
+"annual_pct": 35.03,
+"worst_day_raw": -0.1539324421770969,
+"worst_day_pct": -15.393,
+"worst_full_month_raw": -0.1689742272924929,
+"worst_full_month_pct": -16.897,
+"mdd_report_pct": -25.33,
+"loss_months": 43,
+"months": 114,
+"within": false
+},
+"dev": {
+"annual_raw": -0.03372945820900375,
+"annual_pct": -3.373,
+"worst_day_raw": -0.05091151622943524,
+"worst_day_pct": -5.091,
+"worst_full_month_raw": -0.12768082762033894,
+"worst_full_month_pct": -12.768,
+"mdd_report_pct": -37.78,
+"loss_months": 43,
+"months": 81,
+"within": true
+}
+}
+]
