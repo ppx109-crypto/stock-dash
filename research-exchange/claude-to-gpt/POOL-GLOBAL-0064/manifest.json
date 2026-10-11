@@ -1,0 +1,81 @@
+{
+ "schema_version": "1",
+ "task_id": "POOL-GLOBAL-0064",
+ "chain_id": "POOL-GLOBAL-0064",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 최종 자본 분배는 봇개발이 더 이상 안될때하자(새 봇 후보 목록 쌓기)",
+ "source_pr": "251",
+ "source_head_sha": "dbd1ff748d5bcbcea98bb762f81f8840200a4dba",
+ "source_note": "POOL-SECTOR-0063 결과 head(그 뒤 manifest 표기만 고친 커밋 있음)",
+ "code_commit": null,
+ "code_commit_note": "사전등록 PR head",
+ "completed_at_kst": "2026-10-11 21:18:32",
+ "completed_note": "실행 전(PLAN) · KST · 성과 셈 없음(진단 없음 · 자르기는 차이만)",
+ "code": {
+  "research/pool_global.py": "107ed10c2db0a878556ea15c83707fdb70bb0eb532fcf1cc5f04b84502653c3e",
+  "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/global_test.py": "da264df036776cc6364a0be2f97b34645300bad11fe35bf6d8ae5a3b9d39df52"
+ },
+ "input_lock": {
+  "root": "/home/user/stock-dash",
+  "research/pool_global.py": "107ed10c2db0a878556ea15c83707fdb70bb0eb532fcf1cc5f04b84502653c3e",
+  "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/133690.json": "cc8a99b3f37c3b159ec5c4842400e9c687676f2cc3f075b5424082f75e207576",
+  "etf-data/143850.json": "a68e03468469391046db0e5093211b33295a18f7ba8821a856c8e9e5de6d7dae",
+  "etf-data/148070.json": "3507ba57a40e842f6f6412cfcb1413140dcbdf6b174b623b1ffb455da9c2fb1f",
+  "etf-data/153130.json": "403462f344808726aabcb20779ea7f73023a90dd892f4fa628a1d4f37216505d",
+  "etf-data/192090.json": "81ead865acb610d1694523214c2db87bd7013442a9352b0543d0cd8421e6247b",
+  "etf-data/195930.json": "6cd8de9b090d2d9b5477cb9714a3f544061b5868a4c5affc37c1b3d2935e7dbb",
+  "etf-data/241180.json": "0a655091e69c8d9884113a3736f4d369a0edf36edb653d39e5b497f6615f530d",
+  "mix54_rows:VOL-SIZE-0057/all_rows.json": "b92e51f80541edcea0a48a9d79b71b674a85ba8520a31237b3361f350dc86573",
+  "pool1_rows:POOL-XASSET-0062/all_rows.json": "54801c48fb23d65b2f606d00cfd7b65c139bfa81f91abc0ebb6e116ab0f66ae1"
+ },
+ "input_lock_sha256": "61e33f0b6ee89c5d144344d6982d296690d62361f4e74ad456e0540bc7d1ce0f",
+ "grid": {
+  "count": 6,
+  "compare": [
+   "153130 단기채(조건)",
+   "133690 나스닥100(참고)"
+  ],
+  "universe": [
+   "133690",
+   "143850",
+   "195930",
+   "241180",
+   "192090"
+  ],
+  "safe": "148070",
+  "k_top": [
+   1,
+   2
+  ],
+  "l_months": [
+   6,
+   12
+  ]
+ },
+ "pool_rule": {
+  "day": -0.15,
+  "full_month": -0.15,
+  "bond_gain_pp": 3,
+  "corr_mix54_max": 0.5,
+  "need_cells": 3
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/PLAN.md",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/input_lock.json",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/global_test.py",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/global_test.out",
+  "research-exchange/claude-to-gpt/POOL-GLOBAL-0064/evidence/cut_test.out"
+ ],
+ "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
+ "independent_check": "WAITING_DATA",
+ "data_provenance": "ETF 원자료 NEEDS_DATA"
+}
