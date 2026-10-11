@@ -46,4 +46,37 @@ except SystemExit as e:
     stopped = "71개" in str(e)
 check("13 72개 가운데 하나라도 DONE · 파일 sha가 없으면 고르기 전에 멈춤(지금 71개 모자람)", stopped)
 check("14 잠금에 z100 · 얼린 봇 둘 · perf2 · idle_signal · nrl · 캐시 해시", {"research/z100.py", "research/mix0053/basket_live.py", "research/mix0053/idle_live.py", "nrl.py", M.CACHE} <= set(lk))
+# round 3(GPT #221 · 환경 · 외부 장부 잠금)
+pe = M.base_cmd(M.NOW, parent={"PATH": "/usr/bin", "Z_PARK": "1", "Z_STOCK_SIDE": "x", "Z_ATTR": "/tmp/a.csv", "Z_ACC_VOL": "0", "PYTHONPATH": "/evil", "Z_FROM": "20200101"})
+check("15 부모 환경(Z_PARK=1 · Z_STOCK_SIDE · Z_ATTR · Z_ACC_VOL=0 · PYTHONPATH · Z_FROM)은 물려받지 않고 등록값으로 고정",
+      pe["Z_PARK"] == "0" and "Z_STOCK_SIDE" not in pe and "Z_ATTR" not in pe and pe["Z_ACC_VOL"] == "0.010911" and "PYTHONPATH" not in pe
+      and pe["Z_FROM"] == "20170201" and pe["PATH"] == "/usr/bin" and set(M.research_env(pe)) == set(M.ENV_CONTRACT) | set(M.CELL_KEYS) | {"Z_OUT", "PYTHONHASHSEED"})
+old_c = dict(M.ENV_CONTRACT); M.ENV_CONTRACT["Z_LOOK"] = "21"; lk_env = M.lock(); M.ENV_CONTRACT.clear(); M.ENV_CONTRACT.update(old_c)
+check("16 환경 계약 값 하나(Z_LOOK 20 → 21)가 바뀌면 잠금이 달라져 옛 DONE을 다시 쓰지 않음",
+      lk_env["env_contract"] != lk["env_contract"] and M.name(M.NOW) not in M.done_bases(lk_env) and M.lock() == lk)
+SP2 = TMP / "sp"; SP2.mkdir()
+for f in M.SP_FILES:
+    shutil.copy(M.SP / f, SP2 / f)
+old_sp = M.SP; M.SP = SP2
+same = M.lock() == lk
+with open(SP2 / "x004_m15_final.json", "a") as fh:
+    fh.write(" ")
+lk_led = M.lock(); M.SP = old_sp
+check("17 외부 장부(x004_m15_final.json) 한 바이트가 바뀌면 잠금이 달라져 옛 DONE을 다시 쓰지 않음(같은 내용 복사본은 같은 잠금)",
+      same and lk_led["SP/x004_m15_final.json"] != lk["SP/x004_m15_final.json"] and M.name(M.NOW) not in M.done_bases(lk_led))
+import subprocess as sp
+G = TMP / "repo"; (G / "price-data").mkdir(parents=True); (G / "price-data/005930.json").write_text("{}")
+sp.run(["git", "init", "-q", str(G)]); sp.run(["git", "-C", str(G), "add", "."]); sp.run(["git", "-C", str(G), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "a"])
+old_dirs = M.DATA_DIRS; M.DATA_DIRS = ["price-data"]
+t1 = M.data_trees(G)["price-data"]
+(G / "price-data/005930.json").write_text('{"x":1}')
+try:
+    M.data_trees(G); dirty_stop = False
+except SystemExit as e:
+    dirty_stop = "커밋 안 된" in str(e)
+sp.run(["git", "-C", str(G), "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "b"])
+t2 = M.data_trees(G)["price-data"]; M.DATA_DIRS = old_dirs
+check("18 자료 폴더: 커밋 안 된 바뀜이 있으면 멈춤 · 커밋하면 나무 해시가 달라짐(→ 잠금이 달라짐)", dirty_stop and t1 and t2 and t1 != t2)
+check("19 잠금 = 코드(루트 *.py · z100 · z001 · perf2 · idle_signal · 얼린 봇) + 캐시 + 장부 둘 + 자료 폴더 나무 + 환경 계약",
+      {"research/z001.py", "lab.py", "caps.py", "SP/z055_d1_raw.json", "SP/x004_m15_final.json", "tree:price-data", "tree:etf-data", "tree:market-data", "env_contract"} <= set(lk))
 print(f"모두 {ok}개 통과")

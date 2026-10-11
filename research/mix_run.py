@@ -9,6 +9,8 @@
 round 2(GPT #221 · 무결성):
 - 1단계: 칸마다 BASES_LOG(STARTED · DONE · FAILED)에 명령 · 환경 · 코드 / 입력 해시를 적음. z100 출력은 .part.csv로 쓰고, 종료 코드 0이며 점검(2,360줄 ·
   첫날 20170201 · 마지막 20260916 · 날짜 고유 · 정렬)을 넘을 때만 .csv로 바꿔 DONE(파일 sha256 포함). 아니면 FAILED · 파일 격리. 다시 돌리면 같은 잠금(코드 · 캐시 해시)의 DONE만 건너뜀.
+- round 3: z100 환경은 등록값 allowlist로 고정(ENV_CONTRACT · 부모 환경 안 물려받음 · STARTED에 전부 적음). 잠금 = 코드 해시 + 캐시 + 장부 파일
+  (z055_d1_raw · x004_m15_final) + 자료 폴더 HEAD 나무 해시(커밋 안 된 바뀜이 있으면 멈춤) + 환경 계약 해시. 하나라도 바뀌면 옛 DONE을 다시 쓰지 않음.
 - 2단계: 72개 모두 같은 잠금의 DONE이고 파일 sha가 기록과 같을 때만 시작. 288 고정 평가와 이웃 평가는 EVALS_LOG에 (바탕 · 덧붙임 설정) 열쇠로 STARTED · DONE · FAILED.
   모든 고정 격자 결과는 evidence/all_rows.json에 씀.
 python3 research/mix_run.py bases   → 1단계(4개씩 나란히)
@@ -48,12 +50,31 @@ def name(g):
     return f"d{a}_m{b}_b{c}_x{d.replace(',', '+') or 'none'}"
 
 
-def base_cmd(g):
+SP = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad")
+# round 3(GPT #221): z100 행동을 바꾸는 환경은 모두 등록값으로 고정(부모 환경을 물려받지 않음). 빈 문자열 = 끔(z100 기본과 같음).
+ENV_CONTRACT = {"NRL_CACHE": CACHE, "Z_ACC_VOL": ACC_VOL, "Z_FROM": "20170201", "Z_TO": "20260930", "Z_MARGIN": "1.30", "Z_ACC": "1e8",
+                "Z_D1_VOL": "0", "Z_LOOK": "20", "Z_ACC_STRICT": "1", "Z_D1_LED": "z055_d1_raw.json", "Z_STOCK_CAP": "0", "Z_PARK": "0",
+                "Z_BASKET_BEAR": "0", "Z_STOCK_VOL": "0", "Z_TRIM_BAND": "0"}
+ENV_UNSET = ("Z_STOCK_SIDE", "Z_ATTR")          # 없어야 하는 것(있으면 z100 행동이 바뀜)
+SYS_KEEP = ("PATH", "HOME", "LANG", "LC_ALL", "TZ", "TMPDIR")   # 연구와 무관한 실행 환경만 물려받음
+CELL_KEYS = ("Z_SHARE_1D", "Z_SHARE_15M", "Z_SHARE_BASKET", "Z_DROP")
+
+
+def base_cmd(g, parent=None):
     a, b, c, d = g
+    parent = os.environ if parent is None else parent
     drop = ",".join(x for x in [d, "basket" if c == 0.0 else ""] if x)
-    env = dict(os.environ, NRL_CACHE=CACHE, Z_ACC_VOL=ACC_VOL, Z_SHARE_1D=str(a), Z_SHARE_15M=str(b), Z_SHARE_BASKET=str(c),
-               Z_DROP=drop, Z_OUT=str(BASES / f"{name(g)}.csv"))
+    env = {k: parent[k] for k in SYS_KEEP if k in parent}
+    env.update(ENV_CONTRACT)
+    env.update(Z_SHARE_1D=str(a), Z_SHARE_15M=str(b), Z_SHARE_BASKET=str(c), Z_DROP=drop, Z_OUT=str(BASES / f"{name(g)}.csv"),
+               PYTHONHASHSEED="0")
+    assert not any(k in env for k in ENV_UNSET)
     return env
+
+
+def research_env(env):
+    """STARTED에 적는 연구 환경(시스템 경로 빼고 전부)."""
+    return {k: v for k, v in sorted(env.items()) if k not in SYS_KEEP}
 
 
 BASES_LOG = BOX / "bases.jsonl"
@@ -66,10 +87,39 @@ def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
+DATA_DIRS = sorted(x.name for x in ROOT.iterdir() if x.is_dir() and (x.name.endswith("-data") or x.name in ("basket-live", "idle-live")))
+SP_FILES = ("z055_d1_raw.json", "x004_m15_final.json")
+
+
+def code_files():
+    """z100이 불러올 수 있는 코드: 루트 *.py 전부 + research의 z100 · z001 · perf2 · idle_signal + 얼린 봇 판."""
+    fs = sorted(p.name for p in ROOT.glob("*.py"))
+    fs += ["research/z100.py", "research/z001.py", "research/perf2.py", "research/idle_signal.py"]
+    fs += sorted(f"research/mix0053/{p.name}" for p in (ROOT / "research/mix0053").glob("*.py"))
+    return fs
+
+
+def data_trees(root=ROOT):
+    """자료 폴더마다 HEAD 나무 해시. 고치지 않은 파일이 있으면 멈춤(나무 해시가 실제 파일과 다를 수 있으므로)."""
+    dirty = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--", *DATA_DIRS], capture_output=True, text=True).stdout.strip()
+    if dirty:
+        sys.exit("자료 폴더에 커밋 안 된 바뀜이 있음(멈춤): " + dirty[:300])
+    return {d: subprocess.run(["git", "-C", str(root), "rev-parse", f"HEAD:{d}"], capture_output=True, text=True).stdout.strip() for d in DATA_DIRS}
+
+
+def env_hash():
+    import hashlib
+    body = {"contract": ENV_CONTRACT, "unset": list(ENV_UNSET), "cell_keys": list(CELL_KEYS), "PYTHONHASHSEED": "0"}
+    return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+
+
 def lock():
-    return {"research/z100.py": sha(ROOT / "research/z100.py"), "research/mix0053/basket_live.py": sha(ROOT / "research/mix0053/basket_live.py"),
-            "research/mix0053/idle_live.py": sha(ROOT / "research/mix0053/idle_live.py"), "research/perf2.py": sha(ROOT / "research/perf2.py"),
-            "research/idle_signal.py": sha(ROOT / "research/idle_signal.py"), "nrl.py": sha(ROOT / "nrl.py"), CACHE: sha(CACHE)}
+    out = {f: sha(ROOT / f) for f in code_files()}
+    out[CACHE] = sha(CACHE)
+    out.update({f"SP/{f}": sha(SP / f) for f in SP_FILES})
+    out.update({f"tree:{d}": h for d, h in data_trees().items()})
+    out["env_contract"] = env_hash()
+    return out
 
 
 def log(path, rec):
@@ -111,7 +161,7 @@ def bases():
             if part.exists():
                 part.unlink()
             env["Z_OUT"] = str(part)
-            keep = {k: env[k] for k in ("NRL_CACHE", "Z_ACC_VOL", "Z_SHARE_1D", "Z_SHARE_15M", "Z_SHARE_BASKET", "Z_DROP", "Z_OUT")}
+            keep = research_env(env)
             log(BASES_LOG, {"status": "STARTED", "cell": name(g), "g": list(g), "env": keep, "lock": lk, "at": time.strftime("%Y-%m-%d %H:%M:%S")})
             lg = open(BASES / f"{name(g)}.log", "w")
             running.append((g, part, subprocess.Popen([sys.executable, str(ROOT / "research/z100.py")], env=env, cwd=ROOT, stdout=lg, stderr=subprocess.STDOUT)))

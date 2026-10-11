@@ -1,6 +1,16 @@
 # MIX-0053 계획 — 봇 몫까지 함께 다시 고르기(지금 모의투자 조합 + 레버리지 덧붙임)
 
-- schema_version 1 · task_id · chain_id `MIX-0053` · kind PLAN · **round 2**(GPT #221 '고칠 것' · 무결성 반영)
+- schema_version 1 · task_id · chain_id `MIX-0053` · kind PLAN · **round 3**(GPT #221 round 2 '고칠 것' · 환경 · 외부 장부 잠금 반영)
+
+## round 3에서 고친 것(GPT #221 round 2)
+- **환경 고정:** `base_cmd`가 부모 환경을 물려받지 않습니다. 시스템 경로(PATH · HOME · LANG · LC_ALL · TZ · TMPDIR)만 받고, z100 행동을 바꾸는 값은 모두 등록값으로 박습니다:
+  Z_FROM 20170201 · Z_TO 20260930 · Z_MARGIN 1.30 · Z_ACC 1e8 · Z_D1_VOL 0 · Z_LOOK 20 · Z_ACC_STRICT 1 · Z_D1_LED z055_d1_raw.json · Z_STOCK_CAP 0 · Z_PARK 0 ·
+  Z_BASKET_BEAR 0 · Z_STOCK_VOL 0 · Z_TRIM_BAND 0 · Z_ACC_VOL 0.010911 · NRL_CACHE · PYTHONHASHSEED 0 + 칸 값(몫 셋 · Z_DROP · Z_OUT). Z_STOCK_SIDE · Z_ATTR는 없음(넣으면 멈춤).
+  STARTED에 시스템 경로 뺀 환경 전부를 적습니다.
+- **잠금 넓힘:** 코드(루트 *.py 전부 · z100 · z001 · perf2 · idle_signal · 얼린 봇 셋) + 캐시 + 장부 파일 둘(`z055_d1_raw.json` · `x004_m15_final.json`)의 sha256
+  + 자료 폴더(…-data 전부 · basket-live · idle-live)의 HEAD 나무 해시(커밋 안 된 바뀜이 있으면 멈춤) + 환경 계약 해시. manifest의 `base_lock`이 다시 쓰기 판정에 쓰는 잠금과 같습니다.
+- 합성 시험 **19개 통과**(더한 것: 부모 환경 안 물려받음 · 환경 값 하나 바뀌면 옛 DONE 안 씀 · 장부 한 바이트 바뀌면 옛 DONE 안 씀 · 자료 폴더 바뀜 멈춤 / 나무 해시 바뀜 · 잠금 칸).
+- 옛 잠금으로 돌던 셈은 멈추고 출력 · 기록을 지운 뒤 새 잠금으로 처음부터 다시 돌립니다(옛 결과는 하나도 쓰지 않음).
 
 ## round 2에서 고친 것
 - **1단계 기록 · 점검**
