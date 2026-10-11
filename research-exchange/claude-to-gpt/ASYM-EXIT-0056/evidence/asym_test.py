@@ -48,7 +48,9 @@ check("9 채택 잣대: 손실 달 −3(연 −0.4%p)은 채택 · 연 −0.6%p�
       and A.eligible(dict(b, worst_full_month_raw=-0.119), b) and A.eligible(dict(b, annual_raw=0.361), b))
 T = Path(tempfile.mkdtemp())
 good = A.lock_body(); (T / "ok.json").write_text(json.dumps(good))
-check("10 입력 잠금 12개(코드 4 · ETF 4 · 시장 자료 2 · 바탕 장부 · 스냅샷)가 같으면 통과", A.verify_inputs(T / "ok.json") == good and len(good) == 12)
+check("10 입력 잠금 13칸(뿌리 · 코드 4 · regime_dev.load가 읽는 ETF 4 · 시장 자료 2 · 바탕 장부 · 스냅샷)이 같으면 통과",
+      A.verify_inputs(T / "ok.json") == good and len(good) == 13 and good["root"] == str(D.ROOT)
+      and set(k for k in good if k.startswith("etf-data/")) == {f"etf-data/{c}.json" for c in D.ETF})
 bad = dict(good, **{"etf-data/122630.json": "0" * 64}); (T / "bad.json").write_text(json.dumps(bad))
 old = (A.LOCK, A.EVALS); A.LOCK, A.EVALS = T / "bad.json", T / "evals.jsonl"
 try:
@@ -57,4 +59,32 @@ except SystemExit as e:
     stopped = "122630" in str(e)
 A.LOCK, A.EVALS = old
 check("11 잠금이 하나라도 다르면 첫 STARTED 전에 멈춤(기록 파일 안 생김)", stopped and not (T / "evals.jsonl").exists())
+# 12 뿌리가 서로 다르면(잠근 checkout ≠ 계산이 읽는 곳) 첫 STARTED 전에 멈춤
+import shutil
+old_root = A.ROOT
+A.ROOT = T / "other-checkout"
+old = (A.LOCK, A.EVALS); A.LOCK, A.EVALS = T / "ok.json", T / "evals2.jsonl"
+try:
+    A.run(); stopped = False
+except SystemExit as e:
+    stopped = "뿌리가 서로 다름" in str(e)
+A.ROOT = old_root; A.LOCK, A.EVALS = old
+check("12 잠근 checkout과 계산이 읽는 뿌리(regime_dev.ROOT · mix54_run.ROOT)가 다르면 첫 STARTED 전에 멈춤", stopped and not (T / "evals2.jsonl").exists())
+# 13 다른 뿌리(임시 checkout)로 셋을 함께 옮기면: 잠금도 계산도 그 뿌리의 같은 파일을 읽음 → 자료 한 줄을 바꾸면 잠금이 달라지고 load도 바뀐 값을 읽음
+R2 = T / "root2"
+for f in A.CODE_FILES + A.MARKET_FILES + [f"etf-data/{c}.json" for c in D.ETF]:
+    (R2 / f).parent.mkdir(parents=True, exist_ok=True); shutil.copy(Path(D.ROOT) / f, R2 / f)
+saved = (A.ROOT, D.ROOT, M.ROOT)
+A.ROOT = D.ROOT = M.ROOT = R2
+lk2 = A.lock_body()
+same_as_main = {k: v for k, v in lk2.items() if k != "root"} == {k: v for k, v in good.items() if k != "root"}
+body = json.loads((R2 / "etf-data/122630.json").read_text()); last = body["closes"][-1]
+body["closes"][-1] = [last[0], float(last[1]) + 1.0]; (R2 / "etf-data/122630.json").write_text(json.dumps(body))
+lk3 = A.lock_body()
+D.DATA, D.FEAT = None, None
+etf_loaded = D.load()[1]["122630"][str(last[0])]
+A.ROOT, D.ROOT, M.ROOT = saved
+D.DATA, D.FEAT = None, None
+check("13 임시 checkout에서도 잠금 = 계산이 읽는 파일: 그대로 옮기면 잠금이 같고 · 122630 한 줄을 바꾸면 잠금이 달라지며 load도 바뀐 값을 읽음",
+      same_as_main and lk3["etf-data/122630.json"] != lk2["etf-data/122630.json"] and abs(etf_loaded - (float(last[1]) + 1.0)) < 1e-9)
 print(f"모두 {ok}개 통과")

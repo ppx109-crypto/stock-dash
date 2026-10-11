@@ -3,7 +3,7 @@
  "task_id": "ASYM-EXIT-0056",
  "chain_id": "ASYM-EXIT-0056",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-11 비대칭 버팀 연구 진행해줘",
  "source_pr": "224",
@@ -13,14 +13,15 @@
  "completed_at_kst": null,
  "completed_note": "실행 전(PLAN)",
  "code": {
-  "research/asym_exit.py": "f573c973764b1ad753b8549dc05db1e9c5f9b9b62858386c1f3fff4046f55c02",
+  "research/asym_exit.py": "13aba1bcb29bb4bee288b1f109ea1f96c26dcf93a88cbfcae822232c3bbea415",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
   "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
   "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
-  "research-exchange/claude-to-gpt/ASYM-EXIT-0056/evidence/asym_test.py": "524bfb641794f5880be8b3e4de825efe6670aeb2af2e66982ad1fafab930bba0"
+  "research-exchange/claude-to-gpt/ASYM-EXIT-0056/evidence/asym_test.py": "46170a47e54086953e0439514d9442c0329edf1ad1d6490b09e52abbbb54ced2"
  },
  "input_lock": {
-  "research/asym_exit.py": "f573c973764b1ad753b8549dc05db1e9c5f9b9b62858386c1f3fff4046f55c02",
+  "root": "/home/user/stock-dash",
+  "research/asym_exit.py": "13aba1bcb29bb4bee288b1f109ea1f96c26dcf93a88cbfcae822232c3bbea415",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
   "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
   "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
@@ -33,7 +34,7 @@
   "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
   "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
  },
- "input_lock_sha256": "9a772a488a653a25e98e8cbff0df78d4e9368ff31cf8c2a859faadb511ca7cd4",
+ "input_lock_sha256": "cc313d754059a4f5e97c37ef5b13dd3b541b0597a5e060a8b96ff28df3a440b7",
  "grid": {
   "count": 10,
   "p_up": [
@@ -83,7 +84,7 @@
  },
  "tests": {
   "file": "research-exchange/claude-to-gpt/ASYM-EXIT-0056/evidence/asym_test.out",
-  "passed": 11,
+  "passed": 13,
   "exit": 0
  },
  "actual_period": [
@@ -99,5 +100,8 @@
   "research-exchange/claude-to-gpt/ASYM-EXIT-0056/evidence/asym_test.out",
   "research-exchange/claude-to-gpt/ASYM-EXIT-0056/evidence/cut_test.out",
   "research/asym_exit.py"
- ]
+ ],
+ "source_head_sha_prev_review": "a57389dd98c5837155aa664ee617068d797033f3",
+ "path_contract": "asym_exit checkout = regime_dev.ROOT = mix54_run.ROOT(check_root · 다르면 STARTED 전에 멈춤) · 잠금은 regime_dev.load와 같은 경로 식",
+ "answering": "234+a57389dd98c5837155aa664ee617068d797033f3+PREREG+ASYM-EXIT-0056"
 }

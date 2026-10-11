@@ -35,9 +35,24 @@ P_SIDE = [1, 2, 3]
 FIRST_FULL, LAST_FULL = "201703", "202608"
 DAY_LIM, MONTH_LIM, NB_CAP = -0.15, -0.15, 100
 ANN_SLACK, LOSS_CUT, MONTH_GAIN, ANN_GAIN = 0.005, 3, 0.02, 0.02
-LOCK_FILES = ["research/asym_exit.py", "research/regime_dev.py", "research/mix54_run.py", "research/regime_rules4.py",
-              "etf-data/069500.json", "etf-data/114800.json", "etf-data/252670.json", "etf-data/122630.json",
-              "market-data/investor_KSP.json", "market-data/index_KOSPI.json"]
+# round 2(GPT #234): 경로 계약 하나 — 잠금 · 실제 계산(regime_dev.load · mix54_run 바탕 장부)이 모두 같은 저장소 뿌리를 씀.
+#   regime_dev · mix54_run은 뿌리를 고정 경로로 두므로, 이 파일이 있는 checkout과 그 뿌리가 다르면 첫 STARTED 전에 멈춤(check_root).
+CODE_FILES = ["research/asym_exit.py", "research/regime_dev.py", "research/mix54_run.py", "research/regime_rules4.py"]
+MARKET_FILES = ["market-data/investor_KSP.json", "market-data/index_KOSPI.json"]       # regime_dev.load가 읽는 시장 자료
+
+
+def check_root():
+    """이 파일의 checkout · regime_dev.ROOT · mix54_run.ROOT가 모두 같은 곳인지(아니면 멈춤)."""
+    roots = {"asym_exit": ROOT.resolve(), "regime_dev": Path(D.ROOT).resolve(), "mix54_run": Path(M.ROOT).resolve()}
+    if len(set(roots.values())) != 1:
+        sys.exit("저장소 뿌리가 서로 다름(멈춤): " + json.dumps({k: str(v) for k, v in roots.items()}, ensure_ascii=False))
+    return roots["regime_dev"]
+
+
+def loader_files():
+    """실제 계산이 읽는 자료 파일(regime_dev.load와 같은 경로 식): ETF 넷(D.ETF) · 시장 자료 둘."""
+    root = Path(D.ROOT)
+    return {f"etf-data/{c}.json": root / f"etf-data/{c}.json" for c in D.ETF} | {f: root / f for f in MARKET_FILES}
 _ORIG_STATES = D.states
 
 
@@ -137,10 +152,13 @@ def neighbors(cfg):
 
 
 def lock_body():
+    root = check_root()
     sha = lambda f: hashlib.sha256(Path(f).read_bytes()).hexdigest()
-    body = {f: sha(ROOT / f) for f in LOCK_FILES}
-    body["base_ledger:" + M.name(BASE) + ".csv"] = sha(M.BASES / f"{M.name(BASE)}.csv")
-    body["snapshot:" + Path(D.SNAP).name] = sha(D.SNAP)
+    body = {"root": str(root)}
+    body.update({f: sha(root / f) for f in CODE_FILES})
+    body.update({k: sha(v) for k, v in loader_files().items()})                          # regime_dev.load가 읽는 바로 그 파일
+    body["base_ledger:" + M.name(BASE) + ".csv"] = sha(M.BASES / f"{M.name(BASE)}.csv")     # run이 D.BASE_CSV로 넣는 바로 그 파일
+    body["snapshot:" + Path(D.SNAP).name] = sha(D.SNAP)                                  # regime_dev.load가 읽는 바로 그 스냅샷
     return body
 
 
@@ -154,7 +172,7 @@ def verify_inputs(path=None):
 
 
 def run():
-    verify_inputs()
+    verify_inputs()                                   # 뿌리 같음 · 잠금 같음(첫 STARTED 전)
     D.BASE_CSV = M.BASES / f"{M.name(BASE)}.csv"
     D.DATA, D.FEAT = None, None
     rows = []

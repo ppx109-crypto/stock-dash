@@ -1,5 +1,6 @@
 {
- "research/asym_exit.py": "f573c973764b1ad753b8549dc05db1e9c5f9b9b62858386c1f3fff4046f55c02",
+ "root": "/home/user/stock-dash",
+ "research/asym_exit.py": "13aba1bcb29bb4bee288b1f109ea1f96c26dcf93a88cbfcae822232c3bbea415",
  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",

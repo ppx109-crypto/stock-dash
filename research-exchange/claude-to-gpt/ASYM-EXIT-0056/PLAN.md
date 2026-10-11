@@ -1,9 +1,19 @@
 # ASYM-EXIT-0056 계획 — 덧붙임 비대칭 버팀(빠져나오기만 빠르게)
 
-- schema_version 1 · task_id · chain_id `ASYM-EXIT-0056` · kind PLAN · round 1 · status READY
+- schema_version 1 · task_id · chain_id `ASYM-EXIT-0056` · kind PLAN · **round 2**(GPT #234 6106723331 '고칠 것' 반영) · status READY
 - **사용자 지시(2026-10-11 · 이 세션에서 직접):** "비대칭 버팀 연구 진행해줘"
 - 출발: MIX-0054 최종(#224 인정 · 2026-10-11 켜 둔 판 · 바탕 `d0.5_b0.3_no15m` + 덧붙임 n24 · persist 3 · r10m5 · 레버리지 0.4 · 횡보 인버스 0.4)
 - 연구입니다. 켜 둔 판은 3개월 판단 기준(docs/MIX54-3MONTH-CRITERIA.md)대로 그대로 두고, 주문 · 운영 · 배분 변경 승인이 아닙니다.
+
+## round 2에서 고친 것(GPT #234)
+- **경로 계약 하나:** 잠금과 실제 계산이 반드시 같은 저장소 뿌리를 쓰게 했습니다.
+  - `check_root()`가 이 파일의 checkout · `regime_dev.ROOT` · `mix54_run.ROOT`를 비교해 하나라도 다르면 첫 STARTED 전에 멈춥니다.
+  - 잠금(`lock_body`)은 `regime_dev.load`와 같은 경로 식으로 만든 파일을 해시합니다. `D.ROOT/etf-data/{D.ETF}` · `D.ROOT/market-data` 둘, `run`이 `D.BASE_CSV`로 넣는 바탕 장부, `D.SNAP` 스냅샷, 그리고 뿌리 경로 자체입니다(13칸).
+- 시험 2개 추가(13개 통과)
+  - 12: 잠근 checkout과 계산 뿌리가 다르면 STARTED 전에 멈춤
+  - 13: 임시 checkout으로 셋을 함께 옮기면 잠금이 같고, 122630 한 줄을 바꾸면 잠금이 달라지며 `load`도 바뀐 값을 읽음 — 잠금과 계산이 같은 파일임을 보임
+- 입력 잠금 · manifest를 새 코드 기준으로 다시 만들었고, 자르기 시험도 다시 돌렸습니다(15번 차이 0).
+- PR 범위: 이 갈래는 MONTH-POS-0055 결과 갈래 위에 있어 main과 갈라져 있습니다. 결과 PR에는 정확한 실행 커밋과 입력 해시(잠금 13칸)를 고정해, 관련 없는 변경이 채택 근거에 섞이지 않게 합니다. 이 계획의 실행에 쓰이는 파일은 잠금 13칸과 `asym_test.py`뿐입니다.
 
 ## 0. 진단(사전등록 전에 봄 · 공개)
 - 최종 판 완료 114달 중 손실 40달을 봇별 손익(z100 `Z_ATTR`)으로 나눴습니다.
@@ -44,9 +54,9 @@
 
 ## 5. 미래 참조 · 시험 · 잠금
 - 자르기 시험(`asym_exit.py cut`): 자른 날 5 × 설정 3에서 자른 날 앞 NAV · 국면 차이가 0이어야 합니다(`evidence/cut_test.out`).
-- 합성 시험 11개 통과(`evidence/asym_test.py` · `.out` 종료 상태 0)
+- 합성 시험 13개 통과(`evidence/asym_test.py` · `.out` 종료 상태 0)
   - 버팀 셈 5
   - 지금 판 재현(34.113% · 손실 40 · −14.043%)
   - 격자 · 이웃 · 채택 잣대 · 입력 잠금 2
-- 입력 잠금 `input_lock.json`(코드 4 · ETF 4 · 시장 자료 2 · 바탕 장부 · 스냅샷): `run`이 첫 STARTED 전에 검사합니다.
+- 입력 잠금 `input_lock.json`(뿌리 · 코드 4 · ETF 4 · 시장 자료 2 · 바탕 장부 · 스냅샷 = 13칸 · 뿌리가 다르면 멈춤): `run`이 첫 STARTED 전에 검사합니다.
 - 기록 `evals.jsonl` · `evidence/all_rows.json` · 명령(GPT 동의 뒤) `python3 research/asym_exit.py run`
