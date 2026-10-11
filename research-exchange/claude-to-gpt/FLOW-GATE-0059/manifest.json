@@ -2,17 +2,17 @@
  "schema_version": "1",
  "task_id": "FLOW-GATE-0059",
  "chain_id": "FLOW-GATE-0059",
- "kind": "PLAN",
- "round": "2",
+ "kind": "RESULT",
+ "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 손실달의 공통점을 파악하고 거기서 엣지를 만드는건 어떨까?",
- "source_pr": "241",
+ "source_pr": "242",
  "source_note": "D1-LOSS-DIAG-0058(손실 달 줄기 닫음) 뒤 사용자 직접 지시로 새 과제 · 출발 판 MIX-0054 최종(#224)",
- "source_head_sha": "e1cf2b52ad405d07e5d842cfd53310792b840bb4",
- "code_commit": null,
+ "source_head_sha": "e8040783886b48372b27322b060e04d8baa78824",
+ "code_commit": "e8040783886b48372b27322b060e04d8baa78824",
  "code_commit_note": "이 파일을 담은 커밋이 실행기 고정 커밋(사전등록 PR head)",
- "completed_at_kst": "2026-10-11 19:41:35",
- "completed_note": "실행 전(PLAN) · 성과 셈 없음 · KST",
+ "completed_at_kst": "2026-10-11 19:43:48",
+ "completed_note": "run 19:43:43 ~ 19:43:48 KST · 종료 0",
  "code": {
   "research/flow_gate.py": "1c8d6b606d01e40bbe3b796e316973f62fbad943525cdcea9be2a493e7f1b9a1",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
@@ -64,12 +64,18 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/PLAN.md",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/REPORT.md",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evals.jsonl",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/all_rows.json",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/diag/lossm_diag.py",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/diag/lossm_diag_out.txt",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/f20_provenance.md",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/flow_test.out",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/flow_test.py",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/FLOW-GATE-0059/evidence/run_time.txt",
   "research-exchange/claude-to-gpt/FLOW-GATE-0059/input_lock.json"
  ],
  "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
@@ -80,5 +86,18 @@
   "file_sha256": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
   "available_at_contract": "p일 장 마감 뒤 집계(이어 받기 18:40 KST) < p+1 종가 체결",
   "historical_publish_time": "NEEDS_DATA(2026-09-29 거꾸로 받은 최종값)"
- }
+ },
+ "prereg_ack": "GPT #242 round 2 동의 · 242+e8040783886b48372b27322b060e04d8baa78824+PREREG+FLOW-GATE-0059",
+ "verdict": "NO_IMPROVEMENT",
+ "eligible_count": 0,
+ "neighbor_evals": 0,
+ "evals": {
+  "STARTED": 7,
+  "DONE": 7,
+  "FAILED": 0
+ },
+ "ci": "산출 안 함",
+ "scope": "F20 과거 공개 시각 NEEDS_DATA · 시점 가정 아래의 탐색 결과",
+ "plan_source_pr": "241",
+ "plan_source_head_sha": "e1cf2b52ad405d07e5d842cfd53310792b840bb4"
 }
