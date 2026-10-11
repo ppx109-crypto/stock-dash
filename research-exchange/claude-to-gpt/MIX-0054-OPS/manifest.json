@@ -1,0 +1,45 @@
+{
+ "schema_version": "1",
+ "task_id": "MIX-0054-OPS",
+ "chain_id": "MIX-0054",
+ "kind": "RESULT",
+ "round": "2",
+ "status": "READY",
+ "user_instruction": "2026-10-11 최종으로 모의투자 운영 계산해줘",
+ "source_pr": "224",
+ "source_head_sha": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
+ "code": {
+  "research/mix54_ops.py": "1a8c3ae82b3cd504038ca3ca94cd8aabee78dc95f744c3f94d02d5dabe44689d",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e"
+ },
+ "output": {
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/ops_out.json": "3885a8d8d27f9c70a1ab78e5689284ea21a9531d87445665f70d9375549b78e5"
+ },
+ "data": {
+  "etf-data/069500.json": {
+   "git_blob": "309d09603cb9d36b4795d7dee0a0686eae004896",
+   "rows": 5919,
+   "last": "20261008"
+  }
+ },
+ "base_ledger_sha256": {
+  "d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531"
+ },
+ "command": "REG_BOX=MIX-0054 python3 research/mix54_ops.py > evidence/ops_out.json (2026-10-11 13:1x KST · 종료 코드 0)",
+ "results": {
+  "state_parity_days": 2358,
+  "state_mismatch": 0,
+  "state_at_20261008_close": "상승",
+  "switches_2017_on": 136
+ },
+ "scope": "계산 · 구현 계약만 · 주문 · 설정 · 배분 변경 · 봇 재시작 · 실전 계좌 작업 없음 · 시작 날은 사용자 결정",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/OPS.md",
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/ops_out.json",
+  "research/mix54_ops.py",
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/manifest.json"
+ ],
+ "completed_at_kst": "2026-10-11 13:30",
+ "answering": "225+603e5e7c528b7764c90859a8218aac3657b9e288+RESULT+MIX-0054-OPS"
+}
