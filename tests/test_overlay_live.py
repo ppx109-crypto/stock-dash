@@ -85,8 +85,7 @@ class States(unittest.TestCase):
     def test_same_as_research_every_day(self):
         """연구 regime_dev.features · states(MIX-0054 최종 규칙)로 만든 기준표와 5,919일 모두 같음."""
         fx = json.loads((ROOT / "tests/fixtures/overlay_states.json").read_text(encoding="utf-8"))
-        body = json.loads((ROOT / "etf-data/069500.json").read_text(encoding="utf-8"))
-        rows = sorted((str(d), float(c)) for d, c in body["closes"] if c and str(d) <= fx["last"])
+        rows = [(str(d), float(c)) for d, c in fx["closes"]]           # 얼린 종가(실제 자료 파일이 바뀌어도 봇 앞 시험이 멈추지 않게)
         got = O.states(rows)
         self.assertEqual(len(fx["states"]), len(got))
         bad = [d for d, s in fx["states"].items() if got.get(d) != s]
