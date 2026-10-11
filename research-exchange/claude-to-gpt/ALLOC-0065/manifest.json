@@ -1,0 +1,92 @@
+{
+ "schema_version": "1",
+ "task_id": "ALLOC-0065",
+ "chain_id": "ALLOC-0065",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 '가' — 최종 분배 연구로 넘어감(앞서 '최종 자본 분배는 봇개발이 더 이상 안될때하자')",
+ "source_pr": "253",
+ "source_head_sha": "64b5fe0b7271929987f44cf2aedb9190b5795137",
+ "code_commit": null,
+ "code_commit_note": "사전등록 PR head",
+ "completed_at_kst": "2026-10-11 21:57:11",
+ "completed_note": "실행 전(PLAN) · KST · 기준 칸만 재현 시험으로 셈(이미 인정된 값)",
+ "code": {
+  "research/alloc.py": "0bdc8eb6b6d39f0ef38933de7e9afa1381bcbc6cfe60a06dd22c786955ce7ca7",
+  "research/pool_global.py": "107ed10c2db0a878556ea15c83707fdb70bb0eb532fcf1cc5f04b84502653c3e",
+  "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/alloc_test.py": "642c82e9c7aed74ee5507629bc60bf569ea48c6595ac17321353c2f5a929451c"
+ },
+ "input_lock": {
+  "root": "/home/user/stock-dash",
+  "research/alloc.py": "0bdc8eb6b6d39f0ef38933de7e9afa1381bcbc6cfe60a06dd22c786955ce7ca7",
+  "research/pool_global.py": "107ed10c2db0a878556ea15c83707fdb70bb0eb532fcf1cc5f04b84502653c3e",
+  "research/pool_xasset.py": "49cbe8b63274db017c0469c873a675ba7d70babcb29bd86de9c1e6c32adb3fbd",
+  "research/xasset.py": "72aab57bf57af14d5e13953fafdc2512627be01b07c0517af546466704e00c92",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "etf-data/069500.json": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6",
+  "etf-data/114800.json": "c644d3872ae0eb7be9052684d1301392c1b6a949c6e32c45de411d8a0193ae4d",
+  "etf-data/122630.json": "f8b8d6823d7bb1c545b030d25aa143078cbd7f55abdb5eb92b8c5c6e6e82d09f",
+  "etf-data/132030.json": "820e9eb647500d1a5ec1cef75488eec66a0d5a1f833c0a5a95592b4af8f78833",
+  "etf-data/133690.json": "cc8a99b3f37c3b159ec5c4842400e9c687676f2cc3f075b5424082f75e207576",
+  "etf-data/143850.json": "a68e03468469391046db0e5093211b33295a18f7ba8821a856c8e9e5de6d7dae",
+  "etf-data/148070.json": "3507ba57a40e842f6f6412cfcb1413140dcbdf6b174b623b1ffb455da9c2fb1f",
+  "etf-data/153130.json": "403462f344808726aabcb20779ea7f73023a90dd892f4fa628a1d4f37216505d",
+  "etf-data/192090.json": "81ead865acb610d1694523214c2db87bd7013442a9352b0543d0cd8421e6247b",
+  "etf-data/195930.json": "6cd8de9b090d2d9b5477cb9714a3f544061b5868a4c5affc37c1b3d2935e7dbb",
+  "etf-data/241180.json": "0a655091e69c8d9884113a3736f4d369a0edf36edb653d39e5b497f6615f530d",
+  "etf-data/252670.json": "f439cd34911d70c7add2c0bb8251e57de0ed77c7759cdc17167d18a4f2a4070d",
+  "etf-data/261240.json": "451b91d9355368ced96c8dcfb560cc39f2ae2852071f84839f913cf9b130190e",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+  "market-data/index_KOSPI.json": "ad283f9c2062e4e8f7c99f079ccdb0852b1d1b49d27af86696282330591ab980",
+  "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "mix54_rows": "b92e51f80541edcea0a48a9d79b71b674a85ba8520a31237b3361f350dc86573"
+ },
+ "input_lock_sha256": "693b80d0bc655f902b8256c0f7ba683dd8cc8ae6bc9954375d33852dc2fd6ba8",
+ "grid": {
+  "count": 27,
+  "A": "MIX-0054 최종",
+  "B_cells": [
+   "U3_n6",
+   "U4_n10"
+  ],
+  "C_cell": "K2_L12",
+  "wB": [
+   0,
+   0.1,
+   0.2,
+   0.3,
+   0.4
+  ],
+  "wC": [
+   0,
+   0.1,
+   0.2
+  ]
+ },
+ "recommend": {
+  "return": "잣대 안 연수익 최고",
+  "balance": "잣대 안 · 연 ≥ 기준 − 3%p · 효율(연 ÷ |가장 나쁜 완료 달|) 최고",
+  "limits": {
+   "day": -0.15,
+   "full_month": -0.15
+  }
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/ALLOC-0065/PLAN.md",
+  "research-exchange/claude-to-gpt/ALLOC-0065/input_lock.json",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/alloc_test.py",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/alloc_test.out",
+  "research-exchange/claude-to-gpt/ALLOC-0065/evidence/cut_test.out"
+ ],
+ "period": "2017-02-01 ~ 2026-09-15 · 공식 달 완료 114달",
+ "independent_check": "WAITING_DATA"
+}
