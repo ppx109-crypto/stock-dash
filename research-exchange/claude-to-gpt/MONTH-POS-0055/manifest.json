@@ -1,0 +1,87 @@
+{
+ "schema_version": "1",
+ "task_id": "MONTH-POS-0055",
+ "chain_id": "MONTH-POS-0055",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-11 이제 손실달을 양수달로 전환하는 연구해줘",
+ "source_pr": "224",
+ "source_head_sha": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
+ "code": {
+  "research/month_guard.py": "345acc1da796e0401f87829b2d69caeb6a0182f34b7c959044ba8697352c1983",
+  "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py": "7f512a82448a157837f3480513e71ac022a15a12120a9e62cf4321c9a44033bc"
+ },
+ "inputs": {
+  "base_ledger d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "etf-data/069500.json(git blob)": "309d09603cb9d36b4795d7dee0a0686eae004896"
+ },
+ "grid": {
+  "count": 68,
+  "k": [
+   null,
+   0.02,
+   0.04,
+   0.06
+  ],
+  "g": [
+   null,
+   0.03,
+   0.06
+  ],
+  "actions_fb": {
+   "A0": 1.0,
+   "A1": 0.5,
+   "A2": 0.0
+  },
+  "down_inv": [
+   0.0,
+   0.4
+  ]
+ },
+ "adoption": {
+  "day": -0.15,
+  "month": -0.15,
+  "loss_months_cut": 4,
+  "annual_floor_ratio": 0.9,
+  "neighbor_cap": 300,
+  "verdicts": [
+   "POS_MONTH_CANDIDATE",
+   "NO_IMPROVEMENT"
+  ]
+ },
+ "baseline": {
+  "loss_months": 41,
+  "months": 116,
+  "annual_pct": 34.113
+ },
+ "lookahead_cut_test": {
+  "file": "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/cut_test.out",
+  "runs": 30,
+  "diff_days_total": 0,
+  "pass": true
+ },
+ "tests": {
+  "file": "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.out",
+  "passed": 9,
+  "exit": 0
+ },
+ "pre_reg_disclosure": "손실 41달 원인 나눔(바탕 · 덧붙임)을 사전등록 전에 봄 · 지킴이 결과는 보지 않음",
+ "actual_period": [
+  "20170201",
+  "20260915"
+ ],
+ "independent_validation": "WAITING_DATA",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/PLAN.md",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/manifest.json",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.py",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/guard_test.out",
+  "research-exchange/claude-to-gpt/MONTH-POS-0055/evidence/cut_test.out",
+  "research/month_guard.py"
+ ]
+}
