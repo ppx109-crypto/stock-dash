@@ -2,16 +2,16 @@
  "schema_version": "1",
  "task_id": "TAILBOX-0067",
  "chain_id": "TAILBOX-0067",
- "kind": "PLAN",
+ "kind": "RESULT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-11 '가, 나 진행해줘'(AUDIT-MIX54-0066 #257 보완 후보: 가 급락일 꼬리 줄이기 · 나 박스권 감지)",
- "source_pr": "257",
- "source_head_sha": "4e88bc6f825796306b9a071926c82d4904c07ae3",
- "code_commit": null,
- "code_commit_note": "사전등록 PR head",
- "completed_at_kst": "2026-10-11 23:30:29",
- "completed_note": "실행 전(PLAN) · KST · 기준 칸만 재현 시험으로 셈",
+ "source_pr": "258",
+ "source_head_sha": "f2fa35784f173d65205c70797ec4d497322d95a0",
+ "code_commit": "f2fa35784f173d65205c70797ec4d497322d95a0",
+ "code_commit_note": "사전등록 동의 head · 실행 뒤 실행기 고치지 않음",
+ "completed_at_kst": "2026-10-11 23:33:38",
+ "completed_note": "실행 끝 · KST",
  "code": {
   "research/tailbox.py": "5daded0d2132b6ff77d47665069883f9159acf10cc766558c0d2fd8165e80523",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
@@ -71,7 +71,37 @@
   "research-exchange/claude-to-gpt/TAILBOX-0067/input_lock.json",
   "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/tailbox_test.py",
   "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/tailbox_test.out",
-  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/REPORT.md",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evals.jsonl",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/all_rows.json",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/run_out.json",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/run_time.txt",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/run_err.txt",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/report_box_days.py",
+  "research-exchange/claude-to-gpt/TAILBOX-0067/evidence/report_box_days_out.txt"
  ],
- "independent_check": "WAITING_DATA"
+ "independent_check": "WAITING_DATA",
+ "run": {
+  "command": "python3 research/tailbox.py run",
+  "start_kst": "2026-10-11 23:33:31",
+  "end_kst": "2026-10-11 23:33:38",
+  "exit": 0,
+  "stderr_bytes": 0,
+  "started": 19,
+  "done": 19,
+  "failed": 0,
+  "neighbors": 0
+ },
+ "verdict": {
+  "가": "NO_IMPROVEMENT",
+  "나": "NO_IMPROVEMENT"
+ },
+ "outputs": {
+  "evals.jsonl": "0e7d92aaa7c806d5e36ed297a0279ee16c44dc6191a86ac4076eb29fa7734d01",
+  "evidence/all_rows.json": "4a734d2f1d98577d746239758d5858d8c753e37e42bfec2f5817730fc36cc8da",
+  "evidence/run_out.json": "3a1692f464c6502990120713e843e9b9f157c36e9e0c4130fc59e7143e0e5207",
+  "evidence/report_box_days.py": "771cad86f952ba1d9651573849c73d2bf34de5e8a7da578ce56d98c64e9bc8c7",
+  "evidence/report_box_days_out.txt": "e2986e0ed29c31f175f7a867d1b2b289f9f1e49aab8abae3d578c1287116ee06"
+ }
 }
