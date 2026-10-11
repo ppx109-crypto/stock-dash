@@ -1,9 +1,9 @@
 {
  "schema_version": "1",
  "task_id": "MIX-0054-OPS",
- "chain_id": "MIX-0054",
+ "chain_id": "MIX-0054-OPS",
  "kind": "RESULT",
- "round": "2",
+ "round": "3",
  "status": "READY",
  "user_instruction": "2026-10-11 최종으로 모의투자 운영 계산해줘",
  "source_pr": "224",
@@ -11,7 +11,8 @@
  "code": {
   "research/mix54_ops.py": "1a8c3ae82b3cd504038ca3ca94cd8aabee78dc95f744c3f94d02d5dabe44689d",
   "research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
-  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e"
+  "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/b_contract_check.py": "6745c327cdc59dadf966f5703aae3a4e5cb9a6251ed417ffe1640310e69c2d1a"
  },
  "output": {
   "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/ops_out.json": "3885a8d8d27f9c70a1ab78e5689284ea21a9531d87445665f70d9375549b78e5"
@@ -26,20 +27,27 @@
  "base_ledger_sha256": {
   "d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531"
  },
- "command": "REG_BOX=MIX-0054 python3 research/mix54_ops.py > evidence/ops_out.json (2026-10-11 13:1x KST · 종료 코드 0)",
+ "command": "REG_BOX=MIX-0054 python3 research/mix54_ops.py > evidence/ops_out.json",
  "results": {
   "state_parity_days": 2358,
   "state_mismatch": 0,
   "state_at_20261008_close": "상승",
-  "switches_2017_on": 136
+  "switches_2017_on": 136,
+  "b_contract_check": "11개 통과 · 종료 상태 0"
  },
  "scope": "계산 · 구현 계약만 · 주문 · 설정 · 배분 변경 · 봇 재시작 · 실전 계좌 작업 없음 · 시작 날은 사용자 결정",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/MIX-0054-OPS/OPS.md",
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/b_contract_check.out",
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/b_contract_check.py",
   "research-exchange/claude-to-gpt/MIX-0054-OPS/evidence/ops_out.json",
-  "research/mix54_ops.py",
-  "research-exchange/claude-to-gpt/MIX-0054-OPS/manifest.json"
+  "research-exchange/claude-to-gpt/MIX-0054-OPS/manifest.json",
+  "research/mix54_ops.py"
  ],
- "completed_at_kst": "2026-10-11 13:30",
- "answering": "225+603e5e7c528b7764c90859a8218aac3657b9e288+RESULT+MIX-0054-OPS"
+ "completed_at_kst": null,
+ "answering": "226+2ba597775a1183dd976da8264e5320f6bb84fdf5+RESULT+MIX-0054-OPS",
+ "code_commit": "603e5e7c528b7764c90859a8218aac3657b9e288",
+ "code_commit_note": "research/mix54_ops.py와 ops_out.json은 이 커밋 뒤 바뀌지 않음 · 제출 head는 PR #226의 head(이 파일을 담은 커밋은 자기 해시를 적을 수 없음)",
+ "command_at_kst": null,
+ "time_note": "정확한 실행 시각을 기록하지 않아 만들어 넣지 않음(null) · 출력 파일은 커밋 603e5e7c5(2026-10-11 13:1x KST 이전)에 처음 담김"
 }
