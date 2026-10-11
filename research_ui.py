@@ -351,15 +351,19 @@ def live_top_bar():
     lights, at = api_lights()
     # 들고 있는 종목은 지금 값 · 오늘 +/− · 산 값 대비를 1분마다(사용자 2026-10-07 "코스피 장 마감처럼 내 지금 가격 … 실시간으로")
     books = {k: (repo_json_live(f'{k}/state.json'), repo_json_live(f'{k}/paper-orders.json'))
-             for k in ('daily-live', 'm15-live', 'idle-live', 'basket-live')}
-    quotes = held_quotes(*(s for s, _ in books.values()))
+             for k in ('daily-live', 'm15-live', 'idle-live', 'basket-live', 'overlay-live')}
+    quotes = held_quotes(*(s for k, (s, _) in books.items() if k != 'overlay-live'),
+                         {'positions': {c: {} for c in ((books['overlay-live'][0] or {}).get('held') or {})}})
     D = _fresh_ui()
+    ostate, obook = books['overlay-live']
+    final_on = D.final_active(ostate)
     st.markdown(D.top_bar(
         D.ledger_mini('1일봉 모의투자', *books['daily-live'], quotes=quotes),
-        D.ledger_mini('15분봉 모의투자', *books['m15-live'], quotes=quotes),
+        D.ledger_mini('15분봉 모의투자' + (' (최종 판에서 끔 · 든 것만 팖)' if final_on else ''), *books['m15-live'], quotes=quotes),
         D.kospi_box(kospi_last()) + D.lights_box(lights, at),
         D.ledger_mini('빈칸 엔진 · 코스닥 인버스 모의투자', *books['idle-live'], quotes=quotes)
-        + D.ledger_mini('사건 바구니 C 모의투자', *books['basket-live'], quotes=quotes)),
+        + D.ledger_mini('사건 바구니 C 모의투자', *books['basket-live'], quotes=quotes)
+        + D.overlay_mini(ostate, obook, quotes)),
         unsafe_allow_html=True)
 
 
@@ -626,14 +630,26 @@ def rules_board():
     dtoday, dstate, dalerts = daily_live()
     itoday, istate, ibook = idle_live()
     # 화살표를 눌러야 펼쳐짐(사용자 2026-10-03) — 1분마다 새로 그려도 펼친 상태가 남게 Streamlit 접기 칸(expander)을 씀
-    st.markdown('<div class="pxb" style="margin:6px 0 2px">' + section('통합 매매 규칙', '1일봉 50% · 15분봉 50% · 남는 돈은 빈칸 엔진 · 코스닥 과열 인버스 · 한투 모의투자')
+    D = _fresh_ui()
+    ostate, obook = repo_json_live('overlay-live/state.json'), repo_json_live('overlay-live/paper-orders.json')
+    k200 = repo_json_live('etf-data/069500.json') or {}
+    try:
+        regime = D.overlay_regime(k200.get('closes') or [])
+    except Exception:
+        regime = {}
+    final_on = D.final_active(ostate)
+    st.markdown('<div class="pxb" style="margin:6px 0 2px">' + section('통합 매매 규칙', D.mix_note(ostate))
                 + '</div>', unsafe_allow_html=True)
-    parts = (('15분봉 매매 규칙 · 장중 15분마다 · 모의투자 몫 50%',
+    parts = (('15분봉 매매 규칙 · 장중 15분마다 · ' + ('최종 판에서 끔(새 매수 없음 · 든 것은 제 규칙대로 팖)' if final_on
+                                                    else '모의투자 몫 50% · 최종 판 시작 날부터 끔'),
               M15_RULES + sortie_panel(today_a_group(), plan, mstate, malerts, name='15분봉')),
              ('1일봉 매매 규칙 · 하루 한 번 15:20 · 모의투자 몫 50%',
               CLOSE_RULES + close_panel(dtoday, dstate, dalerts)),
-             ('빈칸 엔진 · 코스닥 인버스 모의투자 · 하루 한 번 15:10 · 규칙들이 안 쓰는 돈',
-              IDLE_RULES + idle_panel(itoday, istate, ibook)))
+             ('빈칸 엔진 · 코스닥 인버스 모의투자 · 하루 한 번 15:10 · 규칙들이 안 쓰는 돈'
+              + (' · 사건 바구니 몫 30%' if final_on else ' · 사건 바구니 몫 50%(최종 판에서 30%)'),
+              IDLE_RULES + idle_panel(itoday, istate, ibook)),
+             ('덧붙임 · 오름장 레버리지 · 횡보장 인버스(각 40%) · 하루 한 번 15:10 엔진 뒤 · ' + ('켜짐' if final_on else '시작 날 정하면 켜짐'),
+              D.OVERLAY_RULES + D.overlay_panel(ostate, obook, regime)))
     for label, body in parts:
         with st.expander(label, expanded=False):
             st.markdown(body, unsafe_allow_html=True)
