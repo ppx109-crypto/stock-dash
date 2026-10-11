@@ -13,5 +13,5 @@
  "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
  "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
  "research/ens.py": "6e40a0f040b490018f820a894bf1a6ebdcd56146d8908d85ad6f13826798f4fb",
- "research/safelev.py": "f3e8c1affe183d8868a05bc1f2762b9acceb1710ba65c4395477865214731373"
+ "research/safelev.py": "237d1f4c4d8ffdd8db6f737ed460b0812337cd0cd47c054d523646377971c5a9"
 }

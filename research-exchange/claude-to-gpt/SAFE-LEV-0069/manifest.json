@@ -3,7 +3,7 @@
  "task_id": "SAFE-LEV-0069",
  "chain_id": "SAFE-LEV-0069",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-11 '백테스트하고 약점을 보완방법 연구해줘 지피티와'",
  "source_pr": "261",
@@ -18,8 +18,8 @@
   "research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
   "research/regime_rules4.py": "683176ec52621d31d421046555935bd0b1396150e6bbf17c7081688ce3364e30",
   "research/ens.py": "6e40a0f040b490018f820a894bf1a6ebdcd56146d8908d85ad6f13826798f4fb",
-  "research/safelev.py": "f3e8c1affe183d8868a05bc1f2762b9acceb1710ba65c4395477865214731373",
-  "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/safelev_test.py": "808d384d7106ba9d0b0acfe37c44edff5302a55a64388b6e5ed0c7fccdf0eb7b"
+  "research/safelev.py": "237d1f4c4d8ffdd8db6f737ed460b0812337cd0cd47c054d523646377971c5a9",
+  "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/safelev_test.py": "bcb8dd895e6958012a90ceea3d59a5789c397da65b7920821ad19525d85c2790"
  },
  "input_lock": {
   "root": "/home/user/stock-dash",
@@ -36,9 +36,9 @@
   "base_ledger:d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
   "snapshot:rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
   "research/ens.py": "6e40a0f040b490018f820a894bf1a6ebdcd56146d8908d85ad6f13826798f4fb",
-  "research/safelev.py": "f3e8c1affe183d8868a05bc1f2762b9acceb1710ba65c4395477865214731373"
+  "research/safelev.py": "237d1f4c4d8ffdd8db6f737ed460b0812337cd0cd47c054d523646377971c5a9"
  },
- "input_lock_sha256": "2f74b3a11d6e9a88df7a1a4bb2474d493c7c32cca0d4bd1583e15a6fee53c527",
+ "input_lock_sha256": "0b29061e1c6ed4d968f2a8f3ccb5c2c1bcdd92cb23736f26e156384f62e39c48",
  "grid": {
   "count": 60,
   "up_lev": [
@@ -61,7 +61,10 @@
   ],
   "side_inv": 0.4
  },
- "eval_cap": 60,
+ "eval_cap": {
+  "unique_settings": 60,
+  "attempt_cap_started": 66
+ },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/PLAN.md",
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/input_lock.json",
@@ -69,5 +72,6 @@
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/safelev_test.out",
   "research-exchange/claude-to-gpt/SAFE-LEV-0069/evidence/cut_test.out"
  ],
- "independent_check": "WAITING_DATA"
+ "independent_check": "WAITING_DATA",
+ "round2_note": "GPT #262 6110460054: 평가 상한 코드 집행 · 이어 하기 · 시험 11 ~ 14"
 }

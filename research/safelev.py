@@ -21,6 +21,9 @@ EVALS = BOX / "evals.jsonl"
 LOCK = BOX / "input_lock.json"
 FINAL = E.FINAL
 UP_LEV = [0.25, 0.30, 0.35, 0.40]
+UNIQUE = 60                                                     # 고유 설정(고정 격자)
+ATTEMPT_CAP = 66                                                # 총 STARTED 상한(실패 뒤 다시 돌리기 6번까지 · GPT #262)
+OUT = BOX / "evidence"
 CODE_FILES = ["research/safelev.py"] + E.CODE_FILES
 
 
@@ -62,26 +65,50 @@ def log(rec):
         fh.write(json.dumps(rec, ensure_ascii=False) + "\n"); fh.flush(); os.fsync(fh.fileno())
 
 
-def evaluate(name, lv, n, p, cfg):
+def prior():
+    """앞서 남은 기록: STARTED 수 · FAILED 수 · DONE(결과 통째) 열쇠별."""
+    st, fl, done = 0, 0, {}
+    if EVALS.exists():
+        for line in EVALS.read_text(encoding="utf-8").splitlines():
+            r = json.loads(line)
+            st += r["status"] == "STARTED"
+            fl += r["status"] == "FAILED"
+            if r["status"] == "DONE":
+                done[r["key"]] = r
+    return st, fl, done
+
+
+def evaluate(name, lv, n, p, cfg, done):
     key = json.dumps(cfg, sort_keys=True, ensure_ascii=False)
-    log({"status": "STARTED", "key": key, "at": time.strftime("%Y-%m-%d %H:%M:%S")})
-    try:
-        r = E.both(cfg)
-    except Exception as e:
-        log({"status": "FAILED", "key": key, "error": repr(e)}); raise
-    log({"status": "DONE", "key": key, "full_annual": r["full"]["annual_pct"], "full_month": r["full"]["worst_full_month_pct"]})
+    if key in done:                                              # 끝난 설정은 다시 셈하지 않음(STARTED 안 늘림)
+        r = {"full": done[key]["full"], "dev": done[key]["dev"]}
+    else:
+        log({"status": "STARTED", "key": key, "at": time.strftime("%Y-%m-%d %H:%M:%S")})
+        try:
+            r = E.both(cfg)
+        except Exception as e:
+            log({"status": "FAILED", "key": key, "error": repr(e)}); raise
+        log({"status": "DONE", "key": key, "full": r["full"], "dev": r["dev"]})
     return {"name": name, "up_lev": lv, "n": n, "persist": p, "cfg": cfg, **r}
 
 
 def run():
     verify_inputs()
+    g = grid()
+    assert len(g) == UNIQUE
+    st, fl, done = prior()
+    todo = [x for x in g if json.dumps(x[4], sort_keys=True, ensure_ascii=False) not in done]
+    if st + len(todo) > ATTEMPT_CAP:                             # 첫 STARTED 전에 멈춤(fail-closed)
+        sys.exit(f"평가 상한 넘음(멈춤): 앞선 STARTED {st} + 남은 {len(todo)} > {ATTEMPT_CAP}")
     D.DATA, D.FEAT = None, None
-    rows = [evaluate(*g) for g in grid()]
+    rows = [evaluate(*x, done) for x in g]
     best, per = pick(rows)
-    (BOX / "evidence").mkdir(parents=True, exist_ok=True)
-    (BOX / "evidence/all_rows.json").write_text(json.dumps(rows, ensure_ascii=False, indent=0))
+    st2, fl2, done2 = prior()
+    OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "all_rows.json").write_text(json.dumps(rows, ensure_ascii=False, indent=0))
     now = {str(lv): next(r["full"] for r in rows if r["up_lev"] == lv and r["n"] == 24 and r["persist"] == 3) for lv in UP_LEV}
     print(json.dumps({"verdict": f"SAFE_SIZE_L{best}" if best is not None else "NONE_IN_GRID", "per_lev": {str(k): v for k, v in per.items()},
+                      "attempts": {"started": st2, "done_unique": len(done2), "failed": fl2, "unique_settings": UNIQUE, "cap": ATTEMPT_CAP},
                       "n24_p3": {k: {"annual_pct": v["annual_pct"], "worst_full_month_pct": v["worst_full_month_pct"], "worst_day_pct": v["worst_day_pct"]} for k, v in now.items()}},
                      ensure_ascii=False))
 

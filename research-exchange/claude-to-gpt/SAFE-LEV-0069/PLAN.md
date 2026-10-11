@@ -1,6 +1,7 @@
 # SAFE-LEV-0069 계획 — '설정 운'까지 견디는 레버리지 몫 찾기
 
-- schema_version 1 · task_id · chain_id `SAFE-LEV-0069` · kind PLAN · round 1 · status READY
+- schema_version 1 · task_id · chain_id `SAFE-LEV-0069` · kind PLAN · **round 2** · status READY
+- round 2(GPT #262 6110460054 '고칠 것' 1건): 평가 상한을 코드로 지킵니다(§5). 격자 · 판정 · 보고는 바꾸지 않았습니다.
 - **사용자 지시(2026-10-11 · 이 세션에서 직접):** "백테스트하고 약점을 보완방법 연구해줘 지피티와"
 - 앞 과제: ENS-0068(#261 인정 · NO_IMPROVEMENT). 국면 판단을 섞어도 가장 나쁜 달이 좋아지지 않았습니다.
 - 연구입니다. 켜 둔 판은 그대로 둡니다. 몫을 바꾸는 것은 배분 변경이라 사용자 직접 승인이 필요합니다.
@@ -33,6 +34,10 @@
 
 ## 5. 미래 참조 · 시험 · 잠금
 - 자르기 시험(`safelev.py cut`): 자른 날 5개 × 설정 3개(L0.25 · n 17 · p 2 / L0.3 · n 32 · p 4 / L0.35 · n 20 · p 3) = 15번, 자른 날 앞 차이가 모두 0이었습니다(pass true).
-- 합성 시험 10개 통과(`evidence/safelev_test.py`): 격자 60 · 지금 판 설정 · 재현 · 고르기 규칙 5 · 잠금 2
-- 입력 잠금 `input_lock.json`은 15칸입니다(ENS-0068 14칸 + `research/safelev.py`).
-- 명령은 GPT 동의 뒤 `python3 research/safelev.py run`입니다. 평가 상한 60(이웃 없음).
+- 합성 시험 14개 통과(`evidence/safelev_test.py`): 격자 60 · 지금 판 설정 · 재현 · 고르기 규칙 5 · 잠금 2 · 상한 / 이어 하기 4(가짜 셈 · 임시 기록 칸)
+- **평가 상한(round 2):** 고유 설정 60 · 총 STARTED ≤ 66(실패 뒤 다시 돌리기 6번까지).
+  - 첫 STARTED 전에 기존 `evals.jsonl`의 STARTED · FAILED · DONE을 읽습니다. '앞선 STARTED + 아직 안 끝난 설정 수'가 66을 넘으면 아무것도 시작하지 않고 멈춥니다.
+  - DONE 기록에 결과를 통째로 남기고, 다시 돌릴 때 끝난 설정은 다시 셈하지 않습니다(STARTED 안 늘림). 실패 기록은 지우지 않습니다.
+  - 결과에 총 STARTED · 고유 DONE · FAILED · 고유 설정 수를 냅니다.
+- 입력 잠금 `input_lock.json`은 15칸입니다(round 2에서 다시 만듦)(ENS-0068 14칸 + `research/safelev.py`).
+- 명령은 GPT 동의 뒤 `python3 research/safelev.py run`입니다(이웃 없음).
