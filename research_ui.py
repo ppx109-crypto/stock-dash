@@ -553,13 +553,27 @@ def group_board_ui(graded):
     buckets, pending = group_buckets(graded, *board_marks())
     h_near, d_near, h_basis, d_basis = near_lists()
     near = {"A": ("15분봉 매수 후보(충족 미달)", h_near, h_basis), "B": ("1일봉 매수 후보(충족 미달)", d_near, d_basis)}
+    # 최종 판(MIX-0054)에서는 15분봉이 꺼져 첫 칸을 레버리지 봇 칸으로 바꿈(사용자 2026-10-12 "한투 최신 통합 봇으로")
+    D = _fresh_ui()
+    ostate = repo_json_live('overlay-live/state.json')
+    lever = D.final_active(ostate)
+    if lever:
+        near.pop("A")
     columns = st.columns(len(GROUP_TITLES))
     for column, key in zip(columns, GROUP_TITLES):
         klass = GROUP_TITLES[key][2]
         rows = buckets[key]
         with column, st.container(border=True, key=f'pxgrp-{klass}'):
-            st.markdown(slot_head(key, len(rows)), unsafe_allow_html=True)
-            if not rows:
+            if lever and key == "A":
+                try:
+                    regime = D.overlay_regime((repo_json_live('etf-data/069500.json') or {}).get('closes') or [])
+                except Exception:
+                    regime = {}
+                st.markdown(D.lever_card(ostate, regime, len(rows)), unsafe_allow_html=True)
+                # 15분봉이 아직 든 종목은 아래 단추로 그대로 보임(새로 사지 않고 제 규칙대로 팖)
+            else:
+                st.markdown(slot_head(key, len(rows)), unsafe_allow_html=True)
+            if not rows and not (lever and key == "A"):
                 st.caption('해당 종목 없음')
             for row in rows[:SHOWN_PER_GROUP]:
                 st.button(chip_label(row), key=f'pxpick-{key}-{row["code"]}',
@@ -625,7 +639,7 @@ def missing_reports(state):
 
 @st.fragment(run_every=60)
 def rules_board():
-    """통합 매매 규칙 칸(15분봉 · 1일봉 · 빈칸 엔진) — 1분마다 새 파일로 다시 그림(사용자 2026-10-03 "실시간 반영")."""
+    """통합 매매 규칙 칸(1일봉 · 빈칸 엔진 · 레버리지 봇 · 15분봉) — 1분마다 새 파일로 다시 그림(사용자 2026-10-03 "실시간 반영")."""
     plan, mstate, malerts = m15_live()
     dtoday, dstate, dalerts = daily_live()
     itoday, istate, ibook = idle_live()
@@ -640,16 +654,18 @@ def rules_board():
     final_on = D.final_active(ostate)
     st.markdown('<div class="pxb" style="margin:6px 0 2px">' + section('통합 매매 규칙', D.mix_note(ostate))
                 + '</div>', unsafe_allow_html=True)
-    parts = (('15분봉 매매 규칙 · 장중 15분마다 · ' + ('최종 판에서 끔(새 매수 없음 · 든 것은 제 규칙대로 팖)' if final_on
-                                                    else '모의투자 몫 50% · 최종 판 시작 날부터 끔'),
-              M15_RULES + sortie_panel(today_a_group(), plan, mstate, malerts, name='15분봉')),
-             ('1일봉 매매 규칙 · 하루 한 번 15:20 · 모의투자 몫 50%',
+    m15 = ('15분봉 매매 규칙 · 장중 15분마다 · ' + ('최종 판에서 끔(새 매수 없음 · 든 것은 제 규칙대로 팖)' if final_on
+                                                 else '모의투자 몫 50% · 최종 판 시작 날부터 끔'),
+           M15_RULES + sortie_panel(today_a_group(), plan, mstate, malerts, name='15분봉'))
+    parts = (('1일봉 매매 규칙 · 하루 한 번 15:20 · 모의투자 몫 50%',
               CLOSE_RULES + close_panel(dtoday, dstate, dalerts)),
              ('빈칸 엔진 · 코스닥 인버스 모의투자 · 하루 한 번 15:10 · 규칙들이 안 쓰는 돈'
               + (' · 사건 바구니 몫 30%' if final_on else ' · 사건 바구니 몫 50%(최종 판에서 30%)'),
               IDLE_RULES + idle_panel(itoday, istate, ibook)),
-             ('덧붙임 · 오름장 레버리지 · 횡보장 인버스(각 40%) · 하루 한 번 15:10 엔진 뒤 · ' + ('켜짐' if final_on else '시작 날 정하면 켜짐'),
+             ('레버리지 봇 · 오름장 레버리지 · 횡보장 인버스(각 40%) · 하루 한 번 15:10 엔진 뒤 · ' + ('켜짐' if final_on else '시작 날 정하면 켜짐'),
               D.OVERLAY_RULES + D.overlay_panel(ostate, obook, regime)))
+    # 최종 판: 운영 중인 봇 먼저 · 꺼진 15분봉은 맨 뒤(사용자 2026-10-12)
+    parts = parts + (m15,) if final_on else (m15,) + parts
     for label, body in parts:
         with st.expander(label, expanded=False):
             st.markdown(body, unsafe_allow_html=True)

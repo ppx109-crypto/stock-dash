@@ -297,7 +297,8 @@ if st.session_state.get("force_nav"):
     st.session_state.nav_choice = st.session_state.pop("force_nav")
 
 # 확률 검증 · 계좌 연결 · 교육자료는 쓰지 않아 메뉴에서 뺌(사용자 요청 2026-10-02). 화면 파일(study_ui · portfolio_ui · education)은 남겨 둠.
-NAV_ITEMS = ["오늘의 투자판단", "PreDash 교실", "설정"]
+# 키움 개발실: 키움 미니 코스피200 선물 연구 결과(사용자 2026-10-12)
+NAV_ITEMS = ["오늘의 투자판단", "키움 개발실", "PreDash 교실", "설정"]
 legacy = {"내 종목":"오늘의 투자판단", "통합 분석":"오늘의 투자판단", "홈":"오늘의 투자판단", "AI 인사이트":"오늘의 투자판단", "관심 종목":"오늘의 투자판단", "포트폴리오":"오늘의 투자판단",
           "확률 검증":"오늘의 투자판단", "계좌 연결":"오늘의 투자판단", "교육자료":"오늘의 투자판단"}
 current = st.session_state.get("nav_choice", "오늘의 투자판단")
@@ -788,6 +789,9 @@ def render_placeholder(title, subtitle, required):
 
 if nav == "오늘의 투자판단":
     render_research(store, state, sample_mode)
+elif nav == "키움 개발실":
+    from kiwoom_ui import render_kiwoom
+    render_kiwoom()
 elif nav == "PreDash 교실":
     # 수강생 실습 화면(planxs-ai/PreDash-Classroom). 이 메뉴를 열 때만 불러옵니다.
     from classroom_ui import render_classroom
