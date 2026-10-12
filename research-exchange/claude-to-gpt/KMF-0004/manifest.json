@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0004",
  "chain_id": "KMF-0004",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-13 한투 1일봉 EMA 응용 · RNA 위주 · 변화에도 살아남기 · 1분봉 신호 안 씀 · GPT와 아이디어",
- "completed_at_kst": "2026-10-13 00:36",
- "completed_note": "실행 전 · 성과 셈 안 함(거래 수만 봄)",
+ "completed_at_kst": "2026-10-13 00:39",
+ "completed_note": "run 00:38:55 ~ 58 · 개발 14 · 확인 0",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
@@ -52,7 +52,13 @@
   "research-exchange/claude-to-gpt/KMF-0004/evidence/kmf4_test.out",
   "research-exchange/claude-to-gpt/KMF-0004/evidence/guard.out",
   "research-exchange/claude-to-gpt/KMF-0004/evidence/guard_selftest.out",
-  "research-exchange/claude-to-gpt/KMF-0004/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0004/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0004/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/pick.json"
  ],
  "account_criteria": "WAITING_DATA",
  "cumulative_kmf_before": {
@@ -62,6 +68,26 @@
   "test2": 0
  },
  "source_pr": 282,
- "source_head_sha": "ecce772a36adedeb4bdbceeb6238ddf6048ddd95(round 1 head · 이 기록 커밋이 round 2 head)",
- "code_commit": "d99cbf2f7caf2c4710d59b05cfd95fe83ab57651"
+ "source_head_sha": "ecce772a36adedeb4bdbceeb6238ddf6048ddd95",
+ "code_commit": "d99cbf2f7caf2c4710d59b05cfd95fe83ab57651",
+ "verdict": "NO_EDGE",
+ "agreed_head_sha": "38fcf42ee0b023b6f25cd34b8b0b3f7011f4b0dc",
+ "runs": {
+  "dev": 14,
+  "distinct_rules": 10,
+  "val": 0,
+  "test1": 0,
+  "test2": 0
+ },
+ "cumulative_kmf": {
+  "dev": 58,
+  "val": 5,
+  "test1": 2,
+  "test2": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "e78d2c16cf22c6b2ac7ef41d13b9cb1e75d9f961279408b88287552eec3c79ba",
+  "pick.json": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+  "run.out": "8daff28a568fd91748fb72ec4c909a06e0c78f08ce06e65a247a4fe2e7e8ded5"
+ }
 }
