@@ -24,4 +24,5 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           IDLE_START: '20261005'
+          MIX54_START: '20261011'           # 레버리지 봇(최종 판) 시작 날 — 일봉 작업과 같은 값
         run: python run_watch.py
