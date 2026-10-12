@@ -12,8 +12,8 @@
 시험 2(판정 · 미리 고정 · round 2):
   자료 = kiwoom-data/mini_1min_test2.csv(10-13부터 · 따로 잠금 PR + GPT 동의 뒤 test2_ok.json에 해시가 적혀야만 엶)
   날 고르기 = 10-13부터 날짜 순으로 '완전한 거래일'만 세어 **처음 20일** 딱 그만큼(더도 덜도 아님)
-    완전한 거래일: 09:00 ~ 15:34 안 1분봉 360줄 이상 · 줄 사이 빈 분이 5분 넘는 곳 없음 · 그날 첫 분 ≤ 10:00
-    불완전한 날은 손익에서 빼고 목록으로 보고(다음 날로 채움 · 20일 이후 날은 안 셈)
+    완전한 거래일(round 3): 같은 분 중복 줄 없음 · 고유 분 360개 이상 · 첫 분 ≤ 09:05 · 마지막 분 ≥ 15:29 · 빈 분 ≤ 5분
+    결손일은 손익 · 셈 상태(EMA · ATR) 모두에서 빼고(없던 날로 봄) 목록으로 보고 · 다음 날로 채움 · 20번째 날 뒤 줄은 안 셈
   워밍업 = 개발 자료(10-13 앞 전부)에 이어서 EMA · ATR을 셈(라이브 봇과 같음) · 손익은 고른 20일만 더함
   셈 = 개발과 같은 simulate(다음 봉 시가 · −25p · 마지막 봉 정리 · 편도 0.04p) · 고른 칸 하나만
   PASS = 합 > 0 · 하루 평균 ≥ 1.69p(개발 3.379의 절반) · 가장 나쁜 날 ≥ −25.5p · 아니면 NO_EDGE
@@ -185,20 +185,29 @@ TEST2_OUT = BOX / "evidence/test2.json"
 
 
 def complete_days(rows, start=K.TEST2_FROM):
-    """완전한 거래일(1분봉 기준) 목록과 빠진 날 사유."""
+    """완전한 거래일(1분봉 · 장 09:00 ~ 15:34) 목록과 빠진 날 사유(round 3 고정).
+    완전 = 같은 분 중복 줄 없음 · 고유 분 360개 이상 · 첫 분 ≤ 09:05(545) · 마지막 분 ≥ 15:29(929) · 이웃 분 사이 빈 곳 ≤ 5분."""
     byd = defaultdict(list)
     for r in rows:
         if r[0] >= start:
             byd[r[0]].append(r[1])
     good, bad = [], {}
     for d in sorted(byd):
-        ms = sorted(byd[d])
+        raw = byd[d]
+        ms = sorted(set(raw))
+        dup = len(raw) - len(ms)
         gaps = max((b2 - a for a, b2 in zip(ms, ms[1:])), default=0)
-        if len(ms) >= 360 and gaps <= 5 and ms[0] <= 600:
+        if dup == 0 and len(ms) >= 360 and ms[0] <= 545 and ms[-1] >= 929 and gaps <= 5:
             good.append(d)
         else:
-            bad[d] = {"rows": len(ms), "max_gap": gaps, "first_min": ms[0]}
+            bad[d] = {"rows": len(raw), "unique_min": len(ms), "dup_rows": dup, "max_gap": gaps, "first_min": ms[0], "last_min": ms[-1]}
     return good, bad
+
+
+def test2_rows(rows, pick_days):
+    """시험 2 셈 입력: 10-13 앞 개발 자료 전부(워밍업) + 고른 완전한 날의 줄만. 결손일 줄은 상태(EMA · ATR)에도 넣지 않음(없던 날로 봄)."""
+    keep = set(pick_days)
+    return [r for r in rows if r[0] < K.TEST2_FROM or r[0] in keep]
 
 
 def test2():
@@ -217,7 +226,7 @@ def test2():
         sys.exit(f"완전한 거래일 {len(good)}일 < {TEST2_N}일(멈춤 · 아직 판정 안 함)")
     pick_days = good[:TEST2_N]
     last = pick_days[-1]
-    rows = [r for r in rows if r[0] <= last]              # 20번째 날 뒤 자료는 셈에 안 넣음
+    rows = test2_rows(rows, pick_days)                    # 결손일 · 20번째 날 뒤 줄은 셈 상태에도 안 넣음
     b = prep(rows)
     days, trades = K.simulate(b, signals(b, grid()[0]))
     sel = {d: days.get(d, 0.0) for d in pick_days}

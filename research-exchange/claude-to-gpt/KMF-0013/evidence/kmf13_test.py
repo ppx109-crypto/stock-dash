@@ -47,11 +47,19 @@ chk("8 잠금 통과", bool(M.verify_inputs()))
 # 아침 관망: 셋째 날(봉 152부터)은 첫 봉에 이미 정배열 → 그날 오름이 이어지는 동안 들기 신호 없음
 w = M.signals(mk([100 + 0.2 * i for i in range(228)]), pick)
 chk("4b 아침 관망: 첫 봉에 이미 배열이면 그날 새로 안 듦(밤사이 추세 따라 들지 않음)", all(x is None for x in w[152:228]) and 1 in w[76:152])
-# 9 완전한 거래일 판별(가짜 줄)
-full = [("20261013", m, 1, 1, 1, 1, 1) for m in range(540, 935)]
-holey = [("20261014", m, 1, 1, 1, 1, 1) for m in range(540, 935) if not 700 <= m < 710]
-short = [("20261015", m, 1, 1, 1, 1, 1) for m in range(540, 700)]
-g, bad = M.complete_days(full + holey + short)
-chk("9 완전한 날만 셈(빈 분 5분 넘음 · 줄 모자람은 뺌)", g == ["20261013"] and set(bad) == {"20261014", "20261015"})
+# 9 완전한 거래일 판별(가짜 줄 · round 3)
+row = lambda d, m: (d, m, 1, 1, 1, 1, 1)
+full = [row("20261013", m) for m in range(540, 935)]
+holey = [row("20261014", m) for m in range(540, 935) if not 700 <= m < 710]
+short = [row("20261015", m) for m in range(540, 700)]
+dup = [row("20261016", m) for m in range(540, 720)] * 2                        # 중복 줄로 360줄 채움
+late = [row("20261019", m) for m in range(575, 935)]                           # 09:35 ~ 15:34 연속 360줄(앞 잘림)
+early = [row("20261020", m) for m in range(540, 900)]                          # 09:00 ~ 14:59 연속 360줄(뒤 잘림)
+g, bad = M.complete_days(full + holey + short + dup + late + early)
+chk("9 완전한 날만: 빈 곳 · 줄 모자람 · 중복 줄 · 앞 잘림 · 뒤 잘림은 모두 뺌",
+    g == ["20261013"] and set(bad) == {"20261014", "20261015", "20261016", "20261019", "20261020"} and bad["20261016"]["dup_rows"] == 180)
+dev_row = row("20261012", 600)
+kept = M.test2_rows([dev_row] + full + holey, ["20261013"])
+chk("9b 결손일 줄은 셈 상태에도 안 넣음 · 개발 자료(워밍업)는 그대로", dev_row in kept and all(r[0] != "20261014" for r in kept) and len(kept) == 1 + len(full))
 chk("10 시험 2는 잠금 동의 파일 없으면 멈춤", not M.TEST2_OK.exists() and M.TEST2_N == 20)
 print(f"모두 통과 {ok}개")

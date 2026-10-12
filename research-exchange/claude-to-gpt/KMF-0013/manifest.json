@@ -3,7 +3,7 @@
  "task_id": "KMF-0013",
  "chain_id": "KMF-0013",
  "kind": "PLAN",
- "round": "2",
+ "round": "3",
  "status": "READY",
  "user_instruction": "2026-10-13 목표 10개월 +1000p · 추세장봇 먼저 RNA · 국면 여러 번 봐도 됨 · 앞뒤 잘라서 말고 한번에 다 보고 개발 · −25p",
  "day_stop_p": -25.0,
@@ -35,9 +35,9 @@
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
-  "research/kmf13.py": "65890efe24ebc348b10e76be35119438fd2fcedeb909544feeaac07ae14764d0",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
   "research/kmf_guard.py": "13802e3eb2a4decfca35cfb2924684c99eff9f60035c08acc05d09b9e7ec8ea3",
-  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.py": "fe0df2147ba9f8a77f1b0c86343434c90278ea7fbaa5df6e86a9e6972e4be880",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.py": "8a335082e7183bb7ae04be100b37f6f8290aa7c2c10ceff48b8c713fef85a90d",
   "research-exchange/claude-to-gpt/KMF-0013/explore/regimes.py": "d465e6380497aa2e6e9a64214ad9c4df5a1482433de2c72074f73657115e35b5",
   "research-exchange/claude-to-gpt/KMF-0013/explore/round2.py": "0fff51d21004747012c54e316fe7dcd03b10002e49d14df51783efb7edb1a903",
   "research-exchange/claude-to-gpt/KMF-0013/explore/round3.py": "f76a638fe6edc245a206ed4468d8e531fab16541c55551e758b3033daac63fba",
@@ -48,12 +48,12 @@
  "input_lock": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
-  "research/kmf13.py": "65890efe24ebc348b10e76be35119438fd2fcedeb909544feeaac07ae14764d0",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
  },
- "input_lock_sha256": "145dc7e4d37db9fa1e432c729d52402426b5e5a74fe1bcee07cba64d99e5c6ca",
- "plan_sha256": "07ae9f6e8bbf2fb31bd88737d50f2580b72f544269f68aeba2c767c867c0f0f6",
+ "input_lock_sha256": "a32ac55de164ed5f61df8adf1b5184610e5015bb9b4c04425751f7b59b93eade",
+ "plan_sha256": "12e882efab02c2d602dff1c9828605c447af2838116a9c9a7b620d199d1d4518",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/KMF-0013/PLAN.md",
   "research-exchange/claude-to-gpt/KMF-0013/evidence/contracts_from_KMF-0012.out",
@@ -100,5 +100,6 @@
  "round2_disclosure": {
   "morning_watch": "처음 코드에 숨어 있던 동작을 드러내 적음 · 없애면 +210.9 · 결과 본 뒤 이름 붙임",
   "delay_check": "0 ~ 5분 늦게 +561.8 ~ +645.8 · 비용 2배 +609.5"
- }
+ },
+ "test2_complete_day": "중복 줄 없음 · 고유 분 ≥ 360 · 첫 분 ≤ 09:05 · 마지막 분 ≥ 15:29 · 빈 곳 ≤ 5분 · 결손일은 손익 · 셈 상태 모두에서 뺌"
 }
