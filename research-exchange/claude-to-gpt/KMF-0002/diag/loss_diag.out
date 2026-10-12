@@ -1,0 +1,154 @@
+{
+ "botORB_or30_filterFalse": {
+  "days": 98,
+  "total_p": 205.46,
+  "gross_before_cost_p": 245.7,
+  "cost_p": 40.24,
+  "trades": 503,
+  "trades_per_day_avg": 5.13,
+  "trades_per_day_max": 21,
+  "stop_days": 14,
+  "stop_days_sum_p": -168.0,
+  "stop_days_avg_trades": 7.71,
+  "good_days_avg_trades": 3.08,
+  "or30_avg": {
+   "stop": 19.93,
+   "good": 12.29
+  },
+  "after_range_avg": {
+   "stop": 36.36,
+   "good": 33.39
+  },
+  "abs_trend_avg": {
+   "stop": 9.79,
+   "good": 24.76
+  },
+  "by_exit_hour_p": {
+   "9시": [
+    -81.42,
+    63
+   ],
+   "10시": [
+    -203.92,
+    137
+   ],
+   "11시": [
+    -96.72,
+    84
+   ],
+   "12시": [
+    -50.8,
+    59
+   ],
+   "13시": [
+    -39.8,
+    55
+   ],
+   "14시": [
+    -34.96,
+    45
+   ],
+   "15시": [
+    713.08,
+    60
+   ]
+  },
+  "by_or30_band_p": {
+   "좁음": [
+    33.54,
+    32,
+    1
+   ],
+   "중간": [
+    30.98,
+    33,
+    6
+   ],
+   "넓음": [
+    140.94,
+    33,
+    7
+   ]
+  },
+  "or30_cut_p": [
+   9.12,
+   13.5
+  ]
+ },
+ "botTR_spansmid_exit_gap2": {
+  "days": 98,
+  "total_p": 141.86,
+  "gross_before_cost_p": 165.86,
+  "cost_p": 24.0,
+  "trades": 300,
+  "trades_per_day_avg": 3.06,
+  "trades_per_day_max": 8,
+  "stop_days": 32,
+  "stop_days_sum_p": -384.0,
+  "stop_days_avg_trades": 1.88,
+  "good_days_avg_trades": 3.02,
+  "or30_avg": {
+   "stop": 18.42,
+   "good": 11.47
+  },
+  "after_range_avg": {
+   "stop": 31.18,
+   "good": 28.55
+  },
+  "abs_trend_avg": {
+   "stop": 15.55,
+   "good": 17.51
+  },
+  "by_exit_hour_p": {
+   "9시": [
+    -323.0,
+    42
+   ],
+   "10시": [
+    -108.92,
+    48
+   ],
+   "11시": [
+    50.24,
+    36
+   ],
+   "12시": [
+    47.74,
+    40
+   ],
+   "13시": [
+    10.1,
+    37
+   ],
+   "14시": [
+    38.88,
+    43
+   ],
+   "15시": [
+    426.82,
+    54
+   ]
+  },
+  "by_or30_band_p": {
+   "좁음": [
+    38.96,
+    32,
+    4
+   ],
+   "중간": [
+    62.42,
+    33,
+    9
+   ],
+   "넓음": [
+    40.48,
+    33,
+    19
+   ]
+  },
+  "or30_cut_p": [
+   9.12,
+   13.5
+  ]
+ }
+}
