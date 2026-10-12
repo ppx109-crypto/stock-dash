@@ -1,0 +1,4 @@
+{"status": "STARTED", "stage": "val", "at": "2026-10-12 16:08:29"}
+{"status": "DONE", "stage": "val", "val_total_p": 86.9, "val_pass": true}
+{"status": "STARTED", "stage": "test1", "at": "2026-10-12 16:08:29"}
+{"status": "DONE", "stage": "test1", "test1_total_p": 2.1, "pass1": true}

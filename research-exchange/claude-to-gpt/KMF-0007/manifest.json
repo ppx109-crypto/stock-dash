@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0007",
  "chain_id": "KMF-0007",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 1분봉 신호 안 씀 · 변화에도 살아남기 · 리더가 알아서",
- "completed_at_kst": "2026-10-13 01:04",
- "completed_note": "실행 전 · 성과 셈 안 함",
+ "completed_at_kst": "2026-10-13 01:08",
+ "completed_note": "run 01:08:28 ~ 29 · 재사용 재집계 확인 1 · 시험 1 1",
  "cell": "KMF-0005 N60_day_e1",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
@@ -30,8 +30,26 @@
   "research-exchange/claude-to-gpt/KMF-0007/PLAN.md",
   "research-exchange/claude-to-gpt/KMF-0007/input_lock.json",
   "research-exchange/claude-to-gpt/KMF-0007/evidence/kmf7_test.py",
-  "research-exchange/claude-to-gpt/KMF-0007/evidence/kmf7_test.out"
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/kmf7_test.out",
+  "research-exchange/claude-to-gpt/KMF-0007/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0007/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/result.json"
  ],
  "account_criteria": "WAITING_DATA",
- "independence": "비독립(KMF-0006 pool_months에 이 칸 달별 합 있음)"
+ "independence": "비독립(KMF-0006 pool_months에 이 칸 달별 합 있음)",
+ "verdict": "WAITING_DATA(시험 2)",
+ "source_pr": 291,
+ "source_head_sha": "2a41ca0a066ad512279b15e76d944188669cc05b",
+ "code_commit": "2a41ca0a066ad512279b15e76d944188669cc05b",
+ "runs": {
+  "val_reused": 1,
+  "test1_reused": 1,
+  "test2": 0
+ },
+ "result_sha256": {
+  "result.json": "10fbed84f498817c5bb0b0b6dd414037e6ba341c075ac1967afe788a550d39d3",
+  "run.out": "0756f57d0d11de7bcb23b219ce270af90cbc6befd2e9d559850325260757a110"
+ }
 }
