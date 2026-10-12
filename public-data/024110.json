@@ -38,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-05",
+  "fetched": "2026-10-12",
   "disclosures": [
     {
       "title": "주요사항보고서(상각형조건부자본증권발행결정)",
@@ -74,11 +74,6 @@
       "title": "결산실적공시예고(안내공시)              ",
       "date": "20260720",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800463"
-    },
-    {
-      "title": "현금ㆍ현물배당결정              ",
-      "date": "20260713",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260713800760"
     }
   ]
 }
