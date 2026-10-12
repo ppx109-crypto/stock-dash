@@ -1,0 +1,45 @@
+{
+ "ok": {
+  "gpt_pr": 278,
+  "gpt_comment_id": 6126986022,
+  "gpt_comment_url": "https://github.com/ppx109-crypto/stock-dash/pull/278#issuecomment-6126986022",
+  "reviewed_head_sha": "3a2938eecc7a0ae8a5225e73739575cc70170608",
+  "pick": "botORB1_or60_max_entries2_stoprange",
+  "note": "시험 1(2026-09-01 ~ 10-12) 비독립 · 늘 WAITING_DATA · 채택은 시험 2에서만"
+ },
+ "name": "botORB1_or60_max_entries2_stoprange",
+ "cfg": {
+  "bot": "ORB1",
+  "or": 60,
+  "max_entries": 2,
+  "stop": "range"
+ },
+ "test1": {
+  "days": 26,
+  "total_p": 15.6,
+  "per_day_p": 0.6,
+  "worst_day_p": -12.0,
+  "best_day_p": 20.92,
+  "win_days": 12,
+  "loss_days": 14,
+  "trades": 30,
+  "win_rate": 0.467,
+  "mdd_p": -75.72,
+  "months": {
+   "202609": -49.1,
+   "202610": 64.7
+  },
+  "stop_days": 7,
+  "worst_month_p": -49.1,
+  "per_day_ci95_p": [
+   -3.238,
+   4.614
+  ],
+  "won": {
+   "total": 780000,
+   "worst_day": -600000,
+   "worst_month": -2455000
+  }
+ },
+ "pass1": true
+}

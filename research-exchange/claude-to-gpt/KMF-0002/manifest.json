@@ -7,7 +7,7 @@
  "status": "READY",
  "user_instruction": "2026-10-12 한번에 안 나옴 · 한투처럼 기본 봇 → 보완 봇 → 손실 분석 · 줄이기 · 천천히 · 리더가 알아서",
  "prev_task": "KMF-0001(#273 · 결과 #275 NO_EDGE)",
- "completed_at_kst": "2026-10-12 23:58",
+ "completed_at_kst": "2026-10-13 00:08",
  "completed_note": "run 23:57:09 ~ 23:57:11 · 시험 1 · 2 안 함",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
@@ -68,7 +68,11 @@
   "research-exchange/claude-to-gpt/KMF-0002/evidence/concentration.py",
   "research-exchange/claude-to-gpt/KMF-0002/evidence/concentration.out",
   "research-exchange/claude-to-gpt/KMF-0002/evidence/guard.out",
-  "research-exchange/claude-to-gpt/KMF-0002/evidence/guard_selftest.out"
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0002/TEST1.md",
+  "research-exchange/claude-to-gpt/KMF-0002/final_ok.json",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/final.json",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/final.out"
  ],
  "account_criteria": "WAITING_DATA",
  "independent_check": "시험 2(새 자료)",
@@ -82,7 +86,7 @@
   "dev_calcs": 12,
   "distinct_rules": 9,
   "val_cells": 1,
-  "test1": 0,
+  "test1": 1,
   "test2": 0
  },
  "guard": {
@@ -95,6 +99,16 @@
   "dev_rows.json": "137caad19abeb94ce0a15f7926e26636bb9b3fc1e70f47ff8d7884264894e428",
   "pick.json": "13491c40a1c81a1e399bdcbc5062815e009006751c6e81db897477726e349a07",
   "concentration.out": "371140ec0efc2a5c9217a6cae3ad5ded6d737096147a7d685b8b0601754a5b92",
-  "guard.out": "f301da61512467def2be5ef5451a9cb8b2de09232774e472259fa1e24afaa878"
+  "guard.out": "f301da61512467def2be5ef5451a9cb8b2de09232774e472259fa1e24afaa878",
+  "final.json": "5394aae689dc0df3b4fc56943c607fe90a294f5d3da700a429bbe5506bdc4b81"
+ },
+ "source_pr": 278,
+ "source_head_sha": "3a2938eecc7a0ae8a5225e73739575cc70170608",
+ "test1": {
+  "ran_at_kst": "2026-10-13 00:07:44",
+  "pass1": true,
+  "total_p": 15.6,
+  "verdict": "WAITING_DATA(시험 2)",
+  "gpt_comment": 6126986022
  }
 }
