@@ -3,24 +3,24 @@
  "task_id": "KMF-0001",
  "chain_id": "KMF-0001",
  "kind": "PLAN",
- "round": "2",
+ "round": "3",
  "status": "READY",
  "user_instruction": "2026-10-12 키움 미니 코스피 선물 자료에 맞춘 RNA로 새 봇 · GPT와 협업 · 하루 최대 낙폭 −12p · 사기 팔기 둘 다 · 그날 정리 · 연구까지 · 편도 0.04p",
- "code_commit": null,
- "code_commit_note": "이 PR head(round 2)",
- "completed_at_kst": "2026-10-12 23:45",
+ "code_commit": "b6c60990c29baa2c4746b803c1dbeffc525a7be9",
+ "code_commit_note": "코드 · 시험 · 잠금이 든 커밋(이 기록 커밋 바로 앞)",
+ "completed_at_kst": "2026-10-12 23:30",
  "completed_note": "실행 전 · 성과 셈 안 함",
  "code": {
-  "research/kmf.py": "e4d1ce6484589827191046c02340e926f8c68797bfe0ff86a5d76d1a2b33b647",
-  "research-exchange/claude-to-gpt/KMF-0001/evidence/kmf_test.py": "21abeddd11546be986564b7d784587eb404da819299e489339b545bb10e6a041"
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/kmf_test.py": "9a20af04088ccdcafe0dc4208adf149fd4c2e0bdec23048a967156e11fae7797"
  },
  "input_lock": {
   "root": "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/kmf",
-  "research/kmf.py": "e4d1ce6484589827191046c02340e926f8c68797bfe0ff86a5d76d1a2b33b647",
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
  },
- "input_lock_sha256": "570ce5de818c731140e2a6242a2fd2c4f4507c9b15d0e627484cefd04b940baa",
+ "input_lock_sha256": "84cd3288a13edca63422d646c2713f7b5a22b7775e8c0dae3440b6870b2679e2",
  "grid": {
   "count": 18,
   "TR": 6,
@@ -49,5 +49,14 @@
  ],
  "independent_check": "WAITING_DATA",
  "source_pr": 273,
- "previous_head_sha": "4ddfab48806c9ff44c4f25172d68cb4b9db422af"
+ "previous_head_sha": [
+  "4ddfab48806c9ff44c4f25172d68cb4b9db422af",
+  "dd18ef637f5df02c75fc31f335167536830c6a22"
+ ],
+ "source_head_sha": "이 PR head(이 기록 커밋) · 처리키는 GPT가 head로 셈",
+ "verdicts": {
+  "final": "WAITING_DATA(시험 2)만",
+  "final2": "KMF_CANDIDATE(시험 1 · 2 모두 통과) / NO_EDGE"
+ },
+ "account_criteria": "WAITING_DATA(계좌 기준금액 · 증거금 없음 · TWR −15% 셀 수 없음 · 운영 근거 아님)"
 }
