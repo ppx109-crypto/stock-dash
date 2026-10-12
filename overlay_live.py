@@ -152,7 +152,13 @@ def target_qty(state, nav_total, cash_b, nav_b, reserve, price):
 
 
 def needs_rebalance(st, state, day):
+    """국면이 바뀌었거나 · 달 첫 맞춤이 아직이면 맞춤(연구와 같음). 지난 사기가 실패했으면 applied가 비어 있어 다음 거래일에 다시 맞춤."""
     return st.get("applied") != state or st.get("rebalanced_month") != day[:6]
+
+
+def _why(e):
+    """주문 실패 까닭 — 증권사 오류면 그 한국어 설명(비밀값 없음 · 응답 본문 아님), 아니면 오류 종류만."""
+    return str(e) if type(e).__name__ == "BrokerError" and str(e) else type(e).__name__
 
 
 def other_books_held(code):
@@ -369,18 +375,26 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
         elif diff > 0:
             orders.append((code_new, "buy", diff))
     before = {p["code"]: int(p["quantity"]) for p in raw.get("positions", [])}
-    done, sells = [], {}
+    done, sells, buy_failed = [], {}, False
     for c, side, q in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저(연속 매매라 판 돈이 바로 풀림)
         broker._overlay_buying = side == "buy"
+        no, status = "", ""
         try:
-            no = broker.order(c, side, q)
-            q = int(getattr(broker, "last_qty", q) or q) if side == "buy" else q
-            status = "접수"
-            done.append((c, side, q))
-            if side == "sell":
-                sells[c] = q
-        except Exception as e:
-            no, status = "", f"실패 · {type(e).__name__}"
+            for attempt in range(2 if side == "buy" else 1):            # 사기는 한 번 더(방금 판 돈이 늦게 풀리는 경우 · 2026-10-12 첫날 실패)
+                try:
+                    no = broker.order(c, side, q)
+                    q = int(getattr(broker, "last_qty", q) or q) if side == "buy" else q
+                    status = "접수"
+                    done.append((c, side, q))
+                    if side == "sell":
+                        sells[c] = q
+                    break
+                except Exception as e:
+                    no, status = "", f"실패 · {_why(e)}"
+                    if attempt == 0 and side == "buy":
+                        time.sleep(float(os.getenv("OVERLAY_BUY_RETRY_WAIT", "3")))
+            if side == "buy" and status != "접수":
+                buy_failed = True
         finally:
             broker._overlay_buying = False
         log_order({"key": f"{day}:{side}:{c}", "at": now.strftime("%Y-%m-%d %H:%M"), "code": c, "name": NAME.get(c, c), "side": side,
@@ -412,7 +426,7 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             held[c] = q
             px[c] = px_new if c == code_new else (quote(c) or 0.0)
     left = {c: q for c, q in held.items() if c != code_new}
-    complete = not left
+    complete = not left and not buy_failed            # 사기가 실패했으면 '맞춤 끝'으로 적지 않음 → 다음 거래일에 다시 맞춤
     # B = 맞춘 뒤 덧붙임 평가액(남은 옛 종목 포함 · 그때 값) · 다 못 팔았으면 '맞춤 끝'으로 적지 않아 다음 실행에 다시 맞춤
     st = {"held": held, "B": round(sum(q * px[c] for c, q in held.items()), 2) if held else 0.0,
           "applied": state if complete else None, "rebalanced_month": day[:6] if complete else st.get("rebalanced_month"),
@@ -420,6 +434,8 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     if left:
         st["unconfirmed"] = {"left": left, "at": now.strftime("%Y-%m-%d %H:%M")}
         lines.append("⚠️ 덧붙임: 옛 종목 " + " · ".join(f"{NAME.get(c, c)} {q:,}주" for c, q in left.items()) + " 매도가 다 체결되지 않음 → 장부에 남기고 내일 다시 맞춤")
+    if buy_failed:
+        lines.append(f"⚠️ 덧붙임: {NAME.get(code_new, code_new)} 사기가 안 됨 → 장부에 '맞춤 끝'으로 적지 않고 다음 거래일에 다시 맞춤")
     save_state(st)
     lines.insert(0, f"🪜 **덧붙임 {day[4:6]}-{day[6:]}** · 국면 {state}(어제 장 끝) · 목표 {NAME.get(code_new, '없음')} 몫 {f:.2f}")
     return lines
