@@ -3,7 +3,7 @@
  "task_id": "KMF-0014",
  "chain_id": "KMF-0014",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "source_pr": null,
  "source_head_sha": null,
@@ -25,12 +25,13 @@
  "range_search_combos": 2424,
  "pick": "L15_W120_f0.8_k2.0_s3.0",
  "dev_result": {
-  "total_p": 406.12,
-  "per_day_p": 2.172,
+  "total_p": 407.44,
+  "per_day_p": 2.179,
   "top10_sum": 673.08,
-  "rest_sum": -266.96,
-  "with_kmf13_total": 1037.92,
-  "with_kmf13_ex_kmf13_top10": 661.7
+  "rest_sum": -265.64,
+  "with_kmf13_total": 1039.24,
+  "with_kmf13_ex_kmf13_top10": 663.02,
+  "before_round2_fix": 406.12
  },
  "periods": {
   "dev_full_sample": [
@@ -54,9 +55,9 @@
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
   "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
-  "research/kmf14.py": "4f7cd8f69d645234fea0b0ec462f08b2b87b7e219a270978e663a48871b95418",
+  "research/kmf14.py": "c5f8fd731be0774010644991180656194905b4a1020e3af21ef400999db3319a",
   "research/kmf_guard.py": "353dbe52b060022c7f6417de13cf13e95e6a5fd7ef4e108b0f5572ee3e5b40b4",
-  "research-exchange/claude-to-gpt/KMF-0014/evidence/kmf14_test.py": "a6ea722f761e128ea28473cd6d06df088611ea37584df15428ca94b833798825",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/kmf14_test.py": "815c6201b883d69db009b45f908552267401685fb5f423b49fbb80c344371d57",
   "research-exchange/claude-to-gpt/KMF-0014/evidence/delay_check.py": "1e12aeb82cd0d8a686b17a452f0101126c9c76215e020eef8b8f8682165d6758",
   "research-exchange/claude-to-gpt/KMF-0014/explore/ceiling.py": "949df29e44ad70408afa286de2e7f52774880294273fcfe18acc160739cbe4f8",
   "research-exchange/claude-to-gpt/KMF-0014/explore/range_r3.py": "3dcb2d3ce27975c7b40ab0eb0005f1b10b7403315ff18126d017b7ac5e0ae01b",
@@ -69,12 +70,12 @@
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
   "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
-  "research/kmf14.py": "4f7cd8f69d645234fea0b0ec462f08b2b87b7e219a270978e663a48871b95418",
+  "research/kmf14.py": "c5f8fd731be0774010644991180656194905b4a1020e3af21ef400999db3319a",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
  },
- "input_lock_sha256": "7ea45debba6d8feb656807052e50fafe5971d6f1623fd6432dcd961657fd9b49",
- "plan_sha256": "050fd2c6683b9ab6a0be845c1213c814cd5ac568fdaa026561efe02c3fbad7c8",
+ "input_lock_sha256": "4d6f49c0cdf918a6568b1333a1ec694382cf2229c1698a28fe31bbbb9e598d82",
+ "plan_sha256": "f71417ac87fa0105c57ac0109a494cb0af5f0bccdb70f972d327de2dc86b198e",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/KMF-0014/PLAN.md",
   "research-exchange/claude-to-gpt/KMF-0014/evidence/cut_test.out",
@@ -103,5 +104,6 @@
  "account_criteria": "WAITING_DATA",
  "runs_planned": {
   "test2": 1
- }
+ },
+ "round2_fix": "3 ATR 멈춤 기준을 신호 봉 종가 → 실제 체결값(다음 봉 시가)으로 · 합성 시험 4b"
 }

@@ -4,7 +4,7 @@
   이격도 disp = 종가 ÷ EMA15 − 1 · 이격밴드 z = disp가 앞 120봉(그 봉 제외) 평균에서 몇 표준편차인지(한투 1일봉 RNA의 이격밴드)
   횡보 거름(RNA): 큰 흐름 선(EMA90)의 3봉 기울기 크기 < 0.8 × ATR(앞 20봉 평균 참 범위 · 그 봉 제외)
   들기: 거름 켜졌을 때 z ≥ +2.0이면 팖 · z ≤ −2.0이면 삼 · 09:05 ~ 15:00 판단 · 하루 3번까지
-  나가기: 들 때 값에서 종가가 3 × ATR 넘게 불리하면 정리 · 아니면 그날 마지막 봉까지 들고 감(평균 돌아옴 나가기는 없음 · 탐색에서 약했음)
+  나가기: 실제 체결값(신호 다음 봉 시가)에서 종가가 3 × ATR 넘게 불리하면 정리 · 아니면 그날 마지막 봉까지 들고 감(평균 돌아옴 나가기는 없음 · 탐색에서 약했음)
 시험 2(판정 · KMF-0013과 같은 계약): 완전한 거래일 처음 20일 · 워밍업 = 개발 자료에 이어서 · 결손일은 상태에서도 뺌
   PASS = 합 > 0 · 하루 평균 ≥ 개발의 절반 · 가장 나쁜 날 ≥ −25.5p
 python3 research/kmf14.py lock | report | cut | test2"""
@@ -80,6 +80,8 @@ def signals(b, cfg):
         d, m = b[i][0], b[i][1]
         if d != day:
             day, pos, cnt = d, 0, 0
+        if pos and ent is None:
+            ent = b[i][2]                             # 실제 체결값 = 신호 다음 봉 시가(simulate와 같음 · round 2 고침)
         if i < 3 or np.isnan(z[i]) or np.isnan(atr[i]) or np.isnan(e90[i - 3]):
             continue
         if pos:
@@ -90,7 +92,7 @@ def signals(b, cfg):
             continue
         if abs(e90[i] - e90[i - 3]) < cfg["f"] * atr[i] and abs(z[i]) >= cfg["k"]:
             side = -1 if z[i] > 0 else 1
-            want[i], pos, ent, cnt = side, side, c[i], cnt + 1
+            want[i], pos, ent, cnt = side, side, None, cnt + 1   # 체결값은 다음 봉 시가에서 정함
     return want
 
 
