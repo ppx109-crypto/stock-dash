@@ -1,0 +1,60 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0006",
+ "chain_id": "KMF-0006",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 변화에도 살아남게 · 1분봉 신호 안 씀 · 리더가 알아서",
+ "completed_at_kst": "2026-10-13 00:55",
+ "completed_note": "실행 전 · 성과 셈 안 함(자르기 시험은 06-01 앞 자료로 차만 셈)",
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "research/kmf6.py": "854e7d24e1657c610f93f60ad5c355d9628fba839b15dcc4541bcb90f8fdb57f",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/kmf6_test.py": "0a3cd0d083426d6fb919b176533d51527c0879e0a8d1bbaa6ac3bb0c2a06f274",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/wf_cut.py": "146ab1bad79f9b7b00705e473a8b941ce5c26e6db5c02aa39f89a5d20ffd0655"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "research/kmf6.py": "854e7d24e1657c610f93f60ad5c355d9628fba839b15dcc4541bcb90f8fdb57f",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "c1248eb373df469291462517fe627e4b97ab5fa131d0911846bf0fbf1ee61d79",
+ "plan_sha256": "d5b0d04e38f5a46d3f934240e60c3c67ae5db0831f9725b86529cc62b9a81aa0",
+ "pool": 26,
+ "lookbacks": [
+  1,
+  2,
+  3
+ ],
+ "walk_months": [
+  "202603",
+  "202604",
+  "202605",
+  "202606",
+  "202607",
+  "202608",
+  "202609",
+  "202610"
+ ],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0006/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0006/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/kmf6_test.py",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/kmf6_test.out",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/wf_cut.py",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/wf_cut.out"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "cumulative_kmf_before": {
+  "dev": 70,
+  "val": 6,
+  "test1": 2,
+  "test2": 0
+ }
+}
