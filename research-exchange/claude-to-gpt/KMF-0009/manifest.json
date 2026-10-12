@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0009",
  "chain_id": "KMF-0009",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 목표 10개월 800p · 추세 · 횡보 각각 작동하는 단타봇 · 1분봉 신호 안 씀",
- "completed_at_kst": "2026-10-13 05:08",
- "completed_note": "실행 전 · 성과 셈 안 함(진단 · 거래 수만)",
+ "completed_at_kst": "2026-10-13 05:10",
+ "completed_note": "run 05:10:14 · 개발 8 · 확인 1 · 시험 1 · 2 0회",
  "goal": {
   "points_10_months": 800,
   "per_day_p": 4.0,
@@ -55,7 +55,28 @@
   "research-exchange/claude-to-gpt/KMF-0009/evidence/guard_selftest.out",
   "research-exchange/claude-to-gpt/KMF-0009/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/KMF-0009/diag/regime_diag.py",
-  "research-exchange/claude-to-gpt/KMF-0009/diag/regime_diag.out"
+  "research-exchange/claude-to-gpt/KMF-0009/diag/regime_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0009/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0009/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/pick.json"
  ],
- "account_criteria": "WAITING_DATA"
+ "account_criteria": "WAITING_DATA",
+ "verdict": "NO_EDGE",
+ "source_pr": 298,
+ "source_head_sha": "bb2fa13bfa464a4228fbee93c315c1fbcc5a578f",
+ "code_commit": "bb2fa13bfa464a4228fbee93c315c1fbcc5a578f",
+ "runs": {
+  "dev": 8,
+  "val": 1,
+  "test1": 0,
+  "test2": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "1f50344c77f7b9483dbeaa983245b760e0b2a901963b6577b7e41be835a8b233",
+  "pick.json": "afcbd15c47887f116265be84672172391640c6909439febad9588eb9874c4be2",
+  "run.out": "471e66fb3ec7c00876606713074c6cd41d1bcc7eab464bcd6ce0487503634a1b"
+ }
 }
