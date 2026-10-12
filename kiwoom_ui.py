@@ -24,6 +24,8 @@ def lab_html(s: dict | None) -> str:
     out = [f'<p style="margin:0 0 8px">{_e(s.get("goal"))}</p>']
     if s.get("limits"):
         out.append("<p><b>정한 틀</b> · " + " · ".join(_e(x) for x in s["limits"]) + "</p>")
+    if s.get("plan"):
+        out.append(f'<p><b>개발 순서</b> · {_e(s["plan"])}</p>')
     res = s.get("results") or []
     out.append("<h4 style=\"margin:14px 0 6px\">올릴 만한 결과</h4>")
     if res:
