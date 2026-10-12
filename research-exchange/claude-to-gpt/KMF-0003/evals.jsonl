@@ -1,0 +1,32 @@
+{"status": "STARTED", "key": "B0", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "B0", "stage": "dev", "dev_total_p": 191.84}
+{"status": "STARTED", "key": "W15", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "W15", "stage": "dev", "dev_total_p": 116.06}
+{"status": "STARTED", "key": "W20", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "W20", "stage": "dev", "dev_total_p": 155.16}
+{"status": "STARTED", "key": "W25", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "W25", "stage": "dev", "dev_total_p": 260.84}
+{"status": "STARTED", "key": "WR1.25", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "WR1.25", "stage": "dev", "dev_total_p": 109.6}
+{"status": "STARTED", "key": "WR1.5", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "WR1.5", "stage": "dev", "dev_total_p": 171.38}
+{"status": "STARTED", "key": "S6", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "S6", "stage": "dev", "dev_total_p": 235.68}
+{"status": "STARTED", "key": "S8", "stage": "dev", "at": "2026-10-12 15:08:35"}
+{"status": "DONE", "key": "S8", "stage": "dev", "dev_total_p": 160.06}
+{"status": "STARTED", "key": "T660", "stage": "dev", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "T660", "stage": "dev", "dev_total_p": 233.82}
+{"status": "STARTED", "key": "T720", "stage": "dev", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "T720", "stage": "dev", "dev_total_p": 240.22}
+{"status": "STARTED", "key": "G20", "stage": "dev", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "G20", "stage": "dev", "dev_total_p": 51.74}
+{"status": "STARTED", "key": "G30", "stage": "dev", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "G30", "stage": "dev", "dev_total_p": 134.3}
+{"status": "STARTED", "key": "C5", "stage": "dev", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "C5", "stage": "dev", "dev_total_p": 227.88}
+{"status": "STARTED", "key": "C15", "stage": "dev", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "C15", "stage": "dev", "dev_total_p": 205.4}
+{"status": "STARTED", "key": "B0", "stage": "val", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "B0", "stage": "val", "val_total_p": 247.76}
+{"status": "STARTED", "key": "W25", "stage": "val", "at": "2026-10-12 15:08:36"}
+{"status": "DONE", "key": "W25", "stage": "val", "val_total_p": 3.5}

@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0003",
  "chain_id": "KMF-0003",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "base_bot": "KMF-0002 botORB1_or60_max_entries2_stoprange(#278)",
- "completed_at_kst": "2026-10-13 00:03",
- "completed_note": "실행 전 · 성과 셈 안 함(B0 신호 같음만 확인)",
+ "completed_at_kst": "2026-10-13 00:09",
+ "completed_note": "run 00:08:35 ~ 36",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
@@ -58,7 +58,36 @@
   "research-exchange/claude-to-gpt/KMF-0003/evidence/kmf3_test.py",
   "research-exchange/claude-to-gpt/KMF-0003/evidence/kmf3_test.out",
   "research-exchange/claude-to-gpt/KMF-0003/evidence/guard.out",
-  "research-exchange/claude-to-gpt/KMF-0003/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0003/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0003/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/pick.json",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/skip_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/skip_diag.out"
  ],
- "account_criteria": "WAITING_DATA"
+ "account_criteria": "WAITING_DATA",
+ "verdict": "NO_IMPROVEMENT",
+ "source_pr": 279,
+ "source_head_sha": "f14e7d4f945e20498db9a6c27f38d2e203511915",
+ "code_commit": "f14e7d4f945e20498db9a6c27f38d2e203511915",
+ "runs": {
+  "dev": 14,
+  "val": 2,
+  "test1": 0,
+  "test2": 0
+ },
+ "cumulative_kmf": {
+  "dev": 44,
+  "val": 5,
+  "test1": 2,
+  "test2": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "ea32ccbbead4f167719f6b14c650d1a037afe9edf9ed28b69f3b8ba305f26b60",
+  "pick.json": "927ac86de192bcbfdc91a1fff60a758b8efebd1c06f953353b8922725c5e4072",
+  "skip_diag.out": "0a82e4fbb5496b37b6dea19fb09846e2506d02ed8978d33cd1c86505a745bc4d"
+ }
 }

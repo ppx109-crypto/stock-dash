@@ -1,0 +1,1 @@
+{"verdict": "NO_IMPROVEMENT", "better_dev": ["W25", "T720", "S6", "T660", "C5", "C15"], "pick": {"name": "W25", "dev_total_p": 260.84, "dev_stop_days": 16, "val_total_p": 3.5, "val_stop_days": 7, "base_val_total_p": 247.76, "base_val_stop_days": 30, "val_keep": false}}
