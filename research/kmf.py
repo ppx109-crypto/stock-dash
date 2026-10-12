@@ -7,7 +7,7 @@ RNA(분봉판 · rna.py와 같은 뜻 · 그 분 종가까지만): 배열 · 기
 체결: 그 분 종가에 판단 → 다음 분 시가에 체결(편도 0.04p). 하루 −12p는 '멈춤 주문'으로 그 분 안에서 닿으면 그 값(시가가 이미 넘었으면 시가)에 정리.
 새로 사기 · 팔기는 09:05 ~ 15:00 판단까지 · 15:30(930분) 종가에 모두 정리.
 기간(사전등록 · 결과 보기 전 고정): 개발 2026-01 ~ 05 · 확인 06 ~ 08 · 마지막 시험 09-01 ~ 10-12(한 번만).
-python3 research/kmf.py lock | run | cut | final
+python3 research/kmf.py lock | run | cut | final | final2
 고친 판(2026-10-12 GPT 검토 #273 반영): 계약은 그날 거래량 합 1등(같으면 코드 앞) · 개발 18칸은 확인 기간을 처음부터 안 읽음(KMF_CUT=06-01)
 · 확인 값은 봇마다 고른 1칸만 셈 · 자르기 시험은 시험 기간을 안 읽음 · 마지막 시험은 final(지피티 동의 파일이 있을 때 한 번만)."""
 import csv
@@ -35,7 +35,9 @@ FIRST_MIN, LAST_MIN = 540, 934
 ENTRY_FROM, ENTRY_TO, FLAT_AT = 545, 900, 930
 DEV = ("20260101", "20260531")
 VAL = ("20260601", "20260831")
-TEST = ("20260901", "20261012")
+TEST = ("20260901", "20261012")          # 마지막 시험 1(엔진 접촉 있음 · 값 안 봄 · 독립 아님)
+TEST2_FROM, TEST2_MIN_DAYS = "20261013", 20   # 마지막 시험 2(결정 · 아무도 셈한 적 없는 새 자료 · 20거래일 이상)
+TEST2_FILE = DATA / "mini_1min_test2.csv"     # 새 키움 자료(첫 파일과 같은 꼴) · 받은 뒤 test2_lock.json에 해시를 잠그고 PR로 낸 다음에만 씀
 CUT = os.getenv("KMF_CUT", "")          # 자르기 시험: 이 날(YYYYMMDD)부터 뒤 자료는 처음부터 안 읽음
 
 
@@ -50,12 +52,20 @@ def load():
                 continue
             if FIRST_MIN <= m <= LAST_MIN:
                 rows.append((d, m, float(r["open"]), float(r["high"]), float(r["low"]), float(r["close"]), int(float(r["volume"]))))
-    last = max(r[0] for r in rows) if rows else ""
+    if TEST2_FILE.exists():                   # 시험 2 자료: 10-13부터만
+        with open(TEST2_FILE, encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                d, m = r["date"], int(r["minute"])
+                if d < TEST2_FROM or (CUT and d >= CUT):
+                    continue
+                if FIRST_MIN <= m <= LAST_MIN:
+                    rows.append((d, m, float(r["open"]), float(r["high"]), float(r["low"]), float(r["close"]), int(float(r["volume"]))))
+    last = max((r[0] for r in rows if r[0] < TEST2_FROM), default="")
     fut = defaultdict(list)
     with open(FUT, encoding="utf-8-sig") as fh:
         for r in csv.DictReader(fh):
             d = r["datetime"][:10].replace("-", "")
-            if d <= last or not r["code"].startswith("A056") or (CUT and d >= CUT):
+            if d <= last or d >= TEST2_FROM or not r["code"].startswith("A056") or (CUT and d >= CUT):
                 continue                          # 첫 파일 뒤 날의 미니 근월물만
             m = int(r["datetime"][11:13]) * 60 + int(r["datetime"][14:16])
             if FIRST_MIN <= m <= LAST_MIN:
@@ -67,7 +77,7 @@ def load():
         main = sorted(vol.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]    # 그날 거래량 합 1등 미니 계약(같으면 코드 앞)
         for x in sorted((x for x in fut[d] if x[0] == main), key=lambda x: x[1]):
             rows.append((d,) + x[1:])
-    return rows
+    return sorted(rows, key=lambda r: (r[0], r[1]))
 
 
 # ───────── RNA(분봉판) ─────────
@@ -404,14 +414,21 @@ def run():
 
 
 FINAL_OK = BOX / "final_ok.json"        # 지피티 동의 뒤 클로드가 올리는 파일: {"gpt_pr": 번호, "picks": [칸 이름, ...]}
-FINAL_OUT = BOX / "evidence/final.json"
+FINAL_OUT = BOX / "evidence/final.json"         # 시험 1 결과
+TEST2_LOCK = BOX / "test2_lock.json"            # 시험 2 자료 잠금: {"sha256": 파일 해시, "pr": 잠금 PR, "gpt_pr": 동의 PR}
+FINAL2_OUT = BOX / "evidence/final2.json"       # 시험 2 결과 · 채택 판정
+
+
+def _test_pass(t):
+    return t.get("days", 0) > 0 and t["total_p"] > 0 and t["worst_day_p"] >= DAY_STOP - 0.5
 
 
 def final():
-    """마지막 시험(09-01 ~ 10-12) 한 번: 확인을 통과했고 동의 파일에 적힌 칸만. 이미 돌렸으면 멈춤."""
+    """마지막 시험 1(09-01 ~ 10-12) 한 번: 확인을 통과했고 동의 파일에 적힌 칸만 · 10-13부터 자료는 안 읽음.
+    채택 판정은 내지 않음(WAITING_DATA) — 채택은 final2(시험 2)에서만."""
     verify_inputs()
     if FINAL_OUT.exists():
-        sys.exit("마지막 시험은 이미 한 번 돌렸음(멈춤)")
+        sys.exit("마지막 시험 1은 이미 한 번 돌렸음(멈춤)")
     if not FINAL_OK.exists():
         sys.exit("지피티 동의 파일이 없음(멈춤)")
     ok = json.loads(FINAL_OK.read_text())
@@ -420,16 +437,46 @@ def final():
     want = list(ok["picks"])
     if not want or any(n not in allowed for n in want):
         sys.exit("동의 파일의 칸이 확인 통과 칸이 아님(멈춤): " + json.dumps(want, ensure_ascii=False))
-    rows = load()
+    rows = _rows_before(TEST2_FROM)
     out = {}
     for n in want:
         days, trades = simulate(rows, signals(rows, allowed[n]["cfg"]))
         t = stats(days, trades, *TEST)
-        out[n] = {"test": t, "pass": t.get("days", 0) > 0 and t["total_p"] > 0 and t["worst_day_p"] >= DAY_STOP - 0.5}
+        out[n] = {"cfg": allowed[n]["cfg"], "test1": t, "pass1": _test_pass(t)}
     FINAL_OUT.write_text(json.dumps({"gpt_pr": ok.get("gpt_pr"), "results": out}, ensure_ascii=False, indent=1))
-    print(json.dumps({"verdict": "KMF_CANDIDATE" if any(v["pass"] for v in out.values()) else "NO_EDGE",
-                      "results": {n: {"test_total_p": v["test"].get("total_p"), "pass": v["pass"]} for n, v in out.items()}}, ensure_ascii=False))
+    print(json.dumps({"verdict": "WAITING_DATA(시험 2)", "results": {n: {"test1_total_p": v["test1"].get("total_p"), "pass1": v["pass1"]}
+                                                                  for n, v in out.items()}}, ensure_ascii=False))
+
+
+def final2():
+    """마지막 시험 2(10-13 ~ 새 자료) 한 번 · 결정: 시험 1을 돌린 칸만 · 자료 해시가 잠금과 같아야 · 20거래일 이상.
+    KMF_CANDIDATE = 같은 칸이 시험 1과 시험 2를 모두 통과."""
+    verify_inputs()
+    if FINAL2_OUT.exists():
+        sys.exit("마지막 시험 2는 이미 한 번 돌렸음(멈춤)")
+    if not FINAL_OUT.exists():
+        sys.exit("시험 1을 먼저(멈춤)")
+    if not (TEST2_LOCK.exists() and TEST2_FILE.exists()):
+        sys.exit("시험 2 자료 · 잠금이 없음(WAITING_DATA)")
+    lock2 = json.loads(TEST2_LOCK.read_text())
+    if hashlib.sha256(TEST2_FILE.read_bytes()).hexdigest() != lock2.get("sha256") or not lock2.get("gpt_pr"):
+        sys.exit("시험 2 자료가 잠금과 다르거나 지피티 동의가 없음(멈춤)")
+    first = json.loads(FINAL_OUT.read_text())["results"]
+    rows = load()
+    out, any_ok = {}, False
+    for n, v in first.items():
+        days, trades = simulate(rows, signals(rows, v["cfg"]))
+        t = stats(days, trades, TEST2_FROM, "99991231")
+        if t.get("days", 0) < TEST2_MIN_DAYS:
+            sys.exit(f"시험 2 자료가 {t.get('days', 0)}거래일뿐(20일 이상 · WAITING_DATA)")
+        p2 = _test_pass(t)
+        out[n] = {"test2": t, "pass1": v["pass1"], "pass2": p2, "candidate": v["pass1"] and p2}
+        any_ok = any_ok or out[n]["candidate"]
+    FINAL2_OUT.write_text(json.dumps({"lock": lock2, "results": out}, ensure_ascii=False, indent=1))
+    print(json.dumps({"verdict": "KMF_CANDIDATE" if any_ok else "NO_EDGE",
+                      "results": {n: {"test2_total_p": v["test2"].get("total_p"), "pass1": v["pass1"], "pass2": v["pass2"]} for n, v in out.items()}},
+                     ensure_ascii=False))
 
 
 if __name__ == "__main__":
-    {"lock": write_lock, "cut": cut, "run": run, "final": final}[sys.argv[1]]()
+    {"lock": write_lock, "cut": cut, "run": run, "final": final, "final2": final2}[sys.argv[1]]()

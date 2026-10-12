@@ -117,4 +117,37 @@ with tempfile.TemporaryDirectory() as td:
             stops.append(True)
     K.BOX, K.FINAL_OK, K.FINAL_OUT, K.verify_inputs = ob, oo, ofo, ov
 chk("14 마지막 시험 막기(동의 없음 · 미통과 칸 · 두 번째)", all(stops))
+# 15 시험 2 막기: 시험 1 먼저 · 자료 · 잠금 없음 · 해시 다름 · 두 번째
+with tempfile.TemporaryDirectory() as td:
+    keep = (K.BOX, K.FINAL_OUT, K.FINAL2_OUT, K.TEST2_LOCK, K.TEST2_FILE, K.verify_inputs)
+    K.BOX = Path(td); K.FINAL_OUT = K.BOX / "f1.json"; K.FINAL2_OUT = K.BOX / "f2.json"
+    K.TEST2_LOCK = K.BOX / "t2lock.json"; K.TEST2_FILE = K.BOX / "t2.csv"; K.verify_inputs = lambda *a: {}
+    stops = []
+    for setup in ("no_test1", "no_lock", "bad_sha", "done"):
+        if setup == "no_lock":
+            K.FINAL_OUT.write_text(json.dumps({"results": {}}))
+        if setup == "bad_sha":
+            K.TEST2_FILE.write_text("date,minute,open,high,low,close,volume\n")
+            K.TEST2_LOCK.write_text(json.dumps({"sha256": "0" * 64, "gpt_pr": 1}))
+        if setup == "done":
+            K.FINAL2_OUT.write_text("{}")
+        try:
+            K.final2(); stops.append(False)
+        except SystemExit:
+            stops.append(True)
+    K.BOX, K.FINAL_OUT, K.FINAL2_OUT, K.TEST2_LOCK, K.TEST2_FILE, K.verify_inputs = keep
+chk("15 시험 2 막기(시험 1 먼저 · 잠금 · 해시 · 두 번째)", all(stops))
+# 16 시험 2 자료는 10-13부터만 읽고 날 · 분 순서로 붙음 · 그 앞 날은 버림
+with tempfile.TemporaryDirectory() as td:
+    mini, fut, t2 = Path(td) / "m.csv", Path(td) / "f.csv", Path(td) / "t2.csv"
+    mini.write_text("date,minute,open,high,low,close,volume\n20260831,540,1,1,1,1,1\n")
+    fut.write_text("datetime,code,open,high,low,close,volume\n2026-09-01 09:00:00,A0569000,2,2,2,2,1\n2026-10-13 09:00:00,A056A000,9,9,9,9,1\n")
+    t2.write_text("date,minute,open,high,low,close,volume\n20261014,540,7,7,7,7,1\n20261012,540,8,8,8,8,1\n20261013,541,6,6,6,6,1\n")
+    keep = (K.MINI, K.FUT, K.TEST2_FILE, K.CUT)
+    K.MINI, K.FUT, K.TEST2_FILE, K.CUT = mini, fut, t2, ""
+    got = [(r[0], r[5]) for r in K.load()]
+    K.CUT = "20261013"; cut13 = [(r[0], r[5]) for r in K.load()]
+    K.MINI, K.FUT, K.TEST2_FILE, K.CUT = keep
+chk("16 시험 2 자료 10-13부터 · 순서 · 키움 큰 파일의 10-13 뒤는 안 씀 · 자르면 안 읽음",
+    got == [("20260831", 1.0), ("20260901", 2.0), ("20261013", 6.0), ("20261014", 7.0)] and cut13 == got[:2])
 print(f"모두 통과 {ok}개")
