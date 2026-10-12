@@ -93,6 +93,8 @@ def main(which):
         import kmf3 as M
     elif which == "kmf4":
         import kmf4 as M                          # N분봉: 묶은 봉으로 검사(prep)
+    elif which == "kmf5":
+        import kmf5 as M
     else:
         M = K
     rows = K._rows_before(K.VAL[0])
