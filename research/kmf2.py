@@ -76,8 +76,7 @@ def neighbors(cfg):
 
 def lock_body():
     sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
-    body = {"root": str(ROOT)}
-    body.update({f: sha(ROOT / f) for f in CODE_FILES})
+    body = {f: sha(ROOT / f) for f in CODE_FILES}          # 뿌리 경로는 잠그지 않음(작업 폴더가 달라도 같은 코드 · 자료면 통과 · GPT #276)
     body.update({f"kiwoom-data/{p.name}": sha(p) for p in (K.MINI, K.FUT)})
     return body
 
@@ -156,6 +155,18 @@ def final():
     print(json.dumps({"verdict": "WAITING_DATA(시험 2)", "test1_total_p": t.get("total_p"), "pass1": _pass(t)}, ensure_ascii=False))
 
 
+FULL_DAY_MIN_BARS = 380          # 09:00 ~ 15:30(391분) 가운데 380분 이상 봉이 있어야 '완전한 거래일'
+
+
+def full_days(rows):
+    """시험 2 자료(10-13부터)의 완전한 거래일 수 — 자료 꼴만 봄(손익 셈 없음)."""
+    cnt = {}
+    for r in rows:
+        if r[0] >= K.TEST2_FROM and r[1] <= K.FLAT_AT:
+            cnt[r[0]] = cnt.get(r[0], 0) + 1
+    return sum(1 for v in cnt.values() if v >= FULL_DAY_MIN_BARS)
+
+
 def final2():
     """시험 2(10-13 ~ 새 자료 · 20거래일 이상 · 결정) 한 번. 거래일 수는 셈 전에 자료만 보고 확인."""
     verify_inputs()
@@ -169,9 +180,9 @@ def final2():
     if hashlib.sha256(K.TEST2_FILE.read_bytes()).hexdigest() != lock2.get("sha256") or not lock2.get("gpt_pr"):
         sys.exit("시험 2 자료가 잠금과 다르거나 지피티 동의가 없음(멈춤)")
     rows = K.load()
-    n2 = len({r[0] for r in rows if r[0] >= K.TEST2_FROM})
-    if n2 < K.TEST2_MIN_DAYS:                               # 셈 전에 막음(엔진 접촉 없음)
-        sys.exit(f"시험 2 자료가 {n2}거래일뿐(WAITING_DATA)")
+    n2 = full_days(rows)
+    if n2 < K.TEST2_MIN_DAYS:                               # 셈(simulate) 전에 막음 · 엔진 접촉 없음(합성 시험 9)
+        sys.exit(f"시험 2 자료가 완전한 {n2}거래일뿐(WAITING_DATA)")
     first = json.loads(FINAL_OUT.read_text())
     days, trades = K.simulate(rows, signals(rows, first["cfg"]))
     t = K.stats(days, trades, K.TEST2_FROM, "99991231")

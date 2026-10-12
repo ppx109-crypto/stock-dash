@@ -53,4 +53,25 @@ for g in K2.grid():
 chk("6 신호 12칸 모두 그 분까지 값만", True)
 chk("7 격자 12칸 · 이름 겹침 없음", len(K2.grid()) == 12 and len({K2.name(g) for g in K2.grid()}) == 12)
 chk("8 잠금 통과", bool(K2.verify_inputs()))
+# 9 시험 2: 완전한 거래일이 20일 모자라면 셈(simulate) 전에 멈춤 · 반쯤 빈 날은 세지 않음
+import tempfile, hashlib  # noqa: E402
+with tempfile.TemporaryDirectory() as td:
+    keep = (K2.BOX, K2.FINAL_OUT, K2.FINAL2_OUT, K2.TEST2_LOCK, K.TEST2_FILE, K2.verify_inputs, K.simulate, K.load)
+    K2.BOX = Path(td); K2.FINAL_OUT = K2.BOX / "f1.json"; K2.FINAL2_OUT = K2.BOX / "f2.json"; K2.TEST2_LOCK = K2.BOX / "l.json"
+    K.TEST2_FILE = K2.BOX / "t2.csv"; K.TEST2_FILE.write_text("x"); K2.verify_inputs = lambda *a: {}
+    K2.FINAL_OUT.write_text(json.dumps({"cfg": K2.grid()[0], "pass1": True}))
+    K2.TEST2_LOCK.write_text(json.dumps({"sha256": hashlib.sha256(b"x").hexdigest(), "gpt_pr": 1}))
+    fake = []
+    for k in range(25):
+        fake += day(f"202610{13 + k:02d}" if 13 + k <= 31 else f"202611{k - 18:02d}", [100.0] * (391 if k < 19 else 200))
+    K.load = lambda: fake                                   # 완전한 날 19 + 반쯤 빈 날 6
+    touched = []
+    K.simulate = lambda *a, **kw: touched.append(1) or ({}, [])
+    try:
+        K2.final2(); stopped = False
+    except SystemExit as e:
+        stopped = "19거래일" in str(e)
+    K2.BOX, K2.FINAL_OUT, K2.FINAL2_OUT, K2.TEST2_LOCK, K.TEST2_FILE, K2.verify_inputs, K.simulate, K.load = keep
+chk("9 시험 2: 완전한 19일 → 셈 전에 멈춤(simulate 안 부름) · 반쯤 빈 날 안 셈", stopped and not touched and K2.full_days(fake) == 19)
+chk("10 잠금에 뿌리 경로 없음", "root" not in K2.lock_body())
 print(f"모두 통과 {ok}개")
