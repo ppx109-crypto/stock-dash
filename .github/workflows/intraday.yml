@@ -91,6 +91,10 @@ jobs:
         env:   # runner 값은 작업 전체 env에서 못 써서 단계마다
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
+          # 최종 판(MIX-0054 · 사용자 2026-10-11 승인) — 일봉 · 15분봉 작업과 같은 값(이 단계에만 · 시험 단계는 예전 몫으로 시험). 켜면 15분봉 새 매수 멈춤(몫 0 · 든 것은 제 규칙대로 팖)
+          # (2026-10-12 점검: 장중 상주가 15분봉을 돌리는데 이 값이 빠져 15분봉 몫이 0.5로 남아 있었음)
+          MIX54: 'on'
+          MIX54_START: '20261011'
       - if: always()
         uses: ./.github/actions/kis-token-close  # 도중에 새로 받은 출입증이 있으면 넣음(없으면 건너뜀)
         continue-on-error: true

@@ -79,6 +79,8 @@ jobs:
           # 2026-10-03 최종 조합: 1시간봉은 모의 주문 끔(알림 · 연습 계좌는 그대로) — 1일봉 50 · 15분봉 50 · 빈칸 엔진이 계좌를 씀
           PAPER_TRADING: 'off'
           PAPER_START: '20261002'          # 모의투자는 2026-10-02부터(사용자 결정)
+          MIX54: 'on'                     # 최종 판(MIX-0054) — 다른 봇 작업과 같은 값(1시간봉은 모의 주문 끔 · 몫 0)
+          MIX54_START: '20261011'
           KIS_PAPER_APP_KEY: ${{ secrets.KIS_PAPER_APP_KEY }}
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
