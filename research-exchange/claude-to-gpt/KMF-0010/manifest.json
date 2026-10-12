@@ -2,8 +2,8 @@
  "schema_version": "1",
  "task_id": "KMF-0010",
  "chain_id": "KMF-0010",
- "kind": "PLAN",
- "round": "2",
+ "kind": "REPORT",
+ "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 추세 · 횡보 각각 작동하는 단타봇 · 목표 10개월 800p · 천천히(기본 봇 → 손실 분석 → 줄이기 → 보완 봇) · 1분봉 신호 안 씀",
  "goal": {
@@ -60,31 +60,48 @@
  },
  "evidence_paths": [
   "research-exchange/claude-to-gpt/KMF-0010/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0010/REPORT.md",
   "research-exchange/claude-to-gpt/KMF-0010/diag/day_type_diag2.out",
   "research-exchange/claude-to-gpt/KMF-0010/diag/day_type_diag2.py",
   "research-exchange/claude-to-gpt/KMF-0010/diag/split_diag.out",
   "research-exchange/claude-to-gpt/KMF-0010/diag/split_diag.py",
   "research-exchange/claude-to-gpt/KMF-0010/diag/stop_vs_range_diag.out",
   "research-exchange/claude-to-gpt/KMF-0010/diag/stop_vs_range_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0010/evals.jsonl",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/contracts.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0010/evidence/dev_rows.json",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/guard.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/guard_selftest.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/kmf10_test.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/kmf10_test.py",
+  "research-exchange/claude-to-gpt/KMF-0010/evidence/pick.json",
+  "research-exchange/claude-to-gpt/KMF-0010/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0010/evidence/run.out",
   "research-exchange/claude-to-gpt/KMF-0010/input_lock.json"
  ],
  "account_criteria": "WAITING_DATA",
- "runs_planned": {
-  "dev": 8,
-  "val": 1,
-  "test1": 0,
-  "test2": 0
- },
  "contract_check": {
   "days": 26,
   "all_single": true,
   "calendar_match": true,
   "note": "GPT #300 round 1 지적 · 성과 실행 전 확인"
+ },
+ "completed_at_kst": "2026-10-13 05:25",
+ "completed_note": "run 05:25:41 · 개발 8 · 확인 1 · 시험 1 · 2 0회",
+ "verdict": "NO_EDGE",
+ "source_pr": 300,
+ "source_head_sha": "da40c075861a93050d2ebfa054986591440ec5ba",
+ "code_commit": "da40c075861a93050d2ebfa054986591440ec5ba",
+ "runs": {
+  "dev": 8,
+  "val": 1,
+  "test1": 0,
+  "test2": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "65337b80c667407970aca19dbf03d880cf148b792cd543b3927da784cf3706d2",
+  "pick.json": "c9a6ac402a51e9e45630b5748672ff0de57ce011204223de74b12ae980406ad7",
+  "run.out": "2f488f293de47c6d37da72394f2a5ac4efd87a09b342859b6b80fa734adf19ae"
  }
 }

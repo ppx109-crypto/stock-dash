@@ -1,0 +1,72 @@
+{
+ "name": "N60_b0.25_t1",
+ "cfg": {
+  "bot": "TRAP",
+  "or": 60,
+  "b": 0.25,
+  "trap": 1,
+  "tag": "N60_b0.25_t1"
+ },
+ "dev": {
+  "days": 161,
+  "total_p": 337.86,
+  "per_day_p": 2.099,
+  "worst_day_p": -12.0,
+  "best_day_p": 110.3,
+  "win_days": 61,
+  "loss_days": 62,
+  "trades": 142,
+  "win_rate": 0.465,
+  "mdd_p": -85.38,
+  "months": {
+   "202601": -23.28,
+   "202602": 42.28,
+   "202603": 31.08,
+   "202604": -6.22,
+   "202605": 143.48,
+   "202606": 170.96,
+   "202607": -27.6,
+   "202608": 7.16
+  },
+  "stop_days": 41,
+  "worst_month_p": -27.6,
+  "per_day_ci95_p": [
+   -0.292,
+   4.681
+  ],
+  "won": {
+   "total": 16893000,
+   "worst_day": -600000,
+   "worst_month": -1380000
+  }
+ },
+ "dev_check": 337.86,
+ "val": {
+  "days": 26,
+  "total_p": -14.48,
+  "per_day_p": -0.557,
+  "worst_day_p": -12.0,
+  "best_day_p": 16.18,
+  "win_days": 9,
+  "loss_days": 12,
+  "trades": 26,
+  "win_rate": 0.385,
+  "mdd_p": -55.24,
+  "months": {
+   "202609": -36.12,
+   "202610": 21.64
+  },
+  "stop_days": 5,
+  "worst_month_p": -36.12,
+  "per_day_ci95_p": [
+   -3.601,
+   2.478
+  ],
+  "won": {
+   "total": -724000,
+   "worst_day": -600000,
+   "worst_month": -1806000
+  }
+ },
+ "val_pass": false
+}
