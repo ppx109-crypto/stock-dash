@@ -1,0 +1,56 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0008",
+ "chain_id": "KMF-0008",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 단타개발 · 1분봉 신호 안 씀 · 천천히 · 리더가 알아서",
+ "completed_at_kst": "2026-10-13 04:56",
+ "completed_note": "실행 전 · 성과 셈 안 함(거래 수만 봄)",
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf8.py": "9054bb7427ad98ffbee1d36357f26eaf1ea3df799bb4b12aa93542db6f94d4fb",
+  "research/kmf_guard.py": "d8c6941175bb19de879a984a607bfc425db954c77a49f5aa7928dadd6f1a686e",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/kmf8_test.py": "4a4205e2d2a0cc0ec44fc4d40896453576dbded44fd146c9b65ff535cc5e0939",
+  "research-exchange/claude-to-gpt/KMF-0008/diag/daily_rna_diag.py": "976d02f866dda8aa2983d694af10210841ae5616e066e4942fde6cdc799607e8"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf8.py": "9054bb7427ad98ffbee1d36357f26eaf1ea3df799bb4b12aa93542db6f94d4fb",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "4efe743b52f618dc6f9b6c17deb96129d9343ab95bfcb9bfa949e0a0bd927e49",
+ "plan_sha256": "711eb4f7a5c93d7800af9517f9d6f7e40c171eefc66517181307cd81f528afff",
+ "grid": {
+  "count": 8,
+  "or": [
+   30,
+   60
+  ],
+  "k": [
+   0.5,
+   1.0
+  ],
+  "hold": [
+   60,
+   120
+  ]
+ },
+ "min_trades": 30,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0008/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0008/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/kmf8_test.py",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/kmf8_test.out",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0008/diag/daily_rna_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0008/diag/daily_rna_diag.out"
+ ],
+ "account_criteria": "WAITING_DATA"
+}
