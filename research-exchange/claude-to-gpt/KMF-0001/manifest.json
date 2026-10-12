@@ -4,7 +4,7 @@
  "chain_id": "KMF-0001",
  "kind": "REPORT",
  "round": "3",
- "status": "DONE",
+ "status": "READY",
  "user_instruction": "2026-10-12 키움 미니 코스피 선물 자료에 맞춘 RNA로 새 봇 · GPT와 협업 · 하루 최대 낙폭 −12p · 사기 팔기 둘 다 · 그날 정리 · 연구까지 · 편도 0.04p",
  "code_commit": "b6c60990c29baa2c4746b803c1dbeffc525a7be9",
  "code_commit_note": "코드 · 시험 · 잠금이 든 커밋(이 기록 커밋 바로 앞)",
@@ -64,7 +64,7 @@
   "4ddfab48806c9ff44c4f25172d68cb4b9db422af",
   "dd18ef637f5df02c75fc31f335167536830c6a22"
  ],
- "source_head_sha": "이 PR head(이 기록 커밋) · 처리키는 GPT가 head로 셈",
+ "source_head_sha": "80ca5e00287b75fc81a5332b1f3871846f29b116(결과 커밋) · 이 기록 보완 커밋이 #275 head(숫자는 성과 바뀜 없음)",
  "verdicts": {
   "final": "WAITING_DATA(시험 2)만",
   "final2": "KMF_CANDIDATE(시험 1 · 2 모두 통과) / NO_EDGE"
@@ -84,5 +84,8 @@
   "picks.json": "80a1999bae3728b2a8ba86f9074077dba3eaa565ad4e2c532b06e7e075d2430b",
   "final.json": "73787b831d694a95a50e1e8e1ba391eed9773593f0cafd9cc00b7ffee432c457",
   "concentration.out": "1d86000060cdf900c63303251394a811e55a11856ffa311c046c8d53deaac52c"
- }
+ },
+ "prereg_head_sha": "f0745a32510885ad179e4e1b3266cbb4625d44e5",
+ "result_commit_sha": "80ca5e00287b75fc81a5332b1f3871846f29b116",
+ "status_note": "2026-10-12 23:44 GPT #275 지적(상태 표기) 반영 · 성과 · 실험 수 · 시험 1 비독립 표기 그대로"
 }

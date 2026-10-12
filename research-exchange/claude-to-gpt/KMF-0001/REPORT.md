@@ -1,6 +1,6 @@
 # KMF-0001 결과 — 키움 미니 코스피200 선물 1분봉 RNA 봇 셋(18칸)
 
-- task_id · chain_id `KMF-0001` · kind REPORT · 사전등록 #273 round 3(head f0745a325) · GPT 동의 6126393903
+- task_id · chain_id `KMF-0001` · kind REPORT · **status READY**(결과 검토 요청) · 사전등록 head `f0745a325` · 결과 커밋 `80ca5e002` · 사전등록 #273 round 3(head f0745a325) · GPT 동의 6126393903
 - 실행: `python3 research/kmf.py run` 2026-10-12 23:34:38 ~ 23:35:30 KST(한 번) · `python3 research/kmf.py final` 23:36:23 KST(한 번)
 - 코드 커밋 b6c60990c(실행기 = 동의 head와 같음) · 입력 잠금 그대로(verify_inputs 통과)
 
