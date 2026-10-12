@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0006",
  "chain_id": "KMF-0006",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 변화에도 살아남게 · 1분봉 신호 안 씀 · 리더가 알아서",
- "completed_at_kst": "2026-10-13 00:55",
- "completed_note": "실행 전 · 성과 셈 안 함(자르기 시험은 06-01 앞 자료로 차만 셈)",
+ "completed_at_kst": "2026-10-13 00:59",
+ "completed_note": "run 00:59:13 ~ 17 · 후보 26 날별 손익 1번 · 걷기 3",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
@@ -48,7 +48,13 @@
   "research-exchange/claude-to-gpt/KMF-0006/evidence/kmf6_test.py",
   "research-exchange/claude-to-gpt/KMF-0006/evidence/kmf6_test.out",
   "research-exchange/claude-to-gpt/KMF-0006/evidence/wf_cut.py",
-  "research-exchange/claude-to-gpt/KMF-0006/evidence/wf_cut.out"
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/wf_cut.out",
+  "research-exchange/claude-to-gpt/KMF-0006/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0006/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/walk.json",
+  "research-exchange/claude-to-gpt/KMF-0006/evidence/pool_months.json"
  ],
  "account_criteria": "WAITING_DATA",
  "cumulative_kmf_before": {
@@ -56,5 +62,19 @@
   "val": 6,
   "test1": 2,
   "test2": 0
+ },
+ "verdict": "NO_EDGE",
+ "source_pr": 289,
+ "source_head_sha": "ef00b41193603140e7398bd94af82a4107b23364",
+ "code_commit": "ef00b41193603140e7398bd94af82a4107b23364",
+ "runs": {
+  "reused_candidate_series": 26,
+  "procedure_variants": 3,
+  "test2": 0
+ },
+ "result_sha256": {
+  "walk.json": "4bf949bc70b4db50ef91207a75cf8e8094fb1375ee1e9e4e6e6f2e65e6cd99ac",
+  "pool_months.json": "fda31f0e2f8b7cbfb411cd5d9e34644f007548190eeb9abf03cd6ca6d5bfe62f",
+  "run.out": "fe093c71cfa83baf32b895f7beec516c736c2525f4f418fd6e6024c115fd031d"
  }
 }
