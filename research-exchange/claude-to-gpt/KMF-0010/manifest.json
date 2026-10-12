@@ -3,7 +3,7 @@
  "task_id": "KMF-0010",
  "chain_id": "KMF-0010",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-13 추세 · 횡보 각각 작동하는 단타봇 · 목표 10개월 800p · 천천히(기본 봇 → 손실 분석 → 줄이기 → 보완 봇) · 1분봉 신호 안 씀",
  "goal": {
@@ -26,7 +26,7 @@
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
-  "research/kmf10.py": "d9aeeef0d1539fb00631c74cc768488e688a52ea4adcaae294d65b8599bc1f49",
+  "research/kmf10.py": "b2e9633ec86714222221b0ce20d55012ec517dd9210b875e74beabd798d7f96f",
   "research/kmf_guard.py": "f6c1ce259bb14ac7b83322c4fde443e55a3a910418aacbc834373a3064c05333",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/kmf10_test.py": "9753b72c0c870487dd20605c4a1219293c198f03f9e4fadfd133d45ab7944f46",
   "research-exchange/claude-to-gpt/KMF-0010/diag/day_type_diag2.py": "7e869bd8f5abd1d588eedf5b9a64e0abf00e09c8b3fcf66112829f405e00c4f6",
@@ -36,12 +36,12 @@
  "input_lock": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
-  "research/kmf10.py": "d9aeeef0d1539fb00631c74cc768488e688a52ea4adcaae294d65b8599bc1f49",
+  "research/kmf10.py": "b2e9633ec86714222221b0ce20d55012ec517dd9210b875e74beabd798d7f96f",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
  },
- "input_lock_sha256": "204e40a4cbb1edae825ea48f3886f72f97054fc0de3bd90c4b393393b92b4cd6",
- "plan_sha256": "34bedb1ac8f57fa86245be533dbefb59c708125357a12a22f1c521fc7513bd72",
+ "input_lock_sha256": "08407107a1a4c746c69b355a97883e7a7cf360b4ae3f8aa5d10ccad08c161ec6",
+ "plan_sha256": "3342d10619d613f44a789a46feed89a53412bc81cda5fd0823f4cd59cd864809",
  "grid": {
   "count": 8,
   "or": [
@@ -66,6 +66,7 @@
   "research-exchange/claude-to-gpt/KMF-0010/diag/split_diag.py",
   "research-exchange/claude-to-gpt/KMF-0010/diag/stop_vs_range_diag.out",
   "research-exchange/claude-to-gpt/KMF-0010/diag/stop_vs_range_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0010/evidence/contracts.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/guard.out",
   "research-exchange/claude-to-gpt/KMF-0010/evidence/guard_selftest.out",
@@ -79,5 +80,11 @@
   "val": 1,
   "test1": 0,
   "test2": 0
+ },
+ "contract_check": {
+  "days": 26,
+  "all_single": true,
+  "calendar_match": true,
+  "note": "GPT #300 round 1 지적 · 성과 실행 전 확인"
  }
 }

@@ -10,7 +10,7 @@
   trap 0 = 추세 봇만(기준) · 새로 들기는 15:00 판단까지
   격자 8칸: N × b × trap
 기간(사전등록): 개발 01-01 ~ 08-31(앞 확인 구간 06 ~ 08을 개발로 씀 · 이미 여러 번 본 구간) · 확인 = 09-01 ~ 10-12(시험 1 구간 · 비독립) · 채택 = 시험 2(10-13부터 새 자료)만
-python3 research/kmf10.py lock | run | cut"""
+python3 research/kmf10.py lock | run | cut | contracts"""
 import hashlib
 import json
 import os
@@ -145,10 +145,52 @@ def log(rec):
         fh.write(json.dumps(rec, ensure_ascii=False) + "\n"); fh.flush(); os.fsync(fh.fileno())
 
 
+def contract_check():
+    """확인 구간 자료(미니 파일 뒤 날 · 10-13 앞)에서 날마다 A056 후보 계약 수 · 코드 · load()가 고른 코드.
+    후보가 하루 둘 이상이면 '그날 종일 거래량 1등' 고르기가 미래 참조가 될 수 있으므로 멈춤(GPT #300 round 1).
+    달력 규칙(코드 A05 + 해 끝자리 + 달(1 ~ 9 · A · B · C) + 000 · 그 달 둘째 목요일 만기 · 만기 날부터 다음 달 계약)과도 견줌 — 장 열기 전에 아는 규칙."""
+    import csv
+    import datetime as dt
+    from collections import defaultdict
+    mini_last = ""
+    with open(K.MINI, encoding="utf-8") as fh:
+        for r in csv.DictReader(fh):
+            mini_last = max(mini_last, r["date"])
+    codes = defaultdict(set)
+    with open(K.FUT, encoding="utf-8-sig") as fh:
+        for r in csv.DictReader(fh):
+            d = r["datetime"][:10].replace("-", "")
+            m = int(r["datetime"][11:13]) * 60 + int(r["datetime"][14:16])
+            if mini_last < d < K.TEST2_FROM and r["code"].startswith("A056") and K.FIRST_MIN <= m <= K.LAST_MIN:
+                codes[d].add(r["code"])
+
+    def second_thu(y, mo):
+        x = dt.date(y, mo, 1)
+        return x + dt.timedelta(days=(3 - x.weekday()) % 7 + 7)
+
+    def cal_code(d):
+        x = dt.date(int(d[:4]), int(d[4:6]), int(d[6:]))
+        y, mo = x.year, x.month
+        if x >= second_thu(y, mo):
+            y, mo = (y + 1, 1) if mo == 12 else (y, mo + 1)
+        return f"A05{y % 10}{'0123456789ABC'[mo]}000"
+    rows = K._rows_before(K.TEST2_FROM)
+    out = []
+    for d in sorted(codes):
+        out.append({"day": d, "n_codes": len(codes[d]), "codes": sorted(codes[d]), "calendar_code": cal_code(d),
+                    "rows_used": sum(1 for r in rows if r[0] == d)})
+    ok = all(x["n_codes"] == 1 for x in out)
+    return {"mini_last": mini_last, "days": len(out), "all_single": ok,
+            "calendar_match": all(x["codes"] == [x["calendar_code"]] for x in out), "per_day": out}
+
+
 def run():
     """① 개발 8칸(09-01부터 안 읽음) → ② robust 1등 한 칸 → ③ 그 칸만 확인(10-13부터 안 읽음 · 시험 2 자료 안 읽음).
     덫 효과(trap 1 − trap 0)도 같은 N · b끼리 보고(판정 아님) · 목표 800p 대비 하루 평균도 보고(판정 아님)."""
     verify_inputs()
+    cc = contract_check()
+    if not cc["all_single"]:
+        sys.exit("확인 구간에 계약 후보가 둘 이상인 날이 있음(멈춤 · 계약 고르기 미래 참조 우려)")
     b = prep(K._rows_before(VAL[0]))
     res = {}
     for cfg in grid():
@@ -199,4 +241,6 @@ def cut():
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "contracts":
+        print(json.dumps(contract_check(), ensure_ascii=False, indent=1)); sys.exit()
     {"lock": write_lock, "cut": cut, "run": run}[sys.argv[1]]()
