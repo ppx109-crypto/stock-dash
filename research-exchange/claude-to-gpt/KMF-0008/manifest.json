@@ -6,7 +6,7 @@
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 단타개발 · 1분봉 신호 안 씀 · 천천히 · 리더가 알아서",
- "completed_at_kst": "2026-10-13 04:59",
+ "completed_at_kst": "2026-10-13 05:02",
  "completed_note": "run 04:58:13 ~ 14 · 개발 8 · 확인 1 · 시험 1 안 함",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
@@ -58,17 +58,21 @@
   "research-exchange/claude-to-gpt/KMF-0008/evidence/dev_rows.json",
   "research-exchange/claude-to-gpt/KMF-0008/evidence/pick.json",
   "research-exchange/claude-to-gpt/KMF-0008/evidence/concentration.py",
-  "research-exchange/claude-to-gpt/KMF-0008/evidence/concentration.out"
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/concentration.out",
+  "research-exchange/claude-to-gpt/KMF-0008/TEST1.md",
+  "research-exchange/claude-to-gpt/KMF-0008/final_ok.json",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/test1.json",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/test1.out"
  ],
  "account_criteria": "WAITING_DATA",
- "verdict": "VAL_PASS N60_k1.0_H120(채택 아님)",
- "source_pr": 295,
- "source_head_sha": "abd7c347b3363eadcb1261c52ad1ea777654631e",
+ "verdict": "NO_EDGE(시험 1)",
+ "source_pr": 296,
+ "source_head_sha": "1fb5b5c1da6921812fde49dbe912298d8b785872",
  "code_commit": "abd7c347b3363eadcb1261c52ad1ea777654631e",
  "runs": {
   "dev": 8,
   "val": 1,
-  "test1": 0,
+  "test1": 1,
   "test2": 0
  },
  "test1_code": {
@@ -77,6 +81,12 @@
  "result_sha256": {
   "dev_rows.json": "78da2bef9c5ee506a4678348b4f6952f179cca7c2ea19b59a3e699a632b8712c",
   "pick.json": "ee4b1e0cab696c06286a261f256c2fa2d94782f2519f8b4ee468f53a81b14829",
-  "concentration.out": "0aa517ea87af26f3eb9c1d96aa28dff2ef1622d433242827f6d4fcc7b03a0c18"
+  "concentration.out": "0aa517ea87af26f3eb9c1d96aa28dff2ef1622d433242827f6d4fcc7b03a0c18",
+  "test1.json": "64b7e03602a8b7fee27d73614cdfa6b86f68badb32ccc6524706fe860a3e0290"
+ },
+ "test1": {
+  "ran_at_kst": "2026-10-13 05:02:12",
+  "total_p": -2.32,
+  "pass1": false
  }
 }

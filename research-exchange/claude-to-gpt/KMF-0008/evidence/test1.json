@@ -1,0 +1,47 @@
+{
+ "ok": {
+  "gpt_pr": 296,
+  "gpt_comment_id": 6131670232,
+  "gpt_comment_url": "https://github.com/ppx109-crypto/stock-dash/pull/296#issuecomment-6131670232",
+  "reviewed_head_sha": "1fb5b5c1da6921812fde49dbe912298d8b785872",
+  "pick": "N60_k1.0_H120",
+  "note": "시험 1(2026-09-01 ~ 10-12) 비독립 · 채택은 시험 2에서만"
+ },
+ "name": "N60_k1.0_H120",
+ "cfg": {
+  "bot": "ORBS",
+  "or": 60,
+  "k": 1.0,
+  "hold": 120,
+  "tag": "N60_k1.0_H120"
+ },
+ "test1": {
+  "days": 26,
+  "total_p": -2.32,
+  "per_day_p": -0.089,
+  "worst_day_p": -12.0,
+  "best_day_p": 16.18,
+  "win_days": 13,
+  "loss_days": 13,
+  "trades": 45,
+  "win_rate": 0.467,
+  "mdd_p": -64.86,
+  "months": {
+   "202609": -45.36,
+   "202610": 43.04
+  },
+  "stop_days": 4,
+  "worst_month_p": -45.36,
+  "per_day_ci95_p": [
+   -3.159,
+   3.022
+  ],
+  "won": {
+   "total": -116000,
+   "worst_day": -600000,
+   "worst_month": -2268000
+  }
+ },
+ "pass1": false,
+ "val_check": 114.36
+}
