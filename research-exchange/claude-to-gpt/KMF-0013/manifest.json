@@ -1,0 +1,81 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0013",
+ "chain_id": "KMF-0013",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 목표 10개월 +1000p · 추세장봇 먼저 RNA · 국면 여러 번 봐도 됨 · 앞뒤 잘라서 말고 한번에 다 보고 개발 · −25p",
+ "day_stop_p": -25.0,
+ "goal": {
+  "points_10_months": 1000,
+  "per_day_p": 5.0,
+  "is_acceptance_rule": false
+ },
+ "periods": {
+  "dev_full_sample": [
+   "20260102",
+   "20261012"
+  ],
+  "decisive": "test2 >= 20261013 · 완전한 거래일 20일 이상"
+ },
+ "explored_combinations": 738,
+ "pick": "sc0.75_x60_t4_n5",
+ "test2_pass": {
+  "total_gt": 0,
+  "per_day_ge": 1.69,
+  "worst_day_ge": -25.5
+ },
+ "dev_result": {
+  "total_p": 631.8,
+  "per_day_p": 3.379,
+  "months_pos": 7,
+  "top10_sum": 624.86
+ },
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "28bf0a14b1707de8f8c8ee00c44c9a3914ac56188249c6ac9b3845e67712d693",
+  "research/kmf_guard.py": "13802e3eb2a4decfca35cfb2924684c99eff9f60035c08acc05d09b9e7ec8ea3",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.py": "c708c9b48ce83eba9fc206b86aca53dc0f24d7d68b6aa46b78bed82b8bff62f9",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/regimes.py": "d465e6380497aa2e6e9a64214ad9c4df5a1482433de2c72074f73657115e35b5",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round2.py": "0fff51d21004747012c54e316fe7dcd03b10002e49d14df51783efb7edb1a903",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round3.py": "f76a638fe6edc245a206ed4468d8e531fab16541c55551e758b3033daac63fba",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round4.py": "95b6fbca126a2bc448de65d8957352745406fdc119edf9512cca03bfd5247794",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.py": "7583687bd4cb7adc774d2edb727c84ac655e085ccb2c867cf471e02700ddaa25"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "28bf0a14b1707de8f8c8ee00c44c9a3914ac56188249c6ac9b3845e67712d693",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "16422907e007a9d340bfb5c6887f4e283bd422239b6be2edb24b02da5d0395cb",
+ "plan_sha256": "46002e978a48db8605a063ace187a57c5612a4c91cabd99ff85c347a800b988c",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0013/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/contracts_from_KMF-0012.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/dev_report.json",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/__pycache__/trend_lab.cpython-311.pyc",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/regimes.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round2.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round3.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round4.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round1.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round2.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round3.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round4.json",
+  "research-exchange/claude-to-gpt/KMF-0013/input_lock.json"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "runs_planned": {
+  "test2": 1
+ }
+}
