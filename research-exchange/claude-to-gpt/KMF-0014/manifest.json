@@ -1,0 +1,107 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0014",
+ "chain_id": "KMF-0014",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "source_pr": null,
+ "source_head_sha": null,
+ "code_commit": null,
+ "completed_at_kst": null,
+ "user_instruction": "2026-10-13 위 10일 빼고 작은 · 짧은 추세에도 작동하는 추세봇 +800p · 횡보장봇도 RNA로 · 전체 자료 개발 · −25p",
+ "day_stop_p": -25.0,
+ "goal": {
+  "points": 800,
+  "is_acceptance_rule": false
+ },
+ "short_trend_search": {
+  "combos": 1008,
+  "ex_own_top10_positive": 1,
+  "best_ex_own_top10": 0.9,
+  "best_ex_kmf13_top10": 157.9,
+  "registered": false
+ },
+ "range_search_combos": 2424,
+ "pick": "L15_W120_f0.8_k2.0_s3.0",
+ "dev_result": {
+  "total_p": 406.12,
+  "per_day_p": 2.172,
+  "top10_sum": 673.08,
+  "rest_sum": -266.96,
+  "with_kmf13_total": 1037.92,
+  "with_kmf13_ex_kmf13_top10": 661.7
+ },
+ "periods": {
+  "dev_full_sample": [
+   "20260102",
+   "20261012"
+  ],
+  "decisive": "시험 2: 10-13부터 완전한 거래일 처음 20일(KMF-0013과 같은 계약)"
+ },
+ "test2_pass": {
+  "total_gt": 0,
+  "per_day_ge": 1.09,
+  "worst_day_ge": -25.5
+ },
+ "test2_family": [
+  "KMF-0002",
+  "KMF-0007",
+  "KMF-0013",
+  "KMF-0014"
+ ],
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "research/kmf14.py": "4f7cd8f69d645234fea0b0ec462f08b2b87b7e219a270978e663a48871b95418",
+  "research/kmf_guard.py": "353dbe52b060022c7f6417de13cf13e95e6a5fd7ef4e108b0f5572ee3e5b40b4",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/kmf14_test.py": "a6ea722f761e128ea28473cd6d06df088611ea37584df15428ca94b833798825",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/delay_check.py": "1e12aeb82cd0d8a686b17a452f0101126c9c76215e020eef8b8f8682165d6758",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/ceiling.py": "949df29e44ad70408afa286de2e7f52774880294273fcfe18acc160739cbe4f8",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/range_r3.py": "3dcb2d3ce27975c7b40ab0eb0005f1b10b7403315ff18126d017b7ac5e0ae01b",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/range_r4.py": "81519058a363f4df5959fe8659856f85c7f79b8e5b054b8b5a0c9f19b01f7e23",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_lab.py": "403b1da9dcc6de2a240235f0789547ba4ac3914ae6f6685f4308b8b5466882ff",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_r1.py": "625f0981a0cfbfd04ec909c7a9162eeebfc436e93f652bfa936ee67f2eb372f1",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_r2.py": "1e9d507a829bda36a0b640105744948903a9e94e66fabffbc59845fee3922746"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "research/kmf14.py": "4f7cd8f69d645234fea0b0ec462f08b2b87b7e219a270978e663a48871b95418",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "7ea45debba6d8feb656807052e50fafe5971d6f1623fd6432dcd961657fd9b49",
+ "plan_sha256": "050fd2c6683b9ab6a0be845c1213c814cd5ac568fdaa026561efe02c3fbad7c8",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0014/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/delay_check.out",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/delay_check.py",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/dev_report.json",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/kmf14_test.out",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/kmf14_test.py",
+  "research-exchange/claude-to-gpt/KMF-0014/evidence/report.out",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/__pycache__/range_r3.cpython-311.pyc",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/__pycache__/short_lab.cpython-311.pyc",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/ceiling.py",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/range_r3.json",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/range_r3.py",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/range_r4.json",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/range_r4.py",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_lab.py",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_r1.json",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_r1.py",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_r2.json",
+  "research-exchange/claude-to-gpt/KMF-0014/explore/short_r2.py",
+  "research-exchange/claude-to-gpt/KMF-0014/input_lock.json"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "runs_planned": {
+  "test2": 1
+ }
+}

@@ -107,6 +107,8 @@ def main(which):
         import kmf12 as M                         # 하루 멈춤 −25p(import 때 K.DAY_STOP을 바꿈)
     elif which == "kmf13":
         import kmf13 as M                         # 전체 자료 개발(GUARD_BEFORE 10-13 앞) · −25p
+    elif which == "kmf14":
+        import kmf14 as M                         # RNA 횡보장 봇 · 전체 자료 · −25p
     else:
         M = K
     before = getattr(M, "GUARD_BEFORE", K.VAL[0])
