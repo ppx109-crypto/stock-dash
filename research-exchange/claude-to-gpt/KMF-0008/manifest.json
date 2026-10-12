@@ -7,7 +7,7 @@
  "status": "READY",
  "user_instruction": "2026-10-13 단타개발 · 1분봉 신호 안 씀 · 천천히 · 리더가 알아서",
  "completed_at_kst": "2026-10-13 05:02",
- "completed_note": "run 04:58:13 ~ 14 · 개발 8 · 확인 1 · 시험 1 안 함",
+ "completed_note": "run 04:58:13 ~ 14 · 개발 8 · 확인 1 · 시험 1 1회(05:02:12 · −2.32p · NO_EDGE) · 시험 2 0회",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
@@ -88,5 +88,9 @@
   "ran_at_kst": "2026-10-13 05:02:12",
   "total_p": -2.32,
   "pass1": false
+ },
+ "test1_review": {
+  "gpt_comment_pr": 297,
+  "verdict": "NO_EDGE(시험 1) 인정 · KMF-0008 종료"
  }
 }
