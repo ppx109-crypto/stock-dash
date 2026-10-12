@@ -1,0 +1,60 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0005",
+ "chain_id": "KMF-0005",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 1분봉 신호 안 씀 · RNA 위주 · 역추세금지 · 변화에도 살아남기",
+ "completed_at_kst": "2026-10-13 00:43",
+ "completed_note": "실행 전 · 진단(판정 밖)에서 N60_day_e1 개발 값을 미리 봄",
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "research/kmf_guard.py": "c32e599ae010150e0c12f848d06e0783f2114dfabcd170029ebb81d388cd838b",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/kmf5_test.py": "ae8634aab367221adfdff81ed622a8ebed826840b8d7f0d5fc92db64e37fd3d1",
+  "research-exchange/claude-to-gpt/KMF-0005/diag/day_dir_diag.py": "2fc646d91902ec722892d74f49668a9d45f84a4a4797e97b7c84fcd34397caab",
+  "research-exchange/claude-to-gpt/KMF-0005/diag/orb_daily_rna_diag.py": "3a60fa12b386d5bc7b29c49ff32bebfca05ae0c5fd6511d4e9457fa713bda73f"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "40f846b947c8e79fa3360cac03e961fdda699593e3abbd2ab44d38d7a300edfc",
+ "plan_sha256": "f33a4700055390ac2c3cbf495169d925b19d6000f5b0f1e227b0c1bac82920df",
+ "grid": {
+  "count": 12,
+  "distinct_rules": 10
+ },
+ "min_trades": 30,
+ "periods": {
+  "dev": "2026-01 ~ 05",
+  "val": "2026-06 ~ 08(1칸)",
+  "test1": "따로 동의",
+  "test2": "10-13 ~ 새 자료(결정)"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0005/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0005/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/kmf5_test.py",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/kmf5_test.out",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0005/diag/day_dir_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0005/diag/day_dir_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0005/diag/orb_daily_rna_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0005/diag/orb_daily_rna_diag.out"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "cumulative_kmf_before": {
+  "dev": 58,
+  "val": 5,
+  "test1": 2,
+  "test2": 0
+ }
+}
