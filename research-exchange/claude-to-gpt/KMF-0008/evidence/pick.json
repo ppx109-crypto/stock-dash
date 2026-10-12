@@ -1,0 +1,70 @@
+{
+ "name": "N60_k1.0_H120",
+ "cfg": {
+  "bot": "ORBS",
+  "or": 60,
+  "k": 1.0,
+  "hold": 120,
+  "tag": "N60_k1.0_H120"
+ },
+ "dev": {
+  "days": 98,
+  "total_p": 150.36,
+  "per_day_p": 1.534,
+  "worst_day_p": -12.0,
+  "best_day_p": 30.96,
+  "win_days": 49,
+  "loss_days": 42,
+  "trades": 153,
+  "win_rate": 0.575,
+  "mdd_p": -86.68,
+  "months": {
+   "202601": -23.36,
+   "202602": 93.72,
+   "202603": -47.08,
+   "202604": 40.06,
+   "202605": 87.02
+  },
+  "stop_days": 16,
+  "worst_month_p": -47.08,
+  "per_day_ci95_p": [
+   -0.502,
+   3.542
+  ],
+  "won": {
+   "total": 7518000,
+   "worst_day": -600000,
+   "worst_month": -2354000
+  }
+ },
+ "dev_check": 150.36,
+ "val": {
+  "days": 63,
+  "total_p": 114.36,
+  "per_day_p": 1.815,
+  "worst_day_p": -12.0,
+  "best_day_p": 54.88,
+  "win_days": 23,
+  "loss_days": 34,
+  "trades": 87,
+  "win_rate": 0.46,
+  "mdd_p": -66.92,
+  "months": {
+   "202606": 55.14,
+   "202607": 44.66,
+   "202608": 14.56
+  },
+  "stop_days": 30,
+  "worst_month_p": 14.56,
+  "per_day_ci95_p": [
+   -2.566,
+   6.738
+  ],
+  "won": {
+   "total": 5718000,
+   "worst_day": -600000,
+   "worst_month": 728000
+  }
+ },
+ "val_pass": true
+}

@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0008",
  "chain_id": "KMF-0008",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 단타개발 · 1분봉 신호 안 씀 · 천천히 · 리더가 알아서",
- "completed_at_kst": "2026-10-13 04:56",
- "completed_note": "실행 전 · 성과 셈 안 함(거래 수만 봄)",
+ "completed_at_kst": "2026-10-13 04:59",
+ "completed_note": "run 04:58:13 ~ 14 · 개발 8 · 확인 1 · 시험 1 안 함",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
@@ -50,7 +50,33 @@
   "research-exchange/claude-to-gpt/KMF-0008/evidence/guard_selftest.out",
   "research-exchange/claude-to-gpt/KMF-0008/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/KMF-0008/diag/daily_rna_diag.py",
-  "research-exchange/claude-to-gpt/KMF-0008/diag/daily_rna_diag.out"
+  "research-exchange/claude-to-gpt/KMF-0008/diag/daily_rna_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0008/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0008/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/pick.json",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/concentration.py",
+  "research-exchange/claude-to-gpt/KMF-0008/evidence/concentration.out"
  ],
- "account_criteria": "WAITING_DATA"
+ "account_criteria": "WAITING_DATA",
+ "verdict": "VAL_PASS N60_k1.0_H120(채택 아님)",
+ "source_pr": 295,
+ "source_head_sha": "abd7c347b3363eadcb1261c52ad1ea777654631e",
+ "code_commit": "abd7c347b3363eadcb1261c52ad1ea777654631e",
+ "runs": {
+  "dev": 8,
+  "val": 1,
+  "test1": 0,
+  "test2": 0
+ },
+ "test1_code": {
+  "research/kmf8_test1.py": "368f15504ac95424609a152825ccb7e3addf7753d1ac03ac9869405b0a5bc6cf"
+ },
+ "result_sha256": {
+  "dev_rows.json": "78da2bef9c5ee506a4678348b4f6952f179cca7c2ea19b59a3e699a632b8712c",
+  "pick.json": "ee4b1e0cab696c06286a261f256c2fa2d94782f2519f8b4ee468f53a81b14829",
+  "concentration.out": "0aa517ea87af26f3eb9c1d96aa28dff2ef1622d433242827f6d4fcc7b03a0c18"
+ }
 }

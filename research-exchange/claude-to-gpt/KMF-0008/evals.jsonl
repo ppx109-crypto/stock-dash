@@ -1,0 +1,18 @@
+{"status": "STARTED", "key": "N30_k0.5_H60", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N30_k0.5_H60", "stage": "dev", "dev_total_p": 21.32}
+{"status": "STARTED", "key": "N30_k0.5_H120", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N30_k0.5_H120", "stage": "dev", "dev_total_p": 12.18}
+{"status": "STARTED", "key": "N30_k1.0_H60", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N30_k1.0_H60", "stage": "dev", "dev_total_p": 61.44}
+{"status": "STARTED", "key": "N30_k1.0_H120", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N30_k1.0_H120", "stage": "dev", "dev_total_p": 22.94}
+{"status": "STARTED", "key": "N60_k0.5_H60", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N60_k0.5_H60", "stage": "dev", "dev_total_p": 71.3}
+{"status": "STARTED", "key": "N60_k0.5_H120", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N60_k0.5_H120", "stage": "dev", "dev_total_p": 89.54}
+{"status": "STARTED", "key": "N60_k1.0_H60", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N60_k1.0_H60", "stage": "dev", "dev_total_p": 139.5}
+{"status": "STARTED", "key": "N60_k1.0_H120", "stage": "dev", "at": "2026-10-12 19:58:13"}
+{"status": "DONE", "key": "N60_k1.0_H120", "stage": "dev", "dev_total_p": 150.36}
+{"status": "STARTED", "key": "N60_k1.0_H120", "stage": "val", "at": "2026-10-12 19:58:14"}
+{"status": "DONE", "key": "N60_k1.0_H120", "stage": "val", "val_total_p": 114.36}

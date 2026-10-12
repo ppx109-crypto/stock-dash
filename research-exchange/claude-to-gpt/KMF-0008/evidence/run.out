@@ -1,0 +1,1 @@
+{"verdict": "VAL_PASS N60_k1.0_H120", "robust": ["N60_k1.0_H120"], "pick": {"name": "N60_k1.0_H120", "dev_total_p": 150.36, "dev_check": 150.36, "val_total_p": 114.36, "val_pass": true}}
