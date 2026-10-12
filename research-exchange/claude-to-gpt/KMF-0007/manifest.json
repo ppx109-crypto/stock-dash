@@ -1,0 +1,37 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0007",
+ "chain_id": "KMF-0007",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 1분봉 신호 안 씀 · 변화에도 살아남기 · 리더가 알아서",
+ "completed_at_kst": "2026-10-13 01:04",
+ "completed_note": "실행 전 · 성과 셈 안 함",
+ "cell": "KMF-0005 N60_day_e1",
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "research/kmf7.py": "3a33b907c6d16075d83970de36b086dbc20d2c2cf9b5322cd33bc3f23e744971",
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/kmf7_test.py": "71968f7d27340f00d28918be4f1080b1c322061fda524d54c36fee3284991d9e"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "research/kmf7.py": "3a33b907c6d16075d83970de36b086dbc20d2c2cf9b5322cd33bc3f23e744971",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "a08e4198591464d6fdf2045d2f7568a58ae73bcf2ded52a207e5e1db5cb75912",
+ "plan_sha256": "cff98c35a06cbdd805e8f401d285465fc614ada069d03dc821d0d98e34f056b2",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0007/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0007/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/kmf7_test.py",
+  "research-exchange/claude-to-gpt/KMF-0007/evidence/kmf7_test.out"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "independence": "비독립(KMF-0006 pool_months에 이 칸 달별 합 있음)"
+}
