@@ -1,0 +1,105 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0013",
+ "chain_id": "KMF-0013",
+ "kind": "PLAN",
+ "round": "3",
+ "status": "READY",
+ "user_instruction": "2026-10-13 목표 10개월 +1000p · 추세장봇 먼저 RNA · 국면 여러 번 봐도 됨 · 앞뒤 잘라서 말고 한번에 다 보고 개발 · −25p",
+ "day_stop_p": -25.0,
+ "goal": {
+  "points_10_months": 1000,
+  "per_day_p": 5.0,
+  "is_acceptance_rule": false
+ },
+ "periods": {
+  "dev_full_sample": [
+   "20260102",
+   "20261012"
+  ],
+  "decisive": "시험 2: 10-13부터 완전한 거래일 처음 20일 딱 그만큼(kmf13.complete_days) · 워밍업 = 개발 자료에 이어서"
+ },
+ "explored_combinations": 738,
+ "pick": "sc0.75_x60_t4_n5",
+ "test2_pass": {
+  "total_gt": 0,
+  "per_day_ge": 1.69,
+  "worst_day_ge": -25.5
+ },
+ "dev_result": {
+  "total_p": 631.8,
+  "per_day_p": 3.379,
+  "months_pos": 7,
+  "top10_sum": 624.86
+ },
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "research/kmf_guard.py": "13802e3eb2a4decfca35cfb2924684c99eff9f60035c08acc05d09b9e7ec8ea3",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.py": "8a335082e7183bb7ae04be100b37f6f8290aa7c2c10ceff48b8c713fef85a90d",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/regimes.py": "d465e6380497aa2e6e9a64214ad9c4df5a1482433de2c72074f73657115e35b5",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round2.py": "0fff51d21004747012c54e316fe7dcd03b10002e49d14df51783efb7edb1a903",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round3.py": "f76a638fe6edc245a206ed4468d8e531fab16541c55551e758b3033daac63fba",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round4.py": "95b6fbca126a2bc448de65d8957352745406fdc119edf9512cca03bfd5247794",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.py": "7583687bd4cb7adc774d2edb727c84ac655e085ccb2c867cf471e02700ddaa25",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/delay_check.py": "b64e0c78a3c75aeaa28b4e75df0bbc00bbc7ccaf1479a1b3b8f0a79f1d6b15f9"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "a32ac55de164ed5f61df8adf1b5184610e5015bb9b4c04425751f7b59b93eade",
+ "plan_sha256": "12e882efab02c2d602dff1c9828605c447af2838116a9c9a7b620d199d1d4518",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0013/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/contracts_from_KMF-0012.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/delay_check.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/delay_check.py",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/dev_report.json",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.out",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/kmf13_test.py",
+  "research-exchange/claude-to-gpt/KMF-0013/evidence/report.out",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/__pycache__/trend_lab.cpython-311.pyc",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/range_lab.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/range_lab.round1.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/range_lab.round2.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/range_lab2.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/regimes.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round2.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round3.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/round4.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.py",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round1.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round2.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round3.json",
+  "research-exchange/claude-to-gpt/KMF-0013/explore/trend_lab.round4.json",
+  "research-exchange/claude-to-gpt/KMF-0013/input_lock.json"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "runs_planned": {
+  "test2": 1
+ },
+ "source_pr": null,
+ "source_head_sha": null,
+ "code_commit": null,
+ "completed_at_kst": null,
+ "prereg_pr": 307,
+ "test2_family": [
+  "KMF-0002",
+  "KMF-0007",
+  "KMF-0013"
+ ],
+ "test2_family_note": "각자 고정 규칙의 개별 판정 · 최선 고르기 · 결합 · 자동 채택 근거 아님",
+ "round2_disclosure": {
+  "morning_watch": "처음 코드에 숨어 있던 동작을 드러내 적음 · 없애면 +210.9 · 결과 본 뒤 이름 붙임",
+  "delay_check": "0 ~ 5분 늦게 +561.8 ~ +645.8 · 비용 2배 +609.5"
+ },
+ "test2_complete_day": "중복 줄 없음 · 고유 분 ≥ 360 · 첫 분 ≤ 09:05 · 마지막 분 ≥ 15:29 · 빈 곳 ≤ 5분 · 결손일은 손익 · 셈 상태 모두에서 뺌"
+}

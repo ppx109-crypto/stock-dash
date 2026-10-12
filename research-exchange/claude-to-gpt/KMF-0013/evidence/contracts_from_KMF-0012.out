@@ -1,0 +1,242 @@
+{
+ "mini_last": "20260831",
+ "days": 26,
+ "all_single": true,
+ "calendar_match": true,
+ "per_day": [
+  {
+   "day": "20260901",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260902",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260903",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260904",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260907",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260908",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260909",
+   "n_codes": 1,
+   "codes": [
+    "A0569000"
+   ],
+   "calendar_code": "A0569000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260910",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260911",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260914",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260915",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260916",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260917",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260918",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260921",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260922",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260923",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260928",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260929",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20260930",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20261001",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20261002",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20261006",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20261007",
+   "n_codes": 1,
+   "codes": [
+    "A056A000"
+   ],
+   "calendar_code": "A056A000",
+   "rows_used": 395
+  },
+  {
+   "day": "20261008",
+   "n_codes": 1,
+   "codes": [
+    "A056B000"
+   ],
+   "calendar_code": "A056B000",
+   "rows_used": 395
+  },
+  {
+   "day": "20261012",
+   "n_codes": 1,
+   "codes": [
+    "A056B000"
+   ],
+   "calendar_code": "A056B000",
+   "rows_used": 395
+  }
+ ]
+}
