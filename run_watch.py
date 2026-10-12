@@ -5,6 +5,7 @@
   1일봉   : daily-live/today.json 날짜가 오늘인지 · late(15:28 넘어 주문 건너뜀)가 아닌지
   빈칸 엔진: idle-live/today.json 날짜가 오늘인지 · late(15:18 넘어 주문 건너뜀)가 아닌지(IDLE_START 전은 안 봄)
   15분봉  : m15-live/state.json last_bar가 오늘 15:00 뒤 봉인지
+  레버리지 봇(최종 판 MIX-0054 · MIX54_START부터): overlay-live/state.json last_day가 오늘인지 · 오늘 주문 가운데 실패가 있는지(2026-10-12 첫날 매수 실패가 알림 없이 지나감)
 알림이 오면 GitHub Actions에서 그 작업을 '수동 실행(Run workflow)'할 수 있음(이미 늦었으면 다음 날 판단부터 정상).
 """
 from __future__ import annotations
@@ -18,6 +19,7 @@ from zoneinfo import ZoneInfo
 
 KST = ZoneInfo("Asia/Seoul")
 IDLE_START = os.environ.get("IDLE_START", "20261005")
+MIX54_START = os.environ.get("MIX54_START", "20261011")
 
 
 def _load(path):
@@ -33,7 +35,7 @@ def trading_day(day: str) -> bool:
     return d.weekday() < 5 and day not in HOLIDAYS
 
 
-def check(day: str, daily: dict, idle: dict, m15: dict) -> list[str]:
+def check(day: str, daily: dict, idle: dict, m15: dict, overlay: dict | None = None, overlay_book: dict | None = None) -> list[str]:
     """빠진 · 늦은 봇마다 한 줄. 모두 괜찮으면 빈 목록."""
     bad = []
     if daily.get("date") != day:
@@ -48,6 +50,13 @@ def check(day: str, daily: dict, idle: dict, m15: dict) -> list[str]:
     last = str(m15.get("last_bar") or "")
     if not last.startswith(day) or last[8:] < "1500":
         bad.append(f"15분봉 봇이 오늘 끝까지 돌지 않았어요(마지막 봉 {last or '없음'}) → Actions 'M15 live'")
+    if overlay is not None and day >= MIX54_START:
+        if (overlay or {}).get("last_day") != day:
+            bad.append(f"레버리지 봇이 오늘 돌지 않았어요(마지막 {(overlay or {}).get('last_day') or '없음'}) → Actions 'Daily rule live'")
+        for o in (overlay_book or {}).get("orders", []):
+            if str(o.get("key", "")).startswith(day) and str(o.get("status", "")).startswith("실패"):
+                side = "매수" if o.get("side") == "buy" else "매도"
+                bad.append(f"레버리지 봇 {side} 실패: {o.get('name') or o.get('code')} {o.get('qty')}주({o.get('status')}) → 다음 거래일에 다시 맞춤")
     return bad
 
 
@@ -56,9 +65,10 @@ def main() -> int:
     if not trading_day(day):
         print(f"{day} 휴장 · 안 봄")
         return 0
-    bad = check(day, _load("daily-live/today.json"), _load("idle-live/today.json"), _load("m15-live/state.json"))
+    bad = check(day, _load("daily-live/today.json"), _load("idle-live/today.json"), _load("m15-live/state.json"),
+                _load("overlay-live/state.json"), _load("overlay-live/paper-orders.json"))
     if not bad:
-        print(f"{day} 세 봇 모두 정상")
+        print(f"{day} 봇 모두 정상")
         return 0
     lines = [f"봇 지킴이 {int(day[4:6])}월 {int(day[6:])}일, 모의투자 봇 확인 필요"] + bad
     print("\n".join(lines))
