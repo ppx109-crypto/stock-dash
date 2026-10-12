@@ -1,0 +1,482 @@
+{
+ "N30_day_e1": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 30,
+   "stop": "day",
+   "max_entries": 1,
+   "rna": false,
+   "tag": "N30_day_e1"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 256.32,
+   "per_day_p": 2.616,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 51,
+   "loss_days": 44,
+   "trades": 95,
+   "win_rate": 0.537,
+   "mdd_p": -128.18,
+   "months": {
+    "202601": 26.94,
+    "202602": 107.0,
+    "202603": -27.24,
+    "202604": -2.52,
+    "202605": 152.14
+   },
+   "stop_days": 25,
+   "worst_month_p": -27.24,
+   "per_day_ci95_p": [
+    -0.34,
+    5.697
+   ],
+   "won": {
+    "total": 12816000,
+    "worst_day": -600000,
+    "worst_month": -1362000
+   }
+  }
+ },
+ "N30_day_e2": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 30,
+   "stop": "day",
+   "max_entries": 2,
+   "rna": false,
+   "tag": "N30_day_e2"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 256.32,
+   "per_day_p": 2.616,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 51,
+   "loss_days": 44,
+   "trades": 95,
+   "win_rate": 0.537,
+   "mdd_p": -128.18,
+   "months": {
+    "202601": 26.94,
+    "202602": 107.0,
+    "202603": -27.24,
+    "202604": -2.52,
+    "202605": 152.14
+   },
+   "stop_days": 25,
+   "worst_month_p": -27.24,
+   "per_day_ci95_p": [
+    -0.34,
+    5.697
+   ],
+   "won": {
+    "total": 12816000,
+    "worst_day": -600000,
+    "worst_month": -1362000
+   }
+  }
+ },
+ "N30_range_e1": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 30,
+   "stop": "range",
+   "max_entries": 1,
+   "rna": false,
+   "tag": "N30_range_e1"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 257.98,
+   "per_day_p": 2.632,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 51,
+   "loss_days": 44,
+   "trades": 95,
+   "win_rate": 0.537,
+   "mdd_p": -127.72,
+   "months": {
+    "202601": 28.14,
+    "202602": 107.0,
+    "202603": -25.98,
+    "202604": -3.32,
+    "202605": 152.14
+   },
+   "stop_days": 24,
+   "worst_month_p": -25.98,
+   "per_day_ci95_p": [
+    -0.327,
+    5.708
+   ],
+   "won": {
+    "total": 12899000,
+    "worst_day": -600000,
+    "worst_month": -1299000
+   }
+  }
+ },
+ "N30_range_e2": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 30,
+   "stop": "range",
+   "max_entries": 2,
+   "rna": false,
+   "tag": "N30_range_e2"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 256.62,
+   "per_day_p": 2.619,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 51,
+   "loss_days": 44,
+   "trades": 97,
+   "win_rate": 0.526,
+   "mdd_p": -128.98,
+   "months": {
+    "202601": 28.04,
+    "202602": 107.0,
+    "202603": -27.24,
+    "202604": -3.32,
+    "202605": 152.14
+   },
+   "stop_days": 25,
+   "worst_month_p": -27.24,
+   "per_day_ci95_p": [
+    -0.344,
+    5.696
+   ],
+   "won": {
+    "total": 12831000,
+    "worst_day": -600000,
+    "worst_month": -1362000
+   }
+  }
+ },
+ "N60_day_e1": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 60,
+   "stop": "day",
+   "max_entries": 1,
+   "rna": false,
+   "tag": "N60_day_e1"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 202.76,
+   "per_day_p": 2.069,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 48,
+   "loss_days": 41,
+   "trades": 89,
+   "win_rate": 0.539,
+   "mdd_p": -105.9,
+   "months": {
+    "202601": -14.38,
+    "202602": 86.96,
+    "202603": 0.38,
+    "202604": -5.98,
+    "202605": 135.78
+   },
+   "stop_days": 22,
+   "worst_month_p": -14.38,
+   "per_day_ci95_p": [
+    -0.589,
+    4.95
+   ],
+   "won": {
+    "total": 10138000,
+    "worst_day": -600000,
+    "worst_month": -719000
+   }
+  }
+ },
+ "N60_day_e2": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 60,
+   "stop": "day",
+   "max_entries": 2,
+   "rna": false,
+   "tag": "N60_day_e2"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 202.76,
+   "per_day_p": 2.069,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 48,
+   "loss_days": 41,
+   "trades": 89,
+   "win_rate": 0.539,
+   "mdd_p": -105.9,
+   "months": {
+    "202601": -14.38,
+    "202602": 86.96,
+    "202603": 0.38,
+    "202604": -5.98,
+    "202605": 135.78
+   },
+   "stop_days": 22,
+   "worst_month_p": -14.38,
+   "per_day_ci95_p": [
+    -0.589,
+    4.95
+   ],
+   "won": {
+    "total": 10138000,
+    "worst_day": -600000,
+    "worst_month": -719000
+   }
+  }
+ },
+ "N60_range_e1": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 60,
+   "stop": "range",
+   "max_entries": 1,
+   "rna": false,
+   "tag": "N60_range_e1"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 201.94,
+   "per_day_p": 2.061,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 48,
+   "loss_days": 41,
+   "trades": 89,
+   "win_rate": 0.539,
+   "mdd_p": -105.9,
+   "months": {
+    "202601": -14.4,
+    "202602": 86.96,
+    "202603": 0.38,
+    "202604": -6.78,
+    "202605": 135.78
+   },
+   "stop_days": 22,
+   "worst_month_p": -14.4,
+   "per_day_ci95_p": [
+    -0.606,
+    4.95
+   ],
+   "won": {
+    "total": 10097000,
+    "worst_day": -600000,
+    "worst_month": -720000
+   }
+  }
+ },
+ "N60_range_e2": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 60,
+   "stop": "range",
+   "max_entries": 2,
+   "rna": false,
+   "tag": "N60_range_e2"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 201.94,
+   "per_day_p": 2.061,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.0,
+   "win_days": 48,
+   "loss_days": 41,
+   "trades": 89,
+   "win_rate": 0.539,
+   "mdd_p": -105.9,
+   "months": {
+    "202601": -14.4,
+    "202602": 86.96,
+    "202603": 0.38,
+    "202604": -6.78,
+    "202605": 135.78
+   },
+   "stop_days": 22,
+   "worst_month_p": -14.4,
+   "per_day_ci95_p": [
+    -0.606,
+    4.95
+   ],
+   "won": {
+    "total": 10097000,
+    "worst_day": -600000,
+    "worst_month": -720000
+   }
+  }
+ },
+ "N30_range_e2_RNA": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 30,
+   "stop": "range",
+   "max_entries": 2,
+   "rna": true,
+   "tag": "N30_range_e2_RNA"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 97.18,
+   "per_day_p": 0.992,
+   "worst_day_p": -12.0,
+   "best_day_p": 55.76,
+   "win_days": 25,
+   "loss_days": 22,
+   "trades": 47,
+   "win_rate": 0.532,
+   "mdd_p": -62.66,
+   "months": {
+    "202601": 0.0,
+    "202602": 53.24,
+    "202603": -34.4,
+    "202604": -13.0,
+    "202605": 91.34
+   },
+   "stop_days": 13,
+   "worst_month_p": -34.4,
+   "per_day_ci95_p": [
+    -0.904,
+    2.939
+   ],
+   "won": {
+    "total": 4859000,
+    "worst_day": -600000,
+    "worst_month": -1720000
+   }
+  }
+ },
+ "N30_day_e1_RNA": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 30,
+   "stop": "day",
+   "max_entries": 1,
+   "rna": true,
+   "tag": "N30_day_e1_RNA"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 95.92,
+   "per_day_p": 0.979,
+   "worst_day_p": -12.0,
+   "best_day_p": 55.76,
+   "win_days": 25,
+   "loss_days": 22,
+   "trades": 47,
+   "win_rate": 0.532,
+   "mdd_p": -63.92,
+   "months": {
+    "202601": 0.0,
+    "202602": 53.24,
+    "202603": -35.66,
+    "202604": -13.0,
+    "202605": 91.34
+   },
+   "stop_days": 14,
+   "worst_month_p": -35.66,
+   "per_day_ci95_p": [
+    -0.914,
+    2.926
+   ],
+   "won": {
+    "total": 4796000,
+    "worst_day": -600000,
+    "worst_month": -1783000
+   }
+  }
+ },
+ "N60_range_e2_RNA": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 60,
+   "stop": "range",
+   "max_entries": 2,
+   "rna": true,
+   "tag": "N60_range_e2_RNA"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 69.28,
+   "per_day_p": 0.707,
+   "worst_day_p": -12.0,
+   "best_day_p": 37.24,
+   "win_days": 24,
+   "loss_days": 16,
+   "trades": 40,
+   "win_rate": 0.6,
+   "mdd_p": -54.82,
+   "months": {
+    "202601": 0.0,
+    "202602": 37.78,
+    "202603": -28.88,
+    "202604": -6.72,
+    "202605": 67.1
+   },
+   "stop_days": 10,
+   "worst_month_p": -28.88,
+   "per_day_ci95_p": [
+    -0.752,
+    2.265
+   ],
+   "won": {
+    "total": 3464000,
+    "worst_day": -600000,
+    "worst_month": -1444000
+   }
+  }
+ },
+ "N60_day_e1_RNA": {
+  "cfg": {
+   "bot": "ORB15",
+   "or": 60,
+   "stop": "day",
+   "max_entries": 1,
+   "rna": true,
+   "tag": "N60_day_e1_RNA"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 69.28,
+   "per_day_p": 0.707,
+   "worst_day_p": -12.0,
+   "best_day_p": 37.24,
+   "win_days": 24,
+   "loss_days": 16,
+   "trades": 40,
+   "win_rate": 0.6,
+   "mdd_p": -54.82,
+   "months": {
+    "202601": 0.0,
+    "202602": 37.78,
+    "202603": -28.88,
+    "202604": -6.72,
+    "202605": 67.1
+   },
+   "stop_days": 10,
+   "worst_month_p": -28.88,
+   "per_day_ci95_p": [
+    -0.752,
+    2.265
+   ],
+   "won": {
+    "total": 3464000,
+    "worst_day": -600000,
+    "worst_month": -1444000
+   }
+  }
+ }
+}

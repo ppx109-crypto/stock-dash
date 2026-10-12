@@ -1,0 +1,1 @@
+{"verdict": "NO_EDGE", "robust": ["N30_range_e1", "N30_range_e2", "N30_day_e1", "N30_day_e2", "N60_day_e1", "N60_day_e2", "N60_range_e1", "N60_range_e2"], "pick": {"name": "N30_range_e1", "dev_total_p": 257.98, "dev_check": 257.98, "val_total_p": -88.5, "val_pass": false}}
