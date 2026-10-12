@@ -36,17 +36,16 @@ class Message(unittest.TestCase):
         self.assertEqual(N.tidy("🟢 매수 삼성전자 4칸"), "매수 삼성전자 4칸")
         self.assertEqual(N.tidy("✅ **1일봉 체결 10-12** · 보유 3"), "1일봉 체결 10-12, 보유 3")
         self.assertEqual(N.tidy("🧪 모의투자(덧붙임) 매수 · KODEX 레버리지(122630) 120주 · 접수"),
-                         "레버리지 봇 모의 매수, 코덱스 레버리지(122630) 120주, 접수")
+                         "레버리지 봇 모의 매수, KODEX 레버리지(122630) 120주, 접수")
         self.assertEqual(N.tidy("계좌 그달 손실 -9.2%(15:1x 값)"), "계좌 그달 손실 -9.2%(장 마감 직전 값)")
         self.assertEqual(N.tidy("⚠️ 주문 중 문제 · ConnectionError"), "주문 중 문제, 오류")
         self.assertEqual(N.tidy("거절(APBK0919)"), "거절")
-        self.assertEqual(N.tidy("LG전자 · SK하이닉스 · NAVER"), "엘지전자, 에스케이하이닉스, 네이버")
+        self.assertEqual(N.tidy("LG전자 · SK하이닉스 · NAVER"), "LG전자, SK하이닉스, NAVER")   # 종목 이름 영어는 그대로(사용자 2026-10-12)
         self.assertEqual(N.tidy("ETF 몫 × 0.4 → 0.2 −3.1%"), "지수펀드 몫 곱하기 0.4 다음 0.2 -3.1%")
         self.assertEqual(N.tidy("※ 안내"), "")
-        for line in ["🔄 자리 바꾸기 A → B", "⏭️ 매수 건너뜀", "• 한 줄 ─── ★"]:
+        for line in ["🔄 자리 바꾸기 가 → 나", "⏭️ 매수 건너뜀", "• 한 줄 ─── ★", "**굵게** · `코드`"]:
             out = N.tidy(line)
-            self.assertFalse(any("a" <= ch.lower() <= "z" for ch in out), out)
-            self.assertFalse(any(ch in "🔄⏭️•─★→·*" for ch in out), out)
+            self.assertFalse(any(ch in "🔄⏭️•─★→·*`" for ch in out), out)
 
     def test_messages_prefix(self):
         msgs = N.messages(["🌇 **1일봉 10-12 15:20** · 폭 45%", "", "※ 안내", "🟢 매수 삼성전자 2칸"])
