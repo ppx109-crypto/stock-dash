@@ -81,7 +81,8 @@ def atr(b, n=20):
 
 def h60_slope(b, tf):
     """각 봉 시점에 '다 끝난' 60분봉들의 종가로 셈한 20선의 2봉 기울기 부호(+1 · −1 · 0) · 앞만.
-    60분봉 = 그날 첫 봉부터 60 ÷ tf개씩 · 그날 마지막 봉에서도 끝남. 이 봉이 60분봉의 마지막 봉이면 그 60분봉은 이 봉 종가에 끝남."""
+    60분봉 = 그날 첫 봉부터 60 ÷ tf개씩 다 찬 묶음만(장 끝 15:00 ~ 15:29 같은 모자란 조각은 넣지 않음 · GPT #282).
+    이 봉이 60분 묶음의 마지막 봉이면 그 60분봉은 이 봉 종가에 끝남."""
     per = 60 // tf
     out = np.zeros(len(b))
     ema, hist, k = None, [], 2.0 / 21
@@ -91,8 +92,7 @@ def h60_slope(b, tf):
             day, j = r[0], 0
         else:
             j += 1
-        last_of_day = i + 1 == len(b) or b[i + 1][0] != r[0]
-        if (j + 1) % per == 0 or last_of_day:
+        if (j + 1) % per == 0:
             ema = r[5] if ema is None else ema + k * (r[5] - ema)
             hist.append(ema)
         if len(hist) >= 23:

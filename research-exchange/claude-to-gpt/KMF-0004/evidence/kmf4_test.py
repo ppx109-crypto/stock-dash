@@ -40,6 +40,18 @@ for k in rng.integers(20, len(raw3), 50):
 chk("3 묶기는 앞만(1분 자료를 어디서 잘라도 다 끝난 봉은 같음)", same)
 h_full = K4.h60_slope(fullb, 15)
 chk("4 60분 흐름 앞만(앞부분으로 셈 = 전체의 앞부분)", all(np.array_equal(K4.h60_slope(fullb[:k], 15), h_full[:k]) for k in (10, 30, 50, 70)))
+# 4b 장 끝 모자란 조각(15:00 ~ 15:29)은 60분 흐름을 바꾸지 않음: 그 조각 값만 크게 바꿔도 다음 날 첫 봉까지 흐름이 같음(GPT #282)
+def two_days(last_piece):
+    rows = []
+    for k, d in enumerate([f"202601{5 + x:02d}" for x in range(12)]):
+        p = list(100 + np.arange(390) * 0.01 + k)
+        if d == "20260116":
+            p[360:] = [last_piece] * 30                    # 그날 15:00 ~ 15:29
+        rows += day(d, p)
+    return K4.day_start_aligned(rows, 15)
+A, Bb = two_days(100.0), two_days(500.0)
+ha, hb = K4.h60_slope(A, 15), K4.h60_slope(Bb, 15)
+chk("4b 장 끝 30분 조각은 60분 흐름 셈에 안 들어감", np.array_equal(ha, hb) and len(A) == len(Bb))
 # 5 역추세금지 · 정배열 성질(실제 개발 자료 · 손익 셈 없음): 산 봉은 기울기 > 0 · 정배열, 판 봉은 기울기 < 0 · 역배열
 rows = K._rows_before(K.VAL[0])
 good = True
