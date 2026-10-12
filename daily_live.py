@@ -233,18 +233,8 @@ def target_cut(code, day, back_days=45):
 
 def send(lines):
     """디스코드로 보냄. 웹훅은 GitHub Secrets의 DISCORD_WEBHOOK_URL에만 있고 어디에도 찍지 않음."""
-    url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
-    if not url or not lines:
-        return False
-    import requests
-    from notify_discord import chunks
-    ok = True
-    for msg in chunks(lines):
-        try:
-            ok = requests.post(url, json={"content": msg}, timeout=(10, 20)).status_code < 300 and ok
-        except requests.RequestException:
-            ok = False
-    return ok
+    from notify_discord import post          # 다듬기(영어 · 기호 뺌) + 맨 앞 '☆한투'(사용자 2026-10-12)
+    return post(lines)
 
 
 ICON = {"매수": "🟢", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪"}
@@ -271,15 +261,15 @@ def decision_lines(day, breadth, cands, sells, buys, now_price, held):
 
 def brief_decision(day, breadth, sells, buys, held):
     """15:20 판단 디스코드 — 짧게(사용자 2026-10-06 "거두절미하고 요약버전으로 전부"). 자세한 까닭은 대시보드(daily-live/today.json)."""
-    head = f"🌇 **1일봉 {day[4:6]}-{day[6:]} 15:20** · 폭 {breadth}% · 보유 {len(held)}"
+    head = f"1일봉 봇 {int(day[4:6])}월 {int(day[6:])}일 15시 20분 판단, 시장 폭 {breadth}%, 들고 있는 종목 {len(held)}개"
     out = []
     for x in sells:
         kind = ("절반 익절" if "절반" in x["why"] else "익절" if "익절" in x["why"] or "지키기" in x["why"]
                 else "손절" if "손절" in x["why"] else "청산")
-        out.append(f"{ICON[kind]} {kind} {x['name']} {x['칸']}칸")
+        out.append(f"{kind}: {x['name']} {x['칸']}칸 팔기")
     for x in buys:
-        out.append(f"🟢 매수 {x['name']} {x['칸']}칸")
-    return [head] + out if out else [head + " · 할 일 없음"]
+        out.append(f"매수: {x['name']} {x['칸']}칸 사기")
+    return [head] + out if out else [head, "오늘은 사고팔 것 없음"]
 
 
 def _wait_until(hhmm):
@@ -388,7 +378,7 @@ def run(now=None):
         cands = []           # 자료가 덜 들어왔으면 새로 사지 않음 · 들고 있는 종목 팔기는 그대로(사용자 2026-10-02)
     sells, buys = decide(state, cands, now_price, aligned, rate, kin_ok)
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
-    warn = [] if ready else [f"⚠️ 1일봉 새로 사기 멈춤(자료 덜 들어옴 · 팔기는 그대로)"]
+    warn = [] if ready else ["1일봉 봇 오늘 새로 사기 멈춤(자료가 덜 들어옴, 팔기는 그대로)"]
     send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
     paper = list(cap_lines)
     if (sells or buys) and not late:
@@ -398,7 +388,7 @@ def run(now=None):
             paper += paper_trade.execute([dict(x, decided=day) for x in sells + buys], after, now_price, day + "1520",
                                          now=datetime.now(KST), strategy="1d")
         except Exception as e:           # 모의투자 주문이 잘못돼도 연습 계좌 · 알림은 그대로
-            paper += [f"🧪 모의투자(1일봉) 주문 중 문제 · {type(e).__name__}"]
+            paper += ["1일봉 모의 주문 중 오류가 났어요(기록 파일 확인)"]
     elif (sells or buys) and late:
         paper += ["🧪 모의투자(1일봉) · 작업이 늦게 돌아 마감 동시호가에 주문하지 못했어요(연습 계좌에만 적음)."]
     _wait_until(SETTLE_AT)
@@ -430,7 +420,7 @@ def run(now=None):
     _save(ALERTS, alerts[-500:])
     if fills or paper:                   # 체결 알림(사고판 것이 있을 때만)
         from notify_discord import brief
-        send([f"✅ **1일봉 체결 {day[4:6]}-{day[6:]}** · 보유 {len(state['positions'])}"] + brief(fills + paper))
+        send([f"1일봉 봇 {int(day[4:6])}월 {int(day[6:])}일 체결 결과, 들고 있는 종목 {len(state['positions'])}개"] + brief(fills + paper))
     print(f"후보 {len(cands)} · 매도 {len(sells)} · 매수 {len(buys)} · 늦음 {late}")
     return 0
 

@@ -60,15 +60,11 @@ def main() -> int:
     if not bad:
         print(f"{day} 세 봇 모두 정상")
         return 0
-    lines = [f"⚠️ **봇 지킴이 · {day[4:6]}-{day[6:]}** 모의투자 봇 확인 필요"] + ["· " + b for b in bad]
+    lines = [f"봇 지킴이 {int(day[4:6])}월 {int(day[6:])}일, 모의투자 봇 확인 필요"] + bad
     print("\n".join(lines))
-    url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
-    if url:
-        import requests
-        try:
-            requests.post(url, json={"content": "\n".join(l for l in lines if not l.lstrip().startswith("※"))}, timeout=(10, 20))
-        except requests.RequestException:
-            print("디스코드 보내기 실패")
+    from notify_discord import post          # 다듬기 + 맨 앞 '☆한투'(사용자 2026-10-12)
+    if os.environ.get("DISCORD_WEBHOOK_URL", "").strip() and not post(lines):
+        print("디스코드 보내기 실패")
     return 0
 
 

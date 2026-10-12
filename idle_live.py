@@ -404,7 +404,7 @@ def run(now=None):
     lines = [f"🧩 **빈칸 엔진 · {day[4:6]}-{day[6:]} 15:10 판단** (규칙 쓴 몫 {used * 100:.0f}% · 시장 폭 {breadth if breadth is not None else '?'}%)"]
     lines += ["· " + w for w in why]
     # 디스코드는 짧게(사용자 2026-10-06 "너무 길고 복잡하여서 간단하게") — 판단 까닭 전부는 작업 기록 · 대시보드(idle-live/today.json)에
-    short = [f"🧩 **빈칸 엔진 {day[4:6]}-{day[6:]}** · 시장 폭 {breadth if breadth is not None else '?'}% · 규칙 {used * 100:.0f}%"]
+    short = [f"빈칸 엔진 {int(day[4:6])}월 {int(day[6:])}일 판단, 시장 폭 {breadth if breadth is not None else '모름'}%, 1일봉이 쓴 몫 {used * 100:.0f}%"]
     short += b_short
     done = []
     seen = {o["key"] for o in book["orders"]}

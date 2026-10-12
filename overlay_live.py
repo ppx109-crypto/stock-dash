@@ -421,5 +421,5 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
         st["unconfirmed"] = {"left": left, "at": now.strftime("%Y-%m-%d %H:%M")}
         lines.append("⚠️ 덧붙임: 옛 종목 " + " · ".join(f"{NAME.get(c, c)} {q:,}주" for c, q in left.items()) + " 매도가 다 체결되지 않음 → 장부에 남기고 내일 다시 맞춤")
     save_state(st)
-    lines.insert(0, f"🪜 **덧붙임 {day[4:6]}-{day[6:]}** · 국면 {state}(어제 장 끝) · 목표 {NAME.get(code_new, '없음')} 몫 {f:.2f}")
+    lines.insert(0, f"레버리지 봇 {int(day[4:6])}월 {int(day[6:])}일, 국면 {state}(어제 장 끝 기준), 목표 {NAME.get(code_new, '없음')} {f * 100:.0f}%")
     return lines
