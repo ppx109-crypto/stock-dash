@@ -1,0 +1,61 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0009",
+ "chain_id": "KMF-0009",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 목표 10개월 800p · 추세 · 횡보 각각 작동하는 단타봇 · 1분봉 신호 안 씀",
+ "completed_at_kst": "2026-10-13 05:08",
+ "completed_note": "실행 전 · 성과 셈 안 함(진단 · 거래 수만)",
+ "goal": {
+  "points_10_months": 800,
+  "per_day_p": 4.0,
+  "is_acceptance_rule": false
+ },
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf5.py": "a6a14eb76a6cf58174d32c6ff8564de983dcfadb9ac2ab35e7cbc1ebfc594653",
+  "research/kmf9.py": "d6423c3e87978ef3d08a07af968a95458f38618b1c56e1e3ee106b59d549b519",
+  "research/kmf_guard.py": "94602bf518eab867fa61a02e3c78da5e7a4e86a996bdd80a8e91e3b6e2373053",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/kmf9_test.py": "7101e144640303e093372b13b0e95d6625641c33730fbd4018b8b0ceb6e3cd43",
+  "research-exchange/claude-to-gpt/KMF-0009/diag/regime_diag.py": "48a6c729cd19054b5997af1635993ca3faf412d9175caa8017533c236820f0ea"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf9.py": "d6423c3e87978ef3d08a07af968a95458f38618b1c56e1e3ee106b59d549b519",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "27752f60758d0d7e504fd2620ff1ea396938a79267bd9f721cfcc1f7a8886ab0",
+ "plan_sha256": "a42dbe6cc73646e5d87d6a22abb6272910ad6e06814ab6ee24ea0dec48fc9b79",
+ "grid": {
+  "count": 8,
+  "or": [
+   30,
+   60
+  ],
+  "z": [
+   0.15,
+   0.25
+  ],
+  "b": [
+   0.25,
+   0.5
+  ]
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0009/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0009/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/kmf9_test.py",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/kmf9_test.out",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0009/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0009/diag/regime_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0009/diag/regime_diag.out"
+ ],
+ "account_criteria": "WAITING_DATA"
+}
