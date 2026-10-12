@@ -1,0 +1,28 @@
+{"status": "STARTED", "key": "E0_15", "stage": "dev", "at": "2026-10-12 15:38:56"}
+{"status": "DONE", "key": "E0_15", "stage": "dev", "dev_total_p": -33.16}
+{"status": "STARTED", "key": "Z2_15", "stage": "dev", "at": "2026-10-12 15:38:56"}
+{"status": "DONE", "key": "Z2_15", "stage": "dev", "dev_total_p": -34.0}
+{"status": "STARTED", "key": "D2_15", "stage": "dev", "at": "2026-10-12 15:38:56"}
+{"status": "DONE", "key": "D2_15", "stage": "dev", "dev_total_p": -33.16}
+{"status": "STARTED", "key": "B8_15", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "B8_15", "stage": "dev", "dev_total_p": -14.1}
+{"status": "STARTED", "key": "T3_15", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "T3_15", "stage": "dev", "dev_total_p": -33.54}
+{"status": "STARTED", "key": "X20_15", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "X20_15", "stage": "dev", "dev_total_p": -55.0}
+{"status": "STARTED", "key": "H60_15", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "H60_15", "stage": "dev", "dev_total_p": -33.16}
+{"status": "STARTED", "key": "E0_30", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "E0_30", "stage": "dev", "dev_total_p": -24.0}
+{"status": "STARTED", "key": "Z2_30", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "Z2_30", "stage": "dev", "dev_total_p": -11.36}
+{"status": "STARTED", "key": "D2_30", "stage": "dev", "at": "2026-10-12 15:38:57"}
+{"status": "DONE", "key": "D2_30", "stage": "dev", "dev_total_p": -24.0}
+{"status": "STARTED", "key": "B8_30", "stage": "dev", "at": "2026-10-12 15:38:58"}
+{"status": "DONE", "key": "B8_30", "stage": "dev", "dev_total_p": 1.6}
+{"status": "STARTED", "key": "T3_30", "stage": "dev", "at": "2026-10-12 15:38:58"}
+{"status": "DONE", "key": "T3_30", "stage": "dev", "dev_total_p": -28.1}
+{"status": "STARTED", "key": "X20_30", "stage": "dev", "at": "2026-10-12 15:38:58"}
+{"status": "DONE", "key": "X20_30", "stage": "dev", "dev_total_p": -14.94}
+{"status": "STARTED", "key": "H60_30", "stage": "dev", "at": "2026-10-12 15:38:58"}
+{"status": "DONE", "key": "H60_30", "stage": "dev", "dev_total_p": -24.0}
