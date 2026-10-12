@@ -2,13 +2,13 @@
  "schema_version": "1",
  "task_id": "KMF-0002",
  "chain_id": "KMF-0002",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-12 한번에 안 나옴 · 한투처럼 기본 봇 → 보완 봇 → 손실 분석 · 줄이기 · 천천히 · 리더가 알아서",
  "prev_task": "KMF-0001(#273 · 결과 #275 NO_EDGE)",
- "completed_at_kst": "2026-10-12 23:51",
- "completed_note": "실행 전 · 성과 셈 안 함",
+ "completed_at_kst": "2026-10-12 23:58",
+ "completed_note": "run 23:57:09 ~ 23:57:11 · 시험 1 · 2 안 함",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
@@ -58,12 +58,43 @@
   "research-exchange/claude-to-gpt/KMF-0002/evidence/kmf2_test.out",
   "research-exchange/claude-to-gpt/KMF-0002/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/KMF-0002/diag/loss_diag.py",
-  "research-exchange/claude-to-gpt/KMF-0002/diag/loss_diag.out"
+  "research-exchange/claude-to-gpt/KMF-0002/diag/loss_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0002/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0002/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/pick.json",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/concentration.py",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/concentration.out",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/guard_selftest.out"
  ],
  "account_criteria": "WAITING_DATA",
  "independent_check": "시험 2(새 자료)",
  "code_commit": "baed66945a31bce71f79dc6f5489726fd039d78d",
  "previous_head_sha": "bbea9fff2b914fa3d4ee51f7673d4996b6da6350",
  "plan_sha256": "b15664469ebf6c8b72e24862fb0d8a443430c338afa7e0dc09f7d31bd17eab4c",
- "distinct_rules": 9
+ "distinct_rules": 9,
+ "verdict": "VAL_PASS(채택 아님 · 시험 2에서 결정)",
+ "prereg_head_sha": "1d54c85ea9b3ba9fe033c6eb12e9a3986ac9d474",
+ "runs": {
+  "dev_calcs": 12,
+  "distinct_rules": 9,
+  "val_cells": 1,
+  "test1": 0,
+  "test2": 0
+ },
+ "guard": {
+  "tool": "research/kmf_guard.py",
+  "tool_sha256": "6972e23170ef18c04864cadbcc187d65826bc365a4bc2ba3ec9acaf637ba0c44",
+  "pass": true,
+  "selftest_caught_all": true
+ },
+ "result_sha256": {
+  "dev_rows.json": "137caad19abeb94ce0a15f7926e26636bb9b3fc1e70f47ff8d7884264894e428",
+  "pick.json": "13491c40a1c81a1e399bdcbc5062815e009006751c6e81db897477726e349a07",
+  "concentration.out": "371140ec0efc2a5c9217a6cae3ad5ded6d737096147a7d685b8b0601754a5b92",
+  "guard.out": "f301da61512467def2be5ef5451a9cb8b2de09232774e472259fa1e24afaa878"
+ }
 }

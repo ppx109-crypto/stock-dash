@@ -1,0 +1,26 @@
+{"status": "STARTED", "key": "botORB1_or15_max_entries1_stopday", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or15_max_entries1_stopday", "stage": "dev", "dev_total_p": -70.62}
+{"status": "STARTED", "key": "botORB1_or15_max_entries1_stoprange", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or15_max_entries1_stoprange", "stage": "dev", "dev_total_p": -72.54}
+{"status": "STARTED", "key": "botORB1_or15_max_entries2_stopday", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or15_max_entries2_stopday", "stage": "dev", "dev_total_p": -70.62}
+{"status": "STARTED", "key": "botORB1_or15_max_entries2_stoprange", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or15_max_entries2_stoprange", "stage": "dev", "dev_total_p": -79.42}
+{"status": "STARTED", "key": "botORB1_or30_max_entries1_stopday", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or30_max_entries1_stopday", "stage": "dev", "dev_total_p": 163.92}
+{"status": "STARTED", "key": "botORB1_or30_max_entries1_stoprange", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or30_max_entries1_stoprange", "stage": "dev", "dev_total_p": 135.3}
+{"status": "STARTED", "key": "botORB1_or30_max_entries2_stopday", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or30_max_entries2_stopday", "stage": "dev", "dev_total_p": 163.92}
+{"status": "STARTED", "key": "botORB1_or30_max_entries2_stoprange", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or30_max_entries2_stoprange", "stage": "dev", "dev_total_p": 110.5}
+{"status": "STARTED", "key": "botORB1_or60_max_entries1_stopday", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or60_max_entries1_stopday", "stage": "dev", "dev_total_p": 185.08}
+{"status": "STARTED", "key": "botORB1_or60_max_entries1_stoprange", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or60_max_entries1_stoprange", "stage": "dev", "dev_total_p": 190.02}
+{"status": "STARTED", "key": "botORB1_or60_max_entries2_stopday", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or60_max_entries2_stopday", "stage": "dev", "dev_total_p": 185.08}
+{"status": "STARTED", "key": "botORB1_or60_max_entries2_stoprange", "stage": "dev", "at": "2026-10-12 14:57:10"}
+{"status": "DONE", "key": "botORB1_or60_max_entries2_stoprange", "stage": "dev", "dev_total_p": 191.84}
+{"status": "STARTED", "key": "botORB1_or60_max_entries2_stoprange", "stage": "val", "at": "2026-10-12 14:57:11"}
+{"status": "DONE", "key": "botORB1_or60_max_entries2_stoprange", "stage": "val", "val_total_p": 247.76}
