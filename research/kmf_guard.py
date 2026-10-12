@@ -103,6 +103,8 @@ def main(which):
         import kmf10 as M                         # 개발 01 ~ 08(GUARD_BEFORE 09-01 앞만)
     elif which == "kmf11":
         import kmf11 as M
+    elif which == "kmf12":
+        import kmf12 as M                         # 하루 멈춤 −25p(import 때 K.DAY_STOP을 바꿈)
     else:
         M = K
     before = getattr(M, "GUARD_BEFORE", K.VAL[0])
