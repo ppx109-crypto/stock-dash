@@ -97,6 +97,8 @@ def main(which):
         import kmf5 as M
     elif which == "kmf8":
         import kmf8 as M
+    elif which == "kmf9":
+        import kmf9 as M
     else:
         M = K
     rows = K._rows_before(K.VAL[0])
