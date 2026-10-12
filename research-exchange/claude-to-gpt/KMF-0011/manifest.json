@@ -1,0 +1,81 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0011",
+ "chain_id": "KMF-0011",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "user_instruction": "2026-10-13 추세 · 횡보 각각 작동하는 단타봇 · 목표 10개월 800p · 하루 −12p 멈춤 그대로(사용자 선택)",
+ "goal": {
+  "points_10_months": 800,
+  "per_day_p": 4.0,
+  "is_acceptance_rule": false
+ },
+ "periods": {
+  "dev": [
+   "20260101",
+   "20260831"
+  ],
+  "val": [
+   "20260901",
+   "20261012"
+  ],
+  "val_independent": false,
+  "val_reuse": "KMF-0010에 이어 두 번째",
+  "decisive": "test2 >= 20261013"
+ },
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf11.py": "30f16824a81101a29c5312e121e2f8fe2521edda3d6a10f0b5e3e528310fe013",
+  "research/kmf_guard.py": "201833c885f0037f880d048d7baa4fa1db9f9a59675f2a8c52c0cb08f9f57010",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/kmf11_test.py": "7d4e882c3441c71cfbc05417fcb82651e848997e1638b7d79db31369272cb02e",
+  "research-exchange/claude-to-gpt/KMF-0011/diag/intraday_mom_diag.py": "45e637e657e259a23b749019f7d41364755a6f55d118c0786f438ca0232b074c"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf11.py": "30f16824a81101a29c5312e121e2f8fe2521edda3d6a10f0b5e3e528310fe013",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "6f78ac04dd8d5f2ea980bca25174a3e97275f22a3111b9eb7c1a263111f7a9a5",
+ "plan_sha256": "b3e509869e11be238d456c52bf4a19986d1ebdd4acae164b4088258c07f7d927",
+ "grid": {
+  "count": 8,
+  "or": [
+   30,
+   60
+  ],
+  "b": [
+   0.25,
+   0.5
+  ],
+  "S": [
+   6,
+   10
+  ],
+  "R": 0.25
+ },
+ "seen_before_prereg": "개발 거래 수(guard.out) · 손익은 안 봄",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0011/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0011/diag/intraday_mom_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0011/diag/intraday_mom_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0011/diag/trap_block_diag_from_KMF-0010.out",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/contracts.out",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/kmf11_test.out",
+  "research-exchange/claude-to-gpt/KMF-0011/evidence/kmf11_test.py",
+  "research-exchange/claude-to-gpt/KMF-0011/input_lock.json"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "runs_planned": {
+  "dev": 8,
+  "val": 1,
+  "test1": 0,
+  "test2": 0
+ }
+}

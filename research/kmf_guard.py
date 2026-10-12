@@ -101,6 +101,8 @@ def main(which):
         import kmf9 as M
     elif which == "kmf10":
         import kmf10 as M                         # 개발 01 ~ 08(GUARD_BEFORE 09-01 앞만)
+    elif which == "kmf11":
+        import kmf11 as M
     else:
         M = K
     before = getattr(M, "GUARD_BEFORE", K.VAL[0])
