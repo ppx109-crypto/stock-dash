@@ -172,6 +172,45 @@ class Run(Env):
         self.assertTrue(any("덧붙임" in x for x in lines))
         self.assertEqual(self.go(b, "상승"), [], "같은 날 두 번 안 함")
 
+    def test_buy_fail_not_marked_done_and_retried(self):
+        """2026-10-12 첫날: 레버리지 사기가 증권사 오류로 실패했는데 '맞춤 끝'으로 적혀 다음 달까지 안 샀음 → 실패면 다음 거래일 다시."""
+        b = FakeBroker(1_000_000, prices={"122630": 100.0, "114800": 50.0})
+        calls = []
+        real = b.order
+
+        def bad(code, side, qty):
+            calls.append(side)
+            raise RuntimeError("거절")
+        b.order = bad
+        with mock.patch.dict(os.environ, {"OVERLAY_BUY_RETRY_WAIT": "0"}):
+            lines = self.go(b, "상승")
+        self.assertEqual(calls, ["buy", "buy"], "사기는 한 번 더 해 봄")
+        st = O.load_state()
+        self.assertIsNone(st["applied"])
+        self.assertEqual(st["held"], {})
+        self.assertTrue(any("다음 거래일에 다시" in x for x in lines))
+        self.assertTrue(O.needs_rebalance(st, "상승", "20261013"))
+        b.order = real
+        self.go(b, "상승", day="20261013", prev="20261012")
+        self.assertEqual(b.orders, [("122630", "buy", 4000)])
+        st = O.load_state()
+        self.assertEqual((st["applied"], st["held"]), ("상승", {"122630": 4000}))
+
+    def test_second_try_buys(self):
+        b = FakeBroker(1_000_000, prices={"122630": 100.0, "114800": 50.0})
+        real, n = b.order, [0]
+
+        def once_bad(code, side, qty):
+            n[0] += 1
+            if n[0] == 1:
+                raise RuntimeError("돈이 아직 안 풀림")
+            return real(code, side, qty)
+        b.order = once_bad
+        with mock.patch.dict(os.environ, {"OVERLAY_BUY_RETRY_WAIT": "0"}):
+            self.go(b, "상승")
+        st = O.load_state()
+        self.assertEqual((st["applied"], st["held"]), ("상승", {"122630": 4000}))
+
     def test_room_caps_size(self):
         b = FakeBroker(300_000, positions={"005930": 7}, prices={"005930": 100_000.0, "122630": 100.0, "114800": 50.0})
         self.go(b, "상승", reserve=100_000 / 1.36)

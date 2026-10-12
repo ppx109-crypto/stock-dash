@@ -1,7 +1,7 @@
 {
  "held": {},
  "B": 0.0,
- "applied": "상승",
+ "applied": null,
  "rebalanced_month": "202610",
  "last_day": "20261012",
  "signal_day": "20261008",
