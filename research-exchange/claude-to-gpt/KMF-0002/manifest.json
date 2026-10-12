@@ -8,7 +8,7 @@
  "user_instruction": "2026-10-12 한번에 안 나옴 · 한투처럼 기본 봇 → 보완 봇 → 손실 분석 · 줄이기 · 천천히 · 리더가 알아서",
  "prev_task": "KMF-0001(#273 · 결과 #275 NO_EDGE)",
  "completed_at_kst": "2026-10-13 00:08",
- "completed_note": "run 23:57:09 ~ 23:57:11 · 시험 1 · 2 안 함",
+ "completed_note": "run 23:57:09 ~ 23:57:11 · 시험 1 1회(10-13 00:07:44 · +15.60p · pass1) · 시험 2 0회",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
@@ -110,5 +110,9 @@
   "total_p": 15.6,
   "verdict": "WAITING_DATA(시험 2)",
   "gpt_comment": 6126986022
+ },
+ "test1_review": {
+  "gpt_comment": 6127098152,
+  "verdict": "TEST1_PASS · WAITING_DATA(시험 2) · 채택 아님"
  }
 }
