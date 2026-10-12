@@ -99,9 +99,12 @@ def main(which):
         import kmf8 as M
     elif which == "kmf9":
         import kmf9 as M
+    elif which == "kmf10":
+        import kmf10 as M                         # 개발 01 ~ 08(GUARD_BEFORE 09-01 앞만)
     else:
         M = K
-    rows = K._rows_before(K.VAL[0])
+    before = getattr(M, "GUARD_BEFORE", K.VAL[0])
+    rows = K._rows_before(before)
     cuts = ("20260302", "20260401", "20260504")
     res = []
     raw = rows
@@ -113,7 +116,7 @@ def main(which):
         r["fill_bad"], r["trades"] = fill_prices(M.signals, rows, cfg)
         res.append(r)
     print(json.dumps({"pass": all(x["prefix_bad"] == 0 and x["scramble_bad"] == 0 and x["intraday_bad"] == 0 and x["fill_bad"] == 0 for x in res),
-                      "period": "2026-01 ~ 05(개발)만", "runs": res}, ensure_ascii=False))
+                      "period": f"{before} 앞(개발)만", "runs": res}, ensure_ascii=False))
 
 
 def selftest():
