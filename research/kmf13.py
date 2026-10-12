@@ -7,7 +7,18 @@
   큰 흐름 = 90봉 선 3봉 기울기 · 역추세 금지
   들기: 정배열(4 > 15 > 45 > 90) + 기울기 > 0 → 삼 / 역배열 + 기울기 < 0 → 팖 · 하루 5번까지 · 새로 들기 15:00 판단까지
   정리: 종가가 45봉 선 반대로 마감 · 또는 들고 난 뒤 가장 좋은 종가에서 4 × ATR(앞 20봉 평균 참 범위 · 그 봉 제외) 넘게 되돌림
-python3 research/kmf13.py lock | report | cut"""
+  아침 관망: 그날 첫 봉(09:05 전 판단)에 이미 배열이 서 있으면 들지 않고, 그 배열이 정리 조건을 만날 때까지 기다림(하루 들기 1번 씀)
+   · 밤사이 이어진 추세에 아침부터 따라 들지 않고 장중에 새로 선 배열만 탐 · round 2에서 숨은 동작을 드러내 적음(결과 같음)
+시험 2(판정 · 미리 고정 · round 2):
+  자료 = kiwoom-data/mini_1min_test2.csv(10-13부터 · 따로 잠금 PR + GPT 동의 뒤 test2_ok.json에 해시가 적혀야만 엶)
+  날 고르기 = 10-13부터 날짜 순으로 '완전한 거래일'만 세어 **처음 20일** 딱 그만큼(더도 덜도 아님)
+    완전한 거래일: 09:00 ~ 15:34 안 1분봉 360줄 이상 · 줄 사이 빈 분이 5분 넘는 곳 없음 · 그날 첫 분 ≤ 10:00
+    불완전한 날은 손익에서 빼고 목록으로 보고(다음 날로 채움 · 20일 이후 날은 안 셈)
+  워밍업 = 개발 자료(10-13 앞 전부)에 이어서 EMA · ATR을 셈(라이브 봇과 같음) · 손익은 고른 20일만 더함
+  셈 = 개발과 같은 simulate(다음 봉 시가 · −25p · 마지막 봉 정리 · 편도 0.04p) · 고른 칸 하나만
+  PASS = 합 > 0 · 하루 평균 ≥ 1.69p(개발 3.379의 절반) · 가장 나쁜 날 ≥ −25.5p · 아니면 NO_EDGE
+  다시 돌리기 막기: evidence/test2.json이 있으면 멈춤
+python3 research/kmf13.py lock | report | cut | test2"""
 import hashlib
 import json
 import os
@@ -79,29 +90,34 @@ def signals(b, cfg):
     atr = np.full(n, np.nan)
     for i in range(20, n):
         atr[i] = trr[i - 20:i].mean()                 # 앞 20봉(그 봉 제외)
-    pos, peak, cnt, day = 0, None, 0, None
+    pos, peak, cnt, day, watch = 0, None, 0, None, False
     for i in range(n):
         d, m = b[i][0], b[i][1]
         if d != day:
-            day, pos, cnt, peak = d, 0, 0, None
+            day, pos, cnt, peak, watch = d, 0, 0, None, False
         if i < 4 or np.isnan(E[4][i - 3]) or np.isnan(atr[i]):
             continue
         slope = E[4][i] - E[4][i - 3]
         up = E[1][i] > E[2][i] > E[3][i] > E[4][i] and slope > 0
         dn = E[1][i] < E[2][i] < E[3][i] < E[4][i] and slope < 0
-        if pos:
+        if pos:                                       # 든 자리(watch면 '보기만 하는 자리' · 체결 없음)
             peak = max(peak, c[i]) if pos > 0 else min(peak, c[i])
             out = (pos > 0 and c[i] < exl[i]) or (pos < 0 and c[i] > exl[i])
             if cfg["tr"]:
                 out = out or (pos > 0 and c[i] < peak - cfg["tr"] * atr[i]) or (pos < 0 and c[i] > peak + cfg["tr"] * atr[i])
             if out:
-                want[i], pos = 0, 0
+                if not watch:
+                    want[i] = 0
+                pos, watch = 0, False
             continue
         if m > K.ENTRY_TO or cnt >= cfg["max_n"]:
             continue
         if up or dn:
             side = 1 if up else -1
-            want[i], pos, peak, cnt = side, side, c[i], cnt + 1
+            if m < K.ENTRY_FROM:                      # 아침 관망: 첫 봉(09:05 전 판단)에 이미 배열이면 들지 않고
+                pos, peak, cnt, watch = side, c[i], cnt + 1, True   # 그 배열이 정리 조건을 만날 때까지 보기만 함(하루 들기 1번 씀)
+            else:
+                want[i], pos, peak, cnt = side, side, c[i], cnt + 1
     return want
 
 
@@ -163,6 +179,58 @@ def report():
                       "neighbors_total": {k: v["total_p"] for k, v in out.items()}}, ensure_ascii=False))
 
 
+TEST2_N = 20
+TEST2_OK = BOX / "test2_ok.json"          # 데이터 잠금 PR · GPT 동의 뒤에만 만듦: {"gpt_pr": 번호, "data_sha256": "..."}
+TEST2_OUT = BOX / "evidence/test2.json"
+
+
+def complete_days(rows, start=K.TEST2_FROM):
+    """완전한 거래일(1분봉 기준) 목록과 빠진 날 사유."""
+    byd = defaultdict(list)
+    for r in rows:
+        if r[0] >= start:
+            byd[r[0]].append(r[1])
+    good, bad = [], {}
+    for d in sorted(byd):
+        ms = sorted(byd[d])
+        gaps = max((b2 - a for a, b2 in zip(ms, ms[1:])), default=0)
+        if len(ms) >= 360 and gaps <= 5 and ms[0] <= 600:
+            good.append(d)
+        else:
+            bad[d] = {"rows": len(ms), "max_gap": gaps, "first_min": ms[0]}
+    return good, bad
+
+
+def test2():
+    """시험 2 한 번(고른 칸 하나 · 처음 완전한 20일). 데이터 잠금 동의(test2_ok.json) 없으면 멈춤 · 이미 했으면 멈춤."""
+    verify_inputs()
+    if TEST2_OUT.exists():
+        sys.exit("시험 2는 이미 했음(다시 안 돌림)")
+    if not TEST2_OK.exists() or not K.TEST2_FILE.exists():
+        sys.exit("시험 2 자료 잠금 동의(test2_ok.json) 또는 자료가 없음(멈춤)")
+    ok = json.loads(TEST2_OK.read_text())
+    if hashlib.sha256(K.TEST2_FILE.read_bytes()).hexdigest() != ok["data_sha256"]:
+        sys.exit("시험 2 자료 해시가 잠금과 다름(멈춤)")
+    rows = K.load()                                       # 개발 자료 + 시험 2 자료(10-13부터) · 워밍업은 이어서
+    good, bad = complete_days(rows)
+    if len(good) < TEST2_N:
+        sys.exit(f"완전한 거래일 {len(good)}일 < {TEST2_N}일(멈춤 · 아직 판정 안 함)")
+    pick_days = good[:TEST2_N]
+    last = pick_days[-1]
+    rows = [r for r in rows if r[0] <= last]              # 20번째 날 뒤 자료는 셈에 안 넣음
+    b = prep(rows)
+    days, trades = K.simulate(b, signals(b, grid()[0]))
+    sel = {d: days.get(d, 0.0) for d in pick_days}
+    tr = [t for t in trades if t[0] in sel]
+    st = K.stats(sel, tr, pick_days[0], last)
+    passed = st["total_p"] > 0 and st["per_day_p"] >= 1.69 and st["worst_day_p"] >= -25.5
+    out = {"verdict": "PASS" if passed else "NO_EDGE", "pick": name(grid()[0]), "days": pick_days,
+           "excluded_incomplete": {d: v for d, v in bad.items() if d <= last}, "stats": st, "data_sha256": ok["data_sha256"]}
+    TEST2_OUT.parent.mkdir(parents=True, exist_ok=True)
+    TEST2_OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    print(json.dumps({k: out[k] for k in ("verdict", "pick")} | {"total_p": st["total_p"], "per_day_p": st["per_day_p"]}, ensure_ascii=False))
+
+
 def cut():
     cuts = ("20260302", "20260601", "20260901")
     code = ("import os,sys,json;sys.path.insert(0,'research');import kmf as K;import kmf13 as M;"
@@ -181,4 +249,4 @@ def cut():
 
 
 if __name__ == "__main__":
-    {"lock": write_lock, "cut": cut, "report": report}[sys.argv[1]]()
+    {"lock": write_lock, "cut": cut, "report": report, "test2": test2}[sys.argv[1]]()
