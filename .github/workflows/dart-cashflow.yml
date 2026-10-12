@@ -3,8 +3,7 @@ name: DART cash flow (research)
 # 대상 = quarter-data에 있는 종목(분기 실적을 받는 종목). 받은 보고서는 다시 묻지 않아 날마다 이어 갑니다.
 # DART 하루 한도(2만)를 다른 작업과 나누려고 한도가 새로 차는 새벽(01:40 한국 시각)에 9천 번까지만 씁니다.
 on:
-  schedule:
-    - cron: '40 16 * * *'
+  # 정기 실행 끔(사용자 2026-10-12 '연구들 불필요는 정리' · 연구 종료 · 봇이 쓰지 않는 자료) — 필요하면 손으로 돌림
   workflow_dispatch:
     inputs:
       codes:

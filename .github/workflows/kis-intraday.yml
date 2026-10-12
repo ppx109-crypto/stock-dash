@@ -3,8 +3,7 @@ name: KIS intraday after close
 # 종목 투자자 추정(하루 다섯 번) · 코스피 · 코스닥 프로그램매매 분별. 휴일이면 저장하지 않습니다.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 7 * * 1-5'   # 한국 시각 16:15(평일)
+  # 정기 실행 끔(사용자 2026-10-12 '연구들 불필요는 정리' · 연구 종료 · 봇이 쓰지 않는 자료) — 필요하면 손으로 돌림
 permissions:
   contents: write
 concurrency:
