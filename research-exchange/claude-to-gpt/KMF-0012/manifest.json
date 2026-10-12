@@ -2,7 +2,7 @@
  "schema_version": "1",
  "task_id": "KMF-0012",
  "chain_id": "KMF-0012",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 추세 · 횡보 각각 작동하는 단타봇 · 목표 10개월 800p · 손실 한도 -25로(하루 −25p · 1계약)",
@@ -61,22 +61,39 @@
  "seen_before_prereg": "개발 거래 수(guard.out) · 손익은 안 봄",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/KMF-0012/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0012/REPORT.md",
   "research-exchange/claude-to-gpt/KMF-0012/diag/intraday_mom_diag.out",
   "research-exchange/claude-to-gpt/KMF-0012/diag/intraday_mom_diag.py",
   "research-exchange/claude-to-gpt/KMF-0012/diag/trap_block_diag_from_KMF-0010.out",
+  "research-exchange/claude-to-gpt/KMF-0012/evals.jsonl",
   "research-exchange/claude-to-gpt/KMF-0012/evidence/contracts.out",
   "research-exchange/claude-to-gpt/KMF-0012/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0012/evidence/dev_rows.json",
   "research-exchange/claude-to-gpt/KMF-0012/evidence/guard.out",
   "research-exchange/claude-to-gpt/KMF-0012/evidence/guard_selftest.out",
   "research-exchange/claude-to-gpt/KMF-0012/evidence/kmf12_test.out",
   "research-exchange/claude-to-gpt/KMF-0012/evidence/kmf12_test.py",
+  "research-exchange/claude-to-gpt/KMF-0012/evidence/pick.json",
+  "research-exchange/claude-to-gpt/KMF-0012/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0012/evidence/run.out",
   "research-exchange/claude-to-gpt/KMF-0012/input_lock.json"
  ],
  "account_criteria": "WAITING_DATA",
- "runs_planned": {
+ "completed_at_kst": "2026-10-13 06:54",
+ "completed_note": "run 06:54:12 · 개발 8 · 확인 1 · 시험 1 · 2 0회",
+ "verdict": "NO_EDGE",
+ "source_pr": 304,
+ "source_head_sha": "d220b35ce1e11ee4ac32930155abd8384c3d35fb",
+ "code_commit": "d220b35ce1e11ee4ac32930155abd8384c3d35fb",
+ "runs": {
   "dev": 8,
   "val": 1,
   "test1": 0,
   "test2": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "01e5e611179fdafbf5f2c3b3e1b25aa262be2713647bd1a9c4989188ccd5e1ab",
+  "pick.json": "abe29ade2d06eb1f5a6ef9f327b441c69a1ac231d7a745f7453b446c4b99d6b1",
+  "run.out": "f4d9b46bba3d707d122d06d7e52af91019d96dbf85c2e2deb2f3dc12de88a537"
  }
 }

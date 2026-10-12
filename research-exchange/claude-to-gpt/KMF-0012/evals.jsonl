@@ -1,0 +1,18 @@
+{"status": "STARTED", "key": "N30_b0.25_S12", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N30_b0.25_S12", "stage": "dev", "dev_total_p": 30.12}
+{"status": "STARTED", "key": "N30_b0.25_S20", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N30_b0.25_S20", "stage": "dev", "dev_total_p": 258.04}
+{"status": "STARTED", "key": "N30_b0.5_S12", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N30_b0.5_S12", "stage": "dev", "dev_total_p": -42.76}
+{"status": "STARTED", "key": "N30_b0.5_S20", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N30_b0.5_S20", "stage": "dev", "dev_total_p": 179.16}
+{"status": "STARTED", "key": "N60_b0.25_S12", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N60_b0.25_S12", "stage": "dev", "dev_total_p": 172.84}
+{"status": "STARTED", "key": "N60_b0.25_S20", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N60_b0.25_S20", "stage": "dev", "dev_total_p": 324.92}
+{"status": "STARTED", "key": "N60_b0.5_S12", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N60_b0.5_S12", "stage": "dev", "dev_total_p": 41.38}
+{"status": "STARTED", "key": "N60_b0.5_S20", "stage": "dev", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N60_b0.5_S20", "stage": "dev", "dev_total_p": 253.76}
+{"status": "STARTED", "key": "N60_b0.25_S20", "stage": "val", "at": "2026-10-12 21:54:13"}
+{"status": "DONE", "key": "N60_b0.25_S20", "stage": "val", "val_total_p": 8.24}

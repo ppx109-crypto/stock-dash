@@ -1,0 +1,1 @@
+{"verdict": "NO_EDGE", "robust": ["N60_b0.25_S20", "N30_b0.25_S20", "N60_b0.5_S20", "N60_b0.25_S12"], "goal_per_day_p": 4.0, "pick": {"name": "N60_b0.25_S20", "dev_total_p": 324.92, "dev_per_day_p": 2.018, "val_total_p": 8.24, "val_per_day_p": 0.317, "val_pass": false}}
