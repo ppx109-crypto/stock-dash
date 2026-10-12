@@ -1,0 +1,88 @@
+{
+ "rna_state_open_to_close": {
+  "아래0": {
+   "days": 386,
+   "mean_pct": 0.046,
+   "up_share": 0.492
+  },
+  "아래1": {
+   "days": 388,
+   "mean_pct": -0.033,
+   "up_share": 0.479
+  },
+  "아래2": {
+   "days": 56,
+   "mean_pct": -0.153,
+   "up_share": 0.5
+  },
+  "위1": {
+   "days": 99,
+   "mean_pct": 0.065,
+   "up_share": 0.576
+  },
+  "위2": {
+   "days": 597,
+   "mean_pct": 0.027,
+   "up_share": 0.516
+  },
+  "위3": {
+   "days": 1329,
+   "mean_pct": -0.014,
+   "up_share": 0.491
+  }
+ },
+ "z120_open_to_close": {
+  "z<-1.5": {
+   "days": 430,
+   "mean_pct": -0.021,
+   "up_share": 0.502
+  },
+  "z>1.5": {
+   "days": 432,
+   "mean_pct": -0.03,
+   "up_share": 0.491
+  },
+  "중간": {
+   "days": 1989,
+   "mean_pct": 0.01,
+   "up_share": 0.498
+  }
+ },
+ "gap_open_to_close": {
+  "갭 +0.5%↑": {
+   "days": 594,
+   "mean_pct": 0.008,
+   "up_share": 0.488
+  },
+  "갭 −0.5%↓": {
+   "days": 435,
+   "mean_pct": 0.044,
+   "up_share": 0.483
+  },
+  "갭 작음": {
+   "days": 1826,
+   "mean_pct": -0.013,
+   "up_share": 0.505
+  }
+ },
+ "night_day_full_by_state": {
+  "위3": {
+   "night_mean_pct": 0.044,
+   "day_mean_pct": -0.014,
+   "close_to_close_mean_pct": 0.03,
+   "days": 1329
+  },
+  "나머지": {
+   "night_mean_pct": 0.069,
+   "day_mean_pct": 0.001,
+   "close_to_close_mean_pct": 0.07,
+   "days": 1140
+  },
+  "아래0": {
+   "night_mean_pct": 0.039,
+   "day_mean_pct": 0.046,
+   "close_to_close_mean_pct": 0.084,
+   "days": 386
+  }
+ }
+}
