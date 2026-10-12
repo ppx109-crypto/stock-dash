@@ -213,10 +213,25 @@ class FailClosed(unittest.TestCase):
 
     def test_daily_path_trim_failure_blocks(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.object(A, "TODAY", Path(tmp) / "t.json"), \
+                mock.patch.object(A, "LOG", Path(tmp) / "log.json"), \
                 mock.patch.dict(os.environ, self.ENV), mock.patch.object(A, "run_trim", self.boom):
             lines = A.trim_or_block("20261012")
             self.assertIn("새 매수 멈춤", lines[0])
             self.assertTrue(A.blocked("20261012"))
+            log = json.loads((Path(tmp) / "log.json").read_text(encoding="utf-8"))     # 실패한 날도 기록에 남음(2026-10-12)
+            self.assertEqual([(x["date"], bool(x.get("failed"))) for x in log], [("20261012", True)])
+
+    def test_broker_error_reason_kept(self):
+        import broker_kis
+
+        def refuse(*a, **k):
+            raise broker_kis.BrokerError("초당 호출 한도를 넘었습니다.")
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(A, "TODAY", Path(tmp) / "t.json"), \
+                mock.patch.object(A, "LOG", Path(tmp) / "log.json"), \
+                mock.patch.dict(os.environ, self.ENV), mock.patch.object(A, "run_trim", refuse):
+            lines = A.trim_or_block("20261012")
+            self.assertIn("초당 호출 한도", lines[0])
+            self.assertIn("초당 호출 한도", json.loads((Path(tmp) / "log.json").read_text(encoding="utf-8"))[0]["failed"])
 
     def test_paper_trade_path_sells_but_no_buys(self):
         class Fake:
