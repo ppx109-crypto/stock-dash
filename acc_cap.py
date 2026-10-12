@@ -254,8 +254,13 @@ def trim_or_block(day, now=None, broker=None):
     try:
         return run_trim(day, now, broker)
     except Exception as e:
-        block(day, f"덜어내기 실패 · {type(e).__name__}")
-        return [f"⚠️ 계좌 흔들림 상한 단계 문제 · {type(e).__name__} → 오늘 새 매수 멈춤(팔기는 그대로)"]
+        why = str(e) if type(e).__name__ == "BrokerError" and str(e) else type(e).__name__   # 증권사 오류는 한국어 설명(응답 본문 · 비밀값 아님)
+        block(day, f"덜어내기 실패 · {why}")
+        print("계좌 흔들림 상한 덜어내기 실패 → 오늘 새 매수 멈춤(팔기는 그대로) ·", why)
+        log = _load(LOG, [])                     # 실패한 날도 기록에 남김(2026-10-12 첫날: 실패 까닭이 디스코드에만 가서 확인 못 함)
+        _save(LOG, [x for x in log if x.get("date") != day] + [{"date": day, "at": (now or datetime.now(KST)).strftime("%Y-%m-%d %H:%M"),
+                                                                "failed": why}])
+        return [f"⚠️ 계좌 흔들림 상한 단계 문제 · {why} → 오늘 새 매수 멈춤(팔기는 그대로)"]
 
 
 def record_close(day, broker=None, quote=None):
