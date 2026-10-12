@@ -1,0 +1,314 @@
+{
+ "N30_k0.5_H60": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 30,
+   "k": 0.5,
+   "hold": 60,
+   "tag": "N30_k0.5_H60"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 21.32,
+   "per_day_p": 0.218,
+   "worst_day_p": -12.0,
+   "best_day_p": 24.12,
+   "win_days": 52,
+   "loss_days": 45,
+   "trades": 182,
+   "win_rate": 0.615,
+   "mdd_p": -52.7,
+   "months": {
+    "202601": -0.8,
+    "202602": 0.42,
+    "202603": -9.2,
+    "202604": 4.16,
+    "202605": 26.74
+   },
+   "stop_days": 10,
+   "worst_month_p": -9.2,
+   "per_day_ci95_p": [
+    -1.28,
+    1.689
+   ],
+   "won": {
+    "total": 1066000,
+    "worst_day": -600000,
+    "worst_month": -460000
+   }
+  }
+ },
+ "N30_k0.5_H120": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 30,
+   "k": 0.5,
+   "hold": 120,
+   "tag": "N30_k0.5_H120"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 12.18,
+   "per_day_p": 0.124,
+   "worst_day_p": -12.0,
+   "best_day_p": 24.12,
+   "win_days": 54,
+   "loss_days": 43,
+   "trades": 179,
+   "win_rate": 0.615,
+   "mdd_p": -75.06,
+   "months": {
+    "202601": 15.56,
+    "202602": 16.64,
+    "202603": -37.38,
+    "202604": -2.92,
+    "202605": 20.28
+   },
+   "stop_days": 16,
+   "worst_month_p": -37.38,
+   "per_day_ci95_p": [
+    -1.579,
+    1.714
+   ],
+   "won": {
+    "total": 609000,
+    "worst_day": -600000,
+    "worst_month": -1869000
+   }
+  }
+ },
+ "N30_k1.0_H60": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 30,
+   "k": 1.0,
+   "hold": 60,
+   "tag": "N30_k1.0_H60"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 61.44,
+   "per_day_p": 0.627,
+   "worst_day_p": -12.0,
+   "best_day_p": 30.96,
+   "win_days": 46,
+   "loss_days": 51,
+   "trades": 179,
+   "win_rate": 0.536,
+   "mdd_p": -53.78,
+   "months": {
+    "202601": -9.88,
+    "202602": 16.4,
+    "202603": -16.88,
+    "202604": 8.7,
+    "202605": 63.1
+   },
+   "stop_days": 10,
+   "worst_month_p": -16.88,
+   "per_day_ci95_p": [
+    -1.209,
+    2.405
+   ],
+   "won": {
+    "total": 3072000,
+    "worst_day": -600000,
+    "worst_month": -844000
+   }
+  }
+ },
+ "N30_k1.0_H120": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 30,
+   "k": 1.0,
+   "hold": 120,
+   "tag": "N30_k1.0_H120"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 22.94,
+   "per_day_p": 0.234,
+   "worst_day_p": -12.0,
+   "best_day_p": 30.96,
+   "win_days": 47,
+   "loss_days": 50,
+   "trades": 174,
+   "win_rate": 0.523,
+   "mdd_p": -107.56,
+   "months": {
+    "202601": -8.3,
+    "202602": 56.26,
+    "202603": -65.42,
+    "202604": -20.46,
+    "202605": 60.86
+   },
+   "stop_days": 17,
+   "worst_month_p": -65.42,
+   "per_day_ci95_p": [
+    -1.726,
+    2.185
+   ],
+   "won": {
+    "total": 1147000,
+    "worst_day": -600000,
+    "worst_month": -3271000
+   }
+  }
+ },
+ "N60_k0.5_H60": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 60,
+   "k": 0.5,
+   "hold": 60,
+   "tag": "N60_k0.5_H60"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 71.3,
+   "per_day_p": 0.728,
+   "worst_day_p": -12.0,
+   "best_day_p": 24.12,
+   "win_days": 51,
+   "loss_days": 40,
+   "trades": 163,
+   "win_rate": 0.583,
+   "mdd_p": -69.24,
+   "months": {
+    "202601": -23.72,
+    "202602": 36.98,
+    "202603": -30.16,
+    "202604": 13.46,
+    "202605": 74.74
+   },
+   "stop_days": 9,
+   "worst_month_p": -30.16,
+   "per_day_ci95_p": [
+    -0.777,
+    2.371
+   ],
+   "won": {
+    "total": 3565000,
+    "worst_day": -600000,
+    "worst_month": -1508000
+   }
+  }
+ },
+ "N60_k0.5_H120": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 60,
+   "k": 0.5,
+   "hold": 120,
+   "tag": "N60_k0.5_H120"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 89.54,
+   "per_day_p": 0.914,
+   "worst_day_p": -12.0,
+   "best_day_p": 24.12,
+   "win_days": 53,
+   "loss_days": 38,
+   "trades": 158,
+   "win_rate": 0.627,
+   "mdd_p": -75.24,
+   "months": {
+    "202601": -34.26,
+    "202602": 57.92,
+    "202603": -30.7,
+    "202604": 29.6,
+    "202605": 66.98
+   },
+   "stop_days": 15,
+   "worst_month_p": -34.26,
+   "per_day_ci95_p": [
+    -0.713,
+    2.6
+   ],
+   "won": {
+    "total": 4477000,
+    "worst_day": -600000,
+    "worst_month": -1713000
+   }
+  }
+ },
+ "N60_k1.0_H60": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 60,
+   "k": 1.0,
+   "hold": 60,
+   "tag": "N60_k1.0_H60"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 139.5,
+   "per_day_p": 1.423,
+   "worst_day_p": -12.0,
+   "best_day_p": 30.96,
+   "win_days": 47,
+   "loss_days": 44,
+   "trades": 161,
+   "win_rate": 0.553,
+   "mdd_p": -70.62,
+   "months": {
+    "202601": -17.9,
+    "202602": 47.78,
+    "202603": -38.98,
+    "202604": 23.14,
+    "202605": 125.46
+   },
+   "stop_days": 9,
+   "worst_month_p": -38.98,
+   "per_day_ci95_p": [
+    -0.387,
+    3.372
+   ],
+   "won": {
+    "total": 6975000,
+    "worst_day": -600000,
+    "worst_month": -1949000
+   }
+  }
+ },
+ "N60_k1.0_H120": {
+  "cfg": {
+   "bot": "ORBS",
+   "or": 60,
+   "k": 1.0,
+   "hold": 120,
+   "tag": "N60_k1.0_H120"
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 150.36,
+   "per_day_p": 1.534,
+   "worst_day_p": -12.0,
+   "best_day_p": 30.96,
+   "win_days": 49,
+   "loss_days": 42,
+   "trades": 153,
+   "win_rate": 0.575,
+   "mdd_p": -86.68,
+   "months": {
+    "202601": -23.36,
+    "202602": 93.72,
+    "202603": -47.08,
+    "202604": 40.06,
+    "202605": 87.02
+   },
+   "stop_days": 16,
+   "worst_month_p": -47.08,
+   "per_day_ci95_p": [
+    -0.502,
+    3.542
+   ],
+   "won": {
+    "total": 7518000,
+    "worst_day": -600000,
+    "worst_month": -2354000
+   }
+  }
+ }
+}
