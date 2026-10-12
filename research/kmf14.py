@@ -33,7 +33,7 @@ END = M13.END
 GUARD_BEFORE = END
 PICK = {"L": 15, "W": 120, "f": 0.8, "k": 2.0, "s": 3.0, "n": 3}
 DEV_PER_DAY = None                         # report()가 채움 · 시험 2 잣대는 PLAN에 숫자로 고정
-TEST2_MIN_PER_DAY = 1.09                   # 개발 하루 평균 2.172의 절반(반올림 · PLAN §4)
+TEST2_MIN_PER_DAY = 1.09                   # 개발 하루 평균 2.179의 절반 1.0895를 반올림(PLAN §5 · round 2)
 
 
 def grid():
