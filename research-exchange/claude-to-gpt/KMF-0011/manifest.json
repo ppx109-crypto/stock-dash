@@ -4,7 +4,7 @@
  "chain_id": "KMF-0011",
  "kind": "PLAN",
  "round": "1",
- "status": "READY",
+ "status": "WITHDRAWN",
  "user_instruction": "2026-10-13 추세 · 횡보 각각 작동하는 단타봇 · 목표 10개월 800p · 하루 −12p 멈춤 그대로(사용자 선택)",
  "goal": {
   "points_10_months": 800,
@@ -75,6 +75,13 @@
  "runs_planned": {
   "dev": 8,
   "val": 1,
+  "test1": 0,
+  "test2": 0
+ },
+ "withdrawn_note": "#302 동의 뒤 실행 전 사용자 손실 한도 −25p로 바꿈 → 실행 0회 · KMF-0012로 다시 냄",
+ "runs": {
+  "dev": 0,
+  "val": 0,
   "test1": 0,
   "test2": 0
  }
