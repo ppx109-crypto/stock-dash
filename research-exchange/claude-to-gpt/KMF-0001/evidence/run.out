@@ -1,0 +1,1 @@
+{"verdict": "VAL_PASS ORB", "val_cells_computed": 2, "picks": {"TR": {"name": "botTR_spansmid_exit_gap2", "dev_total_p": 141.86, "dev_check": 141.86, "val_total_p": -93.34, "val_pass": false}, "MR": null, "ORB": {"name": "botORB_or30_filterFalse", "dev_total_p": 205.46, "dev_check": 205.46, "val_total_p": 136.86, "val_pass": true}}}

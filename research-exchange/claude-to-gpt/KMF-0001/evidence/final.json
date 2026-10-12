@@ -1,0 +1,40 @@
+{
+ "gpt_pr": 273,
+ "results": {
+  "botORB_or30_filterFalse": {
+   "cfg": {
+    "bot": "ORB",
+    "or": 30,
+    "filter": false
+   },
+   "test1": {
+    "days": 26,
+    "total_p": -64.16,
+    "per_day_p": -2.468,
+    "worst_day_p": -12.02,
+    "best_day_p": 22.74,
+    "win_days": 8,
+    "loss_days": 18,
+    "trades": 188,
+    "win_rate": 0.064,
+    "mdd_p": -113.16,
+    "months": {
+     "202609": -84.24,
+     "202610": 20.08
+    },
+    "stop_days": 8,
+    "worst_month_p": -84.24,
+    "per_day_ci95_p": [
+     -6.193,
+     1.626
+    ],
+    "won": {
+     "total": -3208000,
+     "worst_day": -601000,
+     "worst_month": -4212000
+    }
+   },
+   "pass1": false
+  }
+ }
+}

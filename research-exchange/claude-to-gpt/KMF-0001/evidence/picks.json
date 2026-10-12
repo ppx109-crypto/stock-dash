@@ -1,0 +1,148 @@
+{
+ "TR": {
+  "name": "botTR_spansmid_exit_gap2",
+  "cfg": {
+   "bot": "TR",
+   "spans": "mid",
+   "exit_gap": 2
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 141.86,
+   "per_day_p": 1.448,
+   "worst_day_p": -12.0,
+   "best_day_p": 58.92,
+   "win_days": 45,
+   "loss_days": 53,
+   "trades": 300,
+   "win_rate": 0.373,
+   "mdd_p": -50.86,
+   "months": {
+    "202601": -2.64,
+    "202602": 35.04,
+    "202603": 49.04,
+    "202604": -2.52,
+    "202605": 62.94
+   },
+   "stop_days": 32,
+   "worst_month_p": -2.64,
+   "per_day_ci95_p": [
+    -1.324,
+    4.627
+   ],
+   "won": {
+    "total": 7093000,
+    "worst_day": -600000,
+    "worst_month": -132000
+   }
+  },
+  "neighbors_dev": {
+   "botTR_spansfast_exit_gap2": 120.26,
+   "botTR_spansmid_exit_gap1": 7.9,
+   "botTR_spansslow_exit_gap2": -31.66
+  },
+  "dev_check": 141.86,
+  "val": {
+   "days": 63,
+   "total_p": -93.34,
+   "per_day_p": -1.482,
+   "worst_day_p": -12.0,
+   "best_day_p": 64.48,
+   "win_days": 16,
+   "loss_days": 47,
+   "trades": 135,
+   "win_rate": 0.252,
+   "mdd_p": -146.36,
+   "months": {
+    "202606": 11.4,
+    "202607": -48.56,
+    "202608": -56.18
+   },
+   "stop_days": 46,
+   "worst_month_p": -56.18,
+   "per_day_ci95_p": [
+    -5.953,
+    3.531
+   ],
+   "won": {
+    "total": -4667000,
+    "worst_day": -600000,
+    "worst_month": -2809000
+   }
+  },
+  "val_pass": false
+ },
+ "MR": null,
+ "ORB": {
+  "name": "botORB_or30_filterFalse",
+  "cfg": {
+   "bot": "ORB",
+   "or": 30,
+   "filter": false
+  },
+  "dev": {
+   "days": 98,
+   "total_p": 205.46,
+   "per_day_p": 2.097,
+   "worst_day_p": -12.0,
+   "best_day_p": 63.1,
+   "win_days": 37,
+   "loss_days": 60,
+   "trades": 503,
+   "win_rate": 0.097,
+   "mdd_p": -84.0,
+   "months": {
+    "202601": 0.22,
+    "202602": 73.58,
+    "202603": -1.0,
+    "202604": 4.82,
+    "202605": 127.84
+   },
+   "stop_days": 14,
+   "worst_month_p": -1.0,
+   "per_day_ci95_p": [
+    -0.865,
+    5.114
+   ],
+   "won": {
+    "total": 10273000,
+    "worst_day": -600000,
+    "worst_month": -50000
+   }
+  },
+  "neighbors_dev": {
+   "botORB_or15_filterFalse": 74.58,
+   "botORB_or30_filterTrue": 179.26
+  },
+  "dev_check": 205.46,
+  "val": {
+   "days": 63,
+   "total_p": 136.86,
+   "per_day_p": 2.172,
+   "worst_day_p": -12.0,
+   "best_day_p": 123.1,
+   "win_days": 19,
+   "loss_days": 44,
+   "trades": 237,
+   "win_rate": 0.093,
+   "mdd_p": -123.04,
+   "months": {
+    "202606": 82.24,
+    "202607": 49.68,
+    "202608": 4.94
+   },
+   "stop_days": 31,
+   "worst_month_p": 4.94,
+   "per_day_ci95_p": [
+    -3.394,
+    8.7
+   ],
+   "won": {
+    "total": 6843000,
+    "worst_day": -600000,
+    "worst_month": 247000
+   }
+  },
+  "val_pass": true
+ }
+}

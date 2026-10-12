@@ -2,14 +2,14 @@
  "schema_version": "1",
  "task_id": "KMF-0001",
  "chain_id": "KMF-0001",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "3",
- "status": "READY",
+ "status": "DONE",
  "user_instruction": "2026-10-12 키움 미니 코스피 선물 자료에 맞춘 RNA로 새 봇 · GPT와 협업 · 하루 최대 낙폭 −12p · 사기 팔기 둘 다 · 그날 정리 · 연구까지 · 편도 0.04p",
  "code_commit": "b6c60990c29baa2c4746b803c1dbeffc525a7be9",
  "code_commit_note": "코드 · 시험 · 잠금이 든 커밋(이 기록 커밋 바로 앞)",
- "completed_at_kst": "2026-10-12 23:30",
- "completed_note": "실행 전 · 성과 셈 안 함",
+ "completed_at_kst": "2026-10-12 23:37",
+ "completed_note": "run 23:34:38 ~ 23:35:30 · final 23:36:23",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research-exchange/claude-to-gpt/KMF-0001/evidence/kmf_test.py": "9a20af04088ccdcafe0dc4208adf149fd4c2e0bdec23048a967156e11fae7797"
@@ -45,7 +45,18 @@
   "research-exchange/claude-to-gpt/KMF-0001/input_lock.json",
   "research-exchange/claude-to-gpt/KMF-0001/evidence/kmf_test.py",
   "research-exchange/claude-to-gpt/KMF-0001/evidence/kmf_test.out",
-  "research-exchange/claude-to-gpt/KMF-0001/evidence/cut_test.out"
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0001/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0001/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0001/final_ok.json",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/picks.json",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/final.json",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/final.out",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/concentration.py",
+  "research-exchange/claude-to-gpt/KMF-0001/evidence/concentration.out"
  ],
  "independent_check": "WAITING_DATA",
  "source_pr": 273,
@@ -58,5 +69,20 @@
   "final": "WAITING_DATA(시험 2)만",
   "final2": "KMF_CANDIDATE(시험 1 · 2 모두 통과) / NO_EDGE"
  },
- "account_criteria": "WAITING_DATA(계좌 기준금액 · 증거금 없음 · TWR −15% 셀 수 없음 · 운영 근거 아님)"
+ "account_criteria": "WAITING_DATA(계좌 기준금액 · 증거금 없음 · TWR −15% 셀 수 없음 · 운영 근거 아님)",
+ "verdict": "NO_EDGE",
+ "gpt_agree_comment": 6126393903,
+ "agreed_head": "f0745a32510885ad179e4e1b3266cbb4625d44e5",
+ "runs": {
+  "dev_cells": 18,
+  "val_cells": 2,
+  "test1_cells": 1,
+  "test2_cells": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "d3855d1e5be0f8aef24756a4e52bf741dd19c66857dc632bf905b3052047d928",
+  "picks.json": "80a1999bae3728b2a8ba86f9074077dba3eaa565ad4e2c532b06e7e075d2430b",
+  "final.json": "73787b831d694a95a50e1e8e1ba391eed9773593f0cafd9cc00b7ffee432c457",
+  "concentration.out": "1d86000060cdf900c63303251394a811e55a11856ffa311c046c8d53deaac52c"
+ }
 }
