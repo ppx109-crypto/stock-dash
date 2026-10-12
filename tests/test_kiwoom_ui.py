@@ -13,7 +13,8 @@ class KiwoomLab(unittest.TestCase):
         out = K.lab_html(s)
         self.assertIn("−12p", out)
         self.assertIn("KMF-0001", out)
-        self.assertIn("pull/273", out)
+        self.assertIn("pull/275", out)
+        self.assertIn("개발 순서", out)
         self.assertIn("아직 없음", out)            # 인정한 결과가 없으면 빈칸이라고 적음
 
     def test_results_table_and_escape(self):
