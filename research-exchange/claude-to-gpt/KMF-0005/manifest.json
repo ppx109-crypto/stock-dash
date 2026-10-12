@@ -2,12 +2,12 @@
  "schema_version": "1",
  "task_id": "KMF-0005",
  "chain_id": "KMF-0005",
- "kind": "PLAN",
+ "kind": "REPORT",
  "round": "1",
  "status": "READY",
  "user_instruction": "2026-10-13 1분봉 신호 안 씀 · RNA 위주 · 역추세금지 · 변화에도 살아남기",
- "completed_at_kst": "2026-10-13 00:43",
- "completed_note": "실행 전 · 진단(판정 밖)에서 N60_day_e1 개발 값을 미리 봄",
+ "completed_at_kst": "2026-10-13 00:49",
+ "completed_note": "run 00:48:47 ~ 49 · 개발 12 · 확인 1",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
@@ -48,7 +48,13 @@
   "research-exchange/claude-to-gpt/KMF-0005/diag/day_dir_diag.py",
   "research-exchange/claude-to-gpt/KMF-0005/diag/day_dir_diag.out",
   "research-exchange/claude-to-gpt/KMF-0005/diag/orb_daily_rna_diag.py",
-  "research-exchange/claude-to-gpt/KMF-0005/diag/orb_daily_rna_diag.out"
+  "research-exchange/claude-to-gpt/KMF-0005/diag/orb_daily_rna_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0005/REPORT.md",
+  "research-exchange/claude-to-gpt/KMF-0005/evals.jsonl",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/run.out",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/run.err",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/dev_rows.json",
+  "research-exchange/claude-to-gpt/KMF-0005/evidence/pick.json"
  ],
  "account_criteria": "WAITING_DATA",
  "cumulative_kmf_before": {
@@ -56,5 +62,27 @@
   "val": 5,
   "test1": 2,
   "test2": 0
+ },
+ "verdict": "NO_EDGE",
+ "source_pr": 286,
+ "source_head_sha": "18312e8e8f29c7dbbeff4a4737f5200fda5d5b16",
+ "code_commit": "18312e8e8f29c7dbbeff4a4737f5200fda5d5b16",
+ "runs": {
+  "dev": 12,
+  "distinct_rules": 10,
+  "val": 1,
+  "test1": 0,
+  "test2": 0
+ },
+ "cumulative_kmf": {
+  "dev": 70,
+  "val": 6,
+  "test1": 2,
+  "test2": 0
+ },
+ "result_sha256": {
+  "dev_rows.json": "7f4d6d9987887ae1cdc31de71bc4281d8968fcbbbd20ad724284a1082c833e20",
+  "pick.json": "434ab87f0208c0b5674f32a491bc5f5bd926cad14fbce3e3e1d05136b7e045f7",
+  "run.out": "b97f97237b4fb8407e984f0e90cf37d3040a02e08d484e956c68d8b75f1899a5"
  }
 }

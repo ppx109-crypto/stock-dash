@@ -1,0 +1,26 @@
+{"status": "STARTED", "key": "N30_day_e1", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N30_day_e1", "stage": "dev", "dev_total_p": 256.32}
+{"status": "STARTED", "key": "N30_day_e2", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N30_day_e2", "stage": "dev", "dev_total_p": 256.32}
+{"status": "STARTED", "key": "N30_range_e1", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N30_range_e1", "stage": "dev", "dev_total_p": 257.98}
+{"status": "STARTED", "key": "N30_range_e2", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N30_range_e2", "stage": "dev", "dev_total_p": 256.62}
+{"status": "STARTED", "key": "N60_day_e1", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N60_day_e1", "stage": "dev", "dev_total_p": 202.76}
+{"status": "STARTED", "key": "N60_day_e2", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N60_day_e2", "stage": "dev", "dev_total_p": 202.76}
+{"status": "STARTED", "key": "N60_range_e1", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N60_range_e1", "stage": "dev", "dev_total_p": 201.94}
+{"status": "STARTED", "key": "N60_range_e2", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N60_range_e2", "stage": "dev", "dev_total_p": 201.94}
+{"status": "STARTED", "key": "N30_range_e2_RNA", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N30_range_e2_RNA", "stage": "dev", "dev_total_p": 97.18}
+{"status": "STARTED", "key": "N30_day_e1_RNA", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N30_day_e1_RNA", "stage": "dev", "dev_total_p": 95.92}
+{"status": "STARTED", "key": "N60_range_e2_RNA", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N60_range_e2_RNA", "stage": "dev", "dev_total_p": 69.28}
+{"status": "STARTED", "key": "N60_day_e1_RNA", "stage": "dev", "at": "2026-10-12 15:48:48"}
+{"status": "DONE", "key": "N60_day_e1_RNA", "stage": "dev", "dev_total_p": 69.28}
+{"status": "STARTED", "key": "N30_range_e1", "stage": "val", "at": "2026-10-12 15:48:49"}
+{"status": "DONE", "key": "N30_range_e1", "stage": "val", "val_total_p": -88.5}
