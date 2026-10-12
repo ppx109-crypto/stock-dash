@@ -1,0 +1,75 @@
+{
+ "name": "botORB1_or60_max_entries2_stoprange",
+ "cfg": {
+  "bot": "ORB1",
+  "or": 60,
+  "max_entries": 2,
+  "stop": "range"
+ },
+ "dev": {
+  "days": 98,
+  "total_p": 191.84,
+  "per_day_p": 1.958,
+  "worst_day_p": -12.0,
+  "best_day_p": 64.36,
+  "win_days": 47,
+  "loss_days": 46,
+  "trades": 96,
+  "win_rate": 0.5,
+  "mdd_p": -115.56,
+  "months": {
+   "202601": 15.18,
+   "202602": 104.02,
+   "202603": -49.34,
+   "202604": 17.86,
+   "202605": 104.12
+  },
+  "stop_days": 24,
+  "worst_month_p": -49.34,
+  "per_day_ci95_p": [
+   -0.985,
+   5.064
+  ],
+  "won": {
+   "total": 9592000,
+   "worst_day": -600000,
+   "worst_month": -2467000
+  }
+ },
+ "neighbors_dev": {
+  "botORB1_or15_max_entries2_stoprange": -79.42,
+  "botORB1_or30_max_entries2_stoprange": 110.5,
+  "botORB1_or60_max_entries1_stoprange": 190.02,
+  "botORB1_or60_max_entries2_stopday": 185.08
+ },
+ "dev_check": 191.84,
+ "val": {
+  "days": 63,
+  "total_p": 247.76,
+  "per_day_p": 3.933,
+  "worst_day_p": -12.0,
+  "best_day_p": 123.1,
+  "win_days": 26,
+  "loss_days": 35,
+  "trades": 61,
+  "win_rate": 0.426,
+  "mdd_p": -87.38,
+  "months": {
+   "202606": 42.26,
+   "202607": 139.6,
+   "202608": 65.9
+  },
+  "stop_days": 30,
+  "worst_month_p": 42.26,
+  "per_day_ci95_p": [
+   -1.416,
+   10.919
+  ],
+  "won": {
+   "total": 12388000,
+   "worst_day": -600000,
+   "worst_month": 2113000
+  }
+ },
+ "val_pass": true
+}
