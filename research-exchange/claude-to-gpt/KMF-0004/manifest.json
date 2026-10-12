@@ -1,0 +1,67 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0004",
+ "chain_id": "KMF-0004",
+ "kind": "PLAN",
+ "round": "2",
+ "status": "READY",
+ "user_instruction": "2026-10-13 한투 1일봉 EMA 응용 · RNA 위주 · 변화에도 살아남기 · 1분봉 신호 안 씀 · GPT와 아이디어",
+ "completed_at_kst": "2026-10-13 00:36",
+ "completed_note": "실행 전 · 성과 셈 안 함(거래 수만 봄)",
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf_guard.py": "23b3bbd3610b1de5f15b65486f6c2fe2ae7a0c6cec52da1bea6708a8aa67acf1",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/kmf4_test.py": "3c78a0554b133fa5c7acec780dd9f0e9e4ff02a475743b960ff0853a9659a020"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "35ba327bbb8a1bee46dc1803d1e567db9b369fb31fa3317e53210ee0adc40c2e",
+ "plan_sha256": "0c239c7c4a4a2330fc30ebdf663208fff6c103e5046a71c9b7ea8440ea2e6b10",
+ "grid": {
+  "count": 14,
+  "tf": [
+   15,
+   30
+  ],
+  "variants": [
+   "E0",
+   "Z2",
+   "D2",
+   "B8",
+   "T3",
+   "X20",
+   "H60"
+  ]
+ },
+ "min_trades": 15,
+ "periods": {
+  "dev": "2026-01 ~ 05",
+  "val": "2026-06 ~ 08(1칸)",
+  "test1": "따로 동의",
+  "test2": "10-13 ~ 새 자료(결정)"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0004/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0004/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/kmf4_test.py",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/kmf4_test.out",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0004/evidence/cut_test.out"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "cumulative_kmf_before": {
+  "dev": 44,
+  "val": 5,
+  "test1": 2,
+  "test2": 0
+ },
+ "source_pr": 282,
+ "source_head_sha": "ecce772a36adedeb4bdbceeb6238ddf6048ddd95(round 1 head · 이 기록 커밋이 round 2 head)",
+ "code_commit": "d99cbf2f7caf2c4710d59b05cfd95fe83ab57651"
+}

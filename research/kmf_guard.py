@@ -72,11 +72,12 @@ def fill_prices(sig, rows, cfg):
     for i in range(1, len(rows)):
         if rows[i][0] == rows[i - 1][0] and want[i - 1] in (1, -1):
             entries.add((rows[i][0], rows[i][2]))         # 판단 다음 분 시가
+    nxt_open = {(rows[i][0], rows[i][1]): rows[i + 1][2] for i in range(len(rows) - 1) if rows[i + 1][0] == rows[i][0]}   # 다음 봉(1분이든 N분이든 순서로)
     bad = 0
     for d, m, pos, entry, exit_ in trades:
         if (d, entry) not in entries:
             bad += 1
-        nxt = opens.get((d, m + 1))
+        nxt = nxt_open.get((d, m))
         ok = abs(exit_ - closes.get((d, m), 1e18)) < 1e-9 or (nxt is not None and abs(exit_ - nxt) < 1e-9)
         if not ok:                                         # 멈춤 값: 그 분 고저 안 · 또는 그 분 시가(갭)
             r = next((x for x in rows if x[0] == d and x[1] == m), None)
@@ -90,12 +91,16 @@ def main(which):
         import kmf2 as M
     elif which == "kmf3":
         import kmf3 as M
+    elif which == "kmf4":
+        import kmf4 as M                          # N분봉: 묶은 봉으로 검사(prep)
     else:
         M = K
     rows = K._rows_before(K.VAL[0])
     cuts = ("20260302", "20260401", "20260504")
     res = []
+    raw = rows
     for cfg in M.grid():
+        rows = M.prep(raw, cfg) if hasattr(M, "prep") else raw
         r = {"cfg": M.name(cfg), "prefix_bad": prefix_points(M.signals, rows, cfg),
              "scramble_bad": sum(scramble(M.signals, rows, cfg, c, seed=i) for i, c in enumerate(cuts)),
              "intraday_bad": scramble_intraday(M.signals, rows, cfg)}
