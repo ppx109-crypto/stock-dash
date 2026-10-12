@@ -88,6 +88,8 @@ def fill_prices(sig, rows, cfg):
 def main(which):
     if which == "kmf2":
         import kmf2 as M
+    elif which == "kmf3":
+        import kmf3 as M
     else:
         M = K
     rows = K._rows_before(K.VAL[0])

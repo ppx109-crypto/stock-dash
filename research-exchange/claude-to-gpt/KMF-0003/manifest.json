@@ -1,0 +1,64 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0003",
+ "chain_id": "KMF-0003",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "base_bot": "KMF-0002 botORB1_or60_max_entries2_stoprange(#278)",
+ "completed_at_kst": "2026-10-13 00:03",
+ "completed_note": "실행 전 · 성과 셈 안 함(B0 신호 같음만 확인)",
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
+  "research/kmf3.py": "9a7ec13c56479a16494c05efa38cf519f3d6fd942b9746eb5614d27fb46e907e",
+  "research/kmf_guard.py": "57ca708f53e39d489f1838b383a9ec3db63dc69093d16432c30de19ae26db4ed",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/kmf3_test.py": "08cb9e50a0a31686a787eeeeec7520c093ad554b6af29b823a9473c42bb7f9ae",
+  "research-exchange/claude-to-gpt/KMF-0003/diag/loss_diag.py": "9c064722767ccc951540e9db910094e52bb2f159342b6d18f0a91e54a38719dd"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
+  "research/kmf3.py": "9a7ec13c56479a16494c05efa38cf519f3d6fd942b9746eb5614d27fb46e907e",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "input_lock_sha256": "a4986e2565c6e6636d71e95a537be4a282a44732b9312b7464ffef85f9ae7094",
+ "plan_sha256": "b54bf13bd488f8ccc0d20e86507ee33b2ea012191948319485061306cd9aecb3",
+ "grid": {
+  "count": 14,
+  "tags": [
+   "B0",
+   "W15",
+   "W20",
+   "W25",
+   "WR1.25",
+   "WR1.5",
+   "S6",
+   "S8",
+   "T660",
+   "T720",
+   "G20",
+   "G30",
+   "C5",
+   "C15"
+  ]
+ },
+ "periods": {
+  "dev": "2026-01 ~ 05",
+  "val": "2026-06 ~ 08(1등 + B0)",
+  "test1": "따로 동의",
+  "test2": "10-13 ~ 새 자료(결정 · 따로 동의)"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0003/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0003/input_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0003/diag/loss_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0003/diag/loss_diag.out",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/kmf3_test.py",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/kmf3_test.out",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0003/evidence/cut_test.out"
+ ],
+ "account_criteria": "WAITING_DATA"
+}
