@@ -544,7 +544,7 @@ def header() -> str:
     )
 
 
-UI_VERSION = "10-11 · 최종 판 MIX-0054 · 분배 100% 확정"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
+UI_VERSION = "10-12 · 최종 판 MIX-0054 · 레버리지 봇 칸 · 키움 개발실"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -1131,7 +1131,7 @@ IDLE_NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "25134
 # 최종 판 MIX-0054(사용자 2026-10-11 승인 · 연구 #224 · 운영 계산 #226 · 구현 #230) — 화면 글
 OVERLAY_NAME = {"122630": "KODEX 레버리지", "114800": "KODEX 인버스"}
 FINAL_MIX = ("1일봉 50% · 사건 바구니 30%(1일봉이 안 쓰는 몫) · 빈칸 엔진 · 코스닥 인버스(남는 돈) · "
-             "덧붙임(오름장 레버리지 · 횡보장 인버스 각 계좌 40%) · 15분봉 끔 · 계좌 흔들림 상한 그대로")
+             "레버리지 봇(오름장 레버리지 · 횡보장 인버스 각 계좌 40%) · 15분봉 끔 · 계좌 흔들림 상한 그대로")
 NOW_MIX = "1일봉 50% · 15분봉 50% · 남는 돈은 빈칸 엔진 · 코스닥 과열 인버스 · 사건 바구니"
 FINAL_ALLOC = ("최종 분배(사용자 2026-10-11 결정 · 연구 #255): 지금 판 100% · 후보 봇(해외 · 금 · 달러 · 채권 추세 바구니 · 해외 지수 갈아타기)은 "
                "섞어도 효율이 거의 같아 넣지 않음 · 3개월 결론(2027-01-11) 때 다시 봄")
@@ -1141,14 +1141,14 @@ YEARLY = (("2017", 16.6, 19.3), ("2018", -2.3, -17.3), ("2019", 12.7, 7.7), ("20
 
 
 def final_active(overlay_state: dict | None) -> bool:
-    """최종 판이 실제로 돌기 시작했는지: 덧붙임 봇이 한 번이라도 돈 날이 있으면(켜기 전에는 overlay-live/state.json이 없음)."""
+    """최종 판이 실제로 돌기 시작했는지: 레버리지 봇이 한 번이라도 돈 날이 있으면(켜기 전에는 overlay-live/state.json이 없음)."""
     return bool((overlay_state or {}).get("last_day"))
 
 
 def mix_note(overlay_state: dict | None) -> str:
-    """'통합 매매 규칙' 머리 한 줄(짧게 · 자세한 조합은 덧붙임 칸)."""
+    """'통합 매매 규칙' 머리 한 줄(짧게 · 자세한 조합은 레버리지 봇 칸)."""
     if final_active(overlay_state):
-        return "최종 판(MIX-0054) 운영 중 · 1일봉 50% · 바구니 30% · 엔진 · 인버스 · 덧붙임 40% · 15분봉 끔"
+        return "최종 판(MIX-0054) 운영 중 · 1일봉 50% · 바구니 30% · 엔진 · 인버스 · 레버리지 봇 40% · 15분봉 끔"
     return "지금 1일봉 50% · 15분봉 50% · 남는 돈 엔진 · 바구니 · 최종 판(MIX-0054)은 시작 날을 정하면 켜짐"
 
 
@@ -1160,23 +1160,23 @@ OVERLAY_RULES = """<div class="pxb"><div class="pxb-rules">
 <div class="pxb-rule"><h4>사고팔기<span>매일 15:10 빈칸 엔진 뒤</span></h4><dl>
 <dt>오름</dt><dd>KODEX 레버리지(122630)를 계좌의 40%까지</dd>
 <dt>횡보</dt><dd>KODEX 인버스(114800)를 계좌의 40%까지</dd>
-<dt>내림</dt><dd>덧붙임을 모두 팖(1일봉 · 바구니 · 엔진은 그대로)</dd>
+<dt>내림</dt><dd>레버리지 봇이 든 것을 모두 팖(1일봉 · 바구니 · 엔진은 그대로)</dd>
 <dt>맞추는 날</dt><dd>국면이 바뀐 다음 날 · 매달 첫 거래일 · 그 밖의 날은 그대로 둠</dd>
 </dl></div>
 <div class="pxb-rule"><h4>돈<span>빚 없음 · 다른 봇이 먼저</span></h4><dl>
 <dt>쓰는 돈</dt><dd>다른 봇이 안 쓰는 놀던 현금까지만 · 15:20 1일봉이 살 돈은 미리 남겨 둠</dd>
-<dt>자리 내주기</dt><dd>다른 봇이 살 돈이 모자라면 덧붙임을 먼저 팖 · 다른 봇과 계좌 흔들림 상한은 덧붙임이 없는 것처럼 셈(연구와 같음)</dd>
+<dt>자리 내주기</dt><dd>다른 봇이 살 돈이 모자라면 레버리지 봇이 든 것을 먼저 팖 · 다른 봇과 계좌 흔들림 상한은 레버리지 봇이 없는 것처럼 셈(연구와 같음)</dd>
 <dt>장부</dt><dd>판 수량은 실제 체결이 확인된 만큼만 적음 · 덜 팔리면 장부에 남기고 다음 날 다시 맞춤</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot"><b>지난 성적 — 연구 셈</b>(MIX-0054 · 2017-02 ~ 2026-09-15 · 계좌 전체 · 15분봉 뺌 · 비용 포함) · 한 해 <b>+34.1%</b> · 가장 나쁜 하루 −13.0% · 가장 나쁜 달 −14.0%(2026-03) · 고점 대비 −21.8% · 이익 달 75 / 손실 달 41(64.7%) · 2018년만 −2.3% · 지금 조합(덧붙임 없음)은 +20.0% · −7.3% · <b>한계</b>: 같은 10년을 여러 번 써서 고른 값(독립 확인 기다림) · 레버리지 · 인버스 40%는 시험한 범위의 끝 · 손실 한도 −15%와 여유가 작음 · 연구는 종가 · 모의투자는 15:1x 값 · 앞으로도 같다는 보장은 없음</div>
+<div class="pxb-rule-foot"><b>지난 성적 — 연구 셈</b>(MIX-0054 · 2017-02 ~ 2026-09-15 · 계좌 전체 · 15분봉 뺌 · 비용 포함) · 한 해 <b>+34.1%</b> · 가장 나쁜 하루 −13.0% · 가장 나쁜 달 −14.0%(2026-03) · 고점 대비 −21.8% · 이익 달 75 / 손실 달 41(64.7%) · 2018년만 −2.3% · 지금 조합(레버리지 봇 없음)은 +20.0% · −7.3% · <b>한계</b>: 같은 10년을 여러 번 써서 고른 값(독립 확인 기다림) · 레버리지 · 인버스 40%는 시험한 범위의 끝 · 손실 한도 −15%와 여유가 작음 · 연구는 종가 · 모의투자는 15:1x 값 · 앞으로도 같다는 보장은 없음</div>
 <div class="pxb-rule-foot"><b>해마다 수익 — 연구 셈 대 코스피</b>(2017은 2월부터 · 2026은 9월 15일까지) · {YEARLY_LINE}</div>
 </div>"""
 OVERLAY_RULES = OVERLAY_RULES.replace("{YEARLY_LINE}", " · ".join(f"{y} <b>{a:+.1f}%</b>(코스피 {k:+.1f}%)" for y, a, k in YEARLY).replace("-", "−"))
 
 
 def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = None) -> str:
-    """덧붙임 오늘 상태: 켜짐 여부 · 어제 장 끝 국면 · 최근 그날 판정 · 든 것 · 미확인 매도 · 최근 주문.
+    """레버리지 봇 오늘 상태: 켜짐 여부 · 어제 장 끝 국면 · 최근 그날 판정 · 든 것 · 미확인 매도 · 최근 주문.
     regime: {"day": 날, "state": 국면, "recent": [(날, 그날 판정, 국면), ...]}(화면이 069500 종가로 셈)."""
     st_ = state or {}
     on = final_active(st_)
@@ -1185,7 +1185,7 @@ def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = N
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}<br><small>최종 판: {_e(FINAL_MIX)}</small><br><small>{_e(FINAL_ALLOC)}</small>'
     if regime and regime.get("state"):
         body += f'<br>어제 장 끝 국면: <b>{_e(regime["state"])}</b>({_e(as_day(regime.get("day")))}) → 목표 ' + \
-            {"오름": "KODEX 레버리지 40%", "상승": "KODEX 레버리지 40%", "횡보": "KODEX 인버스 40%"}.get(regime["state"], "덧붙임 없음")
+            {"오름": "KODEX 레버리지 40%", "상승": "KODEX 레버리지 40%", "횡보": "KODEX 인버스 40%"}.get(regime["state"], "쉼(든 것 없음)")
         rec = regime.get("recent") or []
         if rec:
             body += "<br><small>최근 그날 판정(사흘 이어져야 바뀜): " + " · ".join(
@@ -1207,7 +1207,7 @@ def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = N
 
 
 def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = None) -> str:
-    """머리 오른쪽 작은 칸: 덧붙임 모의투자(든 것 · 지금 값 · 최근 주문)."""
+    """머리 오른쪽 작은 칸: 레버리지 봇 모의투자(든 것 · 지금 값 · 최근 주문)."""
     st_ = state or {}
     held = {c: int(q) for c, q in (st_.get("held") or {}).items() if int(q) > 0}
     line = ("켜짐" if final_active(st_) else "아직 켜지 않음") + f' · 들고 있는 {len(held)}종목'
@@ -1221,7 +1221,7 @@ def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = No
                   f'{_e(OVERLAY_NAME.get(o.get("code"), o.get("code")))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}</li>'
                   for o in reversed(orders[-3:])) or "<li>아직 주문이 없습니다</li>"
     held_html = ('<div class="pxb-held">' + "".join(f"<div>{r}</div>" for r in rows) + "</div>") if rows else ""
-    return f'<div class="pxb-ledger"><b>덧붙임(레버리지 · 인버스) 모의투자 · 거래 내역</b><small>{line}</small>{held_html}<ul>{lis}</ul></div>'
+    return f'<div class="pxb-ledger"><b>레버리지 봇(레버리지 · 인버스) 모의투자 · 거래 내역</b><small>{line}</small>{held_html}<ul>{lis}</ul></div>'
 
 
 def overlay_regime(closes: list) -> dict:
@@ -1234,6 +1234,29 @@ def overlay_regime(closes: list) -> dict:
     xs = [x for _, x in rows]
     recent = [(rows[k][0], O.raw_state(xs, k), stt[rows[k][0]]) for k in range(len(rows) - 5, len(rows))]
     return {"day": rows[-1][0], "state": stt[rows[-1][0]], "recent": recent}
+
+
+LEVER_TARGET = {"오름": "KODEX 레버리지(122630) 계좌의 40%", "상승": "KODEX 레버리지(122630) 계좌의 40%",
+                "횡보": "KODEX 인버스(114800) 계좌의 40%"}
+
+
+def lever_card(state: dict | None, regime: dict | None = None, left_15m: int = 0) -> str:
+    """오늘의 투자판단 첫 칸(최종 판에서 15분봉 매수 후보 자리): 레버리지 봇 오늘 목표 한눈에.
+    regime: overlay_regime 결과(어제 장 끝 국면). left_15m: 15분봉 봇이 아직 들고 있는 종목 수(새로 사지 않고 제 규칙대로 팖)."""
+    st_ = state or {}
+    held = {c: int(q) for c, q in (st_.get("held") or {}).items() if int(q) > 0}
+    rg = (regime or {}).get("state")
+    target = LEVER_TARGET.get(rg, "쉼(든 것을 모두 팖)") if rg else "국면 셈 기다림"
+    head = (f'<div class="pxb"><div class="pxb-slot-h"><b><i class="pxb-dot" style="background:{STATUS["A"]}"></i>레버리지 봇</b>'
+            f'<i>{_e(rg or "—")}</i></div><small class="pxb-slot-note">어제 장 끝 KODEX 200 국면 → 오늘 15:10 목표 · 한투 모의투자 계좌만</small></div>')
+    lines = [f'오늘 목표: <b>{_e(target)}</b>']
+    if (regime or {}).get("day"):
+        lines.append(f'국면 기준일 {_e(as_day(regime["day"]))}')
+    lines.append("들고 있는 것: " + (" · ".join(f'{_e(OVERLAY_NAME.get(c, c))} {q:,}주' for c, q in held.items()) if held else "없음"))
+    lines.append(("켜짐 · 마지막으로 돈 날 " + _e(as_day(st_.get("last_day")))) if final_active(st_) else "아직 켜지 않음")
+    if left_15m:
+        lines.append(f"15분봉 봇은 꺼짐 · 남은 {left_15m}종목은 새로 사지 않고 제 규칙대로 팖")
+    return head + '<div class="pxb"><div class="pxb-note" style="margin-top:8px;line-height:1.75">' + "<br>".join(lines) + "</div></div>"
 
 
 def fold(label: str, note: str, inner: str, open_: bool = False) -> str:

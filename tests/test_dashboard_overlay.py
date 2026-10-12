@@ -42,6 +42,17 @@ class FinalBoard(unittest.TestCase):
         self.assertIn("아직 켜지 않음", D.overlay_mini(None, None))
         self.assertIn("+34.1%", D.OVERLAY_RULES)
 
+    def test_lever_card(self):
+        on = {"last_day": "20261012", "held": {"122630": 7}}
+        card = D.lever_card(on, {"day": "20261012", "state": "상승"}, left_15m=2)
+        self.assertIn("레버리지 봇", card)
+        self.assertIn("KODEX 레버리지(122630) 계좌의 40%", card)
+        self.assertIn("KODEX 레버리지 7주", card)
+        self.assertIn("남은 2종목", card)
+        self.assertIn("쉼(든 것을 모두 팖)", D.lever_card(on, {"day": "20261012", "state": "하락"}))
+        self.assertIn("국면 셈 기다림", D.lever_card(None, {}))
+        self.assertNotIn("덧붙임", D.OVERLAY_RULES + D.mix_note(on) + D.overlay_mini(on, None) + D.FINAL_MIX)
+
 
 if __name__ == "__main__":
     unittest.main()
