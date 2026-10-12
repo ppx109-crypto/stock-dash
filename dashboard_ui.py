@@ -544,7 +544,7 @@ def header() -> str:
     )
 
 
-UI_VERSION = "10-11 · 최종 판 MIX-0054"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
+UI_VERSION = "10-11 · 최종 판 MIX-0054 · 분배 100% 확정"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -1133,6 +1133,11 @@ OVERLAY_NAME = {"122630": "KODEX 레버리지", "114800": "KODEX 인버스"}
 FINAL_MIX = ("1일봉 50% · 사건 바구니 30%(1일봉이 안 쓰는 몫) · 빈칸 엔진 · 코스닥 인버스(남는 돈) · "
              "덧붙임(오름장 레버리지 · 횡보장 인버스 각 계좌 40%) · 15분봉 끔 · 계좌 흔들림 상한 그대로")
 NOW_MIX = "1일봉 50% · 15분봉 50% · 남는 돈은 빈칸 엔진 · 코스닥 과열 인버스 · 사건 바구니"
+FINAL_ALLOC = ("최종 분배(사용자 2026-10-11 결정 · 연구 #255): 지금 판 100% · 후보 봇(해외 · 금 · 달러 · 채권 추세 바구니 · 해외 지수 갈아타기)은 "
+               "섞어도 효율이 거의 같아 넣지 않음 · 3개월 결론(2027-01-11) 때 다시 봄")
+# 해마다 수익(연구 셈 · MIX-0054 · 비용 포함 · 2017은 02-01부터 · 2026은 09-15까지) · 같은 기간 코스피(지수 종가)
+YEARLY = (("2017", 16.6, 19.3), ("2018", -2.3, -17.3), ("2019", 12.7, 7.7), ("2020", 62.7, 30.8), ("2021", 18.3, 3.6),
+          ("2022", 12.8, -24.9), ("2023", 53.1, 18.7), ("2024", 0.8, -9.6), ("2025", 84.9, 75.6), ("2026", 100.7, 57.3))
 
 
 def final_active(overlay_state: dict | None) -> bool:
@@ -1165,7 +1170,9 @@ OVERLAY_RULES = """<div class="pxb"><div class="pxb-rules">
 </dl></div>
 </div>
 <div class="pxb-rule-foot"><b>지난 성적 — 연구 셈</b>(MIX-0054 · 2017-02 ~ 2026-09-15 · 계좌 전체 · 15분봉 뺌 · 비용 포함) · 한 해 <b>+34.1%</b> · 가장 나쁜 하루 −13.0% · 가장 나쁜 달 −14.0%(2026-03) · 고점 대비 −21.8% · 이익 달 75 / 손실 달 41(64.7%) · 2018년만 −2.3% · 지금 조합(덧붙임 없음)은 +20.0% · −7.3% · <b>한계</b>: 같은 10년을 여러 번 써서 고른 값(독립 확인 기다림) · 레버리지 · 인버스 40%는 시험한 범위의 끝 · 손실 한도 −15%와 여유가 작음 · 연구는 종가 · 모의투자는 15:1x 값 · 앞으로도 같다는 보장은 없음</div>
+<div class="pxb-rule-foot"><b>해마다 수익 — 연구 셈 대 코스피</b>(2017은 2월부터 · 2026은 9월 15일까지) · {YEARLY_LINE}</div>
 </div>"""
+OVERLAY_RULES = OVERLAY_RULES.replace("{YEARLY_LINE}", " · ".join(f"{y} <b>{a:+.1f}%</b>(코스피 {k:+.1f}%)" for y, a, k in YEARLY).replace("-", "−"))
 
 
 def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = None) -> str:
@@ -1175,7 +1182,7 @@ def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = N
     on = final_active(st_)
     head = ("<b>켜짐</b> · 마지막으로 돈 날 " + _e(as_day(st_.get("last_day")))) if on else \
         "<b>아직 켜지 않음</b> · 사용자가 시작 날을 정하면 평일 15:10에 판단하고 한투 모의투자 계좌에만 주문합니다"
-    body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}<br><small>최종 판: {_e(FINAL_MIX)}</small>'
+    body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}<br><small>최종 판: {_e(FINAL_MIX)}</small><br><small>{_e(FINAL_ALLOC)}</small>'
     if regime and regime.get("state"):
         body += f'<br>어제 장 끝 국면: <b>{_e(regime["state"])}</b>({_e(as_day(regime.get("day")))}) → 목표 ' + \
             {"오름": "KODEX 레버리지 40%", "상승": "KODEX 레버리지 40%", "횡보": "KODEX 인버스 40%"}.get(regime["state"], "덧붙임 없음")
