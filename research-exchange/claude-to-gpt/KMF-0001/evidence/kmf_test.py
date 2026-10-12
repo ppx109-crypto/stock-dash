@@ -81,4 +81,40 @@ d = {"days": 90, "total_p": 50.0, "per_day_p": 0.5, "trades": 40, "months": {"20
 v = {"days": 60, "total_p": 20.0, "per_day_p": 0.3, "worst_day_p": -12.3, "months": {"202606": 1, "202607": 1, "202608": -1}}
 chk("11 고르기 잣대 경계", K.eligible(d) and K.val_pass(d, v) and not K.val_pass(d, dict(v, per_day_p=0.24))
     and not K.val_pass(d, dict(v, worst_day_p=-12.6)) and not K.eligible(dict(d, trades=29)))
+# 12 계약: 그날 거래량 합 1등(행 수가 아님 · 같으면 코드 앞)
+with tempfile.TemporaryDirectory() as td:
+    mini, fut = Path(td) / "m.csv", Path(td) / "f.csv"
+    mini.write_text("date,minute,open,high,low,close,volume\n20260831,540,1,1,1,1,1\n")
+    lines = ["datetime,code,open,high,low,close,volume"]
+    for mm in range(3):
+        lines.append(f"2026-09-01 09:0{mm}:00,A0569000,2,2,2,2,1")      # 행 3 · 거래량 3
+    lines.append("2026-09-01 09:00:00,A056A000,3,3,3,3,100")            # 행 1 · 거래량 100
+    lines += ["2026-09-02 09:00:00,A056B000,4,4,4,4,5", "2026-09-02 09:00:00,A056A000,5,5,5,5,5"]
+    fut.write_text("\n".join(lines) + "\n")
+    om, of, oc = K.MINI, K.FUT, K.CUT
+    K.MINI, K.FUT, K.CUT = mini, fut, ""
+    got = K.load()
+    K.MINI, K.FUT, K.CUT = om, of, oc
+chk("12 계약은 거래량 합 1등 · 같으면 코드 앞", [r[5] for r in got if r[0] == "20260901"] == [3.0] and [r[5] for r in got if r[0] == "20260902"] == [5.0])
+# 13 새 지표: 가장 나쁜 달 · 원 환산 · 95% 구간
+st13 = K.stats({"20260105": -2.0, "20260106": 4.0, "20260202": -3.0}, [], "20260101", "20260531")
+chk("13 가장 나쁜 달 · 원 · 구간", st13["worst_month_p"] == -3.0 and st13["won"]["worst_day"] == -150000 and len(st13["per_day_ci95_p"]) == 2)
+# 14 마지막 시험: 동의 파일 없음 · 확인 미통과 칸 · 이미 돌림 → 멈춤
+with tempfile.TemporaryDirectory() as td:
+    ob, oo, ofo, ov = K.BOX, K.FINAL_OK, K.FINAL_OUT, K.verify_inputs
+    K.BOX = Path(td); K.FINAL_OK = K.BOX / "final_ok.json"; K.FINAL_OUT = K.BOX / "evidence/final.json"; K.verify_inputs = lambda *a: {}
+    (K.BOX / "evidence").mkdir()
+    (K.BOX / "evidence/picks.json").write_text(json.dumps({"TR": {"name": "a", "cfg": {}, "val_pass": False}, "MR": None, "ORB": None}))
+    stops = []
+    for setup in ("no_ok", "not_passed", "done"):
+        if setup == "not_passed":
+            K.FINAL_OK.write_text(json.dumps({"gpt_pr": 1, "picks": ["a"]}))
+        if setup == "done":
+            K.FINAL_OUT.write_text("{}")
+        try:
+            K.final(); stops.append(False)
+        except SystemExit:
+            stops.append(True)
+    K.BOX, K.FINAL_OK, K.FINAL_OUT, K.verify_inputs = ob, oo, ofo, ov
+chk("14 마지막 시험 막기(동의 없음 · 미통과 칸 · 두 번째)", all(stops))
 print(f"모두 통과 {ok}개")

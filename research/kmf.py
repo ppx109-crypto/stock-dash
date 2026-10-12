@@ -7,7 +7,9 @@ RNA(분봉판 · rna.py와 같은 뜻 · 그 분 종가까지만): 배열 · 기
 체결: 그 분 종가에 판단 → 다음 분 시가에 체결(편도 0.04p). 하루 −12p는 '멈춤 주문'으로 그 분 안에서 닿으면 그 값(시가가 이미 넘었으면 시가)에 정리.
 새로 사기 · 팔기는 09:05 ~ 15:00 판단까지 · 15:30(930분) 종가에 모두 정리.
 기간(사전등록 · 결과 보기 전 고정): 개발 2026-01 ~ 05 · 확인 06 ~ 08 · 마지막 시험 09-01 ~ 10-12(한 번만).
-python3 research/kmf.py lock | run | cut"""
+python3 research/kmf.py lock | run | cut | final
+고친 판(2026-10-12 GPT 검토 #273 반영): 계약은 그날 거래량 합 1등(같으면 코드 앞) · 개발 18칸은 확인 기간을 처음부터 안 읽음(KMF_CUT=06-01)
+· 확인 값은 봇마다 고른 1칸만 셈 · 자르기 시험은 시험 기간을 안 읽음 · 마지막 시험은 final(지피티 동의 파일이 있을 때 한 번만)."""
 import csv
 import hashlib
 import json
@@ -59,7 +61,10 @@ def load():
             if FIRST_MIN <= m <= LAST_MIN:
                 fut[d].append((r["code"], m, float(r["open"]), float(r["high"]), float(r["low"]), float(r["close"]), int(float(r["volume"]))))
     for d in sorted(fut):
-        main = Counter(x[0] for x in fut[d]).most_common(1)[0][0]      # 그날 가장 많이 거래된 미니 계약(근월물)
+        vol = Counter()
+        for x in fut[d]:
+            vol[x[0]] += x[6]
+        main = sorted(vol.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]    # 그날 거래량 합 1등 미니 계약(같으면 코드 앞)
         for x in sorted((x for x in fut[d] if x[0] == main), key=lambda x: x[1]):
             rows.append((d,) + x[1:])
     return rows
@@ -233,6 +238,19 @@ def simulate(rows, want):
     return days, trades
 
 
+MULT = 50000                   # 미니 코스피200 선물 1포인트 = 5만 원(참고 · 원 환산)
+
+
+def boot_ci(vals, n=2000, seed=0):
+    """하루 평균(p)의 95% 구간(날을 다시 뽑기 · 고정 씨앗)."""
+    if len(vals) < 2:
+        return None
+    rng = np.random.default_rng(seed)
+    a = np.asarray(vals, float)
+    m = a[rng.integers(0, len(a), (n, len(a)))].mean(axis=1)
+    return [round(float(np.percentile(m, 2.5)), 3), round(float(np.percentile(m, 97.5)), 3)]
+
+
 def stats(days, trades, lo, hi):
     ds = {d: v for d, v in days.items() if lo <= d <= hi}
     if not ds:
@@ -249,12 +267,14 @@ def stats(days, trades, lo, hi):
     return {"days": len(ds), "total_p": round(sum(vals), 2), "per_day_p": round(sum(vals) / len(ds), 3), "worst_day_p": round(min(vals), 2),
             "best_day_p": round(max(vals), 2), "win_days": sum(1 for v in vals if v > 0), "loss_days": sum(1 for v in vals if v < 0),
             "trades": len(tr), "win_rate": round(wins / len(tr), 3) if tr else None, "mdd_p": round(mdd, 2),
-            "months": {k: round(v, 2) for k, v in sorted(mo.items())}, "stop_days": sum(1 for v in vals if v <= DAY_STOP + 1e-9)}
+            "months": {k: round(v, 2) for k, v in sorted(mo.items())}, "stop_days": sum(1 for v in vals if v <= DAY_STOP + 1e-9),
+            "worst_month_p": round(min(mo.values()), 2), "per_day_ci95_p": boot_ci(vals),
+            "won": {"total": round(sum(vals) * MULT), "worst_day": round(min(vals) * MULT), "worst_month": round(min(mo.values()) * MULT)}}
 
 
 def evaluate(rows, cfg):
     days, trades = simulate(rows, signals(rows, cfg))
-    return {"name": name(cfg), "cfg": cfg, "dev": stats(days, trades, *DEV), "val": stats(days, trades, *VAL)}
+    return {"name": name(cfg), "cfg": cfg, "dev": stats(days, trades, *DEV)}
 
 
 # ───────── 기록 · 잠금 ─────────
@@ -292,14 +312,14 @@ def write_lock():
 def cut():
     """자르기 시험: 어느 날부터 뒤 자료를 처음부터 안 읽은 채 돌린 날별 손익이 그 날 앞까지 같아야 함."""
     import subprocess
-    cuts = ("20260302", "20260601", "20260803", "20260915")
+    cuts = ("20260302", "20260401", "20260504")              # 개발 기간 안에서만(확인 · 시험 기간은 기준 판도 안 읽음)
     code = ("import os,sys,json;sys.path.insert(0,'research');import kmf as K;rows=K.load();"
             "c=json.loads(os.environ['KC']);d,_=K.simulate(rows,K.signals(rows,c));print(json.dumps(d))")
     picks = [g for g in grid() if g in ({"bot": "TR", "spans": "mid", "exit_gap": 1}, {"bot": "MR", "k": 2.0, "band": 60, "line": 20},
                                          {"bot": "ORB", "or": 30, "filter": True})]
     res = []
     for cfg in picks:
-        env = dict(os.environ, KC=json.dumps(cfg), KMF_CUT="")
+        env = dict(os.environ, KC=json.dumps(cfg), KMF_CUT=VAL[0])
         full = json.loads(subprocess.run([sys.executable, "-c", code], env=env, cwd=ROOT, capture_output=True, text=True, check=True).stdout)
         for ct in cuts:
             env["KMF_CUT"] = ct
@@ -333,40 +353,83 @@ def neighbors(cfg):
     return out
 
 
-def run():
-    """개발(01 ~ 05) 18칸 → 봇마다 개발 1등(1차 조건 넘은 칸) → 그 칸만 확인(06 ~ 08). 마지막 시험(09 ~ 10-12)은 읽지도 않음."""
+def _rows_before(day):
+    """그 날 앞 자료만(처음부터 안 읽음)."""
     global CUT
+    old, CUT = CUT, day
+    try:
+        rows = load()
+    finally:
+        CUT = old
+    assert max(r[0] for r in rows) < day
+    return rows
+
+
+def run():
+    """① 개발(01 ~ 05) 18칸: 확인 기간부터 뒤는 처음부터 안 읽음 → ② 봇마다 개발 1등(1차 조건 넘은 칸) →
+    ③ 그 칸만 확인(06 ~ 08 · 시험 기간은 안 읽음). 다른 칸은 확인 기간을 셈하지도 않음."""
     verify_inputs()
-    CUT = TEST[0]                                       # 시험 기간은 처음부터 안 읽음
-    rows = load()
-    assert max(r[0] for r in rows) < TEST[0]
+    rows = _rows_before(VAL[0])
     res = {}
     for cfg in grid():
         key = name(cfg)
-        log({"status": "STARTED", "key": key, "at": time.strftime("%Y-%m-%d %H:%M:%S")})
+        log({"status": "STARTED", "key": key, "stage": "dev", "at": time.strftime("%Y-%m-%d %H:%M:%S")})
         days, trades = simulate(rows, signals(rows, cfg))
-        dev = stats(days, trades, *DEV)
-        res[key] = {"cfg": cfg, "dev": dev, "_v": stats(days, trades, *VAL)}     # 확인 값은 고른 칸만 밖으로 냄
-        log({"status": "DONE", "key": key, "dev_total_p": dev.get("total_p")})
+        res[key] = {"cfg": cfg, "dev": stats(days, trades, *DEV)}
+        log({"status": "DONE", "key": key, "stage": "dev", "dev_total_p": res[key]["dev"].get("total_p")})
     picks = {}
     for bot in ("TR", "MR", "ORB"):
         cands = sorted([k for k, v in res.items() if v["cfg"]["bot"] == bot and eligible(v["dev"])],
                        key=lambda k: (-res[k]["dev"]["total_p"], k))
-        if cands:
-            k = cands[0]
-            v = res[k]
-            picks[bot] = {"name": k, "dev": v["dev"], "val": v["_v"], "val_pass": val_pass(v["dev"], v["_v"]),
-                          "neighbors_dev": {name(nb): res[name(nb)]["dev"].get("total_p") for nb in neighbors(v["cfg"])}}
-        else:
-            picks[bot] = None
+        picks[bot] = {"name": cands[0], "cfg": res[cands[0]]["cfg"], "dev": res[cands[0]]["dev"],
+                      "neighbors_dev": {name(nb): res[name(nb)]["dev"].get("total_p") for nb in neighbors(res[cands[0]]["cfg"])}} if cands else None
+    vrows = _rows_before(TEST[0]) if any(picks.values()) else []
+    for bot, pk in picks.items():
+        if not pk:
+            continue
+        log({"status": "STARTED", "key": pk["name"], "stage": "val", "at": time.strftime("%Y-%m-%d %H:%M:%S")})
+        days, trades = simulate(vrows, signals(vrows, pk["cfg"]))
+        pk["dev_check"] = stats(days, trades, *DEV)["total_p"]          # 개발 값이 ①과 같아야 함(자르기 맞춤)
+        pk["val"] = stats(days, trades, *VAL)
+        pk["val_pass"] = val_pass(pk["dev"], pk["val"])
+        log({"status": "DONE", "key": pk["name"], "stage": "val", "val_total_p": pk["val"].get("total_p")})
     BOX.mkdir(parents=True, exist_ok=True)
     (BOX / "evidence").mkdir(exist_ok=True)
-    (BOX / "evidence/dev_rows.json").write_text(json.dumps({k: {"cfg": v["cfg"], "dev": v["dev"]} for k, v in res.items()}, ensure_ascii=False, indent=1))
+    (BOX / "evidence/dev_rows.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
     (BOX / "evidence/picks.json").write_text(json.dumps(picks, ensure_ascii=False, indent=1))
     passed = [b for b, p in picks.items() if p and p["val_pass"]]
-    print(json.dumps({"verdict": "VAL_PASS " + ",".join(passed) if passed else "NO_EDGE", "picks": {b: (p and {"name": p["name"], "dev_total_p": p["dev"]["total_p"],
-                      "val_total_p": p["val"]["total_p"], "val_pass": p["val_pass"]}) for b, p in picks.items()}}, ensure_ascii=False))
+    print(json.dumps({"verdict": "VAL_PASS " + ",".join(passed) if passed else "NO_EDGE", "val_cells_computed": sum(1 for p in picks.values() if p),
+                      "picks": {b: (p and {"name": p["name"], "dev_total_p": p["dev"]["total_p"], "dev_check": p["dev_check"],
+                                           "val_total_p": p["val"]["total_p"], "val_pass": p["val_pass"]}) for b, p in picks.items()}}, ensure_ascii=False))
+
+
+FINAL_OK = BOX / "final_ok.json"        # 지피티 동의 뒤 클로드가 올리는 파일: {"gpt_pr": 번호, "picks": [칸 이름, ...]}
+FINAL_OUT = BOX / "evidence/final.json"
+
+
+def final():
+    """마지막 시험(09-01 ~ 10-12) 한 번: 확인을 통과했고 동의 파일에 적힌 칸만. 이미 돌렸으면 멈춤."""
+    verify_inputs()
+    if FINAL_OUT.exists():
+        sys.exit("마지막 시험은 이미 한 번 돌렸음(멈춤)")
+    if not FINAL_OK.exists():
+        sys.exit("지피티 동의 파일이 없음(멈춤)")
+    ok = json.loads(FINAL_OK.read_text())
+    picks = json.loads((BOX / "evidence/picks.json").read_text())
+    allowed = {p["name"]: p for p in picks.values() if p and p.get("val_pass")}
+    want = list(ok["picks"])
+    if not want or any(n not in allowed for n in want):
+        sys.exit("동의 파일의 칸이 확인 통과 칸이 아님(멈춤): " + json.dumps(want, ensure_ascii=False))
+    rows = load()
+    out = {}
+    for n in want:
+        days, trades = simulate(rows, signals(rows, allowed[n]["cfg"]))
+        t = stats(days, trades, *TEST)
+        out[n] = {"test": t, "pass": t.get("days", 0) > 0 and t["total_p"] > 0 and t["worst_day_p"] >= DAY_STOP - 0.5}
+    FINAL_OUT.write_text(json.dumps({"gpt_pr": ok.get("gpt_pr"), "results": out}, ensure_ascii=False, indent=1))
+    print(json.dumps({"verdict": "KMF_CANDIDATE" if any(v["pass"] for v in out.values()) else "NO_EDGE",
+                      "results": {n: {"test_total_p": v["test"].get("total_p"), "pass": v["pass"]} for n, v in out.items()}}, ensure_ascii=False))
 
 
 if __name__ == "__main__":
-    {"lock": write_lock, "cut": cut, "run": run}[sys.argv[1]]()
+    {"lock": write_lock, "cut": cut, "run": run, "final": final}[sys.argv[1]]()
