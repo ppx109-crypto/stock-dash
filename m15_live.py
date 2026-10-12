@@ -351,7 +351,7 @@ def run_live(now=None):
     alerts += [{"at": at, "kind": k, "text": t} for k, t, _ in items]
     _save(ALERTS, alerts[-500:])
     from notify_discord import brief, short_item      # 디스코드는 짧게(사용자 2026-10-06 "거두절미") · 자세한 글은 alerts.json
-    lines = [f"⏱️ **15분봉 {now.strftime('%H:%M')}**"] + [short_item(ICON.get(k, "•"), k, t) for k, t, _ in items] + brief(paper)
+    lines = [f"15분봉 봇 {now.hour}시 {now.minute}분 판단"] + [short_item(ICON.get(k, "•"), k, t) for k, t, _ in items] + brief(paper)
     if items or paper:
         A.send(lines)
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")

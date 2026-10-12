@@ -26,9 +26,46 @@ class Message(unittest.TestCase):
         self.assertEqual(N.short_item("🟢", "매수", "삼성전자(005930) · 10:00 시가 약 276,000원에 4칸(40%) 사기 · 추세 · 순서 무리 2/4"),
                          "🟢 매수 삼성전자 4칸")
         self.assertEqual(N.short_line("✅ 매도 체결 · LG전자(066570) · 2칸 · 10:00 시가 98,000원 · 손익 -3.1%(비용 뺌) · 손절"),
-                         "✅ 매도 LG전자 2칸 -3.1%")
-        self.assertEqual(N.short_line("🧪 모의투자(15분봉) 매수 · 삼성전자(005930) 36주 · 시장가 · 접수"), "🧪 매수 삼성전자 36주 ✅")
+                         "매도 체결: LG전자 2칸 -3.1%")
+        self.assertEqual(N.short_line("🧪 모의투자(15분봉) 매수 · 삼성전자(005930) 36주 · 시장가 · 접수"), "모의 매수: 삼성전자 36주 주문 들어감")
+        self.assertEqual(N.short_line("🧪 모의투자(1일봉) 매도 · 카카오(035720) 5주 · 시장가 · 거절 · APBK0919"), "모의 매도: 카카오 5주 주문 거절됨")
         self.assertEqual(N.brief(["※ 안내", ""]), [])
+
+    def test_tidy_no_english_no_shapes(self):
+        # 사용자 2026-10-12: 영어 다 빼고 · 이상한 모양 전부 빼 · 알기 쉽게
+        self.assertEqual(N.tidy("🟢 매수 삼성전자 4칸"), "매수 삼성전자 4칸")
+        self.assertEqual(N.tidy("✅ **1일봉 체결 10-12** · 보유 3"), "1일봉 체결 10-12, 보유 3")
+        self.assertEqual(N.tidy("🧪 모의투자(덧붙임) 매수 · KODEX 레버리지(122630) 120주 · 접수"),
+                         "레버리지 봇 모의 매수, KODEX 레버리지(122630) 120주, 접수")
+        self.assertEqual(N.tidy("계좌 그달 손실 -9.2%(15:1x 값)"), "계좌 그달 손실 -9.2%(장 마감 직전 값)")
+        self.assertEqual(N.tidy("⚠️ 주문 중 문제 · ConnectionError"), "주문 중 문제, 오류")
+        self.assertEqual(N.tidy("거절(APBK0919)"), "거절")
+        self.assertEqual(N.tidy("LG전자 · SK하이닉스 · NAVER"), "LG전자, SK하이닉스, NAVER")   # 종목 이름 영어는 그대로(사용자 2026-10-12)
+        self.assertEqual(N.tidy("ETF 몫 × 0.4 → 0.2 −3.1%"), "지수펀드 몫 곱하기 0.4 다음 0.2 -3.1%")
+        self.assertEqual(N.tidy("※ 안내"), "")
+        for line in ["🔄 자리 바꾸기 가 → 나", "⏭️ 매수 건너뜀", "• 한 줄 ─── ★", "**굵게** · `코드`"]:
+            out = N.tidy(line)
+            self.assertFalse(any(ch in "🔄⏭️•─★→·*`" for ch in out), out)
+
+    def test_messages_prefix(self):
+        msgs = N.messages(["🌇 **1일봉 10-12 15:20** · 폭 45%", "", "※ 안내", "🟢 매수 삼성전자 2칸"])
+        self.assertEqual(msgs, ["☆한투 1일봉 10-12 15:20, 폭 45%\n매수 삼성전자 2칸\n"])
+        long = N.messages(["가" * 300] * 20)
+        self.assertTrue(len(long) > 1 and all(m.startswith("☆한투 ") for m in long))
+        self.assertTrue(all(len(m) <= 2000 for m in long))
+        self.assertFalse(N.messages(["A그룹 10-12"], paper=False)[0].startswith("☆한투"))
+
+    def test_post_uses_prefix(self):
+        import os
+        from unittest import mock
+        sent = []
+        os.environ["DISCORD_WEBHOOK_URL"] = "https://example.invalid/hook"
+        try:
+            with mock.patch.object(N.requests, "post", side_effect=lambda url, json, timeout: sent.append(json["content"]) or mock.Mock(status_code=204)):
+                self.assertTrue(N.post(["✅ 매수 체결 · 삼성전자(005930) · 2칸 · 종가 70,000원"]))
+        finally:
+            os.environ.pop("DISCORD_WEBHOOK_URL", None)
+        self.assertEqual(sent, ["☆한투 매수 체결, 삼성전자(005930), 2칸, 종가 70,000원\n"])
 
     def test_chunks_under_limit(self):
         rows = ["가" * 300] * 20

@@ -437,5 +437,5 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     if buy_failed:
         lines.append(f"⚠️ 덧붙임: {NAME.get(code_new, code_new)} 사기가 안 됨 → 장부에 '맞춤 끝'으로 적지 않고 다음 거래일에 다시 맞춤")
     save_state(st)
-    lines.insert(0, f"🪜 **덧붙임 {day[4:6]}-{day[6:]}** · 국면 {state}(어제 장 끝) · 목표 {NAME.get(code_new, '없음')} 몫 {f:.2f}")
+    lines.insert(0, f"레버리지 봇 {int(day[4:6])}월 {int(day[6:])}일, 국면 {state}(어제 장 끝 기준), 목표 {NAME.get(code_new, '없음')} {f * 100:.0f}%")
     return lines

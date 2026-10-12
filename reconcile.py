@@ -139,7 +139,7 @@ def recheck(prices, refetch=None, reload=None):
         _save(f, out)
         print(f"{day} 검산(확정 뒤) 다름 {len(v['다름'])}/{v['종목']}")
         if serious(v):
-            alerts.append(f"⚠️ **검산 {day[4:6]}-{day[6:]}** · 확정 일봉과도 종가 다름 {len(v['다름'])}/{v['종목']}"
+            alerts.append(f"검산 {int(day[4:6])}월 {int(day[6:])}일, 확정 일봉과도 종가 다름 {len(v['다름'])}/{v['종목']}"
                           f" · {' '.join(c for c, *_ in v['다름'][:5])}")
     return alerts
 
@@ -347,7 +347,7 @@ def summary_lines(out):
     e = out.get("빈칸 엔진") if isinstance(out.get("빈칸 엔진"), dict) else {}
     # 확정 전(저녁) 검산은 넣지 않음 — 아침에 다시 세어 진짜 문제일 때만 따로 알림
     check = "" if v.get("확정 전") else f" · 검산 다름 {len(v['다름'])}/{v['종목']}"
-    return [f"🔁 **견줌 {day[4:6]}-{day[6:]}**{check}"
+    return [f"장부 맞춰보기 {int(day[4:6])}월 {int(day[6:])}일{check}"
             f" · 1시간봉 같은 매매 {h['같은 매매']}/{h['운영 끝난 매매']} · 1일봉 {d['같은 매매']}/{d['운영 끝난 매매']}"
             + (f" · 엔진 주문 {len(e.get('모의투자 주문(그날)') or [])}" if e else "")]
 
