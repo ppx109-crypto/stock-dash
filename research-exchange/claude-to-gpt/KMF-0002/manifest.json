@@ -3,26 +3,25 @@
  "task_id": "KMF-0002",
  "chain_id": "KMF-0002",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "user_instruction": "2026-10-12 한번에 안 나옴 · 한투처럼 기본 봇 → 보완 봇 → 손실 분석 · 줄이기 · 천천히 · 리더가 알아서",
  "prev_task": "KMF-0001(#273 · 결과 #275 NO_EDGE)",
- "completed_at_kst": "2026-10-12 23:40",
+ "completed_at_kst": "2026-10-12 23:51",
  "completed_note": "실행 전 · 성과 셈 안 함",
  "code": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
-  "research/kmf2.py": "0e56b8b2034f020eb877b25e8ce509dfad9b59a1f23e1dbe40bc38bef1d0a20a",
-  "research-exchange/claude-to-gpt/KMF-0002/evidence/kmf2_test.py": "88689409a9a5e11d27a11d71c6cac1729e47532b78e24bbdb4bbdc454d9bf0fb",
+  "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
+  "research-exchange/claude-to-gpt/KMF-0002/evidence/kmf2_test.py": "1c06dbb2adf3be359b60a8d4b86692bf8bca2616e3d9cf32dc214a092e3b46d6",
   "research-exchange/claude-to-gpt/KMF-0002/diag/loss_diag.py": "2905b91f90981d029d00ba924a78ea62ce870dc7fca59d2bd03a69095896697a"
  },
  "input_lock": {
-  "root": "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/kmf",
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
-  "research/kmf2.py": "0e56b8b2034f020eb877b25e8ce509dfad9b59a1f23e1dbe40bc38bef1d0a20a",
+  "research/kmf2.py": "c3ecc76d1d9a6f4f1631b23d737d803b88398f4144ddffcbf006c560ed970fcf",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
  },
- "input_lock_sha256": "28e9d52ed01240f6d5652458fc1a6f1d4a6b5f8a2408569922e6a5d5625fd672",
+ "input_lock_sha256": "0dbf86da4ad54822d1578802b2cfb5b8abdd16c70ab55f241f149469d4859046",
  "grid": {
   "count": 12,
   "or": [
@@ -62,5 +61,9 @@
   "research-exchange/claude-to-gpt/KMF-0002/diag/loss_diag.out"
  ],
  "account_criteria": "WAITING_DATA",
- "independent_check": "시험 2(새 자료)"
+ "independent_check": "시험 2(새 자료)",
+ "code_commit": "baed66945a31bce71f79dc6f5489726fd039d78d",
+ "previous_head_sha": "bbea9fff2b914fa3d4ee51f7673d4996b6da6350",
+ "plan_sha256": "b15664469ebf6c8b72e24862fb0d8a443430c338afa7e0dc09f7d31bd17eab4c",
+ "distinct_rules": 9
 }
