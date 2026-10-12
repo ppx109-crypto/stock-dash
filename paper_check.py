@@ -1,6 +1,7 @@
 """한투 모의투자 연결 점검(사용자 요청 2026-10-01 '확인하고 테스트해줘').
 
   python paper_check.py check   — 토큰 · 잔고 조회만(주문 없음)
+  python paper_check.py buyable [종목] — 위 점검 뒤 그 종목(빈칸이면 122630 KODEX 레버리지)과 069500(1배)의 '살 수 있는 수량'만 물어 견줌(주문 없음 · 2026-10-12 레버리지 매수 제한 확인)
   python paper_check.py order   — 위 점검 뒤 모의투자 계좌에서 1주 시장가 매수 → 체결 확인 → 1주 시장가 매도(거래 ID 확인용)
 
 주문은 paper_trade.PaperBroker로만 넣습니다(모의투자 주소가 아니면 거부 · 실전 키와 같으면 거부).
@@ -37,6 +38,39 @@ def why_refused(broker):
     return "알 수 없는 갈래(문구 길이 %d)" % len(said)
 
 
+def buyable_check(broker, code):
+    """주문 없이 '매수가능조회'만: 레버리지 상품과 1배 상품을 같은 현금으로 견줌. 응답 본문은 찍지 않고 결과 코드 · 수량 · 주문 가능 현금 같음 여부만."""
+    code = code if code and code != TEST_CODE else "122630"
+    seen = {}
+    for c in (code, "069500"):
+        try:
+            _, data = broker.request("GET", paper_trade.BUYABLE_PATH, headers={
+                "authorization": "Bearer " + broker.token, "appkey": broker.key, "appsecret": broker.secret,
+                "tr_id": paper_trade.TR_BUYABLE, "custtype": "P"},
+                params={"CANO": broker.cano, "ACNT_PRDT_CD": broker.product, "PDNO": c, "ORD_UNPR": "",
+                        "ORD_DVSN": "01", "CMA_EVLU_AMT_ICLD_YN": "N", "OVRS_ICLD_YN": "N"})
+        except broker_kis.BrokerError as e:
+            print(f"{c}: ❌ 물어보기 실패 · {e}")
+            continue
+        out = data.get("output") or {}
+        num = lambda k: int(float(str(out.get(k) or "0").replace(",", "") or 0))
+        ok = str(data.get("rt_cd")) == "0"
+        msg = str(data.get("msg_cd") or "").strip()
+        seen[c] = (ok, num("ord_psbl_cash"), num("nrcvb_buy_qty"), num("max_buy_qty"))
+        print(f"{c}: 응답 {'정상' if ok else '거절'} · 결과 코드 {msg if msg.isalnum() else '-'} · 미수 없이 살 수 있는 수량 {seen[c][2]:,}주 · 최대 {seen[c][3]:,}주")
+        time.sleep(1)
+    if len(seen) == 2:
+        (a, b) = (seen[code], seen["069500"])
+        print("주문 가능 현금 두 종목 같음:", "예" if a[1] == b[1] else "아니오")
+        if a[0] and b[0] and a[2] == 0 and b[2] > 0:
+            print("판단: 1배 상품은 살 수 있는데 레버리지는 0주 → 이 계좌는 레버리지 매수가 막혀 있을 가능성이 큼")
+        elif a[0] and a[2] > 0:
+            print("판단: 레버리지도 살 수 있는 수량이 나옴 → 매수 조회 단계에서는 막히지 않음")
+        else:
+            print("판단: 둘 다 0주이거나 응답 거절 → 현금이 없거나 다른 까닭(결과 코드 확인)")
+    return 0
+
+
 def main(mode="check", code=TEST_CODE):
     ok, why = paper_trade.enabled()
     print("주문 켜짐:", "예" if ok else f"아니오 · {why}")
@@ -64,6 +98,8 @@ def main(mode="check", code=TEST_CODE):
         print("❌ 연결 · 잔고 조회 실패 ·", e)
         print("까닭 짐작:", why_refused(broker))
         return 1
+    if mode == "buyable":
+        return buyable_check(broker, code)
     cash = bal.get("cash") or 0
     print(f"✅ 잔고 조회 · 예수금 약 {cash / 1e4:,.0f}만 원 · 보유 {len(bal['positions'])}종목 · 평가 약 {bal['value'] / 1e4:,.0f}만 원")
     # 현금 세 가지(금액만): 오늘 예수금 · D+2 예수금(주문 몫 셈에 씀) · 총평가 — 사고판 날 서로 어떻게 다른지 확인용

@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'check(조회만) 또는 order(1주 매수 · 매도 시험)'
+        description: 'check(조회만) · buyable(살 수 있는 수량만 · 주문 없음) · order(1주 매수 · 매도 시험)'
         required: true
         default: 'check'
       code:
@@ -36,7 +36,7 @@ jobs:
       - run: pip install requests
       - name: 모의투자 점검
         run: |
-          case "$MODE" in check|order) ;; *) echo "mode는 check 또는 order"; exit 1;; esac
+          case "$MODE" in check|order|buyable) ;; *) echo "mode는 check · buyable · order"; exit 1;; esac
           if [ -n "$CODE" ]; then
             case "$CODE" in [0-9][0-9][0-9][0-9][0-9][0-9]) ;; *) echo "종목코드는 숫자 6자리"; exit 1;; esac
             python paper_check.py "$MODE" "$CODE"
