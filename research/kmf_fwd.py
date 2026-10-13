@@ -16,8 +16,8 @@ LOCK = {"kmf_nb.py": "b34f3549fe9a93b951e104148605404737f0bab30faf2d6960296d5995
 REF = {"kmf_rl4_decisions.json": "a4ec21228dc387ac2123307dc21423dd5f5fb6340910e3267d7f1dc3cb710e60",
        "kmf_rl4_daily.json": "e707acb38154a731362e6592a716fb0f1bca063d2443240f73ac2f6617974f20"}
 F1M = ROOT / "futures-1m/mini_kospi200_futures_1min.csv"; CAL = ROOT / "etf-data/069500.json"
-FWD_START, NEED, JUDGE_DELAY, FAMILY = "20261014", 20, 1, ("H", "RL-4 N z0.5", "쉼")
-SLIPS = (0.1, 0.3)                         # 민감도만: 손절 · 하루멈춤 정리 한 번마다 불리하게(판정에 안 씀)
+FWD_START, NEED, JUDGE_DELAY, FAMILY = "20261014", 20, 0, ("H", "RL-4 N z0.5", "쉼")   # 지연 0 = 신호 봉 끝 바로 그 분 시가(사용자 2026-10-14 "실전 체결 지연은 길어야 5초" → 1 · 2분 지연은 셈 · 보고 안 함)
+SLIPS = (0.05, 0.1, 0.25)                  # 민감도만: 거래 한 번(왕복)마다 이만큼 불리하게 = 5초 안 체결의 값 차이(판정에 안 씀)
 OLD = '            if not (DEV_FROM_F1M <= d < DEV_END) or (CUT and d >= CUT): continue\n'
 NEW = '            if not ((DEV_FROM_F1M <= d < DEV_END) or d in FWD_DAYS) or (CUT and d >= CUT): continue\n'
 DEV_DATA = ("kiwoom-data/mini_1min_2026_01_08.csv", "kiwoom-data/kospi200_futures_1min.csv")   # 148일 초기 학습에 읽히는 개발 입력(F1M 10-13 하루는 F1M 해시로)
@@ -142,8 +142,8 @@ def final():
            "code_sha256": {f: sha(RS / f) for f in (*LOCK, "kmf_fwd.py")}, "data_sha256": {**{f: sha(ROOT / f) for f in DEV_DATA}, "futures-1m 개발 구간(10-14 앞)": f1m_dev_slice(), str(F1M.relative_to(ROOT)): sha(F1M), str(CAL.relative_to(ROOT)): sha(CAL)},
            "148일 자체 확인(별도 프로세스)": sc.stdout.strip()[-300:], "참고 결과 해시": {f: sha(RS / f) for f in REF}, "수집기 front_code 규칙 sha256": COLLECTOR_SHA,
            "날별 품질(포함 · 뺀 날 · 봉별 빠진 분 · 계약)": {d: detail[d] for d in sorted(detail) if d <= fwd[-1]},
-           "CAP(엔진 안 하루 멈춤)": K.CAP, "판정 잣대": "지연 1 · 비용 뒤 장 끝 그날 손익 ≥ −15p(자르지 않고 그대로 기록)", "지연별": {}}
-    for dl in (0, 1, 2):
+           "CAP(엔진 안 하루 멈춤)": K.CAP, "판정 잣대": "지연 0(5초 안 체결 · 사용자 2026-10-14) · 비용 뒤 장 끝 그날 손익 ≥ −15p(자르지 않고 그대로 기록)", "지연별": {}}
+    for dl in (JUDGE_DELAY,):
         P = R.arm_pnl(dl); p, pick, dec = R.run(P, "N", 0.5)
         logs = {"S3": [], "R0": []}
         for d in fwd:
@@ -156,19 +156,18 @@ def final():
             tr = [t for d in fwd if base(d) != "쉼" for t in logs[base(d)] if t["d"] == d]
             eq = pk = mdd = 0.0
             for d in fwd: eq += ser[d]; pk = max(pk, eq); mdd = min(mdd, eq - pk)
-            nstop = collections.Counter(t["d"] for t in tr if t["사유"] in ("손절", "하루멈춤"))
             res[fam] = {"합": round(sum(ser.values()), 4), "날별": {d: round(v, 4) for d, v in ser.items()}, "장 끝 최악": round(min(ser.values()), 4),
                         "−15p 위반 날": [d for d in fwd if ser[d] < -15.0], "날 끝 MDD": round(mdd, 4),
                         "장중 평가 최저": min((mtm_low(K, d, [t for t in tr if t["d"] == d]) for d in fwd), default=0.0),
                         "거래 수": len(tr), "보유 분 합": sum(t["정리분"] - t["진입분"] for t in tr), "비용 합": round(len(tr) * 2 * K.COST, 4),
-                        "미끄럼 민감도(근사 · 판정 안 씀)": {str(s): round(sum(ser.values()) - s * sum(nstop.values()), 4) for s in SLIPS},
+                        "미끄럼 민감도(근사 · 판정 안 씀)": {str(s): round(sum(ser.values()) - s * len(tr), 4) for s in SLIPS},
                         "고른 팔 날 수": dict(collections.Counter(arm_of[fam][d] for d in fwd))}
             res[fam]["PASS"] = res[fam]["합"] > 0 and not res[fam]["−15p 위반 날"]
         diff = [res["RL-4 N z0.5"]["날별"][d] - res["H"]["날별"][d] for d in fwd]; ci = block_ci(diff)
         res["RL − H"] = {"합": round(sum(diff), 4), "날별": dict(zip(fwd, [round(x, 4) for x in diff])), "5일 덩어리 재표집 95%": ci, "RL이 낫다고 말함": sum(diff) > 0 and ci[0] > 0}
         res["결정 장부(RL-4 N z0.5 · 새 날)"] = {d: dec[d] for d in fwd}; out["지연별"][str(dl)] = res
-    out["판정(지연 1)"] = {f: out["지연별"][str(JUDGE_DELAY)][f]["PASS"] for f in ("H", "RL-4 N z0.5")}
-    (RS / "kmf_fwd_out.json").write_text(json.dumps(out, ensure_ascii=False, indent=1)); print(json.dumps(out["판정(지연 1)"], ensure_ascii=False)); return 0
+    out["판정(지연 0)"] = {f: out["지연별"][str(JUDGE_DELAY)][f]["PASS"] for f in ("H", "RL-4 N z0.5")}
+    (RS / "kmf_fwd_out.json").write_text(json.dumps(out, ensure_ascii=False, indent=1)); print(json.dumps(out["판정(지연 0)"], ensure_ascii=False)); return 0
 
 def quality():
     good, bad, cal = pick_days()
