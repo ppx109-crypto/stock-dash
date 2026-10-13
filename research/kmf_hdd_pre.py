@@ -16,6 +16,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent; sys.path.insert(0, str(HERE))
 from kmf_hdd_base import K, R4, R, Z, DAYS, stat, quiet
 TF = R4.TF
+DATA_EXPECT = {"kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+               "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
+               "futures-1m/mini_kospi200_futures_1min.csv": "63123e6c850ed0e0defea847aae506b6e1b70baa154616c302a4e36283271753"}   # 계산 전 잠금(파일 전체 해시 · kmf_ts_out meta와 같음)
 
 def nslope(n, d, m, back=0):
     """닫힌 n분봉(끝 분 ≤ m) 기준 back봉 앞의 |EMA20 4봉 변화| ÷ ATR · 셀 수 없으면 None."""
@@ -78,7 +81,10 @@ def main():
         fam_best = min({f for f, _ in passed}, key=lambda f: -max(res[(f, i)]["MDD"] for g, i in passed if g == f))
         i = max((i for g, i in passed if g == fam_best), key=lambda i: res[(fam_best, i)]["합"]); pick = label(fam_best, FAM[fam_best][i])
     sfx = os.getenv("KMF_OUT_SUFFIX", "")
-    meta = {"days": len(DAYS), "first": DAYS[0], "last": DAYS[-1], "trials_this_lock": 12,
+    data_sha = {str(q.relative_to(HERE.parent)): hashlib.sha256(q.read_bytes()).hexdigest() for q in (K.MINI, K.FUT, K.F1M)}
+    if data_sha != DATA_EXPECT: raise SystemExit(f"입력 자료 해시가 잠금과 다름(멈춤): {data_sha}")
+    meta = {"days": len(DAYS), "first": DAYS[0], "last": DAYS[-1], "trials_this_lock": 12, "data_sha256": data_sha,
+            "rows_read": len(K.ROWS), "dup_minutes": K.DUP, "engine_days": len(K.DAYS), "engine_first": K.DAYS[0], "engine_last": K.DAYS[-1], "KMF_CUT": K.CUT,
             "code_sha256": {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest() for f in ("kmf_hdd_pre.py", "kmf_hdd_base.py", "kmf_nb.py", "kmf_rlk4.py", "kmf_rl4.py")}}
     (HERE / f"kmf_hdd_pre_out{sfx}.json").write_text(json.dumps({"meta": meta, "rows": rows, "통과": [label(f, FAM[f][i]) for f, i in passed], "새 자료 후보(사용자 승인 뒤)": pick}, ensure_ascii=False, indent=1))
     (HERE / f"kmf_hdd_pre_daily{sfx}.json").write_text(json.dumps(daily, ensure_ascii=False))
