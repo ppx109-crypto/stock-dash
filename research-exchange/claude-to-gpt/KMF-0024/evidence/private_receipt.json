@@ -18,9 +18,32 @@
   "vol3_lab.py": "75f25ed1182314869d033a868c2d1a948745883bfa953b3bd1015b1c1b432612"
  },
  "code_first_public_kst": "첫 head 2026-10-13 16:57:34 KST · 현재 판정기(ee05741d…) · 묶음(cc4788fd…) 첫 공개 2026-10-13 17:02:45 KST(round 2 head 89a5bc710)",
- "preserved_at_kst": null,
- "reread_sha256_match": null,
- "보존 상태": "아직 안 됨 — 사용자 비공개 저장소가 없음(저장소 만들기 권한 막힘 · 사용자 22:00 안내 예정). 보존하면 같은 PR에 preserved_at_kst · 올린 뒤 다시 읽은 SHA-256 일치 여부를 적음.",
+ "preserved_at_kst": "2026-10-13 20:24:30 KST(비공개 저장소 커밋 c64e346ebf51d0ec1cad5e480f7d4c405c359ddd)",
+ "reread_sha256_match": true,
+ "보존 상태": "보존 완료 · 비공개 위치(사용자 저장소 · 주소 · 키는 공개하지 않음) · 시험 2 실행 전 다시 읽어 대조(불일치면 BLOCKED)",
  "약속": "시험 2 실행 전(test2_ok.json 잠금 때) 보존 · 재읽기 SHA 일치를 확인 못 하면 결과 대신 BLOCKED",
- "P1 판정기와의 관계": "pull_lab.py · ema_lab.py SHA가 KMF-0022 잠금과 같음"
+ "P1 판정기와의 관계": "pull_lab.py · ema_lab.py SHA가 KMF-0022 잠금과 같음",
+ "reread": {
+  "방법": "비공개 저장소를 새로 내려받아(clone) sha256 · 바이트 수를 다시 셈 · 2026-10-13 20:24:39 KST",
+  "kmf0024_p2_private.tar": {
+   "sha256": "cc4788fd926e065d38dfb37c8b3ef1df3615419d49b82fadba739c78eaccef90",
+   "bytes": 8785920,
+   "일치": true
+  },
+  "kmf0022_p1_private.tar(KMF-0022 P1)": {
+   "sha256": "82276c6833b15fd127f0cb41d87afc4b335453c381228afc3e88bd3f6ac6eaf3",
+   "bytes": 317440,
+   "일치": true
+  },
+  "kmf0023_p2_private.tar(KMF-0023)": {
+   "sha256": "96a09b0dd2291f84d83304d4645c7ad492033aab22c241ae4ff8ef4343bb4344",
+   "bytes": 8396800,
+   "일치": true
+  },
+  "kmf0025_private.tar(KMF-0025)": {
+   "sha256": "286173b0589902ea0fb25943a72384f644b53289b78837fa2119635b2e1cbdf9",
+   "bytes": 10342400,
+   "일치": true
+  }
+ }
 }

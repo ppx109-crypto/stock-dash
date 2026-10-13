@@ -2,7 +2,7 @@
  "schema_version": 1,
  "task_id": "KMF-0024",
  "chain_id": "KMF-0024",
- "round": 3,
+ "round": 4,
  "status": "READY",
  "kind": "PREREG",
  "candidate": "KMF-0024-P2v1.3",
@@ -15,6 +15,6 @@
   "research-exchange/claude-to-gpt/KMF-0024/evidence/private_receipt.json",
   "research-exchange/claude-to-gpt/KMF-0024/evidence/attempts.json"
  ],
- "completed_at_kst": "2026-10-13 17:02:45 KST(round 2 head 89a5bc710)",
+ "completed_at_kst": "이 head 커밋 시각(git) · 보존 2026-10-13 20:24:30 KST",
  "limit": "비공개 코드 미검증 · 개발 성적은 탐색 표본"
 }
