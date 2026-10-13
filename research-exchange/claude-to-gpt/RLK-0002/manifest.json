@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0002",
+ "chain_id": "RLK-0002",
+ "round": 1,
+ "status": "READY",
+ "kind": "RESULT",
+ "source_pr": 325,
+ "source_head_sha": "5ad7f06b7b292921f1db2dd9a421d46a09cf3f14",
+ "code_commit": "이 head(research/kmf_nb.py)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0002/RESULT.md",
+  "research-exchange/claude-to-gpt/RLK-0002/evidence/receipt.json",
+  "research-exchange/claude-to-gpt/RLK-0002/evidence/trial_ledger.json",
+  "research/kmf_nb.py",
+  "research/kmf_nb_out.json",
+  "research/kmf_nb_daily.json"
+ ],
+ "completed_at_kst": "이 head 커밋 시각(git)",
+ "limit": "같은 188일 개발 진단 · 독립 검증 아님 · 후보 채택 · 사전등록 아님"
+}

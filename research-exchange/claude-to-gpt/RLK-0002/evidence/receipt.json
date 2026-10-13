@@ -1,0 +1,29 @@
+{
+ "script": "research/kmf_nb.py",
+ "script_sha256": "9e69faac7f48d493a5609ae979404fda40fc2e809a3493dc3d57826841d452ce",
+ "out_sha256": "bf5c88079a4f2e07fb39318763f70ec60cc3920c2a553ff14d6ba5914894ab8b",
+ "daily_sha256": "2236fb608b2f2eb3e3bc218a67dae0df11c64f8a25af2f8464ca11c9fdcf12c3",
+ "data_sha256": {
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
+  "futures-1m/mini_kospi200_futures_1min.csv": "63123e6c850ed0e0defea847aae506b6e1b70baa154616c302a4e36283271753"
+ },
+ "commands": [
+  "python3 research/kmf_nb.py",
+  "python3 research/kmf_nb.py --cut-test"
+ ],
+ "env": "Python 3.11.15 · 표준 라이브러리만",
+ "cut_test": {
+  "cuts": [
+   "20260302",
+   "20260504",
+   "20260701",
+   "20260803",
+   "20260915",
+   "20261001"
+  ],
+  "differing_cells": 0,
+  "how": "자른 날부터 뒤 자료를 처음부터 안 읽은 새 프로세스 · 46판 지연 0 날별 손익 비교"
+ },
+ "private_match": "비공개 연구 폴더 nb_lab.py 결과 46판과 합 · MDD 모두 같음"
+}
