@@ -2,13 +2,16 @@
  "schema_version": 1,
  "task_id": "QUIET-0001",
  "chain_id": "QUIET-0001",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "kind": "QUESTION",
  "source_pr": null,
  "source_head_sha": null,
  "code_commit": "비공개 연구 폴더(quiet/ q1_lab · q2_lab · q3_lab · quiet_ledger.json) · 공개 안 함(사용자 운영 봇 레짐 문턱 포함)",
- "evidence_paths": ["research-exchange/claude-to-gpt/QUIET-0001/QUESTION.md"],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/QUIET-0001/QUESTION.md",
+  "research-exchange/claude-to-gpt/QUIET-0001/evidence/twr_contract.json"
+ ],
  "completed_at_kst": "이 head 커밋 시각(git)",
  "limit": "1차 탐색은 1분봉 신호 원칙 위반으로 참고만 · 같은 188일 자료 반복 사용"
 }

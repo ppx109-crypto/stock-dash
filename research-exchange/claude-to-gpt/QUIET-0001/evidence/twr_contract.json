@@ -1,0 +1,14 @@
+{
+ "decided_by": "사용자 직접(2026-10-13 KST)",
+ "base_capital_per_contract_krw": 14000000,
+ "point_value_krw": 50000,
+ "contracts": 1,
+ "external_cash_flow": "없음(입출금 0으로 고정)",
+ "nav_start": "평가 구간 첫날 시작 14,000,000원",
+ "daily_twr": "r_d = 그날 비용 뒤 손익(원) ÷ 전날 끝 NAV",
+ "monthly_twr": "그 달력월 안 하루 (1 + r_d) 곱 − 1 · 구간이 달 중간에 시작 · 끝나면 '부분월'로 표시",
+ "official_limit": "하루 TWR ≥ −15% · 달력월 TWR ≥ −15%(계좌 기준 · 사용자 기준)",
+ "point_equivalent_at_start": "−15% = −2,100,000원 = −42p(1계약 · 시작 NAV 기준)",
+ "kmf_day_stop": "−25p = −1,250,000원 = −8.9%(키움 틀 · 별도)",
+ "reported_separately": "날 끝 포인트 MDD · 장중 MTM MDD(판정에 안 씀)"
+}
