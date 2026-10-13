@@ -16,13 +16,16 @@
   "research/kmf_rl3_out.json",
   "research/kmf_rl3_daily.json",
   "research/kmf_rl3_decisions.json",
-  "research/kmf_rl3_cut.out"
+  "research/kmf_rl3_cut.out",
+  "research/kmf_rl3_audit_future.py",
+  "research/kmf_rl3_audit_future.out"
  ],
  "completed_at_kst": "2026-10-13 23:01 KST(계산 · 커밋 시각은 git)",
- "limit": "설계 단계 · 계산 결과 없음",
+ "limit": "같은 148일 개발 진단 · 독립 OOS 아님 · 후보 채택 아님",
  "code_lock": {
   "commit": "e9566aafba9de9f5f249da9cf7ded359fe4a4730",
   "research/kmf_rl3.py sha256": "b8fbe56b429d7945acccf70ff54d838900367642b38a9cabd04a2871925ed564",
   "이전 잠금(무효)": "9b3413343d09a66fa547df05aba26b86e9fbe517"
- }
+ },
+ "result_pr": 330
 }
