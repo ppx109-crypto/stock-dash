@@ -1,0 +1,16 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0007",
+ "chain_id": "RLK-0007",
+ "round": 1,
+ "status": "READY",
+ "kind": "QUESTION",
+ "source_pr": 331,
+ "source_head_sha": "69d4b24200563c2edf6cebd15198cf8f48d9f9f7",
+ "code_commit": null,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0007/PLAN_DRAFT.md"
+ ],
+ "completed_at_kst": "2026-10-14 00:3x KST(초안 · 커밋 시각은 git)",
+ "limit": "계획 초안 · 사용자 승인 전 · 사전등록 아님"
+}
