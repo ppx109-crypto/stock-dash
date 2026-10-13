@@ -1,5 +1,7 @@
+"""별도 클로드 검사 담당(RLK-0003)의 하루 안 자르기 시험: 어느 날 X분 뒤 1분봉을 지우고 처음부터 다시 셈 → X분 앞 진입 · 정리가 같아야 함."""
 import importlib.util, random, collections, copy
-P='/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/nbr/research/kmf_nb.py'
+from pathlib import Path
+P=str(Path(__file__).resolve().parent / 'kmf_nb.py')
 def load():
     s=importlib.util.spec_from_file_location('k',P); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 full=load(); M=load()
