@@ -1,0 +1,19 @@
+{
+ "schema_version": 1,
+ "task_id": "HDD-0001",
+ "chain_id": "HDD-0001",
+ "round": 1,
+ "status": "READY",
+ "kind": "QUESTION",
+ "completed_at_kst": null,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/HDD-0001/QUESTION.md",
+  "research/kmf_hdd_base.py",
+  "research/kmf_hdd_grid1.py",
+  "research/kmf_hdd_grid2.py",
+  "research/kmf_hdd_grid1_out.json",
+  "research/kmf_hdd_grid2_out.json"
+ ],
+ "trials": 37,
+ "limit": "같은 158일 개발 진단 · 후보 아님"
+}
