@@ -1,0 +1,65 @@
+{
+ "private_code_sha256": {
+  "box_lab.py": "bdea34d8a5c73b2b6911c53b38789221e929b4675418a080dc93f59afb46ce09",
+  "box_lab2.py": "e0859d24cc0714cb54ddc370bf2015a9bb3419d11651968ebd354d996171cc55",
+  "box_lab3.py": "3c53da608ce5f1ee517e600679427658fd45687135d52624feff87482224f556",
+  "soft_lab.py": "399a20ad466159017d5fd3c5d3b96d416b38d69f35d628a4b909e83add8a3c2f",
+  "pull_lab.py": "11c6478e1f92bac140374660b377f42f05e3beb2909c98b9dec666be8a1f4b30",
+  "ema_lab.py": "e927faf38e1e1d76658ab3eecec29f6b1677fbdcf3bb10afdd1d9a6cdc204abe",
+  "plateau_lab.py": "8a105c1f8378d49a36b1b4800eb9d0611eb2348afada57ef623d5474ca058d58",
+  "test2_p1.py": "2c12df60d1d9473fcf69675f8e2edefe2b258e4bd835a68a74a9bec4056d5f2b"
+ },
+ "public_code_sha256": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "research/kmf17.py": "9c773ea69bbffde21471845dfdd085715fb5d02d7e48c362fdefb8e6f66e76bf",
+  "research-exchange/claude-to-gpt/KMF-0019/explore/mdd_lab.py": "3537c57b504fceecff33d294902449c69820323a1383c32e31bb0a16d15e28f8",
+  "research-exchange/claude-to-gpt/KMF-0019/explore/loss_lab.py": "d61af807f3a8d49dbb1e6e7f72ba3846d31f2ba5351ee0ce073d5cc8a4103eba"
+ },
+ "data_sha256": {
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"
+ },
+ "receipts_sha256": {
+  "pick_checks.json": "98ca9f165c5d83140d098f15e018d613af2e13846372b1827a884743d7af2b7c",
+  "neighbors_out.json": "588415892e82489639c8ba654f11ea1531da314c7ffa6f85ab727b59ef830241",
+  "plateau_lab_out.json": "eeccd6a9d07d1a7eca1b4821575ce660e10a2257de1e2fd2034156feeb817110",
+  "pull_lab3_out.json": "85c83d9a3a47516be1305657585eee13e6e5996ae260c83ec8c048e45d9aee0e",
+  "pstop_lab_out.json": "ff354b6b04b6a13c9e1f819438ca5ccfc0884e2fb3ed928fbb0bc1c2d34aaab5",
+  "bl_lab_out.json": "c0b0751aa13b4a155ec8ebbe7ffd094183a5bd4e978a4f52b6eb0c9a06919102",
+  "ema_lab_out.json": "cf6dd9324309c80187c23479eb49f9e56c133a158d3a2460c55959425a9000d0",
+  "soft_lab_out.json": "dd118a12d051011fa881fa9284069c137c9eef182db34853b694252cdf46650c"
+ },
+ "private_tries": {
+  "box_lab_out.json": 648,
+  "box_lab2_out.json": 1728,
+  "box_lab3_out.json": 648,
+  "combo_lab_out.json": 196,
+  "soft_lab_out.json": 438,
+  "pull_lab_out.json": 109,
+  "pull_lab2_out.json": 432,
+  "pull_lab3_out.json": 576,
+  "ema_lab_out.json": 244,
+  "pstop_lab_out.json": 120,
+  "bl_lab_out.json": 216,
+  "neighbors_out.json": 28,
+  "plateau_lab_out.json": 972,
+  "v12a_engine_ablation_and_tune(재생기)": 27
+ },
+ "private_tries_total": 6382,
+ "candidate_id": "KMF-0022-P1",
+ "pick_params_sha256": "9ef9157bd132e179175c1153a233556ee5e0b4b4bfd7b7048c004a95bc940c6d",
+ "dev_mdd_intraday_1m": -56.93,
+ "test2": {
+  "warm_from": "20261013",
+  "start": "20261014",
+  "n": 20
+ },
+ "locked_at": "이 파일을 처음 담은 공개 커밋의 시각(git) · 2026-10-14 장 시작 전",
+ "private_artifact": {
+  "file": "kmf0022_p1_private.tar(파일 12개 · 이름순 · mtime 2026-10-13 00:00Z · owner 0)",
+  "sha256": "82276c6833b15fd127f0cb41d87afc4b335453c381228afc3e88bd3f6ac6eaf3",
+  "preserve": "세션 비공개 폴더에 보관 → 사용자 비공개 저장소(만들어지는 대로)에 같은 바이트로 올림 · 이 SHA로 대조"
+ }
+}
