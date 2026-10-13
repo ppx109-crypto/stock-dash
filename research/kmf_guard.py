@@ -111,6 +111,8 @@ def main(which):
         import kmf14 as M                         # RNA 횡보장 봇 · 전체 자료 · −25p
     elif which == "kmf15":
         import kmf15 as M                         # 시간대 짧은 추세 봇 + 전날 수급 거름 · −25p
+    elif which == "kmf16":
+        import kmf16 as M                         # 한 계약: 추세 봇 우선 · 아니면 횡보 봇 · −25p
     else:
         M = K
     before = getattr(M, "GUARD_BEFORE", K.VAL[0])
