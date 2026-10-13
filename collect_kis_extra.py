@@ -140,12 +140,21 @@ def fill_ratio(client, code, today):
     return len(body["연간"]) + len(body["분기"]), 2
 
 
-def fill_market(client, today):
+def investor_today(now=None):
+    """시장 투자자 수급(investor_KSP · KSQ)만: 한국 시각 18:00 뒤에 돌면 그날까지, 아니면 어제까지(2026-10-13 KMF-0015 · GPT #309).
+    장 끝난 날 저녁에 그날 줄이 들어와야 다음 거래일 09:00 전에 쓸 수 있음. 지수 · 프로그램 · 자금은 그대로 어제까지."""
+    now = now or datetime.now(ZoneInfo("Asia/Seoul"))
+    day = now.date() if now.hour >= 18 else now.date() - timedelta(days=1)
+    return day.strftime("%Y%m%d")
+
+
+def fill_market(client, today, inv_today=None):
+    inv_today = inv_today or today
     jobs = {
         "index_KOSPI": lambda h: by_window(lambda a, b: client.index_daily("0001", a, b), h, today, width=60),
         "index_KOSDAQ": lambda h: by_window(lambda a, b: client.index_daily("1001", a, b), h, today, width=60),
-        "investor_KSP": lambda h: by_cursor(lambda d: client.market_investor_daily("KSP", d), h, today),
-        "investor_KSQ": lambda h: by_cursor(lambda d: client.market_investor_daily("KSQ", d), h, today),
+        "investor_KSP": lambda h: by_cursor(lambda d: client.market_investor_daily("KSP", d), h, inv_today),
+        "investor_KSQ": lambda h: by_cursor(lambda d: client.market_investor_daily("KSQ", d), h, inv_today),
         "program_K": lambda h: by_window(lambda a, b: client.market_program_daily("K", a, b), h, today),
         "program_Q": lambda h: by_window(lambda a, b: client.market_program_daily("Q", a, b), h, today),
         "funds": lambda h: by_cursor(lambda d: client.market_funds(d), h, today),
@@ -178,7 +187,7 @@ def main():
         return 1
     today = (datetime.now(ZoneInfo("Asia/Seoul")).date() - timedelta(days=1)).strftime("%Y%m%d")
     if kind == "market":
-        fill_market(client, today)
+        fill_market(client, today, investor_today())
         return 0
     codes = codes_to_collect()
     lock = threading.Lock()

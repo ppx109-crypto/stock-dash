@@ -55,3 +55,13 @@ class Window(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class InvestorTodayTest(unittest.TestCase):
+    def test_after_six_pm_takes_today(self):
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        kst = ZoneInfo("Asia/Seoul")
+        self.assertEqual(C.investor_today(datetime(2026, 10, 13, 18, 40, tzinfo=kst)), "20261013")
+        self.assertEqual(C.investor_today(datetime(2026, 10, 13, 9, 5, tzinfo=kst)), "20261012")
+
