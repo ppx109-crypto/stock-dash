@@ -2,16 +2,21 @@
  "schema_version": 1,
  "task_id": "RLK-0005",
  "chain_id": "RLK-0005",
- "round": 2,
+ "round": 3,
  "status": "READY",
  "kind": "QUESTION",
  "source_pr": 329,
  "source_head_sha": "8f3efdafc3d306660dc8062e9da52a8bf47c7fe2",
- "code_commit": "9b3413343d09a66fa547df05aba26b86e9fbe517(research/kmf_rl3.py · 계산 전 고정)",
+ "code_commit": "e9566aafba9de9f5f249da9cf7ded359fe4a4730(계산 전 잠금 · round 3)",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/RLK-0005/PLAN.md",
   "research/kmf_rl3.py"
  ],
- "completed_at_kst": "2026-10-13 22:47 KST(round 2 설계 수정 · 커밋 시각은 git)",
- "limit": "설계 단계 · 계산 결과 없음"
+ "completed_at_kst": "2026-10-13 22:50 KST(round 3 설계 · 커밋 시각은 git)",
+ "limit": "설계 단계 · 계산 결과 없음",
+ "code_lock": {
+  "commit": "e9566aafba9de9f5f249da9cf7ded359fe4a4730",
+  "research/kmf_rl3.py sha256": "b8fbe56b429d7945acccf70ff54d838900367642b38a9cabd04a2871925ed564",
+  "이전 잠금(무효)": "9b3413343d09a66fa547df05aba26b86e9fbe517"
+ }
 }
