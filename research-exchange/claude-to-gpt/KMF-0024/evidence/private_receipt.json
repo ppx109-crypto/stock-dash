@@ -1,20 +1,26 @@
 {
- "tar_sha256": "6ca2c226fc5af45545e347da710a7ad956da1ef150b1aa3202da57633af795d9",
+ "tar": "kmf0024_p2_private.tar(p2 · explore 폴더 *.py · *.json 이름순 · mtime 1791849600 · uid/gid 0 · mode 644 · USTAR)",
+ "tar_sha256": "cc4788fd926e065d38dfb37c8b3ef1df3615419d49b82fadba739c78eaccef90",
+ "tar_bytes": 8785920,
  "n_files": 135,
  "key_sha256": {
-  "test2_p2.py": "8bc52a1e2a199b2a206dde5280bcdea031031869e77debfa8d4f8e2a84d33751",
+  "ema_lab.py": "e927faf38e1e1d76658ab3eecec29f6b1677fbdcf3bb10afdd1d9a6cdc204abe",
+  "pull_lab.py": "11c6478e1f92bac140374660b377f42f05e3beb2909c98b9dec666be8a1f4b30",
+  "P2_CANDIDATE.json": "825614b7c3582dc5c92a78256c30770757572cacbd3f7f8d05040d2ba9beebc9",
+  "attempts_receipt.json": "b8b46327c9e8b86de3f96ee16dee52624a794fed18f0353b380f628debab3876",
+  "curve_lab.py": "7a0fdd8cb7dc19b4264155baa619b59288a8e965d6316ac1f43b4326f3005782",
+  "cut_new.py": "82653f69c99c7a42e4cadb34b7838a2008239f7937ce267d026a3622a8c6d69f",
   "eng2.py": "a3931f6e179d330385304d46f79494769650e18cfc0aa0f95ccd95eb1d75eec4",
   "idle_diag.py": "69b1776c60ef7382b21fccc058675ce7f349ca9f7746080ac1e589af1edab0d4",
   "idle_rev_lab.py": "e4364ef8c87374a7ae443a4731230a94e40c6fe09589e92e5c32d76a9e6fc2cc",
   "idle_strict.py": "1a83df4f786fcf4e10096b52a41216caee562da5968f7fcb3ca855e21927e7bf",
-  "curve_lab.py": "7a0fdd8cb7dc19b4264155baa619b59288a8e965d6316ac1f43b4326f3005782",
-  "vol3_lab.py": "75f25ed1182314869d033a868c2d1a948745883bfa953b3bd1015b1c1b432612",
-  "cut_new.py": "82653f69c99c7a42e4cadb34b7838a2008239f7937ce267d026a3622a8c6d69f",
-  "P2_CANDIDATE.json": "825614b7c3582dc5c92a78256c30770757572cacbd3f7f8d05040d2ba9beebc9",
-  "pull_lab.py": "11c6478e1f92bac140374660b377f42f05e3beb2909c98b9dec666be8a1f4b30",
-  "ema_lab.py": "e927faf38e1e1d76658ab3eecec29f6b1677fbdcf3bb10afdd1d9a6cdc204abe"
+  "test2_p2.py": "ee05741d452cd7b158d72ad1e076b55b0c96a1019625de6857f7e1fc96313d58",
+  "vol3_lab.py": "75f25ed1182314869d033a868c2d1a948745883bfa953b3bd1015b1c1b432612"
  },
- "tar": "kmf0024_p2_private.tar(p2 · explore 폴더 *.py · *.json 이름순 · mtime 1791849600 · uid/gid 0 · mode 644 · USTAR)",
- "보존": "사용자 비공개 저장소에 같은 바이트로 올림(22:00 안내 예정) · 그 전까지 미검증 · test2_ok.json 잠글 때 대조 · 불일치면 BLOCKED",
- "P1 판정기와의 관계": "P1 의존 파일(pull_lab.py · ema_lab.py) SHA가 KMF-0022 잠금과 같음 → P1 판정 그대로"
+ "code_first_public_kst": "2026-10-13 16:57:34(첫 head f73db084f) · 판정기는 round 2에서 바뀜(2분 지연 보고 · 체결 계약 주석) → 이 head 커밋 시각이 새 판정기 첫 공개",
+ "preserved_at_kst": null,
+ "reread_sha256_match": null,
+ "보존 상태": "아직 안 됨 — 사용자 비공개 저장소가 없음(저장소 만들기 권한 막힘 · 사용자 22:00 안내 예정). 보존하면 같은 PR에 preserved_at_kst · 올린 뒤 다시 읽은 SHA-256 일치 여부를 적음.",
+ "약속": "시험 2 실행 전(test2_ok.json 잠금 때) 보존 · 재읽기 SHA 일치를 확인 못 하면 결과 대신 BLOCKED",
+ "P1 판정기와의 관계": "pull_lab.py · ema_lab.py SHA가 KMF-0022 잠금과 같음"
 }

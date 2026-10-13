@@ -1,7 +1,7 @@
 {
  "candidate": "KMF-0024-P2v1.3",
- "judge_p2_sha256": "8bc52a1e2a199b2a206dde5280bcdea031031869e77debfa8d4f8e2a84d33751",
- "private_tar_sha256": "6ca2c226fc5af45545e347da710a7ad956da1ef150b1aa3202da57633af795d9",
+ "judge_p2_sha256": "ee05741d452cd7b158d72ad1e076b55b0c96a1019625de6857f7e1fc96313d58",
+ "private_tar_sha256": "cc4788fd926e065d38dfb37c8b3ef1df3615419d49b82fadba739c78eaccef90",
  "test2": {
   "source": "futures-1m/mini_kospi200_futures_1min.csv",
   "from": "20261014",
@@ -11,13 +11,27 @@
   "report_only": [
    "goal_mdd15_met(날 끝 MDD ≥ −15)",
    "mdd_intraday_1m_main",
-   "delay1(체결 1분 지연)"
-  ]
+   "delay1(체결 1분 지연 · 규칙 그대로)",
+   "delay2(체결 2분 지연 · 규칙 그대로 · 개발에서 −28p대로 무너짐)"
+  ],
+  "execution": {
+   "본 신호→체결": "5분봉 마감 분 m 신호 → m+1분 1분봉 시가",
+   "되돌림 신호→체결": "분 m(5분 끝 분) 판단 → m+1분 시가",
+   "가격 칸": "1분봉 open · high · low · close · volume",
+   "멈춤/손절 체결": "그 분 저가(매수)·고가(매도)가 닿으면 min(시가, 멈춤값)/max(시가, 멈춤값)",
+   "강제 정리": "15:30(930분) 그 분 종가",
+   "비용": "한쪽 0.04p(K.COST) · 따로 미끄럼 없음",
+   "하루 멈춤": "−15p",
+   "빈 분": "건너뜀(그 분 체결 없음)",
+   "근월물": "수집기 collect_fut_1min.py(main)가 만기일 당일부터 다음 월물로 바꾼 A05… 줄 그대로 · 완전한 날 = kmf13.complete_days(sha 39d63706…9049)",
+   "같은 엔진 관례": "KMF-0022 P1(pull_lab.py sha 11c6478e…4b30)과 같은 체결 · 비용 관례"
+  }
  },
  "dev_data_sha256": {
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
   "futures-1m 10-13 줄": "stock-dash main 678e9e449(10-13 한투 수집)"
  },
- "locked_at": "이 파일을 처음 담은 공개 커밋 시각(git)"
+ "locked_at": "이 파일을 처음 담은 공개 커밋 시각(git)",
+ "locked_at_kst": "2026-10-13 16:57:34(첫 공개 · f73db084f) · 판정기 바뀐 판은 round 2 head 커밋 시각"
 }
