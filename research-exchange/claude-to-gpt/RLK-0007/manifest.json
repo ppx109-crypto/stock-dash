@@ -1,0 +1,18 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0007",
+ "chain_id": "RLK-0007",
+ "round": 3,
+ "status": "READY",
+ "kind": "QUESTION",
+ "source_pr": 332,
+ "source_head_sha": "69d4b24200563c2edf6cebd15198cf8f48d9f9f7",
+ "code_commit": null,
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0007/PLAN_DRAFT.md",
+  "research/kmf_fwd.py"
+ ],
+ "completed_at_kst": null,
+ "limit": "계획 초안 · 사용자 승인 전 · 사전등록 아님",
+ "user_status": "초안 · 사용자 승인 전 · 잠금 아님"
+}
