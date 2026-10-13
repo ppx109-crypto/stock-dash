@@ -1,0 +1,26 @@
+{
+ "tar": "kmf0026_private.tar",
+ "tar_sha256": "5b6c9806caf99f68e46634cf3ded5c0d773f8dfa1bcc990c5eb9a723f5d2f709",
+ "tar_bytes": 12093440,
+ "n_files": 181,
+ "made": "tar --owner=0 --group=0 --numeric-owner --mtime='2026-10-13 00:00:00' · v12a-port/explore + v12a-port/p2(__pycache__ 뺌) · 파일 목록 LC_ALL=C 정렬",
+ "preserved": true,
+ "private_repo_commit": "add4d8820443c009c674cb098849a33d6ca09ca1",
+ "preserved_at_kst": "2026-10-13 20:29:48 KST(비공개 커밋 시각)",
+ "reread": {
+  "how": "비공개 저장소를 빈 폴더에 새로 내려받아 sha256 · 바이트 수 셈",
+  "sha256": "5b6c9806caf99f68e46634cf3ded5c0d773f8dfa1bcc990c5eb9a723f5d2f709",
+  "bytes": 12093440,
+  "match": true
+ },
+ "reproduce": {
+  "how": "묶음을 빈 폴더에 풀고 python3 test2_p2v14.py --selftest",
+  "result": "cut_thu2와 다른 날 0 · 잘라 셈과 다른 날 0 · 합 30.12 · MDD −9.82(개발 09-02부터 20일)"
+ },
+ "earlier_tars_still_match": [
+  "kmf0022 82276c68…eaf3",
+  "kmf0023 96a09b0d…4344",
+  "kmf0024 cc4788fd…ef90",
+  "kmf0025 286173b0…cbdf9"
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "schema_version": 1,
+ "task_id": "KMF-0026",
+ "chain_id": "KMF-0026",
+ "round": 1,
+ "status": "READY",
+ "kind": "PREREG",
+ "candidate": "KMF-0026-P2v1.4",
+ "source_pr": 320,
+ "source_head_sha": "fd17b88e9da6a794fd92c7ac7e6694a3dc8416ed",
+ "base_branch": "research-exchange/kmf-0024-prereg(4e77025ac)",
+ "code_commit": "비공개 tar 5b6c9806caf99f68e46634cf3ded5c0d773f8dfa1bcc990c5eb9a723f5d2f709 · 비공개 저장소 커밋 add4d8820443c009c674cb098849a33d6ca09ca1",
+ "commands": [
+  "python3 test2_p2v14.py --selftest",
+  "python3 cut_thu2.py(성적 + 자르기 6곳)",
+  "python3 test2_p2v14.py <futures-1m mini csv> <test2_ok.json>(시험 2 · 한 번만)"
+ ],
+ "environment": "Python 3.11.15 · 표준 라이브러리만 · 1분봉 다음 분 시가 체결 · 한쪽 0.04p · 1계약",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0026/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0026/evidence/audit_lock.json",
+  "research-exchange/claude-to-gpt/KMF-0026/evidence/private_receipt.json",
+  "research-exchange/claude-to-gpt/KMF-0026/evidence/trial_ledger.json",
+  "research-exchange/claude-to-gpt/KMF-0026/evidence/thursday_sample.json"
+ ],
+ "completed_at_kst": "이 head 커밋 시각(git)",
+ "limit": "개발 성적은 탐색 표본(46,310판) · 목요일은 결과를 본 뒤 고름 · 계좌 TWR은 계좌 크기 비공개로 옮긴 값만"
+}
