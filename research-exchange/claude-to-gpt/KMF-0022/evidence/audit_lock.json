@@ -4,10 +4,10 @@
   "box_lab2.py": "e0859d24cc0714cb54ddc370bf2015a9bb3419d11651968ebd354d996171cc55",
   "box_lab3.py": "3c53da608ce5f1ee517e600679427658fd45687135d52624feff87482224f556",
   "soft_lab.py": "399a20ad466159017d5fd3c5d3b96d416b38d69f35d628a4b909e83add8a3c2f",
-  "pull_lab.py": "834573a3172dbf900b7f29db04bcf4f6754114b0db029db3b8fbe7c88619a2bb",
+  "pull_lab.py": "11c6478e1f92bac140374660b377f42f05e3beb2909c98b9dec666be8a1f4b30",
   "ema_lab.py": "e927faf38e1e1d76658ab3eecec29f6b1677fbdcf3bb10afdd1d9a6cdc204abe",
   "plateau_lab.py": "8a105c1f8378d49a36b1b4800eb9d0611eb2348afada57ef623d5474ca058d58",
-  "test2_p1.py": "5e26ed5a106402aabaf15eaef578e8c0837665fa3adb02df5e13e203a92b2ef9"
+  "test2_p1.py": "2c12df60d1d9473fcf69675f8e2edefe2b258e4bd835a68a74a9bec4056d5f2b"
  },
  "public_code_sha256": {
   "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
@@ -50,5 +50,16 @@
  "private_tries_total": 6382,
  "candidate_id": "KMF-0022-P1",
  "pick_params_sha256": "9ef9157bd132e179175c1153a233556ee5e0b4b4bfd7b7048c004a95bc940c6d",
- "locked_at_kst": "2026-10-13 14:05 (시험 2 첫날 자료 수집 16:00 전)"
+ "dev_mdd_intraday_1m": -56.93,
+ "test2": {
+  "warm_from": "20261013",
+  "start": "20261014",
+  "n": 20
+ },
+ "locked_at": "이 파일을 처음 담은 공개 커밋의 시각(git) · 2026-10-14 장 시작 전",
+ "private_artifact": {
+  "file": "kmf0022_p1_private.tar(파일 12개 · 이름순 · mtime 2026-10-13 00:00Z · owner 0)",
+  "sha256": "82276c6833b15fd127f0cb41d87afc4b335453c381228afc3e88bd3f6ac6eaf3",
+  "preserve": "세션 비공개 폴더에 보관 → 사용자 비공개 저장소(만들어지는 대로)에 같은 바이트로 올림 · 이 SHA로 대조"
+ }
 }
