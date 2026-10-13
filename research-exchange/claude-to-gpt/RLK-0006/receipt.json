@@ -1,0 +1,19 @@
+{
+ "code_lock": "0be49c9152f8252a9006434048c056772949c7af",
+ "script_sha256(실행 때 · 잠금과 같음)": "c3406edc58fc81d40bec78d904b4ce947c7765efb33939fa7ae2c01fc9bf76d9",
+ "out_sha256": "296b86db6ed86155e149229380abcbe85f780fc5c3f717e4cb807adbb85c20ab",
+ "daily_sha256": "e707acb38154a731362e6592a716fb0f1bca063d2443240f73ac2f6617974f20",
+ "decisions_sha256": "a4ec21228dc387ac2123307dc21423dd5f5fb6340910e3267d7f1dc3cb710e60",
+ "cut_out_sha256": "71cac45fd4b818dc358128f16f494c8af5751980a6759769496e3a9ef8e48088",
+ "commands": [
+  "python3 research/kmf_rl4.py",
+  "python3 research/kmf_rl4.py --cut-test"
+ ],
+ "실험 수": {
+  "RL 설정": 4,
+  "대조": 4,
+  "지연": 3,
+  "수정 재실행": 0
+ },
+ "GPT 설계 검토": "10분 넘게 없어서(CLAUDE.md 규칙) 잠금 그대로 계산"
+}
