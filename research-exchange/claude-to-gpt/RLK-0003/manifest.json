@@ -1,0 +1,14 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0003",
+ "chain_id": "RLK-0003",
+ "round": 1,
+ "status": "READY",
+ "kind": "QUESTION",
+ "source_pr": 327,
+ "source_head_sha": "58f44e8642353aa2a97600e65cdebb7a8301eb14",
+ "code_commit": "research/kmf_nb.py(RLK-0002 round 2 · 이 브랜치에 그대로)",
+ "evidence_paths": ["research-exchange/claude-to-gpt/RLK-0003/QUESTION.md", "research/kmf_nb_out.json", "research/kmf_nb_trades.json"],
+ "completed_at_kst": "이 head 커밋 시각(git)",
+ "limit": "질문 단계"
+}
