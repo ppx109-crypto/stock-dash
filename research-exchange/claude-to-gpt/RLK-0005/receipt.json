@@ -1,0 +1,19 @@
+{
+ "code_lock": "e9566aafba9de9f5f249da9cf7ded359fe4a4730",
+ "script_sha256(실행 때)": "b8fbe56b429d7945acccf70ff54d838900367642b38a9cabd04a2871925ed564",
+ "out_sha256": "92635bdb69a22356771da0491941b681af4ecd7be91a34de2fec9f7e56acfce7",
+ "daily_sha256": "6f38de045b85e83717c85ce52ff7b5891cc1cd624a859d3167450d283fcf14f7",
+ "decisions_sha256": "cc53a28eb120b495019bc6ab5623c4a9c5113b9e89d6cbef9662fe65c9326da9",
+ "cut_out_sha256": "d4cc098b5fd310ccc8fa5e1f58792558c1b9f333c7c23427398ad2c5853233aa",
+ "commands": [
+  "python3 research/kmf_rl3.py",
+  "python3 research/kmf_rl3.py --cut-test"
+ ],
+ "실험 수": {
+  "RL 설정": 4,
+  "대조": 4,
+  "지연": 3,
+  "수정 재실행": 0
+ },
+ "GPT 재검토": "round 3 잠금에 대한 재검토는 10분 넘게 없어서(CLAUDE.md 규칙) 잠금 그대로 계산 · round 2 GPT 답은 '이 두 가지만 고치면 된다'"
+}
