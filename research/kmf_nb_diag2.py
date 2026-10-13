@@ -17,7 +17,7 @@ def rna(n, d, m):
     if i < 4: return None
     e10, a = E10[i]; e20 = E20[i][0]; sl = e20 - E20[i - 4][0]
     dirn = 1 if (e10 > e20 and sl > 0) else (-1 if (e10 < e20 and sl < 0) else 0)
-    full = sum(1 for mm in range(B[i][1] - n, B[i][1]) if mm in K.BY[B[i][0]]) == n
+    full = sum(1 for mm in range(B[i][1] - n, B[i][1]) if mm in K.BY[B[i][0]] and mm <= 914) == n
     return {"방향": dirn, "기울기/ATR": round(sl / a, 3) if a else None, "간격/ATR": round((e10 - e20) / a, 3) if a else None, "끝분": B[i][1], "날": B[i][0], "덜참": not full}
 Z = K.quiet_state(0.6); EVAL = [d for d in K.DAYS if d in K.quiet_state(0.4)]
 PLANS = {"T2": (lambda d: Z.get(d) is False, lambda d: K.sig_t(d, "T2", s=1.5)), "R0": (lambda d: Z.get(d) is True, lambda d: K.sig_r0(d))}
@@ -40,6 +40,9 @@ def table(ts):
             "평균 보유 분": round(st.mean(t["정리분"] - t["진입분"] for t in ts), 1), "날 재표집 95%(거래 평균)": boot(ts)}
 out = {"계약": {"완결 봉": "끝 분(= 다음 봉 첫 분) ≤ 진입 분인 마지막 봉 · 끝 분에 앎(available_at = 끝 분 시작)", "30 · 60분봉": "kmf_nb.bars(n) · 09:00부터 n분씩 · 15:15(914분)까지 · EMA10 · EMA20 · ATR(봉 폭 EMA14) 날 넘어 이어짐",
                "방향": "위 = EMA10 > EMA20 이고 EMA20 4봉 기울기 > 0 · 아래 = 반대 · 그 밖 평평", "15분": "kmf_nb.B15 · E10 · E20 그대로"}}
+LEDGER = {}
+out["덜 찬 봉"] = {f"{n}분": {"전체 봉": sum(1 for b in TF[n][0] if b[0] in set(EVAL)), "덜 찬 봉": sum(1 for b in TF[n][0] if b[0] in set(EVAL) and sum(1 for mm in range(b[1] - n, b[1]) if mm in K.BY[b[0]] and mm <= 914) < n),
+                    "참고": "15:15(914분)까지만 묶으므로 그날 마지막 30분봉(900 ~ 914) · 60분봉(900 ~ 914)은 늘 덜 참"} for n in (15, 30, 60)}
 for name, (gate, sigf) in PLANS.items():
     out[name] = {}
     for dl in (0, 1, 2):
@@ -54,7 +57,8 @@ for name, (gate, sigf) in PLANS.items():
                     r = rna(n, d, t["진입분"]); t[f"rna{n}"] = r; t[f"일치{n}"] = (None if r is None else ("같음" if r["방향"] == ref else ("반대" if r["방향"] == -ref else "평평")))
                 ts.append(t)
         top = set(sorted({t["d"] for t in ts}, key=lambda d: -sum(u["손익"] for u in ts if u["d"] == d))[:5])
-        res = {}
+        res = {"뺀 상위 5일(이 봇 · 이 지연에서 다시 고름 · 지연마다 표본이 다를 수 있음)": sorted(top)}
+        LEDGER.setdefault(name, {})[f"지연{dl}"] = [{k: t[k] for k in ("d", "신호분", "진입분", "정리분", "방향", "진입가", "정리가", "사유", "손익", "몇번째", "MAE", "MFE", "rna15", "rna30", "rna60", "일치15", "일치30", "일치60")} for t in ts]
         for scope, sel in (("전체", ts), ("상위5일 뺌", [t for t in ts if t["d"] not in top])):
             for half, hs in (("둘 다", sel), ("앞(~05-29)", [t for t in sel if t["d"] < "20260601"]), ("뒤(06-01~)", [t for t in sel if t["d"] >= "20260601"])):
                 key = f"{scope} · {half}"; res[key] = {"모두": table(hs)}
@@ -65,7 +69,11 @@ for name, (gate, sigf) in PLANS.items():
                 res[key]["첫 거래"] = table([t for t in hs if t["몇번째"] == 1]); res[key]["두 번째"] = table([t for t in hs if t["몇번째"] == 2])
                 res[key]["덜 찬 15분봉 위 진입"] = table([t for t in hs if t["rna15"] and t["rna15"]["덜참"]])
         out[name][f"지연{dl}"] = res
+for name in LEDGER:
+    for dl, ts in LEDGER[name].items():
+        out[name][dl]["덜 찬 봉 위 진입 거래 수"] = {f"{n}분": sum(1 for t in ts if t[f"rna{n}"] and t[f"rna{n}"]["덜참"]) for n in (15, 30, 60)}
 (ROOT / "research/kmf_nb_diag2.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
+(ROOT / "research/kmf_nb_diag2_trades.json").write_text(json.dumps(LEDGER, ensure_ascii=False))     # 거래별 장부(15 · 30 · 60 상태 · 끝분 = available_at · MAE · MFE)
 for name in ("T2", "R0"):
     for dl in (0, 1, 2):
         r = out[name][f"지연{dl}"]
