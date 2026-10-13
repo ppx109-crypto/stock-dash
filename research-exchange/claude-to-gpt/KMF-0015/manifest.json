@@ -1,0 +1,116 @@
+{
+ "schema_version": "1",
+ "task_id": "KMF-0015",
+ "chain_id": "KMF-0015",
+ "kind": "PLAN",
+ "round": "1",
+ "status": "READY",
+ "source_pr": null,
+ "source_head_sha": null,
+ "code_commit": null,
+ "completed_at_kst": null,
+ "user_instruction": "2026-10-13 위 10일 빼고 짧은 추세 봇 +800p → 클로드 제안(거래량 · 시간대 · 수급)에 '고' · 전체 자료 개발 · −25p",
+ "day_stop_p": -25.0,
+ "goal": {
+  "points": 800,
+  "is_acceptance_rule": false
+ },
+ "pick": "m6_r1_f1_q0.0",
+ "windows": {
+  "mom": [
+   545,
+   575,
+   605,
+   695,
+   785,
+   815
+  ],
+  "rev": [
+   845
+  ]
+ },
+ "flow": "전날 코스피 개인 순매수 z(앞 20거래일) 부호",
+ "dev_result": {
+  "total_p": 725.96,
+  "per_day_p": 3.882,
+  "ci95": [
+   1.751,
+   6.048
+  ],
+  "top10_sum": 474.42,
+  "rest_sum": 251.54,
+  "with13_14_total": 1765.2,
+  "with13_14_ex_own_top10": 742.14
+ },
+ "guard_fix_before_prereg": "들기가 60분째 정리 봉 존재에 기대던 것 고침(앞 일부 검사 113 ~ 167곳 → 0)",
+ "periods": {
+  "dev_full_sample": [
+   "20260102",
+   "20261012"
+  ],
+  "decisive": "시험 2: 10-13부터 완전한 거래일 처음 20일(KMF-0013과 같은 계약) · 수급 자료 SHA도 잠금"
+ },
+ "test2_pass": {
+  "total_gt": 0,
+  "per_day_ge": 1.94,
+  "worst_day_ge": -25.5
+ },
+ "test2_family": [
+  "KMF-0002",
+  "KMF-0007",
+  "KMF-0013",
+  "KMF-0014",
+  "KMF-0015"
+ ],
+ "code": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "research/kmf14.py": "2eb0e33fa36cfdf5db5b28a80c576cd44c0196f11ce3d0327288f3769e624372",
+  "research/kmf15.py": "00cb97f57586e4dfba71ec61603f031f758eccc9bea17ad19918acd495c57afd",
+  "research/kmf_guard.py": "50ea84842684aa2c442491a70544209af901c0b9f4f7a3cb9f95acdea2345e50",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py": "47a5afbf954c1aaa6697ce0b82e9195feea568aefbdf6092d2c612b8e47a7f38",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.py": "40560d118b6186eaae01a25d263aba44d4e31d21ca85238000d0ac33825a4aa3",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/time_flow_diag.py": "c1a8e4527094410ac9383f905c2dcec0d229b8650cb04d854fcbc140c996433b",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/vol_diag.py": "c85b32b8ffcf4e6f53aa11f1bdcb9bc771a19de4517fb8752153aa546e14513f",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/window_check.py": "3a1a37a5dcc56d37cd98ef2c643ff49813ece91225cd0fd7da3e27630ce1cf1d",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/window_lab.py": "7e3e5c8595e39b06c04b607edbdbce7faa28e40ce49e12502316a0e54cb4e402"
+ },
+ "input_lock": {
+  "research/kmf.py": "6724b91815e387e74d09d24078df57b398aa53cf2993235faea65939ede0b729",
+  "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
+  "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
+  "research/kmf14.py": "2eb0e33fa36cfdf5db5b28a80c576cd44c0196f11ce3d0327288f3769e624372",
+  "research/kmf15.py": "00cb97f57586e4dfba71ec61603f031f758eccc9bea17ad19918acd495c57afd",
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
+  "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad"
+ },
+ "input_lock_sha256": "c3119efb692e4b8b01bb4be6db2ea56d77796787ec5120a329e391f1b94845cd",
+ "plan_sha256": "7922e753c8d2553121f49a6c31f5f883eb3c3279747f02e4d3826940aae0a0a8",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0015/PLAN.md",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/cut_test.out",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.out",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.py",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/dev_report.json",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/guard.out",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/guard_selftest.out",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.out",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/report.out",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/__pycache__/window_lab.cpython-311.pyc",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/investor_KSP.json",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/program_K.json",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/time_flow_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/vol_diag.py",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/window_check.py",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/window_lab.json",
+  "research-exchange/claude-to-gpt/KMF-0015/explore/window_lab.py",
+  "research-exchange/claude-to-gpt/KMF-0015/input_lock.json"
+ ],
+ "account_criteria": "WAITING_DATA",
+ "runs_planned": {
+  "test2": 1
+ }
+}
