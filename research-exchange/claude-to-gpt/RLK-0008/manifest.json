@@ -1,0 +1,25 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0008",
+ "chain_id": "RLK-0008",
+ "round": 1,
+ "status": "READY",
+ "kind": "QUESTION",
+ "source_pr": 331,
+ "source_head_sha": "5c603f5ae2ff4e9171845404383ec383718382c3",
+ "code_lock": {
+  "commit": "f5877b2227f8f9f59be143cd24538768a1802563",
+  "research/kmf_ts.py sha256": "42846caacd2b245d1227f7115c974cb1e1c3f8f84db5d195d09a73a9b19f6e5f",
+  "research/kmf_rl4.py sha256": "c3406edc58fc81d40bec78d904b4ce947c7765efb33939fa7ae2c01fc9bf76d9",
+  "research/kmf_rlk4.py sha256": "8caed7c65867511572b4a12e53780d97940fbe901ec7c0a9be506455532765a6",
+  "research/kmf_nb.py sha256": "b34f3549fe9a93b951e104148605404737f0bab30faf2d6960296d59957b55de"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0008/PLAN.md",
+  "research/kmf_ts.py"
+ ],
+ "completed_at_kst": "2026-10-14 04:20 KST 무렵(설계 2판 · 정확한 시각은 git)",
+ "limit": "설계 단계 · 148일 개발 진단 예정 · 독립 시험 아님",
+ "superseded_lock": "9094def540289f16a06cc7c2f15aaf8c0d5dfabf(계산 안 함)",
+ "user_status": "연구 설계 계산 전 잠금(개발 진단) · 사용자 확정 사전등록 아님 · 사용자 확인 필요"
+}
