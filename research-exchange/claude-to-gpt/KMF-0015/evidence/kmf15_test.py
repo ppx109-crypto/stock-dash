@@ -56,4 +56,19 @@ M.FLOW = old; M._BIAS.clear()
 chk("7 수급은 그날 앞 거래일 값만(그날 · 뒤 값을 엉터리로 바꿔도 그대로)", b_[dpos] == bias[dpos])
 chk("8 하루 멈춤 −25p · 칸 4개 · 잣대 1.94 · 시험 2 잠금 없으면 멈춤", K.DAY_STOP == -25.0 and len(M.grid()) == 4 and M.TEST2_MIN_PER_DAY == 1.94 and not M.TEST2_OK.exists())
 chk("9 잠금 통과(수급 파일 포함)", "market-data/investor_KSP.json" in M.verify_inputs())
+# 10 ~ 13 시험 2 수급 점검(가짜 달력 · 가짜 영수증 · 실제 시험 2 자료 안 씀)
+td = [f"202610{d:02d}" for d in range(1, 32)] + [f"202611{d:02d}" for d in range(1, 31)]
+good_rec = {"dates": {d: {"committed_at": f"{d[:4]}-{d[4:6]}-{d[6:]}T09:55:00+00:00", "value_changes": 0} for d in td}}   # 그날 18:55 KST
+pick = ["20261110"]
+p, used = M.flow_ready(pick, td, td, good_rec)
+chk("10 수급 줄 · 영수증 모두 있으면 문제 없음 · 쓴 날 = 그 앞 21거래일", p == [] and used["20261110"][-1] == "20261109" and len(used["20261110"]) == 21)
+p, _ = M.flow_ready(pick, td, [d for d in td if d != "20261109"], good_rec)
+chk("11 전날 수급 줄이 빠지면 문제(→ NEEDS_DATA)", any("20261109 없음" in x for x in p))
+late = json.loads(json.dumps(good_rec)); late["dates"]["20261109"]["committed_at"] = "2026-11-10T01:00:00+00:00"   # 그날 10:00 KST
+p, _ = M.flow_ready(pick, td, td, late)
+chk("12 전날 줄이 그날 09:00 뒤에 처음 저장됐으면 문제", any("09:00" in x for x in p))
+fix = json.loads(json.dumps(good_rec)); fix["dates"]["20261020"]["value_changes"] = 1
+p, _ = M.flow_ready(pick, td, td, fix)
+chk("13 20일 이력 안의 줄 값이 뒤에 바뀌었으면 문제", any("바뀜" in x for x in p))
+chk("14 KMF-0015 시험 2는 10-14부터", M.TEST2_FROM == "20261014")
 print(f"모두 통과 {ok}개")

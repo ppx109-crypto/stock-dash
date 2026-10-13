@@ -3,7 +3,7 @@
  "task_id": "KMF-0015",
  "chain_id": "KMF-0015",
  "kind": "PLAN",
- "round": "1",
+ "round": "2",
  "status": "READY",
  "source_pr": null,
  "source_head_sha": null,
@@ -48,7 +48,7 @@
    "20260102",
    "20261012"
   ],
-  "decisive": "시험 2: 10-13부터 완전한 거래일 처음 20일(KMF-0013과 같은 계약) · 수급 자료 SHA도 잠금"
+  "decisive": "시험 2: 10-14부터 완전한 거래일 처음 20일 · 날마다 앞 21거래일 수급 줄 · 처음 커밋 ≤ 그날 09:00 · 정정 없음 · 아니면 NEEDS_DATA"
  },
  "test2_pass": {
   "total_gt": 0,
@@ -67,9 +67,9 @@
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
   "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
   "research/kmf14.py": "2eb0e33fa36cfdf5db5b28a80c576cd44c0196f11ce3d0327288f3769e624372",
-  "research/kmf15.py": "00cb97f57586e4dfba71ec61603f031f758eccc9bea17ad19918acd495c57afd",
+  "research/kmf15.py": "1f598b73696d69d03ddf24109e064e9794787c19c18c8f54bc40be4b647e23c1",
   "research/kmf_guard.py": "50ea84842684aa2c442491a70544209af901c0b9f4f7a3cb9f95acdea2345e50",
-  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py": "47a5afbf954c1aaa6697ce0b82e9195feea568aefbdf6092d2c612b8e47a7f38",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py": "b3d7aeb829a908f3b9542288594e07677c65a5fe043095d8c459f9caed19190c",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.py": "40560d118b6186eaae01a25d263aba44d4e31d21ca85238000d0ac33825a4aa3",
   "research-exchange/claude-to-gpt/KMF-0015/explore/time_flow_diag.py": "c1a8e4527094410ac9383f905c2dcec0d229b8650cb04d854fcbc140c996433b",
   "research-exchange/claude-to-gpt/KMF-0015/explore/vol_diag.py": "c85b32b8ffcf4e6f53aa11f1bdcb9bc771a19de4517fb8752153aa546e14513f",
@@ -81,25 +81,25 @@
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
   "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
   "research/kmf14.py": "2eb0e33fa36cfdf5db5b28a80c576cd44c0196f11ce3d0327288f3769e624372",
-  "research/kmf15.py": "00cb97f57586e4dfba71ec61603f031f758eccc9bea17ad19918acd495c57afd",
+  "research/kmf15.py": "1f598b73696d69d03ddf24109e064e9794787c19c18c8f54bc40be4b647e23c1",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
   "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad"
  },
- "input_lock_sha256": "c3119efb692e4b8b01bb4be6db2ea56d77796787ec5120a329e391f1b94845cd",
- "plan_sha256": "7922e753c8d2553121f49a6c31f5f883eb3c3279747f02e4d3826940aae0a0a8",
+ "input_lock_sha256": "ded4bb388ad807e082d3a961b4be82f295d7af7c8121475dd9e902e26dc8d05d",
+ "plan_sha256": "aca4032c656040a3edf0fb8be49532725ab00de562f70be152dc32510ef8a74b",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/KMF-0015/PLAN.md",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/cut_test.out",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.out",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.py",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/dev_report.json",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/flow_receipt.json",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/guard.out",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/guard_selftest.out",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.out",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/report.out",
-  "research-exchange/claude-to-gpt/KMF-0015/explore/__pycache__/window_lab.cpython-311.pyc",
   "research-exchange/claude-to-gpt/KMF-0015/explore/investor_KSP.json",
   "research-exchange/claude-to-gpt/KMF-0015/explore/program_K.json",
   "research-exchange/claude-to-gpt/KMF-0015/explore/time_flow_diag.py",
@@ -112,5 +112,27 @@
  "account_criteria": "WAITING_DATA",
  "runs_planned": {
   "test2": 1
- }
+ },
+ "flow_provenance": {
+  "provider": "한국투자증권 Open API",
+  "tr_id": "FHPTJ04040000",
+  "path": "/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market",
+  "market": "코스피(FID_INPUT_ISCD 0001)",
+  "field": "개인 = prsn_ntby_tr_pbmn(순매수 거래대금 · 부호만 씀)",
+  "collector": "collect_kis_extra.py market ← .github/workflows/kis-extra-history.yml(평일 18:40 KST)",
+  "snapshot": {
+   "sha256": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad",
+   "main_commit": "ce605b2a69a3b37dbc92a52e840ac9ab848d7bfc",
+   "committed_at": "2026-10-09T09:54:20+00:00"
+  },
+  "revision_policy": "새 날만 이어 붙임 · 지난 날 다시 안 받음 · 공급자 정정 버전 미제공",
+  "receipt": {
+   "path": "research-exchange/claude-to-gpt/KMF-0015/evidence/flow_receipt.json",
+   "sha256": "90813f479d57b7376eff92ac1ec366668aabe03350810145fb1155af5164d071",
+   "dates": 2393,
+   "changed_dates": 0
+  },
+  "collector_fix": "main #310: investor_KSP · KSQ만 18:00 뒤 수집이면 그날까지(10-13 저녁부터)"
+ },
+ "test2_from": "20261014"
 }

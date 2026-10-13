@@ -7,7 +7,13 @@
   수급 거름: 전날(그날 앞 마지막 거래일) 코스피 개인 순매수가 앞 20거래일 평균보다 많으면 '오름 쪽' · 적으면 '내림 쪽' →
    그 쪽과 같은 방향의 창만 듦(장 끝난 뒤 나온 자료를 다음 거래일에만 씀)
   창은 전체 자료 진단에서 앞 반(01 ~ 05) · 뒤 반(06 ~ 10) 모두 같은 부호인 창만 고름(explore/time_flow_diag)
-python3 research/kmf15.py lock | report | cut | test2"""
+수급 자료 출처(round 2 · GPT #309): 한국투자증권 Open API FHPTJ04040000(/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market)
+  코스피(FID_INPUT_ISCD 0001) 일별 · 개인 = prsn_ntby_tr_pbmn(순매수 거래대금 · 같은 줄의 부호만 견줘 단위는 판정에 영향 없음)
+  모으는 곳: collect_kis_extra.py market ← .github/workflows/kis-extra-history.yml(평일 18:40 KST) · 커밋 'Collect KIS extra history (market)'
+  정정 정책: 모으는 코드가 새 날만 이어 붙이고 지난 날은 다시 받지 않음 · 공급자 정정 버전: 미제공 → 잠근 스냅샷 SHA · 커밋으로 재현
+  시험 2(KMF-0015만 10-14부터 완전한 거래일 처음 20일): 날마다 그 앞 21거래일(선물 거래일 달력) 수급 줄이 모두 있고,
+   각 줄이 처음 커밋된 시각 ≤ 그 거래일 09:00 KST · 값 정정 없음(영수증) · 하나라도 아니면 판정 파일 쓰기 전에 NEEDS_DATA로 멈춤
+python3 research/kmf15.py lock | report | cut | receipt | test2"""
 import hashlib
 import json
 import os
@@ -162,8 +168,59 @@ def report():
 
 
 TEST2_N = 20
+TEST2_FROM = "20261014"                   # KMF-0015만: 10-13 판단에 쓸 10-12 수급은 10-13 09:00 전에 없었음(수집 고침 #310 · 10-13 저녁부터 그날 줄)
 TEST2_OK = BOX / "test2_ok.json"
 TEST2_OUT = BOX / "evidence/test2.json"
+
+
+RECEIPT = BOX / "evidence/flow_receipt.json"
+FLOW_REL = "market-data/investor_KSP.json"
+
+
+def make_receipt(ref="origin/main"):
+    """수급 파일의 저장 이력(ref · 오래된 것부터)에서 날짜마다 처음 들어온 커밋 · 시각 · 뒤에 값이 바뀐 횟수."""
+    log = subprocess.run(["git", "log", "--reverse", "--format=%H %cI", ref, "--", FLOW_REL], cwd=ROOT, capture_output=True, text=True, check=True).stdout.split()
+    first, last_val, changes = {}, {}, defaultdict(int)
+    for sha, when in zip(log[0::2], log[1::2]):
+        body = subprocess.run(["git", "show", f"{sha}:{FLOW_REL}"], cwd=ROOT, capture_output=True, text=True)
+        if body.returncode:
+            continue
+        for r in json.loads(body.stdout)["rows"]:
+            d, v = r["date"], r["개인"]
+            if d not in first:
+                first[d] = {"commit": sha, "committed_at": when}
+            elif last_val.get(d) != v:
+                changes[d] += 1
+            last_val[d] = v
+    out = {"ref": ref, "file": FLOW_REL, "dates": {d: dict(first[d], value_changes=changes.get(d, 0)) for d in sorted(first)}}
+    RECEIPT.parent.mkdir(parents=True, exist_ok=True)
+    RECEIPT.write_text(json.dumps(out, ensure_ascii=False, indent=0))
+    print(json.dumps({"dates": len(first), "changed_dates": sum(1 for d in changes if changes[d])}, ensure_ascii=False))
+
+
+def flow_ready(pick_days, trade_days, flow_dates, receipt):
+    """시험 2 날마다: 그 앞 21개 선물 거래일 모두 수급 줄 있음 · 각 줄 처음 커밋 ≤ 그날 09:00 KST · 값 정정 없음. 문제 목록과 쓴 수급 날짜."""
+    from datetime import datetime, timezone, timedelta
+    kst = timezone(timedelta(hours=9))
+    td = sorted(set(trade_days)); fd = set(flow_dates); rec = receipt.get("dates", {})
+    problems, used = [], {}
+    for d in pick_days:
+        prev = [x for x in td if x < d][-21:]
+        if len(prev) < 21:
+            problems.append(f"{d}: 앞 거래일 21개 모자람"); continue
+        used[d] = prev
+        cutoff = datetime.strptime(d + " 09:00", "%Y%m%d %H:%M").replace(tzinfo=kst)
+        for x in prev:
+            if x not in fd:
+                problems.append(f"{d}: 수급 {x} 없음"); continue
+            r = rec.get(x)
+            if not r:
+                problems.append(f"{d}: 수급 {x} 영수증 없음"); continue
+            if datetime.fromisoformat(r["committed_at"]) > cutoff:
+                problems.append(f"{d}: 수급 {x} 처음 커밋 {r['committed_at']} > 그날 09:00")
+            if r.get("value_changes"):
+                problems.append(f"{d}: 수급 {x} 값이 뒤에 바뀜")
+    return problems, used
 
 
 def test2():
@@ -179,18 +236,26 @@ def test2():
     if hashlib.sha256(FLOW.read_bytes()).hexdigest() != ok.get("flow_sha256"):
         sys.exit("수급 자료 해시가 시험 2 잠금과 다름(멈춤)")
     rows = K.load()
-    good, bad = M13.complete_days(rows)
+    good, bad = M13.complete_days(rows, start=TEST2_FROM)
     if len(good) < TEST2_N:
         sys.exit(f"완전한 거래일 {len(good)}일 < {TEST2_N}일(멈춤)")
     pick_days = good[:TEST2_N]
     last = pick_days[-1]
+    if not RECEIPT.exists():
+        sys.exit("NEEDS_DATA: 수급 영수증(evidence/flow_receipt.json) 없음 — python3 research/kmf15.py receipt 먼저(멈춤)")
+    flow_dates = [r["date"] for r in json.loads(FLOW.read_text())["rows"]]
+    problems, used = flow_ready(pick_days, sorted({r[0] for r in rows}), flow_dates, json.loads(RECEIPT.read_text()))
+    if problems:
+        sys.exit("NEEDS_DATA: 수급 자료 문제(판정 안 함) " + json.dumps(problems[:20], ensure_ascii=False))
     b = prep(M13.test2_rows(rows, pick_days))
     days, trades = K.simulate(b, signals(b, grid()[0]))
     sel = {d: days.get(d, 0.0) for d in pick_days}
     st = K.stats(sel, [t for t in trades if t[0] in sel], pick_days[0], last)
     passed = st["total_p"] > 0 and st["per_day_p"] >= TEST2_MIN_PER_DAY and st["worst_day_p"] >= -25.5
     out = {"verdict": "PASS" if passed else "NO_EDGE", "pick": name(grid()[0]), "days": pick_days,
-           "excluded_incomplete": {d: v for d, v in bad.items() if d <= last}, "stats": st, "data_sha256": ok["data_sha256"]}
+           "excluded_incomplete": {d: v for d, v in bad.items() if d <= last}, "stats": st, "data_sha256": ok["data_sha256"],
+           "flow_sha256": ok["flow_sha256"], "flow_dates_used": {d: used[d][-1] for d in pick_days},
+           "receipt_sha256": hashlib.sha256(RECEIPT.read_bytes()).hexdigest()}
     TEST2_OUT.parent.mkdir(parents=True, exist_ok=True)
     TEST2_OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print(json.dumps({"verdict": out["verdict"], "total_p": st["total_p"], "per_day_p": st["per_day_p"]}, ensure_ascii=False))
@@ -214,4 +279,4 @@ def cut():
 
 
 if __name__ == "__main__":
-    {"lock": write_lock, "cut": cut, "report": report, "test2": test2}[sys.argv[1]]()
+    {"lock": write_lock, "cut": cut, "report": report, "receipt": make_receipt, "test2": test2}[sys.argv[1]]()
