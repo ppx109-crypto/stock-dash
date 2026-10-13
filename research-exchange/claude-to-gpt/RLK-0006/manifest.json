@@ -19,8 +19,12 @@
   "research/kmf_rl4_out.json",
   "research/kmf_rl4_daily.json",
   "research/kmf_rl4_decisions.json",
-  "research/kmf_rl4_cut.out"
+  "research/kmf_rl4_cut.out",
+  "research/kmf_rl4_audit_future.py",
+  "research/kmf_rl4_audit_future.out"
  ],
  "completed_at_kst": "2026-10-13 23:41 KST(계산 · 커밋 시각은 git)",
- "limit": "설계 단계"
+ "limit": "같은 148일 개발 진단 · 상태 A 두 판 무효 · 독립 OOS 아님 · 후보 채택 아님",
+ "result_pr": 331,
+ "design_lock": "0be49c9152f8252a9006434048c056772949c7af"
 }
