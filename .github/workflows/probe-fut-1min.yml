@@ -1,0 +1,42 @@
+name: Probe futures 1min
+# 선물 1분봉 한투 조회 시험(조회 전용 · 시험 가지에 올릴 때만 돎). 응답 본문은 찍지 않음.
+on:
+  push:
+    branches: [probe/fut-1min]
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/kis-token-open
+        continue-on-error: true
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Probe and save one past day
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+        run: |
+          python collect_fut_1min.py probe || true
+          python collect_fut_1min.py collect 20261012 || true
+          python collect_fut_1min.py collect 20261013 || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A futures-1m || true
+          git diff --cached --quiet || (git commit -q -m "선물 1분봉 시험 저장 [skip ci]" && git push -q origin HEAD:probe/fut-1min)
+      - if: always()
+        uses: ./.github/actions/kis-token-close
+        continue-on-error: true
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+          paper-secret: ${{ secrets.KIS_PAPER_APP_SECRET }}
