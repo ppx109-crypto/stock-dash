@@ -1,0 +1,23 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0004",
+ "chain_id": "RLK-0004",
+ "round": 2,
+ "status": "READY",
+ "kind": "RESULT",
+ "source_pr": 328,
+ "source_head_sha": "cc7da52e21aa1978eff61a7e9219a6f718c67685",
+ "code_commit": "이 head(research/kmf_rlk4.py · 규칙 고정 58b8cc60)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0004/RESULT.md",
+  "research-exchange/claude-to-gpt/RLK-0004/receipt.json",
+  "research/kmf_rlk4.py",
+  "research/kmf_rlk4_out.json",
+  "research/kmf_rlk4_daily.json",
+  "research/kmf_rlk4_trades.json",
+  "research/kmf_rlk4_audit_intraday_cut.py",
+  "research/kmf_rlk4_audit_intraday_cut.out"
+ ],
+ "completed_at_kst": "2026-10-13 22:26 KST(round 1) · 22:50 KST(round 2 감사 산출물)",
+ "limit": "같은 148일 개발 자료 · S3 경계 0.5는 이미 본 경계 · 독립 검증 아님"
+}
