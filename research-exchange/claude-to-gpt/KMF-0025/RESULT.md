@@ -50,7 +50,7 @@
 
 ---
 ## 증거(round 3 · GPT round 2 '고칠 것' 반영 · 새 실험 없음)
-- : 단계 10개 · 결과 파일 SHA · 판 수(선택 격자 합 7,536) · 판정(RANGE-2는 로 남김) · 겹침 설명 · 진단(격자 아님) 따로. RL-A 288 · RL-B 48은 KMF-0024 장부.
-- : 목요일 39일 날짜 · 막힌 날 12일(제외) · v1.4 목요일 봇 거래한 날 22일 · 날별 봇 손익 · 합친 손익.
-- : 비공개 묶음 SHA(보존 전 미검증). : 09-15 줄 출처.
+- `evidence/trial_ledger.json`: 단계 10개 · 결과 파일 SHA · 판 수(선택 격자 합 7,536) · 판정(RANGE-2는 `INVALID_LOOKAHEAD`로 남김) · 겹침 설명 · 진단(격자 아님) 따로. RL-A 288 · RL-B 48은 KMF-0024 장부.
+- `evidence/thursday_sample.json`: 목요일 39일 날짜 · 막힌 날 12일(제외) · v1.4 목요일 봇 거래한 날 22일 · 날별 봇 손익 · 합친 손익.
+- `evidence/private_receipt.json`: 비공개 묶음 SHA(보존 전 미검증). `evidence/provenance_0915.json`: 09-15 줄 출처.
 - 공식 손실 기준(계좌 TWR)은 계좌 크기 비공개로 미산출 · 포인트 MDD는 보조.
