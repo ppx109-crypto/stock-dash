@@ -7,7 +7,8 @@
 설정: 상태 {A, B} × z {0.5, 1.0} = 4. 평가: 148일(kmf_nb EVAL) 가운데 앞 20일은 배움만(쉼) · 지연 0 / 1 / 2는 팔 손익을 그 지연으로 셈.
 대조: 늘 S3(게이트 없음) · 늘 R0(게이트 없음) · 손으로 정한 합침(조용 → R0 · 조용하지 않음 → S3 · RLK-0004 게이트를 재현하는 유일한 대조) · 쉼(0).
 결정 장부: 설정 · 지연 · 날마다 상태 칸 · 선택 직전 팔별 n · 평균 · 표준편차 · 점수 · n ≥ 10 · 선택 · 두 팔 반사실 손익 · 채택 손익 → research/kmf_rl3_decisions.json · 자르기 시험은 손익과 결정 장부를 함께 비교(GPT #330).
-(설계 수정 round 2 · 설정 4 · 상태 · z · 팔 · 워밍업은 그대로 · 아직 계산 안 함)
+동점: 두 팔 보수 점수가 정확히 같으면 쉼.
+(설계 수정 round 3 · 설정 4 · 상태 · z · 팔 · 워밍업은 그대로 · 아직 계산 안 함)
 python3 research/kmf_rl3.py → research/kmf_rl3_out.json · _daily.json · --cut-test"""
 import json, os, sys, math, collections, hashlib, statistics as st
 from pathlib import Path
@@ -30,7 +31,9 @@ def run(P, kind, z):
             mu = round(st.mean(h), 4) if n else None; sd = round(st.stdev(h), 4) if n >= 2 else None
             sc = round(st.mean(h) - z * st.stdev(h) / math.sqrt(n), 4) if n >= 10 else None
             arms[a] = {"n": n, "평균": mu, "표준편차": sd, "보수 점수": sc, "n≥10": n >= 10}
-            if i >= WARM and sc is not None and sc > 0 and (best is None or sc > best[0]): best = (sc, a)
+            if i >= WARM and sc is not None and sc > 0:
+                if best is None or sc > best[0]: best = (sc, a)
+                elif sc == best[0]: best = (sc, "쉼")              # 동점이면 쉼(계산 전 고정 · GPT #330 round 2)
         if best: choice = best[1]
         pick[d] = choice; pnl[d] = P[choice][d] if choice != "쉼" else 0.0
         dec[d] = {"상태": list(s), "워밍업": i < WARM, "팔": arms, "선택": choice, "반사실": {a: round(P[a][d], 4) for a in ARMS}, "채택 손익": round(pnl[d], 4)}
