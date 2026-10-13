@@ -1,0 +1,20 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0006",
+ "chain_id": "RLK-0006",
+ "round": 1,
+ "status": "READY",
+ "kind": "QUESTION",
+ "source_pr": 330,
+ "source_head_sha": "d4d1daedcefb11c201722e45285cece079dc6cf6",
+ "code_lock": {
+  "commit": "0be49c9152f8252a9006434048c056772949c7af",
+  "research/kmf_rl4.py sha256": "c3406edc58fc81d40bec78d904b4ce947c7765efb33939fa7ae2c01fc9bf76d9"
+ },
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0006/PLAN.md",
+  "research/kmf_rl4.py"
+ ],
+ "completed_at_kst": "2026-10-13 23:28 KST(설계 · 커밋 시각은 git)",
+ "limit": "설계 단계"
+}
