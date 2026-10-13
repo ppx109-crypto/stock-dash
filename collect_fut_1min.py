@@ -80,13 +80,11 @@ def master_rows():
 
 
 def kis_code(rows, kcode):
-    """마스터 파일에서 키움식 코드에 맞는 한투 단축코드를 찾음(단축 · 표준 칸 어디든)."""
-    bare = kcode[1:] if kcode.startswith("A") else kcode
+    """마스터 파일에서 키움식 코드(A056B000)에 맞는 한투 단축코드(A05611)를 찾음 — 표준코드 KR4A056B0006의 'A056B'로 맞춤."""
     for row in rows:
         cells = [c.strip() for c in row[:3]]
-        for c in cells[1:]:
-            if c in (kcode, bare) or c.startswith(bare[:5]) and c[:5] == bare[:5]:
-                return cells[1]
+        if len(cells) == 3 and cells[2][3:8] == kcode[:5]:
+            return cells[1]
     return None
 
 
@@ -151,7 +149,7 @@ def probe():
     shown = 0
     for r in rows:
         name = r[3] if len(r) > 3 else ""
-        if ("F" in name and "SP" not in name and "C " not in name[:3] and "P " not in name[:3]) and shown < 40:
+        if r[0].strip() in ("1", "3", "B") and shown < 40:
             print("  선물줄", [c.strip() for c in r])
             shown += 1
     today = datetime.now(KST).date()
@@ -160,7 +158,7 @@ def probe():
         kcode = front_code(prefix, today, quarterly)
         code = kis_code(rows, kcode)
         print(prod, "키움식", kcode, "→ 한투", code)
-        for c in [x for x in (code, kcode, kcode[1:]) if x]:
+        for c in [x for x in (code,) if x]:
             for day in (today, today - timedelta(days=1)):
                 try:
                     got = fetch_day(client, c, day)
@@ -169,7 +167,6 @@ def probe():
                     continue
                 span = (got[0]["stck_cntg_hour"], got[-1]["stck_cntg_hour"]) if got else None
                 print("   ", c, day, "줄", len(got), "시각", span, "칸", sorted(got[0].keys()) if got else [])
-            break_ok = True
 
 
 def collect(day):
