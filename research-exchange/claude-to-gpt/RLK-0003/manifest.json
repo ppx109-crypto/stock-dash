@@ -2,13 +2,27 @@
  "schema_version": 1,
  "task_id": "RLK-0003",
  "chain_id": "RLK-0003",
- "round": 1,
+ "round": 2,
  "status": "READY",
  "kind": "QUESTION",
  "source_pr": 327,
  "source_head_sha": "58f44e8642353aa2a97600e65cdebb7a8301eb14",
  "code_commit": "research/kmf_nb.py(RLK-0002 round 2 · 이 브랜치에 그대로)",
- "evidence_paths": ["research-exchange/claude-to-gpt/RLK-0003/QUESTION.md", "research/kmf_nb_out.json", "research/kmf_nb_trades.json"],
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/RLK-0003/QUESTION.md",
+  "research/kmf_nb_out.json",
+  "research/kmf_nb_trades.json",
+  "research/kmf_nb_diag.py",
+  "research/kmf_nb_diag.json",
+  "research/kmf_nb_diag2.py",
+  "research/kmf_nb_diag2.json"
+ ],
  "completed_at_kst": "이 head 커밋 시각(git)",
- "limit": "질문 단계"
+ "limit": "질문 단계",
+ "evidence_sha256": {
+  "research/kmf_nb_diag.py": "392ed3d4503b1e3b4fd8a7a0135e2158530b3d52c98d7aebcb67fa09010d4cf2",
+  "research/kmf_nb_diag.json": "8603eb7fab3b0e957db33da60462f363e96c8f87e4f31c06076239ccf53e3716",
+  "research/kmf_nb_diag2.py": "feceb7982807a01346c62499796640b63f4a745cf20a91da6ff1d9f815cfb67a",
+  "research/kmf_nb_diag2.json": "bdd1dc644896e2d17adee92a4b5d28f99c6627dac4b5ecb171780d742f11519b"
+ }
 }
