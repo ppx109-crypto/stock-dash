@@ -25,10 +25,18 @@
  },
  "limit": "같은 158일 개발 진단 · 후보 아님",
  "source_pr": 337,
- "source_head_sha": "19149f4057d8b7c744e20cea39b5319895c96661",
+ "source_head_sha": "25bde4db4ee8addeedfe201dabeafe3b10a13f67",
  "code_lock": {
-  "commit": "8b4089aa01c5656a5d86d395b6fa18d4366f2adf",
-  "research/kmf_hdd_pre.py sha256": "7f707e3eea3344017bd8f2ffbcd09c88cecb17efc34fc46f7773cb956fc53d1f"
+  "commit": "519bf5faaff1511e0acabe53c251d343a9c7161d",
+  "research/kmf_hdd_pre.py sha256": "b7c56a2387e6869cad0513f9465b54d331140ce17d1fe807189a57d9dec2e5d3",
+  "superseded": "8b4089aa01c5656a5d86d395b6fa18d4366f2adf(계산 안 함)"
  },
- "user_status": "연구 설계 계산 전 잠금 · 사용자 확정 사전등록 아님"
+ "user_status": "연구 설계 계산 전 잠금 · 사용자 확정 사전등록 아님",
+ "code_commit": "519bf5faaff1511e0acabe53c251d343a9c7161d",
+ "data_lock": {
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
+  "futures-1m/mini_kospi200_futures_1min.csv": "63123e6c850ed0e0defea847aae506b6e1b70baa154616c302a4e36283271753"
+ },
+ "hypothesis_C": "미시험 · 이번 배분 제외(반증 아님)"
 }
