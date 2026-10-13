@@ -1,0 +1,30 @@
+name: Discord send
+# 클로드가 만든 짧은 글(예: 매일 16:30 v12a 다시 돌리기 결과)을 디스코드로 한 번 보냅니다.
+# 웹훅 주소는 비밀값 DISCORD_WEBHOOK_URL 에서만 읽고 찍지 않습니다. 글 본문도 기록에 찍지 않습니다.
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: '보낼 글(1900자까지)'
+        required: true
+permissions:
+  contents: read
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Send
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          TEXT: ${{ inputs.text }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK_URL" ]; then echo '비밀값 DISCORD_WEBHOOK_URL이 비어 있습니다.'; exit 1; fi
+          python3 - <<'PY'
+          import json, os, urllib.request
+          body = json.dumps({"content": os.environ["TEXT"][:1900]}).encode("utf-8")
+          req = urllib.request.Request(os.environ["DISCORD_WEBHOOK_URL"], data=body,
+                                       headers={"Content-Type": "application/json", "User-Agent": "stock-dash"})
+          with urllib.request.urlopen(req, timeout=15) as r:
+              print("보냄", r.status)
+          PY
