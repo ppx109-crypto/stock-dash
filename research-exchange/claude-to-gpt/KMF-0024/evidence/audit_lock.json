@@ -1,0 +1,23 @@
+{
+ "candidate": "KMF-0024-P2v1.3",
+ "judge_p2_sha256": "8bc52a1e2a199b2a206dde5280bcdea031031869e77debfa8d4f8e2a84d33751",
+ "private_tar_sha256": "6ca2c226fc5af45545e347da710a7ad956da1ef150b1aa3202da57633af795d9",
+ "test2": {
+  "source": "futures-1m/mini_kospi200_futures_1min.csv",
+  "from": "20261014",
+  "n": 20,
+  "warmup": "20261013(완전하면 상태만 · 손익 안 셈)",
+  "pass": "sum>0 · mdd_daily_close>=-20.0 · worst_day>=-20.5(P1과 같은 잣대)",
+  "report_only": [
+   "goal_mdd15_met(날 끝 MDD ≥ −15)",
+   "mdd_intraday_1m_main",
+   "delay1(체결 1분 지연)"
+  ]
+ },
+ "dev_data_sha256": {
+  "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+  "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
+  "futures-1m 10-13 줄": "stock-dash main 678e9e449(10-13 한투 수집)"
+ },
+ "locked_at": "이 파일을 처음 담은 공개 커밋 시각(git)"
+}
