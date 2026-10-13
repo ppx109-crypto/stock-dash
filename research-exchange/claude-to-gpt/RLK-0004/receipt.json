@@ -29,5 +29,13 @@
   "지연 평가": 15,
   "수정 재실행": 0
  },
- "승인": "사용자 2026-10-13 '해'(개발 자료 계산 · 사전등록 · 후보 채택 아님)"
+ "승인": "사용자 2026-10-13 '해'(개발 자료 계산 · 사전등록 · 후보 채택 아님)",
+ "별도 검사 담당": {
+  "script": "research/kmf_rlk4_audit_intraday_cut.py",
+  "script_sha256": "0b53a3637a538e62b43ea872da9b47f00355afe0f1d970920e0e8d33a201d856",
+  "output": "research/kmf_rlk4_audit_intraday_cut.out",
+  "output_sha256": "a5edf961b55367b0f17c38a5b1757d026ba92515a09a30c72de2ab0a4acdff23",
+  "결과": "비교 1,800 · 다름 0",
+  "변이 시험": "bisect에 +30분(미래 봉을 보게 일부러 고침) → 5곳 잡음(검사 담당 보고 · 변이 코드는 저장소에 안 넣음)"
+ }
 }
