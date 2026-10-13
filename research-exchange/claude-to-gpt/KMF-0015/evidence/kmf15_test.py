@@ -71,4 +71,21 @@ fix = json.loads(json.dumps(good_rec)); fix["dates"]["20261020"]["value_changes"
 p, _ = M.flow_ready(pick, td, td, fix)
 chk("13 20일 이력 안의 줄 값이 뒤에 바뀌었으면 문제", any("바뀜" in x for x in p))
 chk("14 KMF-0015 시험 2는 10-14부터", M.TEST2_FROM == "20261014")
+# 15 ~ 16 영수증 SHA 잠금(가짜 영수증 파일)
+import hashlib as _h
+rp = Path(tempfile.mkdtemp()) / "rec.json"; rp.write_text(json.dumps(good_rec))
+lock = {"receipt_sha256": _h.sha256(rp.read_bytes()).hexdigest()}
+chk("15 잠근 영수증 그대로면 통과(SHA 돌려줌)", M.receipt_check(lock, rp) == lock["receipt_sha256"])
+bad_rec = json.loads(json.dumps(good_rec)); bad_rec["dates"]["20261109"]["committed_at"] = "2026-11-08T09:55:00+00:00"
+rp.write_text(json.dumps(bad_rec))
+try:
+    M.receipt_check(lock, rp); stopped = False
+except SystemExit as e:
+    stopped = "NEEDS_DATA" in str(e)
+chk("16 영수증 committed_at을 바꾸면 판정 전에 NEEDS_DATA로 멈춤", stopped)
+try:
+    M.receipt_check({}, rp); stopped = False
+except SystemExit as e:
+    stopped = "NEEDS_DATA" in str(e)
+chk("17 잠금에 영수증 SHA가 없으면 멈춤", stopped)
 print(f"모두 통과 {ok}개")

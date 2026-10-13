@@ -3,7 +3,7 @@
  "task_id": "KMF-0015",
  "chain_id": "KMF-0015",
  "kind": "PLAN",
- "round": "2",
+ "round": "3",
  "status": "READY",
  "source_pr": null,
  "source_head_sha": null,
@@ -67,9 +67,9 @@
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
   "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
   "research/kmf14.py": "2eb0e33fa36cfdf5db5b28a80c576cd44c0196f11ce3d0327288f3769e624372",
-  "research/kmf15.py": "1f598b73696d69d03ddf24109e064e9794787c19c18c8f54bc40be4b647e23c1",
+  "research/kmf15.py": "b91a068c2a0c4f3bca1d2c57b586b4bb52700562e0029672bd3dfc6f388a53b4",
   "research/kmf_guard.py": "50ea84842684aa2c442491a70544209af901c0b9f4f7a3cb9f95acdea2345e50",
-  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py": "b3d7aeb829a908f3b9542288594e07677c65a5fe043095d8c459f9caed19190c",
+  "research-exchange/claude-to-gpt/KMF-0015/evidence/kmf15_test.py": "f30ac541f5ebc532a8660768dd88e97eab189104ffa6b47e3cd860e0a88080a9",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/delay_check.py": "40560d118b6186eaae01a25d263aba44d4e31d21ca85238000d0ac33825a4aa3",
   "research-exchange/claude-to-gpt/KMF-0015/explore/time_flow_diag.py": "c1a8e4527094410ac9383f905c2dcec0d229b8650cb04d854fcbc140c996433b",
   "research-exchange/claude-to-gpt/KMF-0015/explore/vol_diag.py": "c85b32b8ffcf4e6f53aa11f1bdcb9bc771a19de4517fb8752153aa546e14513f",
@@ -81,13 +81,13 @@
   "research/kmf4.py": "4f594eedfff985c6da55fe1706b1b2dada6c45dbd894bcaf9edeb909be048d12",
   "research/kmf13.py": "39d637066dca0dbb8aabb266e176ecd66ef453600563af517a3d85548bad9049",
   "research/kmf14.py": "2eb0e33fa36cfdf5db5b28a80c576cd44c0196f11ce3d0327288f3769e624372",
-  "research/kmf15.py": "1f598b73696d69d03ddf24109e064e9794787c19c18c8f54bc40be4b647e23c1",
+  "research/kmf15.py": "b91a068c2a0c4f3bca1d2c57b586b4bb52700562e0029672bd3dfc6f388a53b4",
   "kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
   "market-data/investor_KSP.json": "7798a6023eff8a3b6e7ed57f278d384caed471682d7fe37cf6aaf548bcc280ad"
  },
- "input_lock_sha256": "ded4bb388ad807e082d3a961b4be82f295d7af7c8121475dd9e902e26dc8d05d",
- "plan_sha256": "aca4032c656040a3edf0fb8be49532725ab00de562f70be152dc32510ef8a74b",
+ "input_lock_sha256": "3004a669e12588d6eca55fa825a37d633df8b37098f334a1016270de5817da51",
+ "plan_sha256": "0909864696558122ec9c9472ab60ec4ae14e8a399ba67fc785afe3458f0e8bbf",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/KMF-0015/PLAN.md",
   "research-exchange/claude-to-gpt/KMF-0015/evidence/cut_test.out",
@@ -134,5 +134,11 @@
   },
   "collector_fix": "main #310: investor_KSP · KSQ만 18:00 뒤 수집이면 그날까지(10-13 저녁부터)"
  },
- "test2_from": "20261014"
+ "test2_from": "20261014",
+ "test2_ok_contract": [
+  "gpt_pr",
+  "data_sha256",
+  "flow_sha256",
+  "receipt_sha256"
+ ]
 }

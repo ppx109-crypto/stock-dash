@@ -13,6 +13,7 @@
   정정 정책: 모으는 코드가 새 날만 이어 붙이고 지난 날은 다시 받지 않음 · 공급자 정정 버전: 미제공 → 잠근 스냅샷 SHA · 커밋으로 재현
   시험 2(KMF-0015만 10-14부터 완전한 거래일 처음 20일): 날마다 그 앞 21거래일(선물 거래일 달력) 수급 줄이 모두 있고,
    각 줄이 처음 커밋된 시각 ≤ 그 거래일 09:00 KST · 값 정정 없음(영수증) · 하나라도 아니면 판정 파일 쓰기 전에 NEEDS_DATA로 멈춤
+   test2_ok.json = {gpt_pr, data_sha256, flow_sha256, receipt_sha256} · 영수증 SHA도 판정 전에 대조(round 3)
 python3 research/kmf15.py lock | report | cut | receipt | test2"""
 import hashlib
 import json
@@ -223,6 +224,14 @@ def flow_ready(pick_days, trade_days, flow_dates, receipt):
     return problems, used
 
 
+def receipt_check(ok, path=None):
+    """test2_ok.json의 receipt_sha256과 실제 영수증 SHA가 같아야 함 · 다르거나 없으면 NEEDS_DATA로 멈춤. 같으면 그 SHA를 돌려줌."""
+    have = hashlib.sha256(Path(path or RECEIPT).read_bytes()).hexdigest()
+    if not ok.get("receipt_sha256") or have != ok["receipt_sha256"]:
+        sys.exit("NEEDS_DATA: 수급 영수증 SHA가 시험 2 잠금과 다름(판정 안 함)")
+    return have
+
+
 def test2():
     """시험 2 한 번(KMF-0013과 같은 날 고르기 · 워밍업 · 결손일 처리) + 수급 자료도 잠금 해시가 맞아야 함."""
     verify_inputs()
@@ -243,6 +252,7 @@ def test2():
     last = pick_days[-1]
     if not RECEIPT.exists():
         sys.exit("NEEDS_DATA: 수급 영수증(evidence/flow_receipt.json) 없음 — python3 research/kmf15.py receipt 먼저(멈춤)")
+    receipt_sha = receipt_check(ok)                       # 잠근 영수증 SHA와 다르면 판정 전에 멈춤(round 3)
     flow_dates = [r["date"] for r in json.loads(FLOW.read_text())["rows"]]
     problems, used = flow_ready(pick_days, sorted({r[0] for r in rows}), flow_dates, json.loads(RECEIPT.read_text()))
     if problems:
@@ -255,7 +265,7 @@ def test2():
     out = {"verdict": "PASS" if passed else "NO_EDGE", "pick": name(grid()[0]), "days": pick_days,
            "excluded_incomplete": {d: v for d, v in bad.items() if d <= last}, "stats": st, "data_sha256": ok["data_sha256"],
            "flow_sha256": ok["flow_sha256"], "flow_dates_used": {d: used[d][-1] for d in pick_days},
-           "receipt_sha256": hashlib.sha256(RECEIPT.read_bytes()).hexdigest()}
+           "receipt_sha256": receipt_sha}
     TEST2_OUT.parent.mkdir(parents=True, exist_ok=True)
     TEST2_OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print(json.dumps({"verdict": out["verdict"], "total_p": st["total_p"], "per_day_p": st["per_day_p"]}, ensure_ascii=False))
