@@ -6,7 +6,8 @@
   --selfcheck: FWD_DAYS가 비면 148일 RL-4 N z0.5 결정 장부 · 날별 손익 · H가 잠근 결과(kmf_rl4_*.json)와 한 칸도 안 다른지 확인.
 이것은 '20일이 찬 뒤 한 번 하는 날짜순 재생'이며 매일 실제로 내린 shadow 결정이 아닙니다(결과에 그렇게 표시).
 모드: --quality(손익 없이 새 날 자료 품질만) · --selfcheck · --final(20일이 찼을 때 한 번)."""
-import csv, json, sys, types, hashlib, random, collections, statistics as st
+import csv, json, sys, types, hashlib, random, collections, subprocess, statistics as st
+from datetime import date, timedelta
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; RS = ROOT / "research"; sys.path.insert(0, str(RS))
 LOCK = {"kmf_nb.py": "b34f3549fe9a93b951e104148605404737f0bab30faf2d6960296d59957b55de",
@@ -19,7 +20,29 @@ FWD_START, NEED, JUDGE_DELAY, FAMILY = "20261014", 20, 1, ("H", "RL-4 N z0.5", "
 SLIPS = (0.1, 0.3)                         # 민감도만: 손절 · 하루멈춤 정리 한 번마다 불리하게(판정에 안 씀)
 OLD = '            if not (DEV_FROM_F1M <= d < DEV_END) or (CUT and d >= CUT): continue\n'
 NEW = '            if not ((DEV_FROM_F1M <= d < DEV_END) or d in FWD_DAYS) or (CUT and d >= CUT): continue\n'
+DEV_DATA = ("kiwoom-data/mini_1min_2026_01_08.csv", "kiwoom-data/kospi200_futures_1min.csv")   # 148일 초기 학습에 읽히는 개발 입력(F1M 10-13 하루는 F1M 해시로)
+FIRST, LAST = 540, 934                     # 엔진(kmf_nb.load)과 같은 정규장 분(09:00 ~ 15:34) · 품질 검사도 이 안에서만(GPT #335 결함 2)
+DEV_HASH = {"kiwoom-data/mini_1min_2026_01_08.csv": "2acfec06a264da7d8d306d911da4c426dccd0d84e8c42b5d005e8c304a9eafe7",
+            "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de"}
+F1M_DEV_SLICE = "6073899291895e9909a0ff39f1da891245226994de35ca0a2fb1796a24b61b7d"   # futures-1m 파일 중 10-14 앞 줄(머리줄 뺌 · 822줄)만의 해시
+
+def f1m_dev_slice():
+    lines = [l for l in F1M.read_bytes().split(b"\n")[1:] if l and l[:10].replace(b"-", b"") < FWD_START.encode()]
+    return hashlib.sha256(b"\n".join(lines)).hexdigest()
+MONTH_CH = "123456789ABC"                  # main collect_fut_1min.py(sha256 0fd513a8…e447)의 front_code 규칙을 그대로 옮김(GPT #335 결함 3)
+COLLECTOR_SHA = "0fd513a81aad8fb37ffafbdab380efc47372631a728c7a9084a59d8d0f15e447"
 sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+def expected_code(d):
+    """그날 장 전에 아는 미니 근월물 코드(만기일 = 둘째 목요일 당일부터 다음 월물)."""
+    day = date(int(d[:4]), int(d[4:6]), int(d[6:])); y, m = day.year, day.month
+    for _ in range(15):
+        first = date(y, m, 1); second_thu = first + timedelta(days=(3 - first.weekday()) % 7 + 7)
+        if second_thu > day: return f"A05{y % 10}{MONTH_CH[m - 1]}000"
+        m += 1
+        if m == 13: y, m = y + 1, 1
+
+detail = {}
 
 def fwd_minutes():
     """새 날(FWD_START ~) 줄의 날 · 분 · 계약 코드만(값은 읽지 않음 · 손익 계산 없음)."""
@@ -27,11 +50,12 @@ def fwd_minutes():
     with open(F1M, encoding="utf-8-sig") as fh:
         for r in csv.DictReader(fh):
             d = r["datetime"][:10].replace("-", "")
-            if d < FWD_START: continue
-            out[d]["m"].append(int(r["datetime"][11:13]) * 60 + int(r["datetime"][14:16])); out[d]["code"].add(r["code"])
+            m = int(r["datetime"][11:13]) * 60 + int(r["datetime"][14:16])
+            if d < FWD_START or not (FIRST <= m <= LAST): continue
+            out[d]["m"].append(m); out[d]["code"].add(r["code"])
     return out
 
-def day_ok(ms, codes):
+def day_ok(d, ms, codes):
     """미리 정한 포함 규칙(결과 보기 전 고정).
     하루: kmf13.complete_days와 같음(중복 0 · 고유 분 ≥ 360 · 첫 분 ≤ 09:05 · 끝 분 ≥ 15:29 · 이웃 분 빈 곳 ≤ 5분).
     봉: 09:00 ~ 15:15 신호용 15분봉 25개 모두 빠진 분 ≤ 5(아니면 그날 전체 뺌 · 봉만 빼지 않음).
@@ -40,25 +64,29 @@ def day_ok(ms, codes):
     if len(ms) != len(u): why.append(f"중복 {len(ms) - len(u)}")
     if len(u) < 360: why.append(f"고유 분 {len(u)}")
     if not u or u[0] > 545: why.append("첫 분 늦음")
-    if not u or u[-1] < 929: why.append("끝 분 이름")
+    if not u or u[-1] < 929: why.append("끝 분 이름(15:29 앞)")
     gap = max((b - a for a, b in zip(u, u[1:])), default=999)
     if gap > 5: why.append(f"빈 곳 {gap}분")
     s = set(u); worst = max(15 - sum(1 for m in range(540 + 15 * k, 555 + 15 * k) if m in s) for k in range(25))
     if worst > 5: why.append(f"15분봉 빠진 분 최대 {worst}")
+    bars = [15 - sum(1 for m in range(540 + 15 * k, 555 + 15 * k) if m in s) for k in range(25)]
+    exp = expected_code(d)
     if len(codes) != 1: why.append(f"계약 코드 {len(codes)}개")
-    return not why, why, {"rows": len(ms), "unique_min": len(u), "max_gap": gap, "bar_missing_max": worst, "codes": sorted(codes)}
+    elif exp not in codes: why.append(f"계약 코드 {sorted(codes)[0]} ≠ 달력 근월물 {exp}")
+    return not why, why, {"rows": len(ms), "unique_min": len(u), "max_gap": gap, "bar_missing_max": worst, "bar_missing": bars, "codes": sorted(codes), "expected_code": exp}
 
 def calendar_days():
     """거래일 달력(KODEX 200 일봉 날짜) · 새 날 줄이 아예 없는 거래일을 '수집 실패'로 가려내는 데만 씀."""
     return sorted(d for d, _ in json.loads(CAL.read_text())["closes"] if d >= FWD_START)
 
 def pick_days():
-    fm = fwd_minutes(); cal = calendar_days(); seen = sorted(set(cal) | set(fm)); good, bad = [], {}
+    global detail
+    fm = fwd_minutes(); cal = calendar_days(); seen = sorted(set(cal) | set(fm)); good, bad = [], {}; detail = {}
     for d in seen:
         if d not in fm: bad[d] = {"사유": ["거래일인데 줄 없음(수집 실패)"]}; continue
-        ok, why, info = day_ok(fm[d]["m"], fm[d]["code"])
+        ok, why, info = day_ok(d, fm[d]["m"], fm[d]["code"])
         if d not in cal: why = why + ["달력에 없는 날(휴장 · 달력 늦음)"]; ok = False
-        (good.append(d) if ok else bad.__setitem__(d, {"사유": why, **info}))
+        (good.append(d) if ok else bad.__setitem__(d, {"사유": why, **info})); detail[d] = {"포함": ok, "사유": why, **info}
     return good, bad, cal
 
 def load_engine(fwd_days):
@@ -71,6 +99,8 @@ def load_engine(fwd_days):
     return mod, kmf_rl4
 
 def selfcheck():
+    for f, h in DEV_HASH.items(): assert sha(ROOT / f) == h, f"{f} 개발 입력 해시 다름"
+    assert f1m_dev_slice() == F1M_DEV_SLICE, "futures-1m 개발 구간(10-13 앞) 해시 다름"
     K, R = load_engine([])
     for f, h in REF.items(): assert sha(RS / f) == h, f"{f} 해시 다름"
     rdec = json.loads((RS / "kmf_rl4_decisions.json").read_text()); rday = json.loads((RS / "kmf_rl4_daily.json").read_text()); bad = 0
@@ -105,9 +135,13 @@ def block_ci(diff, B=2000, L=5, seed=0):
 def final():
     good, bad, cal = pick_days()
     if len(good) < NEED: print("WAITING_DATA", len(good)); return 2
+    sc = subprocess.run([sys.executable, __file__, "--selfcheck"], capture_output=True, text=True)   # 별도 프로세스(GPT #335 결함 1 · 모듈 캐시 섞임 막기)
+    if sc.returncode != 0: print("BLOCKED 148일 자체 확인 실패", sc.stdout[-500:], sc.stderr[-500:]); return 3
     fwd = good[:NEED]; K, R = load_engine(fwd); assert set(fwd) <= set(R.EVAL)
     out = {"표시": "20일이 찬 뒤 한 번 한 날짜순 재생(매일 실제 shadow 결정 아님)", "새 날": fwd, "뺀 날": bad,
-           "code_sha256": {f: sha(RS / f) for f in (*LOCK, "kmf_fwd.py")}, "data_sha256": {str(F1M.relative_to(ROOT)): sha(F1M), str(CAL.relative_to(ROOT)): sha(CAL)},
+           "code_sha256": {f: sha(RS / f) for f in (*LOCK, "kmf_fwd.py")}, "data_sha256": {**{f: sha(ROOT / f) for f in DEV_DATA}, "futures-1m 개발 구간(10-14 앞)": f1m_dev_slice(), str(F1M.relative_to(ROOT)): sha(F1M), str(CAL.relative_to(ROOT)): sha(CAL)},
+           "148일 자체 확인(별도 프로세스)": sc.stdout.strip()[-300:], "참고 결과 해시": {f: sha(RS / f) for f in REF}, "수집기 front_code 규칙 sha256": COLLECTOR_SHA,
+           "날별 품질(포함 · 뺀 날 · 봉별 빠진 분 · 계약)": {d: detail[d] for d in sorted(detail) if d <= fwd[-1]},
            "CAP(엔진 안 하루 멈춤)": K.CAP, "판정 잣대": "지연 1 · 비용 뒤 장 끝 그날 손익 ≥ −15p(자르지 않고 그대로 기록)", "지연별": {}}
     for dl in (0, 1, 2):
         P = R.arm_pnl(dl); p, pick, dec = R.run(P, "N", 0.5)
