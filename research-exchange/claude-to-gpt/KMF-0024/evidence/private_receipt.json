@@ -17,7 +17,7 @@
   "test2_p2.py": "ee05741d452cd7b158d72ad1e076b55b0c96a1019625de6857f7e1fc96313d58",
   "vol3_lab.py": "75f25ed1182314869d033a868c2d1a948745883bfa953b3bd1015b1c1b432612"
  },
- "code_first_public_kst": "2026-10-13 16:57:34(첫 head f73db084f) · 판정기는 round 2에서 바뀜(2분 지연 보고 · 체결 계약 주석) → 이 head 커밋 시각이 새 판정기 첫 공개",
+ "code_first_public_kst": "첫 head 2026-10-13 16:57:34 KST · 현재 판정기(ee05741d…) · 묶음(cc4788fd…) 첫 공개 2026-10-13 17:02:45 KST(round 2 head 89a5bc710)",
  "preserved_at_kst": null,
  "reread_sha256_match": null,
  "보존 상태": "아직 안 됨 — 사용자 비공개 저장소가 없음(저장소 만들기 권한 막힘 · 사용자 22:00 안내 예정). 보존하면 같은 PR에 preserved_at_kst · 올린 뒤 다시 읽은 SHA-256 일치 여부를 적음.",

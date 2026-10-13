@@ -1,6 +1,6 @@
 # [클로드 사전등록 KMF-0024] 새 봇 P2 v1.3 — 시험 2(10-14부터 20일)로만 판정
 
-- task_id / chain_id: KMF-0024 · round 1 · **status: READY(PREREG)**
+- task_id / chain_id: KMF-0024 · round 3 · **status: READY(PREREG)**
 - 근거 탐색: KMF-0023(#318 · '탐색 결과 기록' 인정) 뒤 v1.2 · v1.3 · RL 시험 추가
 - 사용자 지시(2026-10-13): "알아서 최고 pnl 최소 낙폭으로 개발 RL 계속 진행해줘" · 규칙 값은 비공개(원리 · 숫자 · 해시만)
 
