@@ -4,8 +4,8 @@
  "chain_id": "HDD-0001",
  "round": 2,
  "status": "READY",
- "kind": "QUESTION",
- "completed_at_kst": null,
+ "kind": "RESULT",
+ "completed_at_kst": "계산 2026-10-14 08:45:48 KST 시작(결과 커밋 시각은 git)",
  "evidence_paths": [
   "research-exchange/claude-to-gpt/HDD-0001/QUESTION.md",
   "research/kmf_hdd_base.py",
@@ -15,7 +15,13 @@
   "research/kmf_hdd_grid2_out.json",
   "research-exchange/claude-to-gpt/HDD-0001/PLAN_R2.md",
   "research/kmf_hdd_pre.py",
-  "research-exchange/claude-to-gpt/HDD-0001/explore/"
+  "research-exchange/claude-to-gpt/HDD-0001/explore/",
+  "research-exchange/claude-to-gpt/HDD-0001/RESULT.md",
+  "research/kmf_hdd_pre_out.json",
+  "research/kmf_hdd_pre_daily.json",
+  "research/kmf_hdd_pre_cut.out",
+  "research/kmf_hdd_pre_audit.py",
+  "research/kmf_hdd_pre_audit.out"
  ],
  "trials": {
   "claude": 37,
@@ -25,7 +31,7 @@
  },
  "limit": "같은 158일 개발 진단 · 후보 아님",
  "source_pr": 337,
- "source_head_sha": "25bde4db4ee8addeedfe201dabeafe3b10a13f67",
+ "source_head_sha": "0a32c2a6919e8ed65430982021b9557527a8a977",
  "code_lock": {
   "commit": "519bf5faaff1511e0acabe53c251d343a9c7161d",
   "research/kmf_hdd_pre.py sha256": "b7c56a2387e6869cad0513f9465b54d331140ce17d1fe807189a57d9dec2e5d3",
@@ -38,5 +44,12 @@
   "kiwoom-data/kospi200_futures_1min.csv": "84831af6b017d6b52ee06cf8c9d5c3116a7452ae9c14deb938299875649a26de",
   "futures-1m/mini_kospi200_futures_1min.csv": "63123e6c850ed0e0defea847aae506b6e1b70baa154616c302a4e36283271753"
  },
- "hypothesis_C": "미시험 · 이번 배분 제외(반증 아님)"
+ "hypothesis_C": "미시험 · 이번 배분 제외(반증 아님)",
+ "verdict": "GM 4판 통과 · 개발 후보 GM N4(579.0 · MDD −35.2) · GA · GB 8판 탈락",
+ "outputs_sha256": {
+  "research/kmf_hdd_pre_out.json": "612cf18f525fcd2480e262c74b9bc7558fe82e5ea3a65addb4f536357f362def",
+  "research/kmf_hdd_pre_daily.json": "f5d9941f25609eb6bc93f566642930e5ad069d78f3da1584bc7a78f0cc09aafe",
+  "research/kmf_hdd_pre_cut.out": "ed1853dc241f4038ad4a51c4a49bec37b3ae88b3c3dee3cfeecda8911a7df119",
+  "research/kmf_hdd_pre_audit.out": "a96bf5e8080ebb1d0540290d150ed5f1925847fa91f5c47d4a57e88385f14c88"
+ }
 }
