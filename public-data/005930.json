@@ -389,8 +389,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-12",
+  "fetched": "2026-10-13",
   "disclosures": [
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20261013",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013800651"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등거래계획보고서",
+      "date": "20261013",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261013000379"
+    },
     {
       "title": "자기주식취득결과보고서",
       "date": "20261012",
@@ -530,16 +540,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260821",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000262"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820000290"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820000040"
     }
   ]
 }

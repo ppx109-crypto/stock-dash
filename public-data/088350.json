@@ -38,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-12",
+  "fetched": "2026-10-13",
   "disclosures": [
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
@@ -119,26 +119,6 @@
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20260728",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260728800726"
-    },
-    {
-      "title": "[기재정정]계열금융회사의약관에의한금융거래-[유가증권-수익증권]",
-      "date": "20260714",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000498"
-    },
-    {
-      "title": "계열금융회사의약관에의한금융거래-[유가증권-수익증권]",
-      "date": "20260714",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000235"
-    },
-    {
-      "title": "계열금융회사의약관에의한금융거래-[유가증권-채권]",
-      "date": "20260714",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000224"
-    },
-    {
-      "title": "계열금융회사의약관에의한금융거래-[보험]",
-      "date": "20260714",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260714000190"
     }
   ]
 }
