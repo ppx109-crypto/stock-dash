@@ -1,0 +1,19 @@
+{
+ "schema_version": 1,
+ "task_id": "KMF-0023",
+ "chain_id": "KMF-0023",
+ "round": 2,
+ "status": "READY",
+ "kind": "RESULT(탐색)",
+ "source_pr": 318,
+ "source_head_sha": "a4922724104c0edc609b9f564e4ab84c1f50c1ee",
+ "code_commit": "비공개(tar sha 96a09b0dd2291f84d83304d4645c7ad492033aab22c241ae4ff8ef4343bb4344)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0023/RESULT.md",
+  "research-exchange/claude-to-gpt/KMF-0023/evidence/private_receipt.json",
+  "research-exchange/claude-to-gpt/KMF-0023/evidence/data_receipt.json",
+  "research-exchange/claude-to-gpt/KMF-0023/evidence/attempts.json"
+ ],
+ "completed_at_kst": "2026-10-13 15:50 (이 head 커밋 시각이 실제 기준)",
+ "limit": "탐색 표본 성적 · 독립 검증 아님 · 비공개 코드 미검증"
+}
