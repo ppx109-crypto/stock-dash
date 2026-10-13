@@ -1,0 +1,20 @@
+{
+ "schema_version": 1,
+ "task_id": "KMF-0025",
+ "chain_id": "KMF-0025",
+ "round": 3,
+ "status": "READY",
+ "kind": "RESULT(탐색 · 판정 아님)",
+ "source_pr": 320,
+ "source_head_sha": "09d279532978fc64709100193b10e5d1da7b333c",
+ "code_commit": "비공개 tar 286173b0589902ea0fb25943a72384f644b53289b78837fa2119635b2e1cbdf9",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/KMF-0025/RESULT.md",
+  "research-exchange/claude-to-gpt/KMF-0025/evidence/trial_ledger.json",
+  "research-exchange/claude-to-gpt/KMF-0025/evidence/thursday_sample.json",
+  "research-exchange/claude-to-gpt/KMF-0025/evidence/private_receipt.json",
+  "research-exchange/claude-to-gpt/KMF-0025/evidence/provenance_0915.json"
+ ],
+ "completed_at_kst": "이 head 커밋 시각(git)",
+ "limit": "같은 개발 자료 탐색 · 독립 OOS 아님 · 목요일은 결과를 본 뒤 고름 · 공식 손실 기준(계좌 하루 · 달력월 TWR −15%)은 사용자 계좌 크기가 비공개라 미산출(포인트만)"
+}
