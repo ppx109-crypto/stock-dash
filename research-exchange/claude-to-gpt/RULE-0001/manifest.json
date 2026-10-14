@@ -1,0 +1,30 @@
+{
+ "status": "READY",
+ "task_id": "RULE-0001",
+ "source_pr": 359,
+ "lock_head": "fd65b6c67a95d917616be87e46eec51f3210b2a9",
+ "gpt_agree": "2026-10-14 14:00:52 KST",
+ "computed": "2026-10-14 14:01:06~27 KST",
+ "private_sha256": {
+  "rule_lib.py": "4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199",
+  "rule_trend.py": "717247b97365b514cc36081735b617a313988b268f8c319bac76c2bee4afdbe9",
+  "rule_rev.py": "909afd8fb64e055ec07c2b9a7913ddfb27289677c6ce2d1eeffb3c10eacfbb7f",
+  "rule_combine.py": "3de5f636e0fee05dc93ef171ffd39a8cef87c5cb251ef6e0fd956c5507fd84b6"
+ },
+ "outputs_sha256": {
+  "trend_out.json": "b31755782432bcf57003892c670a5953358c222c4c15ecc7749bf32808eb2311",
+  "rev_out.json": "8b05b3ed4bb7472e1583786d88c512eb13554b1c22e28d265110ec5697a560e6",
+  "combine_out.json": "80c7f731a636abf34b52344b744f55b4d3de615d535ff84f9f2e27e09b9d7264",
+  "audit/audit.py": "b445b25a053ad279555f7f352764369cca1650a1d4693d37835448d934846fc6",
+  "audit/auditR.out": "edc6b5de1d84995286aa94046802bacd0a7ec1767ba547b8a05b136fe7a6b410"
+ },
+ "판 수": {
+  "추세": 192,
+  "회귀": 152
+ },
+ "고른 판": {
+  "추세": "V+AMIN+AMAX+PB+EM+P3 n50(= P2 본)",
+  "회귀": "VW 막힌 날 k0.8 s1.5 마감780 1번 ds3 곡선(= P2R)"
+ },
+ "참고 판정": "참고 지지 안 됨(④ 위 5일 47%)"
+}
