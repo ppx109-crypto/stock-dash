@@ -1,0 +1,42 @@
+{
+ "status": "READY",
+ "task_id": "COMP-0003",
+ "source_pr": 348,
+ "lock_head": "4e5b979191a7cc3b3cb18c88292a1da489f2909b",
+ "gpt_agree": "2026-10-14 11:00:57 KST",
+ "computed": "2026-10-14 11:01:17~20 KST",
+ "locked_sha256": {
+  "research/kmf_comp_joint_sig.py": "ea015d366bec386af6cfb0661958fa5b58a5c64d1b352e12aac1ad366fd9203f",
+  "research/kmf_comp_joint_sig.json": "812604ddb947d3b1ab0c32edf3abd7531227f99341e3e32f6a7e06bf54baad12",
+  "private eng2_joint.py": "96b341365e437450870b93d895fc7ec3388088c465c90d2ba2e73eb06f6783a8",
+  "private comp_joint.py": "f19d60a4a05711b9888420b92839356d3c648db6e9b8bf1c6dde8e586611a8ad"
+ },
+ "outputs_sha256": {
+  "research/kmf_comp_joint_out.json": "518eec03f5c626e77e1657029044c3c1e5870c937da7d3ec8f8b2f511a5f4fb3",
+  "research/kmf_comp_joint_out_daily.json": "1133456ce7f90ff3c41eb7a1848c32870e51c21ab602e0cde3a18ff135843221",
+  "research/kmf_comp_joint_out_log.json": "51cfd50eff6e1c6646d646157f23d988c98d7717a10df420c6f2eb6532a97d03",
+  "research/kmf_comp_joint_cut.out": "138a08a4cee2a74d83ceabd566f3c8876d98d6333567e6feeef9fd0973a8745f",
+  "audit/audit3.py": "8bbbb67391f1e143d31ed4c9937bdea1e0b1640e3f5db5ce14908289272a82c3",
+  "audit/audit3.out": "9cc3e6d6a5b82e32f07387a19315b14f75c92248fc93eaa5c3d07479d7663072"
+ },
+ "private_cut_test": {
+  "cut_joint.py": "3451850d44ca406eb173a767714e5f96bd581b785dbea7f437240da0df3d7f89",
+  "cuts": [
+   "20260302",
+   "20260504",
+   "20260701",
+   "20260803",
+   "20260915",
+   "20261001"
+  ],
+  "compared_cells": 16920,
+  "diff_cells": 0
+ },
+ "verdict": {
+  "R0 f0.25": "지지 안 됨",
+  "R0 f0.5": "지지 안 됨",
+  "S3 f0.25": "지지 안 됨",
+  "S3 f0.5": "지지 안 됨"
+ },
+ "log_pnl_definition": "정리 쪽 비용만 뺀 값(진입 비용 0.04는 날 실현에서 따로 뺌) · 비용 뒤 거래 손익 = 기록 − 0.04"
+}
