@@ -1,0 +1,14 @@
+{
+ "status": "READY",
+ "task_id": "AUX-0002",
+ "source_pr": 364,
+ "lock_head": "d55dc14b9715e11e9e43f8cbd0ac676470f4a44a",
+ "gpt_agree": "2026-10-14 15:02:15 KST",
+ "computed": "2026-10-14 15:02:26~27 KST",
+ "aux2.py": "16cd3b83ac7afb26df59c2c07ba3d83ba0dc01b497c7175e372f3e5d1535de96",
+ "aux_lib.py": "500208f2d92b75b95d7765db836c62cf35852345f4ea9e89949fe27ba52914b8",
+ "outputs_sha256": {
+  "aux2_out.json": "cadde1062fda37625dc5950f4e814966b6e8b0663023909c4c077d111e52d234"
+ },
+ "verdict": "자격 2/30 · 고른 판 VR+P2R · 참고 지지 안 됨(④)"
+}
