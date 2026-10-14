@@ -1,0 +1,18 @@
+{
+ "status": "READY",
+ "task_id": "AUX-0001",
+ "source_pr": 362,
+ "lock_head": "4515689887bc2b0dd4c568609fdaee2c916780df",
+ "gpt_agree": "2026-10-14 14:45:09 KST",
+ "computed": "2026-10-14 14:45:24~25 KST",
+ "aux.py sha256": "579040256ad65557884699dbf03b2463e64bfa9bf215b75eb681a197a54599fa",
+ "outputs_sha256": {
+  "aux_out.json": "284403c7be1d1ad1c248cd9f237799df06d3c2786a41b80723c0bdc7c507be7b"
+ },
+ "verdict": "자격 판 0/16 → 실패",
+ "자체 다시 셈": {
+  "후보 수": 16,
+  "자격 수": 0,
+  "탈락 사유 맞음": true
+ }
+}
