@@ -1,0 +1,35 @@
+{
+ "status": "READY",
+ "task_id": "BUILD-0002",
+ "source_pr": 394,
+ "result_pr": 395,
+ "lock_head": "3c49184110fe762aa62a2006f50784320257cbde",
+ "gpt_agree": "2026-10-15 00:25:58 KST (#394)",
+ "computed": "2026-10-15 00:26:31~37 KST",
+ "private_sha256": {
+  "build2.py": "582668cc94c9c2ef4684a8ca59d3235182a09b88ba2eb44ade992d00b35f8c3a",
+  "vt_door2_keys.json": "b00db5c29a23facf2aec80c896602e3844bf523aff3f97191e83a9599ad3de82",
+  "vt_split.py": "454598e79145ce8d2703163aaea6f6549e4a5f83288aecb752ed0d67eb323826",
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda"
+ },
+ "inputs_sha256": {
+  "pool/pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "build2_out.json": "2d600ee20bcdc02ac68d5506ab87bf5a5e12b818afe0f2e6bbe285d344a7926b",
+  "audit/audit.py": "af17f9b799db1480d1076c8000118006fd4445b00f536233a976308da0ad3b86",
+  "audit/audit.out": "765dbf98d348d378a4ac9ccc5b437e6f55986e95ca66b693cbc72ac01045dfbf"
+ },
+ "runs": [
+  "문② 표식 · 분해 표 00:1x~00:21",
+  "smoke 00:22:41",
+  "결과 1회 00:26:31~37",
+  "감사 1회(PASS 15 · FAIL 0 · NEEDS_DATA 4)"
+ ],
+ "evaluations": "(63+7)×2+1 = 141",
+ "not_done": [
+  "문② 표식 원천 · 구현 · tla 재생 · 원천 장부(NEEDS_DATA)",
+  "독립 검증 WAITING_DATA"
+ ],
+ "verdict": "VT1+VE+VT2+M1 선택 · BUILD-0001과 날별 같음 · 막힌 날 쉼"
+}
