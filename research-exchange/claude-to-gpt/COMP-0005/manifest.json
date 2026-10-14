@@ -1,0 +1,34 @@
+{
+ "status": "READY",
+ "task_id": "COMP-0005",
+ "source_pr": 354,
+ "lock_head": "d4ce25e4b4dfdecb8eab70fb840c8753f8b48548",
+ "gpt_agree": "2026-10-14 12:25:41 KST",
+ "computed": "2026-10-14 12:26:10~13 KST",
+ "locked_sha256": {
+  "research/kmf_comp_lastm2_sig.py": "b3155bd294e02506bfc7e6f8bae88c2c4ef064f62809376275d3dbc926f67b1b",
+  "research/kmf_comp_lastm2_sig.json": "6936085b4f1f16862780d20b91a3d014acebfa013d057d505477ce356dad2c2d",
+  "private eng2_joint3.py": "99a58d8006967a672d2247470fef7549a5575426e57ac994555fd02f932745a3",
+  "private comp_lastm2.py": "31959185236fd0217f731058f6267b050347541fa124a14e09ee836c563c6904"
+ },
+ "outputs_sha256": {
+  "research/kmf_comp_lastm2_out.json": "941141e3c4f15faed1e409dbb6a97acc14c44bba731983f9dfe9b9813d4c906a",
+  "research/kmf_comp_lastm2_out_daily.json": "34d66034872d1ae112a4395ab00723998301e1ea7456447ced8c3cb3963e06fe",
+  "research/kmf_comp_lastm2_out_log.json": "0b9feac30cec604f82faf11696ed2c7e87a426564ffaec4820c240e37f40615c",
+  "research/kmf_comp_lastm2_cut.out": "138a08a4cee2a74d83ceabd566f3c8876d98d6333567e6feeef9fd0973a8745f",
+  "audit/audit5.py": "780b87d729ef5bad5c9709f974120898b400a2681cecbe8b53eb9e3b239ef124",
+  "audit/audit5.out": "ed4438bcc9364f98508218613d0f41cfe1d24f655d4eb2dc0e21c8248089e833"
+ },
+ "private_cut_test": {
+  "cut_lastm2.py": "f67a1c1351b64b50aebf0e41880169b656704f4954a16cc41702e8c831bd98b8",
+  "compared_cells": 16920,
+  "diff_cells": 0
+ },
+ "verdict": {
+  "M12 s1.0": "지지",
+  "M12 s1.5": "지지 안 됨(④)",
+  "M1cap s1.0": "지지 안 됨(④)",
+  "M1cap s1.5": "지지 안 됨(④)"
+ },
+ "note": "재사용 개발 자료 · 채택 아님 · 사용자 승인 전 새 날 시험 없음"
+}
