@@ -61,7 +61,7 @@ def block_ci(v, B=2000, L=5, seed=0, stat_fn=lambda x: sum(x) / len(x)):
         s = []
         while len(s) < n: i = rng.randrange(0, n - L + 1); s += v[i:i + L]
         out.append(stat_fn(s[:n]))
-    out.sort(); return [round(out[int(0.025 * B)], 4), round(out[int(0.975 * B) - 1], 4)]
+    out.sort(); return [out[int(0.025 * B)], out[int(0.975 * B) - 1]]   # 원정밀도(표시할 때만 반올림 · GPT #339)
 
 def run_plan(rule=None, quiet_only=True):
     orig, adv, logs, nadj = {}, {}, {}, 0
@@ -94,7 +94,7 @@ def main():
         for mo in [None] + months:
             ds = [d for d in DAYS if mo is None or d[:6] != mo]; v = [p[d] for d in ds]
             qv = [p[d] for d in ds if Z[d]]
-            rows["전체" if mo is None else f"{mo} 뺌"] = {"날": len(ds), "합": round(sum(v), 2), "날 평균": round(sum(v) / len(v), 4), "조용한 날 평균": round(sum(qv) / len(qv), 4), "95% 구간(날 평균)": block_ci(v),
+            rows["전체" if mo is None else f"{mo} 뺌"] = {"날": len(ds), "합": round(sum(v), 2), "날 평균": round(sum(v) / len(v), 4), "조용한 날 평균": round(sum(qv) / len(qv), 4), "95% 구간(날 평균)": [round(x, 4) for x in block_ci(v)],
                                                        "거래 수": sum(len(lg0[d]) for d in ds)}
         h1[nm] = rows
     out["가설 1"] = h1; out["가설 1"]["스트레스판에서 손익이 바뀐 날 수(대조)"] = n0
@@ -110,14 +110,15 @@ def main():
             res = {}
             for nm, p, base, lb in (("원판", o, o0, lg0), ("스트레스판", a, a0, lg0)):
                 ex = [p[d] - base[d] for d in DAYS]; best = max(range(len(ex)), key=lambda i: ex[i])
-                kept = {(t["신호분"]) for d in DAYS for t in lg[d]}
                 blocked = [t["손익"] for d in DAYS for t in lb[d] if (t["신호분"]) not in {u["신호분"] for u in lg[d]}]
-                s = stat(p)
-                res[nm] = {"합": s["합"], "MDD": s["MDD"], "최악": s["최악"], "앞반": s["앞반"], "뒤반": s["뒤반"], "초과 합": round(sum(ex), 2),
-                           "초과 합 95%": block_ci(ex, stat_fn=sum), "가장 큰 한 날 뺀 초과": round(sum(ex) - ex[best], 2), "막힌 대조 거래 수": len(blocked),
-                           "막힌 대조 거래 손익 합": round(sum(blocked), 2), "−15 넘은 날": sum(1 for v in p.values() if v < -15.0),
-                           "새로 생긴 거래 수": sum(1 for d in DAYS for t in lg[d] if t["신호분"] not in {u["신호분"] for u in lb[d]})}
-                res[nm]["지지"] = res[nm]["초과 합"] > 0 and res[nm]["초과 합 95%"][0] > 0 and res[nm]["가장 큰 한 날 뺀 초과"] > 0 and res[nm]["막힌 대조 거래 손익 합"] < 0
+                raw = {"초과 합": sum(ex), "초과 합 95%": block_ci(ex, stat_fn=sum), "가장 큰 한 날 뺀 초과": sum(ex) - ex[best], "막힌 대조 거래 손익 합": sum(blocked)}
+                cond = {"초과 합 > 0": raw["초과 합"] > 0, "95% 하한 > 0": raw["초과 합 95%"][0] > 0, "한 날 빼도 > 0": raw["가장 큰 한 날 뺀 초과"] > 0, "막힌 거래 손익 < 0": raw["막힌 대조 거래 손익 합"] < 0}
+                s_ = stat(p)
+                res[nm] = {"합": s_["합"], "MDD": s_["MDD"], "최악": s_["최악"], "앞반": s_["앞반"], "뒤반": s_["뒤반"], "초과 합": round(raw["초과 합"], 2),
+                           "초과 합 95%": [round(x, 2) for x in raw["초과 합 95%"]], "가장 큰 한 날 뺀 초과": round(raw["가장 큰 한 날 뺀 초과"], 2), "막힌 대조 거래 수": len(blocked),
+                           "막힌 대조 거래 손익 합": round(raw["막힌 대조 거래 손익 합"], 2), "−15 넘은 날": sum(1 for v in p.values() if v < -15.0),
+                           "새로 생긴 거래 수": sum(1 for d in DAYS for t in lg[d] if t["신호분"] not in {u["신호분"] for u in lb[d]}),
+                           "원정밀도": raw, "조건": cond, "지지": all(cond.values())}
             h2[name] = res; daily[name + " 원판"] = o; daily[name + " 스트레스"] = a
     out["가설 2"] = h2
     sfx = os.getenv("KMF_OUT_SUFFIX", "")
