@@ -1,0 +1,86 @@
+PASS [1] 판 "대조 다 넣기" 있음 · real/mtm 통계 · 날별 · 뺀 거래 있음
+PASS [1] 판 "R λ1" 있음 · real/mtm 통계 · 날별 · 뺀 거래 있음
+PASS [1] 판 "R λ10" 있음 · real/mtm 통계 · 날별 · 뺀 거래 있음
+PASS [1] 판 "K γ0.95" 있음 · real/mtm 통계 · 날별 · 뺀 거래 있음
+PASS [1] 판 이름 정확히 4개: ['K γ0.95', 'R λ1', 'R λ10', '대조 다 넣기']
+PASS [2] 대조 다 넣기 real 전체 통계 재계산 일치
+PASS [2] 대조 다 넣기 real 1~6월 통계 재계산 일치
+PASS [2] 대조 다 넣기 real 7~10월 통계 재계산 일치
+PASS [2] 대조 다 넣기 real 9~10월 통계 재계산 일치
+PASS [2] 대조 다 넣기 real 09-21 이후 통계 재계산 일치
+PASS [3] 대조 다 넣기 real 점수 셈 9.7799 / 저장 9.7799
+PASS [3] 대조 다 넣기 real 자격 셈 True / 저장 True
+PASS [2] 대조 다 넣기 mtm 전체 통계 재계산 일치
+PASS [2] 대조 다 넣기 mtm 1~6월 통계 재계산 일치
+PASS [2] 대조 다 넣기 mtm 7~10월 통계 재계산 일치
+PASS [2] 대조 다 넣기 mtm 9~10월 통계 재계산 일치
+PASS [2] 대조 다 넣기 mtm 09-21 이후 통계 재계산 일치
+PASS [3] 대조 다 넣기 mtm 점수 셈 8.7985 / 저장 8.7985
+PASS [3] 대조 다 넣기 mtm 자격 셈 False / 저장 False
+PASS [2] R λ1 real 전체 통계 재계산 일치
+PASS [2] R λ1 real 1~6월 통계 재계산 일치
+PASS [2] R λ1 real 7~10월 통계 재계산 일치
+PASS [2] R λ1 real 9~10월 통계 재계산 일치
+PASS [2] R λ1 real 09-21 이후 통계 재계산 일치
+PASS [3] R λ1 real 점수 셈 8.3747 / 저장 8.3747
+PASS [3] R λ1 real 자격 셈 False / 저장 False
+PASS [2] R λ1 mtm 전체 통계 재계산 일치
+PASS [2] R λ1 mtm 1~6월 통계 재계산 일치
+PASS [2] R λ1 mtm 7~10월 통계 재계산 일치
+PASS [2] R λ1 mtm 9~10월 통계 재계산 일치
+PASS [2] R λ1 mtm 09-21 이후 통계 재계산 일치
+PASS [3] R λ1 mtm 점수 셈 7.626 / 저장 7.626
+PASS [3] R λ1 mtm 자격 셈 False / 저장 False
+PASS [2] R λ10 real 전체 통계 재계산 일치
+PASS [2] R λ10 real 1~6월 통계 재계산 일치
+PASS [2] R λ10 real 7~10월 통계 재계산 일치
+PASS [2] R λ10 real 9~10월 통계 재계산 일치
+PASS [2] R λ10 real 09-21 이후 통계 재계산 일치
+PASS [3] R λ10 real 점수 셈 9.094 / 저장 9.094
+PASS [3] R λ10 real 자격 셈 True / 저장 True
+PASS [2] R λ10 mtm 전체 통계 재계산 일치
+PASS [2] R λ10 mtm 1~6월 통계 재계산 일치
+PASS [2] R λ10 mtm 7~10월 통계 재계산 일치
+PASS [2] R λ10 mtm 9~10월 통계 재계산 일치
+PASS [2] R λ10 mtm 09-21 이후 통계 재계산 일치
+PASS [3] R λ10 mtm 점수 셈 8.1127 / 저장 8.1127
+PASS [3] R λ10 mtm 자격 셈 False / 저장 False
+PASS [2] K γ0.95 real 전체 통계 재계산 일치
+PASS [2] K γ0.95 real 1~6월 통계 재계산 일치
+PASS [2] K γ0.95 real 7~10월 통계 재계산 일치
+PASS [2] K γ0.95 real 9~10월 통계 재계산 일치
+PASS [2] K γ0.95 real 09-21 이후 통계 재계산 일치
+PASS [3] K γ0.95 real 점수 셈 9.6367 / 저장 9.6367
+PASS [3] K γ0.95 real 자격 셈 True / 저장 True
+PASS [2] K γ0.95 mtm 전체 통계 재계산 일치
+PASS [2] K γ0.95 mtm 1~6월 통계 재계산 일치
+PASS [2] K γ0.95 mtm 7~10월 통계 재계산 일치
+PASS [2] K γ0.95 mtm 9~10월 통계 재계산 일치
+PASS [2] K γ0.95 mtm 09-21 이후 통계 재계산 일치
+PASS [3] K γ0.95 mtm 점수 셈 8.6553 / 저장 8.6553
+PASS [3] K γ0.95 mtm 자격 셈 False / 저장 False
+PASS [4] 고른 판 셈 "대조 다 넣기" / 저장 "대조 다 넣기" (대조 점수 9.7799 · 후보 [])
+PASS [5] 대조 real_날별 = BUILD-0001 · 날 수 183/183 · 날짜 같음 True · 최대 차 0
+PASS [6] 대조 뺀 거래 모두 0: {'VT': 0, 'VE': 0, 'M1_s1.0': 0}
+PASS [6] R λ1 뺀 거래 (8, 0, 10) = QUESTION smoke (8, 0, 10)
+PASS [6] R λ1 뺀 거래 RESULT 표 (8, 0, 10) = 출력 (8, 0, 10)
+PASS [6] R λ10 뺀 거래 (6, 0, 2) = QUESTION smoke (6, 0, 2)
+PASS [6] R λ10 뺀 거래 RESULT 표 (6, 0, 2) = 출력 (6, 0, 2)
+PASS [6] K γ0.95 뺀 거래 (3, 0, 16) = QUESTION smoke (3, 0, 16)
+PASS [6] K γ0.95 뺀 거래 RESULT 표 (3, 0, 16) = 출력 (3, 0, 16)
+PASS [6] QUESTION.md에 smoke 숫자 문구 있음
+PASS [7] RESULT 표에 판 4줄 있음: ['K γ0.95', 'R λ1', 'R λ10', '대조 다 넣기']
+PASS [7] RESULT 표 "대조 다 넣기" 숫자 일치
+PASS [7] RESULT 표 "R λ1" 숫자 일치
+PASS [7] RESULT 표 "R λ10" 숫자 일치
+PASS [7] RESULT 표 "K γ0.95" 숫자 일치
+PASS [7] R 학습기 7~10월 합 = 대조 556.5 (대조 556.5 · λ1 556.4689 · λ10 556.4689)
+PASS [7] K 09-21 이후 합 23.7253 ≈ 23.7
+PASS [7] mtm 대조 +1114.4 / −20.6 (셈 1114.40 / -20.64)
+PASS [7] mtm 학습기 범위 +1026.5~+1088.9 / −20.6~−25.5 (셈 [1026.5, 1063.0, 1088.9] / [-25.5, -20.6, -20.6])
+NEEDS_DATA [8] 학습기 인과성(엄격히 앞 거래만 배움) — rl_filt1.py 비공개
+NEEDS_DATA [8] 맥락 가용 시각(진입 분에 앎) — rl_exit1.ctx 비공개
+NEEDS_DATA [8] 비공개 구현(rl_filt1 / judge / exit1) 내용 · 해시 대조
+NEEDS_DATA [8] tla 조립 재생(VT > VE > M1 prio · stop) — tla.py 비공개
+NEEDS_DATA [8] 원천 장부(pool_ledger.json · exit1 거래 목록) 대조
+요약 PASS 80 · FAIL 0 · NEEDS_DATA 5
