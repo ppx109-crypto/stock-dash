@@ -12,7 +12,7 @@ import math
 import os
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -58,6 +58,9 @@ TR_SELL = os.getenv("KIS_PAPER_TR_SELL", "VTTC0011U")
 # 계좌 돈에 꽉 맞춘 수량은 거절됨(2026-10-06 빈칸 엔진 인버스 45,539주 · 약 9,700만 원 → 40250000). 주문 전에 물어 수량을 맞춤.
 TR_BUYABLE = os.getenv("KIS_PAPER_TR_BUYABLE", "VTTC8908R")
 BUYABLE_PATH = "/uapi/domestic-stock/v1/trading/inquire-psbl-order"
+# 오늘 주문 내역(주식일별주문체결조회) — 주문 중 연결이 끊겼을 때 실제로 들어갔는지 확인(사용자 2026-10-14 "주문이 나갔는지 확인 후 재주문")
+TR_CCLD = os.getenv("KIS_PAPER_TR_CCLD", "VTTC8001R")
+CCLD_PATH = "/uapi/domestic-stock/v1/trading/inquire-daily-ccld"
 # 시장가 매수가 묶는 돈 ÷ 실제 값(확인: 1억 → 251340 2,130원 34,608주 = 1.357배). 자리 내주기를 정할 때 씀.
 MKT_MARGIN = float(os.getenv("PAPER_MKT_MARGIN", "1.36"))
 
@@ -186,12 +189,9 @@ class PaperBroker(broker_kis.KIS):
                     raise broker_kis.BrokerError("살 수 있는 수량이 0주라 넣지 않았습니다(시장가 매수가능 조회).")
                 qty = can
         self.last_qty = qty
-        self.authorize()
-        _, data = self.request("POST", ORDER_PATH, headers={
-            "authorization": "Bearer " + self.token, "appkey": self.key, "appsecret": self.secret,
-            "tr_id": TR_BUY if side == "buy" else TR_SELL, "custtype": "P", "content-type": "application/json; charset=utf-8"},
-            json={"CANO": self.cano, "ACNT_PRDT_CD": self.product, "PDNO": str(code), "ORD_DVSN": "01",
-                  "ORD_QTY": str(int(qty)), "ORD_UNPR": "0"})
+        data = self._send_checked(code, side, qty)
+        if data.get("_found"):                    # 끊겼지만 실제로 들어가 있던 주문
+            return data["_found"]
         if str(data.get("rt_cd")) != "0":
             msg = str(data.get("msg_cd") or "").strip()
             msg = msg if re.fullmatch(r"[A-Z0-9]{4,10}", msg) else ""
@@ -199,6 +199,68 @@ class PaperBroker(broker_kis.KIS):
         out = data.get("output") or {}
         no = str(out.get("ODNO") or "").strip()
         return no if re.fullmatch(r"[0-9]{1,12}", no) else ""
+
+
+    def _post_order(self, code, side, qty):
+        self.authorize()
+        _, data = self.request("POST", ORDER_PATH, headers={
+            "authorization": "Bearer " + self.token, "appkey": self.key, "appsecret": self.secret,
+            "tr_id": TR_BUY if side == "buy" else TR_SELL, "custtype": "P", "content-type": "application/json; charset=utf-8"},
+            json={"CANO": self.cano, "ACNT_PRDT_CD": self.product, "PDNO": str(code), "ORD_DVSN": "01",
+                  "ORD_QTY": str(int(qty)), "ORD_UNPR": "0"})
+        return data
+
+    def today_orders(self, code, side):
+        """오늘 이 종목 · 이 방향으로 들어간 주문 [(주문 시각 HHMMSS, 주문 번호, 수량)]. 물어보지 못하면 None."""
+        day = datetime.now(KST).strftime("%Y%m%d")
+        try:
+            self.authorize()
+            _, data = self.request("GET", CCLD_PATH, headers={
+                "authorization": "Bearer " + self.token, "appkey": self.key, "appsecret": self.secret,
+                "tr_id": TR_CCLD, "custtype": "P"},
+                params={"CANO": self.cano, "ACNT_PRDT_CD": self.product, "INQR_STRT_DT": day, "INQR_END_DT": day,
+                        "SLL_BUY_DVSN_CD": "02" if side == "buy" else "01", "INQR_DVSN": "00", "PDNO": str(code),
+                        "CCLD_DVSN": "00", "ORD_GNO_BRNO": "", "ODNO": "", "INQR_DVSN_3": "00", "INQR_DVSN_1": "",
+                        "CTX_AREA_FK100": "", "CTX_AREA_NK100": ""})
+        except broker_kis.BrokerError:
+            return None
+        if str(data.get("rt_cd")) != "0":
+            return None
+        out = []
+        for r in data.get("output1") or []:
+            if str(r.get("pdno") or "").strip() != str(code):
+                continue
+            try:
+                out.append((str(r.get("ord_tmd") or "").strip(), str(r.get("odno") or "").strip(), int(float(str(r.get("ord_qty") or 0)))))
+            except (TypeError, ValueError):
+                continue
+        return out
+
+    def _send_checked(self, code, side, qty, resend=2, wait=3.0):
+        """주문을 보내고, 연결이 끊겨 들어갔는지 모를 때는 오늘 주문 내역으로 확인 → 보낸 시각 뒤 같은 수량 주문이 있으면 그 번호 ·
+        없으면 다시 보냄(최대 resend번). 확인 자체를 못 하면 다시 보내지 않음(겹 주문보다 안 사는 쪽이 안전)."""
+        seen = set()
+        for turn in range(resend + 1):
+            at = (datetime.now(KST) - timedelta(seconds=5)).strftime("%H%M%S")   # 서버 시계 차 여유 5초
+            try:
+                return self._post_order(code, side, qty)
+            except broker_kis.BrokerError as e:
+                if getattr(e, "net", None) != "sent" or turn == resend:
+                    raise
+            now = None
+            for _ in range(3):                          # 서버가 주문을 적을 틈을 주고 확인
+                time.sleep(wait)
+                now = self.today_orders(code, side)
+                if now is not None:
+                    break
+            if now is None:
+                raise broker_kis.BrokerError("주문 중 연결이 끊겼고 주문 내역도 확인하지 못해 다시 넣지 않았습니다(겹 주문 막기 · 확인 필요).")
+            new = [o for o in now if o[0] >= at and o[1] not in seen and o[2] == qty]
+            if new:
+                print("주문 중 연결이 끊겼지만 주문 내역에서 들어간 것을 확인함")
+                return {"_found": new[-1][1] if re.fullmatch(r"[0-9]{1,12}", new[-1][1]) else ""}
+            print(f"주문 중 연결이 끊겼고 주문 내역에 없어 다시 넣음({turn + 1}/{resend})")
+            seen |= {o[1] for o in now}
 
 
 def enabled(now=None):
