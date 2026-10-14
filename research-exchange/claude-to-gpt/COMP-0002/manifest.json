@@ -1,0 +1,30 @@
+{
+ "schema_version": 1,
+ "task_id": "COMP-0002",
+ "chain_id": "COMP-0002",
+ "round": 1,
+ "status": "READY",
+ "kind": "RESULT",
+ "source_pr": 345,
+ "code_commit": "9cdef88998f0bf569e4825b25648416e046fa433",
+ "code_lock": {
+  "research/kmf_comp_cush.py sha256": "8778cdeacbbc9b25b0fb976cc66f032f4eb602b6d69f85871792f239820e0ea4",
+  "research/kmf_p2_done_table.json sha256": "8a7f1d975860b2d824f0c32f389c8ff8e6592c316fab33e8bb9c99a41c530aa7"
+ },
+ "verdict": "R0 · S3 지지 안 됨 · 결합 MDD −15 유지",
+ "completed_at_kst": "2026-10-14 10:26:24 ~ 10:26:25 KST",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/COMP-0002/RESULT.md",
+  "research/kmf_comp_cush.py",
+  "research/kmf_p2_done_table.json",
+  "research/kmf_comp_cush_out.json",
+  "research/kmf_comp_cush_daily.json",
+  "research/kmf_comp_cush_audit.py",
+  "research/kmf_comp_cush_audit.out"
+ ],
+ "outputs_sha256": {
+  "research/kmf_comp_cush_out.json": "741d885fc3d3d75dfa18416d4e976f4b1c11c6a72fa4dc43d84766fb2dced81d",
+  "research/kmf_comp_cush_daily.json": "89244c5941ec6050ba48233513aa3b6da71c91f8869d3090bbd049e67eb2fbbe",
+  "research/kmf_comp_cush_audit.out": "6afa303552b97260f304a4c3bc5e79f65bd7f3744cc7d7fb0ac68a515538e0e1"
+ }
+}
