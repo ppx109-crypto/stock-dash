@@ -2,7 +2,7 @@
  "status": "READY",
  "task_id": "BUILD-0002",
  "source_pr": 394,
- "result_pr": null,
+ "result_pr": 395,
  "lock_head": "3c49184110fe762aa62a2006f50784320257cbde",
  "gpt_agree": "2026-10-15 00:25:58 KST (#394)",
  "computed": "2026-10-15 00:26:31~37 KST",
