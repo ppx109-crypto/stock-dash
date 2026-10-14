@@ -1,0 +1,30 @@
+{
+ "schema_version": 1,
+ "task_id": "COMP-0001",
+ "chain_id": "COMP-0001",
+ "round": 2,
+ "status": "READY",
+ "kind": "RESULT",
+ "source_pr": 343,
+ "code_commit": "538107108ca4f1ff02d7e8aa35ab990e5ef90d15",
+ "code_lock": {
+  "research/kmf_comp_w1.py sha256": "310a7dbfe5be273c1bd48184b0b0dfbd1aa045282eebe35416a738dfe7c87a72",
+  "comp_combine.py(비공개) sha256": "38a07a8bf8381896dbf81987237f7df547dd538c44f3ccee7e991ddc6986f20b"
+ },
+ "verdict": "6판 모두 지지 안 됨(띠 되돌림은 손익 +33~38 · 결합 MDD −15 → −31~−34)",
+ "completed_at_kst": "2026-10-14 10:08:15 ~ 10:08:19 KST",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/COMP-0001/RESULT.md",
+  "research-exchange/claude-to-gpt/COMP-0001/COMBINE_CONTRACT.md",
+  "research/kmf_comp_w1.py",
+  "research/kmf_comp_w1_daily.json",
+  "research/kmf_comp_w1_out.json",
+  "research/kmf_comp_w1_audit.py",
+  "research/kmf_comp_w1_audit.out"
+ ],
+ "outputs_sha256": {
+  "research/kmf_comp_w1_daily.json": "3d0a9f69661fce5dd772c2428e8e08f5c5437db434ba271f6976d8520e8d60b3",
+  "research/kmf_comp_w1_out.json": "12f2cdad79a23d319eb70305020e41e32bc72e66efacede81570c8a8f038cd4a",
+  "research/kmf_comp_w1_audit.out": "9bb42b24867f2872baadbbef0feb828e62989c2604ef4a545807965bc2e489dd"
+ }
+}
