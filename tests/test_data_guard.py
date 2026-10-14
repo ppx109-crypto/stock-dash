@@ -60,3 +60,23 @@ class PlanReady(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PrevDayFallback(unittest.TestCase):
+    """지수 조회가 안 되면 KODEX 200 일봉 날짜로 대신(2026-10-14 점검)."""
+    def test_index_fails_uses_kodex200(self):
+        class C:
+            def index_daily(self, *a):
+                raise RuntimeError("x")
+            def daily(self, code, start, end):
+                assert code == "069500"
+                return [("20261008", 100.0), ("20261013", 101.0), ("20261014", 102.0)]
+        self.assertEqual(G.prev_trading_day(C(), "20261014"), "20261013")
+
+    def test_index_empty_uses_kodex200(self):
+        class C:
+            def index_daily(self, *a):
+                return []
+            def daily(self, code, start, end):
+                return [("20261012", 100.0), ("20261013", 101.0)]
+        self.assertEqual(G.prev_trading_day(C(), "20261014"), "20261013")

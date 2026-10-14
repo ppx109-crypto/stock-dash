@@ -17,13 +17,23 @@ def _minus(day, days):
 
 
 def prev_trading_day(client, day):
-    """오늘(day)보다 앞선 가장 늦은 거래일. 조회가 안 되면 None."""
+    """오늘(day)보다 앞선 가장 늦은 거래일. 코스피 지수 일봉 → 안 되면 KODEX 200(069500) 일봉으로 대신. 둘 다 안 되면 None.
+    (2026-10-14 점검: 지수 조회가 조용히 실패해 바구니 · 덧붙임이 '어제 거래일 모름'으로 사건 · 국면을 못 봤음 → 대신할 길 · 까닭 찍기)"""
     try:
         rows = client.index_daily("0001", _minus(day, 20), day)
-    except Exception:
+        days = sorted(str(r.get("date", "")) for r in rows or [] if str(r.get("date", "")) < day and r.get("종가"))
+        if days:
+            return days[-1]
+        print("어제 거래일: 지수 일봉이 비어 KODEX 200으로 대신")
+    except Exception as e:
+        print("어제 거래일: 지수 일봉 조회 실패 ·", type(e).__name__, "→ KODEX 200으로 대신")
+    try:
+        rows = client.daily("069500", _minus(day, 20), day)
+        days = sorted(str(r[0]) for r in rows or [] if str(r[0]) < day and r[1])
+        return days[-1] if days else None
+    except Exception as e:
+        print("어제 거래일: KODEX 200 일봉 조회도 실패 ·", type(e).__name__)
         return None
-    days = sorted(str(r.get("date", "")) for r in rows or [] if str(r.get("date", "")) < day and r.get("종가"))
-    return days[-1] if days else None
 
 
 def last_days(prices):
