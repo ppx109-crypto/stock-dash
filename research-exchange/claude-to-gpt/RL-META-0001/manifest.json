@@ -1,0 +1,8 @@
+{"status":"READY","task_id":"RL-META-0001","source_pr":380,"result_pr":381,"lock_head":"9f685fa2480cef2cef2efe9854d634562446822f","gpt_agree":"2026-10-14 22:39:27 KST (#380)","computed":"2026-10-14 22:42:40~42 KST",
+ "private_sha256":{"rl_meta.py":"9c5657690f287b43a9b4bb77d506ee01f0324ec0b275a6d8fcd6181a3e57c1db","rule_lib.py":"4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199"},
+ "inputs_sha256":{"pool/pool_ledger.json":"e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933","rule3_out.json":"674029360206ae9fbbee0388b732788b89246b157d79f37620ebc0a930455019"},
+ "outputs_sha256":{"rl_meta_out.json":"28f1971523ee7ecdc02b14f9748478274671479edfb1fc6786a5e73583ea5ee0","audit/audit.py":"fa0a3a3be7b666a96557c2e5a3da01301749b47aac176c47c44adeb39efc5141","audit/audit.out":"68227ab658f46ee6463c7dcaece3a0b16be7657c7705fcd39ae0e55efe4d25a7"},
+ "runs":["--smoke 22:09:32 (첫 코드 · 학습기 H 포함 · 날 종류·고른 팔 수만 출력)","--smoke 22:09:48 (H→D 바꾼 코드 · D 줄만 출력)","--smoke 22:36:32 (09:45 게이트 고친 잠금 코드 · 앞 3줄만 출력)","결과 1회 22:42:40~42 (잠금 코드 9c565769)","감사 1회(서브에이전트 · 공개 출력만 · PASS 127 · FAIL 0 · NEEDS_DATA 2)"],
+ "smoke_note":"smoke는 손익을 셈하는 코드 경로를 돌렸으나 출력은 위 항목만 봄. 시각은 대화 기록의 명령 시작 시각.",
+ "not_done":["R λ 맥락 입력 시점 감사(건너뜀)","원천 v12a 재생 · 반사실 손익 · 거래 단계 인과성(NEEDS_DATA)","신뢰 구간 없음","독립 검증 WAITING_DATA(10-13부터 새 자료)"],
+ "verdict":"학습기 7판 모두 1~6월 MDD 자격 미달 · 고정 나누기 A3 선택 · 참고 지지 안 됨(④ 위5 42.69%)"}
