@@ -1,0 +1,79 @@
+== 1. 날 목록
+PASS 183일 | 183일 20260108~20261012
+PASS 첫날 0108 · 끝날 1012
+PASS rule2 결합 날별 날짜 = RULE-0001 결합 날짜
+PASS rev P2R 날별 날짜 = 183일
+PASS 고른 판 · P2 본 날별은 183일 포함 | 183일 밖 날 ['20260102', '20260105', '20260106', '20260107']
+   SEL 115일 · CHK 68일
+== 2. 구간 성적 다시 셈(183일 · 허용 1e-6)
+PASS 결합 · 고르기 1~6월
+PASS 결합 · 참고 7~8월
+PASS 결합 · 참고 9~10월
+PASS 결합 · 참고 7~10월
+PASS 결합 · 전체
+PASS 대조 P2(T+R) · 고르기 1~6월
+PASS 대조 P2(T+R) · 참고 7~8월
+PASS 대조 P2(T+R) · 참고 9~10월
+PASS 대조 P2(T+R) · 참고 7~10월
+PASS 대조 P2(T+R) · 전체
+PASS 고른 판(추세만) · 고르기 1~6월
+PASS 고른 판(추세만) · 참고 7~8월
+PASS 고른 판(추세만) · 참고 9~10월
+PASS 고른 판(추세만) · 참고 7~10월
+PASS 고른 판(추세만) · 전체
+PASS P2 본 · 고르기 1~6월
+PASS P2 본 · 참고 7~8월
+PASS P2 본 · 참고 9~10월
+PASS P2 본 · 참고 7~10월
+PASS P2 본 · 전체
+   참고: 고른 판 "전체"를 187일로 세면 차이 ['거래 날', '비', '위5 몫', '합'] → 보고는 183일 기준
+PASS 후보 표 행 = 날별 1~6월 다시 셈 (GB1)
+PASS 후보 표 행 = 날별 1~6월 다시 셈 (GB0)
+== 3. P2 본 날별 대조
+PASS rule2 P2 본 날별 = RULE-0001 trend P2 본 날별(183일) | 최대 차 0.0
+   187일 전체 최대 차 0.0
+   고른 판(GB1) vs P2 본이 다른 날 2개: 20260518:+7.220->+12.800, 20260706:+16.920->+21.380
+== 4. 결합 = 추세 날이면 고른 판 · 아니면 P2R
+   둘 다 같음(모호): 29일
+   고른 판만 맞음: 109일
+   P2R만 맞음: 45일
+   둘 다 아님: 0일
+PASS 모든 날 결합 ∈ {고른 판, P2R} | []
+   고른 판 ≠ 0인데 결합이 P2R을 쓴 날: 0개 []
+   P2R ≠ 0인데 결합이 고른 판을 쓴 날: 0개
+PASS 추세 도는 날 122가 가능 범위 안 | 확실 109 ~ 최대 138(모호 29일 중 둘 다 0인 날 29) · 보고 122
+PASS 추세 도는 날 수 = RULE-0001(122)
+PASS RULE-0001 결합과 다른 날은 모두 GB 바뀐 날이며 차이 = 고른 판 − P2 본 | 다른 날 ['20260518', '20260706']
+   GB로 바뀐 날 중 결합에 안 들어간 날(P2R 날로 판단): []
+PASS RULE-0001 결합과 날 나누기가 어긋나는 확실한 날 없음 | []
+== 5. 단계 고르기(후보 표만으로)
+PASS 단계 0 후보 15개 | 15
+PASS 단계 0 지금 판 = 기록 | ('V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB0 DEAD0 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB0 DEAD0 DCAP7')
+PASS 단계 0 이웃 = 부품 하나씩 바꾼 14판(N 다른 두 값 · DCAP 반대) | [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+   단계 0: 자격 11 · 월양수율 최대 무리 11 · 위5≤0.35 0 · 1등 V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7 비 38.667581 · 2등 V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB0 DEAD0 DCAP7 비 38.295581
+PASS 단계 0 다시 고른 판 = 기록 | ('V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7')
+PASS 단계 1 후보 15개 | 15
+PASS 단계 1 지금 판 = 기록 | ('V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7')
+PASS 단계 1 이웃 = 부품 하나씩 바꾼 14판(N 다른 두 값 · DCAP 반대) | [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+   단계 1: 자격 11 · 월양수율 최대 무리 11 · 위5≤0.35 0 · 1등 V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7 비 38.667581 · 2등 V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD1 DCAP7 비 38.667581
+   단계 1: 비 1e-5 안 동률 ['V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD1 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL1 P31 N50 EC0 GB1 DEAD0 DCAP7'] → 합 · 이름으로 갈림
+   단계 1: 1등과 성적이 완전히 같은 판(이름 순서로만 밀림) ['V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD1 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL1 P31 N50 EC0 GB1 DEAD0 DCAP7']
+PASS 단계 1 다시 고른 판 = 기록 | ('V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7')
+PASS 단계 1에서 멈춤(1등 = 지금 판) · 이후 단계 없음
+PASS 최종 고른 판 = 마지막 단계 고른 판 | ('V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7', 'V1 AMIN1 AMAX1 PB1 EM1 LL0 BL0 P31 N50 EC0 GB1 DEAD0 DCAP7')
+PASS 8단계 이하
+PASS 평가한 고유 판 수 = 후보 표 고유 판 | (28, 28)
+   경계(−15 · 0.35)에서 1e-5 안이지만 같지 않은 값: 없음
+   MDD 또는 최악이 정확히 −15.0으로 적힌 행 30개(하루 한도 15에서 잘린 값 · 반올림 뒤 −15 이상이라 자격 판단에 영향 없음; 원래 날별에서 결합 최악 = -14.99999999999999)
+== 6. 참고 조건(CHK 7~10월)
+PASS 주(결합 vs P2(T+R)) 조건 ①~⑤ 같음 | 다시 셈 {'①': True, '②': True, '③': True, '④': False, '⑤': True} · 위5 0.4682 · 비 33.8024 vs 대조 33.5051
+PASS 주(결합 vs P2(T+R)) 판정 같음 | ('참고 지지 안 됨', '참고 지지 안 됨')
+PASS 보조(추세만 vs P2 본) 조건 ①~⑤ 같음 | 다시 셈 {'①': True, '②': True, '③': True, '④': False, '⑤': True} · 위5 0.5833 · 비 27.0068 vs 대조 26.7095
+PASS 보조(추세만 vs P2 본) 판정 같음 | ('참고 지지 안 됨', '참고 지지 안 됨')
+PASS 7~10월 달별(결합) 같음 | {'202607': 350.0918124772178, '202608': 108.63747871151661, '202609': 34.893038145169164, '202610': 13.413571428571517}
+== 7. 바꿔도 결과가 같은 부품(합 · MDD · 위5 · 최악이 지금 판과 같음)
+   단계 0: ['BL0->1', 'DEAD0->1']
+   단계 1: ['BL0->1', 'DEAD0->1']
+   GB를 켜도 1~6월이 같은 판(GB0 판 이름): ['V1AMIN1AMAX1PB1EM0LL0BL0P31N50EC0GB0DEAD0DCAP7', 'V1AMIN1AMAX1PB1EM1LL1BL0P31N50EC0GB0DEAD0DCAP7']
+
+합계 PASS 50 · FAIL 0
