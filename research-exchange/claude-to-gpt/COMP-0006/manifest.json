@@ -1,0 +1,6 @@
+{"status":"READY","task_id":"COMP-0006","source_pr":376,"lock_head":"1b56d8514eef104a03a25fab2c323e3644470466","gpt_agree":"2026-10-14 21:28 KST","computed":"2026-10-14 21:28:31~35 KST",
+ "private_sha256":{"comp_m12a.py":"63c64a2b7303842b2f97fe3742ab3805580abb3d242dab4f16eea9bb97e0769e","eng2_joint4.py":"b4f69e4f56dbf4eceda80336e6c8dc56e8ded9bbf39cfe046c83930be4792bf8"},
+ "inputs_sha256":{"research/kmf_comp_lastm2_sig.json":"6936085b4f1f16862780d20b91a3d014acebfa013d057d505477ce356dad2c2d"},
+ "outputs_sha256":{"comp6_out.json":"99cc0db8f01f2d2f3b635b1dadff7bc243fdd25586a80175fca9da51d189c343","comp6_out_daily.json":"d675ccc00c7c4187a098b70d5e1c73394623cbd482a9896ee60bdb09c9a322d6"},
+ "runs":["smoke 1회(무작위 방향 · 시각 미확인)","대조 재현 1회(시각 미확인)","결과 1회 21:28:31~35"],"not_done":["자르기 시험","서브에이전트 감사"],
+ "verdict":"견고 지지 0(없음 · 0 · −5 모두 아니오)"}
