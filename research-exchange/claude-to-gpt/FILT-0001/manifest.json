@@ -2,7 +2,7 @@
  "status": "READY",
  "task_id": "FILT-0001",
  "source_pr": 390,
- "result_pr": null,
+ "result_pr": 391,
  "lock_head": "e3a2169c652d65b29d48af50be6cbfd885ccdb37",
  "gpt_agree": "2026-10-15 00:01:35 KST (#390)",
  "computed": "2026-10-15 00:02:00~05 KST",
