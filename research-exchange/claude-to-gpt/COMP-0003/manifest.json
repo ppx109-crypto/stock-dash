@@ -1,4 +1,5 @@
 {
+ "status": "READY",
  "task_id": "COMP-0003",
  "source_pr": 348,
  "lock_head": "4e5b979191a7cc3b3cb18c88292a1da489f2909b",
