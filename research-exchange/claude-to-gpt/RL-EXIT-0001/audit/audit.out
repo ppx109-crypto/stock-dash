@@ -1,0 +1,118 @@
+PASS 1 판존재 대조 N
+PASS 1 판존재 D γ0.9
+PASS 1 판존재 D γ0.95
+PASS 1 판존재 D γ0.98
+PASS 1 판존재 R λ1
+PASS 1 판존재 R λ10
+PASS 1 판 수 6 ['D γ0.9', 'D γ0.95', 'D γ0.98', 'R λ1', 'R λ10', '대조 N']
+PASS 2 대조 N real 전체
+PASS 2 대조 N real 1~6월
+PASS 2 대조 N real 7~10월
+PASS 2 대조 N real 9~10월
+PASS 2 대조 N real 09-21 이후
+PASS 3 대조 N real 점수 9.7799 vs 9.7799
+PASS 3 대조 N real 자격 True vs True
+PASS 2 대조 N mtm 전체
+PASS 2 대조 N mtm 1~6월
+PASS 2 대조 N mtm 7~10월
+PASS 2 대조 N mtm 9~10월
+PASS 2 대조 N mtm 09-21 이후
+PASS 3 대조 N mtm 점수 8.7985 vs 8.7985
+PASS 3 대조 N mtm 자격 False vs False
+PASS 2 D γ0.9 real 전체
+PASS 2 D γ0.9 real 1~6월
+PASS 2 D γ0.9 real 7~10월
+PASS 2 D γ0.9 real 9~10월
+PASS 2 D γ0.9 real 09-21 이후
+PASS 3 D γ0.9 real 점수 8.3932 vs 8.3932
+PASS 3 D γ0.9 real 자격 False vs False
+PASS 2 D γ0.9 mtm 전체
+PASS 2 D γ0.9 mtm 1~6월
+PASS 2 D γ0.9 mtm 7~10월
+PASS 2 D γ0.9 mtm 9~10월
+PASS 2 D γ0.9 mtm 09-21 이후
+PASS 3 D γ0.9 mtm 점수 8.0876 vs 8.0876
+PASS 3 D γ0.9 mtm 자격 False vs False
+PASS 2 D γ0.95 real 전체
+PASS 2 D γ0.95 real 1~6월
+PASS 2 D γ0.95 real 7~10월
+PASS 2 D γ0.95 real 9~10월
+PASS 2 D γ0.95 real 09-21 이후
+PASS 3 D γ0.95 real 점수 8.8839 vs 8.8839
+PASS 3 D γ0.95 real 자격 False vs False
+PASS 2 D γ0.95 mtm 전체
+PASS 2 D γ0.95 mtm 1~6월
+PASS 2 D γ0.95 mtm 7~10월
+PASS 2 D γ0.95 mtm 9~10월
+PASS 2 D γ0.95 mtm 09-21 이후
+PASS 3 D γ0.95 mtm 점수 8.0283 vs 8.0283
+PASS 3 D γ0.95 mtm 자격 False vs False
+PASS 2 D γ0.98 real 전체
+PASS 2 D γ0.98 real 1~6월
+PASS 2 D γ0.98 real 7~10월
+PASS 2 D γ0.98 real 9~10월
+PASS 2 D γ0.98 real 09-21 이후
+PASS 3 D γ0.98 real 점수 9.0796 vs 9.0796
+PASS 3 D γ0.98 real 자격 True vs True
+PASS 2 D γ0.98 mtm 전체
+PASS 2 D γ0.98 mtm 1~6월
+PASS 2 D γ0.98 mtm 7~10월
+PASS 2 D γ0.98 mtm 9~10월
+PASS 2 D γ0.98 mtm 09-21 이후
+PASS 3 D γ0.98 mtm 점수 8.3788 vs 8.3788
+PASS 3 D γ0.98 mtm 자격 False vs False
+PASS 2 R λ1 real 전체
+PASS 2 R λ1 real 1~6월
+PASS 2 R λ1 real 7~10월
+PASS 2 R λ1 real 9~10월
+PASS 2 R λ1 real 09-21 이후
+PASS 3 R λ1 real 점수 8.2585 vs 8.2585
+PASS 3 R λ1 real 자격 False vs False
+PASS 2 R λ1 mtm 전체
+PASS 2 R λ1 mtm 1~6월
+PASS 2 R λ1 mtm 7~10월
+PASS 2 R λ1 mtm 9~10월
+PASS 2 R λ1 mtm 09-21 이후
+PASS 3 R λ1 mtm 점수 7.9529 vs 7.9529
+PASS 3 R λ1 mtm 자격 False vs False
+PASS 2 R λ10 real 전체
+PASS 2 R λ10 real 1~6월
+PASS 2 R λ10 real 7~10월
+PASS 2 R λ10 real 9~10월
+PASS 2 R λ10 real 09-21 이후
+PASS 3 R λ10 real 점수 8.4495 vs 8.4495
+PASS 3 R λ10 real 자격 False vs False
+PASS 2 R λ10 mtm 전체
+PASS 2 R λ10 mtm 1~6월
+PASS 2 R λ10 mtm 7~10월
+PASS 2 R λ10 mtm 9~10월
+PASS 2 R λ10 mtm 09-21 이후
+PASS 3 R λ10 mtm 점수 7.9567 vs 7.9567
+PASS 3 R λ10 mtm 자격 False vs False
+PASS 4 고른 판 재계산 대조 N · 저장 대조 N · 후보 []
+PASS 5 대조 real_날별 = BUILD-0001 날 183 · 빠진 날 0 · 최대 차 0.0
+PASS 5 대조 mtm_날별 = BUILD-0001 날 183 · 빠진 날 0 · 최대 차 0.0
+PASS 6 대조 N 팔 수 합 {'VT': 130, 'VE': 26, 'M1_s1.0': 121}
+PASS 6 D γ0.9 팔 수 합 {'VT': 130, 'VE': 26, 'M1_s1.0': 121}
+PASS 6 D γ0.95 팔 수 합 {'VT': 130, 'VE': 26, 'M1_s1.0': 121}
+PASS 6 D γ0.98 팔 수 합 {'VT': 130, 'VE': 26, 'M1_s1.0': 121}
+PASS 6 R λ1 팔 수 합 {'VT': 130, 'VE': 26, 'M1_s1.0': 121}
+PASS 6 R λ10 팔 수 합 {'VT': 130, 'VE': 26, 'M1_s1.0': 121}
+PASS 6 대조 모두 N
+PASS 7 표 대조 N
+PASS 7 표 D γ0.9
+PASS 7 표 D γ0.95
+PASS 7 표 D γ0.98
+PASS 7 표 R λ1
+PASS 7 표 R λ10
+PASS 7 mtm 대조 1114.40/-20.64
+PASS 7 mtm 학습기 범위 합 1000.62~1049.84 · MDD -19.76~-24.08
+PASS 7 §2 팔 수 인용 30개
+PASS 7 §2 D γ0.95 VE 같음 {'N': 14, 'L(0.3, 0.2)': 4, 'L(0.3, 0.1)': 8} vs {'N': 14, 'L(0.3, 0.2)': 4, 'L(0.3, 0.1)': 8}
+PASS 7 §2 D γ0.98 VE 같음 {'N': 14, 'L(0.3, 0.2)': 4, 'L(0.3, 0.1)': 8} vs {'N': 14, 'L(0.3, 0.2)': 4, 'L(0.3, 0.1)': 8}
+PASS 7 §2 D γ0.9 VT 상위 3 [('T(0.4,)', 75), ('N', 24), ('T(0.2,)', 12), ('L(0.3, 0.2)', 9)]
+NEEDS_DATA 8 학습기 인과성 · 배우는 때(비공개 rl_exit1.py)
+NEEDS_DATA 8 청산 변환 apply(비공개 exit1.py)
+NEEDS_DATA 8 tla 조립 재생(tla.py)
+NEEDS_DATA 8 원천 장부 · 분봉 출처(pool_ledger.json)
+합계 PASS 113 · FAIL 0 · NEEDS_DATA 4

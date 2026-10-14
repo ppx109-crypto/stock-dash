@@ -1,0 +1,37 @@
+{
+ "status": "READY",
+ "task_id": "RL-EXIT-0001",
+ "source_pr": 388,
+ "result_pr": 389,
+ "lock_head": "4fe2d13b75be158a24ba00ab45f9b9edff2dd537",
+ "gpt_agree": "2026-10-14 23:53:42 KST (#388)",
+ "computed": "2026-10-14 23:54:11~17 KST",
+ "private_sha256": {
+  "rl_exit1.py": "2108da8b3d64543e6823d2d5049091b1544c9dc972f795fd5d0984c7fdda7671",
+  "exit1.py": "583b69fe389b95fb693c13dda5dafb888ec4f20460f49f4f34ea200844503bfd",
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda",
+  "rule2.py": "8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c",
+  "rule_lib.py": "4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199"
+ },
+ "inputs_sha256": {
+  "pool/pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "rl_exit1_out.json": "f5f951a22b7c3e888c344347feea75a68d6c3a5e0acf48e0dbb85b8ac3eac61a",
+  "audit/audit.py": "04fbecd3e180e69fc0f479ec53bffc988c085a55c978e161b612955856122c03",
+  "audit/audit.out": "849ef12e002d91f14807e442e8aa959bef4400edb924dcc629295212655b983a"
+ },
+ "runs": [
+  "smoke 23:46:17(손익 안 셈 · 고른 팔 수 상위 3)",
+  "결과 1회 23:54:11~17",
+  "자르기 안 함(대조 선택)",
+  "감사 1회(PASS 113 · FAIL 0 · NEEDS_DATA 4)"
+ ],
+ "evaluations": "6판 × stop 2 = 12",
+ "not_done": [
+  "배우는 때 · 청산 변환 · tla 재생 · 원천 장부(NEEDS_DATA)",
+  "신뢰 구간 없음",
+  "독립 검증 WAITING_DATA"
+ ],
+ "verdict": "학습기 5개 모두 대조보다 점수 낮음(자격 1개 D γ0.98 9.080 < 9.780) · 대조(원래 청산) 유지"
+}
