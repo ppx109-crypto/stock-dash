@@ -1,0 +1,31 @@
+{
+ "schema_version": 1,
+ "task_id": "GATE10-0001",
+ "chain_id": "GATE10-0001",
+ "round": 1,
+ "status": "READY",
+ "kind": "RESULT",
+ "source_pr": 341,
+ "source_head_sha": "8b69f68ff1fd91f0ad61dbe323a4134d77d1dfa0",
+ "code_commit": "e6fe31fd185f2efcf2dfd5a08f104790375a20dc",
+ "code_lock": {
+  "research/kmf_gate10.py sha256": "e8b8ffc1be06868cf0ea971ca080dea7c1375160314c363035983188157f9994"
+ },
+ "verdict": "두 게이트 지지 안 됨",
+ "completed_at_kst": "2026-10-14 09:36:24 KST(1회)",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/GATE10-0001/RESULT.md",
+  "research/kmf_gate10.py",
+  "research/kmf_gate10_out.json",
+  "research/kmf_gate10_daily.json",
+  "research/kmf_gate10_cut.out",
+  "research/kmf_gate10_audit.py",
+  "research/kmf_gate10_audit.out"
+ ],
+ "outputs_sha256": {
+  "research/kmf_gate10_out.json": "2919f5a4fae89eb5f22e4970d12f80db169d1f2e80335178a45f3cedde2358ad",
+  "research/kmf_gate10_daily.json": "5cabcea7e6d20d17c495963dcca36fc5a0d64081b889f8e2d78b5bcdab060dd5",
+  "research/kmf_gate10_cut.out": "6c2d5f025995fd4047b91b33316294a3250be3e7c176aa6a77164b39a9642677",
+  "research/kmf_gate10_audit.out": "efd00bee0c793ec1e53861d7165fda56743065724dc1062cf098da45389fb973"
+ }
+}
