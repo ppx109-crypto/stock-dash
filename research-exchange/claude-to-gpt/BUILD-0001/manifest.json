@@ -1,0 +1,41 @@
+{
+ "status": "READY",
+ "task_id": "BUILD-0001",
+ "source_pr": 384,
+ "result_pr": 385,
+ "lock_head": "4e07ce0e702864daf51557860a5f052436a399ff",
+ "gpt_agree": "2026-10-14 23:19:28 KST (#384 2차)",
+ "computed": "2026-10-14 23:19:50~54 KST",
+ "private_sha256": {
+  "build1.py": "4efcbddfdfee4ddbc5a9a088fe30ed76dfee73bb6da3301bf993387218e38611",
+  "build1.py(폐기된 첫 잠금)": "6c8e3c49ea3e13fde3fe8c3aff1329ee2ebf25ef310d0c15cf01b5da4f617e80",
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda",
+  "rule2.py": "8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c",
+  "rule_lib.py": "4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199",
+  "v12a_decomp.py": "db88dd0d905320b4(앞 16자)"
+ },
+ "inputs_sha256": {
+  "pool/pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "build1_out.json": "a55828deacb7dd87b860ea370c4cf5ff927524666c69e9dbce0f312e4672befc",
+  "audit/audit.py": "8fff028475b04837b519f48710aceb494200c51be8802f3526f346474876dbf8",
+  "audit/audit.out": "5898e5f7e2b7a8ca8be9b1f7be7e1fd49ef676e1c1684a6a91451b0428ea616c"
+ },
+ "runs": [
+  "v12a 분해 23:02:46(손익 출력)",
+  "부품 목록 23:10:18(손익 출력)",
+  "smoke 23:11:16(첫 잠금 코드 · 거르기 · 판 수만)",
+  "코드 고침 뒤 smoke 23:16:30(거르기 · 판 수만)",
+  "거르기 표 23:16:5x",
+  "결과 1회 23:19:50~54",
+  "감사 1회(서브에이전트 · 공개 출력만 · PASS 13 · FAIL 0 · NEEDS_DATA 6)"
+ ],
+ "evaluations": "T 31 + B 7 = 38판 × stop 2 = 76 + 이웃 1(T) = 77 ≤ 78",
+ "not_done": [
+  "tla 중재 재현 · 09:45 전 진입 제외 · 원천 장부 · 인과성(NEEDS_DATA)",
+  "신뢰 구간 없음",
+  "독립 검증 WAITING_DATA(10-13부터 새 자료)"
+ ],
+ "verdict": "추세 봇 VT+VE+M1 s1.0 선택(전체 +1290.0 · MDD −11.52 · 최악 −7.18) · 막힌 날 자격 판 없음(쉼)"
+}
