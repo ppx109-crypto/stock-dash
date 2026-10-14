@@ -51,7 +51,7 @@ jobs:
           PRICE_WORKERS: '2'
           # 114800 KODEX 인버스 · 251340 KODEX 코스닥150선물인버스 · 252670 KODEX 200선물인버스2X ·
           # 069500 KODEX 200 · 229200 KODEX 코스닥150 · 122630 KODEX 레버리지
-          PRICE_CODES: ${{ inputs.codes || '114800,251340,252670,069500,229200,122630' }}
+          PRICE_CODES: ${{ inputs.codes || '114800,251340,252670,069500,229200,122630,133690,148070,138230,132030' }}   # 뒤 4개 = 빈칸 엔진 돌리기 · 달러(2026-10-14 점검: 10-02부터 빠져 있었음)
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
         continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)
