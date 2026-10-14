@@ -2,7 +2,7 @@
  "status": "READY",
  "task_id": "PARTS-0001",
  "source_pr": 396,
- "result_pr": null,
+ "result_pr": 397,
  "lock_head": "85ac4aad0a304b13ee06809396d30aaf94f12699",
  "gpt_agree": "2026-10-15 00:44:42 KST (#396)",
  "computed": "2026-10-15 00:44:56~45:17 KST",
