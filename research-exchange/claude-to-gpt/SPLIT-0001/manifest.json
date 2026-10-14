@@ -1,0 +1,36 @@
+{
+ "status": "READY",
+ "task_id": "SPLIT-0001",
+ "source_pr": 382,
+ "result_pr": null,
+ "lock_head": "0fc5c1e875a6b094ba56f452a1ae012361030ddd",
+ "gpt_agree": "2026-10-14 22:49:53 KST (#382)",
+ "computed": "2026-10-14 22:50:21~23 KST",
+ "private_sha256": {
+  "split1.py": "4e11abc088456a6a746b0db85928a516c233cece0f06b5becba9104edae3a75b",
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda",
+  "rule2.py": "8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c",
+  "rule_lib.py": "4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199"
+ },
+ "inputs_sha256": {
+  "pool/pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "split1_out.json": "b80830b0e0de6869d5415b955689f77aa817067382ddb81d19b26fe2ba131e0e",
+  "audit/audit.py": "8d1057e63a82290f5a6bc4f4183d43dfe76c31bf851ebe7036b02990055ba8e0",
+  "audit/audit.out": "88b6caba4aa1a402f1274705ba6619cec7a331fb08cbf9e3b388c92f9a21b659"
+ },
+ "runs": [
+  "--smoke 22:44:14 (대조 재현 · 05-21 0.98 차 · 09:45 전 v12a 0건 · 거래 수만 출력)",
+  "원인 확인 22:44:27 (05-21 VT 630분 u 정리 · 같은 분 진입 건너뜀)",
+  "결과 1회 22:50:21~23",
+  "감사 1회(서브에이전트 · 공개 출력만 · PASS 75 · FAIL 0 · NEEDS_DATA 3)"
+ ],
+ "evaluations": "5판 × stop 2(real 주 · mtm 보조) = 10 설정",
+ "not_done": [
+  "거래 단위 중재 · 인과성 · 원천 v12a 재생(NEEDS_DATA)",
+  "신뢰 구간 없음",
+  "독립 검증 WAITING_DATA(10-13부터 새 자료)"
+ ],
+ "verdict": "S1 나누기 선택 · 참고 지지 안 됨(④ 위5 42.69%) · S2 · S3 06-29 −20.38로 자격 미달"
+}
