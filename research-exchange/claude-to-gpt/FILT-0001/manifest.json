@@ -1,0 +1,35 @@
+{
+ "status": "READY",
+ "task_id": "FILT-0001",
+ "source_pr": 390,
+ "result_pr": 391,
+ "lock_head": "e3a2169c652d65b29d48af50be6cbfd885ccdb37",
+ "gpt_agree": "2026-10-15 00:01:35 KST (#390)",
+ "computed": "2026-10-15 00:02:00~05 KST",
+ "private_sha256": {
+  "filt1.py": "602dc683e34fdaad59801424a05136704204ebc5a99c31bdf0b5ed59d08578c2",
+  "rl_exit1.py": "2108da8b3d64543e6823d2d5049091b1544c9dc972f795fd5d0984c7fdda7671",
+  "exit1.py": "583b69fe389b95fb693c13dda5dafb888ec4f20460f49f4f34ea200844503bfd",
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda"
+ },
+ "inputs_sha256": {
+  "pool/pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "filt1_out.json": "69b54beb48b4accfe57fe8fae659b88d084df891585bbb24f3bacd627137e073",
+  "audit/audit.py": "5276b2265e933b0200cf32bea7c38778c0366b796e6aad19532cc5432861eaa2",
+  "audit/audit.out": "d8f25b4d0ac31524113b7dc66513e0f8fa8c971eb29485cf2cb8d5e2e799b43d"
+ },
+ "runs": [
+  "smoke 23:57:03(뺀 거래 수만)",
+  "결과 1회 00:02:00~05",
+  "자르기 안 함(모두 N)",
+  "감사 1회(PASS 49 · FAIL 0 · NEEDS_DATA 4)"
+ ],
+ "evaluations": "성과 31",
+ "not_done": [
+  "맥락 가용 시각 · 구현 · tla 재생 · 원천 장부(NEEDS_DATA)",
+  "독립 검증 WAITING_DATA"
+ ],
+ "verdict": "VT · VE · M1 모두 필터 없음(N) · 추세 봇 = BUILD-0001 그대로"
+}
