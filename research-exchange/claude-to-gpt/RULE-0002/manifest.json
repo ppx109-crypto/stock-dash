@@ -1,0 +1,13 @@
+{
+ "status": "READY",
+ "task_id": "RULE-0002",
+ "source_pr": 366,
+ "lock_head": "360c99e9ceb2c40b57f6c42456f8838e10314691",
+ "gpt_agree": "2026-10-14 16:09:46 KST",
+ "computed": "2026-10-14 16:10 KST",
+ "private_sha256": {"rule2.py": "8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c", "eng2_r2.py": "17c9a8cb715aad9cd6806c5bed1091dff9628a73c09dcef8d5d1a528fbaa2a9d", "rule_lib.py": "4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199", "cut_rule2.py(계산 뒤 만든 자르기 도구 · 계산 전에 출발 판으로 시험)": "bab9a01a8dcba620881c27a6475fe7065028d7d3296ed65d3c1b1071032928f5"},
+ "outputs_sha256": {"rule2_out.json": "1bd5a1551010a2361a674449102a12865a118940b90333b63de9f6024a307726", "cut_out.txt": "61e16a1b3de107df3bc16f68771b926c347eeb54c4bfd56128345bee2291522d", "audit/audit.py": "59fc85397209ea644debd7b4fd56e79e3e74875bc08860a69c16c9610e277ab2", "audit/audit.out": "ba641e0388ad31e865c9b5c8fcce5c8298380c643b19eea9408c0441270043bb"},
+ "고른 판": "P2 본 + GB(이익 반납 멈춤) · 2단계에서 멈춤",
+ "정정": "DEAD(75분 · 0.1 ATR)는 P2 엔진에 이미 있던 조건과 겹침 — 새 이식 아님",
+ "참고 판정": "참고 지지 안 됨(④ 위 5일 47%)"
+}
