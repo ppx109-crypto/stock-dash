@@ -1,0 +1,6 @@
+{"status":"READY","task_id":"RULE-0005","source_pr":377,"result_pr":379,"lock_head":"f646c8168270851f4eb222f1a0aad450435e469f","gpt_agree":"2026-10-14 21:29 KST","computed":"2026-10-14 21:42:39~41 KST",
+ "private_sha256":{"rule5.py":"ecdec384dc320c1f5abadbd52f907ec8598ca914afe700f1a0fbaf6bb4db88bc","eng2_r5.py":"ce7a53a6ed27c149fed641c31e7a3036fb4009d5bed2a3a03fe16a19457b5ba6","rule2.py":"8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c","rule_lib.py":"4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199","cut_rule5.py":"64fe91cb5593bcc8b5e57fb77159d3ea5f283c860562059db770b4a48cee9ee1"},
+ "inputs_sha256":{"rule1_rev_out.json":"8b05b3ed4bb7472e1583786d88c512eb13554b1c22e28d265110ec5697a560e6"},
+ "outputs_sha256":{"rule5_out.json":"31e468ff33fda8803cd1518564d3a09437647bd61ce99a89a49d774d9b7df22e","rule5_cut.txt":"61e16a1b3de107df3bc16f68771b926c347eeb54c4bfd56128345bee2291522d","audit/audit.py":"333bb0b78db47eff6e359d0e0a6eb5b17f8ec9085f4ce84a7248a9717a39f54a","audit/audit.out":"11ab7b6822ef0f66f7e6804e1adc4ee602f05eadd6906b460b2d743021f30faf"},
+ "runs":["--smoke 1회(21:2x · 정확 시각 미확인 · 8판 날별 손익 계산 · 다른 날 수만 출력)","결과 1회 21:42:39~41","자르기(고른 판 6시점) 1회","감사 1회(PASS 93 · FAIL 1 → 표기 고침)"],
+ "not_done":["보조표 '그 밖 7~10월' 통계는 출력에 없음","원천 엔진 · 체결 감사(NEEDS_DATA)"],"verdict":"10p→2p 고정 참고판 선택 · 참고 지지 안 됨(④ 49.46%)"}
