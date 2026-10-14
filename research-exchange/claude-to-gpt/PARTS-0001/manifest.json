@@ -1,0 +1,37 @@
+{
+ "status": "READY",
+ "task_id": "PARTS-0001",
+ "source_pr": 396,
+ "result_pr": 397,
+ "lock_head": "85ac4aad0a304b13ee06809396d30aaf94f12699",
+ "gpt_agree": "2026-10-15 00:44:42 KST (#396)",
+ "computed": "2026-10-15 00:44:56~45:17 KST",
+ "private_sha256": {
+  "parts1.py": "359059eb98c56d8401d8fcbb9033304e73fe439e37c77f48b6c4ac2f1459119f",
+  "p2t_kind.json": "bf9ae5bd13b64a1898d6e58539537e2003377fda9395c87ef44bb1fb2637cf88",
+  "p2_kind.py": "bdfe30a693d750576c6b8493ad59faa7f5d7f6da80b72870780c688dec47a04c",
+  "vt_door2_keys.json": "b00db5c29a23facf2aec80c896602e3844bf523aff3f97191e83a9599ad3de82",
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda"
+ },
+ "inputs_sha256": {
+  "pool/pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "parts1_out.json": "0cdb6bb2b10acc640648c674179ab7453d555909aca24f44fff1f06a2fe9f090",
+  "audit/audit.py": "f78eaaba855c3e539a3de4e04dc1a66b3182107a3e51340af5bf9e5b20610295",
+  "audit/audit.out": "9c59c8fb1ec2aa1b4fbcb16035f5e2ffe9c2db7d1ceb7fbb3c629eabcbb0b615"
+ },
+ "runs": [
+  "해부 · P2T 종류 붙이기 00:3x",
+  "smoke 00:41:18",
+  "결과 1회 00:44:56~45:17",
+  "파레토 · 막힌 날 합치기 표(같은 출력)",
+  "감사 1회(PASS 45 · FAIL 1 옛 문구 · NEEDS_DATA 4)"
+ ],
+ "evaluations": "(255+7)×2 = 524",
+ "not_done": [
+  "부품 표식 원천 · parts1 · tla 재생 · 원천 장부(NEEDS_DATA)",
+  "독립 검증 WAITING_DATA"
+ ],
+ "verdict": "고른 판 T P2T-e+P2T-b+P2T-p+VT2 · B VR · +1116.32 · MDD −15.0 · 10/10달 · 최악 달 +14.18"
+}
