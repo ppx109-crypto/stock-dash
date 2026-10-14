@@ -92,3 +92,46 @@ class DailyDetail(unittest.TestCase):
         rows = [{'stck_bsop_date': '20200102', 'stck_clpr': '0', 'acml_vol': '10'}]
         self.assertEqual(self.client(rows).daily('005930', '20200101', '20200103',
                                                  detail=True), [])
+
+
+class NetworkRetry(unittest.TestCase):
+    """연결 끊김 다시 시도(2026-10-14 15:20 모의 서버 한 번 끊김 → 흔들림 상한 실패)."""
+    def setUp(self):
+        self.env = patch.dict(os.environ, {'KIS_APP_KEY':'k', 'KIS_APP_SECRET':'s', 'KIS_CANO':'12345678', 'KIS_ACNT_PRDT_CD':'01', 'KIS_ENV':'demo', 'KIS_CALL_GAP':'0', 'KIS_RETRIES':'3'})
+        self.env.start(); self.addCleanup(self.env.stop)
+        sl = patch('broker_kis.time.sleep'); sl.start(); self.addCleanup(sl.stop)
+
+    def ok(self):
+        return Mock(status_code=200, headers={}, json=Mock(return_value={'rt_cd':'0'}))
+
+    def test_get_retries_after_drop(self):
+        import requests
+        calls = [requests.exceptions.ReadTimeout('x'), self.ok()]
+        def fake(*a, **k):
+            x = calls.pop(0)
+            if isinstance(x, Exception): raise x
+            return x
+        with patch('broker_kis.requests.request', side_effect=fake):
+            KIS().request('GET', '/x')
+        self.assertEqual(calls, [])
+
+    def test_order_not_resent_when_it_may_have_reached(self):
+        import requests
+        n = []
+        def fake(*a, **k):
+            n.append(1); raise requests.exceptions.ReadTimeout('x')
+        with patch('broker_kis.requests.request', side_effect=fake):
+            with self.assertRaises(BrokerError):
+                KIS().request('POST', '/uapi/order')
+        self.assertEqual(len(n), 1)                          # 겹 주문 막기
+
+    def test_order_resent_when_never_connected(self):
+        import requests
+        calls = [requests.exceptions.ConnectTimeout('x'), self.ok()]
+        def fake(*a, **k):
+            x = calls.pop(0)
+            if isinstance(x, Exception): raise x
+            return x
+        with patch('broker_kis.requests.request', side_effect=fake):
+            KIS().request('POST', '/uapi/order')
+        self.assertEqual(calls, [])

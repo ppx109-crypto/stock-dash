@@ -81,7 +81,12 @@ class KIS:
             try:
                 return self._once(method, path, **kwargs)
             except BrokerError as error:
-                if self.REFUSALS['EGW00201'] not in str(error) or turn == tries - 1:
+                # 연결이 아예 안 된 경우(요청이 증권사에 닿지 않음)는 다시 물어도 안전 · 조회(GET) · 토큰 받기는 늘 안전
+                # (2026-10-14 15:20 모의 서버 연결 한 번 끊김 → 흔들림 상한 실패 → 그날 1일봉 새 매수 멈춤).
+                # 주문(POST)이 닿았을 수 있는 끊김은 다시 보내지 않음(겹 주문 막기).
+                net = getattr(error, 'net', None)
+                again = net == 'connect' or (net is not None and (method.upper() == 'GET' or path.startswith('/oauth2/')))
+                if (self.REFUSALS['EGW00201'] not in str(error) and not again) or turn == tries - 1:
                     raise
                 time.sleep(rest)
                 rest *= 2
@@ -90,9 +95,15 @@ class KIS:
     def _once(self, method, path, **kwargs):
         try:
             response = requests.request(method, self.base + path, timeout=(5, 20), **kwargs)
-        except requests.RequestException:
-            raise BrokerError('증권사에 연결하지 못했습니다. 네트워크와 서비스 상태를 '
-                              '확인한 뒤 다시 조회하세요.') from None
+        except requests.RequestException as e:
+            error = BrokerError('증권사에 연결하지 못했습니다. 네트워크와 서비스 상태를 '
+                                '확인한 뒤 다시 조회하세요.')
+            text = str(e)
+            reached = not (isinstance(e, requests.exceptions.ConnectTimeout)
+                           or 'NewConnectionError' in text or 'Failed to establish' in text
+                           or 'Name or service not known' in text or 'Temporary failure in name resolution' in text)
+            error.net = 'sent' if reached else 'connect'
+            raise error from None
         try:
             data = response.json()
             if not isinstance(data, dict):
