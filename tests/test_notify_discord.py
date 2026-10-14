@@ -81,3 +81,40 @@ class Message(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Bundle(unittest.TestCase):
+    """종가 작업 알림 한 번에(사용자 2026-10-14 "한번으로 정리해서")."""
+    def test_buffer_then_flush_once(self):
+        import os, tempfile
+        from unittest import mock
+        sent = []
+        buf = os.path.join(tempfile.mkdtemp(), "bundle.json")
+        with mock.patch.dict(os.environ, {"DISCORD_WEBHOOK_URL": "https://example.invalid/hook", "DISCORD_BUFFER": buf}), \
+                mock.patch.object(N.requests, "post", side_effect=lambda url, json, timeout: sent.append(json["content"]) or mock.Mock(status_code=204)):
+            self.assertTrue(N.post(["빈칸 엔진 오늘 쉼"]))
+            self.assertTrue(N.post(["1일봉 판단 · 사고팔 것 없음", "빈칸 엔진 오늘 쉼"]))
+            self.assertEqual(sent, [])                       # 모으는 동안은 안 보냄
+            self.assertTrue(N.flush(buf, "종가 작업 10-14 모음"))
+        self.assertEqual(len(sent), 1)                       # 한 번만
+        self.assertEqual(sent[0].count("빈칸 엔진 오늘 쉼"), 1)  # 같은 줄은 한 번
+        self.assertTrue(sent[0].startswith("☆한투 종가 작업 10-14 모음"))
+        self.assertFalse(os.path.exists(buf))
+
+    def test_flush_without_anything(self):
+        import os, tempfile
+        self.assertTrue(N.flush(os.path.join(tempfile.mkdtemp(), "none.json"), "머리말"))
+
+
+class UrgentNotBuffered(unittest.TestCase):
+    def test_warning_sent_at_once(self):
+        import os, tempfile
+        from unittest import mock
+        sent = []
+        buf = os.path.join(tempfile.mkdtemp(), "b.json")
+        with mock.patch.dict(os.environ, {"DISCORD_WEBHOOK_URL": "https://example.invalid/hook", "DISCORD_BUFFER": buf}), \
+                mock.patch.object(N.requests, "post", side_effect=lambda url, json, timeout: sent.append(json["content"]) or mock.Mock(status_code=204)):
+            N.post(["⚠️ 계좌 흔들림 상한 단계 문제"])
+            N.post(["빈칸 엔진 오늘 쉼"])
+        self.assertEqual(len(sent), 1)
+        self.assertFalse(any("빈칸" in x for x in sent))

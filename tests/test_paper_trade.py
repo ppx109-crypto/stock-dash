@@ -282,3 +282,68 @@ class DailyReserve(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class OrderDropCheck(unittest.TestCase):
+    """주문 중 연결이 끊겼을 때: 내역 확인 → 있으면 그대로 · 없으면 다시 · 확인 못 하면 안 보냄(사용자 2026-10-14)."""
+    def broker(self):
+        with mock.patch.dict(os.environ, {"KIS_PAPER_APP_KEY": "paperkey", "KIS_PAPER_APP_SECRET": "s", "KIS_PAPER_ACCOUNT": "12345678-01", "KIS_APP_KEY": "realkey"}):
+            b = P.PaperBroker()
+        p = mock.patch.object(P.time, "sleep"); p.start(); self.addCleanup(p.stop)
+        return b
+
+    def drop(self):
+        e = broker_kis.BrokerError("증권사에 연결하지 못했습니다.")
+        e.net = "sent"
+        return e
+
+    def test_found_in_history_not_resent(self):
+        b = self.broker(); sent = []
+        def post(*a):
+            sent.append(1); raise self.drop()
+        from datetime import datetime
+        t = datetime.now(P.KST).strftime("%H%M%S")
+        hist = [("000001", "111", 5), (t, "222", 5)]                 # 아침에 같은 수량으로 넣은 옛 주문은 셈에서 뺌
+        with mock.patch.object(b, "_post_order", side_effect=post), mock.patch.object(b, "today_orders", return_value=hist):
+            self.assertEqual(b._send_checked("005930", "sell", 5), {"_found": "222"})
+        self.assertEqual(len(sent), 1)
+
+    def test_missing_then_resent(self):
+        b = self.broker(); calls = []
+        def post(*a):
+            calls.append(1)
+            if len(calls) == 1:
+                raise self.drop()
+            return {"rt_cd": "0", "output": {"ODNO": "333"}}
+        with mock.patch.object(b, "_post_order", side_effect=post), mock.patch.object(b, "today_orders", return_value=[]):
+            self.assertEqual(b._send_checked("005930", "buy", 2)["output"]["ODNO"], "333")
+        self.assertEqual(len(calls), 2)
+
+    def test_late_record_found_on_second_look(self):
+        b = self.broker(); sent = []
+        def post(*a):
+            sent.append(1); raise self.drop()
+        from datetime import datetime
+        t = datetime.now(P.KST).strftime("%H%M%S")
+        looks = iter([[], [(t, "555", 4)]])                  # 처음엔 아직 안 적힘 · 5초 뒤 보임
+        with mock.patch.object(b, "_post_order", side_effect=post), mock.patch.object(b, "today_orders", side_effect=lambda *a: next(looks)):
+            self.assertEqual(b._send_checked("005930", "buy", 4), {"_found": "555"})
+        self.assertEqual(len(sent), 1)                       # 다시 안 보냄
+
+    def test_cannot_check_then_no_resend(self):
+        b = self.broker(); calls = []
+        def post(*a):
+            calls.append(1); raise self.drop()
+        with mock.patch.object(b, "_post_order", side_effect=post), mock.patch.object(b, "today_orders", return_value=None):
+            with self.assertRaises(broker_kis.BrokerError):
+                b._send_checked("005930", "buy", 2)
+        self.assertEqual(len(calls), 1)
+
+    def test_resend_limit(self):
+        b = self.broker(); calls = []
+        def post(*a):
+            calls.append(1); raise self.drop()
+        with mock.patch.object(b, "_post_order", side_effect=post), mock.patch.object(b, "today_orders", return_value=[]):
+            with self.assertRaises(broker_kis.BrokerError):
+                b._send_checked("005930", "buy", 2)
+        self.assertEqual(len(calls), 3)                      # 처음 + 다시 2번

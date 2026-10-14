@@ -159,16 +159,52 @@ def messages(rows, paper=True):
 
 
 def post(rows, paper=True):
-    """디스코드로 보냄(모든 봇이 이것을 씀). 웹훅은 GitHub Secrets의 DISCORD_WEBHOOK_URL에만 있고 어디에도 찍지 않음."""
+    """디스코드로 보냄(모든 봇이 이것을 씀). 웹훅은 GitHub Secrets의 DISCORD_WEBHOOK_URL에만 있고 어디에도 찍지 않음.
+    DISCORD_BUFFER(파일 경로)가 있으면 바로 보내지 않고 그 파일에 모아 둠 → 작업 끝에 flush()로 한 번에 보냄
+    (사용자 2026-10-14 "14시34분부터 15시32분까지 비슷한 내용을 여러 번 · 한 번으로 정리해서")."""
     url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
     if not url or not rows:
         return False
+    buf = os.environ.get("DISCORD_BUFFER", "").strip()
+    if buf and any(str(r).lstrip().startswith("⚠️") for r in rows):
+        buf = ""                                        # 급한 경고는 모으지 않고 바로 보냄
+    if buf:
+        try:
+            old = json.loads(Path(buf).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            old = []
+        Path(buf).write_text(json.dumps(old + [{"rows": [str(r) for r in rows], "paper": bool(paper)}], ensure_ascii=False),
+                             encoding="utf-8")
+        return True
     ok = True
     for msg in messages(rows, paper):
         try:
             ok = requests.post(url, json={"content": msg}, timeout=(10, 20)).status_code < 300 and ok
         except requests.RequestException:
             ok = False
+    return ok
+
+
+def flush(buf, head=None):
+    """모아 둔 알림을 한 메시지(길면 2000자마다 나눔)로 보내고 파일을 지움. 같은 줄은 한 번만 실음."""
+    try:
+        got = json.loads(Path(buf).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return True                                     # 모은 것이 없음(보낼 것 없음)
+    rows, seen, paper = ([head] if head else []), set(), any(x.get("paper", True) for x in got)
+    for x in got:
+        for r in x.get("rows", []):
+            if r not in seen:
+                seen.add(r)
+                rows.append(r)
+    saved = os.environ.pop("DISCORD_BUFFER", None)      # 이번에는 진짜로 보냄
+    try:
+        ok = post(rows, paper) if len(rows) > (1 if head else 0) else True
+    finally:
+        if saved is not None:
+            os.environ["DISCORD_BUFFER"] = saved
+    if ok:
+        Path(buf).unlink(missing_ok=True)
     return ok
 
 
@@ -196,4 +232,6 @@ def main():
 
 
 if __name__ == "__main__":
+    if sys.argv[1:2] == ["--flush"]:                   # python notify_discord.py --flush <모음 파일> [머리말]
+        sys.exit(0 if flush(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None) else 1)
     sys.exit(main())

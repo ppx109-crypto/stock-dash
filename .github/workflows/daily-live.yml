@@ -1,12 +1,14 @@
 name: Daily rule live (종가 출격)
 # 일봉 최고 규칙(새 82회차)을 실제 날에 — 15:20 마감 직전 값으로 판단 → 한투 모의투자 계좌에 시장가 주문(마감 동시호가 → 종가 체결)
 # → 15:32 진짜 종가로 연습 계좌에 적고 디스코드로 알림. 실전 계좌 주문은 없음. 거래 내역은 daily-live/에 남김.
-# GitHub 예약은 늦게 돌 수 있어 일찍(14:40 · 15:00) 띄우고 15:20까지 기다림. 두 번째는 첫 번째가 끝냈으면 그냥 끝남.
+# GitHub 예약은 늦게 돌거나 빠질 수 있어 일찍 여러 번(14:05 · 14:20 · 14:40 · 15:00) 띄우고 15:10 · 15:20까지 기다림. 뒤의 것은 앞의 것이 끝냈으면 그냥 끝남.
 on:
   workflow_dispatch:
   schedule:
+    - cron: '5 5 * * 1-5'           # 한국 시각 14:05(평일) — 2026-10-13 예약이 7시간 늦고 10-14는 아예 안 돌아 더 일찍 · 더 많이 띄움
+    - cron: '20 5 * * 1-5'          # 한국 시각 14:20(평일)
     - cron: '40 5 * * 1-5'          # 한국 시각 14:40(평일)
-    - cron: '0 6 * * 1-5'           # 한국 시각 15:00(평일, 첫 예약이 밀렸을 때)
+    - cron: '0 6 * * 1-5'           # 한국 시각 15:00(평일, 앞 예약이 밀렸을 때)
 permissions:
   contents: write
 concurrency:
@@ -15,7 +17,7 @@ concurrency:
 jobs:
   live:
     runs-on: ubuntu-latest
-    timeout-minutes: 80
+    timeout-minutes: 110             # 14:05에 떠도 15:32 종가 기록까지(약 90분) 넉넉히
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,6 +54,7 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_CALL_GAP: '0.07'
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json   # 알림을 모았다가 작업 끝에 한 번만 보냄(사용자 2026-10-14)
           # 빈칸 엔진 모의투자(사용자 2026-10-03 "최종 규칙 정하고 모의투자 제작") · 2026-10-05부터
           # 계좌 흔들림 상한(acc_cap.py · ACC-VOL-0007 · 사용자 2026-10-09 "main에 넣고 켜라") · 모의투자만 · 바구니 · 엔진 사기 한도
           ACC_CAP: 'on'
@@ -91,6 +94,7 @@ jobs:
           KIS_CALL_GAP: '0.07'
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json   # 알림을 모았다가 작업 끝에 한 번만 보냄(사용자 2026-10-14)
           # 한투 모의투자 자동 주문(사용자 요청 2026-10-01). 계좌 하나를 1시간봉과 반씩 나눠 씀(PAPER_SHARE 0.5).
           # 계좌 흔들림 상한(acc_cap.py) · 15:20 덜어내기 · 1일봉 사기 한도 · 15:32 종가 비교 기록
           ACC_CAP: 'on'
@@ -105,6 +109,11 @@ jobs:
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
           KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
+      - name: 디스코드 알림 한 번에 보내기(빈칸 엔진 · 흔들림 상한 · 1일봉 판단 · 체결 모음)
+        if: always()
+        run: python notify_discord.py --flush "${{ runner.temp }}/discord-bundle.json" "종가 작업 $(TZ=Asia/Seoul date +%m-%d) 모음" || echo '디스코드 모음 보내기 실패'
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
         continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)

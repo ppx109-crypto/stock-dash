@@ -295,6 +295,8 @@ def run(now=None):
         return 0
     if now.weekday() >= 5 or now.strftime("%H%M") > "1600":
         print("장이 끝난 지 오래되었거나 주말이라 넘어갑니다.")
+        if now.weekday() < 5:                # 평일인데 늦게 돈 것 — 그날 판단이 빠졌음을 알림(2026-10-13 GitHub 예약 7시간 늦음)
+            send([f"⚠️ 1일봉 {day[4:6]}-{day[6:]} 판단 못 함 · 작업이 {now.strftime('%H:%M')}에야 돌아 장이 끝남(휴장일이면 무시)"])
         return 0
     _wait_until(DECIDE_AT)
     import paper_trade as _pt
