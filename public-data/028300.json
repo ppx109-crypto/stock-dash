@@ -389,7 +389,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-12",
+  "fetched": "2026-10-14",
   "disclosures": [
     {
       "title": "기업설명회(IR)개최              ",
@@ -465,11 +465,6 @@
       "title": "전환가액의조정              ",
       "date": "20260716",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716900712"
-    },
-    {
-      "title": "전환가액의조정              ",
-      "date": "20260715",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260715900545"
     }
   ]
 }
