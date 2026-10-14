@@ -1,0 +1,43 @@
+{
+ "status": "READY",
+ "task_id": "COMP-0004",
+ "source_pr": 352,
+ "lock_head": "b171d7db1f329f79d13682f0be90ef2e336e7404",
+ "gpt_agree": "2026-10-14 12:05:53 KST",
+ "computed": "2026-10-14 12:06:24~26 KST",
+ "locked_sha256": {
+  "research/kmf_comp_lastm_sig.py": "cd6c9c1882a18b0b2a842cf39a492c19f502e7495068939eb656d7bd2c637863",
+  "research/kmf_comp_lastm_sig.json": "f246815a80dd79ce1d99f0dfa7ceb5f781bc67b3b7eb8c84dd810b38dd1cbbc5",
+  "private eng2_joint2.py": "71c92c21d0856b9555550bb9e479cd1848fc2de978912cb16b6681c5771f59a9",
+  "private comp_lastm.py": "1cc0772c5a554fe9cff22d050b3a80e4e207e8e4a80431f99b94ec2940e21a2d",
+  "private p2_lib.py": "74de14f919544a822504d573247dc119cac7716a5436c44701e31e20798a0b00"
+ },
+ "outputs_sha256": {
+  "research/kmf_comp_lastm_out.json": "aab0cca9f5792e23a90fd2481e0d53162f7987441ace6cada0fb88fb75608fe6",
+  "research/kmf_comp_lastm_out_daily.json": "2bd3ab9891e2a09992cd4dfedc5db06d2e48f2e91afbbec64ea3e5dcda2fdd48",
+  "research/kmf_comp_lastm_out_log.json": "1ecba4201a43ceb1cb364339a01ffe4d9d8a35e7ae4a64198520f54d7391373c",
+  "research/kmf_comp_lastm_cut.out": "138a08a4cee2a74d83ceabd566f3c8876d98d6333567e6feeef9fd0973a8745f",
+  "audit/audit4.py": "e433ea505506108c8efeb44fe6b8f547ae00c5d7aab72a2c24af87ba85ca9a7c",
+  "audit/audit4.out": "eeef1aca72cb0c2380076d0476a082d22faa3cfaccbc16a6cf8ad8ad3fe15028"
+ },
+ "private_cut_test": {
+  "cut_lastm.py": "97499063273ba5097d270b8c0ad40b5e62499a134a8e067c469bf8ed9c3077d4",
+  "cuts": [
+   "20260302",
+   "20260504",
+   "20260701",
+   "20260803",
+   "20260915",
+   "20261001"
+  ],
+  "compared_cells": 16920,
+  "diff_cells": 0
+ },
+ "verdict": {
+  "M1 s1.0": "지지 안 됨(④만)",
+  "M1 s1.5": "지지 안 됨(④만)",
+  "M2 s1.0": "지지 안 됨(②④⑥)",
+  "M2 s1.5": "지지 안 됨(④⑥)"
+ },
+ "log_pnl_definition": "비용 뒤(진입 0.04 + 정리 0.04)"
+}
