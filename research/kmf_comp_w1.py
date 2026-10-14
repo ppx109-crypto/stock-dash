@@ -5,7 +5,7 @@
 판(6 · 결과 전 고정): GPT #343 H1 = T2 눌림 뒤 재개(첫 유효 신호 1번) 손절 {1.0, 1.5} ATR ·
   클로드(탐색 agentW1 뒤 · 사후 선택 표시) = 갭 되돌림 k {0.3, 0.5} · 15분 EMA10 띠 되돌림 k {1.0, 1.5} + 평평(|EMA20 4봉 기울기|/ATR ≤ 0.5).
 평가: 2026-01-08 ~ 10-12(P2 자료 끝과 같음) · 빈 29분 9일은 원판에 두고 스트레스판(kmf_r0q.execute2)을 따로.
-python3 research/kmf_comp_w1.py → research/kmf_comp_w1_daily.json · _out.json"""
+python3 research/kmf_comp_w1.py → research/kmf_comp_w1_daily.json(원정밀도 · 결합 입력) · _out.json(표시 · 날별 마지막 정리 분 · 09:45 넘은 정리)"""
 import sys, os, json, hashlib
 from pathlib import Path
 HERE = Path(__file__).resolve().parent; sys.path.insert(0, str(HERE))
@@ -84,15 +84,21 @@ DAYS = [d for d in K.DAYS if "20260108" <= d <= "20261012"]
 def main():
     data_sha = {str(q.relative_to(HERE.parent)): hashlib.sha256(q.read_bytes()).hexdigest() for q in (K.MINI, K.FUT, K.F1M)}
     if not K.CUT: assert data_sha == P.DATA_EXPECT
-    daily = {}
+    daily, exits = {}, {}
     for name, f in VARIANTS.items():
         for mode in ("원판", "스트레스판"):
-            daily[f"{name} {mode}"] = {d: Q.execute2(d, f(d), stress=(mode == "스트레스판")) for d in DAYS}
+            p, ex = {}, {}
+            for d in DAYS:
+                lg = []; p[d] = Q.execute2(d, f(d), log=lg, stress=(mode == "스트레스판")); ex[d] = max((t["정리분"] for t in lg), default=None)
+            daily[f"{name} {mode}"] = p; exits[f"{name} {mode}"] = ex
     meta = {"days": len(DAYS), "first": DAYS[0], "last": DAYS[-1], "data_sha256": data_sha, "KMF_CUT": K.CUT,
             "code_sha256": {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest() for f in ("kmf_comp_w1.py", "kmf_r0q.py", "kmf_nb.py", "kmf_rlk4.py")}}
     sfx = os.getenv("KMF_OUT_SUFFIX", "")
-    (HERE / f"kmf_comp_w1_daily{sfx}.json").write_text(json.dumps({k: {d: round(v, 6) for d, v in p.items()} for k, p in daily.items()}, ensure_ascii=False))
-    (HERE / f"kmf_comp_w1_out{sfx}.json").write_text(json.dumps({"meta": meta, "단독 합": {k: round(sum(p.values()), 2) for k, p in daily.items()}}, ensure_ascii=False, indent=1))
+    # 계산용 날별 값은 반올림 없이(원정밀도 · GPT #343 A) · 표시용만 반올림
+    (HERE / f"kmf_comp_w1_daily{sfx}.json").write_text(json.dumps(daily, ensure_ascii=False))
+    late = {k: {d: m for d, m in ex.items() if m is not None and m > EXIT} for k, ex in exits.items()}
+    (HERE / f"kmf_comp_w1_out{sfx}.json").write_text(json.dumps({"meta": meta, "단독 합(표시)": {k: round(sum(p.values()), 2) for k, p in daily.items()},
+        "마지막 정리 분(날별)": exits, "09:45 넘어 정리된 날": late, "가장 늦은 정리 분": {k: max((m for m in ex.values() if m is not None), default=None) for k, ex in exits.items()}}, ensure_ascii=False, indent=1))
     print({k: round(sum(p.values()), 2) for k, p in daily.items() if k.endswith("원판")})
 
 if __name__ == "__main__":
