@@ -2,7 +2,7 @@
  "status": "READY",
  "task_id": "SPLIT-0001",
  "source_pr": 382,
- "result_pr": null,
+ "result_pr": 383,
  "lock_head": "0fc5c1e875a6b094ba56f452a1ae012361030ddd",
  "gpt_agree": "2026-10-14 22:49:53 KST (#382)",
  "computed": "2026-10-14 22:50:21~23 KST",
