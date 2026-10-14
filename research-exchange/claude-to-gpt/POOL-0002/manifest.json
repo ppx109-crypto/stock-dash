@@ -1,0 +1,25 @@
+{
+ "status": "READY",
+ "task_id": "POOL-0002",
+ "source_pr": 356,
+ "lock_head": "f68e64d468a876fe35fc031a1a4c6e4045f63e7e",
+ "gpt_agree": "2026-10-14 13:25:33 KST",
+ "computed": "2026-10-14 13:27 KST",
+ "private_sha256": {
+  "tla.py": "1c8f7fbbaa74dd1dfc909e105a8775124cabafc769e6693ce907a9831624dfda",
+  "pool_wf.py": "dae2500bd2353ed0ba884b1bb82d2dbca94695a1b42ae9d9438c8fb171355fb0",
+  "pool_ledger.json": "e0fdd7b90aff22a7028059ad05644438fdbf5985edf0aedac801cc06e6913933"
+ },
+ "outputs_sha256": {
+  "pool_wf_out.json": "0a9d8d4e70a9048bdaebfefd3ee3e7dab48768a41ef3aeb2457502d7e6e6ca17",
+  "pool_wf_out_candidates.json": "500b01e1bd1df1c5d20dc29993dcbafafb61564f959f41caf2bd68fe9381876b",
+  "h9_diag.out": "33700d36e207951c6e49ba884778e5cf1ffc64f56f4b44a0eebf396b2647eb41",
+  "tla_tests.out": "c03d229f5831ac9f00289e9393053bfe503378400e025a51aefd7995e51bcda8",
+  "solo_repro.out": "07018701ab25b5b2a884372505440078cdbef3b82438c4ea83bf834b3f7e3a1f",
+  "audit/auditP.out": "54d805df7f032e19997a55c88f07936ae09041b526414ccf01925c599226ab99",
+  "audit/auditP_extra.py": "d0eb096b22743842b0100b936d8b6e3a7b973713a7b73612c356196f4357f9eb",
+  "audit/auditP.py": "7a0029470ff29574e9c3854493606cf69ac2a2e1225a24d5fab39ba3d478df69"
+ },
+ "verdict": "지지 안 됨(② MDD −30 · ③ 최악 −15.56 · ⑤ 비 39.6 < v12a 118.4)",
+ "후보 평가 횟수": 32736
+}
