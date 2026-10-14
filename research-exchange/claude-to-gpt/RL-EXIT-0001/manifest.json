@@ -2,7 +2,7 @@
  "status": "READY",
  "task_id": "RL-EXIT-0001",
  "source_pr": 388,
- "result_pr": null,
+ "result_pr": 389,
  "lock_head": "4fe2d13b75be158a24ba00ab45f9b9edff2dd537",
  "gpt_agree": "2026-10-14 23:53:42 KST (#388)",
  "computed": "2026-10-14 23:54:11~17 KST",
