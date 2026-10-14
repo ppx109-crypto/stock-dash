@@ -1,0 +1,6 @@
+{"status":"READY","task_id":"RULE-0003","chain_id":"RULE-0003","source_pr":370,"lock_pr":369,"lock_head":"b882fa9d8d3c8988eec7c858f68d5d13462910d4","gpt_agree":"2026-10-14 16:48 KST","computed":"2026-10-14 16:50 KST",
+ "private_sha256":{"rule3.py":"44712d9af971b70a4fe74e115778d879400a2b18a1c2f177c34de2e3ed21ae93","rule2.py":"8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c","eng2_r2.py":"17c9a8cb715aad9cd6806c5bed1091dff9628a73c09dcef8d5d1a528fbaa2a9d","rule_lib.py":"4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199","cut_rule2.py":"bab9a01a8dcba620881c27a6475fe7065028d7d3296ed65d3c1b1071032928f5"},
+ "inputs_sha256":{"rule1_rev_out.json":"8b05b3ed4bb7472e1583786d88c512eb13554b1c22e28d265110ec5697a560e6"},
+ "outputs_sha256":{"rule3_out.json":"674029360206ae9fbbee0388b732788b89246b157d79f37620ebc0a930455019","cut_out.txt":"61e16a1b3de107df3bc16f68771b926c347eeb54c4bfd56128345bee2291522d"},
+ "window_actual":"앞 유효 ER 마지막 60개(QUESTION 문구 '앞 60거래일'과 어긋남 · 06-08 ER 없음 때문에 07-14 · 08-14(q0.3) · 08-07(q0.4)만 다름 · 1~6월 성적 같음)",
+ "done":["5판 계산","고른 판(대조) 자르기 6시점","결합 = RULE-0001 결합 날별 차 0"],"not_done":["서브에이전트 독립 감사(대조가 뽑혀 생략)","후보별 날짜별 문턱 · 창 영수증 공개(비공개 실행만)"],"verdict":"참고 지지 안 됨(④ 47.23%)"}
