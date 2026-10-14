@@ -1,0 +1,6 @@
+{"status":"READY","task_id":"RULE-0004","source_pr":371,"lock_head":"991fad2fe8c40cb481718122efa903ddeac0fdd3","gpt_agree":"2026-10-14 18:26 KST","computed":"2026-10-14 18:27 KST",
+ "private_sha256":{"rule4.py":"a93a48cf7b48cc0cf341f3a99d9a7292c123b6106db2be99ada64385ea2461ad","eng2_r4.py":"8a6f7dc4e81450f52da2ceb6183ec164107af103de9c9cd9d7e0fa2776beabd4","rule2.py":"8975f4620246acbcb7de72629ed3a87b70f8b64933f5cb62ae14188eb1e6cd7c","rule_lib.py":"4989b33e9020f2b849a62158b2d4b37c7725d6a07a2fedf7969d06aef56f0199"},
+ "inputs_sha256":{"rule1_rev_out.json":"8b05b3ed4bb7472e1583786d88c512eb13554b1c22e28d265110ec5697a560e6"},
+ "outputs_sha256":{"rule4_out.json":"43210bb0c4f26e8ff6a3b50bc41f22a4b587400d5ef58b0d9171569e318213ab","cut_out.txt":"61e16a1b3de107df3bc16f68771b926c347eeb54c4bfd56128345bee2291522d"},
+ "runs":["--smoke 1회(시각 미확인 · 17:19:23 KST 전 · 5판 날별 손익 계산 · 다른 날 수만 출력)","결과 계산 1회 18:27 KST"],
+ "not_done":["서브에이전트 감사(대조 선택으로 생략)"],"verdict":"대조 선택 · 참고 지지 안 됨(④ 47.23%)"}
