@@ -241,7 +241,7 @@ class PaperBroker(broker_kis.KIS):
         없으면 다시 보냄(최대 resend번). 확인 자체를 못 하면 다시 보내지 않음(겹 주문보다 안 사는 쪽이 안전)."""
         seen = set()
         for turn in range(resend + 1):
-            at = (datetime.now(KST) - timedelta(seconds=5)).strftime("%H%M%S")   # 서버 시계 차 여유 5초
+            at = (datetime.now(KST) - timedelta(seconds=120)).strftime("%H%M%S")   # 서버 시계 차 여유 2분
             try:
                 return self._post_order(code, side, qty)
             except broker_kis.BrokerError as e:
@@ -256,6 +256,13 @@ class PaperBroker(broker_kis.KIS):
             if now is None:
                 raise broker_kis.BrokerError("주문 중 연결이 끊겼고 주문 내역도 확인하지 못해 다시 넣지 않았습니다(겹 주문 막기 · 확인 필요).")
             new = [o for o in now if o[0] >= at and o[1] not in seen and o[2] == qty]
+            if not new:                                 # 서버가 늦게 적을 수 있어 5초 뒤 한 번 더 보고 그래도 없을 때만 다시 넣음
+                time.sleep(5)
+                again = self.today_orders(code, side)
+                if again is None:
+                    raise broker_kis.BrokerError("주문 중 연결이 끊겼고 주문 내역도 확인하지 못해 다시 넣지 않았습니다(겹 주문 막기 · 확인 필요).")
+                now = again
+                new = [o for o in now if o[0] >= at and o[1] not in seen and o[2] == qty]
             if new:
                 print("주문 중 연결이 끊겼지만 주문 내역에서 들어간 것을 확인함")
                 return {"_found": new[-1][1] if re.fullmatch(r"[0-9]{1,12}", new[-1][1]) else ""}

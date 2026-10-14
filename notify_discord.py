@@ -166,6 +166,8 @@ def post(rows, paper=True):
     if not url or not rows:
         return False
     buf = os.environ.get("DISCORD_BUFFER", "").strip()
+    if buf and any(str(r).lstrip().startswith("⚠️") for r in rows):
+        buf = ""                                        # 급한 경고는 모으지 않고 바로 보냄
     if buf:
         try:
             old = json.loads(Path(buf).read_text(encoding="utf-8"))

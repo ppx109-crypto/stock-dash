@@ -319,6 +319,17 @@ class OrderDropCheck(unittest.TestCase):
             self.assertEqual(b._send_checked("005930", "buy", 2)["output"]["ODNO"], "333")
         self.assertEqual(len(calls), 2)
 
+    def test_late_record_found_on_second_look(self):
+        b = self.broker(); sent = []
+        def post(*a):
+            sent.append(1); raise self.drop()
+        from datetime import datetime
+        t = datetime.now(P.KST).strftime("%H%M%S")
+        looks = iter([[], [(t, "555", 4)]])                  # 처음엔 아직 안 적힘 · 5초 뒤 보임
+        with mock.patch.object(b, "_post_order", side_effect=post), mock.patch.object(b, "today_orders", side_effect=lambda *a: next(looks)):
+            self.assertEqual(b._send_checked("005930", "buy", 4), {"_found": "555"})
+        self.assertEqual(len(sent), 1)                       # 다시 안 보냄
+
     def test_cannot_check_then_no_resend(self):
         b = self.broker(); calls = []
         def post(*a):

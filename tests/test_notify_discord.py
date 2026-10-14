@@ -104,3 +104,17 @@ class Bundle(unittest.TestCase):
     def test_flush_without_anything(self):
         import os, tempfile
         self.assertTrue(N.flush(os.path.join(tempfile.mkdtemp(), "none.json"), "머리말"))
+
+
+class UrgentNotBuffered(unittest.TestCase):
+    def test_warning_sent_at_once(self):
+        import os, tempfile
+        from unittest import mock
+        sent = []
+        buf = os.path.join(tempfile.mkdtemp(), "b.json")
+        with mock.patch.dict(os.environ, {"DISCORD_WEBHOOK_URL": "https://example.invalid/hook", "DISCORD_BUFFER": buf}), \
+                mock.patch.object(N.requests, "post", side_effect=lambda url, json, timeout: sent.append(json["content"]) or mock.Mock(status_code=204)):
+            N.post(["⚠️ 계좌 흔들림 상한 단계 문제"])
+            N.post(["빈칸 엔진 오늘 쉼"])
+        self.assertEqual(len(sent), 1)
+        self.assertFalse(any("빈칸" in x for x in sent))

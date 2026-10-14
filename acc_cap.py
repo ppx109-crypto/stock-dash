@@ -13,6 +13,7 @@
 막힘(fail-closed · GPT #149 검토): 켜진 날 상한 셈이나 덜어내기가 실패하면 그날 **새 매수만 멈춤**(팔기는 그대로) — safe_room · block · blocked.
 """
 import json
+import time
 import math
 import os
 from datetime import datetime
@@ -189,7 +190,15 @@ def run_trim(day, now=None, broker=None):
     if t0.get("date") == day and t0.get("trim_done"):
         return []
     broker = broker or P.PaperBroker()
-    balance = broker.balance()
+    for turn in range(3):                # 주문 전 첫 잔고 조회만 다시 시도(2026-10-14 15:20 연결 끊김 → 그날 새 매수 멈춤) · 주문 뒤에는 다시 안 함
+        try:
+            balance = broker.balance()
+            break
+        except broker_kis.BrokerError:
+            if turn == 2:
+                raise
+            print("흔들림 상한: 잔고 조회 실패 → 10초 뒤 다시")
+            time.sleep(10)
     t = today(day, balance)
     files = {"1d": P.DAILY_BOOK, "15m": P.M15_BOOK, "1h": P.BOOK, "idle": P.IDLE_BOOK, "basket": P.BASKET_BOOK}
     books = {k: _load(v, {"orders": [], "held": {}}) for k, v in files.items()}
