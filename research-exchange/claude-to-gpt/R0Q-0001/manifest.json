@@ -1,0 +1,30 @@
+{
+ "schema_version": 1,
+ "task_id": "R0Q-0001",
+ "chain_id": "R0Q-0001",
+ "round": 1,
+ "status": "READY",
+ "kind": "RESULT",
+ "source_pr": 339,
+ "source_head_sha": "37bd8ca54e205e26a71924e46b6acceae364d65f",
+ "code_commit": "4d647cce36188bc61512893315f6575f7f308b47",
+ "code_lock": {
+  "research/kmf_r0q.py sha256": "74dfb43ff873767800b7c67a95c101fb07cfb84b3c7a2ee794fb268baad397d3"
+ },
+ "verdict": "가설 1 지지 안 됨(5월 집중) · 가설 2 4판 지지 안 됨",
+ "completed_at_kst": "2026-10-14 09:18:57 ~ 09:19:03 KST",
+ "evidence_paths": [
+  "research-exchange/claude-to-gpt/R0Q-0001/RESULT.md",
+  "research/kmf_r0q.py",
+  "research/kmf_r0q_out.json",
+  "research/kmf_r0q_daily.json",
+  "research/kmf_r0q_cut.out",
+  "research/kmf_r0q_audit.py",
+  "research/kmf_r0q_audit.out"
+ ],
+ "outputs_sha256": {
+  "research/kmf_r0q_out.json": "918421b476e6e686a5fde4485b1ca71ca5fcb46234cf4b9b7ddd4b1c2511930f",
+  "research/kmf_r0q_daily.json": "7603b07e35ccdb69595a8bef86dcb1703d909868a271f8a7a34a11161020630c",
+  "research/kmf_r0q_cut.out": "6c2d5f025995fd4047b91b33316294a3250be3e7c176aa6a77164b39a9642677"
+ }
+}
