@@ -5,12 +5,14 @@ RNA 방향(기존 식 그대로): EMA10 > EMA20 이고 EMA20 4봉 기울기 > 0 
 게이트 2개(그 이상 없음): G30+60 = 30 · 60분 방향이 같고 0이 아님 · G15+30+60 = 15 · 30 · 60분 모두 같고 0이 아님 → 그 방향을 그날 고정.
   안 조용한 날 S3 신호 중 신호 분 ≥ 600 이고 방향 = 고정 방향인 것만 허용 · 불일치(0 포함)면 그날 S3 쉼 ·
   그날 09:00 ~ 09:59 분 가운데 빠진 분이 있으면(오전 자료 미완결) 게이트 판은 그날 쉼.
-대조: 같은 날들에 신호 분 ≥ 600인 S3 전부(게이트 없음 · 오전 미완결 규칙 없음). 조용한 날 R0는 모든 판에서 그대로(참고 H 수준 합계용).
+대조(판정용 · GPT #341 보완): 품질 일치 대조 = 신호 분 ≥ 600인 S3 전부 · 오전 미완결 날은 대조도 쉼(RNA 효과만 분리).
+  참고 대조: 무게이트 대조 = 오전 미완결 규칙 없이 10:00 뒤 S3 전부(전체 정책 효과 참고 · 품질 쉼 효과를 따로 적음). 조용한 날 R0는 모든 판에서 그대로.
 스트레스판: kmf_r0q.execute2(stress=True)(빈 29분을 들고 지나오면 그 안 손절가 도달 가정 · 상태 이어 재생 · 실제 하한 아님).
 지지(결과 전 고정 · 게이트마다 · 원판과 스트레스판 둘 다 만족해야 함 · 원정밀도로 판정):
   ① 대조 대비 초과 손익 합 > 0 ② 막힌 대조 거래(대조에 있고 게이트 판에 없는 거래) 손익 합 < 0
   ③ 날별 초과의 5일 덩어리 재표집 합 95% 하한 > 0(158일 순서 · 0 포함 · 2,000번 · random.Random(0)) ④ 초과가 가장 큰 한 날 빼도 > 0.
-  작동한(방향이 고정된) 안 조용한 날이 20일 미만이면 WAITING_DATA로 적음. 두 게이트 중 최선 고르기 없음 · 둘 다 보고.
+  ⑤ 손실 잣대: 게이트 판의 장 끝 하루 손익(원정밀도)이 −15p보다 나쁜 날 0개(−15 정확히는 허용 · 날짜 · 값 기록).
+  비교 대상은 품질 일치 대조. 작동한(방향이 고정된) 안 조용한 날이 20일 미만이면 WAITING_DATA로 적음. 두 게이트 중 최선 고르기 없음 · 둘 다 보고.
 python3 research/kmf_gate10.py → research/kmf_gate10_out.json · _daily.json · --cut-test"""
 import sys, os, json, bisect, hashlib, subprocess
 from pathlib import Path
@@ -37,14 +39,15 @@ def gate_dir(d, kind):
 def sigs(d, kind):
     if Z[d]: return K.sig_r0(d)
     s = [x for x in R4.s3(d) if x[0] >= T]
-    if kind == "대조": return s
+    if kind == "무게이트 대조": return s
+    if kind == "대조": return s if morning_complete(d) else []
     g = gate_dir(d, kind); return [x for x in s if g != 0 and x[1] == g]
 
 def main():
     data_sha = {str(q.relative_to(HERE.parent)): hashlib.sha256(q.read_bytes()).hexdigest() for q in (K.MINI, K.FUT, K.F1M)}
     if not K.CUT: assert data_sha == P.DATA_EXPECT
     res, daily, logs = {}, {}, {}
-    for kind in ("대조", "G30+60", "G15+30+60"):
+    for kind in ("무게이트 대조", "대조", "G30+60", "G15+30+60"):
         for mode in ("원판", "스트레스판"):
             p, lg = {}, {}
             for d in DAYS:
@@ -63,17 +66,25 @@ def main():
             ex = [p[d] - base[d] for d in DAYS]; best = max(range(len(ex)), key=lambda i: ex[i])
             blocked = [t["손익"] for d in DAYS for t in lb[d] if t["신호분"] not in {u["신호분"] for u in lg[d]}]
             raw = {"초과 합": sum(ex), "초과 합 95%": Q.block_ci(ex, stat_fn=sum), "가장 큰 한 날 뺀 초과": sum(ex) - ex[best], "막힌 대조 거래 손익 합": sum(blocked)}
-            cond = {"① 초과 합 > 0": raw["초과 합"] > 0, "② 막힌 거래 손익 < 0": raw["막힌 대조 거래 손익 합"] < 0, "③ 95% 하한 > 0": raw["초과 합 95%"][0] > 0, "④ 한 날 빼도 > 0": raw["가장 큰 한 날 뺀 초과"] > 0}
+            worse = {d: p[d] for d in DAYS if p[d] < -15.0}
+            cond = {"① 초과 합 > 0": raw["초과 합"] > 0, "② 막힌 거래 손익 < 0": raw["막힌 대조 거래 손익 합"] < 0, "③ 95% 하한 > 0": raw["초과 합 95%"][0] > 0, "④ 한 날 빼도 > 0": raw["가장 큰 한 날 뺀 초과"] > 0,
+                    "⑤ −15p보다 나쁜 날 0": not worse}
             s = stat(p); sb = stat(base)
             r[mode] = {"H 수준 합(R0 + 게이트 S3)": s["합"], "MDD": s["MDD"], "최악": s["최악"], "앞반": s["앞반"], "뒤반": s["뒤반"], "대조 합": sb["합"], "대조 MDD": sb["MDD"],
                        "안 조용한 날만 합": round(sum(p[d] for d in nq), 2), "대조 안 조용한 날만 합": round(sum(base[d] for d in nq), 2),
                        "초과 합": round(raw["초과 합"], 2), "초과 합 95%": [round(x, 2) for x in raw["초과 합 95%"]], "가장 큰 한 날 뺀 초과": round(raw["가장 큰 한 날 뺀 초과"], 2),
                        "막힌 대조 거래 수": len(blocked), "막힌 대조 거래 손익 합": round(raw["막힌 대조 거래 손익 합"], 2),
                        "새로 생긴 거래 수": sum(1 for d in DAYS for t in lg[d] if t["신호분"] not in {u["신호분"] for u in lb[d]}),
-                       "−15 넘은 날": sum(1 for v in p.values() if v < -15.0), "원정밀도": raw, "조건": cond}
+                       "−15p보다 나쁜 날": {d: v for d, v in worse.items()}, "원정밀도": raw, "조건": cond,
+                       "실제 S3 거래 수(게이트 · 대조)": [sum(1 for d in nq for t in lg[d]), sum(1 for d in nq for t in lb[d])]}
             ok_all = ok_all and all(cond.values())
         r["판정"] = "WAITING_DATA" if len(active) < 20 else ("지지" if ok_all else "지지 안 됨")
         out["판"][kind] = r
+    for mode in ("원판", "스트레스판"):
+        a, b = daily[f"무게이트 대조 {mode}"], daily[f"대조 {mode}"]
+        out[f"품질 쉼 효과({mode} · 품질 일치 대조 − 무게이트 대조)"] = {"합": round(sum(b[d] - a[d] for d in DAYS), 4),
+            "날짜별": {d: round(b[d] - a[d], 4) for d in out["meta"]["오전 미완결 안 조용한 날"]}}
+    out["10:00 방향 기록"] = {d: {"G30+60": gate_dir(d, "G30+60"), "G15+30+60": gate_dir(d, "G15+30+60"), "15": dir15(d, T), "30": R4.rna_dir(30, d, T), "60": R4.rna_dir(60, d, T)} for d in nq}
     sfx = os.getenv("KMF_OUT_SUFFIX", "")
     (HERE / f"kmf_gate10_out{sfx}.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     (HERE / f"kmf_gate10_daily{sfx}.json").write_text(json.dumps({k: {d: round(v, 4) for d, v in p.items()} for k, p in daily.items()}, ensure_ascii=False))
