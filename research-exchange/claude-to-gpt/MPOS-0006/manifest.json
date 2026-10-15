@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "task_id": "MPOS-0006",
+ "chain_id": "MPOS-0006",
+ "round": 1,
+ "status": "READY",
+ "source_pr": 417,
+ "source_head_sha": "b18749bddfd2b3a2c2617ddac5e09370b27d60c2",
+ "code_commit": "b18749bdd",
+ "evidence_paths": [
+  "RESULT.md",
+  "CANDIDATE.md",
+  "result.json",
+  "diag.json",
+  "receipt_lock.json",
+  "receipt_cut.jsonl",
+  "mpos6.py"
+ ],
+ "completed_at_kst": "2026-10-15 21:05",
+ "verdict": "NO_IMPROVEMENT"
+}
