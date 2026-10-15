@@ -4,7 +4,8 @@ HB_MODE=IMM   : 원판(nrl.BASE_HOLD · BASE_SIZE · rule.order · BASE_EXIT) �
 HB_MODE=DELAY : 정배열 문 신호(t)를 t+2 종가에 삼(확인 없음 · 단순 지연 대조).
 HB_MODE=CONFIRM: 정배열 문 신호(t) 뒤 t+1 종가 / t 종가 − 1 > HB_TH%(회복 확인 · t+1 종가로 확정) → t+2 종가에 삼(확인한 종가로 바로 체결하지 않음 · GPT #437).
 HB_MODE=RAND  : DELAY 후보에서 C0가 버리는 몫만큼 고정 씨앗 동전으로 버림(무작위 버림 대조 · 대리 검토 1).
-지연 경로(DELAY · CONFIRM · RAND) 공통: 사는 날(t+2) 종가 기준 정배열 유지(nrl.shape) — 같은 날 정배열이 깨져 판 종목을 다시 사는 헛매매를 막음(대리 검토 1).
+지연 경로(DELAY · CONFIRM · RAND) 공통: 확인 날(t+1) 종가 기준 정배열 유지(nrl.shape) · 판 날 다시 사지 않음(cooldown 1) — 결정은 t+1 종가에 끝남(GPT #438).
+남는 같은 종가 의존: t+2 날 시총 100위 줄이 있어야 엔진이 삼(원판이 신호 날 100위 · 종가로 사는 것과 같은 일봉 종가 대리 구조) → 결과는 진단 전용.
 공통: 규칙 문(rule.holds)은 원판 그대로 신호 날 종가에 삼(같은 종목이면 규칙 문이 먼저). 크기 · 순서 · 나가기 층은 신호 줄(t) 값으로.
 미확인 · t+2 줄 없음(그날 100위 밖) → 그 신호는 버림(넘겨 기다리지 않음 · 다음 날 새 신호는 따로 봄).
 t+2 날 판단에 쓰는 값: 신호 줄(t)의 값 · t · t+1 종가 · t+2 줄의 존재(100위 안) — t+2 종가 이후 값 안 씀(엔진의 상한가 건너뛰기는 원판과 같음).
@@ -16,6 +17,10 @@ import sys
 sys.path.insert(0, os.getcwd())
 sys.path.insert(0, os.path.join(os.getcwd(), "research"))
 import lab  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+_C = Path(os.environ["NRL_CACHE"])                       # GPT #438 고칠 것 3: 캐시를 읽어야 함(다시 굽기 금지)
+assert _C.exists() and _C.stat().st_mtime > lab.CACHE.stat().st_mtime, "nrl 캐시를 다시 구울 상황 → 중단"
 import nrl  # noqa: E402
 import rule  # noqa: E402
 
@@ -28,6 +33,7 @@ TH = float(os.environ.get("HB_TH", "0"))      # 확인 문턱(%): t+1 종가 / t
 SEED = 20261016                               # RAND(무작위 버림 대조)의 고정 씨앗
 LEAK = os.environ.get("HB_LEAK", "")           # 검사 도구 자체 시험 전용 · 실제 칸에는 쓰지 않음: "1" 다음 날 종가 · "R" 미래 종가 둘의 비율
 POISON = os.environ.get("HB_POISON", "")      # 독 시험: 이 날 뒤 종가를 모두 0.7배로 바꾸고 이 날 뒤엔 새로 사지 않음
+COOL = int(os.environ.get("HB_COOL", "1"))     # 지연 경로: 판 날 다시 사지 않음(엔진 cooldown · 대리 검토 1) · GAP0 재현은 0
 SIGTEST = os.environ.get("HB_SIGTEST") == "1"  # 신호 단위 접근 감사(엔진 없이 모든 줄): 판단이 읽는 종가 · 모양 · 줄 번호가 그 줄 날짜를 넘는지
 PRICES = nrl.prices
 if POISON:
@@ -53,7 +59,7 @@ def build(pool):
         _see(j)
         return LANE[code]["closes"][j]
 
-    def aligned_now(code, j):
+    def aligned_at(code, j):
         _see(j)
         return bool(nrl.shape[code]["정배열"][j])
 
@@ -62,7 +68,7 @@ def build(pool):
         s = row_at(r["code"], r["i"] - GAP)
         if s is None or not nrl.BASE_HOLD(s) or rule.holds(s):
             return None
-        if not aligned_now(r["code"], r["i"]):          # 사는 날(t+2) 종가 기준 정배열 유지(원판이 신호 날 종가로 보는 것과 같은 시점)
+        if not aligned_at(r["code"], max(r["i"] - GAP, r["i"] - 1)):   # 확인 날(t+1 · GAP 0이면 신호 날) 종가 기준 정배열 유지 — 결정은 t+1 종가에 끝남(GPT #438)
             return None
         return s
 
@@ -133,7 +139,7 @@ for side, pool, since in (("앞", nrl.early, rule.SINCE), ("뒤", nrl.inside, ru
     if POISON:                                    # 자른 날 뒤엔 새로 사지 않음(날은 계속 흘러 들고 있던 것은 독 값으로 나감)
         holds = (lambda h: lambda r: r["date"] <= POISON and h(r))(holds)
     g = lab.run(pool, PRICES, holds, exit_at, slots=nrl.SLOTS, rank=rank, since=since, apart=nrl.kin, realistic=True, cap=130,
-                detail=True, size=size)
+                detail=True, size=size, **({} if MODE == "IMM" else {"cooldown": COOL}))
     got = (g or {}).get("매매목록") or []                 # 독 시험에서 자른 날 앞 반이면 뒤 반은 빈 판
     assert g or POISON, side
     rows += [(t["code"], t["산 날"], t["판 날"], t["손익"], t["자리"] if t.get("자리") is not None else 1) for t in got]

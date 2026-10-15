@@ -8,7 +8,7 @@ import os
 import sys
 from pathlib import Path
 
-HERE = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos14")   # 계산 폴더(잠금 지문은 계산 폴더 사본 기준)
+HERE = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos14")   # 계산 폴더(저장소 사본과 바이트 같게 · GPT #438 고칠 것 3)
 SP = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad")
 WORK = SP / "mpos14"
 M12 = SP / "r8/research-exchange/claude-to-gpt/MPOS-0012"
@@ -18,7 +18,7 @@ import mpos12 as M  # noqa: E402
 X = M.X
 CELLS = {"IMM": dict(HB_MODE="IMM"), "DELAY": dict(HB_MODE="DELAY"), "RAND": dict(HB_MODE="RAND"), "C0": dict(HB_MODE="CONFIRM", HB_TH="0"),
          "CM1": dict(HB_MODE="CONFIRM", HB_TH="-1"), "CP1": dict(HB_MODE="CONFIRM", HB_TH="1")}
-EXTRA = {"GAP0": dict(HB_MODE="DELAY", HB_GAP="0")}                 # 대리 검토 5: 지연 경로 코드를 GAP=0으로 → 원 장부와 바이트 같아야 함
+EXTRA = {"GAP0": dict(HB_MODE="DELAY", HB_GAP="0", HB_COOL="0")}                 # 대리 검토 5: 지연 경로 코드를 GAP=0으로 → 원 장부와 바이트 같아야 함
 SIGS = {"SIG_C0": dict(HB_MODE="CONFIRM", HB_TH="0", HB_SIGTEST="1"), "SIG_RAND": dict(HB_MODE="RAND", HB_SIGTEST="1"),
         "SIG_LEAK1": dict(HB_MODE="CONFIRM", HB_TH="0", HB_SIGTEST="1", HB_LEAK="1"), "SIG_LEAKR": dict(HB_MODE="CONFIRM", HB_TH="0", HB_SIGTEST="1", HB_LEAK="R")}
 CAND = ["C0", "CM1", "CP1"]
@@ -32,6 +32,7 @@ def verify():
     lock = M.verify()                                      # MPOS-0012 잠금(z100g · 바탕 · 입력) 그대로인지
     for f in ("hb14.py", "mpos14.py"):
         lock[f] = X.sha(str(HERE / f))
+    lock["NRL_CACHE /tmp/maxret-0026-cache.pkl"] = X.sha("/tmp/maxret-0026-cache.pkl")     # GPT #438 고칠 것 3: 실제 읽는 캐시
     if not (HERE / "lock.json").exists():                 # 대리 검토 2: 잠금 없으면 멈춤
         sys.exit("lock.json 없음 → 중단")
     bad = [f for f, v in json.load(open(HERE / "lock.json")).items() if lock.get(f) != v]
@@ -230,7 +231,9 @@ def run():
     info = {c: {"줄": len(led[c]), "평균 손익 %(줄 · 왕복 0.25% 뒤)": round(sum(r[3] for r in led[c]) / len(led[c]), 3)} for c in CELLS}
     sh = {c: M.shares(WORK / f"base_{c}.csv") for c in CELLS}
     costs = {c: float(list(M.csv.DictReader(open(WORK / f"base_{c}.csv")))[-1]["비용누계"]) for c in CELLS}     # 대리 검토 4
-    out = {"cells": R, "기준선": "IMM(= REPRO_G)", "기전": mech, "잣대": why, "자격": ok, "순위": rank, "판정": "SELECTED" if rank else "NO_IMPROVEMENT",
+    out = {"cells": R, "기준선": "IMM(= REPRO_G)", "기전": mech, "잣대": why, "자격": ok, "순위": rank,
+           "판정": "PASS_DIAGNOSTIC(진단 전용 · 후보 아님)" if rank else "NO_IMPROVEMENT",        # GPT #438: 일봉 종가 대리 · 상속 줄 존재 조건 → 진단 전용
+           "범위": "진단 전용(DIAGNOSTIC_ONLY): t+2 날 100위 줄 · 원판 신호 날 같은 종가 구조 · 상속된 후보 줄 미래 존재 조건(판단 구간에서 지운 줄 0 · rowend14 · rowlen14)",
            "장부(보고)": info, "바탕 평균 몫(보고)": sh, "바탕 비용 누계(보고 · 빌드 바탕 전체 구간 마지막 행 · 원)": costs, "잠금": lock}
     json.dump(out, open(HERE / "result.json", "w"), ensure_ascii=False, indent=1)
     for c in CELLS:
