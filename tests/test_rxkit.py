@@ -70,6 +70,16 @@ class RxKit(unittest.TestCase):
         assert any("badenv/j" in b for b in bad)
         assert not any(b.startswith("ok") for b in bad)
 
+    def test_dry_smoke_timeout_and_missing_output_fail(self):
+        py = sys.executable
+        tmp = Path(tempfile.mkdtemp())
+        bad = R.dry({}, smoke={"slow": dict(cmd=[py, "-c", "import time; time.sleep(5)"]),
+                               "noout": dict(cmd=[py, "-c", "pass"], expect=[str(tmp / "x.csv")]),
+                               "good": dict(cmd=[py, "-c", "open(%r,'w').write('1')" % str(tmp / "y.csv")], expect=[str(tmp / "y.csv")])}, timeout=1)
+        assert any("slow" in b and "미완료" in b for b in bad)
+        assert any("noout" in b for b in bad)
+        assert not any("good" in b for b in bad)
+
     def test_review_prompt_mentions_checklist(self):
         t = R.review_prompt("/x/MPOS-0009")
         assert "RESEARCH-SELF-UPGRADE.md" in t and "마른 실행" in t
