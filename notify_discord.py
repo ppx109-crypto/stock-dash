@@ -165,9 +165,13 @@ def post(rows, paper=True):
     url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
     if not url or not rows:
         return False
+    urgent = any(str(r).lstrip().startswith("⚠️") for r in rows)     # 급한 경고는 모으지 않고 바로 보냄
+    dig = os.environ.get("DISCORD_DIGEST", "").strip()
+    if dig and not urgent:                              # 하루 두 번 모음(사용자 2026-10-15 "한투 디스코드는 하루 1~2번만")
+        return digest_add(dig, rows, paper)
     buf = os.environ.get("DISCORD_BUFFER", "").strip()
-    if buf and any(str(r).lstrip().startswith("⚠️") for r in rows):
-        buf = ""                                        # 급한 경고는 모으지 않고 바로 보냄
+    if buf and urgent:
+        buf = ""
     if buf:
         try:
             old = json.loads(Path(buf).read_text(encoding="utf-8"))
@@ -182,6 +186,92 @@ def post(rows, paper=True):
             ok = requests.post(url, json={"content": msg}, timeout=(10, 20)).status_code < 300 and ok
         except requests.RequestException:
             ok = False
+    return ok
+
+
+# ───────── 하루 두 번 모음(사용자 2026-10-15 "한투에서 오는 디스코드는 하루 1~2번만 · 간단한 이모지") ─────────
+# 봇 알림은 저장소 discord-digest/ 에 한 건씩 파일로 쌓이고(작업이 장부와 함께 올림), 16:10 장 마감 모음 · 저녁 A그룹 뒤 모음에서 한 통으로 나감.
+_SRC = [("1일봉", "📅"), ("1시간봉", "⏰"), ("15분봉", "⏱️"), ("빈칸 엔진", "🧩"), ("바구니", "🧺"), ("레버리지", "📈"), ("덧붙임", "📈"),
+        ("흔들림", "🛡️"), ("장부 맞춰보기", "🧾"), ("검산", "🧾"), ("봇 지킴이", "🩺"), ("A그룹", "🌙"), ("코스닥", "📉")]
+
+
+def _kst_now():
+    from datetime import datetime, timedelta, timezone
+    return datetime.now(timezone(timedelta(hours=9)))
+
+
+def digest_add(folder, rows, paper=True):
+    """알림 한 건을 모음 폴더에 파일로 둠(같은 작업 안에서 여러 번 불러도 파일이 따로라 겹쳐 쓰지 않음)."""
+    import uuid
+    now = _kst_now()
+    p = Path(folder) / now.strftime("%Y%m%d") / f"{now.strftime('%H%M%S')}-{uuid.uuid4().hex[:8]}.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"t": now.strftime("%Y-%m-%d %H:%M"), "rows": [str(r) for r in rows], "paper": bool(paper)},
+                            ensure_ascii=False), encoding="utf-8")
+    return True
+
+
+def _icon(head):
+    for k, e in _SRC:
+        if k in head:
+            return e
+    return "🔹"
+
+
+def _line_icon(line):
+    if "매수" in line or "사기" in line:
+        return "🟢"
+    if "손절" in line:
+        return "✂️"
+    if "매도" in line or "청산" in line or "팔" in line:
+        return "🔴"
+    if "건너뜀" in line or "거절" in line or "실패" in line or "멈춤" in line:
+        return "⏸️"
+    return "▫️"
+
+
+def digest_text(items, title):
+    """모은 알림 → 한 통 글(이모지는 여기서만 붙임 · 본문은 tidy로 다듬음 · 같은 줄은 한 번만)."""
+    out, seen = [f"📬 {title}"], set()
+    for it in sorted(items, key=lambda x: x.get("t", "")):
+        rows = [tidy(r) for r in it.get("rows", [])]
+        rows = [r for r in rows if r and r not in seen]
+        if not rows:
+            continue
+        seen.update(rows)
+        head, rest = rows[0], rows[1:]
+        out.append(f"{_icon(head)} {it.get('t', '')[11:16]} {head}")
+        out += [f"  {_line_icon(r)} {r}" for r in rest]
+    return out if len(out) > 1 else []
+
+
+def digest_flush(folder, title):
+    """모음 폴더의 파일을 모두 읽어 한 통(길면 나눠)으로 보내고, 보낸 파일을 지움. 보낼 것이 없으면 아무것도 안 함."""
+    files = sorted(Path(folder).glob("*/*.json"))
+    items = []
+    for f in files:
+        try:
+            items.append(json.loads(f.read_text(encoding="utf-8")))
+        except (OSError, ValueError):
+            pass
+    text = digest_text(items, title)
+    if not text:
+        for f in files:
+            f.unlink(missing_ok=True)
+        return True
+    url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
+    if not url:
+        print("디스코드 웹훅이 없어 모음을 보내지 않습니다.")
+        return False
+    ok = True
+    for msg in chunks(text):
+        try:
+            ok = requests.post(url, json={"content": f"{PREFIX} {msg}"}, timeout=(10, 20)).status_code < 300 and ok
+        except requests.RequestException:
+            ok = False
+    if ok:
+        for f in files:
+            f.unlink(missing_ok=True)
     return ok
 
 
@@ -218,9 +308,9 @@ def main():
     except (OSError, ValueError):
         print("A그룹 파일을 읽지 못했습니다.")
         return 1
-    if os.environ.get("DISCORD_BUFFER", "").strip():   # 저녁 작업도 한 통으로(사용자 2026-10-15 "11시51분 메시지 2개 · 한 번만")
+    if os.environ.get("DISCORD_BUFFER", "").strip() or os.environ.get("DISCORD_DIGEST", "").strip():   # 저녁 작업도 한 통으로(사용자 2026-10-15)
         post(lines(found), paper=False)
-        print("A그룹 알림을 모음 파일에 넣었습니다(작업 끝에 한 번에 보냄).")
+        print("A그룹 알림을 모음에 넣었습니다(작업 끝에 한 번에 보냄).")
         return 0
     for msg in messages(lines(found), paper=False):
         try:
@@ -236,6 +326,8 @@ def main():
 
 
 if __name__ == "__main__":
+    if sys.argv[1:2] == ["--digest-flush"]:            # python notify_discord.py --digest-flush <모음 폴더> <제목>
+        sys.exit(0 if digest_flush(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "한투 모음") else 1)
     if sys.argv[1:2] == ["--flush"]:                   # python notify_discord.py --flush <모음 파일> [머리말]
         sys.exit(0 if flush(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None) else 1)
     sys.exit(main())

@@ -85,7 +85,7 @@ jobs:
         if: ${{ !cancelled() && steps.fix.outcome == 'success' }}
         run: |
           status=0; python reconcile.py --recheck || status=$?
-          git add -A reconcile price-data volume-data kosdaq-data investor-data fix-recent 2>/dev/null || true
+          git add -A reconcile price-data volume-data kosdaq-data investor-data fix-recent discord-digest 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily close check: 확정된 일봉으로 검산 다시 셈"
             ok=0
@@ -101,6 +101,7 @@ jobs:
           KIS_CALL_GAP: '0.07'
           FIX_LANES: '2'
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15)
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
         continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)

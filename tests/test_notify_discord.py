@@ -100,6 +100,60 @@ class Message(unittest.TestCase):
         self.assertEqual(len(sent), 1)
         self.assertIn("A그룹", sent[0]); self.assertIn("1시간봉", sent[0])
 
+    def test_digest_two_a_day(self):
+        """한투 알림은 모음 폴더에 쌓였다가 한 통(이모지 붙음)으로 나가고, ⚠️ 급한 알림만 바로 감(사용자 2026-10-15)."""
+        import os, tempfile, json
+        from pathlib import Path
+        from unittest import mock
+        sent = []
+        with tempfile.TemporaryDirectory() as td:
+            os.environ.update(DISCORD_WEBHOOK_URL="https://example.invalid/hook", DISCORD_DIGEST=td)
+            try:
+                with mock.patch.object(N.requests, "post", side_effect=lambda url, json, timeout: sent.append(json["content"]) or mock.Mock(status_code=204)):
+                    N.post(["1일봉 봇 오늘 판단", "삼성전자 매수 10주"])
+                    N.post(["15분봉 봇", "SK하이닉스 손절"])
+                    N.post(["15분봉 봇", "SK하이닉스 손절"])          # 같은 줄은 한 번만
+                    self.assertEqual(sent, [])
+                    self.assertEqual(len(list(Path(td).glob("*/*.json"))), 3)
+                    N.post(["⚠️ 장부를 올리지 못했습니다"])             # 급한 것은 바로
+                    self.assertEqual(len(sent), 1)
+                    self.assertTrue(N.digest_flush(td, "한투 모의투자 10-15 장 마감 모음"))
+                    self.assertEqual(list(Path(td).glob("*/*.json")), [])
+                    self.assertTrue(N.digest_flush(td, "빈 모음"))      # 쌓인 것이 없으면 보내지 않음
+            finally:
+                os.environ.pop("DISCORD_WEBHOOK_URL", None); os.environ.pop("DISCORD_DIGEST", None)
+        self.assertEqual(len(sent), 2)
+        msg = sent[1]
+        self.assertIn("📬 한투 모의투자 10-15 장 마감 모음", msg)
+        self.assertIn("📅", msg); self.assertIn("⏱️", msg); self.assertIn("🟢", msg); self.assertIn("✂️", msg)
+        self.assertEqual(msg.count("SK하이닉스 손절"), 1)
+
+    def test_digest_flush_keeps_files_when_send_fails(self):
+        """보내기에 실패하면 파일을 지우지 않아 다음 모음에 다시 실림."""
+        import os, tempfile
+        from pathlib import Path
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as td:
+            N.digest_add(td, ["1일봉 봇", "삼성전자 매수"])
+            os.environ["DISCORD_WEBHOOK_URL"] = "https://example.invalid/hook"
+            try:
+                with mock.patch.object(N.requests, "post", return_value=mock.Mock(status_code=500)):
+                    self.assertFalse(N.digest_flush(td, "모음"))
+            finally:
+                os.environ.pop("DISCORD_WEBHOOK_URL", None)
+            self.assertEqual(len(list(Path(td).glob("*/*.json"))), 1)
+
+    def test_workflows_two_digests(self):
+        """하루 두 번: 16:10 봇 지킴이(장 마감 모음) · 저녁 A그룹(저녁 모음). 봇 작업은 모두 모음 폴더로 보냄."""
+        from pathlib import Path
+        w = Path(__file__).resolve().parent.parent / ".github" / "workflows"
+        self.assertIn("--digest-flush discord-digest", (w / "run-watch.yml").read_text(encoding="utf-8"))
+        self.assertIn("--digest-flush discord-digest", (w / "a-group.yml").read_text(encoding="utf-8"))
+        for f in ["daily-live.yml", "hourly-a-live.yml", "m15-live.yml", "reconcile.yml", "intraday.yml", "daily-close-check.yml", "a-group.yml"]:
+            t = (w / f).read_text(encoding="utf-8")
+            self.assertIn("DISCORD_DIGEST: discord-digest", t, f)
+            self.assertNotIn("DISCORD_BUFFER", t, f)
+
 
 if __name__ == "__main__":
     unittest.main()

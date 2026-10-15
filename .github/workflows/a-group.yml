@@ -50,7 +50,7 @@ jobs:
           python notify_discord.py || echo '디스코드 알림은 실패했지만 A그룹 저장은 끝났습니다.'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json   # A그룹 · 1시간봉 후보를 모았다가 끝에 한 통으로(사용자 2026-10-15)
+          DISCORD_DIGEST: discord-digest   # 한투 알림은 하루 두 번 모음(사용자 2026-10-15) · 이 작업 끝에 저녁 모음으로 나감
       - name: 1시간봉 A그룹 — 다음 거래일 후보 · 정배열 깨진 보유 종목 청산 알림
         # 연구 90회차 최종 규칙(사용자 허락 2026-10-01). 오늘 종가 · 오늘 수급까지로 후보를 셉니다. 주문은 넣지 않습니다.
         run: |
@@ -66,9 +66,18 @@ jobs:
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json
-      - name: 저녁 알림 한 통으로 보내기
+          DISCORD_DIGEST: discord-digest
+      - name: 한투 저녁 모음 한 통으로 보내기(하루 두 번 중 두 번째 · 16:10 뒤에 쌓인 알림)
         if: always()
-        run: python notify_discord.py --flush "${{ runner.temp }}/discord-bundle.json" "저녁 A그룹 · 1시간봉 후보 $(TZ=Asia/Seoul date +%m-%d)" || echo '디스코드 모음 보내기 실패'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git pull -q --rebase --autostash origin main || true   # 다른 작업이 올린 모음 파일까지 받음
+          python notify_discord.py --digest-flush discord-digest "한투 저녁 모음 $(TZ=Asia/Seoul date +%m-%d)" || echo '디스코드 모음 보내기 실패'
+          mkdir -p discord-digest && git add -A discord-digest
+          if ! git diff --cached --quiet; then
+            git commit -q -m "Discord evening digest sent"
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+          fi
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
