@@ -78,6 +78,28 @@ class Message(unittest.TestCase):
         os.environ.pop("DISCORD_WEBHOOK_URL", None)
         self.assertEqual(N.main(), 0)
 
+    def test_a_group_and_hourly_one_message(self):
+        """저녁 작업: A그룹 알림과 1시간봉 후보가 모음 파일로 들어가 끝에 한 통으로 감(사용자 2026-10-15)."""
+        import os, tempfile, json
+        from pathlib import Path
+        from unittest import mock
+        sent = []
+        with tempfile.TemporaryDirectory() as td:
+            buf = os.path.join(td, "b.json")
+            os.environ.update(DISCORD_WEBHOOK_URL="https://example.invalid/hook", DISCORD_BUFFER=buf)
+            try:
+                with mock.patch.object(N.requests, "post", side_effect=lambda url, json, timeout: sent.append(json["content"]) or mock.Mock(status_code=204)), \
+                     mock.patch.object(N, "Path", side_effect=lambda q: Path(td) / "a.json" if q == "study/a_group.json" else Path(q)):
+                    (Path(td) / "a.json").write_text(json.dumps({"date": "2026-10-14", "picks": [], "breadth": 42.0}), encoding="utf-8")
+                    self.assertEqual(N.main(), 0)
+                    N.post(["1시간봉 봇 다음 거래일 후보 0개, 시장 폭 42.0%"])
+                    self.assertEqual(sent, [])
+                    self.assertTrue(N.flush(buf, "저녁 A그룹 · 1시간봉 후보 10-14"))
+            finally:
+                os.environ.pop("DISCORD_WEBHOOK_URL", None); os.environ.pop("DISCORD_BUFFER", None)
+        self.assertEqual(len(sent), 1)
+        self.assertIn("A그룹", sent[0]); self.assertIn("1시간봉", sent[0])
+
 
 if __name__ == "__main__":
     unittest.main()

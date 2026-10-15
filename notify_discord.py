@@ -218,6 +218,10 @@ def main():
     except (OSError, ValueError):
         print("A그룹 파일을 읽지 못했습니다.")
         return 1
+    if os.environ.get("DISCORD_BUFFER", "").strip():   # 저녁 작업도 한 통으로(사용자 2026-10-15 "11시51분 메시지 2개 · 한 번만")
+        post(lines(found), paper=False)
+        print("A그룹 알림을 모음 파일에 넣었습니다(작업 끝에 한 번에 보냄).")
+        return 0
     for msg in messages(lines(found), paper=False):
         try:
             r = requests.post(url, json={"content": msg}, timeout=(10, 20))
