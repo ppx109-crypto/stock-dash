@@ -1,0 +1,29 @@
+{
+ "해시": {
+  "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "/tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
+  "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "mpos10.py": "c4b3b65d2c1558ec527b3bd0705b8e2206a0f987b4e998f8cdfad3de7a5579c9",
+  "jobs10.py": "2c230b73e7e76938173c10db0e4d2bfc4d190bf8daa7dc2990bd301e159f235e",
+  "door.py": "1e7f14175ee996ff82334604493e6c8bde98fa71a214ec202b3432b7cca696f0",
+  "checks10.py": "16be243e51e7025a55d733fa0660e120cbe096b33dddf66f7ac8b6d43243af46",
+  "cost10.py": "4c21f0595fe8c3a3a30d30df0010eb5665ce54fce5e0a263b56dec9429f14219",
+  "tree_run.py": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4",
+  "rxkit.py": "5f3e45b2584df2d4b191ae84a5c0a620fd988e81da3471a3ec5bffe0faed5dd9",
+  "test_door.py": "feba8dd823bbb3bb150e03792c8b54f65baf2f264e6831868d2e72b6f364f9e1",
+  "test_judge10.py": "6df7a0ca992569a72a0ad6844b0306f773c290f29764a164cbef44fb1a1f9715",
+  "test_checks10.py": "a8627eff77c8d865e11a49513f92cb1e35f16c77dc7c140def6eedae14dc1673",
+  "ref_mods.json": "8868294f8ccb49bc2cf5508b6cb738232c2446a1be23c5ffde125d358a5923bf",
+  "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+  "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+  "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+  "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+  "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+  "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03"
+ },
+ "z100 나무": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
+ "불일치": []
+}

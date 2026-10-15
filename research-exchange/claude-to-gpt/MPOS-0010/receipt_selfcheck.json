@@ -1,0 +1,39 @@
+{
+ "코드": {
+  "mpos10.py": "c4b3b65d2c1558ec527b3bd0705b8e2206a0f987b4e998f8cdfad3de7a5579c9",
+  "jobs10.py": "2c230b73e7e76938173c10db0e4d2bfc4d190bf8daa7dc2990bd301e159f235e",
+  "door.py": "1e7f14175ee996ff82334604493e6c8bde98fa71a214ec202b3432b7cca696f0",
+  "checks10.py": "16be243e51e7025a55d733fa0660e120cbe096b33dddf66f7ac8b6d43243af46",
+  "cost10.py": "4c21f0595fe8c3a3a30d30df0010eb5665ce54fce5e0a263b56dec9429f14219",
+  "tree_run.py": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4",
+  "rxkit.py": "5f3e45b2584df2d4b191ae84a5c0a620fd988e81da3471a3ec5bffe0faed5dd9",
+  "test_door.py": "feba8dd823bbb3bb150e03792c8b54f65baf2f264e6831868d2e72b6f364f9e1",
+  "test_judge10.py": "6df7a0ca992569a72a0ad6844b0306f773c290f29764a164cbef44fb1a1f9715",
+  "test_checks10.py": "a8627eff77c8d865e11a49513f92cb1e35f16c77dc7c140def6eedae14dc1673",
+  "ref_mods.json": "8868294f8ccb49bc2cf5508b6cb738232c2446a1be23c5ffde125d358a5923bf"
+ },
+ "때(한국)": "2026-10-16 00:12:37",
+ "줄": {
+  "test_door.py": {
+   "판정": "PASS",
+   "출력": "PASS ① 순서 = 들어간 순서\nPASS ③ 미래 값이 순서를 안 바꿈\nPASS ② 칸 ≤ 10 날마다\nPASS ② 늦게 든 B부터 그날 종가 정리\nPASS ④ 앞날 기존 진입 안 봄\nPASS ⑤ 검사 도구: 섞은 순서를 잡음\n"
+  },
+  "test_judge10.py": {
+   "판정": "PASS",
+   "출력": "PASS gt 0 > −0.1\nPASS gt 0 > 0 거짓\nPASS gt None · nan 거짓\nPASS 반례: 중심 −0.10 · TOTAL 0 · NOPULL −0.2 → 미지지\nPASS 중심 0 · 대조 음수 → 지지\nPASS 대조 결측 → 미지지\nPASS 손실 달 많음 → 미지지\nPASS judge: 모두 통과 6칸\nPASS judge: 앞 반 추정 비용 뒤 0 → 탈락\nPASS judge: 한 해 몰림 결측 → 탈락\nPASS judge: 기전 미지지 → 모두 탈락\nPASS judge: 이웃 하나 ③ 실패 → 그 이웃의 이웃 탈락\nPASS judge: 최악 달이 P0보다 나쁨 → 탈락(⑥깊이)\n"
+  },
+  "test_checks10.py": {
+   "판정": "PASS",
+   "출력": "PASS 정상 장부 PASS\nPASS 섞은 순서 FAIL\nPASS 칸 넘침 FAIL\nPASS 기존 줄 바뀜 FAIL\nPASS 같은 prefix PASS\nPASS 진입 순서 다름 FAIL\nPASS 계좌 날 다름 FAIL\nPASS 판 줄 다름 FAIL\nPASS 빈 비교 FAIL\n"
+  },
+  "lint": {
+   "판정": "PASS",
+   "걸린 것": []
+  },
+  "dry": {
+   "판정": "PASS",
+   "문제": [],
+   "일감 수": 84
+  }
+ }
+}
