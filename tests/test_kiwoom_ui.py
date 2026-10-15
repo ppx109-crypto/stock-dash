@@ -37,6 +37,7 @@ class KiwoomLab(unittest.TestCase):
         t2 = {**t, "days": {"신뢰형": {f"202611{d:02d}": 1.0 for d in range(1, 21)}}}
         self.assertIn("✅", K.trio_html(t2))
         self.assertEqual(K.trio_html({}), "")
+        self.assertEqual(K.trio_stats({"20261015": -5.0, "20261016": 2.0}, "20261015", {"20261015"})["n"], 1)   # 불완전한 날은 뺌
 
     def test_menu_order(self):
         src = (ROOT / "app.py").read_text(encoding="utf-8")
