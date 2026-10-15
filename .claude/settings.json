@@ -4,5 +4,30 @@
       "Bash(gh api -X POST repos/ppx109-crypto/stock-dash/actions/workflows/paper-check.yml/dispatches *)",
       "Bash(python3 research/drop_m15_day.py 20261002)"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/korean_only.py\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/korean_only.py\"",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
   }
 }
