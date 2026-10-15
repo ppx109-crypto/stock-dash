@@ -13,3 +13,4 @@ service-account*.json
 study/features.json
 .cache/
 acc-cap/today.json
+.claude/hooks/.korean_only_seen
