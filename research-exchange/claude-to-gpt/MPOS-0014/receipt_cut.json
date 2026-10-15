@@ -1,0 +1,249 @@
+{
+ "잠금": {
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+  "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+  "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+  "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+  "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+  "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03",
+  "diag12.json": "ca6e4462bbea07c9a6a235490ed220e870392df5a2fd84e26b0ad3910e55c69c",
+  "diag12.py": "a7275bb914f1bdb4241d00e082e66a496a874dc6c4384d6a1c620fd9ba0515b3",
+  "mpos12.py": "8a915a70d30953681cf8796856a923370250ab867b67c1c30adaa7682cc208b5",
+  "make_z100g.py": "50334b57c8a5e980e16a702a45c98aef53297df06b276a43fd05aa60c7594708",
+  "z100g.py": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+  "hb14.py": "c9b1bc032c3e099b9ef2c99bee151b351ab3ab2b491be741cac3d4c9be93dd2a",
+  "mpos14.py": "10bf503c7669b1b814f5fd3e87d692e89aa8bc26babaafd31ab04616700ffb53"
+ },
+ "행": [
+  {
+   "칸": "DELAY",
+   "자른 날": "20190628",
+   "산 진입": 91,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20200922",
+   "산 진입": 106,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20230609",
+   "산 진입": 211,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20240503",
+   "산 진입": 252,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20240628",
+   "산 진입": 266,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20241029",
+   "산 진입": 295,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20250709",
+   "산 진입": 340,
+   "판정": "PASS"
+  },
+  {
+   "칸": "DELAY",
+   "자른 날": "20251211",
+   "산 진입": 389,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20190628",
+   "산 진입": 73,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20201216",
+   "산 진입": 97,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20230829",
+   "산 진입": 198,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20240613",
+   "산 진입": 230,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20240628",
+   "산 진입": 233,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20241125",
+   "산 진입": 262,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20250728",
+   "산 진입": 298,
+   "판정": "PASS"
+  },
+  {
+   "칸": "C0",
+   "자른 날": "20251211",
+   "산 진입": 333,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20190628",
+   "산 진입": 72,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20201112",
+   "산 진입": 90,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20230915",
+   "산 진입": 183,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20240618",
+   "산 진입": 212,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20240628",
+   "산 진입": 213,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20241204",
+   "산 진입": 243,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20250801",
+   "산 진입": 273,
+   "판정": "PASS"
+  },
+  {
+   "칸": "CP1",
+   "자른 날": "20251215",
+   "산 진입": 307,
+   "판정": "PASS"
+  },
+  {
+   "칸": "LEAK(일부러 미래)",
+   "다른 날 수": 4,
+   "날 수": 8,
+   "판정": "PASS",
+   "뜻": "시험이 미래 참조를 잡으면 PASS"
+  },
+  {
+   "칸": "SIG_C0",
+   "읽은 가장 먼 앞날": 0,
+   "줄": 336100,
+   "판정": "PASS",
+   "뜻": "앞날 안 읽음"
+  },
+  {
+   "칸": "SIG_RAND",
+   "읽은 가장 먼 앞날": 0,
+   "줄": 336100,
+   "판정": "PASS",
+   "뜻": "앞날 안 읽음"
+  },
+  {
+   "칸": "SIG_LEAK1",
+   "읽은 가장 먼 앞날": 1,
+   "줄": 336100,
+   "판정": "PASS",
+   "뜻": "LEAK는 앞날을 읽어야 PASS(검사 힘)"
+  },
+  {
+   "칸": "SIG_LEAKR",
+   "읽은 가장 먼 앞날": 2,
+   "줄": 336100,
+   "판정": "PASS",
+   "뜻": "LEAK는 앞날을 읽어야 PASS(검사 힘)"
+  }
+ ],
+ "장부 지문": {
+  "IMM": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "DELAY": "3574e398ff18d5756247cac7a0be713687ef71ebde2cf6eec04b8bc7dad1a2c5",
+  "RAND": "fffc6eb3d69b47f4771f75f2d7c8a57bab0d09d61b463fe337d8ca6771dd83dc",
+  "C0": "c7945d4f9ca5eaac2e52f675804edcea274d1c05c6575681ab143e13425deda1",
+  "CM1": "e5d0391514e50607705544c5f8be0ab87d3b223d1d6c2bab4a494101187038c3",
+  "CP1": "b72a9f0dcc5982c946adf446ef51e4dd6051e9eacf2060d44909323e5410635c",
+  "GAP0": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "SIG_C0": "f766fdd228590520574f6af03169fedcdc9d9874f8d0503ce8670422cea715bb",
+  "SIG_RAND": "fe2fdb75cecd503f36ebc0eca9795cbc0d4c02bb8d01bf0eb5c543ce5baafcbc",
+  "SIG_LEAK1": "7cdc6355a11fa887878d44b7d847c3cc4e3f491028bdc1cab7c015bae0df2ecb",
+  "SIG_LEAKR": "f0b1dbe2e1f1c8113486e588c780533d78f600afac2716a0c835ec9d8b2864aa",
+  "LEAK": "c6ab5e073ac5ca2d7e8df36ff7b76dcc9de064d3f8e26f4bcd71beefed072ba1",
+  "DELAY_P20190628": "180eb6f5946b1c6c30d3823631a2796b329c5ca8b3874ba9f96144c47ad9f4ec",
+  "DELAY_P20200922": "6be914acfbf01d9dd528572aca060b05e1b0691b4c16ce7472ecdfbe9128a2e4",
+  "DELAY_P20230609": "96f1bcd7b26c18fa9f4eeded627299c963252bb945e1ac951723e7c10eba2f11",
+  "DELAY_P20240503": "663f504848697cb41ce768fbf0bbe9a67e7f9dbd954e9cebde0eaabf0af2abe7",
+  "DELAY_P20240628": "caa05eeae5085158001540f62538a6411dc0e6a7743ff80068d9d714b72bac54",
+  "DELAY_P20241029": "3eba77c32536734384c1b98c9744544a8e3358e9d80c34f14f0627555fe12bbd",
+  "DELAY_P20250709": "9a87b95fafb8224b783db7fd7c147048c5a3f32a75c08aab97609732089e7d94",
+  "DELAY_P20251211": "f439a60804a356d6df4f4180248883300733e8d893634badb83f7075f6d5fc94",
+  "C0_P20190628": "a524496ae4ef61ef66dedc3c35fbdc0b804073ff424af942928b18b7c9908409",
+  "C0_P20201216": "11e74544b8fbc754539eb82a3d9e701171d089f63db61d501253e60bc07f30ef",
+  "C0_P20230829": "93749350c071a3b0889a88511352a4c1c87cd9d73761c85d74bd8b88109fe1c2",
+  "C0_P20240613": "ed9aa1f34e78b16bcc3edb7910b5c32d71b5038f0ddbfdf1eed9ffd38d92f27f",
+  "C0_P20240628": "8ab7f8905a43cdaa670e505dc66270909e33a03e471c03241ea6de9f56398340",
+  "C0_P20241125": "91908c46ae89db24ea6de360cf95f15c3d57097b3cc10baa3a9e48bfcdd5a95c",
+  "C0_P20250728": "8d5e3c017b4c36c0998635911a18851afa9c675ec53b90ade28a662859738b57",
+  "C0_P20251211": "638b149183589c89e39b0283b7de47b5bcfc4e2f19dd2e19a508c3896124ed09",
+  "CP1_P20190628": "95a3f33fc0b561fe4d3ff068f6c9c2885b61582ef7c52bc243fdcf43d48365c2",
+  "CP1_P20201112": "7ca5d59da5ea2551c852fed76087086b9dcbcd2df82f56138eb76d53ea2f5f3d",
+  "CP1_P20230915": "31a7494745d7032d4310f41add4881e7e64bc523d92c712a58885880d5688b16",
+  "CP1_P20240618": "78bf6c73b1c093eb6826c74572fc1788a3cfbcacf84001114dc9aba22ed9e130",
+  "CP1_P20240628": "89253e8396e38b02e095e3082a4eabfa13262e95b220c3894f7133a60e881bd6",
+  "CP1_P20241204": "d064a9b940be81d5f10fcee7c3a50b8e9b59885f33e977096f41131fbd74d9d0",
+  "CP1_P20250801": "553354c5a258bafb2c7da1bd9d36075206840e3f80ede4ffbfb9eabbba6e213c",
+  "CP1_P20251215": "91eaf828a910c292fbcc037620de54bae9435fb068419ef897fbcd1119e741c9",
+  "LEAK_P20190628": "8fa7a308cd77241b8d470447deeb6b79e823dd1773811f885bcc4e37f814957c",
+  "LEAK_P20210908": "68117d16142dfcb19a2e4ebcf158c6c748000855d42aff893ad99e359e12b220",
+  "LEAK_P20230906": "ebd1e4406a96c91ca4894889680a27ee6aed4478679668da2cb2fac5a260caf1",
+  "LEAK_P20240603": "a69373f3e6f756c7fd49f317358118e12fb357218be3e1a2dfc75727b2e57485",
+  "LEAK_P20240628": "e8a51325852e2e2970d8946ef572cd037e186846c98b5b98506f898cb7f68785",
+  "LEAK_P20241203": "9bb984ee63bd7182aa3bad64739c030749fe73f3a25911ffef4de7803b4a96df",
+  "LEAK_P20250709": "bf25fb0d60c292571b284aab6d348eb127429b1d1dddb189242ef722db2c228e",
+  "LEAK_P20251114": "97bec7df4e6a65be7f7463ebb7507e06c351d1a3c4b057f665f5e31f34425315"
+ }
+}
