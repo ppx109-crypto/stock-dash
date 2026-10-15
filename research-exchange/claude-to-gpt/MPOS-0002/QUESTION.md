@@ -26,6 +26,7 @@
   - 보유 중에는 **청산만** 봄(신규 신호 사라짐 ≠ 청산). 청산: L·S·LS·RL·RS·RLS = 롱 g(p) ≥ 0 · 인버스 g(p) ≤ 0 / B = 롱 g(p) ≤ 0 · 인버스 g(p) ≥ 0 / 공통: 나이 ≥ 10 → 그날 d 종가에 팖.
   - 나이 = 체결일 다음 거래일부터 1씩(체결일 0). **청산한 날 같은 종가 재진입 · 반대 전환 없음**(다음 날 다시 판단).
   - 국면이 횡보를 벗어나면 그날 기존 규칙대로 맞추고 부품 상태 · 나이 초기화. 다시 횡보가 되면 미보유로 시작.
+  - **실제 보유 = 체결된 ETF**(GPT #409 r2): 신호가 있어도 room이 0이면 체결 없음 → 미보유 그대로(나이 안 셈 · 다음 날 다시 판단). 빚 없음 처리로 ETF를 전량 덜어내면 부품도 미보유로 돌리고 다음 날 다시 판단. 일부만 덜어내면 보유 유지(나이 그대로).
   - 재조정: (전날 국면, 목표 코드, 목표 몫)이 바뀌거나 달 첫날이면 그날 종가에 맞춤(P0는 원래와 같은 경로 — **원래 account()와 2,359날 NAV 차 0.0 확인**). 상승 · 하락 갈래 · 비용 · room · 빚 없음 처리는 코드 그대로.
 
 ## 3. 잣대(셈 전 고정 · GPT #409 고칠 것 2 반영)
@@ -37,11 +38,13 @@
 - 모든 23칸 표 공개(+/0/− · 앞/뒤 손실 · 최악 달 · 최악 날 · 손실 달 평균 · 연 · MDD · 출처).
 
 ## 3-1. 잠금 · 시험 수 · 자르기(GPT #409 고칠 것 3 반영)
-- 코드: `research-exchange/claude-to-gpt/MPOS-0002/mpos2.py` sha256 85fe910d0976bb333de7165a6c8e0a4251c2485736a040c2a8fce5af4620e1e5(이 커밋에 넣음 · 셈은 이 커밋 뒤).
+- 코드: `research-exchange/claude-to-gpt/MPOS-0002/mpos2.py` sha256 4ea2e738b51494ed5a33a10120704be15a8928a59834168a0c16f9a2f0b4b327(round 3 · 이 커밋에 넣음 · 셈은 이 커밋 뒤).
 - 쓰는 기존 코드: regime_dev.py 9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc · mix54_run.py b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e(#257 head 4e88bc6f 그대로 · /home/user/stock-dash/research/에 둠).
-- 입력: 바탕 d0.5_b0.3_no15m.csv 6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531 · etf-data 069500 7b4135e1… · 114800 ca62396f… · 122630 c4a43c96…(main 053156c8) · REG_SNAP /tmp/rev-full.pkl 540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6.
+- 입력: 바탕 d0.5_b0.3_no15m.csv 6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531 · etf-data 069500 7b4135e1… · 114800 ca62396f… · 122630 c4a43c96…· 252670 fb616d9f… · market-data investor_KSP 7d0cd8fb… · index_KOSPI 608d6c8c…(main 053156c8 · 전체 해시는 mpos2.py LOCK) · REG_SNAP /tmp/rev-full.pkl 540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6.
 - 시험 수: **고유 성과 설정 23**. 따로 셈: P0 확인 1회(완료 · 위) · 자르기 재실행(고른 칸 + P0) × 2 자른 날 · 오류 재시도는 있으면 횟수 적음.
-- 자르기: `mpos2.py cut <칸>` — REG_CUT로 자료를 2021-12-31 · 2024-06-28까지 잘라 처음부터 다시 돌려, **자른 날 전날까지** 날마다 (g · σ · 국면 · 보유 방향 · 나이 · ETF 코드 · ETF 몫 · NAV)가 전체 실행과 같은지 비교(자른 날 당일 끝맺음 차는 비교 밖).
+- **실행 전 잠금 검증**: `run` · `cut`은 시작 때 실제 읽는 경로(BASE_CSV · SNAP · CUT · ROOT · ETF 4개 · LO/HI) · 환경(REG_SNAP · REG_CUT · REG_BASE · MIX_BASES · REG_BOX) · 위 입력 11개 해시를 확인해 하나라도 다르면 중단하고 `receipt_lock.json`을 남김.
+- 합성 시험(완료): room 0 → L_1.0이 '보유'로 남는 날 0 · PASS. P0 = 원래 account() 2,359날 NAV 차 0.0.
+- 자르기: `mpos2.py cut <칸>` — REG_CUT로 자료를 2021-12-31 · 2024-06-28까지 잘라 처음부터 다시 돌려, **자른 날 전날까지** 날마다 (g · σ · 국면 · 보유 방향 · 나이 · ETF 코드 · ETF 몫 · NAV)가 전체 실행과 같은지 비교(자른 날 당일 끝맺음 차는 비교 밖). **반올림 없는 원값 · 허용 오차 0** · 비교 날 0개 · 빠진 날이 있으면 FAIL · 결과는 `receipt_cut.jsonl`(PASS/FAIL).
 
 ## 4. 노출 · 한계
 - 2017 ~ 2026 자료는 MIX-0054 · MONTH-POS 등에서 여러 번 썼음 → 결과는 탐색적. 독립 검증은 모의투자 실측(WAITING_DATA).

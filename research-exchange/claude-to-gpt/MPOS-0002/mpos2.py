@@ -79,7 +79,7 @@ def account(cell, log=None):
             if not pos and not exited and cell != "P1":
                 pi = pidx.get(p); pp = pdays[pi - 1] if pi else None
                 e = entry(cell, p, pp, S)
-                if e: pos, age = e, 0            # 오늘(d) 종가 체결 · 손익은 d 뒤부터
+                if e and min(W, base[d][1]) > 0: pos, age = e, 0   # 오늘(d) 종가 체결(room > 0일 때만) · 손익은 d 뒤부터
             tgt = (1.0, {"L": "069500", "S": "114800"}.get(pos, cfg["inv"]), W if pos else 0.0)
         else:
             if s_prev != "횡보": pos, age = None, 0   # 횡보 벗어나면 부품 상태 초기화
@@ -95,14 +95,17 @@ def account(cell, log=None):
             vb, ve, code = fb * A, fe * A, (c_new if fe > 0 else None)
             if not code: ve = 0.0
             cash = A - vb - ve; pending = key
+            if pos and not code: pos, age = None, 0          # room 0으로 실제 체결 없음 → 미보유(GPT #409 r2)
         elif code and cash < -vb * base[d][1] - 1e-12:
             need = -vb * base[d][1] - cash; cut = min(ve, need / (1 - Dv.COST_ETF))
             ve -= cut; cash += cut * (1 - Dv.COST_ETF)
-            if ve <= 1e-15: ve, code = 0.0, None
+            if ve <= 1e-15:
+                ve, code = 0.0, None
+                if pos: pos, age, pending = None, 0, None      # 전량 덜어냄 → 부품 미보유 · 다음 날 다시 판단
         if cash < -vb * base[d][1] - 1e-12:
             c = base[d][1]; x = (-c * vb - cash) / (1 - Dv.COST_BASE_DOWN - c); vb -= x; cash += x * (1 - Dv.COST_BASE_DOWN)
         navs[d] = vb + ve + cash; nst[d] = s_prev
-        if log is not None: log[d] = (round(S[p][0] or 0, 10), round(S[p][1] or 0, 10), s_prev, pos, age, code, round(ve / A if A else 0, 10), round(navs[d], 12))
+        if log is not None: log[d] = (S[p][0], S[p][1], s_prev, pos, age, code, ve, vb, cash, navs[d])   # 반올림 없이 원값
     return navs, nst
 
 def stats(navs):
@@ -130,9 +133,42 @@ def judge(R):
     rank = sorted(ok, key=lambda c: (-math.floor(R[c]["최악달"] / 5), R[c]["손실"], -math.floor(R[c]["MDD"] / 2), -R[c]["연"], c))
     return ok, rank
 
+LOCK = {"mpos2.py": None,   # 자기 해시는 receipt에 기록(잠금 커밋의 blob과 대조)
+        "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+        "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+        "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+        "/home/user/stock-dash/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+        "/home/user/stock-dash/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+        "/home/user/stock-dash/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+        "/home/user/stock-dash/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+        "/home/user/stock-dash/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03",
+        "/home/user/stock-dash/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+        "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"}
+
+def verify():
+    """23칸 전에: 실제 읽는 경로 · 해시 · 환경이 잠금과 같은지 → 다르면 중단 · receipt 남김."""
+    h = lambda f: hashlib.sha256(open(f, "rb").read()).hexdigest()
+    got = {f: h(os.path.join(HERE, f) if not f.startswith("/") else f) for f in LOCK}
+    bad = [f for f, v in LOCK.items() if v and got[f] != v]
+    env = {k: os.environ.get(k) for k in ("REG_SNAP", "REG_CUT", "REG_BASE", "MIX_BASES", "REG_BOX")}
+    paths = {"BASE_CSV": str(Dv.BASE_CSV), "SNAP": Dv.SNAP, "CUT": Dv.CUT, "ROOT": str(Dv.ROOT), "ETF": list(Dv.ETF), "LO-HI": [Dv.LO, Dv.HI]}
+    if Dv.SNAP != "/tmp/rev-full.pkl" or Dv.CUT or str(Dv.BASE_CSV) != "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv":
+        bad.append("경로 · 환경")
+    rec = {"해시": got, "환경": env, "경로": paths, "불일치": bad}
+    json.dump(rec, open(os.path.join(HERE, "receipt_lock.json"), "w"), ensure_ascii=False, indent=1)
+    if bad: sys.exit(f"잠금 불일치 → 중단: {bad}")
+    print("잠금 확인 PASS · receipt_lock.json")
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
-    if cmd == "p0check":
+    if cmd in ("run", "cut"): verify()
+    if cmd == "synth":   # 합성: 바탕 현금 몫 0(room 0)이면 부품이 '보유'로 남지 않아야 함
+        base, etf, br, flow = Dv.data()
+        Dv.DATA = ({d: (v[0], 0.0) for d, v in base.items()}, etf, br, flow); Dv.FEAT = None
+        lg = {}; account("L_1.0", lg)
+        held = sum(1 for v in lg.values() if v[3]); etfd = sum(1 for v in lg.values() if v[5] and v[2] == "횡보")
+        print(f"합성 room 0 · L_1.0: 부품 보유 날 {held} · 횡보 날 ETF 든 날 {etfd} →", "PASS" if held == 0 and etfd == 0 else "FAIL")
+    elif cmd == "p0check":
         a, _ = Dv.account(CFG); b, _ = account("P0")
         print("P0 vs 원래 account 최대 NAV 차", max(abs(a[d] - b[d]) for d in a), "날", len(a))
     elif cmd == "run":
@@ -150,5 +186,9 @@ if __name__ == "__main__":
             part = {}; account(c, part)
             Dv.CUT, Dv.DATA, Dv.FEAT = "", None, None
             common = [d for d in sorted(part) if d < cut]
-            diff = [d for d in common if part[d] != full[d]]
-            print(f"자르기 {cut} · {c}: 비교 {len(common)}날(자른 날 전날까지) · 다른 날 {len(diff)}", diff[:3])
+            miss = [d for d in sorted(full) if d < cut and d not in part]
+            diff = [d for d in common if part[d] != full[d]]          # 반올림 없는 원값 비교(허용 오차 0)
+            ok = len(common) > 0 and not miss and not diff
+            rec = {"칸": c, "자른 날": cut, "비교 날": len(common), "빠진 날": len(miss), "다른 날": len(diff), "첫 다른 날": diff[:3], "판정": "PASS" if ok else "FAIL"}
+            print(json.dumps(rec, ensure_ascii=False))
+            with open(os.path.join(HERE, "receipt_cut.jsonl"), "a") as f: f.write(json.dumps(rec, ensure_ascii=False) + "\n")
