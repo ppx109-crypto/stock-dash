@@ -88,23 +88,52 @@ def kis_code(rows, kcode):
     return None
 
 
-def fetch_day(client, code, day):
-    """그날 1분봉(오래된 것부터). 한 번에 백여 줄씩 뒤로 넘기며 받음."""
+def _ask(client, code, ymd, hour):
+    return client._market_rows(PATH, TR, {
+        "FID_COND_MRKT_DIV_CODE": "F", "FID_INPUT_ISCD": code, "FID_HOUR_CLS_CODE": "60",
+        "FID_PW_DATA_INCU_YN": "Y", "FID_FAKE_TICK_INCU_YN": "N",
+        "FID_INPUT_DATE_1": ymd, "FID_INPUT_HOUR_1": hour}, "선물 분봉", key="output2")
+
+
+def _take(rows, ymd, got):
+    """그날 · 처음 보는 분만 got에 넣고 (넣은 수, 받은 첫 시각, 끝 시각)."""
+    fresh, seen = 0, []
+    for r in rows:
+        d, t = str(r.get("stck_bsop_date", "")).strip(), str(r.get("stck_cntg_hour", "")).strip()
+        if d != ymd or not re.fullmatch(r"[0-9]{6}", t):
+            continue
+        seen.append(t)
+        if (d, t) not in got:
+            got[(d, t)] = r
+            fresh += 1
+    return fresh, (min(seen) if seen else None), (max(seen) if seen else None)
+
+
+def _mins(t):
+    return int(t[:2]) * 60 + int(t[2:4])
+
+
+def gaps(times):
+    """빈 곳 [(앞 분 HHMMSS, 뒤 분 HHMMSS, 빈 분 수)] — 15:35 ~ 15:44 단일가 시간은 원래 비므로 뺌."""
+    out = []
+    for a, b in zip(times, times[1:]):
+        n = _mins(b) - _mins(a) - 1
+        if n > 0 and not (_mins(a) >= 15 * 60 + 34 and _mins(b) <= 15 * 60 + 45):
+            out.append((a, b, n))
+    return out
+
+
+def fetch_day(client, code, day, log=print):
+    """그날 1분봉(오래된 것부터). 한 번에 백여 줄씩 뒤로 넘기며 받음.
+    2026-10-15: 코스피200 선물 두 개만 12:39 ~ 13:07 29분이 빈 채 저장됨(쪽 넘김 중 한 쪽이 빔) →
+    쪽마다 받은 시각을 남기고(줄 수 · 시각만), 받은 뒤 빈 곳이 있으면 빈 곳 끝 시각부터 다시 요청해 채움(최대 3번)."""
     ymd = day.strftime("%Y%m%d")
     got = {}
     hour = "160000"
+    pages = []
     for _ in range(12):
-        rows = client._market_rows(PATH, TR, {
-            "FID_COND_MRKT_DIV_CODE": "F", "FID_INPUT_ISCD": code, "FID_HOUR_CLS_CODE": "60",
-            "FID_PW_DATA_INCU_YN": "Y", "FID_FAKE_TICK_INCU_YN": "N",
-            "FID_INPUT_DATE_1": ymd, "FID_INPUT_HOUR_1": hour}, "선물 분봉", key="output2")
-        fresh = 0
-        for r in rows:
-            d, t = str(r.get("stck_bsop_date", "")).strip(), str(r.get("stck_cntg_hour", "")).strip()
-            if d != ymd or not re.fullmatch(r"[0-9]{6}", t) or (d, t) in got:
-                continue
-            got[(d, t)] = r
-            fresh += 1
+        fresh, lo, hi = _take(_ask(client, code, ymd, hour), ymd, got)
+        pages.append(f"{hour[:4]}→{lo and lo[:4]}~{hi and hi[:4]}({fresh})")
         if not fresh:
             break
         earliest = min(t for (d, t) in got)
@@ -112,6 +141,22 @@ def fetch_day(client, code, day):
             break
         hh = datetime.strptime(earliest, "%H%M%S") - timedelta(minutes=1)
         hour = hh.strftime("%H%M%S")
+    log(f"   {code} {ymd} 쪽: " + " · ".join(pages))
+    for _ in range(3):
+        holes = gaps(sorted(t for (d, t) in got))
+        if not holes:
+            break
+        added = 0
+        for a, b, n in holes:
+            ask = (datetime.strptime(b, "%H%M%S") - timedelta(minutes=1)).strftime("%H%M%S")
+            fresh, lo, hi = _take(_ask(client, code, ymd, ask), ymd, got)
+            added += fresh
+            log(f"   {code} {ymd} 빈 곳 {a[:4]}~{b[:4]}({n}분) 다시 요청 {ask[:4]} → {lo and lo[:4]}~{hi and hi[:4]} 새로 {fresh}줄")
+        if not added:
+            break
+    left = gaps(sorted(t for (d, t) in got))
+    if left:
+        log(f"   {code} {ymd} ⚠️ 남은 빈 곳: " + ", ".join(f"{a[:4]}~{b[:4]}({n}분)" for a, b, n in left))
     return [got[k] for k in sorted(got)]
 
 
