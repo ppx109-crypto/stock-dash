@@ -50,6 +50,7 @@ jobs:
           python notify_discord.py || echo '디스코드 알림은 실패했지만 A그룹 저장은 끝났습니다.'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json   # A그룹 · 1시간봉 후보를 모았다가 끝에 한 통으로(사용자 2026-10-15)
       - name: 1시간봉 A그룹 — 다음 거래일 후보 · 정배열 깨진 보유 종목 청산 알림
         # 연구 90회차 최종 규칙(사용자 허락 2026-10-01). 오늘 종가 · 오늘 수급까지로 후보를 셉니다. 주문은 넣지 않습니다.
         run: |
@@ -64,4 +65,10 @@ jobs:
           exit $status
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json
+      - name: 저녁 알림 한 통으로 보내기
+        if: always()
+        run: python notify_discord.py --flush "${{ runner.temp }}/discord-bundle.json" "저녁 A그룹 · 1시간봉 후보 $(TZ=Asia/Seoul date +%m-%d)" || echo '디스코드 모음 보내기 실패'
+        env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
