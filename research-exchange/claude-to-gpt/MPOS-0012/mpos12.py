@@ -2,7 +2,8 @@
 키움(KMF) 교훈 ③ '믿을 부품만' · ② '날 종류별 부품': 1일봉 매매 중 **정배열 문**을 판단 전날 국면이 믿을 수 없는 날에만 건너뜀(사지 않음 · 빈 칸은 채우지 않음).
 부품 해부(diag12.json · 추정 비용 뒤): 규칙 문 93건 t 4.62 · 정배열 × 상승 262건 t 2.10 · 정배열 × 횡보 117건 t 1.60 · 정배열 × 하락 23건 t 1.72.
 칸: F_DOWN(하락 날 정배열 건너뜀) · F_SIDE(횡보 날) · F_SIDEDOWN(횡보 · 하락 날) · F_ALL(정배열 전부 건너뜀 = 규칙 문만) · AB_RAND(빼기: F_SIDEDOWN과 같은 건수의 정배열을 고정 씨앗으로 무작위 건너뜀).
-흐름: 걸러낸 장부 → z100(MIX-0054 나무 · tree_run) → 덧붙임 P0 → 114달 잣대. python3 mpos12.py build | run | cut"""
+흐름: 걸러낸 장부 → z100g(고정 나무 z100에서 같은 날 1일봉 매수 배정만 비율 배정으로 · make_z100g.py) → 덧붙임 → 114달 잣대(주판정 = _G 경로 · 기준 REPRO_G).
+원 z100 경로(원 순서 · 판 날 순 배정 = 미래 의존)는 진단 · 계보 재현만(GPT #435). python3 mpos12.py cut | build | cutacct | run"""
 import csv
 import hashlib
 import json
@@ -39,6 +40,8 @@ LOCK = {P0_CSV: "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb7282453
         "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
         str(RAW): "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99"}
 CUTS = ("20211231", "20240628", "20200303")
+Z100G = HERE / "z100g.py"
+QCUT = "20211231"            # 미래 판 날 · 손익 바꾸기 시험의 기준 날
 
 
 def verify():
@@ -48,7 +51,7 @@ def verify():
     for f, v in lk.items():
         got["inputs/" + f] = X.sha(str(SNAPDIR / f))
     bad = [f for f, v in LOCK.items() if got[f] != v] + [f for f, v in lk.items() if got["inputs/" + f] != v]
-    for f in ("diag12.json", "diag12.py", "mpos12.py"):
+    for f in ("diag12.json", "diag12.py", "mpos12.py", "make_z100g.py", "z100g.py"):
         got[f] = X.sha(str(HERE / f))
     if (HERE / "lock.json").exists():
         bad += [f for f, v in json.load(open(HERE / "lock.json")).items() if got.get(f) != v]
@@ -102,27 +105,42 @@ def decide(cell, trades, st, seed=20261016):
     return {i for i, x in enumerate(trades) if x["door"] == "정배열" and reg(x["b"]) in SKIP[cell]}
 
 
+def perturb(led, days):
+    """시험 Q: QCUT 뒤에 파는 줄의 판 날을 다음 거래일로 미루고 손익을 바꿈(산 날 · 종목 · 자리는 그대로) → QCUT까지 계좌가 같아야 함."""
+    nxt = {d: days[i + 1] for i, d in enumerate(days[:-1])}
+    return [[c, b, nxt.get(e, e), p * 0.5 - 1.0, s] if e > QCUT else [c, b, e, p, s] for c, b, e, p, s in led]
+
+
 def build():
     lock = verify()
     raw = json.load(open(RAW))
     trades = json.load(open(HERE / "diag12.json"))["매매"]
     assert all((r[0], r[1], r[2]) == (x["c"], x["b"], x["e"]) for r, x in zip(raw, trades)) and len(raw) == len(trades) == 495
+    days = [r["날"] for r in csv.DictReader(open(P0_CSV))]
     st = states()
-    rec = {}
-    jobs = {}
+    rec, jobs = {}, {}
+
+    def job(c, led, eng):
+        p = WORK / f"led_{c}.json"
+        json.dump(led, open(p, "w"))
+        rec[c] = {"남은 매매": len(led), "장부 지문": X.sha(str(p)), "엔진": eng}
+        env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG") if k in os.environ}
+        env.update(ENV)
+        env.update(Z_D1_LED=str(p), Z_OUT=str(WORK / f"base_{c}.csv"))
+        script = "research/z100.py" if eng == "z100" else str(Z100G)
+        jobs[c] = dict(cmd=[sys.executable, str(TREE_RUN), str(WORK / f"base_{c}.mods.json"), script], env=env, cwd=str(TREE),
+                       out=str(WORK / f"base_{c}.log"), clean=[str(WORK / f"base_{c}.csv")])
     for c0 in BUILD:
         sk = set() if c0 == "REPRO" else decide(c0, trades, st)
         assert c0 == "REPRO" or len(sk) == EXPECT[c0], (c0, len(sk))
         led0 = [r for i, r in enumerate(raw) if i not in sk]
-        for c, led in ((c0, led0), (c0 + "_N", order_n(led0))):
-            p = WORK / f"led_{c}.json"
-            json.dump(led, open(p, "w"))
-            rec[c] = {"건너뜀": len(sk), "남은 매매": len(led), "장부 지문": X.sha(str(p))}
-            env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG") if k in os.environ}
-            env.update(ENV)
-            env.update(Z_D1_LED=str(p), Z_OUT=str(WORK / f"base_{c}.csv"))
-            jobs[c] = dict(cmd=[sys.executable, str(TREE_RUN), str(WORK / f"base_{c}.mods.json"), "research/z100.py"], env=env, cwd=str(TREE),
-                           out=str(WORK / f"base_{c}.log"), clean=[str(WORK / f"base_{c}.csv")])
+        job(c0, led0, "z100")
+        job(c0 + "_G", led0, "z100g")
+        rec[c0]["건너뜀"] = rec[c0 + "_G"]["건너뜀"] = len(sk)
+    job("REPRO_N", order_n(raw), "z100")            # 대조: 원 엔진은 순서에 흔들림(시험이 잡을 힘이 있는지)
+    job("REPRO_GN", order_n(raw), "z100g")          # 시험 P: 줄 순서를 바꿔도 바이트까지 같아야 함
+    job("REPRO_GR", raw[::-1], "z100g")             # 시험 P2: 줄 순서를 거꾸로
+    job("REPRO_GQ", perturb(raw, days), "z100g")    # 시험 Q: 미래 판 날 · 손익을 바꿔도 QCUT까지 같아야 함
     bad = X.dry({"z100": lambda: jobs})
     if bad:
         sys.exit(f"마른 실행 FAIL {bad}")
@@ -133,15 +151,24 @@ def build():
         rec[c]["바탕 지문"] = X.sha(str(f)) if f.exists() else None
         mods = json.load(open(WORK / f"base_{c}.mods.json")) if (WORK / f"base_{c}.mods.json").exists() else {"바깥": ["없음"]}
         rec[c]["판정"] = "PASS" if rc[c] == 0 and f.exists() and not mods["바깥"] else "FAIL"
-    for c in rc:
         log = open(WORK / f"base_{c}.log").read() if (WORK / f"base_{c}.log").exists() else ""
         rec[c]["1일봉 못 산 번"] = int(log.split("못 쓴 돈")[1].split("1d ")[1].split("번")[0]) if "못 쓴 돈" in log else None
+    g = rec["REPRO_G"]["바탕 지문"]
+
+    def upto(c):
+        return [r for r in csv.DictReader(open(WORK / f"base_{c}.csv")) if r["날"] <= QCUT]
+    test = {"P 중립 순서 = 원 순서(z100g · 바이트)": rec["REPRO_GN"]["바탕 지문"] == g,
+            "P2 거꾸로 순서 = 원 순서(z100g · 바이트)": rec["REPRO_GR"]["바탕 지문"] == g,
+            "Q 미래 판 날 · 손익 바꿔도 QCUT까지 같음(z100g)": rec["REPRO_GQ"]["판정"] == "PASS" and upto("REPRO_GQ") == upto("REPRO_G") and len(upto("REPRO_G")) > 1000,
+            "Q 바꾼 뒤 QCUT 뒤는 달라짐(시험이 실제로 바꿨는지)": rec["REPRO_GQ"]["바탕 지문"] != g}
+    test["대조: 원 z100은 순서를 바꾸면 달라짐(보고)"] = rec["REPRO_N"]["바탕 지문"] != rec["REPRO"]["바탕 지문"]
     rec["REPRO"]["잠금"] = lock
     rec["REPRO"]["P0 바탕과 같음"] = rec["REPRO"]["바탕 지문"] == X.sha(P0_CSV)
-    if not rec["REPRO"]["P0 바탕과 같음"]:
+    rec["REPRO"]["불변 시험"] = test
+    if not rec["REPRO"]["P0 바탕과 같음"] or not all(v for k, v in test.items() if not k.startswith("대조")):
         rec["REPRO"]["판정"] = "FAIL"
     json.dump(rec, open(HERE / "receipt_build.json", "w"), ensure_ascii=False, indent=1)
-    print(json.dumps(rec, ensure_ascii=False))
+    print(json.dumps({c: {k: v for k, v in r.items() if k != "잠금"} for c, r in rec.items()}, ensure_ascii=False))
     if any(v["판정"] != "PASS" for v in rec.values()):
         sys.exit(3)
 
@@ -193,7 +220,7 @@ def gt(a, b):
 
 
 def cutacct():
-    """자르기 2(대리 검토 4): build 뒤 칸마다 Dv.CUT로 자른 자료(바탕 csv · ETF · 국면 모두 자름)로 덧붙임 계좌를 다시 셈 → 자른 날까지 날마다 NAV가 원정밀도로 같음. 성과는 출력 안 함."""
+    """자르기 2(대리 검토 4 · GPT #435: 이 검사는 덧붙임 · 국면 접두사만 봄 · z100 매수 배정의 미래 의존은 build의 불변 시험 P · P2 · Q가 봄): build 뒤 칸마다 Dv.CUT로 자른 자료(바탕 csv · ETF · 국면 모두 자름)로 덧붙임 계좌를 다시 셈 → 자른 날까지 날마다 NAV가 원정밀도로 같음. 성과는 출력 안 함."""
     lock = verify()
     rb = json.load(open(HERE / "receipt_build.json"))
     out = []
@@ -220,49 +247,57 @@ def shares(f):
     return {k: round(sum(float(r[k]) / float(r["NAV"]) for r in rows) / len(rows) * 100, 2) for k in ("일봉", "바구니", "엔진", "인버스", "현금")}
 
 
+NAMES = [c + n for c in BUILD for n in ("", "_G")] + ["REPRO_N", "REPRO_GN", "REPRO_GR", "REPRO_GQ"]
+
+
 def run():
     lock = verify()
     rb = json.load(open(HERE / "receipt_build.json"))
-    names = [c + n for c in BUILD for n in ("", "_N")]
-    assert rb["REPRO"]["P0 바탕과 같음"] and set(rb) == set(names), sorted(rb)
+    assert set(rb) == set(NAMES) and rb["REPRO"]["P0 바탕과 같음"], sorted(rb)
     for c, v in rb.items():
+        base = c.replace("_G", "")
         if (v["판정"] != "PASS" or X.sha(str(WORK / f"base_{c}.csv")) != v["바탕 지문"] or X.sha(str(WORK / f"led_{c}.json")) != v["장부 지문"]
-                or (c.split("_N")[0] in EXPECT and v["건너뜀"] != EXPECT[c.split("_N")[0]])):
+                or (base in EXPECT and v["건너뜀"] != EXPECT[base])):
             sys.exit(f"{c} 장부 영수증 문제 → 중단")
-    for nm, n in (("receipt_cut.json", 12), ("receipt_cutacct.json", 3 * len(names))):
+    if not all(v for k, v in rb["REPRO"]["불변 시험"].items() if not k.startswith("대조")):
+        sys.exit("불변 시험 FAIL → 중단")
+    for nm, n in (("receipt_cut.json", 12), ("receipt_cutacct.json", 3 * len(NAMES))):
         r = json.load(open(HERE / nm))
         if r["잠금"]["mpos12.py"] != lock["mpos12.py"] or len(r["행"]) != n or any(x["판정"] != "PASS" for x in r["행"]):
             sys.exit(f"{nm}: 코드 지문 다름 · 건수 다름 · FAIL → 중단")
-    if rb["REPRO"]["잠금"]["mpos12.py"] != lock["mpos12.py"]:
+    if rb["REPRO"]["잠금"]["mpos12.py"] != lock["mpos12.py"] or rb["REPRO"]["잠금"]["z100g.py"] != lock["z100g.py"]:
         sys.exit("장부 영수증 코드 지문 다름 → 중단")
     R = {"P0": mstats(account(P0_CSV))}
-    b = R["P0"]
-    assert b["손실"] == 40 and b["앞손실"] == 20 and b["뒤손실"] == 20 and abs(b["최악달"] + 14.0434) < 1e-3 and abs(b["연_거래일"] - 34.1129) < 1e-3
-    for c in names:
+    p0 = R["P0"]                                     # 계보 재현만(주판정 기준 아님 · GPT #435 고칠 것 2)
+    assert p0["손실"] == 40 and p0["앞손실"] == 20 and p0["뒤손실"] == 20 and abs(p0["최악달"] + 14.0434) < 1e-3 and abs(p0["연_거래일"] - 34.1129) < 1e-3
+    for c in NAMES:
         R[c] = mstats(account(WORK / f"base_{c}.csv"))
-    assert R["REPRO"]["달"] == b["달"]
-    bn = R["REPRO_N"]
+    assert R["REPRO"]["달"] == p0["달"]
+    b = R["REPRO_G"]                                 # 주판정 기준선: 미래 의존 없는 배정의 P0
+
+    def G(c):
+        return R[c + "_G"]
 
     def acct(c):
-        x = R[c]
+        x = G(c)
         return (x["최악날"] >= -15 and x["최악달"] >= -15 and x["앞손실"] <= b["앞손실"] and x["뒤손실"] <= b["뒤손실"] and x["손실"] < b["손실"]
                 and x["연_거래일"] >= 30.702 and x["최악달"] >= b["최악달"])
-    mech = {"손실달_이하": R[CENTER]["손실"] <= R[ABL]["손실"], "연_큼": gt(R[CENTER]["연_거래일"], R[ABL]["연_거래일"])}
+    mech = {"손실달_이하": G(CENTER)["손실"] <= G(ABL)["손실"], "연_큼": gt(G(CENTER)["연_거래일"], G(ABL)["연_거래일"])}
     mech["지지"] = mech["손실달_이하"] and mech["연_큼"]
-    why = {c: {"①": R[c]["최악날"] >= -15 and R[c]["최악달"] >= -15, "②": R[c]["앞손실"] <= b["앞손실"] and R[c]["뒤손실"] <= b["뒤손실"],
-               "③": R[c]["손실"] < b["손실"], "④": R[c]["연_거래일"] >= 30.702, "⑥깊이": R[c]["최악달"] >= b["최악달"],
-               "⑤": all(acct(n) for n in NEI[c]), "기전": mech["지지"],
-               "중립순서": (R[c + "_N"]["최악날"] >= -15 and R[c + "_N"]["최악달"] >= -15 and R[c + "_N"]["손실"] < bn["손실"]
-                        and R[c + "_N"]["연_거래일"] >= 30.702)} for c in CELLS}
+    why = {c: {"①": G(c)["최악날"] >= -15 and G(c)["최악달"] >= -15, "②": G(c)["앞손실"] <= b["앞손실"] and G(c)["뒤손실"] <= b["뒤손실"],
+               "③": G(c)["손실"] < b["손실"], "④": G(c)["연_거래일"] >= 30.702, "⑥깊이": G(c)["최악달"] >= b["최악달"],
+               "⑤": all(acct(n) for n in NEI[c]), "기전": mech["지지"]} for c in CELLS}
     ok = [c for c in CELLS if all(why[c].values())]
-    rank = sorted(ok, key=lambda c: (-math.floor(R[c]["최악달"] / 5), R[c]["손실"], -math.floor(R[c]["MDD"] / 2), -R[c]["연_거래일"], c))
-    sh = {c: shares(WORK / f"base_{c}.csv") for c in names}
-    out = {"cells": R, "기전": mech, "잣대": why, "자격": ok, "순위": rank, "판정": "SELECTED" if rank else "NO_IMPROVEMENT",
-           "중립 순서 P0(REPRO_N) — P0와 같은 달 수익인가": R["REPRO_N"]["달"] == b["달"], "바탕 평균 몫(보고)": sh, "장부": rb, "잠금": lock}
+    rank = sorted(ok, key=lambda c: (-math.floor(G(c)["최악달"] / 5), G(c)["손실"], -math.floor(G(c)["MDD"] / 2), -G(c)["연_거래일"], c))
+    sh = {c: shares(WORK / f"base_{c}.csv") for c in NAMES}
+    costs = {c: float(list(csv.DictReader(open(WORK / f"base_{c}.csv")))[-1]["비용누계"]) for c in NAMES}
+    out = {"cells": R, "기준선(주판정)": "REPRO_G", "기전": mech, "잣대": why, "자격": ok, "순위": rank,
+           "판정": "SELECTED" if rank else "NO_IMPROVEMENT", "원 순서 경로": "진단 · 계보 재현만(SELECTED를 만들지 않음)",
+           "바탕 평균 몫(보고)": sh, "바탕 비용 누계(보고)": costs, "장부": rb, "잠금": lock}
     json.dump(out, open(HERE / "result.json", "w"), ensure_ascii=False, indent=1)
-    for c in ["P0"] + names:
-        print(c, json.dumps({k: (round(v, 3) if isinstance(v, float) else v) for k, v in R[c].items() if k != "달"}, ensure_ascii=False), sh.get(c, ""))
-    print("기전", mech, "자격", ok, "순위", rank, "중립 순서 P0 같음", out["중립 순서 P0(REPRO_N) — P0와 같은 달 수익인가"])
+    for c in ["P0"] + NAMES:
+        print(c, json.dumps({k: (round(v, 3) if isinstance(v, float) else v) for k, v in R[c].items() if k != "달"}, ensure_ascii=False), sh[c] if c in sh else "")
+    print("기전", mech, "자격", ok, "순위", rank)
 
 
 if __name__ == "__main__":
