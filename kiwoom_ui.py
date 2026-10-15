@@ -23,9 +23,9 @@ def _d(day):
     return f"{day[4:6]}-{day[6:8]}" if len(str(day)) == 8 else _e(day)
 
 
-def trio_stats(days: dict, start: str) -> dict:
-    """독립 창(start부터) 날별 손익 → 합 · 가장 나쁜 날 · 고점 대비 낙폭 · 날 수."""
-    vals = [v for d, v in sorted(days.items()) if d >= start]
+def trio_stats(days: dict, start: str, skip=()) -> dict:
+    """독립 창(start부터 · 불완전한 날 skip은 뺌) 날별 손익 → 합 · 가장 나쁜 날 · 고점 대비 낙폭 · 날 수."""
+    vals = [v for d, v in sorted(days.items()) if d >= start and d not in skip]
     peak = cum = mdd = 0.0
     for v in vals:
         cum += v
@@ -42,9 +42,10 @@ def trio_html(t: dict | None) -> str:
         return ""
     start, need = str(t.get("test_start", "")), int(t.get("need", 20))
     days = t.get("days") or {}
+    skip = set(t.get("incomplete") or [])
     cards = []
     for b in boards:
-        st = trio_stats(days.get(b["name"], {}), start)
+        st = trio_stats(days.get(b["name"], {}), start, skip)
         ok = st["n"] and st["sum"] > 0 and st["worst"] >= -15 and st["mdd"] >= -15
         light = "⏳" if st["n"] < need else ("✅" if ok else "❌")
         cards.append(
@@ -64,12 +65,12 @@ def trio_html(t: dict | None) -> str:
         head = "".join(f"<th>{_e(b['name'])}</th>" for b in boards)
         rows = []
         for d in all_days:
-            kind = "참고" if d < start else "시험"
+            kind = "참고" if d < start else ("⚠️ 불완전(셈 뺌)" if d in skip else "시험")
             cells = "".join(f"<td>{_p(days.get(b['name'], {}).get(d))}</td>" if d in days.get(b["name"], {}) else "<td>—</td>" for b in boards)
             rows.append(f"<tr><td>{_d(d)}{' 🚧' if d in blocked else ''}</td><td>{kind}</td>{cells}</tr>")
         out.append('<table style="width:100%;font-size:13px;margin-top:10px"><tr><th>날</th><th>구분</th>' + head + "</tr>"
                    + "".join(rows) + "</table>")
-        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · 연구 숫자는 '
+        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · ⚠️ 불완전 = 1분봉이 400줄 미만 등 잠금 규칙상 빠진 날(독립 창 20일에 안 셈) · 연구 숫자는 '
                    f'{_e(t.get("research_span"))} 같은 자료로 고른 값이라 실제는 더 낮을 수 있음</p>')
     if t.get("updated"):
         out.append(f'<p style="color:#7B7465;font-size:12px">고친 때 {_e(t["updated"])}(한국 시각)</p>')
