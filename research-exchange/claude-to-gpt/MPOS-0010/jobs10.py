@@ -120,9 +120,14 @@ def cut_jobs():
 def smoke_jobs():
     """마른 실행의 실제 짧은 일감(반대 검토 결함 6): 자른 장부 하나 + 원래 1일봉 장부로 z100을 2017-06까지."""
     a, nm = door_args(CENTER, "20170630")
-    return {"smoke:door": dict(cmd=tree_cmd(WORK / "smoke_door.mods.json", HERE / "door.py", *a), env=door_env("20170630"), cwd=str(TREE)),
+    for f in (LED / f"{nm}.json", LED / f"{nm}.meta.json", WORK / "smoke_door.mods.json", WORK / "smoke_z100.csv", WORK / "smoke_z100.mods.json"):
+        if f.exists():
+            f.unlink()                                                  # 지난 실행 잔재가 '기대 산출물 있음'으로 오인되지 않게
+    return {"smoke:door": dict(cmd=tree_cmd(WORK / "smoke_door.mods.json", HERE / "door.py", *a), env=door_env("20170630"), cwd=str(TREE),
+                               expect=[str(LED / f"{nm}.json"), str(LED / f"{nm}.meta.json")], mods=str(WORK / "smoke_door.mods.json")),
             "smoke:z100": dict(cmd=tree_cmd(WORK / "smoke_z100.mods.json", "research/z100.py"),
-                               env=dict(z100_env(SP / "z055_d1_raw.json", WORK / "smoke_z100.csv"), Z_TO="20170630"), cwd=str(TREE))}
+                               env=dict(z100_env(SP / "z055_d1_raw.json", WORK / "smoke_z100.csv"), Z_TO="20170630"), cwd=str(TREE),
+                               expect=[str(WORK / "smoke_z100.csv")], mods=str(WORK / "smoke_z100.mods.json"))}
 
 
 if __name__ == "__main__" and sys.argv[1] == "solo":

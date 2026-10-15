@@ -199,26 +199,32 @@ def gt(a, b):
 
 
 def trade_stats(rows, meta, cost):
-    """새 문 매매: 장부 평균(0.25% 관례) · **추정 비용 뒤 평균(장부 + 0.25 − perf2 추정 왕복)** · 앞 · 뒤 반 · 한 해 몰림(추정 비용 뒤 기준)."""
-    meta = [dict(m, **(k or {})) for m, k in zip(meta, cost)]       # cost10.py: 계좌 NAV 기준 주문 금액 · 추정 왕복 비용
+    """새 문 매매: 장부 평균(0.25% 관례) · 비용 대리치 뒤 평균(장부 + 0.25 − cost10 추정 왕복 · 기준 금액 A) · 2배 금액(관문 ⓑ) · 반 금액(보고).
+    cost10은 잠재 장부 거래의 근사(GPT #428) — z100 실제 체결 금액 · 비용이 아님."""
+    meta = [dict(m, **(k or {})) for m, k in zip(meta, cost)]
     sh = [(r, m) for r, m in zip(rows, meta) if r[2] != "99999999"]
 
     def one(xs):
         if not xs:
-            return dict(건=0, 평균=None, 추정비용뒤=None)
+            return dict(건=0, 평균=None, 추정비용뒤=None, 추정비용뒤_2배금액=None)
         led = [r[3] for r, _ in xs]
-        net = [r[3] + 0.25 - m["추정왕복비용"] for r, m in xs]
-        w, lo = [p for p in net if p > 0], -sum(p for p in net if p < 0)
-        return dict(건=len(xs), 평균=sum(led) / len(led), 추정비용뒤=sum(net) / len(net), 승률=len(w) / len(net) * 100, PF=(sum(w) / lo) if lo else None,
-                    합=sum(net))
+        net = {k: [r[3] + 0.25 - m[c] for r, m in xs] for k, c in (("기준", "추정왕복비용"), ("2배", "추정왕복비용_2배금액"), ("반", "추정왕복비용_반금액"))}
+        w, lo = [p for p in net["기준"] if p > 0], -sum(p for p in net["기준"] if p < 0)
+        return dict(건=len(xs), 평균=sum(led) / len(led), 추정비용뒤=sum(net["기준"]) / len(xs), 추정비용뒤_2배금액=sum(net["2배"]) / len(xs),
+                    추정비용뒤_반금액=sum(net["반"]) / len(xs), 승률=len(w) / len(xs) * 100, PF=(sum(w) / lo) if lo else None, 합=sum(net["기준"]))
     yrs = {}
     for r, m in sh:
         yrs[r[2][:4]] = yrs.get(r[2][:4], 0.0) + r[3] + 0.25 - m["추정왕복비용"]
     tot = sum(yrs.values())
     MON = [f"{y}{k:02d}" for y in range(2017, 2027) for k in range(1, 13) if "201703" <= f"{y}{k:02d}" <= "202608"]
+    q = lambda v, x: sorted(v)[int(x * (len(v) - 1))] if v else None
+    betas = [m["β"] for _, m in sh if m.get("β") is not None]
+    rep = dict(β_사분위=[q(betas, .25), q(betas, .5), q(betas, .75)], 점수표본_최소=min((m["점수 표본"] for _, m in sh), default=None),
+               점수표본_100미만=sum(1 for _, m in sh if m["점수 표본"] < 100), ADV없음대입=sum(1 for _, m in sh if m.get("ADV 없음 대입")),
+               비용구성_평균={k: (sum(m[k] for _, m in sh) / len(sh) if sh else None) for k in ("수수료슬리피지", "매도세", "충격")})
     return dict(전체=one(sh), 앞반=one([x for x in sh if x[0][2][:6] <= H1_END]), 뒤반=one([x for x in sh if x[0][2][:6] >= H2_BEG]),
-                못판=len(rows) - len(sh), 해마다_추정비용뒤합=dict(sorted(yrs.items())), 한해몰림=(max(yrs.values()) / tot) if tot > 0 and yrs else None,
-                달평균_114분모=sum(1 for r, _ in sh if r[2][:6] in MON) / 114, 거래있는달=len({r[2][:6] for r, _ in sh if r[2][:6] in MON}))
+                못판=len(rows) - len(sh), 해마다_비용대리치뒤합=dict(sorted(yrs.items())), 한해몰림=(max(yrs.values()) / tot) if tot > 0 and yrs else None,
+                달평균_114분모=sum(1 for r, _ in sh if r[2][:6] in MON) / 114, 거래있는달=len({r[2][:6] for r, _ in sh if r[2][:6] in MON}), 보고=rep)
 
 
 def nei(c):
@@ -245,7 +251,7 @@ def judge(R, T, mech):
     def gate(c):
         x, t = R[c + "_X"], T[c]
         stress = x["최악날"] >= -15 and x["최악달"] >= -15 and x["손실"] < b["손실"] and x["연_거래일"] >= 30.702
-        trade = gt(t["앞반"]["추정비용뒤"], 0.0) and gt(t["뒤반"]["추정비용뒤"], 0.0)
+        trade = gt(t["앞반"]["추정비용뒤_2배금액"], 0.0) and gt(t["뒤반"]["추정비용뒤_2배금액"], 0.0)   # 근사 금액 차이에 견디게 가장 비싼 쪽(GPT #428)
         year = t["한해몰림"] is not None and t["한해몰림"] <= YEAR_MAX
         return stress and trade and year and mech["지지"]
     why = {c: {"①": R[c]["최악날"] >= -15 and R[c]["최악달"] >= -15, "②": R[c]["앞손실"] <= b["앞손실"] and R[c]["뒤손실"] <= b["뒤손실"],

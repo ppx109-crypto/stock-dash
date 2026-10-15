@@ -8,7 +8,7 @@ import mpos10 as M  # noqa: E402
 
 
 def T(net, front=0.1, back=0.1, year=0.3):
-    return {"전체": {"추정비용뒤": net}, "앞반": {"추정비용뒤": front}, "뒤반": {"추정비용뒤": back}, "한해몰림": year}
+    return {"전체": {"추정비용뒤": net}, "앞반": {"추정비용뒤": front, "추정비용뒤_2배금액": front}, "뒤반": {"추정비용뒤": back, "추정비용뒤_2배금액": back}, "한해몰림": year}
 
 
 def mech(c, tot, nop, lc=39, lt=40, ln=40):
@@ -40,6 +40,9 @@ def run():
     R3[M.CENTER] = dict(base, 최악달=-6.0)
     R3["P0"] = dict(R["P0"], 최악달=-5.5)
     ok.append(("judge: 최악 달이 P0보다 나쁨 → 탈락(⑥깊이)", M.CENTER not in M.judge(R3, {c: T(0.2) for c in M.ALL}, {"지지": True})[1]))
+    Ts = {c: T(0.2) for c in M.ALL}
+    Ts[M.CENTER] = dict(T(0.2), 앞반={"추정비용뒤": 0.2, "추정비용뒤_2배금액": -0.01})
+    ok.append(("judge: 기준 금액은 + 이지만 2배 금액에서 − → 탈락", M.CENTER not in M.judge(R, Ts, {"지지": True})[1]))
     for n, v in ok:
         print("PASS" if v else "FAIL", n)
     return all(v for _, v in ok)

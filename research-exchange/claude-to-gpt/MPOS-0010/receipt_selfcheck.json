@@ -1,18 +1,18 @@
 {
  "코드": {
-  "mpos10.py": "c4b3b65d2c1558ec527b3bd0705b8e2206a0f987b4e998f8cdfad3de7a5579c9",
-  "jobs10.py": "2c230b73e7e76938173c10db0e4d2bfc4d190bf8daa7dc2990bd301e159f235e",
-  "door.py": "1e7f14175ee996ff82334604493e6c8bde98fa71a214ec202b3432b7cca696f0",
+  "mpos10.py": "753dfb266c7f35922885bd5ff5d56239f50ab3f1305b0a83bbd7070237b5f2e0",
+  "jobs10.py": "bbaf7b56aab0fec22fd368471086f7294385c318a31bc6c366628085d1cd625e",
+  "door.py": "db55a3cf310bb27503276f30bdbf076134b4506ec15b77634f2ac41a021162de",
   "checks10.py": "16be243e51e7025a55d733fa0660e120cbe096b33dddf66f7ac8b6d43243af46",
-  "cost10.py": "4c21f0595fe8c3a3a30d30df0010eb5665ce54fce5e0a263b56dec9429f14219",
+  "cost10.py": "b62f39c45a9cae15b38ecef5dc92e593c7db535357499b7b8c0e9beb22588567",
   "tree_run.py": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4",
-  "rxkit.py": "5f3e45b2584df2d4b191ae84a5c0a620fd988e81da3471a3ec5bffe0faed5dd9",
+  "rxkit.py": "8d2ab13f3dcb0d868ee6bd7f900966b01c6f70f0536cb619977ccad4ff6528cf",
   "test_door.py": "feba8dd823bbb3bb150e03792c8b54f65baf2f264e6831868d2e72b6f364f9e1",
-  "test_judge10.py": "6df7a0ca992569a72a0ad6844b0306f773c290f29764a164cbef44fb1a1f9715",
+  "test_judge10.py": "a5be5a32f533bc40435ff49efaa10882134723eaad95566a62d496e028884dcc",
   "test_checks10.py": "a8627eff77c8d865e11a49513f92cb1e35f16c77dc7c140def6eedae14dc1673",
   "ref_mods.json": "8868294f8ccb49bc2cf5508b6cb738232c2446a1be23c5ffde125d358a5923bf"
  },
- "때(한국)": "2026-10-16 00:12:37",
+ "때(한국)": "2026-10-16 00:22:45",
  "줄": {
   "test_door.py": {
    "판정": "PASS",
@@ -20,7 +20,7 @@
   },
   "test_judge10.py": {
    "판정": "PASS",
-   "출력": "PASS gt 0 > −0.1\nPASS gt 0 > 0 거짓\nPASS gt None · nan 거짓\nPASS 반례: 중심 −0.10 · TOTAL 0 · NOPULL −0.2 → 미지지\nPASS 중심 0 · 대조 음수 → 지지\nPASS 대조 결측 → 미지지\nPASS 손실 달 많음 → 미지지\nPASS judge: 모두 통과 6칸\nPASS judge: 앞 반 추정 비용 뒤 0 → 탈락\nPASS judge: 한 해 몰림 결측 → 탈락\nPASS judge: 기전 미지지 → 모두 탈락\nPASS judge: 이웃 하나 ③ 실패 → 그 이웃의 이웃 탈락\nPASS judge: 최악 달이 P0보다 나쁨 → 탈락(⑥깊이)\n"
+   "출력": "PASS gt 0 > −0.1\nPASS gt 0 > 0 거짓\nPASS gt None · nan 거짓\nPASS 반례: 중심 −0.10 · TOTAL 0 · NOPULL −0.2 → 미지지\nPASS 중심 0 · 대조 음수 → 지지\nPASS 대조 결측 → 미지지\nPASS 손실 달 많음 → 미지지\nPASS judge: 모두 통과 6칸\nPASS judge: 앞 반 추정 비용 뒤 0 → 탈락\nPASS judge: 한 해 몰림 결측 → 탈락\nPASS judge: 기전 미지지 → 모두 탈락\nPASS judge: 이웃 하나 ③ 실패 → 그 이웃의 이웃 탈락\nPASS judge: 최악 달이 P0보다 나쁨 → 탈락(⑥깊이)\nPASS judge: 기준 금액은 + 이지만 2배 금액에서 − → 탈락\n"
   },
   "test_checks10.py": {
    "판정": "PASS",

@@ -111,7 +111,17 @@ def dry(builders, smoke=None, timeout=600, log=print):
             if r.returncode != 0:
                 bad.append(f"smoke {n}: rc {r.returncode} · {(r.stderr or r.stdout)[-300:]}")
         except subprocess.TimeoutExpired:
-            log(f"smoke {n}: {timeout}초 안에 오류 없이 돎(시간 넘어 멈춤 = 시작은 정상)")
+            bad.append(f"smoke {n}: {timeout}초 안에 끝나지 않음(미완료 = FAIL · GPT #428)")
+            continue
+        for f in j.get("expect", []):                                  # 끝났다면 기대 산출물이 있어야 함
+            if not os.path.exists(f):
+                bad.append(f"smoke {n}: 기대 산출물 없음 {os.path.basename(f)}")
+        m = j.get("mods")
+        if m:
+            if not os.path.exists(m):
+                bad.append(f"smoke {n}: 모듈 영수증 없음")
+            elif json.load(open(m)).get("바깥"):
+                bad.append(f"smoke {n}: 고정 코드 밖 모듈")
     return bad
 
 

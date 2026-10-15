@@ -49,6 +49,7 @@ def frames(cut=None):
 def rm(K, H, mode="rm", extra=0.0, cut=None):
     P, ins, lr, mkt, badwin = frames(cut)
     import nrl
+    beta = None
     if mode == "total":
         e = lr
     else:
@@ -60,6 +61,7 @@ def rm(K, H, mode="rm", extra=0.0, cut=None):
         beta = (mxy - mx.mul(mm, axis=0)).div(var, axis=0)
         e = lr - beta.mul(mkt, axis=0)
     past = e.shift(21)
+    nobs = past.rolling(100, min_periods=1).count()                # 점수 창 유효 표본 수(최소 90 허용 · 보고)
     score = past.rolling(100, min_periods=90).sum() / (past.rolling(100, min_periods=90).std() * 10.0)
     top = score.where(ins).rank(axis=1, pct=True) >= 0.8
     z5 = e.rolling(5, min_periods=5).sum() / (e.rolling(60, min_periods=60).std() * math.sqrt(5))
@@ -81,6 +83,11 @@ def rm(K, H, mode="rm", extra=0.0, cut=None):
     if cut:                                                         # 자르기: 기존 장부도 그날까지 아는 것만(그날 뒤 판 날은 '보유 중')
         old = [[c, b, (e if e <= cut else "99999999"), (p if e <= cut else 0.0), s] for c, b, e, p, s in old if b <= cut]
     led, st, meta = walk(cal, tradeday, cands, zv, Pv, old, H, extra)
+    for m, r in zip(meta, led[len(led) - len(meta):]):            # 보고용(판정에 안 씀): 신호 날의 β · 잔차 강세 점수 · 점수 창 표본 수
+        t = m["신호 날"]
+        m["β"] = None if mode == "total" else float(beta.at[t, r[0]])
+        m["점수"] = float(score.at[t, r[0]])
+        m["점수 표본"] = int(nobs.at[t, r[0]])
     return led, st, meta
 
 
