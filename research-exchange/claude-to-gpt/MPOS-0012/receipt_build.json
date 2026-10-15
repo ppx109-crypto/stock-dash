@@ -1,0 +1,127 @@
+{
+ "REPRO": {
+  "건너뜀": 0,
+  "남은 매매": 495,
+  "장부 지문": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "rc": 0,
+  "바탕 지문": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "판정": "PASS",
+  "1일봉 못 산 번": 107,
+  "잠금": {
+   "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+   "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+   "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+   "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+   "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+   "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+   "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+   "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+   "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+   "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+   "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03",
+   "diag12.json": "ca6e4462bbea07c9a6a235490ed220e870392df5a2fd84e26b0ad3910e55c69c",
+   "diag12.py": "a7275bb914f1bdb4241d00e082e66a496a874dc6c4384d6a1c620fd9ba0515b3",
+   "mpos12.py": "4f2bb627f57a33c3a1b8b7c2cc79249438f40afbbbecb803f7d2281787696c2e"
+  },
+  "P0 바탕과 같음": true
+ },
+ "REPRO_N": {
+  "건너뜀": 0,
+  "남은 매매": 495,
+  "장부 지문": "77994c37a8ef0fcae5d32e348eb46a1bea651814d312975265b6ed3e6880d0a6",
+  "rc": 0,
+  "바탕 지문": "78db1f504bf21fce34e9164ee9ad10943ef458987415ef2470fb6258e2c4f0da",
+  "판정": "PASS",
+  "1일봉 못 산 번": 108
+ },
+ "F_DOWN": {
+  "건너뜀": 23,
+  "남은 매매": 472,
+  "장부 지문": "bc0c428cb91a0d31c448a2ff705afc40a70472d625aa50100fdb010b272520f3",
+  "rc": 0,
+  "바탕 지문": "46e79435988d9a3bf0909d5122183c8e8fcc135c05ca84d63319a35bec46bae8",
+  "판정": "PASS",
+  "1일봉 못 산 번": 92
+ },
+ "F_DOWN_N": {
+  "건너뜀": 23,
+  "남은 매매": 472,
+  "장부 지문": "658ba091599b0875d941c413a68cf684a24299af5c93d47874eca11b03e3581f",
+  "rc": 0,
+  "바탕 지문": "7ca52c03a8603dcf0628824324126b7f13743fe430eb5a6fd01890aa812fdf95",
+  "판정": "PASS",
+  "1일봉 못 산 번": 93
+ },
+ "F_SIDE": {
+  "건너뜀": 117,
+  "남은 매매": 378,
+  "장부 지문": "a6646c80fd0949b21fb3ef99887fb66ffbcbeef0d35b6cc170acc8f8102264af",
+  "rc": 0,
+  "바탕 지문": "3e8824f65a0ccb31cae67d2446432f409fdf6074e1db8b325592f1dc136e497b",
+  "판정": "PASS",
+  "1일봉 못 산 번": 79
+ },
+ "F_SIDE_N": {
+  "건너뜀": 117,
+  "남은 매매": 378,
+  "장부 지문": "d721e0f51c90bf7b9d059ab10485aa53e8bfc1eac0760977d4f1d3cb01d911c4",
+  "rc": 0,
+  "바탕 지문": "a0af0c88f4ebd2ca4228665e4ccd54f8ae42a236ec03f9b4f8c2dbfd8befbecd",
+  "판정": "PASS",
+  "1일봉 못 산 번": 78
+ },
+ "F_SIDEDOWN": {
+  "건너뜀": 140,
+  "남은 매매": 355,
+  "장부 지문": "88b181799c369d8f6b179db8cb533253edbfd93eec59033865c117e026acde58",
+  "rc": 0,
+  "바탕 지문": "7fa76c8c83806aa087ae07dd62ae19b27a3159ddad880787ad79e26b59df6e17",
+  "판정": "PASS",
+  "1일봉 못 산 번": 70
+ },
+ "F_SIDEDOWN_N": {
+  "건너뜀": 140,
+  "남은 매매": 355,
+  "장부 지문": "079e74935a679cbb2e1005baf083324b33e937d7b83d2b58eb0af9c56f2ced78",
+  "rc": 0,
+  "바탕 지문": "972d6f5aa8735d66580aa17173b30404d964ba0301a42b7deb805ea1bcbcb986",
+  "판정": "PASS",
+  "1일봉 못 산 번": 69
+ },
+ "F_ALL": {
+  "건너뜀": 402,
+  "남은 매매": 93,
+  "장부 지문": "2c14f772e648a02ac68abfe488e1384c25b00faebc02b68287b30d57d774e649",
+  "rc": 0,
+  "바탕 지문": "502743c28bdca42ff72422c8a2ea77de7a855bf403571247c6de3fc2a0f26cf1",
+  "판정": "PASS",
+  "1일봉 못 산 번": 4
+ },
+ "F_ALL_N": {
+  "건너뜀": 402,
+  "남은 매매": 93,
+  "장부 지문": "a67b28fa55bd3a31380bda52d6821986c98d68252ab24d29f35cb89c70863192",
+  "rc": 0,
+  "바탕 지문": "502743c28bdca42ff72422c8a2ea77de7a855bf403571247c6de3fc2a0f26cf1",
+  "판정": "PASS",
+  "1일봉 못 산 번": 4
+ },
+ "AB_RAND": {
+  "건너뜀": 140,
+  "남은 매매": 355,
+  "장부 지문": "4a95a771d4190626caa1d4c7e7b2e19af2f0a5f372e70416d54e173ff5c0963a",
+  "rc": 0,
+  "바탕 지문": "23147b0564adb3bd20b29c541547db13842bd7ba12bdb1b4224d0ac44c379523",
+  "판정": "PASS",
+  "1일봉 못 산 번": 54
+ },
+ "AB_RAND_N": {
+  "건너뜀": 140,
+  "남은 매매": 355,
+  "장부 지문": "23ef6817d4b1138a39e65c7f7836b7dfda3e3a3b3ddc4b2f7a34aa41d4731f8e",
+  "rc": 0,
+  "바탕 지문": "347d47c7be04e9dd101d597ac1c4f4017056c9172b6a83e2205ff40f57ce87d3",
+  "판정": "PASS",
+  "1일봉 못 산 번": 53
+ }
+}
