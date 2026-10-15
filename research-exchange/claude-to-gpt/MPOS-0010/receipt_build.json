@@ -1,0 +1,154 @@
+{
+ "코드": {
+  "door.py": "db55a3cf310bb27503276f30bdbf076134b4506ec15b77634f2ac41a021162de",
+  "jobs10.py": "bbaf7b56aab0fec22fd368471086f7294385c318a31bc6c366628085d1cd625e",
+  "checks10.py": "16be243e51e7025a55d733fa0660e120cbe096b33dddf66f7ac8b6d43243af46",
+  "cost10.py": "b62f39c45a9cae15b38ecef5dc92e593c7db535357499b7b8c0e9beb22588567",
+  "tree_run.py": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4",
+  "rxkit.py": "8d2ab13f3dcb0d868ee6bd7f900966b01c6f70f0536cb619977ccad4ff6528cf",
+  "ref_mods.json": "8868294f8ccb49bc2cf5508b6cb738232c2446a1be23c5ffde125d358a5923bf"
+ },
+ "때(한국)": "2026-10-16 01:06:57",
+ "줄": {
+  "RM_K0.5_H10": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H10.json": "3aa6672bc001a6843be45d15c5f1ef05e98beb0a1d8d8afef525103c36732479",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H10.meta.json": "3101a763a266b88bd888b31cf0ba34fcb900e04c4edcb2087d210f6f5497f4f0"
+   }
+  },
+  "RM_K0.5_H20": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H20.json": "7cb8b02a4ff1abb44d8e6c5a27f8abe1a4e1d23359231e09ed32703f57e47bff",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H20.meta.json": "5b2b09a2ca23a3ddde667a2d95531069bb2ddc7c6783829e122a5eac28c53e26"
+   }
+  },
+  "RM_K1.0_H10": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H10.json": "2331b833b00037207a3567483672af3cef1df3998e1c36eadb6a8355ff5a73bf",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H10.meta.json": "bb6c0f19fc7e5be8659147f18d5aa503920541b02ce7dca7540f1d08c3d64bb6"
+   }
+  },
+  "RM_K1.0_H20": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H20.json": "086fd3bf30c7fcc3996ae3f8ec38ea335105935616962213ad55807220492178",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H20.meta.json": "4bd0ffd857468392c0792132fb2c3b58ca38299a4fa636e39c8f9fec8501fc65"
+   }
+  },
+  "RM_K1.5_H10": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H10.json": "d795cac8d132c498275aae63fda512395320683bf798b1518162c8ef45b4f954",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H10.meta.json": "f7126cf88363ebd9539569e18805a0b467993e616757cfdd60362aa864a92869"
+   }
+  },
+  "RM_K1.5_H20": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H20.json": "b058c30225f3d8a50abfed518616d3ce5e57ac2d686fbab9eb8505f891c4abab",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H20.meta.json": "c760b12790853db4e6e46998ed0c2cd4a69d5b8b965e7ab51c8242f2da23f0a0"
+   }
+  },
+  "AB_TOTAL": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_total_K1.0_H20.json": "7d06432e7dd2281018e85dfd86605be06874f3f06c783e98c2ba8325939a79a9",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_total_K1.0_H20.meta.json": "e3d412bea0b35b9bf3ea6bafdfcb447207122f4015177e51a172609cb798fddb"
+   }
+  },
+  "AB_NOPULL": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_nopull_K1.0_H20.json": "94883ed57d7039500c9953304e522aaabbcf66a3720ee507644f806d597a843c",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_nopull_K1.0_H20.meta.json": "f89df344b8895a40f816cc8062e0bb19d34c6a40588b32494f09202740272f1d"
+   }
+  },
+  "RM_K0.5_H10_X": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H10_x0.0025.json": "c4cb9ad18b0e48293fbf4d61ea4dcfd75381d5f22aab18a2931856209c61624c",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H10_x0.0025.meta.json": "3101a763a266b88bd888b31cf0ba34fcb900e04c4edcb2087d210f6f5497f4f0"
+   }
+  },
+  "RM_K0.5_H20_X": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H20_x0.0025.json": "441db42c59478e446961476b987221661e13f84cddc9d0597e4eca42cf6baf63",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K0.5_H20_x0.0025.meta.json": "5b2b09a2ca23a3ddde667a2d95531069bb2ddc7c6783829e122a5eac28c53e26"
+   }
+  },
+  "RM_K1.0_H10_X": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H10_x0.0025.json": "df40db5570c6a9fb9e293451ce954615e8d2656575b010da88c367d0d0d9c730",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H10_x0.0025.meta.json": "bb6c0f19fc7e5be8659147f18d5aa503920541b02ce7dca7540f1d08c3d64bb6"
+   }
+  },
+  "RM_K1.0_H20_X": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H20_x0.0025.json": "90cbf019e9013083ed9213055c97c88291b26497d40f8b56470d014a8f2c2caa",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.0_H20_x0.0025.meta.json": "4bd0ffd857468392c0792132fb2c3b58ca38299a4fa636e39c8f9fec8501fc65"
+   }
+  },
+  "RM_K1.5_H10_X": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H10_x0.0025.json": "5cc554c460c1cbf5e3da136a8ee695ad0d1251bab0b9d12d5dd4261b74411f8e",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H10_x0.0025.meta.json": "f7126cf88363ebd9539569e18805a0b467993e616757cfdd60362aa864a92869"
+   }
+  },
+  "RM_K1.5_H20_X": {
+   "rc": 0,
+   "칸 최대": 10,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H20_x0.0025.json": "a3adaa046805e015af45cca72a86604632ee05f4114cc54a457b375e8316f58a",
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos10/ledgers/rm_rm_K1.5_H20_x0.0025.meta.json": "c760b12790853db4e6e46998ed0c2cd4a69d5b8b965e7ab51c8242f2da23f0a0"
+   }
+  }
+ }
+}
