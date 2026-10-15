@@ -1,7 +1,7 @@
 """MPOS-0004 — (MPOS-0003 mpos3.py를 이어받음) C2 상승 과열 때 레버리지 반 · ZP 0선 회복 뒤 첫 눌림 · Q_ACCT1 계좌 반사실 보상 선택기.
 MPOS-0003 — 횡보 국면 덧붙임: 인버스 방패를 기본으로 두고 신호 때만 바꾸는 규칙 칸 + 지난 자료로만 배우는 RL 칸(QUESTION.md · 계산 전 잠금).
 MPOS-0002 mpos2.py를 이어받되 ETF를 여러 개 동시에 들 수 있게(보유 = {코드: 금액}) 바꿈. 상승 · 하락 갈래 · 비용식 · room · 빚 없음은 그대로.
-python3 mpos3.py p0check | synth | run | cut <칸>"""
+python3 mpos4.py p0check | synth | cons | run | cut <칸|all>"""
 import json, os, sys, math, hashlib
 sys.path.insert(0, "/home/user/stock-dash/research")
 os.environ.setdefault("REG_BOX", "MPOS-0004")
@@ -52,6 +52,30 @@ def ctx(p, S, coarse=False):
     z = g / s; b = 0 if z <= -2 else 1 if z <= -1 else 2 if z <= 0 else 3 if z <= 1 else 4 if z <= 2 else 5
     return (b,) if coarse else (b, up)
 
+def execute(vb, hold, cash, pending, key, tgt, d, p, base):
+    """d 종가 실행 규칙(실제 계좌와 반사실 보상이 같이 씀): key가 바뀌거나 달이 바뀌면 전면 재조정 · 아니면 room 넘침만 ETF에서 덜고 · 그래도 빚이면 1일봉 몫을 줄임."""
+    hold = dict(hold); A = vb + sum(hold.values()) + cash; full = False
+    if pending != key or d[:6] != p[:6]:
+        fb, want = tgt
+        room = fb * base[d][1] + (1 - fb); tot = sum(want.values()); sc = min(1.0, room / tot) if tot > 0 else 0.0
+        te = {c: w * sc * A for c, w in want.items()}
+        tb = fb * A
+        cost = Dv.COST_BASE_DOWN * max(0, vb - tb) + Dv.COST_BASE_UP * max(0, tb - vb)
+        cost += Dv.COST_ETF * sum(abs(te.get(c, 0.0) - hold.get(c, 0.0)) for c in set(te) | set(hold))
+        A -= cost
+        vb = fb * A; hold = {c: w * sc * A for c, w in want.items() if w * sc > 0}
+        cash = A - vb - sum(hold.values()); pending = key; full = True
+    elif hold and cash < -vb * base[d][1] - 1e-12:
+        ve = sum(hold.values()); need = -vb * base[d][1] - cash; cut = min(ve, need / (1 - Dv.COST_ETF))
+        for c in list(hold): hold[c] -= cut * hold[c] / ve
+        cash += cut * (1 - Dv.COST_ETF)
+        if sum(hold.values()) <= 1e-15: hold = {}; full = None      # None = 전량 덜어냄
+    if cash < -vb * base[d][1] - 1e-12:
+        c = base[d][1]; x = (-c * vb - cash) / (1 - Dv.COST_BASE_DOWN - c); vb -= x; cash += x * (1 - Dv.COST_BASE_DOWN)
+    return vb, hold, cash, pending, full
+
+CONS = []
+
 def account(cell, log=None):
     base, etf, br, flow = Dv.data()
     if Dv.FEAT is None or Dv.FEAT[0] is not Dv.DATA:
@@ -61,7 +85,7 @@ def account(cell, log=None):
     days = [d for d in sorted(base) if Dv.LO <= d <= Dv.HI and all(d in etf[c] for c in Dv.ETF)]
     fam, _, par = cell.partition("_")
     # RL 표본: 정보일 q(횡보 · 문맥 있음) → 행동 a의 보상 = q 다음 날 e 종가 → e 다음 날 종가 몫 수익. p에서 쓸 수 있는 건 그 다음 날이 p 이하인 것만.
-    mem = {}; queue = []; last_av = None; nmem = 0; smem = 0.0; h_prev = {}
+    mem = {}; queue = []; last_av = None; nmem = 0; smem = 0.0; h_prev = {}; pend_chk = None
     A, vb, cash = 1.0, 1.0, 0.0; hold = {}
     navs, nst = {days[0]: 1.0}, {}
     pending = None; pos = False; age = 0
@@ -71,7 +95,7 @@ def account(cell, log=None):
         for c in hold: hold[c] *= etf[c][d] / etf[c][p]
         A = vb + sum(hold.values()) + cash
         s_prev = st.get(p, "횡보")
-        qlog = None
+        qlog = None; qrew = None
         if fam == "Q":                                       # p 종가까지 보상이 끝난 표본만 기억에 넣음(국면과 상관없이 날마다)
             while queue and queue[0][0] <= p:
                 av, q_ctx, rew = queue.pop(0); last_av = av
@@ -125,40 +149,25 @@ def account(cell, log=None):
             c0 = ctx(p, S, par == "COARSE1")
             if c0 is not None and j + 1 < len(days):
                 n1 = days[j + 1]
-                if par == "ACCT1":                          # GPT A: d 종가 재조정 전 같은 상태(vb · 보유 · 현금)에서 행동 a로 맞췄다면 n1 종가까지 계좌 수익(비용 · room 포함)
-                    A0 = vb + sum(hold.values()) + cash; room = base[d][1]; rew = {}
+                if par == "ACCT1":                          # GPT A(#413 보완): d 종가 실행 전 같은 상태(pending · 달 포함)에서 행동 a를 실제 실행 규칙(execute)대로 → n1 종가 MTM(다음 결정 전)
+                    A0 = vb + sum(hold.values()) + cash; rew = {}
                     for a, w_ in ACTS.items():
-                        tot = sum(w_.values()); sc = min(1.0, room / tot) if tot > 0 else 0.0
-                        te = {c: w * sc * A0 for c, w in w_.items()}
-                        cost = Dv.COST_BASE_UP * max(0, A0 - vb) + Dv.COST_BASE_DOWN * max(0, vb - A0)
-                        cost += Dv.COST_ETF * sum(abs(te.get(c, 0.0) - hold.get(c, 0.0)) for c in set(te) | set(hold))
-                        A1 = A0 - cost; vb1 = A1; h1 = {c: w * sc * A1 for c, w in w_.items()}; cash1 = A1 - vb1 - sum(h1.values())
-                        An = vb1 * base[n1][0] / base[d][0] + sum(v * etf[c][n1] / etf[c][d] for c, v in h1.items()) + cash1
+                        v1, h1, c1, _, _ = execute(vb, hold, cash, pending, ("횡보", tuple(sorted(w_.items()))), (1.0, w_), d, p, base)
+                        An = v1 * base[n1][0] / base[d][0] + sum(v * etf[c][n1] / etf[c][d] for c, v in h1.items()) + c1
                         rew[a] = An / A0 - 1
+                    qrew = rew
                 else:
                     rew = {a: sum(w * (etf[c][n1] / etf[c][d] - 1) for c, w in ACTS[a].items()) for a in ACTS}
                 queue.append((n1, c0, rew))
         key = (s_prev, tuple(sorted(tgt[1].items())))
-        if pending != key or d[:6] != p[:6]:
-            fb, want = tgt
-            room = fb * base[d][1] + (1 - fb); tot = sum(want.values()); sc = min(1.0, room / tot) if tot > 0 else 0.0
-            te = {c: w * sc * A for c, w in want.items()}
-            tb = fb * A
-            cost = Dv.COST_BASE_DOWN * max(0, vb - tb) + Dv.COST_BASE_UP * max(0, tb - vb)
-            cost += Dv.COST_ETF * sum(abs(te.get(c, 0.0) - hold.get(c, 0.0)) for c in set(te) | set(hold))
-            A -= cost
-            vb = fb * A; hold = {c: w * sc * A for c, w in want.items() if w * sc > 0}
-            cash = A - vb - sum(hold.values()); pending = key
-            if pos and fam == "ZP" and not any(c in hold for c in SWAP[fam]): pos, age = False, 0   # ZP: 실제 체결 없으면 개입 끝
-        elif hold and cash < -vb * base[d][1] - 1e-12:
-            ve = sum(hold.values()); need = -vb * base[d][1] - cash; cut = min(ve, need / (1 - Dv.COST_ETF))
-            for c in list(hold): hold[c] -= cut * hold[c] / ve
-            cash += cut * (1 - Dv.COST_ETF)
-            if sum(hold.values()) <= 1e-15:
-                hold = {}
-                if pos and fam == "ZP": pos, age, pending = False, 0, None   # 전량 덜어냄 → 개입 끝
-        if cash < -vb * base[d][1] - 1e-12:
-            c = base[d][1]; x = (-c * vb - cash) / (1 - Dv.COST_BASE_DOWN - c); vb -= x; cash += x * (1 - Dv.COST_BASE_DOWN)
+        if fam == "Q" and par == "ACCT1" and pend_chk is not None:     # 보존 시험: 어제 고른 행동의 반사실 보상 = 실제 한 단계 손익(오늘 재조정 전)
+            CONS.append((d, pend_chk[1], (vb + sum(hold.values()) + cash) / pend_chk[0] - 1)); pend_chk = None
+        A_pre = vb + sum(hold.values()) + cash
+        vb, hold, cash, pending, full = execute(vb, hold, cash, pending, key, tgt, d, p, base)
+        if full is True and pos and fam == "ZP" and not any(c in hold for c in SWAP[fam]): pos, age = False, 0   # ZP: 실제 체결 없으면 개입 끝
+        if full is None and pos and fam == "ZP": pos, age, pending = False, 0, None                        # 전량 덜어냄 → 개입 끝
+        if fam == "Q" and par == "ACCT1" and s_prev == "횡보" and qrew is not None:
+            pend_chk = (A_pre, qrew.get(qlog[6]) if qlog and qlog[6] in ACTS else qrew.get("INV"))
         navs[d] = vb + sum(hold.values()) + cash; nst[d] = s_prev
         h_prev = {c: v / navs[d] for c, v in hold.items()} if navs[d] > 0 else {}
         if log is not None: log[d] = (S[p][0], S[p][1], s_prev, pos, age, tuple(sorted(hold.items())), vb, cash, navs[d], qlog)
@@ -201,7 +210,7 @@ LOCK = {"/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0a
 
 def verify():
     h = lambda f: hashlib.sha256(open(f, "rb").read()).hexdigest()
-    got = {f: h(f) for f in LOCK}; got["mpos3.py"] = h(os.path.join(HERE, "mpos3.py"))
+    got = {f: h(f) for f in LOCK}; got["mpos4.py"] = h(os.path.abspath(__file__))
     bad = [f for f, v in LOCK.items() if got[f] != v]
     if Dv.SNAP != "/tmp/rev-full.pkl" or Dv.CUT or str(Dv.BASE_CSV) != "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": bad.append("경로 · 환경")
     env = {k: os.environ.get(k) for k in ("REG_SNAP", "REG_CUT", "REG_BASE", "MIX_BASES", "REG_BOX")}
@@ -216,6 +225,9 @@ if __name__ == "__main__":
     if cmd == "p0check":
         a, _ = Dv.account(CFG); b, _ = account("P0")
         mx = max(abs(a[d] - b[d]) for d in a); print("P0 vs 원래 account 최대 NAV 차", mx, "날", len(a), "→", "PASS(허용 1e-12)" if mx <= 1e-12 else "FAIL")
+    elif cmd == "cons":   # 보존 시험(GPT #413): 고른 행동의 반사실 보상 = 실제 다음 날 재조정 전 손익(유지 · 변경 · 달 교체 · room 축소 모두)
+        CONS.clear(); account("Q_ACCT1")
+        mx = max(abs(r - a) for _, r, a in CONS); print("보존 시험 Q_ACCT1:", len(CONS), "날 · 최대 차", mx, "→", "PASS(허용 1e-12)" if CONS and mx <= 1e-12 else "FAIL")
     elif cmd == "synth":
         base, etf, br, flow = Dv.data()
         Dv.DATA = ({d: (v[0], 0.0) for d, v in base.items()}, etf, br, flow); Dv.FEAT = None
