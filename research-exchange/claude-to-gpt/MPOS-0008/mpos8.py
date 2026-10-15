@@ -202,7 +202,9 @@ def door_env():
 
 
 def z100_env(led, out, drop="15m"):
-    return dict(sysenv(), **ENV, Z_DROP=drop, Z_D1_LED=str(led), Z_OUT=str(out))
+    e = dict(sysenv(), **ENV)                                     # ENV(M.ENV_CONTRACT)에 Z_D1_LED가 이미 있어 덮어씀(round 4: 실행 오류 고침)
+    e.update(Z_DROP=drop, Z_D1_LED=str(led), Z_OUT=str(out))
+    return e
 
 
 def occupancy(led):
