@@ -65,12 +65,13 @@ def trio_html(t: dict | None) -> str:
         head = "".join(f"<th>{_e(b['name'])}</th>" for b in boards)
         rows = []
         for d in all_days:
-            kind = "참고" if d < start else ("⚠️ 불완전(셈 뺌)" if d in skip else "시험")
+            halt = (t.get("halt") or {}).get(d)
+            kind = "참고" if d < start else ("⚠️ 불완전(셈 뺌)" if d in skip else ("시험 · ⛔ 거래 멈춤" if halt else "시험"))
             cells = "".join(f"<td>{_p(days.get(b['name'], {}).get(d))}</td>" if d in days.get(b["name"], {}) else "<td>—</td>" for b in boards)
             rows.append(f"<tr><td>{_d(d)}{' 🚧' if d in blocked else ''}</td><td>{kind}</td>{cells}</tr>")
         out.append('<table style="width:100%;font-size:13px;margin-top:10px"><tr><th>날</th><th>구분</th>' + head + "</tr>"
                    + "".join(rows) + "</table>")
-        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · ⚠️ 불완전 = 1분봉이 400줄 미만 등 잠금 규칙상 빠진 날(독립 창 20일에 안 셈) · 연구 숫자는 '
+        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · ⚠️ 불완전 = 1분봉이 400줄 미만 등 잠금 규칙상 빠진 날(독립 창 20일에 안 셈) · ⛔ 거래 멈춤 = 서킷브레이커로 약 30분 빈 날(덧붙임 1 · 사용자 2026-10-15 승인 · 시험 날로 셈) · 연구 숫자는 '
                    f'{_e(t.get("research_span"))} 같은 자료로 고른 값이라 실제는 더 낮을 수 있음</p>')
     if t.get("updated"):
         out.append(f'<p style="color:#7B7465;font-size:12px">고친 때 {_e(t["updated"])}(한국 시각)</p>')
