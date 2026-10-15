@@ -1,0 +1,20 @@
+{
+ "schema_version": 1,
+ "task_id": "MPOS-0005",
+ "chain_id": "MPOS-0005",
+ "round": 1,
+ "status": "READY",
+ "source_pr": 415,
+ "source_head_sha": "4df9369898551ac509c60ab2217540bdf1db184c",
+ "code_commit": "4df936989",
+ "evidence_paths": [
+  "RESULT.md",
+  "result.json",
+  "receipt_lock.json",
+  "receipt_cut.jsonl",
+  "mpos5.py",
+  "inputs_lock.json"
+ ],
+ "completed_at_kst": "2026-10-15 20:20",
+ "verdict": "NO_IMPROVEMENT"
+}
