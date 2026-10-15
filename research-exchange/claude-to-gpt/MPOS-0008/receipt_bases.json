@@ -1,0 +1,198 @@
+{
+ "코드": {
+  "mpos8.py": "2057e6243dc8841cde51508ce55c251f01cc2f4da1dc13680d72edf79b904972",
+  "door.py": "508d3eaf3fc32455dde33d6098768063f90ce1f638ef4c16976e14e5bc7c6e9d",
+  "diag8.py": "ebf2c2c899bb3f60546e205b2cb1d7a7f57774e13c7376addad873c02b391842",
+  "tree_run.py": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4",
+  "test_door.py": "feba8dd823bbb3bb150e03792c8b54f65baf2f264e6831868d2e72b6f364f9e1",
+  "test_judge.py": "8779ca34e1aa65cc755a5899a65d75cbf92994e0e57fdae8bad29f8cfea6be33",
+  "ref_mods.json": "8868294f8ccb49bc2cf5508b6cb738232c2446a1be23c5ffde125d358a5923bf"
+ },
+ "때": "2026-10-15 14:08:33",
+ "줄": {
+  "G2_K1.5_H5": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K1.5_H5.csv": "bc8d31811d152b9f531707cf069ee0a94b6cc55cdaa32b0b9699253f4744cc93"
+   }
+  },
+  "G2_K1.5_H10": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K1.5_H10.csv": "db724bddef39d7e3ab21659851debd51baf4f5d088e4a159c8d6202e982876da"
+   }
+  },
+  "G2_K2.0_H5": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.0_H5.csv": "d5e5b8914939301a656c2c3766ad6099f87a91990c5169a29e22162c74267877"
+   }
+  },
+  "G2_K2.0_H10": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.0_H10.csv": "dd784b737cad2c907d35d1c5c1562b9ff67da023286ce59ad981a872d5997a20"
+   }
+  },
+  "G2_K2.5_H5": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.5_H5.csv": "61b6bd997b1be24c09f95b3c84f2110054c0d232cf18c6cd83faac0e716f74d3"
+   }
+  },
+  "G2_K2.5_H10": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.5_H10.csv": "9571d8fd2f52cb07a38b3fa2b7bb9912cdf5a0f461cce867abfc7cdb03d15dcb"
+   }
+  },
+  "G1_2N": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G1_2N.csv": "6a64ca5d4efa910fdf0f539f3fb506ee93c55ed05283dfcaeb2789707336be3c"
+   }
+  },
+  "AB_RAW": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/AB_RAW.csv": "91a036efcb46a281b8869c0a36f9e96b9199670c3840891307241b200b1f25cd"
+   }
+  },
+  "AB_NOCONF": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/AB_NOCONF.csv": "afea8b41eadb698a2cb9ba179e3aff5088f4252076eadbced0d8cc2b2544a9d3"
+   }
+  },
+  "G2_K1.5_H5_X": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K1.5_H5_X.csv": "845330dffe68ed7f2dc60ceb6e075239df0d7473848d2fc415560dd3e496c2d1"
+   }
+  },
+  "G2_K1.5_H10_X": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K1.5_H10_X.csv": "25285f99cab21c66a728c43b013c45b7f0bbae5e3ee5c00dffb96054605e1b3e"
+   }
+  },
+  "G2_K2.0_H5_X": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.0_H5_X.csv": "1b29be43c3ee5b5083d014e979634b02c273090b6b04fb3a815c57238568c45f"
+   }
+  },
+  "G2_K2.0_H10_X": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.0_H10_X.csv": "266716c5fc3f4ee596dd31ac177e8c469332ae7362f3b1f11fb06a42e78d5272"
+   }
+  },
+  "G2_K2.5_H5_X": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.5_H5_X.csv": "88f77318d1e8d8e71d95947ea3360edf852f3855788a6cb1a876b1d8341f58ec"
+   }
+  },
+  "G2_K2.5_H10_X": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.5_H10_X.csv": "24ab834519f6b85d23e6897d98bebe2a2e578da1dcc56e5c8bf1085290568ee4"
+   }
+  },
+  "G2_K1.5_H5_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K1.5_H5_SOLO.csv": "d3040399b2116f87b1a3a8310506147c4111dce282c3807ef4e70aa5a5185f51"
+   }
+  },
+  "G2_K1.5_H10_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K1.5_H10_SOLO.csv": "83c69a676d9ff74df4dd9a5f85b6a7a324da96614b617f75ca15e7aaa101b335"
+   }
+  },
+  "G2_K2.0_H5_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.0_H5_SOLO.csv": "d99281448b80a3ea00d8e9e530873417da512e39cd90b6073509a783bc611dc1"
+   }
+  },
+  "G2_K2.0_H10_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.0_H10_SOLO.csv": "0f20c53a41818a4cf2456e1e8f31e4a7668f0ae047e4dcd042c0fac20dfe1830"
+   }
+  },
+  "G2_K2.5_H5_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.5_H5_SOLO.csv": "7ccdf059620a21bb3084cb2b0d1a1b70737c1cc3e749011cf0c5f932036d6e39"
+   }
+  },
+  "G2_K2.5_H10_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/G2_K2.5_H10_SOLO.csv": "3a1723ea75bbf8068469b54224e6a3fe6837cb7065c26e7de54370f6aafc9880"
+   }
+  },
+  "AB_RAW_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/AB_RAW_SOLO.csv": "3615126e891e46fd7cb14c31d6989dc9e46e4f0797cad03a4774f86529af9f23"
+   }
+  },
+  "AB_NOCONF_SOLO": {
+   "rc": 0,
+   "판정": "PASS",
+   "까닭": "",
+   "파일": {
+    "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos8/bases/AB_NOCONF_SOLO.csv": "1316681f1e3c8963985c9c6ddbea13da61e60aa911eedc531e400811a18b0fa5"
+   }
+  }
+ }
+}
