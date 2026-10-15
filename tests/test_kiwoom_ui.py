@@ -38,7 +38,9 @@ class KiwoomLab(unittest.TestCase):
         self.assertIn("✅", K.trio_html(t2))
         self.assertEqual(K.trio_html({}), "")
         self.assertEqual(K.trio_stats({"20261015": -5.0, "20261016": 2.0}, "20261015", {"20261015"})["n"], 1)   # 불완전한 날은 뺌
-        self.assertIn("거래 멈춤", K.trio_html({**t, "incomplete": [], "halt": {"20261015": "12:38 뒤 29분"}}))
+        out2 = K.trio_html({**t, "incomplete": [], "halt": {"20261015": "12:38 뒤 29분"}, "post_hoc": {"20261015": "사후"}, "v1_excluded": ["20261015"]})
+        self.assertIn("거래 멈춤 · 사후 포함", out2)
+        self.assertIn("원 잠금(v1) 기준 0/20일", out2)
 
     def test_menu_order(self):
         src = (ROOT / "app.py").read_text(encoding="utf-8")
