@@ -1,0 +1,21 @@
+{
+ "합계 대조 최대 잔차(바탕 NAV 대비 · 두 경로 · 달)": {
+  "매매합-1일봉갈래": 6.510991388211829e-17,
+  "갈래합-NAV변화": 8.872771660793026e-09,
+  "달 수": 228
+ },
+ "코드": {
+  "anal13.py": "efe08612fb15539039299dbd062c5322e61bea39a2bdcc60de99abd6164221e6"
+ },
+ "입력": {
+  "base_REPRO_G.csv": "20115fa76e4a0fab1e5dedaa0d0c70cd1ca68e9ab0ab542603cb33a079c07af2",
+  "attr_REPRO_G.csv": "12383d30b113ec472ffae195f72ced4e4d88441ed4ab7c79a47e820de08035da",
+  "trade_REPRO_G.json": "c1836956ccdabd71a55a86e20fde62e4a6b1f3009defabca9e0643461f0f766b",
+  "base_F_SIDEDOWN_G.csv": "774ee37170f4b4e64e47a257b7b7ca7cdbbeb1bcb4fd47001109119c190d9af3",
+  "attr_F_SIDEDOWN_G.csv": "442ac2a1db069324c42cd25d79a8648f2adf2e805b35cd37739f1b09cab2f809",
+  "trade_F_SIDEDOWN_G.json": "3446f1a839bda7f1986e962a86badf6134ce6b039aaa7bb387bf5d92be2563e6"
+ },
+ "출력": {
+  "diag13.json": "2357d6485a3c9d3e6e874d4c876736a3936befa93b3db3025782c9f3ac5072f2"
+ }
+}
