@@ -3,5 +3,20 @@
   "date": "20261014",
   "at": "2026-10-14 15:20",
   "failed": "증권사에 연결하지 못했습니다. 네트워크와 서비스 상태를 확인한 뒤 다시 조회하세요."
+ },
+ {
+  "date": "20261015",
+  "at": "2026-10-15 15:20",
+  "E": 1.0,
+  "sigma": null,
+  "why": "든 것 없음",
+  "held_share": 0.0,
+  "trim_f": 0.0,
+  "trimmed_share": 0.0,
+  "orders": [],
+  "close_check": "확인",
+  "held_share_close": 0.0,
+  "trim_f_close": 0.0,
+  "trim_f_gap": 0.0
  }
 ]
