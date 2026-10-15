@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SUMMARY = "kiwoom-lab/summary.json"
+TRIO = "kiwoom-lab/trio.json"            # 세 버전 날별 손익(매일 16:30 백테스트 뒤 클로드가 고침 · 규칙 값은 안 담음)
 PR_URL = "https://github.com/ppx109-crypto/stock-dash/pull/"
 
 
@@ -16,6 +17,63 @@ def _e(x):
 def _p(x):
     """포인트 값 · 음수는 긴 빼기표."""
     return (f"{x:+.1f}p").replace("-", "−") if isinstance(x, (int, float)) else _e(x)
+
+
+def _d(day):
+    return f"{day[4:6]}-{day[6:8]}" if len(str(day)) == 8 else _e(day)
+
+
+def trio_stats(days: dict, start: str) -> dict:
+    """독립 창(start부터) 날별 손익 → 합 · 가장 나쁜 날 · 고점 대비 낙폭 · 날 수."""
+    vals = [v for d, v in sorted(days.items()) if d >= start]
+    peak = cum = mdd = 0.0
+    for v in vals:
+        cum += v
+        peak = max(peak, cum)
+        mdd = min(mdd, cum - peak)
+    return {"n": len(vals), "sum": cum, "worst": min(vals) if vals else 0.0, "mdd": mdd}
+
+
+def trio_html(t: dict | None) -> str:
+    """세 버전 카드 + 날별 표(독립 창 · 참고 날 나눔)."""
+    t = t or {}
+    boards = t.get("boards") or []
+    if not boards:
+        return ""
+    start, need = str(t.get("test_start", "")), int(t.get("need", 20))
+    days = t.get("days") or {}
+    cards = []
+    for b in boards:
+        st = trio_stats(days.get(b["name"], {}), start)
+        ok = st["n"] and st["sum"] > 0 and st["worst"] >= -15 and st["mdd"] >= -15
+        light = "⏳" if st["n"] < need else ("✅" if ok else "❌")
+        cards.append(
+            f'<div style="flex:1 1 230px;border:1px solid #E4DCCB;border-radius:10px;padding:10px 12px;background:#FFFDF8">'
+            f'<div style="font-weight:700">{_e(b.get("emoji"))} {_e(b["name"])} <small style="color:#7B7465">{_e(b.get("tag"))}</small></div>'
+            f'<div style="font-size:12px;color:#5C5547;margin:4px 0">{_e(b.get("parts"))}<br>{_e(b.get("why"))}</div>'
+            + (f'<div style="font-size:13px">시험 2 {light} <b>{_p(st["sum"])}</b> · {st["n"]}/{need}일 · 나쁜 날 {_p(st["worst"])} · 낙폭 {_p(st["mdd"])}</div>'
+               if st["n"] else f'<div style="font-size:13px">시험 2 ⏳ 0/{need}일 · 첫 시험 날 셈 기다림</div>')
+            + f'<div style="font-size:12px;color:#7B7465;margin-top:4px">연구 {_p(b.get("sum"))} · 낙폭 {_p(b.get("mdd"))}'
+            + (f' · {_e(b["months"])}' if b.get("months") else "") + f' · 최근({_e(t.get("recent_span"))}) {_p(b.get("recent"))}</div></div>')
+    out = [f'<h4 style="margin:0 0 6px">{_e(t.get("title"))}</h4>',
+           f'<p style="font-size:12px;color:#5C5547;margin:0 0 8px">{_e(t.get("note"))}<br>{_e(t.get("pass_rule"))}</p>',
+           '<div style="display:flex;flex-wrap:wrap;gap:8px">' + "".join(cards) + "</div>"]
+    all_days = sorted({d for s in days.values() for d in s}, reverse=True)
+    if all_days:
+        blocked = set(t.get("blocked") or [])
+        head = "".join(f"<th>{_e(b['name'])}</th>" for b in boards)
+        rows = []
+        for d in all_days:
+            kind = "참고" if d < start else "시험"
+            cells = "".join(f"<td>{_p(days.get(b['name'], {}).get(d))}</td>" if d in days.get(b["name"], {}) else "<td>—</td>" for b in boards)
+            rows.append(f"<tr><td>{_d(d)}{' 🚧' if d in blocked else ''}</td><td>{kind}</td>{cells}</tr>")
+        out.append('<table style="width:100%;font-size:13px;margin-top:10px"><tr><th>날</th><th>구분</th>' + head + "</tr>"
+                   + "".join(rows) + "</table>")
+        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · 연구 숫자는 '
+                   f'{_e(t.get("research_span"))} 같은 자료로 고른 값이라 실제는 더 낮을 수 있음</p>')
+    if t.get("updated"):
+        out.append(f'<p style="color:#7B7465;font-size:12px">고친 때 {_e(t["updated"])}(한국 시각)</p>')
+    return '<div class="pxb"><div class="pxb-note" style="line-height:1.7">' + "".join(out) + "</div></div>"
 
 
 def lab_html(s: dict | None) -> str:
@@ -52,17 +110,17 @@ def lab_html(s: dict | None) -> str:
     return '<div class="pxb"><div class="pxb-note" style="line-height:1.75">' + "".join(out) + "</div></div>"
 
 
-def load_summary():
+def load_summary(path=SUMMARY):
     """저장소 최신 파일을 먼저(5분 캐시) · 못 받으면 앱 안 파일."""
     try:
         from research_ui import repo_json
-        got = repo_json(SUMMARY)
+        got = repo_json(path)
         if got:
             return got
     except Exception:
         pass
     try:
-        return json.loads((ROOT / SUMMARY).read_text(encoding="utf-8"))
+        return json.loads((ROOT / path).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
 
@@ -71,4 +129,6 @@ def render_kiwoom():
     import streamlit as st
     st.header("키움 개발실")
     st.caption("키움 미니 코스피200 선물 연구 · 지피티와 함께 · 한투 모의투자와 별개 · 의미 있는 결과만 올림")
-    st.markdown(lab_html(load_summary()), unsafe_allow_html=True)
+    st.markdown(trio_html(load_summary(TRIO)), unsafe_allow_html=True)
+    with st.expander("연구 기록 · 정한 틀 · 지난 연구", expanded=False):
+        st.markdown(lab_html(load_summary()), unsafe_allow_html=True)

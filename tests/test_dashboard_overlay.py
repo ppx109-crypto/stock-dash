@@ -17,7 +17,7 @@ class FinalBoard(unittest.TestCase):
         note = D.mix_note(on)
         self.assertIn("운영 중", note)
         self.assertIn("바구니 30%", note)
-        self.assertIn("15분봉 끔", note)
+        self.assertIn("15분봉 뺌", note)
 
     def test_regime_same_as_bot(self):
         fx = json.loads((ROOT / "tests/fixtures/overlay_states.json").read_text(encoding="utf-8"))

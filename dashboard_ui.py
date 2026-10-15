@@ -544,7 +544,7 @@ def header() -> str:
     )
 
 
-UI_VERSION = "10-12 · 최종 판 MIX-0054 · 레버리지 봇 칸 · 키움 개발실"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
+UI_VERSION = "10-15 · 한투 최종본(10-14) · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -1148,7 +1148,8 @@ def final_active(overlay_state: dict | None) -> bool:
 def mix_note(overlay_state: dict | None) -> str:
     """'통합 매매 규칙' 머리 한 줄(짧게 · 자세한 조합은 레버리지 봇 칸)."""
     if final_active(overlay_state):
-        return "최종 판(MIX-0054) 운영 중 · 1일봉 50% · 바구니 30% · 엔진 · 인버스 · 레버리지 봇 40% · 15분봉 끔"
+        return ("한투 최종본(2026-10-14 · MIX-0054) 운영 중 · 📅 1일봉 50% · 🧺 바구니 30% · 🧩 엔진 · 코스닥 인버스(남는 돈) · "
+                "📈 레버리지 봇 40%까지 · 🛡️ 계좌 흔들림 상한 · ⏰ 1시간봉 알림만 · ⏱️ 15분봉 뺌 · 판단 2027-01-11")
     return "지금 1일봉 50% · 15분봉 50% · 남는 돈 엔진 · 바구니 · 최종 판(MIX-0054)은 시작 날을 정하면 켜짐"
 
 
@@ -1221,7 +1222,7 @@ def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = No
                   f'{_e(OVERLAY_NAME.get(o.get("code"), o.get("code")))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}</li>'
                   for o in reversed(orders[-3:])) or "<li>아직 주문이 없습니다</li>"
     held_html = ('<div class="pxb-held">' + "".join(f"<div>{r}</div>" for r in rows) + "</div>") if rows else ""
-    return f'<div class="pxb-ledger"><b>레버리지 봇(레버리지 · 인버스) 모의투자 · 거래 내역</b><small>{line}</small>{held_html}<ul>{lis}</ul></div>'
+    return f'<div class="pxb-ledger"><b>📈 레버리지 봇(레버리지 · 인버스) 모의투자 · 몫 40%까지</b><small>{line}</small>{held_html}<ul>{lis}</ul></div>'
 
 
 def overlay_regime(closes: list) -> dict:

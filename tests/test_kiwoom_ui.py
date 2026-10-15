@@ -25,6 +25,19 @@ class KiwoomLab(unittest.TestCase):
         self.assertNotIn("아직 없음", out)
         self.assertIn("pxb", K.lab_html(None))
 
+    def test_trio_board(self):
+        """세 버전 카드 · 독립 창 셈(10-15부터) · 참고 날은 셈에서 뺌 · 20일 전에는 판정 표시 안 함."""
+        t = json.loads((ROOT / K.TRIO).read_text(encoding="utf-8"))
+        out = K.trio_html(t)
+        for name in ("신뢰형", "균형형", "v12a 4봇"):
+            self.assertIn(name, out)
+        self.assertIn("참고", out)
+        st = K.trio_stats({"20261014": 9.0, "20261015": 5.0, "20261016": -8.0, "20261019": 2.0}, "20261015")
+        self.assertEqual((st["n"], st["sum"], st["worst"], st["mdd"]), (3, -1.0, -8.0, -8.0))
+        t2 = {**t, "days": {"신뢰형": {f"202611{d:02d}": 1.0 for d in range(1, 21)}}}
+        self.assertIn("✅", K.trio_html(t2))
+        self.assertEqual(K.trio_html({}), "")
+
     def test_menu_order(self):
         src = (ROOT / "app.py").read_text(encoding="utf-8")
         self.assertIn('NAV_ITEMS = ["오늘의 투자판단", "키움 개발실", "PreDash 교실", "설정"]', src)
