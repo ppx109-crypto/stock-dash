@@ -11,8 +11,16 @@ from pathlib import Path
 
 SP = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad")
 HERE = SP / "mpos15"
-raw = json.load(open(SP / "z055_d1_raw.json"))
+RAW_PATH = SP / "z055_d1_raw.json"
+SP_DIAG = SP / "r8/research-exchange/claude-to-gpt/MPOS-0012/diag12.json"
+raw = json.load(open(RAW_PATH))
 door = [x["door"] for x in json.load(open(SP / "r8/research-exchange/claude-to-gpt/MPOS-0012/diag12.json"))["매매"]]
+
+# GPT #440 정정 3: 입력 지문 · 장부 줄과 diag12 매매의 행별 일치(종목 · 산 날 · 판 날 · 자리)
+import hashlib as _h
+_d12 = json.load(open(SP_DIAG))["매매"]
+assert len(raw) == len(_d12) == 495 and all((r[0], r[1], r[2], int(r[4])) == (x["c"], x["b"], x["e"], int(x["s"])) for r, x in zip(raw, _d12))
+INPUTS = {"z055_d1_raw.json": _h.sha256(open(RAW_PATH, "rb").read()).hexdigest(), "diag12.json": _h.sha256(open(SP_DIAG, "rb").read()).hexdigest()}
 days = [r["날"] for r in csv.DictReader(open(SP / "mpos14/base_IMM.csv"))]
 ix = {d: i for i, d in enumerate(days)}
 
@@ -39,7 +47,10 @@ def stat(v):
             "승률 %": round(sum(a > 0 for a in v) / len(v) * 100, 1)}
 
 
-out = {"진입 수": len(E), "정의": __doc__}
+out = {"진입 수": len(E), "정의": __doc__, "입력 지문": INPUTS,
+       "빠진 진입(산 날이 바탕 달력 2017-02-01 앞)": [k for k, v in E if k[1] not in ix],
+       "끝이 바탕 달력 밖이라 K에서 빠진 진입 수": sum(1 for v in ent.values() if v["끝"] not in ix),
+       "주의": "바탕 달력이 2017-02-01에 시작 → 초반 진입의 K는 왼쪽이 잘림(진짜 무손실이 아닐 수 있음) · 평균은 '진입별 자리 가중 생애 수익률(Σp×s/Σs)'의 진입 간 단순 평균"}
 for W in (10, 5, 20):
     rows = [(min(K(b, W), 3), v["손익"] / v["자리"], v["문"], b) for (c, b), v in E if b in ix]
     res = {}

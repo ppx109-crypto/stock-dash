@@ -5,14 +5,22 @@ import statistics as S
 from pathlib import Path
 
 SP = Path("/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad")
-raw = json.load(open(SP / "z055_d1_raw.json"))
+RAW_PATH = SP / "z055_d1_raw.json"
+SP_DIAG = SP / "r8/research-exchange/claude-to-gpt/MPOS-0012/diag12.json"
+raw = json.load(open(RAW_PATH))
 door = [x["door"] for x in json.load(open(SP / "r8/research-exchange/claude-to-gpt/MPOS-0012/diag12.json"))["매매"]]
+
+# GPT #440 정정 3: 입력 지문 · 장부 줄과 diag12 매매의 행별 일치(종목 · 산 날 · 판 날 · 자리)
+import hashlib as _h
+_d12 = json.load(open(SP_DIAG))["매매"]
+assert len(raw) == len(_d12) == 495 and all((r[0], r[1], r[2], int(r[4])) == (x["c"], x["b"], x["e"], int(x["s"])) for r, x in zip(raw, _d12))
+INPUTS = {"z055_d1_raw.json": _h.sha256(open(RAW_PATH, "rb").read()).hexdigest(), "diag12.json": _h.sha256(open(SP_DIAG, "rb").read()).hexdigest()}
 ent = {}
 for k, (c, b, e, p, s) in enumerate(raw):
     x = ent.setdefault((c, b), {"자리": 0, "몫": 0.0, "문": door[k]})
     x["자리"] += s
     x["몫"] += p * s
-out = {}
+out = {"입력 지문": INPUTS, "주의": "평균 % = 진입별 자리 가중 생애 수익률의 단순 평균 · 몫 합 = Σ(자리 × %) 장부 값(NAV 기여 아님 · 큰 자리는 신호 강도 · 시기 · 빈자리와 함께 정해져 인과적 크기 효과 아님)"}
 for sz in (1, 2, 3, 4):
     for dr in ("정배열", "규칙"):
         sel = [(b, v) for (c, b), v in ent.items() if v["자리"] == sz and v["문"] == dr]

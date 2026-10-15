@@ -14,8 +14,16 @@ import lab  # noqa: E402
 import nrl  # noqa: E402
 
 SP = "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/"
-raw = json.load(open(SP + "z055_d1_raw.json"))
+RAW_PATH = SP + "z055_d1_raw.json"
+SP_DIAG = SP + "r8/research-exchange/claude-to-gpt/MPOS-0012/diag12.json"
+raw = json.load(open(RAW_PATH))
 door = [x["door"] for x in json.load(open(SP + "r8/research-exchange/claude-to-gpt/MPOS-0012/diag12.json"))["매매"]]
+
+# GPT #440 정정 3: 입력 지문 · 장부 줄과 diag12 매매의 행별 일치(종목 · 산 날 · 판 날 · 자리)
+import hashlib as _h
+_d12 = json.load(open(SP_DIAG))["매매"]
+assert len(raw) == len(_d12) == 495 and all((r[0], r[1], r[2], int(r[4])) == (x["c"], x["b"], x["e"], int(x["s"])) for r, x in zip(raw, _d12))
+INPUTS = {"z055_d1_raw.json": _h.sha256(open(RAW_PATH, "rb").read()).hexdigest(), "diag12.json": _h.sha256(open(SP_DIAG, "rb").read()).hexdigest()}
 L = lab.lanes(nrl.prices)
 ent = {}
 for k, (c, b, e, p, s) in enumerate(raw):
@@ -41,7 +49,13 @@ rows = []
 for (c, b), v in sorted(ent.items(), key=lambda kv: kv[0][1]):
     st = run_start(c, b)
     prev = [(bb, w) for (cc, bb), w in ent.items() if cc == c and bb < b and st is not None and bb >= st]
-    kind = "구간 밖" if st is None else ("첫" if not prev else ("반복 · 앞 진입 끝남" if all(w["끝"] < b for _, w in prev) else "반복 · 앞 진입 들고 있음"))
+    if st is None:
+        kind = "구간 밖"
+    elif not prev:
+        kind = "첫"
+    else:
+        last = max(w["끝"] for _, w in prev)        # GPT #440: 앞 진입 마지막 판 날 < b · = b(같은 날 팔고 다시 삼) · > b(겹쳐 들고 있음)
+        kind = "반복 · 앞 끝 < 산 날" if last < b else ("반복 · 앞 끝 = 산 날" if last == b else "반복 · 앞 끝 > 산 날")
     rows.append((kind, v["문"], v["손익"] / v["자리"], b))
 
 
@@ -55,10 +69,11 @@ def stat(vals):
 
 out = {}
 for dr in ("정배열", "규칙"):
-    for kind in ("첫", "반복 · 앞 진입 끝남", "반복 · 앞 진입 들고 있음", "구간 밖"):
+    for kind in ("첫", "반복 · 앞 끝 < 산 날", "반복 · 앞 끝 = 산 날", "반복 · 앞 끝 > 산 날", "구간 밖"):
         sel = [r for r in rows if r[0] == kind and r[1] == dr]
         out[f"{dr} · {kind}"] = {**stat([r[2] for r in sel]), "앞(~2021)": stat([r[2] for r in sel if r[3] < "20220101"]).get("평균 %"),
                                  "뒤(2022~)": stat([r[2] for r in sel if r[3] >= "20220101"]).get("평균 %")}
+out["입력 지문"] = {**INPUTS, "NRL_CACHE": _h.sha256(open(os.environ["NRL_CACHE"], "rb").read()).hexdigest()}
 json.dump(out, open(os.environ["OUT"], "w"), ensure_ascii=False, indent=1)
 for k, v in out.items():
     print(k, v)
