@@ -1,0 +1,22 @@
+{
+ "해시": {
+  "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "/tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
+  "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/m54tree/research/z100.py": "47b85d2aee5743db81aa82166581156480801f5ab492df1a74c367f0ce28840d",
+  "mpos8.py": "76c0b83480b25e1d150029a44da6c8374c31aa814e33e22e372aeda69c416b85",
+  "door.py": "a84c278cdacea2a7b0e01f5a4e745d274e48ec0defdc98daa5de1a9f8847e5b9",
+  "diag8.py": "ebf2c2c899bb3f60546e205b2cb1d7a7f57774e13c7376addad873c02b391842",
+  "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+  "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+  "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+  "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+  "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+  "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03"
+ },
+ "z100 나무": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
+ "불일치": []
+}
