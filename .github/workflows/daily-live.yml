@@ -38,8 +38,8 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python idle_live.py || status=$?
-          mkdir -p idle-live basket-live overlay-live
-          git add -A idle-live basket-live overlay-live
+          mkdir -p idle-live basket-live overlay-live discord-digest
+          git add -A idle-live basket-live overlay-live discord-digest
           if ! git diff --cached --quiet; then
             git commit -q -m "Idle engine live"
             ok=0
@@ -54,7 +54,7 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_CALL_GAP: '0.07'
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json   # 알림을 모았다가 작업 끝에 한 번만 보냄(사용자 2026-10-14)
+          DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15 · 16:10 장 마감 모음으로 나감)
           # 빈칸 엔진 모의투자(사용자 2026-10-03 "최종 규칙 정하고 모의투자 제작") · 2026-10-05부터
           # 계좌 흔들림 상한(acc_cap.py · ACC-VOL-0007 · 사용자 2026-10-09 "main에 넣고 켜라") · 모의투자만 · 바구니 · 엔진 사기 한도
           ACC_CAP: 'on'
@@ -76,8 +76,8 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python daily_live.py || status=$?
-          mkdir -p daily-live basket-live m15-live hourly-live overlay-live
-          git add -A daily-live idle-live basket-live m15-live hourly-live overlay-live    # 흔들림 상한이 다른 규칙 장부에서 덜어낸 기록도
+          mkdir -p daily-live basket-live m15-live hourly-live overlay-live discord-digest
+          git add -A daily-live idle-live basket-live m15-live hourly-live overlay-live discord-digest    # 흔들림 상한이 다른 규칙 장부에서 덜어낸 기록도
           if [ -f acc-cap/log.json ]; then git add acc-cap/log.json; fi
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily rule live"
@@ -94,7 +94,7 @@ jobs:
           KIS_CALL_GAP: '0.07'
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          DISCORD_BUFFER: ${{ runner.temp }}/discord-bundle.json   # 알림을 모았다가 작업 끝에 한 번만 보냄(사용자 2026-10-14)
+          DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15 · 16:10 장 마감 모음으로 나감)
           # 한투 모의투자 자동 주문(사용자 요청 2026-10-01). 계좌 하나를 1시간봉과 반씩 나눠 씀(PAPER_SHARE 0.5).
           # 계좌 흔들림 상한(acc_cap.py) · 15:20 덜어내기 · 1일봉 사기 한도 · 15:32 종가 비교 기록
           ACC_CAP: 'on'
@@ -109,11 +109,6 @@ jobs:
           KIS_PAPER_APP_SECRET: ${{ secrets.KIS_PAPER_APP_SECRET }}
           KIS_PAPER_ACCOUNT: ${{ secrets.KIS_PAPER_ACCOUNT }}
           KIS_PAPER_TOKEN_FILE: ${{ runner.temp }}/kis-paper-token.json
-      - name: 디스코드 알림 한 번에 보내기(빈칸 엔진 · 흔들림 상한 · 1일봉 판단 · 체결 모음)
-        if: always()
-        run: python notify_discord.py --flush "${{ runner.temp }}/discord-bundle.json" "종가 작업 $(TZ=Asia/Seoul date +%m-%d) 모음" || echo '디스코드 모음 보내기 실패'
-        env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
       - if: always()
         uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
         continue-on-error: true   # 보관함이 말썽이어도 봇은 그대로 돎(토큰을 새로 받을 뿐)

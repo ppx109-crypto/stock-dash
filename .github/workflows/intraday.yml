@@ -32,6 +32,7 @@ jobs:
       KIS_ENV: real
       KIS_CALL_GAP: '0.07'
       DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15) · 상주 작업이 장부와 함께 올림(intraday_runner DIRS)
       # 예전 작업 파일과 같은 값: 1시간봉은 모의 주문 끔(알림 · 연습 계좌만) · 15분봉은 모의 주문
       HOURLY_PAPER_TRADING: 'off'
       M15_PAPER_TRADING: 'on'

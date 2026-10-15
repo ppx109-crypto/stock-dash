@@ -31,7 +31,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python reconcile.py || status=$?
           mkdir -p reconcile
-          git add -A reconcile
+          mkdir -p discord-digest && git add -A reconcile discord-digest
           if ! git diff --cached --quiet; then
             git commit -q -m "Reconcile backtest vs paper"
             for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
@@ -40,3 +40,4 @@ jobs:
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15) · 16:10 장 마감 · 저녁 A그룹 뒤

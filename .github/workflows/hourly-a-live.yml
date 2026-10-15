@@ -61,7 +61,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python hourly_a.py live || status=$?
           mkdir -p hourly-live
-          mkdir -p basket-live && git add -A hourly-live idle-live basket-live          # 규칙이 살 돈이 모자라 빈칸 엔진이 자리를 내준 기록도
+          mkdir -p basket-live discord-digest && git add -A hourly-live idle-live basket-live discord-digest          # 규칙이 살 돈이 모자라 빈칸 엔진이 자리를 내준 기록도
           if ! git diff --cached --quiet; then
             git commit -q -m "Hourly A group live"
             for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
@@ -74,6 +74,7 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_CALL_GAP: '0.07'
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15) · 16:10 장 마감 · 저녁 A그룹 뒤
           # 한투 모의투자 자동 주문(사용자 결정 2026-10-01 '가'). 세 비밀값이 다 있어야 주문하고, 없으면 알림만.
           # 끄려면 hourly-live/paper-off 파일을 만들거나 PAPER_TRADING을 'off'로.
           # 2026-10-03 최종 조합: 1시간봉은 모의 주문 끔(알림 · 연습 계좌는 그대로) — 1일봉 50 · 15분봉 50 · 빈칸 엔진이 계좌를 씀

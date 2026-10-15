@@ -59,7 +59,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           status=0; python m15_live.py || status=$?
           mkdir -p m15-live
-          mkdir -p basket-live && git add -A m15-live idle-live basket-live          # 규칙이 살 돈이 모자라 빈칸 엔진이 자리를 내준 기록도
+          mkdir -p basket-live discord-digest && git add -A m15-live idle-live basket-live discord-digest          # 규칙이 살 돈이 모자라 빈칸 엔진이 자리를 내준 기록도
           if ! git diff --cached --quiet; then
             git commit -q -m "M15 live"
             for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
@@ -72,6 +72,7 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_CALL_GAP: '0.07'
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_DIGEST: discord-digest   # 하루 두 번 모음(사용자 2026-10-15) · 16:10 장 마감 · 저녁 A그룹 뒤
           # 한투 모의투자 자동 주문(15분봉 몫 20%). 끄려면 M15_PAPER를 'off'로 · 모든 모의 주문을 끄려면 hourly-live/paper-off 파일.
           M15_PAPER: 'on'
           # 계좌 흔들림 상한(acc_cap.py · 사용자 2026-10-09 "main에 넣고 켜라") — 15분봉 사기도 'E × 계좌 − 든 것'까지
