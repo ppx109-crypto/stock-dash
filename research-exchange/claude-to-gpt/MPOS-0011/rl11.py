@@ -251,8 +251,21 @@ def verify():
     return got
 
 
+def fixed(a, ds, p0, base):
+    """보고용 고정 행동 대조(학습 없음): 늘 a. 첫날 P0에서 바꾸는 비용은 무시(한 번)."""
+    nav, v = {ds[0]: 1.0}, 1.0
+    for j in range(1, len(ds)):
+        r0, rb = p0[ds[j]] / p0[ds[j - 1]] - 1, base[ds[j]] / base[ds[j - 1]] - 1
+        v *= 1 + {"P0": r0, "BASE": rb, "HALF": 0.5 * r0, "CASH": 0.0}[a]
+        nav[ds[j]] = v
+    return nav
+
+
 def run():
     lock = verify()
+    rc = json.load(open(HERE / "receipt_cut.json")) if (HERE / "receipt_cut.json").exists() else None   # GPT #433: 자르기 영수증 자동 검사
+    if not rc or rc.get("잠금", {}).get("rl11.py") != lock["rl11.py"] or any(x["판정"] != "PASS" for x in rc["줄"]) or len(rc["줄"]) != 25:
+        sys.exit("자르기 영수증 없음 · 코드 지문 다름 · FAIL → 중단")
     ds, p0, base = paths()
     k = k200()
     R = {"P0": mstats(p0)}
@@ -268,9 +281,15 @@ def run():
     mech = mechanism(R)
     ok, rank, why = judge(R, mech)
     count = {c: {a: sum(1 for v in C[c].values() if v[0] == a) for a in ARMS} for c in C}
+    why_n = {c: {w: sum(1 for v in C[c].values() if v[1] == w) for w in ("학습", "표본 모자람", "문맥 없음")} for c in C}
+    diff_w = {f"L{l}": sum(1 for m in C[f"RL_L{l}_WALL"] if C[f"RL_L{l}_WALL"][m][0] != C[f"RL_L{l}_W36"][m][0]) for l in (1, 3)}
+    fixed_rep = {a: {kk: v for kk, v in mstats(fixed(a, ds, p0, base)).items() if kk != "달"} for a in ("BASE", "HALF", "CASH")}
     out = {"P0": R["P0"], "cells": R, "고른 행동 수(달)": count, "고른 행동(달마다)": C, "기전": mech, "잣대": why, "자격": ok, "순위": rank,
            "고른 것": rank[0] if rank else None, "판정": "SELECTED" if rank else "NO_IMPROVEMENT", "묶음 이어뽑기(보고만)": {c: boot(R, c) for c in CELLS},
-           "0인 달(보고 · '모든 달 양수'와 다름)": {c: R[c]["영"] for c in CELLS + [ABL]}, "잠금": lock}
+           "0인 달(보고 · '모든 달 양수'와 다름)": {c: R[c]["영"] for c in CELLS + [ABL]}, "결정 까닭 달 수(보고)": why_n,
+           "전부 · W36이 다르게 고른 달 수(보고)": diff_w, "고정 행동 대조(보고 · 학습 없음)": fixed_rep,
+           "계약": "A 대리 연구(GPT #433): 가상으로 계속 운용되는 P0 · BASE 경로 사이의 선택 모형 · 단일 계좌 상태 · 주문 · 상한 재현 아님 · 전환 · HALF 비용 근사 · SELECTED는 이 모형 안 탐색 후보일 뿐",
+           "잠금": lock}
     json.dump(out, open(HERE / "result.json", "w"), ensure_ascii=False, indent=1)
     for c in ["P0"] + CELLS + [ABL]:
         print(c, json.dumps({kk: (round(v, 3) if isinstance(v, float) else v) for kk, v in R[c].items() if kk != "달"}, ensure_ascii=False), count.get(c, ""))
