@@ -43,9 +43,12 @@ def trio_html(t: dict | None) -> str:
     start, need = str(t.get("test_start", "")), int(t.get("need", 20))
     days = t.get("days") or {}
     skip = set(t.get("incomplete") or [])
+    post = t.get("post_hoc") or {}
+    v1x = set(t.get("v1_excluded") or [])
     cards = []
     for b in boards:
         st = trio_stats(days.get(b["name"], {}), start, skip)
+        st1 = trio_stats(days.get(b["name"], {}), start, skip | v1x)
         ok = st["n"] and st["sum"] > 0 and st["worst"] >= -15 and st["mdd"] >= -15
         light = "⏳" if st["n"] < need else ("✅" if ok else "❌")
         cards.append(
@@ -54,6 +57,8 @@ def trio_html(t: dict | None) -> str:
             f'<div style="font-size:12px;color:#5C5547;margin:4px 0">{_e(b.get("parts"))}<br>{_e(b.get("why"))}</div>'
             + (f'<div style="font-size:13px">시험 2 {light} <b>{_p(st["sum"])}</b> · {st["n"]}/{need}일 · 나쁜 날 {_p(st["worst"])} · 낙폭 {_p(st["mdd"])}</div>'
                if st["n"] else f'<div style="font-size:13px">시험 2 ⏳ 0/{need}일 · 첫 시험 날 셈 기다림</div>')
+            + (f'<div style="font-size:12px;color:#7B7465">원 잠금(v1) 기준 {st1["n"]}/{need}일 · 합 {_p(st1["sum"])} · 위 숫자는 덧붙임 1(v1+A1 · 사후 포함 날 있음) 기준</div>'
+               if post else "")
             + f'<div style="font-size:12px;color:#7B7465;margin-top:4px">연구 {_p(b.get("sum"))} · 낙폭 {_p(b.get("mdd"))}'
             + (f' · {_e(b["months"])}' if b.get("months") else "") + f' · 최근({_e(t.get("recent_span"))}) {_p(b.get("recent"))}</div></div>')
     out = [f'<h4 style="margin:0 0 6px">{_e(t.get("title"))}</h4>',
@@ -66,12 +71,12 @@ def trio_html(t: dict | None) -> str:
         rows = []
         for d in all_days:
             halt = (t.get("halt") or {}).get(d)
-            kind = "참고" if d < start else ("⚠️ 불완전(셈 뺌)" if d in skip else ("시험 · ⛔ 거래 멈춤" if halt else "시험"))
+            kind = "참고" if d < start else ("⚠️ 불완전(셈 뺌)" if d in skip else ("시험 · ⛔ 거래 멈춤 · 사후 포함" if halt and d in post else ("시험 · ⛔ 거래 멈춤" if halt else "시험")))
             cells = "".join(f"<td>{_p(days.get(b['name'], {}).get(d))}</td>" if d in days.get(b["name"], {}) else "<td>—</td>" for b in boards)
             rows.append(f"<tr><td>{_d(d)}{' 🚧' if d in blocked else ''}</td><td>{kind}</td>{cells}</tr>")
         out.append('<table style="width:100%;font-size:13px;margin-top:10px"><tr><th>날</th><th>구분</th>' + head + "</tr>"
                    + "".join(rows) + "</table>")
-        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · ⚠️ 불완전 = 1분봉이 400줄 미만 등 잠금 규칙상 빠진 날(독립 창 20일에 안 셈) · ⛔ 거래 멈춤 = 서킷브레이커로 약 30분 빈 날(덧붙임 1 · 사용자 2026-10-15 승인 · 시험 날로 셈) · 연구 숫자는 '
+        out.append('<p style="font-size:12px;color:#7B7465">🚧 막힌 날(09:45에 추세 날이 아니라고 본 날) · ⚠️ 불완전 = 1분봉이 400줄 미만 등 잠금 규칙상 빠진 날(독립 창 20일에 안 셈) · ⛔ 거래 멈춤 = 서킷브레이커로 약 30분 빈 날(덧붙임 1 · 공식 공지로 확인한 날만 · 사용자 2026-10-15 승인 · 10-15는 손익을 본 뒤 정해 「사후 포함」 · 판정 때 원 잠금 기준도 함께 적음) · 연구 숫자는 '
                    f'{_e(t.get("research_span"))} 같은 자료로 고른 값이라 실제는 더 낮을 수 있음</p>')
     if t.get("updated"):
         out.append(f'<p style="color:#7B7465;font-size:12px">고친 때 {_e(t["updated"])}(한국 시각)</p>')
