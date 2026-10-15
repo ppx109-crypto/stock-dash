@@ -1,17 +1,22 @@
 {
  "코드": {
-  "mpos8.py": "40208a4722a7c561d7bcc1760318ff7c1b0c831e01fd69db3322614081903bc9",
+  "mpos8.py": "8dc38088c64ffb33bec0880f814aa2107fb1369fa521fb004cc4dff6fdac0489",
   "door.py": "508d3eaf3fc32455dde33d6098768063f90ce1f638ef4c16976e14e5bc7c6e9d",
   "diag8.py": "ebf2c2c899bb3f60546e205b2cb1d7a7f57774e13c7376addad873c02b391842",
   "tree_run.py": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4",
   "test_door.py": "feba8dd823bbb3bb150e03792c8b54f65baf2f264e6831868d2e72b6f364f9e1",
+  "test_judge.py": "8779ca34e1aa65cc755a5899a65d75cbf92994e0e57fdae8bad29f8cfea6be33",
   "ref_mods.json": "8868294f8ccb49bc2cf5508b6cb738232c2446a1be23c5ffde125d358a5923bf"
  },
- "때": "2026-10-15 13:11:30",
+ "때": "2026-10-15 13:16:16",
  "줄": {
-  "test_door": {
+  "test_door.py": {
    "판정": "PASS",
    "출력": "PASS ① 순서 = 들어간 순서\nPASS ③ 미래 값이 순서를 안 바꿈\nPASS ② 칸 ≤ 10 날마다\nPASS ② 늦게 든 B부터 그날 종가 정리\nPASS ④ 앞날 기존 진입 안 봄\nPASS ⑤ 검사 도구: 섞은 순서를 잡음\n"
+  },
+  "test_judge.py": {
+   "판정": "PASS",
+   "출력": "PASS gt 0 > −0.1\nPASS gt −0.1 > 0 거짓\nPASS gt 0 > 0 거짓\nPASS gt None 거짓\nPASS gt nan 거짓\nPASS GPT 반례: 중심 −0.10 · RAW 0.00 · NOCONF −0.20 → 미지지\nPASS 중심 0 · 대조 음수 → 지지\nPASS 중심 양수 · 대조 결측 → 미지지\nPASS 중심 결측 → 미지지\nPASS 손실 달 더 많으면 미지지\nPASS 손실 달 같고 스트레스 큼 → 지지\nPASS judge: 모두 통과 칸 7\nPASS judge: 앞 반 스트레스 0 → 그 칸 탈락\nPASS judge: 한 해 몰림 결측 → 탈락\nPASS judge: 기전 미지지 → G2 모두 탈락 · G1만\n"
   }
  }
 }

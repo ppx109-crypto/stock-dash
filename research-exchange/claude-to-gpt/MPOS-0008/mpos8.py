@@ -66,7 +66,7 @@ LOCK = {"/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0a
         str(TREE / "study/features.json"): None}                   # 4GB · 크기 · 바뀐 때만(nrl은 캐시를 씀)
 TREE_COMMIT = "9743cb80273"
 SNAPDIR = HERE / "inputs"
-CODE = ("mpos8.py", "door.py", "diag8.py", "tree_run.py", "test_door.py", "ref_mods.json")
+CODE = ("mpos8.py", "door.py", "diag8.py", "tree_run.py", "test_door.py", "test_judge.py", "ref_mods.json")
 
 
 def sha(f):
@@ -390,6 +390,13 @@ def nei(c):
     return out + [f"G2_K{k}_H{x}" for x in HS if x != h]
 
 
+def gt(a, b):
+    """GPT #421 round 2: 숫자 0과 결측(None)을 구분. 둘 중 하나라도 결측이면 거짓(= 기전 미지지 · 관문 탈락), 아니면 원정밀도 a > b."""
+    if a is None or b is None or (isinstance(a, float) and math.isnan(a)) or (isinstance(b, float) and math.isnan(b)):
+        return False
+    return a > b
+
+
 def mechanism(R, T):
     """G2 기전(사전등록 §3 · 결과 보기 전 고정): 가운데 칸(K2.0 · H10)이 빼기 둘 각각보다
     결합 계좌 손실 달 ≤ 이고 새 문 매매 스트레스 평균(전체)이 > 이어야 '지지'. 아니면 G2 칸은 자격 없음."""
@@ -397,8 +404,8 @@ def mechanism(R, T):
     out = {}
     for a in AB:
         out[a] = dict(손실달_이하=R[c]["손실"] <= R[a]["손실"],
-                      스트레스평균_큼=(T[c]["전체"]["스트레스평균"] or -1e9) > (T[a]["전체"]["스트레스평균"] or -1e9))
-    out["지지"] = all(v["손실달_이하"] and v["스트레스평균_큼"] for v in out.values() if isinstance(v, dict))
+                      스트레스평균_큼=gt(T[c]["전체"]["스트레스평균"], T[a]["전체"]["스트레스평균"]))
+    out["지지"] = all(out[a]["손실달_이하"] and out[a]["스트레스평균_큼"] for a in AB)
     return out
 
 
@@ -414,7 +421,7 @@ def judge(R, T, mech):
             return True
         x, t = R[c + "_X"], T[c]
         stress = (x["최악날"] >= -15 and x["최악달"] >= -15 and x["손실"] < b["손실"] and x["연_거래일"] >= 30.702
-                  and (t["앞반"]["스트레스평균"] or -1) > 0 and (t["뒤반"]["스트레스평균"] or -1) > 0)
+                  and gt(t["앞반"]["스트레스평균"], 0.0) and gt(t["뒤반"]["스트레스평균"], 0.0))
         year = t["한해몰림"] is not None and t["한해몰림"] <= YEAR_MAX
         return stress and year and mech["지지"]
     why = {c: {"①": R[c]["최악날"] >= -15 and R[c]["최악달"] >= -15, "②": R[c]["앞손실"] <= b["앞손실"] and R[c]["뒤손실"] <= b["뒤손실"],
@@ -471,9 +478,12 @@ if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
     lk = verify(quiet=cmd != "verify")
     if cmd == "test":
-        r = subprocess.run([sys.executable, str(HERE / "test_door.py")], capture_output=True, text=True)
-        print(r.stdout)
-        write_receipt("test", lk, {"test_door": {"판정": "PASS" if r.returncode == 0 else "FAIL", "출력": r.stdout}})
+        rows = {}
+        for t in ("test_door.py", "test_judge.py"):
+            r = subprocess.run([sys.executable, str(HERE / t)], capture_output=True, text=True)
+            print(r.stdout)
+            rows[t] = {"판정": "PASS" if r.returncode == 0 else "FAIL", "출력": r.stdout + r.stderr[-500:]}
+        write_receipt("test", lk, rows)
     elif cmd == "build":
         need("test", lk)
         build(lk)
