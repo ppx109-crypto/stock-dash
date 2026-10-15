@@ -12,9 +12,10 @@ HOLD = 10
 INV, CASH, LONG, HALF = {"114800": 0.4}, {}, {"069500": 0.4}, {"069500": 0.2, "114800": 0.2}
 ACTS = {"INV": INV, "CASH": CASH, "LONG": LONG, "HALF": HALF}
 KS = (1.0, 1.5, 2.0)
-RLP = {"Q0": 0.0, "Q1": 1.0}                       # RL 위험 벌점 λ
+RLP = {"Q0": 0.0, "Q1": 1.0, "COST1": 1.0, "COARSE1": 1.0}   # 선택기 위험 벌점 λ(COST1 · COARSE1은 GPT 제안 · Q1과 같은 λ)
 NMIN = 20
-CELLS = ["P0"] + [f"{f}_{k}" for f in ("C1", "G1", "G2") for k in KS] + [f"Q_{n}" for n in RLP]
+CELLS = ["P0"] + [f"{f}_{k}" for f in ("C1", "G1", "G2") for k in KS] + [f"Q_{n}" for n in RLP]   # 14칸 · 후보 13
+CUTS = ["P0", "C1_1.0", "G1_1.0", "G2_1.0", "Q_Q0", "Q_Q1", "Q_COST1", "Q_COARSE1"]                   # 자르기 고정 목록(+ 고른 칸이 밖이면 더함)
 SWAP = {"C1": LONG, "G1": CASH, "G2": HALF}         # 확인형 롱 신호 때 바꿀 것(나머지 날은 INV)
 
 def sigs(px_days, px):
@@ -37,11 +38,11 @@ def confirm_long(p, pp, S, k):
     g0, s0, _ = S[pp]
     return g0 is not None and s0 is not None and g0 <= -k * s0 and g0 < g < 0
 
-def ctx(p, S):
+def ctx(p, S, coarse=False):
     g, s, up = S[p]
-    if g is None or s is None or up is None: return None
+    if g is None or s is None or (up is None and not coarse): return None
     z = g / s; b = 0 if z <= -2 else 1 if z <= -1 else 2 if z <= 0 else 3 if z <= 1 else 4 if z <= 2 else 5
-    return (b, up)
+    return (b,) if coarse else (b, up)
 
 def account(cell, log=None):
     base, etf, br, flow = Dv.data()
@@ -52,7 +53,7 @@ def account(cell, log=None):
     days = [d for d in sorted(base) if Dv.LO <= d <= Dv.HI and all(d in etf[c] for c in Dv.ETF)]
     fam, _, par = cell.partition("_")
     # RL 표본: 정보일 q(횡보 · 문맥 있음) → 행동 a의 보상 = q 다음 날 e 종가 → e 다음 날 종가 몫 수익. p에서 쓸 수 있는 건 그 다음 날이 p 이하인 것만.
-    mem = {}; queue = []
+    mem = {}; queue = []; last_av = None; nmem = 0; smem = 0.0; h_prev = {}
     A, vb, cash = 1.0, 1.0, 0.0; hold = {}
     navs, nst = {days[0]: 1.0}, {}
     pending = None; pos = False; age = 0
@@ -62,10 +63,11 @@ def account(cell, log=None):
         for c in hold: hold[c] *= etf[c][d] / etf[c][p]
         A = vb + sum(hold.values()) + cash
         s_prev = st.get(p, "횡보")
-        if fam == "Q":                                       # p까지 끝난 표본을 기억에 넣음
+        qlog = None
+        if fam == "Q":                                       # p 종가까지 보상이 끝난 표본만 기억에 넣음(국면과 상관없이 날마다)
             while queue and queue[0][0] <= p:
-                _, q_ctx, rew = queue.pop(0)
-                for a, r in rew.items(): mem.setdefault((q_ctx, a), []).append(r)
+                av, q_ctx, rew = queue.pop(0); last_av = av
+                for a, r in rew.items(): mem.setdefault((q_ctx, a), []).append(r); nmem += 1; smem += r
         if cell != "P0" and s_prev == "횡보":
             if fam in SWAP:
                 k = float(par)
@@ -76,23 +78,32 @@ def account(cell, log=None):
                 else: exited = False
                 if not pos and not exited:
                     pi = pidx.get(p); pp = pdays[pi - 1] if pi else None
-                    if confirm_long(p, pp, S, k) and base[d][1] > 0: pos, age = True, 0
+                    # 개입 시작: C1 · G2는 실제로 살 room > 0일 때만 · G1(현금 개입)은 신호만으로
+                    if confirm_long(p, pp, S, k) and (fam == "G1" or base[d][1] > 0): pos, age = True, 0
                 want = SWAP[fam] if pos else INV
-            else:                                            # Q: 문맥별 지난 표본으로 날마다 고름
-                lam = RLP[par]
-                c0 = ctx(p, S); want, best = INV, None
+            else:                                            # Q: 문맥별 지난 완료 표본으로 날마다 고름(완전정보 순차 선택기)
+                lam = RLP[par]; coarse = par == "COARSE1"
+                c0 = ctx(p, S, coarse); want, best, why, scs = INV, None, "문맥 없음", {}
                 if c0 is not None and all(len(mem.get((c0, a), [])) >= NMIN for a in ACTS):
-                    for a in ACTS:
+                    room_p = base[p][1]
+                    for a in ACTS:                           # 동률이면 INV → CASH → LONG → HALF(허용차 1e-15)
                         v = mem[(c0, a)]; m = sum(v) / len(v); dn = math.sqrt(sum(min(x, 0) ** 2 for x in v) / len(v))
                         sc = m - lam * dn
+                        if par == "COST1":                   # GPT A: p 종가 실제 보유 h(p)와 room으로 줄인 목표 u_a(p)의 전환 비용 대용
+                            tot = sum(ACTS[a].values()); scl = min(1.0, room_p / tot) if tot > 0 else 0.0
+                            u = {c: w * scl for c, w in ACTS[a].items()}
+                            sc = scl * sc - Dv.COST_ETF * sum(abs(u.get(c, 0.0) - h_prev.get(c, 0.0)) for c in set(u) | set(h_prev))
+                        scs[a] = sc
                         if best is None or sc > best[0] + 1e-15: best = (sc, a)
-                    want = ACTS[best[1]]
+                    want, why = ACTS[best[1]], best[1]
+                elif c0 is not None: why = "표본 모자람"
+                qlog = (c0, tuple(len(mem.get((c0, a), [])) for a in ACTS), last_av, nmem, round(smem, 15), tuple(sorted(scs.items())), why)
             tgt = (1.0, want)
         else:
             if s_prev != "횡보": pos, age = False, 0
             fb, c_, fe = Dv.targets(s_prev, cfg, feat.get(p)); tgt = (fb, {c_: fe} if fe > 0 else {})
-        if fam == "Q" and s_prev == "횡보":                  # 오늘 정보일 p의 표본을 예약(보상은 d 종가 → 다음 날 종가)
-            c0 = ctx(p, S)
+        if fam == "Q" and s_prev == "횡보":                  # 오늘 정보일 p의 표본을 예약(보상은 d 종가 → 다음 날 종가 · 그날 뒤에만 씀)
+            c0 = ctx(p, S, par == "COARSE1")
             if c0 is not None and j + 1 < len(days):
                 n1 = days[j + 1]
                 rew = {a: sum(w * (etf[c][n1] / etf[c][d] - 1) for c, w in ACTS[a].items()) for a in ACTS}
@@ -108,18 +119,19 @@ def account(cell, log=None):
             A -= cost
             vb = fb * A; hold = {c: w * sc * A for c, w in want.items() if w * sc > 0}
             cash = A - vb - sum(hold.values()); pending = key
-            if pos and fam in SWAP and not any(c in hold for c in SWAP[fam]) and SWAP[fam]: pos, age = False, 0
+            if pos and fam in ("C1", "G2") and not any(c in hold for c in SWAP[fam]): pos, age = False, 0   # C1 · G2: 실제 체결 없으면 개입 끝(G1 현금 개입은 유지)
         elif hold and cash < -vb * base[d][1] - 1e-12:
             ve = sum(hold.values()); need = -vb * base[d][1] - cash; cut = min(ve, need / (1 - Dv.COST_ETF))
             for c in list(hold): hold[c] -= cut * hold[c] / ve
             cash += cut * (1 - Dv.COST_ETF)
             if sum(hold.values()) <= 1e-15:
                 hold = {}
-                if pos: pos, age, pending = False, 0, None
+                if pos and fam in ("C1", "G2"): pos, age, pending = False, 0, None   # 전량 덜어냄 → 개입 끝
         if cash < -vb * base[d][1] - 1e-12:
             c = base[d][1]; x = (-c * vb - cash) / (1 - Dv.COST_BASE_DOWN - c); vb -= x; cash += x * (1 - Dv.COST_BASE_DOWN)
         navs[d] = vb + sum(hold.values()) + cash; nst[d] = s_prev
-        if log is not None: log[d] = (S[p][0], S[p][1], s_prev, pos, age, tuple(sorted(hold.items())), vb, cash, navs[d])
+        h_prev = {c: v / navs[d] for c, v in hold.items()} if navs[d] > 0 else {}
+        if log is not None: log[d] = (S[p][0], S[p][1], s_prev, pos, age, tuple(sorted(hold.items())), vb, cash, navs[d], qlog)
     return navs, nst
 
 def stats(navs):
@@ -137,7 +149,7 @@ def stats(navs):
                 달=dict(sorted((m, round(v * 100, 4)) for m, v in full.items())))
 
 NEI = {**{f"{f}_1.0": [f"{f}_1.5"] for f in SWAP}, **{f"{f}_2.0": [f"{f}_1.5"] for f in SWAP},
-       **{f"{f}_1.5": [f"{f}_1.0", f"{f}_2.0"] for f in SWAP}, "Q_Q0": ["Q_Q1"], "Q_Q1": ["Q_Q0"]}
+       **{f"{f}_1.5": [f"{f}_1.0", f"{f}_2.0"] for f in SWAP}, "Q_Q0": ["Q_Q1"], "Q_Q1": ["Q_Q0"], "Q_COST1": [], "Q_COARSE1": []}
 
 def judge(R):
     b = R["P0"]
@@ -174,13 +186,16 @@ if __name__ == "__main__":
     if cmd in ("run", "cut"): verify()
     if cmd == "p0check":
         a, _ = Dv.account(CFG); b, _ = account("P0")
-        print("P0 vs 원래 account 최대 NAV 차", max(abs(a[d] - b[d]) for d in a), "날", len(a))
+        mx = max(abs(a[d] - b[d]) for d in a); print("P0 vs 원래 account 최대 NAV 차", mx, "날", len(a), "→", "PASS(허용 1e-12)" if mx <= 1e-12 else "FAIL")
     elif cmd == "synth":
         base, etf, br, flow = Dv.data()
         Dv.DATA = ({d: (v[0], 0.0) for d, v in base.items()}, etf, br, flow); Dv.FEAT = None
         lg = {}; account("G2_1.0", lg)
         bad = sum(1 for v in lg.values() if v[2] == "횡보" and v[5])
-        print("합성 room 0 · G2_1.0: 횡보 날 ETF 든 날", bad, "· 부품 보유로 남은 날", sum(1 for v in lg.values() if v[3]), "→", "PASS" if bad == 0 and not any(v[3] for v in lg.values()) else "FAIL")
+        print("합성 room 0 · G2_1.0: 횡보 날 ETF 든 날", bad, "· 개입으로 남은 날", sum(1 for v in lg.values() if v[3]), "→", "PASS" if bad == 0 and not any(v[3] for v in lg.values()) else "FAIL")
+        lg = {}; account("G1_1.0", lg)
+        act = sum(1 for v in lg.values() if v[3]); etfd = sum(1 for v in lg.values() if v[2] == "횡보" and v[5])
+        print("합성 room 0 · G1_1.0(현금 개입): 개입 날", act, "· 횡보 날 ETF 든 날", etfd, "→", "PASS" if act > 0 and etfd == 0 else "FAIL")
     elif cmd == "run":
         R = {}
         for c in CELLS:
@@ -190,13 +205,14 @@ if __name__ == "__main__":
         json.dump({"cells": R, "자격": ok, "순위": rank, "고른 것": rank[0] if rank else None}, open(os.path.join(HERE, "result.json"), "w"), ensure_ascii=False, indent=1)
         print("자격", ok, "순위", rank)
     elif cmd == "cut":
-        c = sys.argv[2]; full = {}; account(c, full)
+      for c in (CUTS if sys.argv[2] == "all" else sys.argv[2:]):
+        full = {}; account(c, full)
         for cut in ("20211231", "20240628"):
             Dv.CUT, Dv.DATA, Dv.FEAT = cut, None, None
             part = {}; account(c, part)
             Dv.CUT, Dv.DATA, Dv.FEAT = "", None, None
             common = [d for d in sorted(part) if d < cut]; miss = [d for d in sorted(full) if d < cut and d not in part]
-            diff = [d for d in common if part[d] != full[d]]
+            diff = [d for d in common if part[d] != full[d]]                 # Q는 문맥 · 표본 수 · 최대 완료일 · 기억 합 · 점수 · 선택 이유까지 원값 비교
             rec = {"칸": c, "자른 날": cut, "비교 날": len(common), "빠진 날": len(miss), "다른 날": len(diff), "첫 다른 날": diff[:3], "판정": "PASS" if common and not miss and not diff else "FAIL"}
             print(json.dumps(rec, ensure_ascii=False))
             with open(os.path.join(HERE, "receipt_cut.jsonl"), "a") as f: f.write(json.dumps(rec, ensure_ascii=False) + "\n")
