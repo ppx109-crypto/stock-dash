@@ -1,6 +1,6 @@
 """MPOS-0006 — (mpos5.py 이어받음) V_ONLY 대조(횡보 · 하락 = P0 · 상승 = VOL) + C1 신호 기회 진단(성과 고르기 없음).
 MPOS-0005 — '둘 다'(사용자 2026-10-15): 횡보 C1(인버스 방패 + 확인형 롱 신호 때 069500) + 상승 C2(과열 g ≥ kσ 때 레버리지 0.2) 또는 VOL(GPT: 20일 흔들림 > 지난 252개 중앙값이면 0.2).
-mpos4.py의 execute() · 잠금 검증 · 자르기를 그대로 옮김. python3 mpos5.py p0check | synth | run | cut <칸|all>"""
+mpos4.py의 execute() · 잠금 검증 · 자르기를 그대로 옮김. python3 mpos6.py p0check | synth | diag | run | cut <칸|all>"""
 import json, os, sys, math, hashlib
 sys.path.insert(0, "/home/user/stock-dash/research")
 os.environ.setdefault("REG_BOX", "MPOS-0006")
@@ -154,7 +154,7 @@ SNAPDIR = os.path.join(HERE, "inputs")          # 저장소 자료가 날마다 
 
 def verify():
     h = lambda f: hashlib.sha256(open(f, "rb").read()).hexdigest()
-    got = {f: h(f) for f in LOCK}; got["mpos5.py"] = h(os.path.abspath(__file__))
+    got = {f: h(f) for f in LOCK}; got["mpos6.py"] = h(os.path.abspath(__file__))
     lk = json.load(open(os.path.join(HERE, "inputs_lock.json")))
     for f, v in lk.items(): got[f] = h(os.path.join(SNAPDIR, f))
     bad = [f for f, v in LOCK.items() if got[f] != v] + [f for f, v in lk.items() if got[f] != v]
@@ -173,7 +173,7 @@ Dv.load = load_snap
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "run"
-    if cmd in ("run", "cut"): verify()
+    if cmd in ("run", "cut", "diag"): verify()          # GPT #417: diag도 같은 잠금 · 환경 검증 뒤에만
     if cmd == "p0check":
         a, _ = Dv.account(CFG); b, _ = account("P0")
         mx = max(abs(a[d] - b[d]) for d in a); print("P0 vs 원래 account 최대 NAV 차", mx, "날", len(a), "→", "PASS(허용 1e-12)" if mx <= 1e-12 else "FAIL")
@@ -198,6 +198,8 @@ if __name__ == "__main__":
             entries = sum(1 for j, d in enumerate(sorted(lg)) if lg[d][5] and lg[d][6] == 0 and (j == 0 or not lg[sorted(lg)[j - 1]][5] or lg[sorted(lg)[j - 1]][6] != 0))
             held = sum(1 for v in lg.values() if v[5])
             out[k] = {"신호(전 기간)": len(ev), "그중 횡보": len(side), "그중 room>0": len(roomok), "실제 새 진입": entries, "개입 날": held}
+        out["_기록"] = {"실행 칸": "S{k}_U1.0(C1 + 상승 C2_1.0 계좌 경로)", "단위": "신호 · 횡보 · room = 신호 날 수 / 새 진입 = 사건 수 / 개입 날 = 보유 날 수",
+                        "잠금": json.load(open(os.path.join(HERE, "receipt_lock.json")))["해시"]}
         print(json.dumps(out, ensure_ascii=False)); json.dump(out, open(os.path.join(HERE, "diag.json"), "w"), ensure_ascii=False, indent=1)
     elif cmd == "run":
         R = {}
