@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-14",
+  "fetched": "2026-10-15",
   "disclosures": [
+    {
+      "title": "전환가액의조정              ",
+      "date": "20261015",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261015900184"
+    },
     {
       "title": "기업설명회(IR)개최              ",
       "date": "20261012",
@@ -455,16 +460,6 @@
       "title": "지속가능경영보고서등관련사항(자율공시)              ",
       "date": "20260727",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727900352"
-    },
-    {
-      "title": "주식등의대량보유상황보고서(일반)",
-      "date": "20260716",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716000704"
-    },
-    {
-      "title": "전환가액의조정              ",
-      "date": "20260716",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260716900712"
     }
   ]
 }

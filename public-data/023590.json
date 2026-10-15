@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-12",
+  "fetched": "2026-10-15",
   "disclosures": [
+    {
+      "title": "계열금융회사를거래상대방으로한단기금융상품거래의분기별공시",
+      "date": "20261015",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261015000432"
+    },
     {
       "title": "기타경영사항(종속회사의주요경영사항)              ",
       "date": "20260918",
