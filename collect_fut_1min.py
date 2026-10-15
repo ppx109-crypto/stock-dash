@@ -156,7 +156,9 @@ def fetch_day(client, code, day, log=print):
             break
     left = gaps(sorted(t for (d, t) in got))
     if left:
-        log(f"   {code} {ymd} ⚠️ 남은 빈 곳: " + ", ".join(f"{a[:4]}~{b[:4]}({n}분)" for a, b, n in left))
+        # 20 ~ 35분 빈 곳 하나는 서킷브레이커(20분 멈춤 + 10분 단일가)일 수 있음 — 10-15: −8.8% 직후 29분(전날 종가 대비는 halt_days에서 확인)
+        tag = "⛔ 거래 멈춤(서킷브레이커?)" if len(left) == 1 and 20 <= left[0][2] <= 35 else "⚠️ 남은 빈 곳"
+        log(f"   {code} {ymd} {tag}: " + ", ".join(f"{a[:4]}~{b[:4]}({n}분)" for a, b, n in left))
     return [got[k] for k in sorted(got)]
 
 
