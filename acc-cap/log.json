@@ -18,5 +18,20 @@
   "held_share_close": 0.0,
   "trim_f_close": 0.0,
   "trim_f_gap": 0.0
+ },
+ {
+  "date": "20261016",
+  "at": "2026-10-16 15:20",
+  "E": 1.0,
+  "sigma": null,
+  "why": "든 것 없음",
+  "held_share": 0.0,
+  "trim_f": 0.0,
+  "trimmed_share": 0.0,
+  "orders": [],
+  "close_check": "확인",
+  "held_share_close": 0.0,
+  "trim_f_close": 0.0,
+  "trim_f_gap": 0.0
  }
 ]
