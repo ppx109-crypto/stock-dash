@@ -1,0 +1,21 @@
+{
+ "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+ "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+ "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+ "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+ "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+ "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+ "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+ "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+ "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+ "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+ "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03",
+ "diag12.json": "ca6e4462bbea07c9a6a235490ed220e870392df5a2fd84e26b0ad3910e55c69c",
+ "diag12.py": "a7275bb914f1bdb4241d00e082e66a496a874dc6c4384d6a1c620fd9ba0515b3",
+ "mpos12.py": "8a915a70d30953681cf8796856a923370250ab867b67c1c30adaa7682cc208b5",
+ "make_z100g.py": "50334b57c8a5e980e16a702a45c98aef53297df06b276a43fd05aa60c7594708",
+ "z100g.py": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+ "ex20.py": "2dc38e2e9916b046dbac5faf46dee74337095f0b6abb7c6c5bb11cc97d301844",
+ "mpos20.py": "e2e4dc778c9069adcb7cf644faac806a506ffbb8be53d72b4a8b1f6d70b944b4",
+ "NRL_CACHE /tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7"
+}
