@@ -44,7 +44,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CUSTOMER_USED_FILE: /tmp/customer_used.txt
           CUSTOMER_BUDGET: '7000'
-          CUSTOMER_SAVE_EVERY: '50'
+          CUSTOMER_SAVE_EVERY: '25'
+          CUSTOMER_MINUTES: '300'
           CUSTOMER_SAVE_CMD: bash tools/save_customer_batch.sh
         run: |
           git config user.name 'github-actions[bot]'
