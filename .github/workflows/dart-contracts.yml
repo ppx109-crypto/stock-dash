@@ -1,0 +1,62 @@
+name: DART contracts
+# 단일판매 · 공급계약 공시 본문(계약금액 · 매출액 대비 % · 기간 · 상대)을 모읍니다(공개 자료 · 조회 전용 · 사용자 2026-10-16 승인).
+# 원문 ZIP은 릴리스 dart-contracts-raw-v1에 종목별 내용 지문 묶음으로(덮어쓰기 금지) · 25종목마다 저장 · 300분이면 스스로 멈춤 · 이어 받기.
+# 다시 돌리기: contract-run.txt를 바꿔 올리거나 손으로 돌립니다.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/dart-contracts.yml'
+      - 'collect_dart_contracts.py'
+      - 'tools/save_customer_batch.sh'
+      - 'tests/check_dart_contracts.py'
+      - 'tests/check_save_customer_batch.sh'
+      - 'contract-run.txt'
+permissions:
+  contents: write
+concurrency:
+  group: dart-contracts
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python tests/check_dart_customers.py && python tests/check_dart_contracts.py
+      - run: bash tests/check_save_customer_batch.sh
+      - name: Release for raw documents
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view dart-contracts-raw-v1 >/dev/null 2>&1 || \
+            gh release create dart-contracts-raw-v1 --prerelease --target "$GITHUB_SHA" \
+              --title "DART 공급계약 공시 원문 보관(계약 크기 연구)" \
+              --notes "DART 단일판매 · 공급계약 공시 원문 ZIP 보관소(공개 자료). 종목별 내용 지문 묶음. 지문은 contract-data/raw-assets.jsonl에 있음."
+      - name: Collect
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          CUSTOMER_USED_FILE: /tmp/customer_used.txt
+          CUSTOMER_BUDGET: '9000'
+          CUSTOMER_TAG: dart-contracts-raw-v1
+          CUSTOMER_DATA_DIR: contract-data
+          CUSTOMER_SAVE_EVERY: '25'
+          CUSTOMER_MINUTES: '300'
+          CUSTOMER_SAVE_CMD: bash tools/save_customer_batch.sh
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          echo 0 > /tmp/customer_used.txt
+          status=0; python collect_dart_contracts.py || status=$?
+          echo "실제 요청 합계 $(cat /tmp/customer_used.txt) · 끝 상태 $status"
+          case "$status" in
+            0) echo "모두 받음";;
+            2) echo "부분 수집(호출 예산 · 한도) · 다음에 이어 받기";;
+            4) echo "미해결 남음(목록 · 원문)"; exit 1;;
+            *) exit 1;;
+          esac

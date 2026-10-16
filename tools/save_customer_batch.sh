@@ -6,8 +6,9 @@
 # 3) 그다음 기록을 커밋 · 푸시(세 번 실패하면 멈춤). customer-data가 아직 없으면 빈 저장으로 넘어감.
 set -euo pipefail
 TAG="${CUSTOMER_TAG:-dart-customers-raw-v1}"
+DATA="${CUSTOMER_DATA_DIR:-customer-data}"
 shopt -s nullglob
-mkdir -p customer-data
+mkdir -p "$DATA"
 for dir in raw/*/; do
   code=$(basename "$dir")
   files=("$dir"*.zip)
@@ -35,10 +36,10 @@ for dir in raw/*/; do
   if [ "$digest" != "sha256:$tsha" ]; then echo "서버 지문 불일치 $name"; exit 1; fi
   members=$(for f in "${files[@]}"; do printf '%s:%s\n' "$(basename "$f" .zip)" "$(sha256sum "$f" | cut -c1-64)"; done | paste -sd, -)
   printf '{"asset":"%s/%s","tar_sha256":"%s","bytes":%s,"code":"%s","run":"%s","attempt":"%s","digest_verified":true,"zips":"%s"}\n' \
-    "$TAG" "$name" "$tsha" "$size" "$code" "${GITHUB_RUN_ID:-local}" "${GITHUB_RUN_ATTEMPT:-1}" "$members" >> customer-data/raw-assets.jsonl
+    "$TAG" "$name" "$tsha" "$size" "$code" "${GITHUB_RUN_ID:-local}" "${GITHUB_RUN_ATTEMPT:-1}" "$members" >> "$DATA/raw-assets.jsonl"
   rm -f "$name" "${files[@]}"
 done
-git add -A customer-data
+git add -A "$DATA"
 git diff --cached --quiet && exit 0
 git commit -q -m "DART 주요 매출처 원문 문단 수집(판 3 · 이어 받기)"
 for i in 1 2 3; do
