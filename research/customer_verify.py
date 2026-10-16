@@ -22,6 +22,7 @@ def sha(b):
 
 def main():
     CACHE.mkdir(parents=True, exist_ok=True)
+    start = input_digest()
     rows = [json.loads(x) for x in Path("customer-data/raw-assets.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()]
     kept, bad = {}, []
     for r in rows:
@@ -54,10 +55,13 @@ def main():
                 mismatch += 1
     out = {"자산": len(rows), "자산 문제": len(bad), "받음 보고서": need, "보관 없음": missing, "지문 불일치": mismatch,
            "문제 예": bad[:5]}
+    end = input_digest()
+    if end != start:
+        bad.append(("대조 도중 입력 자료가 바뀜", ""))
     ok = not bad and not missing and not mismatch
     print(json.dumps(out, ensure_ascii=False))
     if "--receipt" in sys.argv:
-        out.update(ok=ok, input_sha256=input_digest(), verifier_sha256=sha(Path(__file__).read_bytes()),
+        out.update(ok=ok, input_sha256=start, input_sha256_end=end, verifier_sha256=sha(Path(__file__).read_bytes()),
                    at=time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()))
         Path("research/customer_verify_receipt.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     return 0 if ok else 1

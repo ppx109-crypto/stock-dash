@@ -1,6 +1,6 @@
 """research/customer_sample.py 합성 시험(GPT #444 round 5 · 6): 봉인 거절 경로와 정상 경로 · 포함 확률 이론값.
 
-거절해야 하는 것: 미해결 · 끝 영수증 아님 · 빈/형식 틀린 범위 닫기 영수증 · 종목 집합 불일치 · 목록 ↔ 기록 불일치 ·
+거절해야 하는 것: 미해결 · 끝 영수증 아님 · 빈/형식 틀린 범위 닫기 영수증 · 합의 주소가 형식뿐이거나 댓글 본문에 지문 없음 · 고정 범위 파일 없음 · 종목 집합 불일치 · 목록 ↔ 기록 불일치 ·
 원문 보관 없음 · 대조 영수증 없음/지문 다름 · git 커밋 실패 · 커밋 안 된 변경 · 계획 없음 · 기존 봉인 파일.
 """
 import io
@@ -33,6 +33,7 @@ for i in range(120):
     (work / f"customer-data/{code}.json").write_text(json.dumps(body))
 (work / "customer-data/raw-assets.jsonl").write_text("".join(json.dumps(m) + "\n" for m in manifest))
 (work / "customer-data/_last_run.json").write_text(json.dumps({"state": "모두 받음"}))
+(work / "customer-data/_scope.json").write_text(json.dumps({"schema": "mpos19-scope-v1", "codes": [f"{i:06d}" for i in range(120)]}))
 
 
 def git(*a):
@@ -79,14 +80,37 @@ Path("customer-data/_last_run.json").write_text(json.dumps({"state": "부분 수
 Path("customer-data/_closure.json").write_text("{}")
 receipt(); commit(); refused("범위 닫기 영수증 형식")
 # 형식은 맞지만 입력 지문이 다름 → 거절
-Path("customer-data/_closure.json").write_text(json.dumps({"schema": "mpos19-closure-v1", "expected_codes": [f"{i:06d}" for i in range(120)],
+scope_sha = s.sha_file("customer-data/_scope.json")
+Path("customer-data/_closure.json").write_text(json.dumps({"schema": "mpos19-closure-v1", "scope_sha256": scope_sha,
                                                          "excluded": [], "input_sha256": "x", "agreed_in": "https://github.com/a"}))
 receipt(); commit(); refused("입력 지문")
+# 지문 · 제외 목록은 맞지만 합의 주소가 'https://github.com/'뿐(GPT round 7 재현 경로) → 거절
+excl = [{"code": "000000", "rcept_no": "000x", "reason": "서버 오류 지속"}]
+import hashlib  # noqa: E402
+excl_sha = hashlib.sha256(json.dumps(sorted([e["code"], e["rcept_no"], e["reason"]] for e in excl)).encode()).hexdigest()
+def closure(url):
+    Path("customer-data/_closure.json").write_text(json.dumps({"schema": "mpos19-closure-v1", "scope_sha256": scope_sha, "excluded": excl,
+                                                             "input_sha256": s.input_digest(), "agreed_in": url}))
+closure("https://github.com/"); receipt(); commit(); refused("합의 근거")
+# 주소 형식은 맞지만 댓글 본문에 지문이 없음(가짜 gh) → 거절 · 지문이 모두 있으면 통과 경로
+fake = work / "bin"; fake.mkdir()
+(fake / "gh").write_text("#!/usr/bin/env bash\ncat \"$GH_FAKE_BODY\"\n"); (fake / "gh").chmod(0o755)
+os.environ["PATH"] = f"{fake}:{os.environ['PATH']}"
+body_file = work / "body.txt"; os.environ["GH_FAKE_BODY"] = str(body_file)
+url = "https://github.com/ppx109-crypto/stock-dash/pull/444#issuecomment-123"
+closure(url); body_file.write_text("동의합니다"); receipt(); commit(); refused("합의 근거")
+body_file.write_text(f"범위 닫기 동의 {s.input_digest()} {excl_sha} {scope_sha}")
+assert "합의 근거" not in " ".join(s.seal_checks()), s.seal_checks()
 Path("customer-data/_closure.json").unlink(); p.write_text(orig)
 Path("customer-data/_last_run.json").write_text(json.dumps({"state": "모두 받음"}))
 
-# 종목 집합 불일치 → 거절
-Path("dart-events/999999.json").write_text("{}"); receipt(); commit(); refused("종목 집합"); Path("dart-events/999999.json").unlink()
+# 종목 집합 불일치(고정 범위에 없는 종목 파일) → 거절 · dart-events가 늘어도 고정 범위가 기준
+Path("dart-events/999999.json").write_text("{}"); receipt(); commit()
+Path("customer-data/999999.json").write_text(json.dumps({"code": "999999", "filings": [], "list_receipt": {"complete": True}, "listed_reports": []}))
+receipt(); commit(); refused("종목 집합"); Path("customer-data/999999.json").unlink(); Path("dart-events/999999.json").unlink()
+# 고정 범위 파일 없음 → 거절
+sc = Path("customer-data/_scope.json").read_text(); Path("customer-data/_scope.json").unlink(); receipt(); commit(); refused("고정 범위")
+Path("customer-data/_scope.json").write_text(sc)
 
 # 목록 ↔ 기록 불일치 → 거절
 b = json.loads(orig); b["listed_reports"].append({"rcept_no": "zzz"}); p.write_text(json.dumps(b)); receipt(); commit(); refused("목록 ↔ 기록")
