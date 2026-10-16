@@ -258,7 +258,7 @@ def front_pick(R, cand=None):
     out = {}
     for fam in ("NP", "CH"):
         cs = [c for c in cand if c.startswith(fam)]
-        best = sorted(cs, key=lambda c: (R[c]["앞손실"], -round(front_annual(R[c]), 9), cand.index(c)))[0]
+        best = sorted(cs, key=lambda c: (R[c]["앞손실"], -front_annual(R[c]), cand.index(c)))[0]      # 비교엔 반올림 없음(GPT #446 round 2) · 표시만 반올림
         out[fam] = {"고른 칸": best, "앞손실": R[best]["앞손실"], "앞연": round(front_annual(R[best]), 3), "뒤손실": R[best]["뒤손실"],
                     "기준 뒤손실": R["IMM"]["뒤손실"], "기간": "mstats 앞 2017-03 ~ 2021-12(58달) · 뒤 2022-01 ~ 2026-08(56달)"}
     return out
@@ -312,15 +312,43 @@ def mech_report(led):
     return out
 
 
+STAGE_COPY = "mpos20_stage.py"     # 성과 안 보는 단계(self · ledgers · cut · build · cutacct · align)를 돌린 그 코드 사본(영수증 잠금 지문과 같아야 함)
+RUN_ONLY = {"front_pick", "run", "stage_reuse"}
+
+
+def stage_reuse(lock):
+    """단계 산출물 재사용 근거(GPT #446 round 2): 영수증을 만든 사본과 지금 코드의 구문 나무(ast)를 맨 위 문장마다 견줘,
+    run에서만 쓰는 함수(front_pick · run · stage_reuse)와 이 두 상수 줄 밖에는 한 글자도 다르지 않음을 확인. 다르면 멈춤."""
+    import ast
+    def parts(src):
+        out = {}
+        for node in ast.parse(src).body:          # 이름 없는 문장은 내용 지문을 이름으로(자리 번호가 밀려도 같은 문장은 같게 봄)
+            name = getattr(node, "name", None) or (node.targets[0].id if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+                                                   else "#" + __import__("hashlib").sha256(ast.dump(node).encode()).hexdigest()[:12])
+            out.setdefault(name, []).append(ast.dump(node))
+        return out
+    old, new = parts(open(HERE / STAGE_COPY).read()), parts(open(HERE / "mpos20.py").read())
+    skip = RUN_ONLY | {"STAGE_COPY", "RUN_ONLY"}
+    diff = sorted(k for k in set(old) | set(new) if k not in skip and old.get(k) != new.get(k))
+    numbered = [k for k in set(old) | set(new) if k.startswith("#")]
+    rec = {"단계 사본 지문": X.sha(str(HERE / STAGE_COPY)), "지금 코드 지문": lock["mpos20.py"], "다른 맨 위 문장(run 전용 밖)": diff,
+           "이름 없는 맨 위 문장": len(numbered), "run 전용": sorted(RUN_ONLY & (set(old) | set(new)))}
+    if diff:
+        sys.exit(f"단계 코드가 바뀜 → 단계 다시 돌려야 함 {diff}")
+    return rec
+
+
 def run():
     lock = verify()
+    reuse = stage_reuse(lock)
     nled = len(CELLS) + len(LEAKS) + len(CUTMODES) * sum(len(cut_days(c)) for c in POISON_CELLS)
     ncut = len(CUTMODES) * (sum(len(cut_days(c)) for c in POISON_CELLS if c not in LEAKS) + len(LEAKS))
     for nm, n in (("receipt_self.json", 0), ("receipt_ledgers.json", nled), ("receipt_cut.json", ncut), ("receipt_build.json", len(CELLS)),
                   ("receipt_cutacct.json", 3 * len(CELLS)), ("receipt_align.json", len(CELLS))):
         r = json.load(open(HERE / nm))
         rows = list(r["행"].values()) if isinstance(r["행"], dict) else r["행"]
-        if any(r["잠금"][f] != lock[f] for f in ("mpos20.py", "ex20.py", "parts20.py", "self20.py")) or (n and len(rows) != n) or not rows \
+        if r["잠금"]["mpos20.py"] != reuse["단계 사본 지문"] or any(r["잠금"][f] != lock[f] for f in ("ex20.py", "parts20.py", "self20.py")) \
+                or (n and len(rows) != n) or not rows \
                 or any(x["판정"] != "PASS" for x in rows):
             sys.exit(f"{nm}: 지문 · 건수 · FAIL → 중단")
     rl = json.load(open(HERE / "receipt_ledgers.json"))["행"]
@@ -352,7 +380,7 @@ def run():
            "판정": "PASS_DIAGNOSTIC(진단 전용 · 후보 아님)" if rank else "NO_IMPROVEMENT",
            "범위": "진단 전용: 일봉 종가 대리 구조 · 상속된 후보 줄 미래 존재 조건(lab.py:317) · 폐지 종목 없음",
            "앞 기간 고르기(보고)": front_pick(R),
-           "기전 진단(보고)": mech_report(led),
+           "기전 진단(보고)": mech_report(led), "단계 재사용 근거": reuse,
            "청산 사유 · 자리일(보고 · 엔진 앞/뒤 반 합)": {c: {"더한 조건만으로 팜": sum(rl[c]["감사"][k]["청산 사유"]["더한 조건만으로 팜"] for k in ("앞", "뒤")),
                                                      "원판 조건(nrl.broken)으로 팜": sum(rl[c]["감사"][k]["청산 사유"]["원판 조건(nrl.broken)으로 팜"] for k in ("앞", "뒤")),
                                                      "자리일": sum(rl[c]["감사"][k]["자리일(들고 × 자리)"] for k in ("앞", "뒤"))} for c in CELLS},

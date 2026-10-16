@@ -28,3 +28,9 @@ m = P.mech_report(led)["NP3"]
 assert m == {"진입": 2, "원판과 같은 진입": 1, "그중 판 날 앞당김": 1, "새 진입": 1, "원판에만 있는 진입": 1, "판 날 같은 날 같은 종목 재진입": 1}, m
 assert P.mech_report(led)["NP5"]["그중 판 날 앞당김"] == 0
 print("기전 진단 합성 시험 통과")
+# GPT #446 round 2 반례: 앞손실 같음 · NP5 앞 첫 달만 1e-12 높음 → NP5를 골라야 함(비교에 반올림 없음)
+for c in P.CAND: R[c] = cell(0.02, 10, 10)
+R["NP5"] = cell(0.02, 10, 10); R["NP5"]["달"]["201703"] += 1e-12
+assert P.front_annual(R["NP5"]) > P.front_annual(R["NP3"])
+o = P.front_pick(R); assert o["NP"]["고른 칸"] == "NP5", o
+print("가까운 동률 시험 통과")
