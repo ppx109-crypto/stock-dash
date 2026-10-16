@@ -160,6 +160,10 @@ def listing(d, corp, today):
         receipt["pages"].append(page)
         rows += [{k: x.get(k) for k in ("rcept_no", "rcept_dt", "report_nm", "rm")} for x in data.get("list") or []]
         if page >= int(data.get("total_page") or 1):
+            nos = [x["rcept_no"] for x in rows]
+            if len(set(nos)) != len(nos):
+                receipt["fail"] = f"접수번호 중복 {len(nos) - len(set(nos))}건"
+                return None, receipt
             receipt["complete"] = len(rows) == int(data.get("total_count") or 0)
             if not receipt["complete"]:
                 receipt["fail"] = f"건수 불일치 {len(rows)}/{data.get('total_count')}"

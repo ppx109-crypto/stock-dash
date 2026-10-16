@@ -1,4 +1,4 @@
-"""collect_dart_customers.py 합성 시험(네트워크 없음 · 9개): 재시도 호출 세기 · 목록 불완전 · 제목만 낱말 · 끝 상태 · 원문 상태 나누기 · 예산 멈춤 · XML 020 · HTTP 429/403 · 원문 보관 · 줄 구조 · 첨부정정 제외 · 목록 쪽 넘기기."""
+"""collect_dart_customers.py 합성 시험(네트워크 없음 · 9개): 재시도 호출 세기 · 목록 불완전 · 접수번호 중복 · 제목만 낱말 · 끝 상태 · 원문 상태 나누기 · 예산 멈춤 · XML 020 · HTTP 429/403 · 원문 보관 · 줄 구조 · 첨부정정 제외 · 목록 쪽 넘기기."""
 import io, json, os, sys, zipfile, tempfile
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ["CUSTOMER_PAUSE"] = "0"
@@ -90,6 +90,9 @@ c.requests.get = seq([R(200, json.dumps({"status": "000", "total_count": 2, "tot
 rows, rc = c.listing(d, "corp", "20261016"); assert rows is None and "013" in rc["fail"], rc
 c.requests.get = seq([R(200, b'{"status":"013"}')])
 rows, rc = c.listing(d, "corp", "20261016"); assert rows == [] and rc["complete"]
+dup = {"status": "000", "total_count": 2, "total_page": 2, "list": [{"rcept_no": "a", "rcept_dt": "1", "report_nm": "x"}]}
+c.requests.get = seq([R(200, json.dumps(dup).encode()), R(200, json.dumps(dup).encode())])
+rows, rc = c.listing(d, "corp", "20261016"); assert rows is None and "중복" in rc["fail"], rc
 ok += 1
 # 8. 제목에만 낱말 · 뒤에 고객 표
 lines = c.lines_of('<TITLE ATOC="Y">주요 매출처</TITLE><TABLE><TR><TD>삼성전자</TD><TD>30%</TD></TR></TABLE>'.encode())

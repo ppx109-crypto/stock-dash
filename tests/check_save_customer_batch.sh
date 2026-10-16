@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tools/save_customer_batch.sh 합성 시험(가짜 gh · 로컬 git): 같은 실행 재시도에 다른 내용 → 새 이름(덮어쓰기 없음) ·
-# 같은 내용 다시 → 올리지 않고 재사용 · customer-data 없을 때 빈 저장 · tar 내용 지문이 결정적.
+# 같은 내용 다시 → 올리지 않고 재사용 · customer-data 없을 때 빈 저장 · tar 내용 지문이 결정적 · 서버 지문 불일치면 멈추고 ZIP 남김.
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 W=$(mktemp -d); mkdir -p "$W/bin" "$W/assets"
@@ -14,6 +14,12 @@ fi
 if [ "\$1 \$2" = "release upload" ]; then
   [ -e "\$A/\$(basename "\$4")" ] && { echo exists; exit 1; }
   cp "\$4" "\$A/"; echo up >> "$W/uploads.txt"; exit 0
+fi
+if [ "\$1" = "api" ]; then
+  name=\$(printf '%s' "\$4" | sed -n 's/.*name=="\([^"]*\)".*/\1/p')
+  [ -e "\$A/\$name" ] || exit 0
+  if [ -e "$W/bad_digest" ]; then echo "sha256:0000"; else echo "sha256:\$(sha256sum "\$A/\$name" | cut -c1-64)"; fi
+  exit 0
 fi
 exit 9
 EOF
@@ -31,4 +37,8 @@ mkdir -p raw/000001; echo AAA > raw/000001/r1.zip; bash tools/save_customer_batc
 [ "$(wc -l < customer-data/raw-assets.jsonl)" = 3 ] || { echo "목록 줄 수 틀림"; exit 1; }
 [ "$(sed -n 1p customer-data/raw-assets.jsonl | cut -d, -f1)" = "$(sed -n 3p customer-data/raw-assets.jsonl | cut -d, -f1)" ] || { echo "같은 내용 다른 이름"; exit 1; }
 [ -z "$(ls raw/000001)" ] || { echo "ZIP 안 지워짐"; exit 1; }
+grep -q '"digest_verified":true' customer-data/raw-assets.jsonl || { echo "서버 지문 확인 기록 없음"; exit 1; }
+touch "$W/bad_digest"; mkdir -p raw/000002; echo CCC > raw/000002/r9.zip
+if bash tools/save_customer_batch.sh >/dev/null 2>&1; then echo "서버 지문 불일치인데 통과"; exit 1; fi
+[ -e raw/000002/r9.zip ] || { echo "지문 불일치인데 ZIP 지움"; exit 1; }
 echo "저장 시험 통과"
