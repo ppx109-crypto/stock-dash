@@ -544,7 +544,7 @@ def header() -> str:
     )
 
 
-UI_VERSION = "10-15 · 한투 최종본(10-14) · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
+UI_VERSION = "10-16 · 거래 내역 주문 줄 숨김 · 한투 최종본(10-14) · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -589,7 +589,6 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
     """머리 오른쪽 작은 칸: 모의투자 거래 내역(끝난 매매 · 들고 있는 종목의 지금 값 · 최근 주문)."""
     closed = (state or {}).get("closed") or []
     held = list(((state or {}).get("positions") or {}).values())
-    orders = (book or {}).get("orders") or []
     if closed:
         acc = sum((t.get("손익") or 0) * (t.get("칸") or 0) / 10 for t in closed)
         wins = sum(1 for t in closed if (t.get("손익") or 0) > 0)
@@ -598,18 +597,10 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
         line = "끝난 매매 없음"
     line += f' · 들고 있는 {len(held)}종목'
     now_rows = holding_rows(state, book, quotes)
-    rows = []
-    for o in reversed(orders[-shown:]):
-        px = f' @ {float(o["price"]):,.0f}원' if o.get("price") else ""
-        rows.append(f'{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
-                    f'{_e(o.get("name"))} {_e(o.get("qty"))}주{px} · {_e(o.get("status"))}')
-    if not rows:
-        for t in reversed(closed[-shown:]):
-            rows.append(f'{_e(t.get("판 때") or t.get("판 날"))} {_e(t.get("name"))} {float(t.get("손익") or 0):+.1f}%')
-    body = "".join(f"<li>{r}</li>" for r in rows) or "<li>아직 주문이 없습니다</li>"
+    # 최근 주문 줄 · '아직 주문이 없습니다' 줄은 보이지 않음(사용자 2026-10-16 "대시보드에서 위 내용들 전부 삭제해줘") · 장부 파일은 그대로
     held_html = ("<div class=\"pxb-held\">" + "".join(f"<div>{r}</div>" for r in now_rows) + "</div>") if now_rows else ""
     return (f'<div class="pxb-ledger"><b>{_e(title)} · 거래 내역</b><small>{line}</small>'
-            f'{held_html}<ul>{body}</ul></div>')
+            f'{held_html}</div>')
 
 
 def kospi_box(k: dict | None) -> str:
@@ -1220,9 +1211,9 @@ def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = No
     orders = (book or {}).get("orders") or []
     lis = "".join(f'<li>{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
                   f'{_e(OVERLAY_NAME.get(o.get("code"), o.get("code")))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}</li>'
-                  for o in reversed(orders[-3:])) or "<li>아직 주문이 없습니다</li>"
+                  for o in reversed(orders[-3:]))     # 주문이 없으면 빈칸('아직 주문이 없습니다' 안 보임 · 사용자 2026-10-16)
     held_html = ('<div class="pxb-held">' + "".join(f"<div>{r}</div>" for r in rows) + "</div>") if rows else ""
-    return f'<div class="pxb-ledger"><b>📈 레버리지 봇(레버리지 · 인버스) 모의투자 · 몫 40%까지</b><small>{line}</small>{held_html}<ul>{lis}</ul></div>'
+    return f'<div class="pxb-ledger"><b>📈 레버리지 봇(레버리지 · 인버스) 모의투자 · 몫 40%까지</b><small>{line}</small>{held_html}{f"<ul>{lis}</ul>" if lis else ""}</div>'
 
 
 def overlay_regime(closes: list) -> dict:
