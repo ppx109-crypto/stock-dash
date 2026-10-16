@@ -1,6 +1,6 @@
 name: DART customers
 # 사업보고서 원문을 통째로 보관하고 '주요 매출처 · 주요 고객' 문단을 뽑습니다(공개 자료 · MPOS H2 고객–공급사 연결 · 조회 전용).
-# 판 2(GPT #444 반영): 원문 ZIP은 릴리스 dart-customers-raw-v1에 종목별 묶음으로 올리고, 저장소에는 지문 · 문단 · 영수증만 둡니다.
+# 판 3(GPT #444 round 2 반영): 원문 ZIP은 릴리스 dart-customers-raw-v1에 종목별 내용 지문 묶음으로 올리고(덮어쓰기 금지), 저장소에는 지문 · 문단 · 영수증만 둡니다.
 # 50종목마다 저장 · 한 번에 실제 요청 7천 번까지(재시도 · 기업 목록 포함) · 다시 돌리면 이어 받기.
 # 다시 돌리기: customer-run.txt를 바꿔 올리거나 손으로 돌립니다.
 on:
@@ -10,6 +10,8 @@ on:
       - '.github/workflows/dart-customers.yml'
       - 'collect_dart_customers.py'
       - 'tools/save_customer_batch.sh'
+      - 'tests/check_dart_customers.py'
+      - 'tests/check_save_customer_batch.sh'
       - 'customer-run.txt'
 permissions:
   contents: write
@@ -27,6 +29,7 @@ jobs:
           python-version: '3.11'
       - run: pip install requests
       - run: python tests/check_dart_customers.py
+      - run: bash tests/check_save_customer_batch.sh
       - name: Release for raw documents
         env:
           GH_TOKEN: ${{ github.token }}
@@ -51,6 +54,7 @@ jobs:
           echo "실제 요청 합계 $(cat /tmp/customer_used.txt) · 끝 상태 $status"
           case "$status" in
             0) echo "모두 받음";;
-            2) echo "호출 예산 · 한도로 멈춤(다음에 이어 받기)";;
+            2) echo "부분 수집(호출 예산 · 한도) · 다음에 이어 받기";;
+            4) echo "미해결 남음(목록 · 원문)"; exit 1;;
             *) exit 1;;
           esac
