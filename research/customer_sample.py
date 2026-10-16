@@ -82,35 +82,92 @@ def input_digest():
     return h.hexdigest()
 
 
+CLOSURE_KEYS = ("schema", "expected_codes", "excluded", "input_sha256", "agreed_in")
+
+
+def git_head():
+    import subprocess
+    r = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True)
+    head = r.stdout.strip()
+    if r.returncode != 0 or len(head) != 40:
+        return None, "git 커밋을 읽지 못함"
+    st = subprocess.run(["git", "status", "--porcelain", "--", "customer-data", "research/customer_verify_receipt.json"],
+                        capture_output=True, text=True)
+    if st.returncode != 0 or st.stdout.strip():
+        return None, "수집 자료 · 대조 영수증이 커밋되지 않은 변경을 가짐"
+    return head, None
+
+
 def seal_checks():
-    """봉인 전 조건(GPT #444 round 5 §4): 실패하면 이유 목록을 돌려줌(빈 목록 = 통과)."""
+    """봉인 전 조건(GPT #444 round 5 §4 · round 6 §4): 실패 이유 목록(빈 목록 = 통과)."""
     why = []
-    seal = Path("research/customer_sample.json")
-    if seal.exists():
+    if Path("research/customer_sample.json").exists():
         why.append("봉인 파일이 이미 있음(다시 만들거나 덮어쓰지 않음)")
-    try:
-        last = json.loads(Path("customer-data/_last_run.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        last = {}
-    closure = Path("customer-data/_closure.json")
-    if last.get("state") != "모두 받음" and not closure.exists():
-        why.append(f"수집 끝 영수증이 '모두 받음'이 아님({last.get('state')}) · 범위 닫기 영수증(_closure.json)도 없음")
-    unresolved = dup = incomplete = 0
-    for p in sorted(Path("customer-data").glob("[0-9]*.json")):
-        body = json.loads(p.read_text(encoding="utf-8"))
+    expected = sorted(p.stem for p in Path("dart-events").glob("*.json"))
+    closure = None
+    if Path("customer-data/_closure.json").exists():
+        try:
+            closure = json.loads(Path("customer-data/_closure.json").read_text(encoding="utf-8"))
+        except ValueError:
+            closure = {}
+        miss = [k for k in CLOSURE_KEYS if k not in (closure or {})]
+        if miss or closure.get("schema") != "mpos19-closure-v1":
+            why.append(f"범위 닫기 영수증 형식 틀림(빠진 칸 {miss})")
+            closure = None
+        else:
+            expected = sorted(closure["expected_codes"])
+            if closure["input_sha256"] != input_digest():
+                why.append("범위 닫기 영수증의 입력 지문이 지금 자료와 다름")
+            if not str(closure["agreed_in"]).startswith("https://github.com/"):
+                why.append("범위 닫기 합의 근거(PR 댓글 주소) 없음")
+    if closure is None:
+        try:
+            last = json.loads(Path("customer-data/_last_run.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            last = {}
+        if last.get("state") != "모두 받음":
+            why.append(f"수집 끝 영수증이 '모두 받음'이 아님({last.get('state')})")
+    have = sorted(p.stem for p in Path("customer-data").glob("[0-9]*.json"))
+    if have != expected:
+        why.append(f"종목 집합 불일치(기대 {len(expected)} · 있음 {len(have)} · 빠짐 {len(set(expected) - set(have))} · 남음 {len(set(have) - set(expected))})")
+    excluded = {(e["code"], e["rcept_no"]) for e in (closure or {}).get("excluded", [])}
+    manifest = set()
+    for line in Path("customer-data/raw-assets.jsonl").read_text(encoding="utf-8").splitlines() if Path("customer-data/raw-assets.jsonl").exists() else []:
+        if line.strip():
+            r = json.loads(line)
+            manifest |= {(r["code"],) + tuple(z.split(":")) for z in r["zips"].split(",")}
+    bad = {"목록 불완전": 0, "목록 ↔ 기록 불일치": 0, "접수번호 중복": 0, "미해결(제외 목록 밖)": 0, "원문 보관 없음": 0}
+    unresolved = set()
+    for code in have:
+        body = json.loads(Path(f"customer-data/{code}.json").read_text(encoding="utf-8"))
         if body.get("why") == "DART에 없음":
             continue
         if not body.get("list_receipt", {}).get("complete"):
-            incomplete += 1
+            bad["목록 불완전"] += 1
         nos = [f["rcept_no"] for f in body.get("filings", [])]
-        dup += len(nos) - len(set(nos))
-        unresolved += sum(1 for f in body.get("filings", []) if f.get("state", "").startswith("미해결"))
-    if incomplete:
-        why.append(f"목록 영수증 불완전 {incomplete}종목")
-    if dup:
-        why.append(f"접수번호 중복 {dup}건")
-    if unresolved and not closure.exists():
-        why.append(f"미해결 {unresolved}건(범위 닫기 영수증 없이 봉인 불가)")
+        bad["접수번호 중복"] += len(nos) - len(set(nos))
+        if set(nos) != {r["rcept_no"] for r in body.get("listed_reports", [])}:
+            bad["목록 ↔ 기록 불일치"] += 1
+        for f in body.get("filings", []):
+            st = f.get("state", "")
+            if st == "받음" and (code, f["rcept_no"], f.get("zip_sha256")) not in manifest:
+                bad["원문 보관 없음"] += 1
+            if st.startswith("미해결"):
+                unresolved.add((code, f["rcept_no"]))
+                if (code, f["rcept_no"]) not in excluded:
+                    bad["미해결(제외 목록 밖)"] += 1
+    if closure is not None and excluded != unresolved:
+        why.append(f"제외 목록과 실제 미해결이 다름(제외 {len(excluded)} · 미해결 {len(unresolved)})")
+    why += [f"{k} {v}" for k, v in bad.items() if v]
+    try:
+        vr = json.loads(Path("research/customer_verify_receipt.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        vr = {}
+    if not vr.get("ok") or vr.get("input_sha256") != input_digest():
+        why.append("원문 대조 영수증이 없거나 실패이거나 지금 자료와 지문이 다름")
+    head, err = git_head()
+    if err:
+        why.append(err)
     return why
 
 
@@ -160,19 +217,19 @@ def main():
             print("봉인 거절 ·", " / ".join(why))
             return 2
         import platform
-        import subprocess
         plan = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--plan=")), "")
         if not plan or not Path(plan).exists():
             print("봉인 거절 · 감사 계획 파일(--plan=경로)이 필요함")
             return 2
+        head, _ = git_head()
         out["sealed"] = {
-            "snapshot_commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
-            "input_sha256": input_digest(), "sampler_sha256": sha_file(__file__), "plan_sha256": sha_file(plan),
+            "snapshot_commit": head, "input_sha256": input_digest(), "sampler_sha256": sha_file(__file__),
+            "plan_sha256": sha_file(plan), "verify_receipt_sha256": sha_file("research/customer_verify_receipt.json"),
             "python": platform.python_version(), "seed": SEED,
-            "closure": json.loads(Path("customer-data/_closure.json").read_text(encoding="utf-8"))
-            if Path("customer-data/_closure.json").exists() else None,
+            "closure_sha256": sha_file("customer-data/_closure.json") if Path("customer-data/_closure.json").exists() else None,
         }
-        Path("research/customer_sample.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+        with open("research/customer_sample.json", "x", encoding="utf-8") as fh:  # 배타적 생성: 있으면 실패
+            fh.write(json.dumps(out, ensure_ascii=False, indent=1))
         print("봉인 파일 씀 · 표본 지문", out["final_sha256"][:16], "· 입력 지문", out["sealed"]["input_sha256"][:16])
     return 0
 
