@@ -8,7 +8,8 @@
 4) 독립 감사 20: 최종 60개 공급사에서 단순무작위 20개(그 공급사의 최종 보고서).
 - 층(해 묶음 × 원본/정정 × 문단 유무)은 배분에 쓰지 않고, 표본이 층마다 몇 개인지 '범위'로만 보고함.
 - 문단 유무는 정답 음성 근거가 아님. 미해결 · 자료 없음 · 첨부(제외)는 모집단 밖으로 따로 셈.
-- --seal 이면 research/customer_sample.json에 씀(최종 · 개발 목록과 지문 · 포함 확률). 봉인은 수집이 끝난 뒤 한 번.
+- 미리보기(인자 없음)는 건수 · 지문 · 층 범위만 찍음. --seal --plan=<감사 계획> 은 봉인 조건(수집 끝 영수증 '모두 받음' 또는 범위 닫기
+  영수증 · 목록 완전 · 접수번호 고유 · 미해결 0 · 기존 봉인 파일 없음)을 통과할 때만 씀 · 표본 식별자 지문과 입력 자료 지문을 따로 남김.
 """
 import hashlib
 import json
@@ -60,6 +61,59 @@ def pick(by, codes, n, tag):
     return rows
 
 
+def marginal(rows, n, M):
+    """개발 표본: pick()의 pi는 최종을 뺀 뒤의 조건부 확률 · 전체 모집단 기준 주변 확률은 (n / M) / R_i."""
+    for r in rows:
+        r["pi_conditional"] = r.pop("pi")
+        r["weight_conditional"] = r.pop("weight")
+        r["pi_marginal"] = (n / M) / r["R_i"]
+    return rows
+
+
+def sha_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def input_digest():
+    """입력 자료 지문: customer-data의 종목 JSON 전체(이름순) + raw-assets.jsonl."""
+    h = hashlib.sha256()
+    for p in sorted(Path("customer-data").glob("[0-9]*.json")) + [Path("customer-data/raw-assets.jsonl")]:
+        h.update(p.name.encode() + b"\0" + p.read_bytes() + b"\0")
+    return h.hexdigest()
+
+
+def seal_checks():
+    """봉인 전 조건(GPT #444 round 5 §4): 실패하면 이유 목록을 돌려줌(빈 목록 = 통과)."""
+    why = []
+    seal = Path("research/customer_sample.json")
+    if seal.exists():
+        why.append("봉인 파일이 이미 있음(다시 만들거나 덮어쓰지 않음)")
+    try:
+        last = json.loads(Path("customer-data/_last_run.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        last = {}
+    closure = Path("customer-data/_closure.json")
+    if last.get("state") != "모두 받음" and not closure.exists():
+        why.append(f"수집 끝 영수증이 '모두 받음'이 아님({last.get('state')}) · 범위 닫기 영수증(_closure.json)도 없음")
+    unresolved = dup = incomplete = 0
+    for p in sorted(Path("customer-data").glob("[0-9]*.json")):
+        body = json.loads(p.read_text(encoding="utf-8"))
+        if body.get("why") == "DART에 없음":
+            continue
+        if not body.get("list_receipt", {}).get("complete"):
+            incomplete += 1
+        nos = [f["rcept_no"] for f in body.get("filings", [])]
+        dup += len(nos) - len(set(nos))
+        unresolved += sum(1 for f in body.get("filings", []) if f.get("state", "").startswith("미해결"))
+    if incomplete:
+        why.append(f"목록 영수증 불완전 {incomplete}종목")
+    if dup:
+        why.append(f"접수번호 중복 {dup}건")
+    if unresolved and not closure.exists():
+        why.append(f"미해결 {unresolved}건(범위 닫기 영수증 없이 봉인 불가)")
+    return why
+
+
 def digest(rows):
     return hashlib.sha256(json.dumps([[r["code"], r["rcept_no"]] for r in rows]).encode()).hexdigest()
 
@@ -79,6 +133,7 @@ def main():
     final = pick(by, list(by), FINAL, "final")
     rest = [c for c in by if c not in {r["code"] for r in final}]
     dev = pick(by, rest, DEV, "dev")
+    marginal(dev, DEV, M)
     audit_codes = sorted(r["code"] for r in final)
     random.Random(f"{SEED}|audit").shuffle(audit_codes)
     audit = sorted(audit_codes[:AUDIT])
@@ -100,8 +155,25 @@ def main():
     print("최종 범위", json.dumps(out["final_coverage"], ensure_ascii=False))
     print("최종", len(final), "개발", len(dev), "독립 감사", len(audit))
     if "--seal" in sys.argv:
+        why = seal_checks()
+        if why:
+            print("봉인 거절 ·", " / ".join(why))
+            return 2
+        import platform
+        import subprocess
+        plan = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--plan=")), "")
+        if not plan or not Path(plan).exists():
+            print("봉인 거절 · 감사 계획 파일(--plan=경로)이 필요함")
+            return 2
+        out["sealed"] = {
+            "snapshot_commit": subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip(),
+            "input_sha256": input_digest(), "sampler_sha256": sha_file(__file__), "plan_sha256": sha_file(plan),
+            "python": platform.python_version(), "seed": SEED,
+            "closure": json.loads(Path("customer-data/_closure.json").read_text(encoding="utf-8"))
+            if Path("customer-data/_closure.json").exists() else None,
+        }
         Path("research/customer_sample.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
-        print("봉인 파일 씀")
+        print("봉인 파일 씀 · 표본 지문", out["final_sha256"][:16], "· 입력 지문", out["sealed"]["input_sha256"][:16])
     return 0
 
 
