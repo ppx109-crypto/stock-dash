@@ -1,0 +1,47 @@
+name: DART customers
+# 사업보고서 원문의 '주요 매출처 · 주요 고객' 문단을 모읍니다(공개 자료 · MPOS H2 고객–공급사 연결 · 조회 전용).
+# 원본 · 정정본을 접수일 그대로 남깁니다. 50종목마다 저장 · 한 번에 호출 7천 번까지(매일 DART 작업 몫을 남김).
+# 다시 돌리면 받은 데서 이어 갑니다: customer-run.txt를 바꿔 올리거나 손으로 돌립니다.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/dart-customers.yml'
+      - 'collect_dart_customers.py'
+      - 'customer-run.txt'
+permissions:
+  contents: write
+concurrency:
+  group: dart-customers
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect, saving every 50 stocks
+        env:
+          DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
+          CUSTOMER_USED_FILE: /tmp/customer_used.txt
+          CUSTOMER_BUDGET: '7000'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          ls dart-events/*.json | xargs -n1 basename | sed 's/.json//' | paste -sd, | tr ',' '\n' | awk 'NR%50==1{if(NR>1)print s; s=$0; next}{s=s","$0}END{print s}' > /tmp/batches.txt
+          echo 0 > /tmp/customer_used.txt
+          while read -r batch; do
+            [ -z "$batch" ] && continue
+            status=0; CUSTOMER_CODES="$batch" python collect_dart_customers.py || status=$?
+            git add -A customer-data
+            if ! git diff --cached --quiet; then
+              git commit -q -m "DART 주요 매출처 문단 수집(이어 받기)"
+              for i in 1 2 3; do git pull --rebase -q origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && break; sleep 5; done
+            fi
+            [ "$status" = "2" ] && { echo "호출 예산 · 한도로 멈춤"; break; }
+          done < /tmp/batches.txt
+          echo "호출 합계 $(cat /tmp/customer_used.txt)"
