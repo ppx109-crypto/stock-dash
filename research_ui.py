@@ -351,22 +351,20 @@ def live_top_bar():
     lights, at = api_lights()
     # 들고 있는 종목은 지금 값 · 오늘 +/− · 산 값 대비를 1분마다(사용자 2026-10-07 "코스피 장 마감처럼 내 지금 가격 … 실시간으로")
     books = {k: (repo_json_live(f'{k}/state.json'), repo_json_live(f'{k}/paper-orders.json'))
-             for k in ('daily-live', 'm15-live', 'idle-live', 'basket-live', 'overlay-live')}
+             for k in ('daily-live', 'idle-live', 'basket-live', 'overlay-live')}
     quotes = held_quotes(*(s for k, (s, _) in books.items() if k != 'overlay-live'),
                          {'positions': {c: {} for c in ((books['overlay-live'][0] or {}).get('held') or {})}})
     D = _fresh_ui()
     ostate, obook = books['overlay-live']
     final_on = D.final_active(ostate)
     # 한투 최종본(docs/PAPER-FINAL.md · 2026-10-14): 주문하는 봇만 칸에 둠 — 1일봉 · 바구니 · 빈칸 엔진(코스닥 인버스) · 레버리지 봇.
-    # 15분봉은 최종본에서 뺐으니 든 것이 남아 있을 때만 맨 끝에 작게 보임(사용자 2026-10-15 "모의투자 칸은 한투 최신버전으로").
-    m15_left = bool(((books['m15-live'][0] or {}).get('positions') or {}))
+    # 최종 화면에는 활성 봇만 표시. 15분봉 기록과 실행 모듈은 건드리지 않음.
     st.markdown(D.top_bar(
         D.ledger_mini('📅 1일봉 모의투자 · 몫 50%', *books['daily-live'], quotes=quotes),
         D.ledger_mini('🧺 사건 바구니 C 모의투자 · 몫 30%', *books['basket-live'], quotes=quotes),
         D.kospi_box(kospi_last()) + D.lights_box(lights, at),
         D.ledger_mini('🧩 빈칸 엔진 · 코스닥 인버스 모의투자 · 남는 돈', *books['idle-live'], quotes=quotes)
-        + D.overlay_mini(ostate, obook, quotes)
-        + (D.ledger_mini('⏱️ 15분봉(최종본에서 뺌 · 든 것만 팖)', *books['m15-live'], quotes=quotes) if m15_left else '')),
+        + D.overlay_mini(ostate, obook, quotes)),
         unsafe_allow_html=True)
 
 
@@ -467,14 +465,9 @@ def near_lists():
 
 
 def board_marks():
-    """관심종목 판의 두 칸: 코드 → 한 줄 설명(15분봉 규칙 · 1일봉 규칙 · 2026-10-03 1시간봉 칸을 15분봉으로)."""
-    plan, hstate, _ = m15_live()
+    """Dashboard annotations for the visible daily strategy only."""
     today, dstate, _ = daily_live()
-    hourly, daily = {}, {}
-    for c in (plan or {}).get("candidates") or []:
-        hourly[c["code"]] = f'{c.get("name")}  ·  15분봉 매수 후보 · {4 if (c.get("추세문") or c.get("3일연속")) else 2}칸'
-    for p in ((hstate or {}).get("positions") or {}).values():
-        hourly[p["code"]] = f'{p.get("name")}  ·  15분봉 규칙 보유 중 · {p.get("칸")}칸'
+    daily = {}
     for c in (today or {}).get("candidates") or []:
         daily[c["code"]] = f'{c.get("name")}  ·  1일봉 매수 후보 · {c.get("칸")}칸'
     now_near = latest_near()
@@ -483,7 +476,7 @@ def board_marks():
             daily.setdefault(c["code"], f'{c.get("name")}  ·  1일봉 후보(지금 값이면 · {str(now_near.get("at"))[11:16]} 판정 · 15:20에 다시 판단)')
     for p in ((dstate or {}).get("positions") or {}).values():
         daily[p["code"]] = f'{p.get("name")}  ·  1일봉 규칙 보유 중 · {p.get("칸")}칸'
-    return hourly, daily
+    return {}, daily
 
 
 def a_group_stamp():
@@ -553,30 +546,26 @@ def group_board_ui(graded):
     새로 시작돼 로그인이 풀립니다. 그래서 단추로 둡니다. 단추는 같은 화면 안에서
     처리되어 로그인도, 펼쳐 둔 칸도 그대로 남습니다.
     """
-    buckets, pending = group_buckets(graded, *board_marks())
-    h_near, d_near, h_basis, d_basis = near_lists()
-    near = {"A": ("15분봉 매수 후보(충족 미달)", h_near, h_basis), "B": ("1일봉 매수 후보(충족 미달)", d_near, d_basis)}
-    # 최종 판(MIX-0054)에서는 15분봉이 꺼져 첫 칸을 레버리지 봇 칸으로 바꿈(사용자 2026-10-12 "한투 최신 통합 봇으로")
+    buckets, _ = group_buckets(graded, *board_marks())
+    _, d_near, _, d_basis = near_lists()
+    near = {"B": ("1일봉 매수 후보(충족 미달)", d_near, d_basis)}
+    # The first panel is always leverage status: no 15-minute candidate category.
     D = _fresh_ui()
     ostate = repo_json_live('overlay-live/state.json')
-    lever = D.final_active(ostate)
-    if lever:
-        near.pop("A")
     columns = st.columns(len(GROUP_TITLES))
     for column, key in zip(columns, GROUP_TITLES):
         klass = GROUP_TITLES[key][2]
         rows = buckets[key]
         with column, st.container(border=True, key=f'pxgrp-{klass}'):
-            if lever and key == "A":
+            if key == "A":
                 try:
                     regime = D.overlay_regime((repo_json_live('etf-data/069500.json') or {}).get('closes') or [])
                 except Exception:
                     regime = {}
-                st.markdown(D.lever_card(ostate, regime, len(rows)), unsafe_allow_html=True)
-                # 15분봉이 아직 든 종목은 아래 단추로 그대로 보임(새로 사지 않고 제 규칙대로 팖)
-            else:
-                st.markdown(slot_head(key, len(rows)), unsafe_allow_html=True)
-            if not rows and not (lever and key == "A"):
+                st.markdown(D.lever_card(ostate, regime), unsafe_allow_html=True)
+                continue
+            st.markdown(slot_head(key, len(rows)), unsafe_allow_html=True)
+            if not rows:
                 st.caption('해당 종목 없음')
             for row in rows[:SHOWN_PER_GROUP]:
                 st.button(chip_label(row), key=f'pxpick-{key}-{row["code"]}',
@@ -642,8 +631,7 @@ def missing_reports(state):
 
 @st.fragment(run_every=60)
 def rules_board():
-    """통합 매매 규칙 칸(1일봉 · 빈칸 엔진 · 레버리지 봇 · 15분봉) — 1분마다 새 파일로 다시 그림(사용자 2026-10-03 "실시간 반영")."""
-    plan, mstate, malerts = m15_live()
+    """Active bot rules only; refresh every minute. The 15-minute UI category is removed."""
     dtoday, dstate, dalerts = daily_live()
     itoday, istate, ibook = idle_live()
     # 화살표를 눌러야 펼쳐짐(사용자 2026-10-03) — 1분마다 새로 그려도 펼친 상태가 남게 Streamlit 접기 칸(expander)을 씀
@@ -657,9 +645,6 @@ def rules_board():
     final_on = D.final_active(ostate)
     st.markdown('<div class="pxb" style="margin:6px 0 2px">' + section('통합 매매 규칙', D.mix_note(ostate))
                 + '</div>', unsafe_allow_html=True)
-    m15 = ('⏱️ 15분봉 매매 규칙 · 장중 15분마다 · ' + ('최종본에서 뺌(새 매수 없음 · 든 것은 제 규칙대로 팖)' if final_on
-                                                 else '모의투자 몫 50% · 최종 판 시작 날부터 끔'),
-           M15_RULES + sortie_panel(today_a_group(), plan, mstate, malerts, name='15분봉'))
     parts = (('📅 1일봉 매매 규칙 · 하루 한 번 15:20 · 모의투자 몫 50%',
               CLOSE_RULES + close_panel(dtoday, dstate, dalerts)),
              ('🧩 빈칸 엔진 · 🧺 사건 바구니 · 코스닥 인버스 모의투자 · 하루 한 번 15:10 · 규칙들이 안 쓰는 돈'
@@ -667,8 +652,6 @@ def rules_board():
               IDLE_RULES + idle_panel(itoday, istate, ibook)),
              ('📈 레버리지 봇 · 오름장 레버리지 · 횡보장 인버스(각 40%) · 하루 한 번 15:10 엔진 뒤 · ' + ('켜짐' if final_on else '시작 날 정하면 켜짐'),
               D.OVERLAY_RULES + D.overlay_panel(ostate, obook, regime)))
-    # 최종 판: 운영 중인 봇 먼저 · 꺼진 15분봉은 맨 뒤(사용자 2026-10-12)
-    parts = parts + (m15,) if final_on else (m15,) + parts
     for label, body in parts:
         with st.expander(label, expanded=False):
             st.markdown(body, unsafe_allow_html=True)

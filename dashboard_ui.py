@@ -585,10 +585,44 @@ def holding_rows(state: dict | None, book: dict | None, quotes: dict | None) -> 
     return rows
 
 
+
+# User-requested historical display exclusions (2026-10-16).
+# Only the UI hides these exact old records. Underlying orders, broker audit,
+# realized P&L and portfolio/account state must never be rewritten or adjusted.
+_HIDDEN_DASHBOARD_ORDERS = frozenset({
+    ("20261006", "buy", "251340", 45539),
+    ("20261007", "buy", "251340", 36116),
+    ("20261012", "sell", "251340", 36116),
+    ("20261012", "buy", "122630", 290),
+})
+
+
+def _visible_dashboard_order(order: dict, fallback_day: str = "") -> bool:
+    """Hide only four explicitly selected historic orders from rendered lists."""
+    at = str(order.get("at") or fallback_day or "")
+    day = at[:10].replace("-", "")
+    try:
+        qty = int(order.get("qty"))
+    except (TypeError, ValueError):
+        return True  # Unexpected data stays visible; never silently lose new errors.
+    identity = (day, str(order.get("side")), str(order.get("code")), qty)
+    return identity not in _HIDDEN_DASHBOARD_ORDERS
+
+
+def _visible_dashboard_closed(trade: dict) -> bool:
+    """Avoid re-showing the corresponding Oct 12 close as a fallback list item."""
+    day = str(trade.get("판 날") or trade.get("판 때") or "")[:10].replace("-", "")
+    buy_day = str(trade.get("산 날") or "")[:10].replace("-", "")
+    return not (day == "20261012" and buy_day == "20261007"
+                and str(trade.get("code")) == "251340")
+
+
+
 def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 3, quotes: dict | None = None) -> str:
     """머리 오른쪽 작은 칸: 모의투자 거래 내역(끝난 매매 · 들고 있는 종목의 지금 값 · 최근 주문)."""
     closed = (state or {}).get("closed") or []
     held = list(((state or {}).get("positions") or {}).values())
+    orders = (book or {}).get("orders") or []
     if closed:
         acc = sum((t.get("손익") or 0) * (t.get("칸") or 0) / 10 for t in closed)
         wins = sum(1 for t in closed if (t.get("손익") or 0) > 0)
@@ -597,10 +631,21 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
         line = "끝난 매매 없음"
     line += f' · 들고 있는 {len(held)}종목'
     now_rows = holding_rows(state, book, quotes)
-    # 최근 주문 줄 · '아직 주문이 없습니다' 줄은 보이지 않음(사용자 2026-10-16 "대시보드에서 위 내용들 전부 삭제해줘") · 장부 파일은 그대로
+    rows = []
+    shown_orders = [o for o in orders if _visible_dashboard_order(o)]
+    for o in reversed(shown_orders[-shown:]):
+        px = f' @ {float(o["price"]):,.0f}원' if o.get("price") else ""
+        rows.append(f'{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
+                    f'{_e(o.get("name"))} {_e(o.get("qty"))}주{px} · {_e(o.get("status"))}')
+    if not rows and not orders:
+        visible_closed = [t for t in closed if _visible_dashboard_closed(t)]
+        for t in reversed(visible_closed[-shown:]):
+            rows.append(f'{_e(t.get("판 때") or t.get("판 날"))} {_e(t.get("name"))} {float(t.get("손익") or 0):+.1f}%')
+    # 보일 줄이 없으면 빈 목록 문구('아직 주문이 없습니다' 등)도 그리지 않음(사용자 2026-10-16 "위 내용들 전부 삭제해줘")
+    body = "".join(f"<li>{r}</li>" for r in rows)
     held_html = ("<div class=\"pxb-held\">" + "".join(f"<div>{r}</div>" for r in now_rows) + "</div>") if now_rows else ""
     return (f'<div class="pxb-ledger"><b>{_e(title)} · 거래 내역</b><small>{line}</small>'
-            f'{held_html}</div>')
+            f'{held_html}{f"<ul>{body}</ul>" if body else ""}</div>')
 
 
 def kospi_box(k: dict | None) -> str:
@@ -1208,7 +1253,8 @@ def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = N
                  + (f' · 맞춘 국면 {_e(regime_word(st_.get("applied")))}' if st_.get("applied") else " · 다시 맞춤 기다림") + "</div>")
     if st_.get("unconfirmed"):
         body += '<div class="pxb-note" style="margin-top:6px">⚠️ 체결이 확인되지 않은 매도가 있어 다음 실행에 실제 잔고와 맞춥니다.</div>'
-    orders = list(reversed(((book or {}).get("orders") or [])[-8:]))
+    orders = list(reversed([o for o in ((book or {}).get("orders") or [])
+                            if _visible_dashboard_order(o)][-8:]))
     if orders:
         body += ('<div class="pxb-note" style="margin-top:6px">모의투자 주문 (최근 ' + str(len(orders)) + '건)</div><ul class="pxb-note" style="margin:4px 0 0 18px">'
                  + "".join(f'<li>{_e(o.get("at"))} · {"매수" if o.get("side") == "buy" else "매도"} · <b>{_e(OVERLAY_NAME.get(o.get("code"), o.get("code")))}</b> '
@@ -1226,10 +1272,11 @@ def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = No
         qq = (quotes or {}).get(c) or {}
         now = qq.get("price")
         rows.append(f'<b>{_e(OVERLAY_NAME.get(c, c))}</b> {q:,}주' + (f' · 지금 <strong>{now:,.0f}원</strong> (오늘 {_signed(qq.get("rate"), "%", 2)})' if now else ""))
-    orders = (book or {}).get("orders") or []
+    all_orders = (book or {}).get("orders") or []
+    orders = [o for o in all_orders if _visible_dashboard_order(o)]
     lis = "".join(f'<li>{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
                   f'{_e(OVERLAY_NAME.get(o.get("code"), o.get("code")))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}</li>'
-                  for o in reversed(orders[-3:]))     # 주문이 없으면 빈칸('아직 주문이 없습니다' 안 보임 · 사용자 2026-10-16)
+                  for o in reversed(orders[-3:]))     # 보일 주문이 없으면 빈칸(빈 목록 문구 안 그림 · 사용자 2026-10-16)
     held_html = ('<div class="pxb-held">' + "".join(f"<div>{r}</div>" for r in rows) + "</div>") if rows else ""
     return f'<div class="pxb-ledger"><b>📈 레버리지 봇(레버리지 · 인버스) 모의투자 · 몫 40%까지</b><small>{line}</small>{held_html}{f"<ul>{lis}</ul>" if lis else ""}</div>'
 
@@ -1288,13 +1335,16 @@ def idle_panel(today: dict | None, state: dict | None, book: dict | None) -> str
         why = today.get("why") or []
         if why:
             body += '<ul class="pxb-note" style="margin:6px 0 0 18px">' + "".join(f"<li>{_e(w)}</li>" for w in why) + "</ul>"
-        orders = today.get("orders") or []
+        all_today_orders = today.get("orders") or []
+        orders = [o for o in all_today_orders
+                  if _visible_dashboard_order(o, str(today.get("date") or ""))]
         if orders:
             body += ('<div class="pxb-note" style="margin-top:6px"><b>그날 주문</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">'
                      + "".join(f'<li>{"매수" if o.get("side") == "buy" else "매도"} · <b>{_e(IDLE_NAME.get(o.get("code"), o.get("code")))}</b> '
                                f'({_e(o.get("code"))}) {_e(o.get("qty"))}주 · {_e(o.get("why"))}</li>' for o in orders) + "</ul>")
         else:
-            body += '<div class="pxb-note" style="margin-top:6px">오늘은 사고판 것이 없습니다.</div>'
+            note = "표시할 주문이 없습니다." if all_today_orders else "오늘은 사고판 것이 없습니다."
+            body += f'<div class="pxb-note" style="margin-top:6px">{note}</div>'
     held = (state or {}).get("positions") or {}
     if held:
         rows = "".join(f'<li><b>{_e(IDLE_NAME.get(c, c))}</b> ({_e(c)}) · {_e(p.get("kind"))} · 산 값 {float(p.get("price") or 0):,.0f}원 · '
@@ -1443,9 +1493,10 @@ def close_panel(today: dict | None, state: dict | None, alerts: list | None) -> 
 
 def ledger_panel(title: str, state: dict | None, book: dict | None, shown: int = 12) -> str:
     """모의투자 거래 내역: 끝난 매매(연습 계좌, 규칙대로 셈한 손익) · 모의투자 주문 장부."""
-    closed = list(reversed(((state or {}).get("closed") or [])[-shown:]))
-    orders = list(reversed(((book or {}).get("orders") or [])[-shown:]))
     every = (state or {}).get("closed") or []
+    closed = list(reversed([t for t in every if _visible_dashboard_closed(t)][-shown:]))
+    orders = list(reversed([o for o in ((book or {}).get("orders") or [])
+                            if _visible_dashboard_order(o)][-shown:]))
     if every:
         wins = sum(1 for t in every if (t.get("손익") or 0) > 0)
         acc = sum((t.get("손익") or 0) * (t.get("칸") or 0) / 10 for t in every)

@@ -48,6 +48,16 @@ except FileNotFoundError:
 apply_theme()
 
 
+# PlanX Nightfall: UI-only stylesheet, shared across sign-in and dashboard screens.
+# No strategy, account, order or broker state is altered by this theme.
+from pathlib import Path as _PlanXPath
+_planx_dark_css = _PlanXPath(__file__).with_name("assets") / "planx-nightfall.css"
+if _planx_dark_css.is_file():
+    st.markdown("<style>" + _planx_dark_css.read_text(encoding="utf-8") + "</style>",
+                unsafe_allow_html=True)
+
+
+
 class SessionStore:
     cloud = False
 
