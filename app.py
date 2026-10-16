@@ -48,6 +48,16 @@ except FileNotFoundError:
 apply_theme()
 
 
+# PlanX Nightfall: UI-only stylesheet, shared across sign-in and dashboard screens.
+# No strategy, account, order or broker state is altered by this theme.
+from pathlib import Path as _PlanXPath
+_planx_dark_css = _PlanXPath(__file__).with_name("assets") / "planx-nightfall.css"
+if _planx_dark_css.is_file():
+    st.markdown("<style>" + _planx_dark_css.read_text(encoding="utf-8") + "</style>",
+                unsafe_allow_html=True)
+
+
+
 class SessionStore:
     cloud = False
 
@@ -812,12 +822,3 @@ else:
     elif page == "시장 현황": render_market()
     else:
         render_placeholder("테마 & 섹터", "산업별 흐름을 확인합니다.", [("업종 강도", "sector.performance", "업종별 등락과 거래대금"), ("업종 수급", "sector.flow", "외국인·기관 자금 흐름"), ("산업 수출", "industry.export", "품목별 수출 변화")])
-
-
-# PlanX Nightfall: UI-only stylesheet, applied after all legacy component styles.
-# No strategy, account, order or broker state is altered by this theme.
-from pathlib import Path as _PlanXPath
-_planx_dark_css = _PlanXPath(__file__).with_name("assets") / "planx-nightfall.css"
-if _planx_dark_css.is_file():
-    st.markdown("<style>" + _planx_dark_css.read_text(encoding="utf-8") + "</style>",
-                unsafe_allow_html=True)
