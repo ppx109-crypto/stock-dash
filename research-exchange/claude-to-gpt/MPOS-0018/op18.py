@@ -29,17 +29,31 @@ def norm(x):
 labels = collections.Counter()
 events, firsts, mismatch, unknown = [], 0, 0, collections.Counter()
 MM, MMY = collections.Counter(), collections.Counter()
+SAMEDAY = collections.Counter()
 files = sorted(ROOT.glob("*.json"))
 for f in files:
     d = json.load(open(f))
     last = {}
+    # GPT #443 round 2: 같은 증권사 · 같은 날 줄을 먼저 묶음(의견이 서로 다르면 '같은 날 충돌'로 세고 버림) · 비교는 엄격히 앞 날짜 관측과만
+    byday = collections.OrderedDict()
     for r in sorted(d.get("rows") or [], key=lambda x: x["date"]):
+        byday.setdefault((r.get("member"), r["date"]), []).append(r)
+    merged = []
+    for (m_, dt), rs in byday.items():
+        ops = {norm(x.get("opinion")) for x in rs}
+        if len(ops) > 1:
+            SAMEDAY["같은 날 의견 충돌(버림)"] += 1
+            continue
+        merged.append(rs[-1])
+    for r in sorted(merged, key=lambda x: x["date"]):
         o, po, m = norm(r.get("opinion")), norm(r.get("prior_opinion")), r.get("member")
         labels[o] += 1
         if o and o not in LADDER:
             unknown[o] += 1
         g, gp = LADDER.get(o), LADDER.get(po)
         prev = last.get(m)
+        if prev is not None and prev[2] >= r["date"]:
+            raise AssertionError("앞 날짜가 아닌 관측과 비교함")
         if prev is None:
             firsts += 1
         elif g is not None and o not in NOT_RATING:
@@ -54,14 +68,19 @@ for f in files:
                 if up_line:
                     MMY[r["date"][:4]] += 1
         if g is not None:
-            last[m] = (g, o)
+            last[m] = (g, o, r["date"])
 uniq = sorted({(c, dt) for c, dt, *_ in events})
 by_year = collections.Counter(dt[:4] for _, dt in uniq)
-out = {"파일 수": len(files), "표기 종류": len(labels), "많은 표기 20": labels.most_common(20), "사다리 밖 표기": unknown.most_common(30),
+import hashlib, subprocess  # noqa: E401,E402
+man = hashlib.sha256("".join(f.name + hashlib.sha256(f.read_bytes()).hexdigest() for f in files).encode()).hexdigest()
+head = subprocess.run(["git", "-C", "/home/user/stock-dash", "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+out = {"입력": {"저장소 커밋(작업 사본 HEAD)": head, "opinion-data 파일 이름 · 지문 묶음 sha256": man,
+              "PR 가지와 차이": "작업 사본은 2026-10-15 자료 갱신(5395da3)의 006110.json을 더 가짐(417 vs PR 가지 416)"},
+       "같은 날 묶음": dict(SAMEDAY), "파일 수": len(files), "표기 종류": len(labels), "많은 표기 20": labels.most_common(20), "사다리 밖 표기": unknown.most_common(30),
        "증권사 첫 관측(신규 커버리지 · 상향 아님)": firsts, "상향 줄(두 확인 모두)": len(events), "줄 확인 불일치": mismatch,
        "상향 사건(종목 · 날 묶음)": len(uniq), "연도별 사건": dict(sorted(by_year.items())), "사건 있는 종목 수": len({c for c, _ in uniq}),
        "예시 5": events[:5], "불일치 나눔": dict(MM), "prior만 상향 연도별": dict(sorted(MMY.items())),
-       "주의": "TRADING BUY는 중립(3)으로 묶음 · 등급 체계는 증권사마다 다를 수 있음(확인 안 함) · 날짜는 발표일 단위 · 발표 시각 없음"}
+       "주의": "가정하의 잠정 사건 수(증권사별 등급 체계 미확인) · TRADING BUY는 중립(3)으로 묶음 · 등급 체계는 증권사마다 다를 수 있음(확인 안 함) · 날짜는 발표일 단위 · 발표 시각 없음"}
 json.dump(out, open(Path(__file__).with_suffix(".json"), "w"), ensure_ascii=False, indent=1)
 print(json.dumps({k: v for k, v in out.items() if k != "많은 표기 20"}, ensure_ascii=False))
 print("많은 표기", out["많은 표기 20"])
