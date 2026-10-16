@@ -1,6 +1,6 @@
 """research/customer_sample.py 합성 시험(GPT #444 round 5 · 6): 봉인 거절 경로와 정상 경로 · 포함 확률 이론값.
 
-거절해야 하는 것: 미해결 · 끝 영수증 아님 · 빈/형식 틀린 범위 닫기 영수증 · 합의 주소가 형식뿐이거나 댓글 본문에 지문 없음 · 고정 범위 파일 없음 · 종목 집합 불일치 · 목록 ↔ 기록 불일치 ·
+거절해야 하는 것: 미해결 · 끝 영수증 아님 · 빈/형식 틀린 범위 닫기 영수증 · 합의 주소가 형식뿐 · 댓글에 결정 줄 없음 · 반대 댓글 · 다른 PR 소속 · 고정 범위 파일 없음 · 종목 집합 불일치 · 목록 ↔ 기록 불일치 ·
 원문 보관 없음 · 대조 영수증 없음/지문 다름 · git 커밋 실패 · 커밋 안 된 변경 · 계획 없음 · 기존 봉인 파일.
 """
 import io
@@ -95,11 +95,21 @@ closure("https://github.com/"); receipt(); commit(); refused("합의 근거")
 # 주소 형식은 맞지만 댓글 본문에 지문이 없음(가짜 gh) → 거절 · 지문이 모두 있으면 통과 경로
 fake = work / "bin"; fake.mkdir()
 (fake / "gh").write_text("#!/usr/bin/env bash\ncat \"$GH_FAKE_BODY\"\n"); (fake / "gh").chmod(0o755)
+def reply(body, pr=444):
+    body_file.write_text(json.dumps([f"https://api.github.com/repos/ppx109-crypto/stock-dash/issues/{pr}", body], ensure_ascii=False))
 os.environ["PATH"] = f"{fake}:{os.environ['PATH']}"
 body_file = work / "body.txt"; os.environ["GH_FAKE_BODY"] = str(body_file)
 url = "https://github.com/ppx109-crypto/stock-dash/pull/444#issuecomment-123"
-closure(url); body_file.write_text("동의합니다"); receipt(); commit(); refused("합의 근거")
-body_file.write_text(f"범위 닫기 동의 {s.input_digest()} {excl_sha} {scope_sha}")
+fp = f"{s.input_digest()} {excl_sha} {scope_sha}"
+closure(url); reply("동의합니다"); receipt(); commit(); refused("합의 근거")
+# 지문만 나열 · 결정 줄 없음 → 거절
+reply(f"검토 대상 지문: {fp}"); refused("합의 근거")
+# 반대 댓글(GPT round 8 재현 경로) → 결정 줄을 흉내 내도 거절
+reply(f"범위 닫기에 동의하지 않습니다. 아래 지문은 검토 대상일 뿐입니다.\n{s.DECISION}\n{fp}"); refused("합의 근거")
+# 결정 줄 · 지문은 맞지만 다른 PR 소속 댓글 → 거절
+reply(f"{s.DECISION}\n{fp}", pr=999); refused("합의 근거")
+# 결정 줄이 한 줄로 정확히 있고 · 지문 셋 · 같은 PR → 합의 근거 통과
+reply(f"{s.DECISION}\n{fp}")
 assert "합의 근거" not in " ".join(s.seal_checks()), s.seal_checks()
 Path("customer-data/_closure.json").unlink(); p.write_text(orig)
 Path("customer-data/_last_run.json").write_text(json.dumps({"state": "모두 받음"}))

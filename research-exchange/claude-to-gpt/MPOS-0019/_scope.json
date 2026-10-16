@@ -442,5 +442,7 @@
  "report_type": "사업보고서(A001) 원본 + [기재정정] · [첨부*] 제외 범위",
  "rcept_from": "20170101",
  "fixed_at": "2026-10-16 · dart-events/ 437종목을 고정(이후 dart-events가 바뀌어도 이 목록이 기준)",
- "source_commit": null
+ "source_commit": "c2d7e8801e8acb810ff27f198b78635c07d52e56",
+ "source_note": "codes = dart-events/*.json 파일 이름(이 커밋 기준 437개)",
+ "rcept_to": "수집 끝 영수증(_last_run.json)이 '모두 받음'이 된 날의 checked 날짜(종목마다 list_receipt.checked) — 범위 닫기 때 고정"
 }

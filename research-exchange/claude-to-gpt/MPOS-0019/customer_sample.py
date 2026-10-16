@@ -86,16 +86,35 @@ CLOSURE_KEYS = ("schema", "scope_sha256", "excluded", "input_sha256", "agreed_in
 AGREED = r"^https://github\.com/ppx109-crypto/stock-dash/pull/\d+#issuecomment-(\d+)$"
 
 
+DECISION = "MPOS-0019 범위 닫기 결정: 동의"
+
+
 def agreement_ok(url, needles):
-    """합의 근거: 이 저장소 PR 댓글 주소 형식 + 그 댓글을 실제로 읽어 본문에 지정 지문들이 모두 있어야 함."""
+    """합의 근거(GPT #444 round 8 §3): 이 저장소 PR 댓글 주소 형식 · 그 댓글이 실제로 그 PR 소속 ·
+    본문에 결정 줄(DECISION)이 한 줄로 정확히 있고 · 거절 · 반대 낱말이 없고 · 입력 · 제외 · 범위 지문이 모두 있어야 함.
+    지문만 나열하거나 인용 · 반대 검토인 댓글은 합의가 아님."""
     import re
     import subprocess
     m = re.match(AGREED, str(url))
     if not m:
         return False
-    r = subprocess.run(["gh", "api", f"repos/ppx109-crypto/stock-dash/issues/comments/{m.group(1)}", "--jq", ".body"],
-                       capture_output=True, text=True)
-    return r.returncode == 0 and all(n and n in r.stdout for n in needles)
+    pr = re.search(r"/pull/(\d+)#", url).group(1)
+    r = subprocess.run(["gh", "api", f"repos/ppx109-crypto/stock-dash/issues/comments/{m.group(1)}",
+                        "--jq", "[.issue_url, .body] | @json"], capture_output=True, text=True)
+    if r.returncode != 0:
+        return False
+    try:
+        issue_url, body = json.loads(r.stdout)
+    except (ValueError, TypeError):
+        return False
+    if not str(issue_url).endswith(f"/repos/ppx109-crypto/stock-dash/issues/{pr}"):
+        return False
+    lines = [x.strip() for x in str(body).splitlines()]
+    if DECISION not in lines:
+        return False
+    if re.search(r"동의하지\s*않|비동의|거절|반대|동의 안", str(body)):
+        return False
+    return all(n and n in body for n in needles)
 
 
 def git_head():
