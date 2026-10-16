@@ -53,11 +53,11 @@ def main():
                 missing += 1
             elif f["zip_sha256"] not in got:
                 mismatch += 1
-    out = {"자산": len(rows), "자산 문제": len(bad), "받음 보고서": need, "보관 없음": missing, "지문 불일치": mismatch,
-           "문제 예": bad[:5]}
     end = input_digest()
     if end != start:
         bad.append(("대조 도중 입력 자료가 바뀜", ""))
+    out = {"자산": len(rows), "자산 문제": len(bad), "받음 보고서": need, "보관 없음": missing, "지문 불일치": mismatch,
+           "문제 예": bad[:5]}
     ok = not bad and not missing and not mismatch
     print(json.dumps(out, ensure_ascii=False))
     if "--receipt" in sys.argv:
