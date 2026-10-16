@@ -82,7 +82,20 @@ def input_digest():
     return h.hexdigest()
 
 
-CLOSURE_KEYS = ("schema", "expected_codes", "excluded", "input_sha256", "agreed_in")
+CLOSURE_KEYS = ("schema", "scope_sha256", "excluded", "input_sha256", "agreed_in")
+AGREED = r"^https://github\.com/ppx109-crypto/stock-dash/pull/\d+#issuecomment-(\d+)$"
+
+
+def agreement_ok(url, needles):
+    """합의 근거: 이 저장소 PR 댓글 주소 형식 + 그 댓글을 실제로 읽어 본문에 지정 지문들이 모두 있어야 함."""
+    import re
+    import subprocess
+    m = re.match(AGREED, str(url))
+    if not m:
+        return False
+    r = subprocess.run(["gh", "api", f"repos/ppx109-crypto/stock-dash/issues/comments/{m.group(1)}", "--jq", ".body"],
+                       capture_output=True, text=True)
+    return r.returncode == 0 and all(n and n in r.stdout for n in needles)
 
 
 def git_head():
@@ -103,7 +116,14 @@ def seal_checks():
     why = []
     if Path("research/customer_sample.json").exists():
         why.append("봉인 파일이 이미 있음(다시 만들거나 덮어쓰지 않음)")
-    expected = sorted(p.stem for p in Path("dart-events").glob("*.json"))
+    try:
+        scope = json.loads(Path("customer-data/_scope.json").read_text(encoding="utf-8"))
+        assert scope.get("schema") == "mpos19-scope-v1"
+        expected = sorted(scope["codes"])
+        scope_sha = sha_file("customer-data/_scope.json")
+    except (OSError, ValueError, AssertionError, KeyError):
+        why.append("고정 범위 파일(_scope.json)이 없거나 형식 틀림")
+        expected, scope_sha = [], None
     closure = None
     if Path("customer-data/_closure.json").exists():
         try:
@@ -115,11 +135,14 @@ def seal_checks():
             why.append(f"범위 닫기 영수증 형식 틀림(빠진 칸 {miss})")
             closure = None
         else:
-            expected = sorted(closure["expected_codes"])
+            if closure["scope_sha256"] != scope_sha:
+                why.append("범위 닫기 영수증이 고정 범위 파일과 다름")
             if closure["input_sha256"] != input_digest():
                 why.append("범위 닫기 영수증의 입력 지문이 지금 자료와 다름")
-            if not str(closure["agreed_in"]).startswith("https://github.com/"):
-                why.append("범위 닫기 합의 근거(PR 댓글 주소) 없음")
+            excl_sha = hashlib.sha256(json.dumps(sorted([e["code"], e["rcept_no"], e.get("reason", "")]
+                                                        for e in closure["excluded"])).encode()).hexdigest()
+            if not agreement_ok(closure["agreed_in"], [closure["input_sha256"], excl_sha, scope_sha]):
+                why.append("범위 닫기 합의 근거를 확인 못 함(이 저장소 PR 댓글 본문에 입력 · 제외 · 범위 지문이 모두 있어야 함)")
     if closure is None:
         try:
             last = json.loads(Path("customer-data/_last_run.json").read_text(encoding="utf-8"))
@@ -227,6 +250,7 @@ def main():
             "plan_sha256": sha_file(plan), "verify_receipt_sha256": sha_file("research/customer_verify_receipt.json"),
             "python": platform.python_version(), "seed": SEED,
             "closure_sha256": sha_file("customer-data/_closure.json") if Path("customer-data/_closure.json").exists() else None,
+            "scope_sha256": sha_file("customer-data/_scope.json"),
         }
         with open("research/customer_sample.json", "x", encoding="utf-8") as fh:  # 배타적 생성: 있으면 실패
             fh.write(json.dumps(out, ensure_ascii=False, indent=1))
