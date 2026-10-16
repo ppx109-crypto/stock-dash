@@ -1,15 +1,19 @@
 """MPOS-0019 원문 보관 대조: 릴리스 자산을 내려받아 ① tar 지문 = raw-assets.jsonl ② 안의 ZIP 지문 = jsonl · customer-data 기록
-③ 기록의 '받음' 보고서마다 보관된 ZIP이 있는지 셉니다. 수익률 · 연결 풀이는 보지 않습니다(건수 · 지문만 출력)."""
+③ 기록의 '받음' 보고서마다 보관된 ZIP이 있는지 셉니다. --receipt 이면 입력 자료 지문과 묶은 영수증을 씀. 수익률 · 연결 풀이는 보지 않습니다(건수 · 지문만 출력)."""
 import hashlib
 import io
 import json
 import sys
 import tarfile
+import time
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from customer_sample import input_digest  # noqa: E402
+
 BASE = "https://github.com/ppx109-crypto/stock-dash/releases/download/"
-CACHE = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("/tmp/customer_raw")
+CACHE = Path(next((a for a in sys.argv[1:] if not a.startswith("--")), "/tmp/customer_raw"))
 
 
 def sha(b):
@@ -50,8 +54,13 @@ def main():
                 mismatch += 1
     out = {"자산": len(rows), "자산 문제": len(bad), "받음 보고서": need, "보관 없음": missing, "지문 불일치": mismatch,
            "문제 예": bad[:5]}
+    ok = not bad and not missing and not mismatch
     print(json.dumps(out, ensure_ascii=False))
-    return 0 if not bad and not missing and not mismatch else 1
+    if "--receipt" in sys.argv:
+        out.update(ok=ok, input_sha256=input_digest(), verifier_sha256=sha(Path(__file__).read_bytes()),
+                   at=time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()))
+        Path("research/customer_verify_receipt.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
