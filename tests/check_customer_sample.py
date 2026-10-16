@@ -108,6 +108,9 @@ reply(f"검토 대상 지문: {fp}"); refused("합의 근거")
 reply(f"범위 닫기에 동의하지 않습니다. 아래 지문은 검토 대상일 뿐입니다.\n{s.DECISION}\n{fp}"); refused("합의 근거")
 # 결정 줄 · 지문은 맞지만 다른 PR 소속 댓글 → 거절
 reply(f"{s.DECISION}\n{fp}", pr=999); refused("합의 근거")
+# 코드 블록 · 인용 줄 안의 결정 줄(GPT round 9 재현 경로) → 거절
+reply(f"서식 예시입니다.\n```\n{s.DECISION}\n{fp}\n```"); refused("합의 근거")
+reply(f"> {s.DECISION}\n{fp}"); refused("합의 근거")
 # 결정 줄이 한 줄로 정확히 있고 · 지문 셋 · 같은 PR → 합의 근거 통과
 reply(f"{s.DECISION}\n{fp}")
 assert "합의 근거" not in " ".join(s.seal_checks()), s.seal_checks()

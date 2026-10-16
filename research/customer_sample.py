@@ -92,7 +92,8 @@ DECISION = "MPOS-0019 범위 닫기 결정: 동의"
 def agreement_ok(url, needles):
     """합의 근거(GPT #444 round 8 §3): 이 저장소 PR 댓글 주소 형식 · 그 댓글이 실제로 그 PR 소속 ·
     본문에 결정 줄(DECISION)이 한 줄로 정확히 있고 · 거절 · 반대 낱말이 없고 · 입력 · 제외 · 범위 지문이 모두 있어야 함.
-    지문만 나열하거나 인용 · 반대 검토인 댓글은 합의가 아님."""
+    지문만 나열하거나 인용 · 반대 검토인 댓글은 합의가 아님. 코드 블록 · 인라인 코드 · 인용 줄 안의 결정 줄은 세지 않음.
+    이 함수는 본문 형식 확인일 뿐 합의 주체를 인증하지 않음 → 범위 닫기를 실제로 쓸 때는 사용자 확인을 따로 받음."""
     import re
     import subprocess
     m = re.match(AGREED, str(url))
@@ -109,7 +110,10 @@ def agreement_ok(url, needles):
         return False
     if not str(issue_url).endswith(f"/repos/ppx109-crypto/stock-dash/issues/{pr}"):
         return False
-    lines = [x.strip() for x in str(body).splitlines()]
+    body = re.sub(r"```.*?```", " ", str(body), flags=re.S)  # 코드 블록 안 인용 · 예시는 결정이 아님
+    body = re.sub(r"`[^`]*`", " ", body)
+    body = "\n".join(x for x in body.splitlines() if not x.lstrip().startswith(">"))  # 인용 줄 제외
+    lines = [x.strip() for x in body.splitlines()]
     if DECISION not in lines:
         return False
     if re.search(r"동의하지\s*않|비동의|거절|반대|동의 안", str(body)):
