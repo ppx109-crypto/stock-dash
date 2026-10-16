@@ -39,6 +39,8 @@ BUDGET = int(os.getenv("CUSTOMER_BUDGET", "7000"))
 USED_FILE = os.getenv("CUSTOMER_USED_FILE", "")
 SAVE_EVERY = int(os.getenv("CUSTOMER_SAVE_EVERY", "0"))
 PAUSE = float(os.getenv("CUSTOMER_PAUSE", "0.6"))
+DEADLINE = float(os.getenv("CUSTOMER_MINUTES", "0")) * 60
+STARTED = time.time()
 FIRST = "20170101"
 NEAR, CAP, BEFORE, AFTER, WIDE = 4, 10, 2, 15, 240
 
@@ -71,6 +73,8 @@ class Dart:
         for turn in range(3):
             if self.used >= BUDGET:
                 raise Stop("budget", "이번에 쓸 호출 수를 다 썼습니다.")
+            if DEADLINE and time.time() - STARTED > DEADLINE:
+                raise Stop("budget", "이번 실행 시간을 다 썼습니다.")
             time.sleep(PAUSE)
             self.used += 1
             self.keep()
@@ -156,6 +160,10 @@ def listing(d, corp, today):
         receipt["pages"].append(page)
         rows += [{k: x.get(k) for k in ("rcept_no", "rcept_dt", "report_nm", "rm")} for x in data.get("list") or []]
         if page >= int(data.get("total_page") or 1):
+            nos = [x["rcept_no"] for x in rows]
+            if len(set(nos)) != len(nos):
+                receipt["fail"] = f"접수번호 중복 {len(nos) - len(set(nos))}건"
+                return None, receipt
             receipt["complete"] = len(rows) == int(data.get("total_count") or 0)
             if not receipt["complete"]:
                 receipt["fail"] = f"건수 불일치 {len(rows)}/{data.get('total_count')}"
