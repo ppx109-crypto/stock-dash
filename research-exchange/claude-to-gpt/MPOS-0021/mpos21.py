@@ -3,7 +3,7 @@
  A 레버리지 봇 국면(덧붙임만 바꿈 · 바탕 = 원판 BASE 바탕 = REPRO_G):
    A_OFF(국면 제거 · 덧붙임 없음) · A_ON(국면 제거 · 늘 레버리지 0.4)
    A2_50 · A2_60 · A2_70(두 국면: 069500 종가 < N일선 = 하락(없음) · 그 밖 = 상승(레버리지 0.4) · 버팀 1)
-   A5_075 · A5_100 · A5_125(다섯 국면: z = (종가 / 60일선 − 1) / (20일 흔들림 × √(20/250)) · z ≥ b 강상승 레버리지 0.4 ·
+   A5_075 · A5_100 · A5_125(네 국면: z = (종가 / 60일선 − 1) / (20일 흔들림 × √(20/250)) · z ≥ b 강상승 레버리지 0.4 ·
                          0 ≤ z < b 약상승 레버리지 0.2 · −b ≤ z < 0 약하락 인버스 0.2 · z < −b 강하락 없음 · 버팀 3)
  B 1일봉 국면 문(069500 전 거래일 종가 < N일선이면 새로 안 삼): B50 · B60 · B70 · BX50 · BX60 · BX70(BX = 그 조건이면 들고 있는 것도 팜)
  C 시장 폭 문(정배열 갈래): C0(문 없앰 = 국면 제거) · C40 · C60 · CT(잘게: 폭 < 40 안 삼 · 40 ~ 50 정배열 1칸 · 50 ↑ 원판)
@@ -45,7 +45,7 @@ POISON_CELLS = ("B60", "BX60", "C0", "CT", "GLEAK")
 POISONS = ("20190628", "20240628")
 CUTMODES = {"P": "scale", "D": "drop"}
 RAW_SHA = "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99"
-FILES = ("ex21.py", "mpos21.py", "parts20.py", "self21.py")
+FILES = ("ex21.py", "mpos21.py", "parts21.py", "self21.py", "self21b.py")
 
 
 def verify():
@@ -83,10 +83,14 @@ def raw_state(f, cfg):
         ma, v = Dv.ma_of(f, 60), f.get("v20a")
         if ma is None or not v:
             return "강하락"
-        z = (f["close"] / ma - 1) / (v * math.sqrt(20 / 250))
-        b = cfg["zb"]
-        return "강상승" if z >= b else "약상승" if z >= 0 else "약하락" if z >= -b else "강하락"
+        return band((f["close"] / ma - 1) / (v * math.sqrt(20 / 250)), cfg["zb"])
     return _RAW(f, cfg)
+
+
+def band(z, b):
+    """네 국면(GPT #450 3: '다섯'이 아니라 넷 · 처음 '횡보'는 버팀이 차기 전 상태일 뿐). z는 흔들림으로 나눈 거리(검정 통계량 아님).
+    z ≥ b 강상승 · 0 ≤ z < b 약상승 · −b ≤ z < 0 약하락 · z < −b 강하락."""
+    return "강상승" if z >= b else "약상승" if z >= 0 else "약하락" if z >= -b else "강하락"
 
 
 def targets(state, cfg, f=None):
@@ -108,7 +112,7 @@ def acct(base_csv, cell=None):
 # ---- 장부 ----
 def eng_job(name, extra):
     env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG") if k in os.environ}
-    env.update(NRL_CACHE="/tmp/maxret-0026-cache.pkl", PYTHONHASHSEED="0", EX_OUT=str(WORK / f"led_{name}.json"), EX_PARTS=str(HERE / "parts20.py"), **extra)
+    env.update(NRL_CACHE="/tmp/maxret-0026-cache.pkl", PYTHONHASHSEED="0", EX_OUT=str(WORK / f"led_{name}.json"), EX_PARTS=str(HERE / "parts21.py"), **extra)
     return dict(cmd=[sys.executable, str(M.TREE_RUN), str(WORK / f"eng_{name}.mods.json"), str(HERE / "ex21.py")], env=env, cwd=str(M.TREE),
                 out=str(WORK / f"eng_{name}.log"), clean=[str(WORK / f"led_{name}.json"), str(WORK / f"led_{name}.json.audit.json")])
 
@@ -128,8 +132,9 @@ def audit_ok(c, a):
     """모든 판: 부품 지문 = 잠금 · 판단 합 > 0 · 미래 바 0 · 판단 날 못 읽음 0 · 미래 칸 0(새 칸은 종가 다음 칸을 안 읽음).
     정직한 칸: 국면 문이 읽은 069500 날 ≥ 판단 날 = 0. GLEAK 본판: ≥ 1이어야 함(감사 도구의 힘)."""
     sides = [a[k] for k in ("앞", "뒤") if k in a]
-    base = bool(sides) and a.get("부품 지문") == X.sha(str(HERE / "parts20.py")) and sum(x["판단 수"] for x in sides) > 0 and all(
-        x["미래 바(오늘 바 날 > 판단 날)"] == 0 and x["판단 날 못 읽음"] == 0 and x["미래 칸(읽은 칸 > 오늘 칸)"] == 0 for x in sides)
+    base = bool(sides) and a.get("부품 지문") == X.sha(str(HERE / "parts21.py")) and sum(x["판단 수"] for x in sides) > 0 and all(
+        x["미래 바(오늘 바 날 > 판단 날)"] == 0 and x["판단 날 못 읽음"] == 0 and x["미래 칸(읽은 칸 > 오늘 칸)"] == 0
+        and x["배정 칸 대조"]["배정 칸 ≠ 보유 칸"] == 0 for x in sides)
     gate = sum(x["국면 문"]["읽은 069500 날 ≥ 판단 날"] for x in sides)
     if c.split("_")[0] in LEAKS:
         return base and (gate >= 1 if "_" not in c else True)
@@ -151,13 +156,20 @@ def _rec(jobs, rc):
 
 
 def selftest():
-    """국면 함수 합성 시험(self21.py · 이 폴더에서 바로 · 성과 출력 없음)."""
+    """합성 시험(성과 출력 없음): self21.py(국면 함수 · 경계 · 버팀 · 고르기 · 이 폴더에서 바로) + self21b.py(진입 기록 · 고정 나무 진짜 lab.run · tree_run)."""
     lock = verify()
     import subprocess
     r = subprocess.run([sys.executable, str(HERE / "self21.py")], capture_output=True, text=True, cwd=str(HERE))
     got = json.load(open(WORK / "self_out.json")) if (WORK / "self_out.json").exists() else {"행": [{"시험": "실행", "판정": "FAIL", "오류": r.stderr[-500:]}]}
-    rows = got["행"] + [{"시험": "실행", "판정": "PASS" if r.returncode == 0 else "FAIL"}]
-    json.dump({"잠금": lock, "행": rows, "영수증 지문": X.sha(str(WORK / "self_out.json")) if (WORK / "self_out.json").exists() else None},
+    env = {k: os.environ[k] for k in ("PATH", "HOME", "LANG") if k in os.environ}
+    env.update(PYTHONHASHSEED="0", EX_PARTS=str(HERE / "parts21.py"), EX_OUT=str(WORK / "self21b_out.json"))
+    rb = subprocess.run([sys.executable, str(M.TREE_RUN), str(WORK / "self21b.mods.json"), str(HERE / "self21b.py")], env=env, cwd=str(M.TREE),
+                        capture_output=True, text=True)
+    gb = json.load(open(WORK / "self21b_out.json")) if (WORK / "self21b_out.json").exists() else {"행": [{"시험": "B 실행", "판정": "FAIL"}]}
+    mods = json.load(open(WORK / "self21b.mods.json"))
+    rows = got["행"] + [{"시험": "실행", "판정": "PASS" if r.returncode == 0 else "FAIL"}] + gb["행"] + [
+        {"시험": "B 실행 · 바깥 모듈 없음 · 부품 지문", "판정": "PASS" if rb.returncode == 0 and not mods["바깥"] and gb.get("부품 지문") == lock["parts21.py"] else "FAIL"}]
+    json.dump({"잠금": lock, "행": rows, "영수증 지문": [X.sha(str(WORK / f)) if (WORK / f).exists() else None for f in ("self_out.json", "self21b_out.json")]},
               open(HERE / "receipt_self.json", "w"), ensure_ascii=False, indent=1)
     print(sum(x["판정"] == "PASS" for x in rows), "/", len(rows))
     if any(x["판정"] != "PASS" for x in rows):
@@ -197,13 +209,14 @@ def buys(led, t):
 
 
 def entries(name, t):
-    """엔진이 실제로 산 진입 기록(크기 함수 덮개 · ex21 ENTRIES) 가운데 자른 날까지(두 반 차례대로)."""
+    """엔진이 산 진입 기록(parts21.Entries: 종목 · 산 날 · 요청 칸 · 배정 칸) 가운데 자른 날까지(두 반 차례대로)."""
     a = json.load(open(WORK / f"led_{name}.json.audit.json"))
-    return [tuple(e) for k in ("앞", "뒤") for e in a[k]["진입"] if e[1] <= t]
+    return [tuple(e) for k in ("앞", "뒤") for e in a[k]["진입(종목 · 산 날 · 요청 칸 · 배정 칸)"] if e[1] <= t]
 
 
 def same_cut(full, part, t, mode, fname=None, pname=None):
-    """P(0.7배) · D(안 읽기) 모두: 자른 날까지 끝난 매매(줄 전체)가 같음 + 자른 날까지 엔진이 산 진입 기록(종목 · 날 · 칸 · 차례)이 똑같음.
+    """P(0.7배) · D(안 읽기) 모두: 자른 날까지 끝난 매매(줄 전체)가 같음 + 자른 날까지 진입 기록(종목 · 날 · 요청 칸 · 배정 칸 · 차례)이 똑같음.
+    배정 칸은 엔진 지역 변수로 셈하고, 다음 날 보유 칸 관찰과 장부 단계에서 대조(audit_ok).
     (MPOS-0020의 D는 '진입 ⊆'였음 → 누수가 진입을 더 막으면 못 잡음 · 여기서 고침)"""
     done = sorted(tuple(r) for r in full if r[2] <= t) == sorted(tuple(r) for r in part if r[2] <= t)
     return done and entries(fname, t) == entries(pname, t)
@@ -322,7 +335,7 @@ def front_pick(R):
     """갈래마다 앞 반 손실 달 → 앞 반 연 → 고정 순서(FAM 목록 순). 뒤 반 값은 안 씀."""
     out = {}
     for fam, cs in FAM.items():
-        best = sorted(cs, key=lambda c: (R[c]["앞손실"], -round(front_annual(R[c]), 9), cs.index(c)))[0]
+        best = sorted(cs, key=lambda c: (R[c]["앞손실"], -front_annual(R[c]), cs.index(c)))[0]      # 비교엔 반올림 없음(GPT #446 · #450) · 표시만
         out[fam] = {"고른 칸": best, "앞손실": R[best]["앞손실"], "앞연": round(front_annual(R[best]), 3), "뒤손실": R[best]["뒤손실"],
                     "기준 뒤손실": R["BASE"]["뒤손실"]}
     return out
@@ -359,7 +372,8 @@ def run():
     rank = sorted(ok, key=lambda c: (-math.floor(R[c]["최악달"] / 5), R[c]["손실"], -math.floor(R[c]["MDD"] / 2), -R[c]["연_거래일"], c))
     out = {"cells": R, "기준선": "BASE(= REPRO_G)", "기전": {"지지": "미검증", "뜻": "국면 칸은 무작위 대조 없음 → 판정은 ①~⑥로만"},
            "잣대": why, "자격": ok, "순위": rank, "판정": "PASS_DIAGNOSTIC(진단 전용 · 후보 아님)" if rank else "NO_IMPROVEMENT",
-           "손실 달 수(보고 · 사용자 목표 '모든 달 양수')": {c: R[c]["손실"] for c in R},
+           "달 수 +/0/−(보고 · 사용자 목표 '모든 달 양수' · 손실 < 40은 그 달성이 아님 · 0인 달도 양수 아님)": {c: [R[c]["이익"], R[c]["영"], R[c]["손실"]] for c in R},
+           "대조군 예외": "A_OFF · A_ON은 이웃이 없어 ⑤를 면제한 대조군 · 일반 칸과 같은 강도의 통과로 해석하지 않음",
            "앞 기간 고르기(보고)": front_pick(R),
            "국면 문(보고)": {c: {k: rl[c]["감사"][k]["국면 문"] for k in ("앞", "뒤")} for c in LEDGER},
            "바탕 평균 몫(보고)": {c: M.shares(WORK / f"base_{c}.csv") for c in BUILD}, "잠금": lock}
