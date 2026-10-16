@@ -389,8 +389,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-13",
+  "fetched": "2026-10-16",
   "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000505"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000492"
+    },
     {
       "title": "최대주주등소유주식변동신고서              ",
       "date": "20261013",
@@ -530,16 +540,6 @@
       "title": "주요사항보고서(자기주식취득결정)",
       "date": "20260821",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000616"
-    },
-    {
-      "title": "수시공시의무관련사항(공정공시)              ",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800763"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000262"
     }
   ]
 }

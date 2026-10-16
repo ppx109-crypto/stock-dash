@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-01",
+  "fetched": "2026-10-16",
   "disclosures": [
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000490"
+    },
     {
       "title": "영업(잠정)실적(공정공시)              ",
       "date": "20261001",
@@ -535,11 +540,6 @@
       "title": "생산중단              ",
       "date": "20260724",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724800692"
-    },
-    {
-      "title": "특수관계인에대한출자",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000432"
     }
   ]
 }

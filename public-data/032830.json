@@ -38,8 +38,23 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-13",
+  "fetched": "2026-10-16",
   "disclosures": [
+    {
+      "title": "계열금융회사의약관에의한금융거래-[유가증권-채권]",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000453"
+    },
+    {
+      "title": "계열금융회사의약관에의한금융거래-[유가증권-수익증권]",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000446"
+    },
+    {
+      "title": "계열금융회사의약관에의한금융거래-[보험]",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000442"
+    },
     {
       "title": "주요사항보고서(자본으로인정되는채무증권발행결정)",
       "date": "20261008",

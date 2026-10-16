@@ -321,8 +321,28 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-09-30",
+  "fetched": "2026-10-16",
   "disclosures": [
+    {
+      "title": "특수관계인에대한출자",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000029"
+    },
+    {
+      "title": "특수관계인에대한담보제공",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016000028"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016800036"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20261016",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261016800024"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260930",
@@ -452,26 +472,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260803",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000356"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260803",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000351"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260803",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000345"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260803",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000341"
-    },
-    {
-      "title": "최대주주등소유주식변동신고서              ",
-      "date": "20260803",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803800794"
     }
   ]
 }
