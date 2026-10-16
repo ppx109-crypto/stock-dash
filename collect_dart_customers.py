@@ -1,11 +1,12 @@
 """DART 사업보고서 원문을 통째로 보관하고 '주요 매출처 · 주요 고객' 문단을 뽑습니다(공개 자료 · MPOS H2 고객–공급사 연결).
 
 판 2(GPT #444 고칠 것 반영):
-- 원문 보존: 접수번호마다 받은 ZIP을 그대로 raw/<종목>/<접수번호>.zip에 두고, 종목마다 묶어 릴리스 자산으로 올립니다
-  (작업 파일이 함). 저장소에는 지문(sha256) · ZIP 안 파일 이름과 지문 · 크기만 남깁니다.
+- 원문 보존: 접수번호마다 받은 ZIP을 그대로 raw/<종목>/<접수번호>.zip에 두고, 저장 스크립트가 종목마다 묶어
+  내용 지문 이름(raw-<종목>-<tar sha256 앞 16자>.tar)으로 릴리스에 올립니다(덮어쓰기 금지 · 같은 이름은 같은 내용만).
+  어느 ZIP이 어느 묶음에 있는지는 customer-data/raw-assets.jsonl에 남깁니다.
 - 줄 · 표 구조 보존: 문단 · 표 행은 줄로, 칸은 ' | '로 남기고 줄바꿈을 지우지 않습니다. 장 제목은 '§ '줄로 남깁니다.
 - 저장소 문단은 낱말 줄 앞 2줄 · 뒤 15줄 · 한 줄 240자까지(전체는 릴리스 원문에서 다시 뽑을 수 있음).
-- 뽑은 문단에는 ZIP 안 파일 이름 · 줄 번호 · 가장 가까운 장 제목 · 풀이 판(PARSER)을 붙이고,
+- 뽑은 문단에는 ZIP 안 파일 이름 · 줄 번호(정규화 뒤 0부터 센 줄 · XML 원문 줄 아님 · colspan/rowspan · 당기/전기 열 대응은 아직 검증 안 함) · 가장 가까운 장 제목 · 풀이 판(PARSER)을 붙이고,
   버린 낱말 자리 수(가까움 · 감사 문단 · 개수 상한)도 셉니다. 문단 없음 ≠ 고객 없음.
 - 호출 상한: 실제 요청 한 번마다(재시도 · 기업 목록 포함) 먼저 예산을 보고 세고 기록합니다.
 - 거절 · 한도: HTTP 401/403 · DART 010/011/012/901 → 멈춤(키 문제). HTTP 429 · DART 020 → 기록 뒤 멈춤(다음에 이어 받기).
@@ -32,8 +33,6 @@ API = "https://opendart.fss.or.kr/api/"
 OUT = Path("customer-data")
 RAW = Path(os.getenv("CUSTOMER_RAW", "raw"))
 PARSER = "c2"
-RUN = os.getenv("GITHUB_RUN_ID", "local")
-TAG = os.getenv("CUSTOMER_TAG", "dart-customers-raw-v1")
 KEYS = re.compile(r"주요\s?매출처|주요\s?고객|주요\s?거래처|주요\s?판매처|매출처\s?현황|외부\s?고객")
 SKIP = re.compile(r"감사절차|감사인|핵심감사사항")
 BUDGET = int(os.getenv("CUSTOMER_BUDGET", "7000"))
@@ -144,8 +143,11 @@ def listing(d, corp, today):
         status = dart_status(content)
         check(status)
         if status == "013":
-            receipt.update(total_count=0, total_page=0, complete=True)
-            return rows, receipt
+            if page == 1 and not rows:
+                receipt.update(total_count=0, total_page=0, complete=True)
+                return rows, receipt
+            receipt["fail"] = f"{page}쪽 DART 013(앞쪽 {len(rows)}건 뒤 빈 쪽)"
+            return None, receipt
         if status != "000":
             receipt["fail"] = f"DART {status}"
             return None, receipt
@@ -155,6 +157,9 @@ def listing(d, corp, today):
         rows += [{k: x.get(k) for k in ("rcept_no", "rcept_dt", "report_nm", "rm")} for x in data.get("list") or []]
         if page >= int(data.get("total_page") or 1):
             receipt["complete"] = len(rows) == int(data.get("total_count") or 0)
+            if not receipt["complete"]:
+                receipt["fail"] = f"건수 불일치 {len(rows)}/{data.get('total_count')}"
+                return None, receipt
             return rows, receipt
         page += 1
 
@@ -189,7 +194,6 @@ def passages(member, lines):
     for i, line in enumerate(lines):
         if line.startswith("§ "):
             title = line[2:]
-            continue
         if not KEYS.search(line):
             continue
         total += 1
@@ -247,18 +251,21 @@ def fetch(d, code, r):
         return filing
     http, content = d.get("document.xml", 120, rcept_no=r["rcept_no"])
     if http is None:
-        filing["state"] = "받기 실패 · " + content
+        filing["state"] = "미해결 · 받기 실패 · " + content
         return filing
     status = dart_status(content)
     check(status)
     filing["http"] = http
-    if status != "zip":
-        filing["state"] = f"원문 없음 · DART {status}"
+    if status in ("013", "014"):
+        filing["state"] = f"자료 없음 · DART {status}"
+        return filing
+    if status != "zip" or http != 200:
+        filing["state"] = f"미해결 · HTTP {http} · DART {status}"
         return filing
     folder = RAW / code
     folder.mkdir(parents=True, exist_ok=True)
     (folder / f"{r['rcept_no']}.zip").write_bytes(content)
-    filing.update(raw_asset=f"{TAG}/raw-{code}-r{RUN}.tar", zip_sha256=sha(content), zip_bytes=len(content), members=[], passages=[], hits=0,
+    filing.update(zip_sha256=sha(content), zip_bytes=len(content), members=[], passages=[], hits=0,
                   drop={"near": 0, "audit": 0, "cap": 0})
     try:
         with zipfile.ZipFile(io.BytesIO(content)) as z:
@@ -272,10 +279,14 @@ def fetch(d, code, r):
                 for k in drop:
                     filing["drop"][k] += drop[k]
     except zipfile.BadZipFile:
-        filing["state"] = "ZIP 깨짐"
+        filing["state"] = "미해결 · ZIP 깨짐"
         return filing
     filing["state"] = "받음"
     return filing
+
+
+class SaveFailed(Exception):
+    pass
 
 
 def commit(note):
@@ -284,7 +295,17 @@ def commit(note):
         return
     result = subprocess.run(["bash", "-c", hook], check=False)
     if result.returncode != 0:
-        raise SystemExit(f"저장 실패({note}) · {result.returncode}")
+        raise SaveFailed(f"저장 실패({note}) · 상태 {result.returncode}")
+
+
+def report(state, **info):
+    """실행 영수증: 끝 상태와 셈(키 · 주소 · 응답 본문 없음)."""
+    OUT.mkdir(exist_ok=True)
+    body = {"state": state, "parser": PARSER, "run": os.getenv("GITHUB_RUN_ID", "local"),
+            "attempt": os.getenv("GITHUB_RUN_ATTEMPT", "1"), "at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
+            **info}
+    (OUT / "_last_run.json").write_text(json.dumps(body, ensure_ascii=False, indent=1), encoding="utf-8")
+    print("영수증 ·", json.dumps(body, ensure_ascii=False), flush=True)
 
 
 def main():
@@ -294,8 +315,9 @@ def main():
         return 1
     d = Dart(key)
     today = date.today().strftime("%Y%m%d")
-    done = failed = 0
+    count = {"종목 끝": 0, "DART에 없음": 0, "목록 실패": 0, "새로 받음": 0, "자료 없음": 0, "제외": 0, "미해결": 0}
     body = None
+    stop = None
     try:
         corps, names = corp_map(d)
         for n, code in enumerate(codes(), 1):
@@ -303,6 +325,7 @@ def main():
             body = load(code)
             if not corp:
                 body["why"] = "DART에 없음"
+                count["DART에 없음"] += 1
                 save(body)
                 body = None
                 continue
@@ -311,36 +334,55 @@ def main():
             body["name"] = names.get(code)
             body["list_receipt"] = {**receipt, "checked": today}
             if rows is None:
-                failed += 1
+                count["목록 실패"] += 1
                 save(body)
                 body = None
                 print(code, "목록 실패 ·", receipt.get("fail"), flush=True)
-                continue
-            body["listed_reports"] = rows
-            new = 0
-            for r in sorted(rows, key=lambda x: (x["rcept_dt"], x["rcept_no"])):
-                if r["rcept_no"] in have:
-                    continue
-                filing = fetch(d, code, r)
-                body["filings"] = [f for f in body["filings"] if f["rcept_no"] != r["rcept_no"]] + [filing]
-                new += 1
-            save(body)
-            body = None
-            done += 1
-            print(code, names.get(code), "보고서", len(rows), "· 새로", new, "· 호출", d.used, flush=True)
+            else:
+                body["listed_reports"] = rows
+                new = 0
+                for r in sorted(rows, key=lambda x: (x["rcept_dt"], x["rcept_no"])):
+                    if r["rcept_no"] in have:
+                        continue
+                    filing = fetch(d, code, r)
+                    body["filings"] = [f for f in body["filings"] if f["rcept_no"] != r["rcept_no"]] + [filing]
+                    new += 1
+                    st = filing["state"]
+                    count["새로 받음" if st == "받음" else "제외" if st.startswith("제외") else
+                          "자료 없음" if st.startswith("자료 없음") else "미해결"] += 1
+                save(body)
+                body = None
+                count["종목 끝"] += 1
+                print(code, names.get(code), "보고서", len(rows), "· 새로", new, "· 호출", d.used, flush=True)
             if SAVE_EVERY and n % SAVE_EVERY == 0:
                 commit(f"{n}종목")
     except Stop as why:
+        stop = why
         if body is not None:
             save(body)
+    except SaveFailed as why:
         d.keep()
-        commit("멈춤")
-        print(f"멈춤({why.kind}) · {why} · 끝낸 종목 {done} · 호출 {d.used}", flush=True)
-        return 3 if why.kind == "auth" else 2
+        report("저장 실패", why=str(why), used=d.used, **count)
+        return 5
     d.keep()
-    commit("끝")
-    print(f"끝 · 종목 {done} · 목록 실패 {failed} · 호출 {d.used}")
-    return 0 if failed == 0 else 4
+    left = sum(1 for p in OUT.glob("[0-9]*.json")
+               for f in json.loads(p.read_text(encoding="utf-8")).get("filings", []) if f.get("state", "").startswith("미해결"))
+    if stop is not None:
+        state = "멈춤 · 키 문제" if stop.kind == "auth" else "부분 수집 · " + ("호출 예산" if stop.kind == "budget" else "한도")
+        report(state, why=str(stop), used=d.used, 남은_미해결=left, **count)
+        code = 3 if stop.kind == "auth" else 2
+    elif count["목록 실패"] or left:
+        report("미해결 남음", used=d.used, 남은_미해결=left, **count)
+        code = 4
+    else:
+        report("모두 받음", used=d.used, 남은_미해결=0, **count)
+        code = 0
+    try:
+        commit("끝")
+    except SaveFailed as why:
+        report("저장 실패", why=str(why), 앞_상태=code, used=d.used, **count)
+        return 5
+    return code
 
 
 if __name__ == "__main__":
