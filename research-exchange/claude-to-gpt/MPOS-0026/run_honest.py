@@ -41,28 +41,22 @@ if MODE == "FULL":
     keep = {k: H[k] for k in ("inside", "T", "BR", "first_day", "shape")}
     pickle.dump(keep, open(OUT + ".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     man = price_manifest()
-    out = {"모드": MODE, "실측": H["실측"], "inside 행 지문": rows_sha(H["inside"]), "달 문턱 수": len(H["T"]),
+    out = {"모드": MODE, "실측": H["실측"], "inside 행 지문": rows_sha(H["inside"]),
+           "가격 지문 뜻": "원파일 바이트가 아니라 study.load_prices로 읽은 rows의 JSON 직렬화 SHA256", "달 문턱 수": len(H["T"]),
            "달 문턱 없음(k < 1000) 달": [m for m, v in H["T"].items() if v is None][:5],
-           "가격 파일 지문 묶음": hashlib.sha256(json.dumps(man, sort_keys=True).encode()).hexdigest(), "가격 종목 수": len(man)}
+           "가격 rows 직렬화 지문 묶음": hashlib.sha256(json.dumps(man, sort_keys=True).encode()).hexdigest(), "가격 종목 수": len(man)}
     json.dump(man, open(OUT + ".prices.json", "w"), ensure_ascii=False, indent=0)
 elif MODE == "CUT":
     c = os.environ["EX_CUT"]
     full = pickle.load(open(os.environ["EX_FULL"], "rb"))
     H = ns["build_honest"](P, c, TMP)
     d_rows = ns["rows_diff_strict"](H["inside"], full["inside"], upto=c)
-    T_diff = [m for m in H["T"] if m <= c[:6] and H["T"][m] != full["T"].get(m)]
-    BR_diff = [d for d in H["BR"] if d <= c and H["BR"][d] != full["BR"].get(d)]
-    sh_diff = 0
-    for code, one in H["shape"].items():
-        if code not in full["shape"]:
-            sh_diff += 1
-            continue
-        n = len(one["정배열"])
-        for key in ("정배열", "간격", "50>200"):
-            a, b = np.asarray(one[key][:n], dtype=float), np.asarray(full["shape"][code][key][:n], dtype=float)
-            if not np.array_equal(np.nan_to_num(a, nan=-7.7), np.nan_to_num(b, nan=-7.7)):
-                sh_diff += 1
-                break
+    # 양쪽 키 집합을 먼저(GPT #457 4차 ②): 달 문턱은 c가 든 달까지 · BR은 c까지 날 · shape는 c까지 inside에 나온 종목 · 길이는 자른 가격 길이
+    T_d = ns["keyed_diff"](H["T"], full["T"], upto=c[:6])
+    BR_d = ns["keyed_diff"](H["BR"], full["BR"], upto=c)
+    codes_c = {k[0] for k in full["inside"] if k[1] <= c}
+    sh_d = ns["shape_diff"](H["shape"], {k: v for k, v in full["shape"].items() if k in codes_c},
+                            {code: len([1 for d, _ in P[code]["rows"] if d <= c]) for code in codes_c | set(H["shape"])})
     tl_c, tl_f = ns["trend_leg_with"](H["T"]), ns["trend_leg_with"](full["T"])
     g_diff = {}
     for k in sorted(set(H["inside"]) & {x for x in full["inside"] if x[1] <= c}):
@@ -71,9 +65,9 @@ elif MODE == "CUT":
         for g in gc:
             if gc[g] != gf[g]:
                 g_diff.setdefault(g, []).append(k)
-    ok = d_rows["같음"] and not T_diff and not BR_diff and sh_diff == 0 and not g_diff
-    out = {"모드": MODE, "자르는 날": c, "실측": H["실측"], "행 · 칸(c까지 inside)": d_rows, "달 문턱 다른 달": T_diff,
-           "BR 다른 날": len(BR_diff), "shape 다른 종목": sh_diff, "문 다름": {g: len(v) for g, v in g_diff.items()},
+    ok = d_rows["같음"] and T_d["같음"] and BR_d["같음"] and sh_d["같음"] and not g_diff
+    out = {"모드": MODE, "자르는 날": c, "실측": H["실측"], "행 · 칸(c까지 inside)": d_rows, "달 문턱(양쪽 키)": T_d,
+           "BR(양쪽 키)": BR_d, "shape(양쪽 종목 · 길이)": sh_d, "문 다름": {g: len(v) for g, v in g_diff.items()},
            "문 다름 예": {g: v[:5] for g, v in g_diff.items()},
            "판정": "동일 가격판 후보 재생 · 내부 시간 절단 PASS" if ok else "동일 가격판 후보 재생 · 내부 시간 절단 FAIL"}
 elif MODE == "OLD":
@@ -105,9 +99,22 @@ elif MODE == "OLD":
     base = json.load(open(os.environ["EX_LEDGER"]))
     assert hashlib.sha256(json.dumps(base).encode()).hexdigest() == "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99"
     eb = {(x[0], x[1]) for x in base}
-    out = {"모드": MODE, "inside 행(SINCE ~) 정직 · 옛 · 정직만 · 옛만": [len(Hn), len(On), len(set(Hn) - set(On)), len(set(On) - set(Hn))],
+    old_last = max(k[1] for k in On)
+    from collections import Counter
+    onlyH, onlyO = sorted(set(Hn) - set(On)), sorted(set(On) - set(Hn))
+    entsC, ebC = {e for e in ents if e[1] <= old_last}, {e for e in eb if e[1] <= old_last}
+    out = {"모드": MODE, "옛 표 마지막 날": old_last,
+           "inside 행(SINCE ~) 정직 · 옛 · 정직만 · 옛만": [len(Hn), len(On), len(onlyH), len(onlyO)],
+           "정직만 행: 공통 구간 · 꼬리(옛 표 마지막 날 뒤)": [sum(1 for k in onlyH if k[1] <= old_last), sum(1 for k in onlyH if k[1] > old_last)],
+           "정직만 행 공통 구간 목록(종목 · 날 · 앞 30)": [k for k in onlyH if k[1] <= old_last][:30],
+           "정직만 행 공통 구간 종목별 수": dict(Counter(k[0] for k in onlyH if k[1] <= old_last).most_common(20)),
+           "옛만 행 목록": onlyO,
+           "장부에 기록된 매매의 서로 다른 진입 키(종목 · 산 날) 공통 구간 정직 · 원판 · 정직만 · 원판만 · 같음": [len(entsC), len(ebC), len(entsC - ebC), len(ebC - entsC), len(entsC & ebC)],
+           "같은 키 꼬리(옛 표 마지막 날 뒤) 정직 · 원판": [len(ents - entsC), len(eb - ebC)],
+           "정직만 · 원판만 키(공통 구간)": [sorted(entsC - ebC), sorted(ebC - entsC)],
+           "범위": "lab.run 매매목록(청산 · 정산 때 적힘 · settle_end=False라 열린 보유는 빠질 수 있음)의 서로 다른 (종목, 산 날) · 엔진 안에서는 손익을 계산하지만 성과 요약은 출력하지도 선택 기준으로 쓰지도 않음",
            "같은 행에서 문 다름(정직: 달 문턱 · 정직 shape/BR · 옛: 전체 문턱 G · 캐시 shape/BR)": gd,
            "칸 대조(같은 행)": ns["rows_diff_strict"](Hn, On),
-           "엔진 진입 정직 · 원판 · 정직만 · 원판만 · 같음": [len(ents), len(eb), len(ents - eb), len(eb - ents), len(ents & eb)]}
+           "(전체 기간) 진입 키 정직 · 원판 · 정직만 · 원판만 · 같음": [len(ents), len(eb), len(ents - eb), len(eb - ents), len(ents & eb)]}
 json.dump(out, open(OUT, "w"), ensure_ascii=False, indent=1, default=str)
 print(json.dumps(out, ensure_ascii=False, indent=1, default=str)[:4000])

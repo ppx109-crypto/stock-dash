@@ -1,0 +1,22 @@
+{
+ "명령": "research/pit26/v2/run_all.sh(그대로 실행한 명령 · 경로는 작업 폴더)",
+ "추가 코드 지문(EX_HC로 exec · 원본 = research/pit26/)": {
+  "honest_cache.py": "159a39e927b77aee8ae60b9ba42f54be3ccf4ebfd74a7c11b247a139f062a9b8",
+  "run_honest.py": "67e2d043ffe71a706a960d4f87b581c41e2eea0628fb8b5c17e802d0fbf52a10"
+ },
+ "고정 나무 모듈 지문": "각 *.mods.json(tree_run 영수증)",
+ "입력 참조": {
+  "EX_FULL": "full.json.pkl(정직 캐시 FULL · sha d25926d5d6db321bb691ef7c5ab2447fecf69d2994f69c230a52d9be74531582)",
+  "EX_CUT": [
+   "20181228",
+   "20201230",
+   "20220615",
+   "20221229",
+   "20241230"
+  ],
+  "EX_LEDGER": "z055_d1_raw.json(sha 0ec97a14…)",
+  "NRL_CACHE": "/tmp/maxret-0026-cache.pkl(sha 03dcdd00…)"
+ },
+ "가격 지문 뜻": "원파일 바이트가 아니라 study.load_prices로 읽은 rows의 JSON 직렬화 SHA256(honest_price_manifest.json)",
+ "주의": "git 커밋 시각은 바깥 자료의 실제 입수 시각이 아님"
+}

@@ -40,8 +40,20 @@ def month_edges_asof(vols, months, first_day, q=rule.CALM, min_k=MIN_K):
     return out
 
 
+def num_same(x, y, rel=1e-9):
+    """수치 같음(GPT #457 4차 ①): 비유한 값을 허용오차 계산 전에 따로 봄.
+    NaN과 NaN만 같음 · +inf와 +inf · −inf와 −inf만 같음 · 유한 대 비유한은 다름 · 유한끼리는 상대 1e−9."""
+    xf, yf = math.isfinite(x), math.isfinite(y)
+    if not xf or not yf:
+        if math.isnan(x) or math.isnan(y):
+            return math.isnan(x) and math.isnan(y)
+        return x == y          # 같은 부호 inf만 참 · 유한 대 inf는 거짓
+    return abs(x - y) <= rel * max(1.0, abs(x), abs(y))
+
+
 def rows_diff_strict(A, B, upto=None):
-    """B 규칙: 칸 이름 집합이 다르면(허용 제외 ahead · i) 실패로 셈. 한쪽만 있는 행 · 칸 값 · 타입 다름 · 칸 이름 다름."""
+    """B 규칙: 칸 이름 집합이 다르면(허용 제외 ahead · i) 실패로 셈. 한쪽만 있는 행 · 칸 값 · 타입 다름 · 칸 이름 다름.
+    타입 정책: bool을 뺀 int · float는 수치 호환(1 == 1.0)으로 보고 num_same으로 비교 · 그 밖은 타입이 같아야 함."""
     a = {k: v for k, v in A.items() if upto is None or k[1] <= upto}
     b = {k: v for k, v in B.items() if upto is None or k[1] <= upto}
     bad, names, types = {}, 0, 0
@@ -54,8 +66,8 @@ def rows_diff_strict(A, B, upto=None):
             if type(x) is not type(y) and not (isinstance(x, (int, float)) and isinstance(y, (int, float)) and not isinstance(x, bool) and not isinstance(y, bool)):
                 types += 1
                 continue
-            if isinstance(x, float) and isinstance(y, float):
-                same = (math.isnan(x) and math.isnan(y)) or abs(x - y) <= 1e-9 * max(1.0, abs(x), abs(y))
+            if isinstance(x, (int, float)) and isinstance(y, (int, float)) and not isinstance(x, bool) and not isinstance(y, bool):
+                same = num_same(float(x), float(y))
             else:
                 same = x == y
             if not same:
@@ -146,3 +158,44 @@ def gates(r, trend_leg, shape, BR):
         return g
     finally:
         rule.trend_leg, nrl.shape, nrl.BR = old
+
+
+def keyed_diff(a, b, upto=None, key_upto=lambda k, u: k <= u):
+    """사전 둘의 키 집합을 양쪽으로 먼저 보고(GPT #457 4차 ②) 값을 비교. 값은 수치면 num_same · None은 None끼리만 같음."""
+    ka = {k for k in a if upto is None or key_upto(k, upto)}
+    kb = {k for k in b if upto is None or key_upto(k, upto)}
+    diff = []
+    for k in ka & kb:
+        x, y = a[k], b[k]
+        if x is None or y is None:
+            ok = x is None and y is None
+        elif isinstance(x, (int, float)) and isinstance(y, (int, float)):
+            ok = num_same(float(x), float(y))
+        else:
+            ok = x == y
+        if not ok:
+            diff.append(k)
+    return {"A만": sorted(ka - kb)[:20], "B만": sorted(kb - ka)[:20], "A만 수": len(ka - kb), "B만 수": len(kb - ka), "값 다름 수": len(diff), "값 다름 예": sorted(diff)[:10],
+            "같음": not (ka - kb) and not (kb - ka) and not diff}
+
+
+def shape_diff(sa, sb, lens):
+    """shape 사전 둘: 종목 집합 양쪽 · 종목마다 길이 lens[종목](자른 판 가격 길이)까지 배열 길이 · 값(NaN끼리 같음)."""
+    import numpy as _np
+    ca, cb = set(sa), set(sb)
+    bad = []
+    for c in ca & cb:
+        n = lens.get(c)
+        for key in ("정배열", "간격", "50>200"):
+            x, y = _np.asarray(sa[c][key], dtype=float), _np.asarray(sb[c][key], dtype=float)
+            if n is None or len(x) < n or len(y) < n:
+                bad.append((c, key, "길이"))
+                break
+            x, y = x[:n], y[:n]
+            same = _np.array_equal(_np.isnan(x), _np.isnan(y)) and _np.array_equal(_np.isinf(x), _np.isinf(y)) and \
+                _np.allclose(_np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0), _np.nan_to_num(y, nan=0.0, posinf=0.0, neginf=0.0), rtol=1e-9, atol=0) and \
+                _np.array_equal(_np.sign(x[_np.isinf(x)]), _np.sign(y[_np.isinf(y)]))
+            if not same:
+                bad.append((c, key, "값"))
+                break
+    return {"A만 종목": len(ca - cb), "B만 종목": len(cb - ca), "다른 종목": len(bad), "예": bad[:10], "같음": not (ca - cb) and not (cb - ca) and not bad}
