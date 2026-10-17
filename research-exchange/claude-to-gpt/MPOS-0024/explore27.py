@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True, cwd=HERE).stdout.strip()   # git 경로는 저장소 뿌리 기준
 TREE = "9743cb802"
 acc = json.load(open(HERE / "acc_month_base.json"))["달"]
 TM = HERE / "tier_month.json" if (HERE / "tier_month.json").exists() else HERE.parent / "attr_mix54" / "tier_month.json"   # PR 복사본은 같은 폴더
@@ -20,12 +21,12 @@ tm = json.load(open(TM))
 months = sorted(tm)
 al = {m: tm[m]["정배열"] for m in months}
 bad = [m for m in months if acc[m] < 0]
-files = subprocess.run(["git", "ls-tree", "--name-only", TREE, "etf-data/"], capture_output=True, text=True, check=True).stdout.split()
+files = subprocess.run(["git", "ls-tree", "--name-only", TREE, "etf-data/"], capture_output=True, text=True, check=True, cwd=ROOT).stdout.split()
 fp = {}
 
 
 def mret(path):
-    raw = subprocess.run(["git", "show", f"{TREE}:{path}"], capture_output=True, check=True).stdout
+    raw = subprocess.run(["git", "show", f"{TREE}:{path}"], capture_output=True, check=True, cwd=ROOT).stdout
     fp[path] = hashlib.sha256(raw).hexdigest()
     last = {}
     for dt, x in json.loads(raw)["closes"]:
