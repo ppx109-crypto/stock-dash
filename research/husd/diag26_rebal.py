@@ -31,9 +31,9 @@ def ins(after, line):
 
 ins("            fb, c_new, fe = tgt\n", "            kind = '국면 바뀜' if pending != s_prev else ('달 첫날 같은 국면' if d[:6] != p[:6] else '띠 벗어남')\n"
     "            vb0, ve0, code0 = vb, ve, code\n")
-ins("            A -= cost\n", "            LOG.append((d, kind, cost, abs(tb - vb0), (abs(te - ve0) if c_new == code0 else ve0 + te), A + cost, code0, c_new))\n")
-ins("            trims[0] += 1\n", "            LOG.append((d, 'ETF 억지 줄이기', cut * COST_ETF, 0.0, cut, vb + ve + cash, code, code))\n")
-ins("            trims[1] += 1\n", "            LOG.append((d, '1일봉 억지 줄이기', x * COST_BASE_DOWN, x, 0.0, vb + ve + cash, code, code))\n")
+ins("            A -= cost\n", "            LOG.append((d, kind, cost, abs(tb - vb0), (abs(te - ve0) if c_new == code0 else ve0 + te), A + cost, code0, c_new, tb - vb0))\n")
+ins("            trims[0] += 1\n", "            LOG.append((d, 'ETF 억지 줄이기', cut * COST_ETF, 0.0, cut, vb + ve + cash, code, code, 0.0))\n")
+ins("            trims[1] += 1\n", "            LOG.append((d, '1일봉 억지 줄이기', x * COST_BASE_DOWN, x, 0.0, vb + ve + cash, code, code, -x))\n")
 src = src.replace("def account(", "def account_log(")
 LOG = []
 g = dict(Dv.__dict__)
@@ -55,7 +55,21 @@ for th in (0.01, 0.02, 0.05):
     sel = [e for e in opt if (e[3] + e[4]) / e[5] < th]
     small[f"거래액(1일봉 + ETF) < NAV {int(th * 100)}%"] = {"건수": len(sel), "비용 합 %": round(sum(e[2] / e[5] for e in sel) * 100, 4)}
 summ["달 첫날 같은 국면 — 작은 거래"] = small
-summ["달 첫날 같은 국면 — 1일봉 쪽 거래(0.30% 내림 비용)가 있는 건"] = sum(1 for e in opt if e[3] > 1e-12)
+CB_DOWN, CB_UP, CE = Dv.COST_BASE_DOWN, Dv.COST_BASE_UP, Dv.COST_ETF
+
+
+def split(e):
+    """비용을 1일봉 몫 줄이기(0.30%) · 늘리기(0.05%) · ETF(0.05%)로 나눔(account 비용식 그대로)."""
+    db = e[8]
+    base_c = CB_DOWN * max(0.0, -db) + CB_UP * max(0.0, db)
+    return base_c, e[2] - base_c
+
+
+for k in KINDS:
+    ev = [e for e in LOG if e[1] == k]
+    summ[k]["비용 나눔 %(1일봉 몫 · ETF)"] = [round(sum(split(e)[0] / e[5] for e in ev) * 100, 7), round(sum(split(e)[1] / e[5] for e in ev) * 100, 7)]
+summ["달 첫날 같은 국면 — 1일봉 몫 거래"] = {"줄이기(0.30%)": sum(1 for e in opt if e[8] < -1e-12), "늘리기(0.05%)": sum(1 for e in opt if e[8] > 1e-12),
+                                    "거래 없음": sum(1 for e in opt if abs(e[8]) <= 1e-12)}
 tot = sum(e[2] / e[5] for e in LOG)
 summ["모든 종류 비용 합 %"] = round(tot * 100, 4)
 
@@ -66,7 +80,7 @@ def sha(f):
 
 out = {"원본 NAV와 같음": True, "base csv sha256": sha(BASE_CSV), "모듈 지문": {"regime_dev.py": sha(Dv.__file__), "mpos12.py": sha(M.__file__), "이 코드": sha(__file__)},
        "기간": [min(navs), max(navs)], "요약": summ,
-       "주의": "비용 합은 건마다 '비용 ÷ 그날 NAV'를 더한 단순 합(복리 아님) · 절감 상한 진단용 · 손익 · 수익률 아님"}
+       "주의": "비용 합은 원 BASE 경로에서 건마다 '비용 ÷ 그날 NAV'를 더한 직접 비용 예산(복리 아님). 거래를 건너뛰면 보유 · NAV · 다음 목표 · 억지 줄이기가 달라지므로 동적 전략의 총 효과나 연 수익 개선 상한이 아님 · 손익 · 수익률 아님"}
 json.dump(out, open(Path(__file__).with_suffix(".json"), "w"), ensure_ascii=False, indent=1)
 json.dump(LOG, open(Path(__file__).parent / "rebal_log_base.json", "w"), ensure_ascii=False)
 print(json.dumps(out, ensure_ascii=False, indent=1))
