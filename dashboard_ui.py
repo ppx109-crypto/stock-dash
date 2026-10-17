@@ -544,7 +544,7 @@ def header() -> str:
     )
 
 
-UI_VERSION = "10-15 · 한투 최종본(10-14) · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
+UI_VERSION = "10-16 · 거래 내역 주문 줄 숨김 · 규칙 칸 최신판 대조 · 한투 최종본(10-14) · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -641,11 +641,11 @@ def ledger_mini(title: str, state: dict | None, book: dict | None, shown: int = 
         visible_closed = [t for t in closed if _visible_dashboard_closed(t)]
         for t in reversed(visible_closed[-shown:]):
             rows.append(f'{_e(t.get("판 때") or t.get("판 날"))} {_e(t.get("name"))} {float(t.get("손익") or 0):+.1f}%')
-    empty_note = "최근 표시할 주문이 없습니다" if orders or closed else "아직 주문이 없습니다"
-    body = "".join(f"<li>{r}</li>" for r in rows) or f"<li>{empty_note}</li>"
+    # 보일 줄이 없으면 빈 목록 문구('아직 주문이 없습니다' 등)도 그리지 않음(사용자 2026-10-16 "위 내용들 전부 삭제해줘")
+    body = "".join(f"<li>{r}</li>" for r in rows)
     held_html = ("<div class=\"pxb-held\">" + "".join(f"<div>{r}</div>" for r in now_rows) + "</div>") if now_rows else ""
     return (f'<div class="pxb-ledger"><b>{_e(title)} · 거래 내역</b><small>{line}</small>'
-            f'{held_html}<ul>{body}</ul></div>')
+            f'{held_html}{f"<ul>{body}</ul>" if body else ""}</div>')
 
 
 def kospi_box(k: dict | None) -> str:
@@ -1132,9 +1132,18 @@ M15_RULES = (SORTIE_RULES
 # 빈칸 엔진 · 코스닥 과열 인버스(idle_live.py · 2026-10-03 배포) — 규칙들이 안 쓰는 돈을 굴림
 IDLE_RULES = """<div class="pxb"><div class="pxb-rules">
 <div class="pxb-rule x"><h4>언제 켜나<span>매일 15:10 판단</span></h4><dl>
-<dt>엔진</dt><dd>② · ③은 시장 폭 50% 미만(1일봉 · 15분봉 규칙이 못 사는 날) <b>그리고</b> 규칙들이 계좌의 20% 미만을 쓰고 있을 때만 · ① 급락 되돌림은 2026-10-04부터 뺌</dd>
-<dt>돈</dt><dd>규칙들이 안 쓰는 몫만 씀 · 규칙이 살 돈이 모자라면 엔진이 산 것을 먼저 팔아 자리를 내줌</dd>
-<dt>때</dt><dd>15:10 값으로 판단 → 장중 시장가로 바로 사고팖(1일봉 15:20 판단보다 먼저)</dd>
+<dt>엔진</dt><dd>② · ③은 시장 폭 50% 미만(1일봉 ② 정배열 갈래가 못 사는 날) <b>그리고</b> 규칙(1일봉 등)이 계좌의 20% 미만을 쓰고 있을 때만(바구니 · 엔진 · 레버리지 봇이 든 것은 빼고 셈) · ① 급락 되돌림은 2026-10-04부터 뺌</dd>
+<dt>쉬는 날</dt><dd>KODEX 200이 5거래일 동안 −4.5% 이하로 빠지고 시장 폭 50% 미만인 날은 ② · ③을 새로 사지 않음 · ②로 든 달러는 팖 · ③으로 든 것은 그 주 마지막 거래일이면 팖</dd>
+<dt>돈</dt><dd>규칙이 안 쓰는 몫만 씀 · 15:20 1일봉이 살 돈은 미리 남겨 두고, 사건 바구니가 든 것도 먼저 뺌 · 규칙이 살 돈이 모자라면 엔진이 산 것을 모두 먼저 팔고, 그래도 모자라면 바구니가 산 것을 오래된 것부터 모자란 만큼 팖</dd>
+<dt>때</dt><dd>15:10 값으로 판단 → 장중 시장가로 바로 사고팖 · 차례는 사건 바구니 → 엔진 · 코스닥 인버스 → 레버리지 봇(모두 1일봉 15:20 판단보다 먼저)</dd>
+</dl></div>
+<div class="pxb-rule"><h4>사건 바구니<span>15:10 · 엔진보다 먼저</span></h4><dl>
+<dt>사건</dt><dd>어제 나온 공시(정정 · 자회사 공시 등은 빼고 본 공시만) 가운데 그날 시총 200위 안 종목의 · <b>자사주 취득</b>: 그날 주가 반응(전날 종가 대비 오름폭 − 200위 종목 가운데값)이 −2%보다 낮을 때만 · <b>무상증자</b>: 반응과 상관없이</dd>
+<dt>거름</dt><dd>같은 종목 · 같은 갈래는 앞 사건에서 20거래일 안이면 다시 안 셈 · 이미 든 종목 · 다른 규칙이나 엔진이 든 종목은 안 삼</dd>
+<dt>사기</dt><dd>공시 다음 날 15:10 시장가 · 5칸(한 칸 = 바구니 돈 ÷ 5) · 빈 칸이 있을 때만</dd>
+<dt>돈</dt><dd>계좌의 30%에서 1일봉이 지금 든 만큼(평가액)을 뺀 돈 · 1일봉이 많이 들수록 바구니 돈은 줄어듦(최종 판을 켜기 전에는 50%)</dd>
+<dt>팔기</dt><dd>산 날부터 20거래일째 15:10 시장가 · 손절 · 익절 없음</dd>
+<dt>돈 차례</dt><dd>규칙(1일봉) &gt; 바구니 &gt; 엔진</dd>
 </dl></div>
 <div class="pxb-rule"><h4>① 급락 되돌림<span>뺌 · 2026-10-04</span></h4><dl>
 <dt>상태</dt><dd><b>안 씀</b>(사용자 결정) · 빼도 계좌가 가장 크게 빠진 폭은 그대로였고 2021~2025 몫이 거의 0(2022 하락장에서 거듭 실패)</dd>
@@ -1147,7 +1156,7 @@ IDLE_RULES = """<div class="pxb"><div class="pxb-rules">
 </dl></div>
 <div class="pxb-rule"><h4>③ 돌리기<span>엔진 셋째</span></h4><dl>
 <dt>후보</dt><dd>TIGER 미국나스닥100(133690) · KOSEF 미국달러선물(138230) · KODEX 골드선물(H)(132030) · KOSEF 국고채10년(148070)</dd>
-<dt>사기</dt><dd>20일 수익이 플러스인 위 2개를 반반 · 모두 마이너스면 현금</dd>
+<dt>사기</dt><dd>20일 수익이 플러스인 위 2개를 반반 · 플러스가 1개뿐이면 그것만 절반(나머지는 현금) · 모두 마이너스면 현금</dd>
 <dt>다시</dt><dd>주 마지막 거래일에 다시 고름 · 엔진이 꺼지면 모두 팖</dd>
 </dl></div>
 <div class="pxb-rule"><h4>코스닥 과열 인버스<span>엔진과 따로 · 먼저</span></h4><dl>
@@ -1157,7 +1166,7 @@ IDLE_RULES = """<div class="pxb"><div class="pxb-rules">
 <dt>익절 폭</dt><dd>산 날 정해 그 매매 내내 씀 · 코스닥150이 어제까지 60일 동안 하루에 출렁인 크기 × √10 × 0.25 · 조용하면 1.5%, 거칠면 2.5%까지 넓힘(2026-10-04 RNA 연구 70라운드에서 고른 판 · 손절은 그대로)</dd>
 </dl></div>
 </div>
-<div class="pxb-rule-foot"><b>지난 성적 — 정직한 값</b>(2026-10-04 점검 30회차 뒤 다시 잼 · 1일봉 규칙 + 엔진 + 코스닥 인버스 · 지금 모의투자와 같은 규칙(급락 되돌림 뺀 판 · 2026-10-04) · 그때까지 자료로만 정한 문턱 · 실제 비용(매도 거래세 · 미끄러짐) · 들고 있는 종목의 손실도 날마다 셈) · 2017~2020 해마다 +21% (가장 크게 빠진 때 −9%) · 2021~2025 해마다 +53% (−18%) · 2026년 1~9월 +137% (−20%) · 원금(그해 1월 1일) 아래로 가장 많이 내려간 때 −8% · <small>빠진 폭은 번 돈을 돌려준 것(아직 안 판 이익이 줄어든 것)은 빼고 잰 값 · 그것까지 세면 2026 −35%</small> · 이익의 대부분이 1년에 몇 번 오는 큰 매매에서 나와 해마다 차이가 큼 · 코스피보다 나은 해 10해 중 8해 · 지금 살아 있는 종목만으로 연구했고 숫자를 고를 때 2021년 뒤 성적도 봐서 실제는 더 낮을 수 있음 · 앞으로도 같다는 보장은 없음</div>
+<div class="pxb-rule-foot"><b>지난 성적 — 정직한 값</b>(<b>최종 판(MIX-0054) 전 조합</b> · 사건 바구니 · 레버리지 봇이 없는 값 · 최종 판 성적은 레버리지 봇 칸 · 2026-10-04 점검 30회차 뒤 다시 잼 · 1일봉 규칙 + 엔진 + 코스닥 인버스 · 그때 모의투자와 같은 규칙(급락 되돌림 뺀 판 · 2026-10-04) · 그때까지 자료로만 정한 문턱 · 실제 비용(매도 거래세 · 미끄러짐) · 들고 있는 종목의 손실도 날마다 셈) · 2017~2020 해마다 +21% (가장 크게 빠진 때 −9%) · 2021~2025 해마다 +53% (−18%) · 2026년 1~9월 +137% (−20%) · 원금(그해 1월 1일) 아래로 가장 많이 내려간 때 −8% · <small>빠진 폭은 번 돈을 돌려준 것(아직 안 판 이익이 줄어든 것)은 빼고 잰 값 · 그것까지 세면 2026 −35%</small> · 이익의 대부분이 1년에 몇 번 오는 큰 매매에서 나와 해마다 차이가 큼 · 코스피보다 나은 해 10해 중 8해 · 지금 살아 있는 종목만으로 연구했고 숫자를 고를 때 2021년 뒤 성적도 봐서 실제는 더 낮을 수 있음 · 앞으로도 같다는 보장은 없음</div>
 </div>"""
 
 IDLE_NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
@@ -1174,6 +1183,14 @@ FINAL_ALLOC = ("최종 분배(사용자 2026-10-11 결정 · 연구 #255): 지�
 # 해마다 수익(연구 셈 · MIX-0054 · 비용 포함 · 2017은 02-01부터 · 2026은 09-15까지) · 같은 기간 코스피(지수 종가)
 YEARLY = (("2017", 16.6, 19.3), ("2018", -2.3, -17.3), ("2019", 12.7, 7.7), ("2020", 62.7, 30.8), ("2021", 18.3, 3.6),
           ("2022", 12.8, -24.9), ("2023", 53.1, 18.7), ("2024", 0.8, -9.6), ("2025", 84.9, 75.6), ("2026", 100.7, 57.3))
+
+
+REGIME_WORD = {"상승": "오름", "하락": "내림"}     # 봇 코드 값(상승 · 하락 · 횡보) → 규칙 글의 말(오름 · 내림 · 횡보)
+
+
+def regime_word(state) -> str:
+    """화면에 보일 국면 이름: 봇 코드 값 '상승 · 하락'을 규칙 글과 같은 '오름 · 내림'으로(횡보는 그대로)."""
+    return REGIME_WORD.get(str(state or ""), str(state or ""))
 
 
 def final_active(overlay_state: dict | None) -> bool:
@@ -1204,6 +1221,7 @@ OVERLAY_RULES = """<div class="pxb"><div class="pxb-rules">
 <dt>쓰는 돈</dt><dd>다른 봇이 안 쓰는 놀던 현금까지만 · 15:20 1일봉이 살 돈은 미리 남겨 둠</dd>
 <dt>자리 내주기</dt><dd>다른 봇이 살 돈이 모자라면 레버리지 봇이 든 것을 먼저 팖 · 다른 봇과 계좌 흔들림 상한은 레버리지 봇이 없는 것처럼 셈(연구와 같음)</dd>
 <dt>장부</dt><dd>판 수량은 실제 체결이 확인된 만큼만 적음 · 덜 팔리면 장부에 남기고 다음 날 다시 맞춤</dd>
+<dt>손실 알림</dt><dd>날마다 15:1x 계좌 전체 값이 전날보다 −10% · 그달 시작보다 −12% 넘게 빠지면 디스코드로 알림(사용자 한도 −15% · 알림만 하고 멈추지는 않음)</dd>
 </dl></div>
 </div>
 <div class="pxb-rule-foot"><b>지난 성적 — 연구 셈</b>(MIX-0054 · 2017-02 ~ 2026-09-15 · 계좌 전체 · 15분봉 뺌 · 비용 포함) · 한 해 <b>+34.1%</b> · 가장 나쁜 하루 −13.0% · 가장 나쁜 달 −14.0%(2026-03) · 고점 대비 −21.8% · 이익 달 75 / 손실 달 41(64.7%) · 2018년만 −2.3% · 지금 조합(레버리지 봇 없음)은 +20.0% · −7.3% · <b>한계</b>: 같은 10년을 여러 번 써서 고른 값(독립 확인 기다림) · 레버리지 · 인버스 40%는 시험한 범위의 끝 · 손실 한도 −15%와 여유가 작음 · 연구는 종가 · 모의투자는 15:1x 값 · 앞으로도 같다는 보장은 없음</div>
@@ -1221,18 +1239,18 @@ def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = N
         "<b>아직 켜지 않음</b> · 사용자가 시작 날을 정하면 평일 15:10에 판단하고 한투 모의투자 계좌에만 주문합니다"
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}<br><small>최종 판: {_e(FINAL_MIX)}</small><br><small>{_e(FINAL_ALLOC)}</small>'
     if regime and regime.get("state"):
-        body += f'<br>어제 장 끝 국면: <b>{_e(regime["state"])}</b>({_e(as_day(regime.get("day")))}) → 목표 ' + \
+        body += f'<br>어제 장 끝 국면: <b>{_e(regime_word(regime["state"]))}</b>({_e(as_day(regime.get("day")))}) → 목표 ' + \
             {"오름": "KODEX 레버리지 40%", "상승": "KODEX 레버리지 40%", "횡보": "KODEX 인버스 40%"}.get(regime["state"], "쉼(든 것 없음)")
         rec = regime.get("recent") or []
         if rec:
             body += "<br><small>최근 그날 판정(사흘 이어져야 바뀜): " + " · ".join(
-                f'{_e(as_day(d)[5:])} {_e(r)}' for d, r, _ in rec) + "</small>"
+                f'{_e(as_day(d)[5:])} {_e(regime_word(r))}' for d, r, _ in rec) + "</small>"
     body += "</div>"
     held = {c: int(q) for c, q in (st_.get("held") or {}).items() if int(q) > 0}
     if held:
         body += ('<div class="pxb-note" style="margin-top:8px"><b>들고 있는 것(모의투자)</b> · '
                  + " · ".join(f'{_e(OVERLAY_NAME.get(c, c))}({_e(c)}) {q:,}주' for c, q in held.items())
-                 + (f' · 맞춘 국면 {_e(st_.get("applied"))}' if st_.get("applied") else " · 다시 맞춤 기다림") + "</div>")
+                 + (f' · 맞춘 국면 {_e(regime_word(st_.get("applied")))}' if st_.get("applied") else " · 다시 맞춤 기다림") + "</div>")
     if st_.get("unconfirmed"):
         body += '<div class="pxb-note" style="margin-top:6px">⚠️ 체결이 확인되지 않은 매도가 있어 다음 실행에 실제 잔고와 맞춥니다.</div>'
     orders = list(reversed([o for o in ((book or {}).get("orders") or [])
@@ -1258,10 +1276,9 @@ def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = No
     orders = [o for o in all_orders if _visible_dashboard_order(o)]
     lis = "".join(f'<li>{_e(str(o.get("at", ""))[5:])} {"매수" if o.get("side") == "buy" else "매도"} '
                   f'{_e(OVERLAY_NAME.get(o.get("code"), o.get("code")))} {_e(o.get("qty"))}주 · {_e(o.get("status"))}</li>'
-                  for o in reversed(orders[-3:])) or ("<li>최근 표시할 주문이 없습니다</li>" if all_orders
-                                                        else "<li>아직 주문이 없습니다</li>")
+                  for o in reversed(orders[-3:]))     # 보일 주문이 없으면 빈칸(빈 목록 문구 안 그림 · 사용자 2026-10-16)
     held_html = ('<div class="pxb-held">' + "".join(f"<div>{r}</div>" for r in rows) + "</div>") if rows else ""
-    return f'<div class="pxb-ledger"><b>📈 레버리지 봇(레버리지 · 인버스) 모의투자 · 몫 40%까지</b><small>{line}</small>{held_html}<ul>{lis}</ul></div>'
+    return f'<div class="pxb-ledger"><b>📈 레버리지 봇(레버리지 · 인버스) 모의투자 · 몫 40%까지</b><small>{line}</small>{held_html}{f"<ul>{lis}</ul>" if lis else ""}</div>'
 
 
 def overlay_regime(closes: list) -> dict:
@@ -1288,7 +1305,7 @@ def lever_card(state: dict | None, regime: dict | None = None, left_15m: int = 0
     rg = (regime or {}).get("state")
     target = LEVER_TARGET.get(rg, "쉼(든 것을 모두 팖)") if rg else "국면 셈 기다림"
     head = (f'<div class="pxb"><div class="pxb-slot-h"><b><i class="pxb-dot" style="background:{STATUS["A"]}"></i>레버리지 봇</b>'
-            f'<i>{_e(rg or "—")}</i></div><small class="pxb-slot-note">어제 장 끝 KODEX 200 국면 → 오늘 15:10 목표 · 한투 모의투자 계좌만</small></div>')
+            f'<i>{_e(regime_word(rg) or "—")}</i></div><small class="pxb-slot-note">어제 장 끝 KODEX 200 국면 → 오늘 15:10 목표 · 한투 모의투자 계좌만</small></div>')
     lines = [f'오늘 목표: <b>{_e(target)}</b>']
     if (regime or {}).get("day"):
         lines.append(f'국면 기준일 {_e(as_day(regime["day"]))}')
@@ -1347,18 +1364,23 @@ GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75
 
 
 CLOSE_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule x"><h4>사는 조건<span>위 1시간봉 규칙과 같음 + 하나 더</span></h4><dl>
-<dt>조건</dt><dd>위 ① 추세 조건 또는 ② 정배열 조건 가운데 하나 + 공통 조건(수급) — 다만 어제가 아니라 <b>오늘 값</b>으로 판단</dd>
+<div class="pxb-rule x"><h4>사는 조건<span>15:20 값을 오늘 종가로 보고 판단</span></h4><dl>
+<dt>대상</dt><dd>코스피 시가총액 1~100위 종목</dd>
+<dt>① 추세</dt><dd>세 가지를 모두 채움 · 최근 20일 주가 흔들림이 작은 편(지난 모든 날 · 모든 종목의 흔들림을 줄 세운 아래 40% 자리 이하 · 이 문턱은 매일 어제까지 자료 전체로 다시 셈 · 지금 약 2.15) · 180일 이동평균선이 최근 5거래일 동안 1.46% 이상 올라감 · 주가가 60거래일 전보다 20% 이상 오름</dd>
+<dt>② 정배열</dt><dd>세 가지를 모두 채움 · 3·15·20·90·150·200일 이동평균선이 짧은 것부터 위에서 아래로 차례대로 놓임(정배열) · 3일선이 200일선보다 19~53% 위 · 시장 폭 50% 이상(시총 100위 안 종목 가운데 50일선이 200일선 위에 있는 종목이 절반 이상)</dd>
+<dt>수급</dt><dd>①·② 모두 꼭 채워야 함 · 어제까지 5거래일 동안 외국인은 사고(순매수), 투신(펀드)도 사고, 개인은 팖(순매도)</dd>
+<dt>결과</dt><dd>① 또는 ② 가운데 하나 + 수급을 채우면 → 오늘 종가에 살 후보</dd>
 <dt>거름</dt><dd>최근 45일 사이 증권사 목표가(여러 증권사의 가운데 값)가 내린 종목은 사지 않음</dd>
 </dl></div>
 <div class="pxb-rule"><h4>매수<span>오늘 종가에</span></h4><dl>
+<dt>먼저</dt><dd>15:20에 계좌 흔들림 상한 덜어내기를 먼저 함(켜져 있을 때 · 이 셈이 말썽이면 그날 새 매수만 멈춤) · 어제 종가가 종목의 90% 넘게 들어와 있지 않으면 그날은 새로 사지 않고 팔기만 함</dd>
 <dt>언제</dt><dd>조건을 채운 바로 그날 장 마감 동시호가(15:20~15:30)에 주문 → 오늘 종가에 삼 (15:20 값으로 판단)</dd>
-<dt>얼마</dt><dd>계좌를 10칸으로 나눔 · ① 4칸(40%) · ②이면서 외국인·투신이 3일 연속 함께 샀으면 4칸 · ②이면서 그날 거래량이 평소(앞 20일 가운데값)의 2배 이상이고 정배열이 된 지 10거래일 안이면 3칸(30%) · 그 밖 2칸(20%)</dd>
-<dt>순서</dt><dd>180일 이동평균선이 가파르게 오르는 종목 먼저 · 칸이 모자라면 남은 칸만큼만 삼</dd>
-<dt>거름</dt><dd>이미 가진 종목과 최근 60일 동안 너무 같이 움직인 종목은 안 삼 · 상한가에 붙으면 못 삼</dd>
+<dt>얼마</dt><dd>계좌를 10칸으로 나눔 · ① 4칸(40%) · ②이면서 외국인·투신이 3일 연속 함께 샀으면 4칸 · ②이면서 그날 거래량이 평소(앞 20일 가운데값)의 2배 이상이고 정배열이 된 지 10거래일 안이면 3칸(30%) · 그 밖 2칸(20%) · 남은 칸이 모자라면 남은 칸만큼만 삼</dd>
+<dt>순서</dt><dd>180일 이동평균선이 가파르게 오르는 종목부터 줄 세워 <b>빈 칸 수만큼 위 후보만</b> 봄 · 그중 이미 가진 · 너무 같이 움직인 · 상한가 종목이 있으면 그 칸은 오늘 비워 둠(아래 후보로 내려가 채우지 않음)</dd>
+<dt>거름</dt><dd>이미 가진 종목과 최근 60일 동안 같이 움직인 정도(상관)가 0.6 이상이면 안 삼(가진 종목은 그 종목을 산 날까지 60일로 잼) · 상한가에 붙으면 못 삼</dd>
 </dl></div>
 <div class="pxb-rule"><h4>매도 · ①로 산 종목<span>4가지 중 먼저 오는 것</span></h4><dl>
-<dt>익절1</dt><dd class="up">종가가 처음으로 +5% 이상이면 그날 종가에 절반을 팖</dd>
+<dt>익절1</dt><dd class="up">종가가 처음으로 +5% 이상이면 그날 종가에 2칸을 팖(들고 있는 칸보다 하나 적게까지 · 1칸이면 나누지 않음 · 한 번만)</dd>
 <dt>익절2</dt><dd class="up">종가가 +13% 이상이면 남은 것을 모두 팖</dd>
 <dt>손절</dt><dd class="down">종가가 산 값보다 5% 이상 낮으면 모두 팖</dd>
 <dt>기간</dt><dd>산 뒤 10거래일이 지나면 그날 종가에 모두 팖</dd>
