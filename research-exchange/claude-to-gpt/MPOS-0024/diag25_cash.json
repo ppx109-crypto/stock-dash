@@ -1,6 +1,32 @@
 {
  "원본 NAV와 같음": true,
  "base csv sha256": "20115fa76e4a0fab1e5dedaa0d0c70cd1ca68e9ab0ab542603cb33a079c07af2",
+ "모듈 지문": {
+  "mpos12.py": "8a915a70d30953681cf8796856a923370250ab867b67c1c30adaa7682cc208b5",
+  "regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "MPOS-0011 inputs_lock.json": "0315ea3f80c9d2268bdd856431a0051e9dd825e975c1952470508584b524c81d",
+  "이 코드": "1a320155bd336ae41c0cf643f32c13f5b5ce4649bfe93ce79a106e1bc5e14a3d"
+ },
+ "CFG": {
+  "n": 24,
+  "confirm": "r10m5",
+  "persist": 3,
+  "down_base": 1.0,
+  "down_inv": 0.0,
+  "inv": "114800",
+  "up_lev": 0.4,
+  "side_inv": 0.4,
+  "up_need": "above_only",
+  "exit_buf": 0.0,
+  "band": null,
+  "lev_vt": null
+ },
+ "기간": [
+  "20170202",
+  "20260915"
+ ],
+ "주의": "현금 진단은 2017-02 ~ 2026-09 116달(첫 · 끝 달 일부) · 성과 표 114달(2017-03 ~ 2026-08)과 범위가 다름 → 성과 대조는 BASE와 같은 날 · 같은 114달로 맞춤",
  "전체": {
   "날 수": 2358,
   "분위 5 · 25 · 50 · 75 · 95%": [

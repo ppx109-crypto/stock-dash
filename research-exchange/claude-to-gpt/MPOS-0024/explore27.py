@@ -15,7 +15,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 TREE = "9743cb802"
 acc = json.load(open(HERE / "acc_month_base.json"))["달"]
-tm = json.load(open(HERE.parent / "attr_mix54" / "tier_month.json"))
+TM = HERE / "tier_month.json" if (HERE / "tier_month.json").exists() else HERE.parent / "attr_mix54" / "tier_month.json"   # PR 복사본은 같은 폴더
+tm = json.load(open(TM))
 months = sorted(tm)
 al = {m: tm[m]["정배열"] for m in months}
 bad = [m for m in months if acc[m] < 0]
@@ -59,7 +60,7 @@ for f in sorted(files):
 rows.sort(key=lambda r: r["계좌와 상관"])
 out = {"고정 나무": TREE, "표": rows, "빠짐(달 < 100)": skipped, "본 ETF 수": len(files), "계좌 손실 달": len(bad),
        "입력 지문": {"acc_month_base.json": hashlib.sha256((HERE / "acc_month_base.json").read_bytes()).hexdigest(),
-                 "tier_month.json": hashlib.sha256((HERE.parent / "attr_mix54" / "tier_month.json").read_bytes()).hexdigest(), **fp}}
+                 "tier_month.json": hashlib.sha256(TM.read_bytes()).hexdigest(), **fp}}
 json.dump(out, open(HERE / "explore27_out.json", "w"), ensure_ascii=False, indent=1)
 for r in rows:
     print(*r.values())
