@@ -1,0 +1,122 @@
+{
+ "실행": "cd 고정 나무(9743cb802) && NRL_CACHE=/tmp/maxret-0026-cache.pkl PYTHONHASHSEED=0 EX_PARTS=parts22.py EX_OUT=diag23_v2.json python3 tree_run.py diag23_v2.mods.json diag23_g1.py",
+ "코드 지문": "06df9e3fa4208de05db99763832b9f6d90425582e19a83d2357079d2c2c3d968",
+ "EX_PARTS(parts22.py) 지문": "9a176836e3932389cb70921092a94918804c919805d844a0fcf4eef3658c5293",
+ "nrl 캐시 지문": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
+ "모듈 영수증": {
+  "모듈": {
+   "caps": [
+    "TREE/caps.py",
+    "8da24e031c222c5a9eca7ff4859c993baaac449d1c74664a9e84208812f90c78"
+   ],
+   "events": [
+    "TREE/events.py",
+    "5740e041eb8260c152694b3ad0b30358d1396041621d50281faee8042e5aa23d"
+   ],
+   "final_group": [
+    "TREE/final_group.py",
+    "130abf9c7e840acf3d8d28bb21a497297715823632bedafb178e349cc15a167a"
+   ],
+   "final_study": [
+    "TREE/final_study.py",
+    "989b915c481a5aaddb7aef97459c1fdeae02caf99e4db1205b0eda4f615e91d2"
+   ],
+   "lab": [
+    "TREE/lab.py",
+    "c693d9268dbc8fc7f2db904971533fa7aac5957f72beff70f96672676934ff96"
+   ],
+   "nrl": [
+    "TREE/nrl.py",
+    "18a653db8d9e6698e1fe8b8c2cefeb1ae785a9834fdaf4180958bbb55963718f"
+   ],
+   "rule": [
+    "TREE/rule.py",
+    "a52b695123aa2bced7fedbb130f43b586c86c24274760cbed13f7c9fb4e8b9ed"
+   ],
+   "study": [
+    "TREE/study.py",
+    "6dc91a6fc83a0f8cc3f2ac02fa14f28d6d8360bb3e429e9c1916e0e728c5fb25"
+   ],
+   "trend": [
+    "TREE/trend.py",
+    "ed532340400b9bfdf4064f2a561db61044ed31dc9dee52116ace372c1cf14946"
+   ]
+  },
+  "바깥": [],
+  "sys.path 앞": [
+   "TREE",
+   "TREE/research",
+   "TREE",
+   "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos23",
+   "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/r8/research-exchange/claude-to-gpt/MPOS-0010",
+   "/usr/lib/python311.zip"
+  ]
+ },
+ "출력 지문": "138dd7d36d533c0c2ab7396b2763ee3d95fc5ccdcf96b0e59e4c30a7e410d1d7",
+ "장부 = 원판(안에서 assert)": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+ "요약": {
+  "판단 수 · 결측 · 요청 ≠ 배정": {
+   "판단": 406,
+   "보유 없음": 23,
+   "자료 모자람(60개 창)": 0,
+   "공통 구간 < 40": 0,
+   "상수열": 0,
+   "요청 ≠ 예상 배정": 56,
+   "가용 ≤ 0": 0
+  },
+  "값 있음": 383,
+  "앞 기간(≤ 2021-12-31) 값": 165,
+  "A": {
+   "분위 10 · 50 · 90%": [
+    0.0862,
+    0.2515,
+    0.5169
+   ],
+   "앞 기간 70 · 80 · 90%": [
+    0.2803,
+    0.3207,
+    0.4079
+   ],
+   "음수 비율 %": 1.57
+  },
+  "B": {
+   "분위 10 · 50 · 90%": [
+    0.0316,
+    0.1037,
+    0.2108
+   ],
+   "앞 기간 70 · 80 · 90%": [
+    0.1162,
+    0.1376,
+    0.1591
+   ],
+   "음수 비율 %": 2.35
+  },
+  "C": {
+   "분위 10 · 50 · 90%": [
+    0.3288,
+    0.5487,
+    0.9457
+   ],
+   "앞 기간 70 · 80 · 90%": [
+    0.5677,
+    0.6312,
+    0.7381
+   ],
+   "음수 비율 %": 0.0
+  },
+  "순위 상관(평균 순위 · 동률 평균)": {
+   "A 대 B": 0.8531,
+   "A 대 C": 0.7853,
+   "A 대 평균 상관": 0.5385,
+   "B 대 평균 상관": 0.7602
+  },
+  "A 앞 80% 넘는 판단(전체 · 앞 · 뒤)": [
+   136,
+   34,
+   102
+  ],
+  "그중 평균 상관 ≥ 0.2895(K80)": 60,
+  "그중 C도 앞 80% 넘음": 101
+ }
+}
