@@ -3,9 +3,10 @@
 - 원주가 · 수정주가 · 분배 일정: etf-ohlc/{코드}.json @ OHLC(collect_etf_ohlc.py · 한투 FHKST03010100 ADJ 0/1 · HHKDB669102C0 예탁원 배당일정)
 - 탐색에 쓴 종가: etf-data/{코드}.json @ 고정 나무 9743cb802
 대조(069500은 분배가 있는 양성 대조):
-① 수정 ÷ 원주가 비율이 바뀐 날(계단)과 분배 기준일 전 거래일(분배락)이 맞는지 · 계단 크기 ≈ 분배금 ÷ 전날 원주가
+① 원주가 ÷ 수정 비율(q = 원 ÷ 수정)이 바뀐 날(계단)과 분배 기준일 전 거래일(분배락)이 맞는지 · 계단 크기 ≈ 분배금 ÷ 전날 원주가
 ② 탐색 종가의 하루 수익 = 지금 수정 종가의 하루 수익인지(수정주가는 새 분배가 날 때마다 앞 값 전체에 같은 배수가 곱해져 값 자체는 달라질 수 있음 · 수익은 같아야 함)
-③ 하루만 튀었다 돌아온 값(±1.5% 넘게 갔다가 다음 날 되돌림 · 단기채는 ±0.15%)과 그 날이 달 마지막 거래일인지(달 수익을 흔드는지)
+④ 분배락 날 수익 식: 수정 수익 대 P_t ÷ (P_{t−1} − D) − 1(앞날 값에서 분배를 뺀 값에 재투자) 대 (P_t + D) ÷ P_{t−1} − 1(분배락 종가에 재투자) · 지급일 기록
+③ 하루만 튀었다 돌아온 값(이상치 후보일 뿐 오류 확정 아님 · 지우지 않음 · ±1.5% 넘게 갔다가 다음 날 되돌림 · 단기채는 ±0.15%)과 그 날이 달 마지막 거래일인지(달 수익을 흔드는지)
 출력: dist_check_out.json"""
 import hashlib
 import json
@@ -23,9 +24,11 @@ def show(rev, path):
     return json.loads(raw), hashlib.sha256(raw).hexdigest()
 
 
+OHLC069 = subprocess.run(["git", "log", "-1", "--format=%H", OHLC, "--", "etf-ohlc/069500.json"], capture_output=True, text=True, check=True).stdout.strip()
 out, fps = {}, {}
 for c in CODES:
-    o, fps[f"{OHLC}:etf-ohlc/{c}.json"] = show(OHLC if c != "069500" else "HEAD", f"etf-ohlc/{c}.json")
+    rev = OHLC if c != "069500" else OHLC069        # 069500은 그 파일을 마지막으로 바꾼 커밋(실제 읽은 SHA)
+    o, fps[f"{rev}:etf-ohlc/{c}.json"] = show(rev, f"etf-ohlc/{c}.json")
     e, fps[f"{TREE}:etf-data/{c}.json"] = show(TREE, f"etf-data/{c}.json")
     adj = {r[0]: r[4] for r in o["adjusted"] if r[4]}
     raw = {r[0]: r[4] for r in o["raw"] if r[4]}
@@ -43,8 +46,14 @@ for c in CODES:
         ex = before[-1] if before else None
         st = next((s for s in steps if s["날"] == ex), None)
         exp = -v["per_share_cash"] / st["전날 원주가"] if st else None
-        divs.append({"기준일": rd, "분배락(전 거래일)": ex, "주당": v["per_share_cash"], "계단": st["비율 변화"] if st else None,
-                     "기대 계단(−분배 ÷ 전날 원주가)": round(exp, 5) if exp is not None else None})
+        D = v["per_share_cash"]
+        f = {}
+        if ex and ks.index(ex) > 0:
+            p = ks[ks.index(ex) - 1]
+            f = {"수정 수익 %": round((adj[ex] / adj[p] - 1) * 100, 6), "P/(P−D) %": round((raw[ex] / (raw[p] - D) - 1) * 100, 6),
+                 "(P+D)/P %": round(((raw[ex] + D) / raw[p] - 1) * 100, 6)}
+        divs.append({"기준일": rd, "분배락(전 거래일)": ex, "지급일": v.get("pay_date"), "주당": D, "계단": st["비율 변화"] if st else None,
+                     "기대 계단(−분배 ÷ 전날 원주가)": round(exp, 5) if exp is not None else None, **f})
     matched = {d["분배락(전 거래일)"] for d in divs if d["계단"] is not None}
     ed = dict(e["closes"])
     common = [k for k in ks if k in ed]
@@ -66,7 +75,10 @@ for c in CODES:
         b = cl[i + 1][1] / cl[i][1] - 1
         if abs(a) > lim and abs(b) > lim and a * b < 0 and abs(cl[i + 1][1] / cl[i - 1][1] - 1) < lim / 3:
             spikes.append({"날": cl[i][0], "그날 %": round(a * 100, 3), "다음 날 %": round(b * 100, 3), "달 마지막 거래일": month_last[cl[i][0][:6]] == cl[i][0]})
-    out[c] = {"분배 건수": len(divs), "분배": divs, "비율 계단 수": len(steps), "분배와 안 맞는 계단": [s for s in steps if s["날"] not in matched][:20],
+    fx = [d for d in divs if "수정 수익 %" in d]
+    out[c] = {"분배 건수": len(divs),
+              "분배락 수익 차 최대 %p": {"수정 − P/(P−D)": round(max((abs(d["수정 수익 %"] - d["P/(P−D) %"]) for d in fx), default=0), 6),
+                                   "수정 − (P+D)/P": round(max((abs(d["수정 수익 %"] - d["(P+D)/P %"]) for d in fx), default=0), 6)}, "분배": divs, "비율 계단 수": len(steps), "분배와 안 맞는 계단": [s for s in steps if s["날"] not in matched][:20],
               "탐색 종가 = 수정 종가(값)": f"{same}/{len(common)}", "값 배수(탐색 ÷ 지금) 최소 · 최대": [round(min(ratio), 6), round(max(ratio), 6)],
               "하루 수익 차이 > 0.05%p 날": big[:20], "하루 수익 차이 최대 %p": round(max(x for _, x in rd) * 100, 4), "하루 튐": spikes,
               "원주가 첫날 · 끝날": [ks[0], ks[-1]] if ks else None}
@@ -74,6 +86,6 @@ out["입력 지문"] = fps
 json.dump(out, open(HERE / "dist_check_out.json", "w"), ensure_ascii=False, indent=1)
 for c in CODES:
     r = out[c]
-    print(c, "분배", r["분배 건수"], "계단", r["비율 계단 수"], "안 맞는 계단", len(r["분배와 안 맞는 계단"]), "값 같음", r["탐색 종가 = 수정 종가(값)"], "배수", r["값 배수(탐색 ÷ 지금) 최소 · 최대"], "수익 차이 큰 날", r["하루 수익 차이 > 0.05%p 날"], "최대", r["하루 수익 차이 최대 %p"], "튐", [(s["날"], s["달 마지막 거래일"]) for s in r["하루 튐"]])
+    print(c, "분배", r["분배 건수"], "분배락 식 차", r["분배락 수익 차 최대 %p"], "계단", r["비율 계단 수"], "안 맞는 계단", len(r["분배와 안 맞는 계단"]), "값 같음", r["탐색 종가 = 수정 종가(값)"], "배수", r["값 배수(탐색 ÷ 지금) 최소 · 최대"], "수익 차이 큰 날", r["하루 수익 차이 > 0.05%p 날"], "최대", r["하루 수익 차이 최대 %p"], "튐", [(s["날"], s["달 마지막 거래일"]) for s in r["하루 튐"]])
     for d in r["분배"][-4:]:
         print("   ", d)
