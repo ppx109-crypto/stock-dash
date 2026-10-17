@@ -14,17 +14,18 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True, cwd=HERE).stdout.strip()   # git 경로는 저장소 뿌리 기준
 OHLC, TREE = "51826765c", "9743cb802"
 CODES = ("069500", "261240", "138230", "153130", "157450")
 BOND = {"153130", "157450"}
 
 
 def show(rev, path):
-    raw = subprocess.run(["git", "show", f"{rev}:{path}"], capture_output=True, check=True).stdout
+    raw = subprocess.run(["git", "show", f"{rev}:{path}"], capture_output=True, check=True, cwd=ROOT).stdout
     return json.loads(raw), hashlib.sha256(raw).hexdigest()
 
 
-OHLC069 = subprocess.run(["git", "log", "-1", "--format=%H", OHLC, "--", "etf-ohlc/069500.json"], capture_output=True, text=True, check=True).stdout.strip()
+OHLC069 = subprocess.run(["git", "log", "-1", "--format=%H", OHLC, "--", "etf-ohlc/069500.json"], capture_output=True, text=True, check=True, cwd=ROOT).stdout.strip()
 out, fps = {}, {}
 for c in CODES:
     rev = OHLC if c != "069500" else OHLC069        # 069500은 그 파일을 마지막으로 바꾼 커밋(실제 읽은 SHA)

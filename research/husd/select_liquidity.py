@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+ROOT = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True, cwd=HERE).stdout.strip()   # git 경로는 저장소 뿌리 기준
 OHLC = "51826765c"
 GROUPS = {"달러선물 1배": ("138230", "261240"), "단기채 대조": ("153130", "157450")}
 LO, HI = "20170201", "20211231"
@@ -15,7 +16,7 @@ out = {"기준": f"{LO} ~ {HI} 하루 거래대금(원) 가운데 값 · 원주�
 for g, codes in GROUPS.items():
     rows = {}
     for c in codes:
-        raw = subprocess.run(["git", "show", f"{OHLC}:etf-ohlc/{c}.json"], capture_output=True, check=True).stdout
+        raw = subprocess.run(["git", "show", f"{OHLC}:etf-ohlc/{c}.json"], capture_output=True, check=True, cwd=ROOT).stdout
         out["입력 지문"][f"{OHLC}:etf-ohlc/{c}.json"] = hashlib.sha256(raw).hexdigest()
         o = json.loads(raw)
         cols = o["columns"]
