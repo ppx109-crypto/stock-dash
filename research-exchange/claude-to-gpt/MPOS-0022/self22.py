@@ -27,7 +27,7 @@ for _ in ds[1:]:
     xs.append(xs[-1] * (1 + rnd.gauss(0, 0.02)))
 d = ds[100]
 w, last = Q.window(ds, xs, d, 60)
-check("창은 판단 날 전 거래일까지(그날 종가 안 씀)", last == ds[99] and max(w) == ds[99] and len(w) == 60)
+check("창은 판단 날 전 거래일까지(그날 종가 안 씀) · 열쇠 = (시작, 끝)", last == ds[99] and max(k[1] for k in w) == ds[99] and len(w) == 60 and (ds[98], ds[99]) in w)
 w2, last2 = Q.window(ds, xs, d, 60, ahead=5)
 check("누수 시험 창은 판단 날 뒤까지 읽음", last2 == ds[105] and last2 > d)
 check("앞 자료 모자라면 None", Q.window(ds, xs, ds[30], 60) == (None, None))
@@ -37,7 +37,15 @@ check("부호 뒤집으면 상관 −1", abs(Q.corr(a, {k: -v for k, v in a.item
 part = dict(list(a.items())[:39])
 check("겹친 날 40 미만이면 None", Q.corr(a, part) is None)
 shifted = {k: v for k, v in list(a.items())[5:]}
-check("날짜로 맞춤(빠진 날은 빼고 셈)", abs(Q.corr(a, shifted) - 1) < 1e-12)
+check("구간으로 맞춤(빠진 구간은 빼고 셈)", abs(Q.corr(a, shifted) - 1) < 1e-12)
+# 결측 바: B는 ds[50] 바가 없음 → B의 (ds[49], ds[51]) 수익은 A의 (ds[50], ds[51])와 짝짓지 않음(GPT #453 3)
+ds_b = [x for i, x in enumerate(ds) if i != 50]
+xs_b = [x for i, x in enumerate(xs) if i != 50]
+wb, _ = Q.window(ds_b, xs_b, d, 60)
+wa, _ = Q.window(ds, xs, d, 60)
+check("결측 바: 끝 날만 같고 시작 날 다른 수익은 짝 안 지음", (ds[49], ds[51]) in wb and (ds[50], ds[51]) in wa and Q.gap_pairs(wa, wb) == 1
+      and abs(Q.corr(wa, wb) - 1) < 1e-12)
+check("상수 수익열은 None", Q.corr(a, {k: 0.01 for k in a}) is None)
 u = [Q.unit(f"{i:06d}", "20200102") for i in range(20000)]
 check("고정 난수: 같은 입력 같은 값 · [0, 1)", Q.unit("005930", "20200102") == Q.unit("005930", "20200102") and min(u) >= 0 and max(u) < 1)
 frac = sum(1 for x in u if x < 0.2) / len(u)

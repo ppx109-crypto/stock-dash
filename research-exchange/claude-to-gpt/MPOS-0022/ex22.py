@@ -3,8 +3,8 @@
 고정 나무(9743cb802) 엔진 lab.run을 그대로 쓰고 정배열 갈래의 살 문만 덧씌움(규칙 갈래 · 크기 · 청산 · 순서 그대로 · 엔진 수정 없음).
 EX_MODE=BASE : 원판 — 장부가 z055_d1_raw.json(sha 0ec97a14…)과 같아야 함.
 EX_MODE=K    : 동조화 문 — 정배열 갈래 후보가 지금 들고 있는 종목들과의 평균 상관(판단 날 d의 전 거래일까지 60거래일 하루 수익 ·
-               날짜로 맞춤 · 겹친 날 40 미만이면 그 쌍 뺌) ≥ EX_TH 이면 사지 않음(들고 있는 종목 없으면 막지 않음). 기존 닮은 종목 문(nrl.kin)은 그대로 먼저.
-EX_MODE=KR   : 대조 — 같은 자리(정배열 후보 · 들고 있는 종목 있음)에서 (종목, 날) 지문으로 정한 고정 난수 < EX_P 이면 사지 않음(상관 안 봄).
+               시작 · 끝 날이 같은 수익끼리만 맞춤 · 겹친 구간 40 미만 · 상수면 그 쌍 뺌) ≥ EX_TH 이면 사지 않음(들고 있는 종목 없으면 막지 않음). 기존 닮은 종목 문(nrl.kin)은 그대로 먼저.
+EX_MODE=KR   : 참고 대조(고정 20% 확률 제외 · 기전 검증용 아님) — 같은 자리(정배열 후보 · 들고 있는 종목 있음)에서 (종목, 날) 지문 고정 난수 < EX_P 이면 사지 않음.
 EX_MODE=L    : 늦은 구간 진입 막기 — 정배열 갈래는 그 종목 정배열이 이어진 날 수(진입 날 포함 · nrl.shape) ≤ EX_N 일 때만 삼.
 EX_MODE=KLEAK: 검사 도구 자체 시험 — K 문의 상관 창이 d 뒤 5거래일까지(일부러 미래).
 판단 값: K · KR · KLEAK는 d 전 거래일까지 종가(KLEAK만 예외) · L은 원판과 같은 nrl.shape(상속 캐시).
@@ -59,7 +59,8 @@ if POISON:
 DATA_END = max(d for b in PRICES.values() for d, _ in b["rows"])
 DAYS = {c: [d for d, _ in b["rows"]] for c, b in PRICES.items()}
 CLOSE = {c: [x for _, x in b["rows"]] for c, b in PRICES.items()}
-GATE = {"판단 수": 0, "막음": 0, "읽은 날 ≥ 판단 날": 0, "쌍 뺌(겹친 날 모자람)": 0}
+GATE = {"판단 수": 0, "막음": 0, "읽은 날 ≥ 판단 날": 0, "쌍 뺌(겹친 구간 모자람 · 상수)": 0, "구간 어긋나 뺀 수익": 0}
+VALS = []      # (판단 날, 종목, 평균 상관 또는 None) — 실제 판단 순간의 모집단(문턱 진단 · 성과와 무관)
 
 
 def rets(code, d):
@@ -81,8 +82,10 @@ def mean_corr(row, held):
     for h in held:
         rb = rets(h["code"], row["date"])
         v = parts.corr(ra, rb, MIN_OVERLAP) if rb is not None else None
+        if rb is not None:
+            GATE["구간 어긋나 뺀 수익"] += parts.gap_pairs(ra, rb)
         if v is None:
-            GATE["쌍 뺌(겹친 날 모자람)"] += 1
+            GATE["쌍 뺌(겹친 구간 모자람 · 상수)"] += 1
         else:
             cs.append(v)
     return sum(cs) / len(cs) if cs else None
@@ -98,6 +101,7 @@ def apart(row, held):
         hit = parts.unit(row["code"], row["date"]) < P_RAND
     else:
         mc = mean_corr(row, held)
+        VALS.append([row["date"], row["code"], mc])
         hit = mc is not None and mc >= TH
     GATE["막음"] += hit
     return not hit
@@ -134,9 +138,10 @@ for side, pool, since in (("앞", nrl.early, rule.SINCE), ("뒤", nrl.inside, ru
     seen = [e for e in ent.rows if (e[0], e[1]) in held]
     bad = [e for e in seen if held[(e[0], e[1])] != e[3]]
     audit[side] = dict(ex.receipt(), **{"문": dict(GATE), "자리일(들고 × 자리)": sum(t["들고"] * (t.get("자리") or 1) for t in got),
-                                       "진입(종목 · 산 날 · 요청 칸 · 배정 칸)": ent.rows,
+                                       "진입(종목 · 산 날 · 요청 칸 · 배정 칸)": ent.rows, "판단 순간 평균 상관": list(VALS),
                                        "배정 칸 대조": {"다음 날 보유 칸을 본 진입": len(seen), "배정 칸 ≠ 보유 칸": len(bad), "예": bad[:3]}})
     GATE.update({k: 0 for k in GATE})
+    VALS.clear()
     print(side, len(got), flush=True)
 json.dump(rows, open(os.environ["EX_OUT"], "w"))
 json.dump({"부품 지문": PARTS_SHA, "자료 끝": DATA_END, "자르기": CUTMODE if POISON else "없음", **audit}, open(os.environ["EX_OUT"] + ".audit.json", "w"),

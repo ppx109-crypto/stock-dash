@@ -133,18 +133,19 @@ import hashlib as _hashlib
 
 
 def window(ds, xs, d, back=60, ahead=None):
-    """d 전 거래일까지 back개 하루 수익 {날: 수익}. ahead가 있으면 일부러 d 뒤 ahead거래일까지(누수 시험 전용). 모자라면 None.
-    두 번째 값: 실제로 읽은 가장 늦은 날."""
+    """d 전 거래일까지 back개 하루 수익 {(시작 날, 끝 날): 수익}. 열쇠에 시작 · 끝 날을 함께 둬서, 한 종목에 바가 빠져
+    수익 구간이 다르면(예: 03→06 대 02→06) 짝짓지 않음(GPT #453 3). ahead가 있으면 일부러 d 뒤 ahead거래일까지(누수 시험 전용).
+    모자라면 (None, None). 두 번째 값: 실제로 읽은 가장 늦은 날."""
     j = _bisect.bisect_left(ds, d) - 1
     if ahead is not None:
         j = min(_bisect.bisect_right(ds, d) - 1 + ahead, len(ds) - 1)
     if j - back < 0:
         return None, None
-    return {ds[q]: xs[q] / xs[q - 1] - 1 for q in range(j - back + 1, j + 1)}, ds[j]
+    return {(ds[q - 1], ds[q]): xs[q] / xs[q - 1] - 1 for q in range(j - back + 1, j + 1)}, ds[j]
 
 
 def corr(a, b, min_overlap=40):
-    """같은 날짜끼리 맞춘 피어슨 상관. 겹친 날 < min_overlap이면 None."""
+    """시작 · 끝 날이 모두 같은 수익끼리 맞춘 피어슨 상관. 겹친 구간 < min_overlap이면 None. 한쪽이 상수(분산 0)면 None."""
     ks = sorted(set(a) & set(b))
     if len(ks) < min_overlap:
         return None
@@ -153,7 +154,13 @@ def corr(a, b, min_overlap=40):
     mx, my = sum(x) / len(x), sum(y) / len(y)
     top = sum((p - mx) * (q - my) for p, q in zip(x, y))
     w = (sum((p - mx) ** 2 for p in x) ** 0.5) * (sum((q - my) ** 2 for q in y) ** 0.5)
-    return top / w if w else None
+    return top / w if w > 1e-15 else None      # 분산이 사실상 0(상수 수익열)이면 None
+
+
+def gap_pairs(a, b):
+    """끝 날은 같은데 시작 날이 다른 수익 수(구간 어긋남 · 짝짓지 않은 것)."""
+    ea = {k[1]: k[0] for k in a}
+    return sum(1 for k in b if k[1] in ea and ea[k[1]] != k[0])
 
 
 def unit(code, d):
