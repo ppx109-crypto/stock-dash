@@ -1,0 +1,35 @@
+{
+ "정의 커밋(셈 전)": "d58ce15cc research/pit26/SURVIVOR.md",
+ "코드 지문": {
+  "honest_cache.py": "6082aa3b661d379dd0433d2671d17b400c581843d5b75b3fe73706a7cb93054a",
+  "survivor_build.py": "c2fc6c7fa4f643bc0e1a784639e5b58d34075515f26c9f732c9638bb2ed69125",
+  "honest_ledger.py": "bf28fff4f54c406eee8b7301a81b9ca198a362915398ffb3dabae8ba2ab7e651",
+  "recount_acct.py": "19944dd9042496c98a0bfd331de99a22174fc0e2860f53ebb0c691892e735c07"
+ },
+ "캐시": {
+  "A": "106405198ef478bd99988d980970d769597c5978a506aa43d18de0e4b15956f5",
+  "B": "432a8fd411b055b7be56f65645d814dbd3fe71aa81828b428728e40cbb087b27"
+ },
+ "장부": {
+  "A": "7317a912c9220a17071f75b53774f24a862be5eb43e276e8330837633934e0f1",
+  "B0": "ff9820056f04064af8790a2fa6a13efd32b0813f9424e8205d2fd7607e33c879",
+  "Bp": "bb96961b76c10a968201fb994739982951a8c751a9339d54972fa900a5d9fea9",
+  "B1": "b7bab335d602b18470ea3f94048896527e7cc5d813050a158a6d4688da243df8"
+ },
+ "바탕 csv": {
+  "A": "2f0159d04a70563d7a0a9641503d0ee37867688c5bceaeea2e1ef6d7da860d5f",
+  "B0": "24a8995d3c71bee753ffacfd71f421015702be79ddb2cbe64ff6cb5dc2dfb9af",
+  "Bp": "d1872732747af1af33bad9a1535af15f12501fb4843172a7803109184ba26e91",
+  "B1": "0bf9755d480ac9edad72efdf3546f7bf7e5ea9f816d3ce355d86febefa631af8"
+ },
+ "공공 자료": {
+  "public-daily-v2/2020.csv": "091ad8ec0e90fced1843426bf404d2ac19b7fbcd92718652592c66b89bd7d749",
+  "public-daily-v2/2021.csv": "64681c22e8ae50ffb0c8398f4ba4f814dcb41eb9855884665067507e0a726ee6",
+  "public-daily-v2/2022.csv": "e1844c4fc9bd4be3f1f5694fc434c8bfca1b068e4876a8f18d42d99c4bed4b53",
+  "public-daily-v2/2023.csv": "338fad66279d50a2f059f128214ded0943c1410add10462c93f8992ec0a5a56c",
+  "public-daily-v2/2024.csv": "56409991f47c854dce3993880242143bd90d2bbbc625f5b0eb78227cc49d09c8",
+  "public-daily-v2/2025.csv": "9d265286796ac55e6f8ad670ccfef73ecae0191a7c0be7d4d51cde88375ad931",
+  "public-daily-v2/2026.csv": "78822841c0d7fe162bcede0bf34d296cf2d237eba896f89cd57bed46ca6a53c6"
+ },
+ "명령": "survivor/run_sv.sh(캐시 · 아래 주석에 장부 · 바탕 명령) · 계좌: recount_acct.py sv.json HONEST=… A=… B0=… Bp=… B1=… · 구간 셈은 RESULT 3절"
+}
