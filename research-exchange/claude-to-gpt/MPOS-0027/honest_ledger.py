@@ -41,10 +41,27 @@ if TEACH:
         return _teacher(r, n)
     nrl.teacher = teacher
 rows = []
-for side, pool, since in (("앞", nrl.early, rule.SINCE), ("뒤", nrl.inside, rule.MID)):
+CONT = os.environ.get("EX_CONT") == "1"          # SEAM_FIX.md: 앞 · 뒤 반을 나누지 않고 SINCE부터 한 번(이음새 보유를 잃지 않음)
+SIDES = (("연속", nrl.inside, rule.SINCE),) if CONT else (("앞", nrl.early, rule.SINCE), ("뒤", nrl.inside, rule.MID))
+EV = []
+
+
+def size_w(row):
+    s = nrl.BASE_SIZE(row)
+    EV.append((CUR[0], row["code"], row["date"]))
+    return s
+
+
+CUR = [None]
+shut = set()
+for side, pool, since in SIDES:
+    CUR[0] = side
     g = lab.run(pool, nrl.prices, nrl.BASE_HOLD, nrl.BASE_EXIT, rank=rule.order, slots=nrl.SLOTS, since=since, apart=nrl.kin,
-                realistic=True, cap=130, detail=True, size=nrl.BASE_SIZE)
+                realistic=True, cap=130, detail=True, size=size_w)
     rows += [(t["code"], t["산 날"], t["판 날"], t["손익"], t.get("자리") or 1) for t in g["매매목록"]]
+    shut |= {(side, t["code"], t["산 날"]) for t in g["매매목록"]}
+info["매수 요청(size 호출)"] = len(EV)
+info["종료 기록 없는 매수(산 날)"] = sorted({(e[1], e[2]) for e in EV if e not in shut})
 json.dump(rows, open(OUT, "w"))
 sha = hashlib.sha256(open(OUT, "rb").read()).hexdigest()
 print(json.dumps({"모드": MODE, "매매": len(rows), "장부 지문": sha, "FLOW 종목": len(nrl.FLOW), "TARGETS 종목": len(nrl.TARGETS),

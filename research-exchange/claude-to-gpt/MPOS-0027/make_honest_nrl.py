@@ -21,9 +21,12 @@ lanes = lab.lanes(P)
 inside = [H["inside"][k] for k in sorted(H["inside"], key=lambda k: (k[1], k[0])) if k[1] >= rule.SINCE]
 with open(os.environ["EX_OUT"], "wb") as fh:
     pickle.dump((P, lanes, H["shape"], H["BR"], inside, None, None), fh, protocol=pickle.HIGHEST_PROTOCOL)
-old = pickle.load(open(os.environ["EX_OLD"], "rb"))
-op = old[0]
-sh = lambda d: hashlib.sha256(json.dumps({c: d[c]["rows"] for c in sorted(d)}).encode()).hexdigest()  # noqa: E731
-diff = sorted(c for c in set(P) | set(op) if c not in P or c not in op or P[c]["rows"] != op[c]["rows"])
-print(json.dumps({"주식수 판": H["실측"]["주식수"], "inside 행": len(inside), "BR 날": len(H["BR"]), "shape 종목": len(H["shape"]), "가격 종목 새 · 옛": [len(P), len(op)],
-                  "가격 지문 새 · 옛": [sh(P), sh(op)], "가격 다른 종목 수": len(diff), "다른 종목 앞 10": diff[:10]}, ensure_ascii=False))
+if os.environ.get("EX_OLD"):        # 옛 캐시 가격 비교는 있을 때만(새 컨테이너에는 옛 캐시가 없음 · 2026-10-18)
+    old = pickle.load(open(os.environ["EX_OLD"], "rb"))
+    op = old[0]
+    sh = lambda d: hashlib.sha256(json.dumps({c: d[c]["rows"] for c in sorted(d)}).encode()).hexdigest()  # noqa: E731
+    diff = sorted(c for c in set(P) | set(op) if c not in P or c not in op or P[c]["rows"] != op[c]["rows"])
+    cmp_old = {"가격 종목 새 · 옛": [len(P), len(op)], "가격 지문 새 · 옛": [sh(P), sh(op)], "가격 다른 종목 수": len(diff), "다른 종목 앞 10": diff[:10]}
+else:
+    cmp_old = {"옛 캐시 비교": "건너뜀(EX_OLD 없음)"}
+print(json.dumps({"주식수 판": H["실측"]["주식수"], "inside 행": len(inside), "BR 날": len(H["BR"]), "shape 종목": len(H["shape"]), **cmp_old}, ensure_ascii=False))
