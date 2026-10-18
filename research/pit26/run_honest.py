@@ -1,6 +1,8 @@
 """정직 캐시 실행(HONEST_CACHE.md 판 2 · 손익 없음). honest_cache.py 원문을 exec(tree_run은 나무 밖 import를 막음).
 EX_MODE=FULL : 고정 나무 가격판 전체로 정직 캐시 → EX_OUT.pkl + EX_OUT(요약 json).
 EX_MODE=CUT  : EX_CUT까지 가격으로 다시 만들고 EX_FULL(.pkl)의 c까지와 대조 — 행 · 칸 · 칸 이름 · 타입 · 달 문턱 · 순위 · BR · shape · 문 · 거절 이유.
+EX_MODE=COMPARE : EX_A(same 판 pkl) 대 EX_B(next 판 pkl) 같은 모집단 비교(SHARES_NEXT.md 3절) + 누수 대조 날 c* 고르기(4절 규칙).
+판 3: EX_SHARES=same|next(기본 same) · EX_FCUT(공시 자르는 날 · CUT 기본 = EX_CUT) · EX_FSTRICT=1이면 접수일 < 그날만.
 EX_MODE=OLD  : EX_FULL 정직 캐시 대 지금 옛 캐시(nrl) — inside 행 · 문(옛: 전체 문턱 G · 캐시 shape/BR) 건수 차이 + 엔진 진입(종목 · 산 날) 건수만.
 cwd = 고정 나무 · tree_run. 손익 · 수익률 출력 없음."""
 import hashlib
@@ -21,6 +23,7 @@ import rule  # noqa: E402
 import study  # noqa: E402
 
 MODE, OUT = os.environ["EX_MODE"], os.environ["EX_OUT"]
+SHARES = os.environ.get("EX_SHARES", "same")
 TMP = os.environ.get("EX_TMP", OUT + ".tmp")
 P = study.load_prices()
 
@@ -37,8 +40,9 @@ def price_manifest():
 
 
 if MODE == "FULL":
-    H = ns["build_honest"](P, "99999999", TMP)
-    keep = {k: H[k] for k in ("inside", "T", "BR", "first_day", "shape")}
+    H = ns["build_honest"](P, "99999999", TMP, shares=SHARES)
+    keep = {k: H[k] for k in ("inside", "T", "BR", "first_day", "shape", "rank")}
+    keep["실측"] = H["실측"]
     pickle.dump(keep, open(OUT + ".pkl", "wb"), protocol=pickle.HIGHEST_PROTOCOL)
     man = price_manifest()
     out = {"모드": MODE, "실측": H["실측"], "inside 행 지문": rows_sha(H["inside"]),
@@ -49,7 +53,9 @@ if MODE == "FULL":
 elif MODE == "CUT":
     c = os.environ["EX_CUT"]
     full = pickle.load(open(os.environ["EX_FULL"], "rb"))
-    H = ns["build_honest"](P, c, TMP)
+    fcut = os.environ.get("EX_FCUT", c)
+    fstrict = os.environ.get("EX_FSTRICT", "0") == "1"
+    H = ns["build_honest"](P, c, TMP, shares=SHARES, filings_upto=fcut, filings_strict=fstrict)
     d_rows = ns["rows_diff_strict"](H["inside"], full["inside"], upto=c)
     # 양쪽 키 집합을 먼저(GPT #457 4차 ②): 달 문턱은 c가 든 달까지 · BR은 c까지 날 · shape는 c까지 inside에 나온 종목 · 길이는 자른 가격 길이
     T_d = ns["keyed_diff"](H["T"], full["T"], upto=c[:6])
@@ -66,10 +72,59 @@ elif MODE == "CUT":
             if gc[g] != gf[g]:
                 g_diff.setdefault(g, []).append(k)
     ok = d_rows["같음"] and T_d["같음"] and BR_d["같음"] and sh_d["같음"] and not g_diff
-    out = {"모드": MODE, "자르는 날": c, "실측": H["실측"], "행 · 칸(c까지 inside)": d_rows, "달 문턱(양쪽 키)": T_d,
+    out = {"모드": MODE, "자르는 날": c, "주식수": SHARES, "공시 자름(날 · 접수일 < 그날만)": [fcut, fstrict], "실측": H["실측"], "행 · 칸(c까지 inside)": d_rows, "달 문턱(양쪽 키)": T_d,
            "BR(양쪽 키)": BR_d, "shape(양쪽 종목 · 길이)": sh_d, "문 다름": {g: len(v) for g, v in g_diff.items()},
            "문 다름 예": {g: v[:5] for g, v in g_diff.items()},
            "판정": "동일 가격판 후보 재생 · 내부 시간 절단 PASS" if ok else "동일 가격판 후보 재생 · 내부 시간 절단 FAIL"}
+elif MODE == "COMPARE":
+    import caps  # noqa: E402
+    from collections import Counter
+    A = pickle.load(open(os.environ["EX_A"], "rb"))
+    B = pickle.load(open(os.environ["EX_B"], "rb"))
+    assert A["실측"]["주식수"] == "same" and B["실측"]["주식수"] == "next"
+    k_next = ns["make_known"]("next")
+
+    def why(k):
+        a, b = caps.known_by(*k), k_next(*k)
+        if b is None:
+            return "② 첫 보고 접수 당일(모름)"
+        return "① 자기 그날 접수 공시(주식수 하루 밀림)" if a != b else "③ 자기 주식수 같음 · 다른 종목 변화로 순위 바뀜"
+    left, entered = sorted(set(A["inside"]) - set(B["inside"])), sorted(set(B["inside"]) - set(A["inside"]))
+    tlA, tlB = ns["trend_leg_with"](A["T"]), ns["trend_leg_with"](B["T"])
+    GA = {k: ns["gates"](A["inside"][k], tlA, A["shape"], A["BR"]) for k in left}
+    GB = {k: ns["gates"](B["inside"][k], tlB, B["shape"], B["BR"]) for k in entered}
+    common = sorted(set(A["inside"]) & set(B["inside"]))
+    gd = {}
+    for k in common:
+        ga = ns["gates"](A["inside"][k], tlA, A["shape"], A["BR"])
+        gb = ns["gates"](B["inside"][k], tlB, B["shape"], B["BR"])
+        for g in ga:
+            if ga[g] != gb[g]:
+                gd.setdefault(g, []).append([k, ga[g], gb[g]])
+    since = rule.SINCE
+
+    def side(keys, G):
+        return {"수(전체 · SINCE ~)": [len(keys), sum(1 for k in keys if k[1] >= since)],
+                "이유별": dict(Counter(why(k) for k in keys)),
+                "문 참 수(holds · aligned · teacher · target_cut · BASE_HOLD)": {g: sum(1 for k in keys if G[k][g]) for g in ("holds", "aligned", "teacher", "target_cut", "BASE_HOLD")},
+                "BASE_HOLD 참 목록(종목 · 날 · 갈래 · 이유)": [[k[0], k[1], G[k]["갈래"], why(k)] for k in keys if G[k]["BASE_HOLD"]],
+                "목록(종목 · 날 · 이유 · BASE_HOLD)": [[k[0], k[1], why(k), G[k]["BASE_HOLD"]] for k in keys]}
+    # 누수 대조 날 c*(SHARES_NEXT.md 4절 · 셈 전 규칙): 2019-01-02 ~ 2024-12-30 · same 판 inside에서 자기 주식수가 두 규칙에서 다른 종목 수 최대 · 같으면 이른 날
+    cnt = Counter(k[1] for k in A["inside"] if "20190102" <= k[1] <= "20241230" and caps.known_by(*k) != k_next(*k))
+    cstar = sorted(cnt.items(), key=lambda x: (-x[1], x[0]))[0] if cnt else None
+    lens = {code: len(P[code]["rows"]) for code in set(A["shape"]) | set(B["shape"])}
+    out = {"모드": MODE, "A 실측": A["실측"], "B 실측": B["실측"],
+           "행 모집단 같음(지문 · 전체 행)": [A["실측"]["행 모집단 지문"] == B["실측"]["행 모집단 지문"], A["실측"]["전체 행"] == B["실측"]["전체 행"]],
+           "달 문턱(양쪽 키)": ns["keyed_diff"](A["T"], B["T"]),
+           "순위 붙은 행 A · B · A만 · B만": [len(A["rank"]), len(B["rank"]), len(set(A["rank"]) - set(B["rank"])), len(set(B["rank"]) - set(A["rank"]))],
+           "순위 값 다른 행(둘 다 순위 있음)": sum(1 for k in set(A["rank"]) & set(B["rank"]) if A["rank"][k][0] != B["rank"][k][0]),
+           "inside A · B": [len(A["inside"]), len(B["inside"])],
+           "빠지는 행(same에만 · 지금 판 문)": side(left, GA), "드는 행(next에만 · 고친 판 문)": side(entered, GB),
+           "같은 키 inside 행 칸 대조": ns["rows_diff_strict"](A["inside"], B["inside"]),
+           "BR(양쪽 키)": ns["keyed_diff"](A["BR"], B["BR"]), "shape(양쪽 종목 · 길이)": ns["shape_diff"](A["shape"], B["shape"], lens),
+           "같은 키 문 다름 수": {g: len(v) for g, v in gd.items()}, "같은 키 문 다름 목록(앞 50)": {g: v[:50] for g, v in gd.items()},
+           "누수 대조 날 c*(날 · 종목 수)": cstar, "c* 후보 앞 5": sorted(cnt.items(), key=lambda x: (-x[1], x[0]))[:5],
+           "범위": "같은 가격판 · 같은 lab.build 행 · 주식수 시점만 다름 · 손익 · 성과 출력 없음"}
 elif MODE == "OLD":
     full = pickle.load(open(os.environ["EX_FULL"], "rb"))
     since = rule.SINCE
