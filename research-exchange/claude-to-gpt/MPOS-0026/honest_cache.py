@@ -3,6 +3,7 @@
 - 달 문턱 T[m]: 그달 첫 거래일(정직 표에서 그달 가장 이른 행 날) 앞 행의 변동성 40% 자리(int(k × 0.4)) · k < 1000이면 없음(추세 문 닫힘).
 - 시총 순위: 그날 행끼리(caps.known_by × 종가) 내림차순 · 안정 정렬. inside = 순위 ≤ rule.TOP.
 - shape · BR: 같은 가격판(upto까지) lanes에서.
+- 판 3(SHARES_NEXT.md): shares="next"면 주식수를 접수일 < 날(다음 거래일부터)로 씀 · filings_upto로 공시를 자를 수 있음 · CAPS_ADJ=0만.
 모듈로 씀(build_honest · rows_diff_strict · gates · month_edges_asof). 실행은 run_honest.py."""
 import bisect
 import math
@@ -77,8 +78,39 @@ def rows_diff_strict(A, B, upto=None):
     return res
 
 
-def build_honest(prices, upto, tmpdir, log=None, codes=None):
-    """upto까지 가격으로 정직 캐시. 돌려줌: dict(inside={(종목, 날): 행} · T · shape · BR · first_day · 실측)."""
+def make_known(shares="same", filings_upto=None, filings_strict=False):
+    """주식수 함수(SHARES_NEXT.md 1절). same = caps.known_by와 같음(접수일 ≤ 날) · next = 접수일 < 날.
+    filings_upto: 이 날까지 접수된 공시만 남김(filings_strict면 접수일 < 그날만)."""
+    assert shares in ("same", "next")
+    memo = {}
+
+    def line(code):
+        got = memo.get(code)
+        if got is None:
+            got = caps.timeline(code)
+            if filings_upto is not None:
+                got = tuple(x for x in got if (x[0] < filings_upto if filings_strict else x[0] <= filings_upto))
+            memo[code] = got
+        return got
+
+    def known(code, day):
+        found = None
+        for when, count in line(code):
+            if (when >= day) if shares == "next" else (when > day):
+                break
+            found = count
+        return found
+    return known
+
+
+RANK_FREE = ("시총순위", "시가총액")
+
+
+def build_honest(prices, upto, tmpdir, log=None, codes=None, shares="same", filings_upto=None, filings_strict=False):
+    """upto까지 가격으로 정직 캐시. 돌려줌: dict(inside={(종목, 날): 행} · T · shape · BR · first_day · rank · 실측)."""
+    if caps.ADJ:
+        raise SystemExit("CAPS_ADJ가 켜져 있음 — 정직 캐시는 원 주식수(CAPS_ADJ=0)만 씀(SHARES_NEXT.md · 멈춤)")
+    known = make_known(shares, filings_upto, filings_strict)
     t0 = time.time()
     P = {c: dict(b, rows=[x for x in b["rows"] if x[0] <= upto]) for c, b in prices.items() if codes is None or c in codes}
     P = {c: b for c, b in P.items() if b["rows"]}
@@ -93,7 +125,7 @@ def build_honest(prices, upto, tmpdir, log=None, codes=None):
             vols.append((r["date"], v))
             if r["date"] >= KEEP_FROM:
                 keep.append(r)
-                cnt = caps.known_by(r["code"], r["date"])
+                cnt = known(r["code"], r["date"])
                 if cnt is not None and r.get("price"):
                     sizes.append((r["date"], c, cnt * r["price"]))
         nrow[c] = len(rows)
@@ -109,9 +141,12 @@ def build_honest(prices, upto, tmpdir, log=None, codes=None):
         for place, (c, s) in enumerate(here, 1):
             rank[(c, d)] = (place, s)
     inside = {}
+    import hashlib
+    pop = hashlib.sha256()          # 행 모집단 지문: 순위 · 시총 칸을 뺀 남긴 행 전체(같은 모집단 확인용)
     for c in sorted(P):
         with open(os.path.join(tmpdir, f"{c}.pkl"), "rb") as fh:
             for r in pickle.load(fh):
+                pop.update(repr(sorted((k, v) for k, v in r.items() if k not in RANK_FREE)).encode())
                 got = rank.get((c, r["date"]))
                 if got is not None:
                     r[caps.RANK], r[caps.SIZE] = got
@@ -133,9 +168,10 @@ def build_honest(prices, upto, tmpdir, log=None, codes=None):
         peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / 1024
     except Exception:
         peak = None
-    return {"inside": inside, "T": T, "shape": shape, "BR": BR, "first_day": first_day, "P": P,
+    return {"inside": inside, "T": T, "shape": shape, "BR": BR, "first_day": first_day, "P": P, "rank": rank,
             "실측": {"빌드 초": round(t1 - t0, 1), "나머지 초": round(t2 - t1, 1), "최대 메모리 MB": peak, "전체 행": len(vols),
-                   "inside 행": len(inside), "종목": len(P)}, "종목별 행 수": nrow}
+                   "inside 행": len(inside), "종목": len(P), "순위 붙은 행": len(rank), "행 모집단 지문": pop.hexdigest(),
+                   "주식수": shares, "공시 자름": [filings_upto, filings_strict], "CAPS_ADJ": os.getenv("CAPS_ADJ", "0")}, "종목별 행 수": nrow}
 
 
 def trend_leg_with(T):

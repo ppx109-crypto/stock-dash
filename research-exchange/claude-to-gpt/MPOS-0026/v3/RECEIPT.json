@@ -1,0 +1,24 @@
+{
+ "명령": "research/pit26/v3/run_full.sh(전체 판 두 개 + 주석의 COMPARE 명령) · run_cuts.sh(다섯 컷 + 누수 대조) · run_avail.sh(감사 판 2 · 칸 이름별 셈을 넣은 두 번째 실행) · 경로는 작업 폴더",
+ "설계 커밋(셈 전)": "96591cb05 research/pit26/SHARES_NEXT.md",
+ "추가 코드 지문(EX_HC로 exec · 원본 = research/pit26/)": {
+  "honest_cache.py": "6082aa3b661d379dd0433d2671d17b400c581843d5b75b3fe73706a7cb93054a",
+  "run_honest.py": "753d218e36f2f7a583eb34b6b3de1f14efc98f060fa29e4e5c25ea3f718017c8",
+  "avail_audit.py": "c186b26f29c9a2b9e76579b046bd7868efea24d40b85a8e30ce308e37269f945",
+  "honest_tools4.py": "3f87f1e6fdc76f80175b4af1396e289f571a43d23f9f1f74aa08304b03bae7a1",
+  "honest_tools3.py": "b862d96b1afd6893e283e18830ab8c946661ab16d50f9efa562fb1b710943c9c"
+ },
+ "고정 나무 모듈 지문": "각 *.mods.json(tree_run 영수증)",
+ "환경": {
+  "CAPS_ADJ": "0(설정해 넣음 · 코드가 켜져 있으면 멈춤)",
+  "PYTHONHASHSEED": "0",
+  "NRL_CACHE": "/tmp/maxret-0026-cache.pkl(sha 03dcdd00…)"
+ },
+ "전체 판 pkl 지문": {
+  "full_same.json.pkl": "2aab74564435fa8cd94be671b62c130ec6fa3ae3cdab19cf865472e20c660914",
+  "full_next.json.pkl": "28b4fcb771d53ddce4bdd5328d84d2e800279621bc19f204b3596c96fb6fd50e"
+ },
+ "same 판 재현": "inside 행 지문 67296c1e…(판 2 FULL과 같음)",
+ "가격 지문 뜻": "원파일 바이트가 아니라 study.load_prices로 읽은 rows의 JSON 직렬화 SHA256 묶음 9f75f62b…(판 2와 같음)",
+ "주의": "git 커밋 시각은 바깥 자료의 실제 입수 시각이 아님 · 손익 · 성과 출력 없음"
+}
