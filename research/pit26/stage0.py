@@ -21,7 +21,7 @@ def betas(r, m, lag=1):
         hi = t + 1 - lag
         lo = max(0, hi - WIN)
         x, y = np.array(m[lo:hi], float), np.array(r[lo:hi], float)
-        ok = ~(np.isnan(x) | np.isnan(y))
+        ok = np.isfinite(x) & np.isfinite(y)          # NaN · inf 모두 뺌(GPT #459 17:25:38Z)
         x, y = x[ok], y[ok]
         if len(x) < MIN_N or np.var(x) == 0:
             out.append(None)
