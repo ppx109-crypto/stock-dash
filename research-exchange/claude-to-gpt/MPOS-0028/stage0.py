@@ -58,7 +58,7 @@ def run(base_csv, attr_csv, out_path):
     src = inspect.getsource(Dv.account)
     rep = [
         ("def account(cfg, lo=LO, hi=HI):", "def account_attr(cfg, lo=LO, hi=HI):\n    ATT = {}"),
-        ("        vb *= base[d][0] / base[p][0]\n", "        _a = ATT.setdefault(d, {'바탕': 0.0, '레버리지': 0.0, '인버스': 0.0, '비용': 0.0, '정리 비용': 0.0, 'A0': vb + ve + cash})\n        _a['바탕'] += vb * (base[d][0] / base[p][0] - 1)\n        vb *= base[d][0] / base[p][0]\n"),
+        ("        vb *= base[d][0] / base[p][0]\n", "        _a = ATT.setdefault(d, {'바탕': 0.0, '레버리지': 0.0, '인버스': 0.0, '비용': 0.0, '정리 비용': 0.0, 'A0': vb + ve + cash, 'VB0': vb})\n        _a['바탕'] += vb * (base[d][0] / base[p][0] - 1)\n        vb *= base[d][0] / base[p][0]\n"),
         ("            ve *= etf[code][d] / etf[code][p]\n", "            _a['레버리지' if code == '122630' else '인버스'] += ve * (etf[code][d] / etf[code][p] - 1)\n            ve *= etf[code][d] / etf[code][p]\n"),
         ("            A -= cost\n", "            A -= cost\n            _a['비용'] -= cost\n"),
         ("            cash += cut * (1 - COST_ETF)\n", "            cash += cut * (1 - COST_ETF)\n            _a['정리 비용'] -= cut * COST_ETF\n"),
@@ -73,79 +73,94 @@ def run(base_csv, attr_csv, out_path):
     navs, nst, att = Dv.account_attr(dict(M.CFG))
     assert navs == ref, "덧붙임 분해 판의 NAV가 원 함수와 다름"
     etf = Dv.data()[1]["069500"]
-    # 바탕 봇별 날 손익(z100g attr · 원) → 바탕 NAV 대비 몫 → 계좌의 '바탕' 몫에 비례해 나눔
-    A = {r["날"]: r for r in csv.DictReader(open(attr_csv))}
+    # 판 2(GPT #459 16:21:57Z): 봇 몫은 손익 비율이 아니라 자본 배율(그날 시작 계좌 안 바탕 VB0 ÷ 전날 바탕 NAV)로 연결
+    rowsA = list(csv.DictReader(open(attr_csv)))
+    A = {r["날"]: r for r in rowsA}
+    assert len(A) == len(rowsA), "z100g 봇별 손익에 중복 날"
     B = {r["날"]: r for r in csv.DictReader(open(base_csv))}
     ds = sorted(navs)
     bots = ("1d", "basket", "engine", "inverse")
     mkt_days = sorted(etf)
-    mret = {}
-    for i in range(1, len(mkt_days)):
-        mret[mkt_days[i]] = etf[mkt_days[i]] / etf[mkt_days[i - 1]] - 1
-    # 봇별 계좌 기여(원) = 덧붙임 판의 '바탕' 손익 × (봇 손익 ÷ 바탕 전체 손익) — 바탕 손익 0인 날은 0
-    contrib = {b: [] for b in bots}
-    rows = []
-    for d in ds[1:]:
-        a = att[d]
-        z = A.get(d)
-        tot = sum(float(z[b]) for b in bots) + float(z.get("15m") or 0) + float(z.get("park") or 0) if z else 0.0
-        part = {b: (a["바탕"] * float(z[b]) / tot if z and tot else 0.0) for b in bots}
-        rows.append((d, a, part))
-    # 베타: 봇 기여(계좌 시작 NAV 대비)와 069500 날 수익
-    rr = {b: [p[b] / a["A0"] for _, a, p in rows] for b in bots}
-    mm = [mret.get(d, np.nan) for d, _, _ in rows]
+    mret = {mkt_days[i]: etf[mkt_days[i]] / etf[mkt_days[i - 1]] - 1 for i in range(1, len(mkt_days))}
+    rows, other_abs, zero_tot = [], [], 0
+    for j, d in enumerate(ds[1:], 1):
+        a, pd_ = att[d], ds[j - 1]
+        if d not in A or d not in B or pd_ not in B:
+            raise SystemExit(f"날 누락: {d}(봇별 손익 · 바탕 csv에 없음) — 0으로 채우지 않음")
+        k = a["VB0"] / float(B[pd_]["NAV"])
+        part = {b: k * float(A[d][b]) for b in bots}
+        other = a["바탕"] - sum(part.values())         # 15m · park · 바탕 csv 원 단위 반올림
+        other_abs.append(abs(other))
+        zero_tot += abs(sum(float(A[d][b]) for b in bots)) < 1e-9 and any(abs(float(A[d][b])) > 0 for b in bots)
+        rows.append((d, a, part, other))
+    rr = {b: [p[b] / a["A0"] for _, a, p, _ in rows] for b in bots}
+    mm = [mret.get(d, float("nan")) for d, _, _, _ in rows]
     beta = {b: betas(rr[b], mm) for b in bots}
+    noest = {b: {"날": 0, "시장 자료 없음": 0, "베타 없음(앞 60일 미만 · 분산 0)": 0} for b in bots}
     mon = {}
-    for i, (d, a, p) in enumerate(rows):
-        x = mon.setdefault(d[:6], {"A0": a["A0"], **{f"{b} 시장": 0.0 for b in bots}, **{f"{b} 잔차": 0.0 for b in bots},
-                                  "레버리지": 0.0, "인버스 ETF": 0.0, "덧붙임 비용": 0.0, "바탕비용": 0.0})
+    for i, (d, a, p, other) in enumerate(rows):
+        x = mon.setdefault(d[:6], {"A0": a["A0"], **{f"{b} 설명": 0.0 for b in bots}, **{f"{b} 미설명": 0.0 for b in bots},
+                                  **{f"{b} 추정불가": 0.0 for b in bots}, "바탕 기타": 0.0, "레버리지": 0.0, "인버스 ETF": 0.0, "덧붙임 비용": 0.0})
         for b in bots:
-            bt = beta[b][i]
-            mk = (bt * mm[i] * a["A0"]) if (bt is not None and not np.isnan(mm[i])) else 0.0
-            x[f"{b} 시장"] += mk
-            x[f"{b} 잔차"] += p[b] - mk
+            bt, mk = beta[b][i], mm[i]
+            if bt is None or not np.isfinite(mk):
+                x[f"{b} 추정불가"] += p[b]
+                if p[b] != 0:
+                    noest[b]["날"] += 1
+                    noest[b]["시장 자료 없음" if not np.isfinite(mk) else "베타 없음(앞 60일 미만 · 분산 0)"] += 1
+                continue
+            x[f"{b} 설명"] += bt * mk * a["A0"]
+            x[f"{b} 미설명"] += p[b] - bt * mk * a["A0"]
+        x["바탕 기타"] += other
         x["레버리지"] += a["레버리지"]
         x["인버스 ETF"] += a["인버스"]
         x["덧붙임 비용"] += a["비용"] + a["정리 비용"]
-        pd_ = ds[ds.index(d) - 1]
-        if d in B and pd_ in B:                   # 바탕 비용은 바탕 NAV 대비(계좌 몫으로 바꾸지 않은 참고 값 · % 단위로 따로)
-            x["바탕비용"] -= (float(B[d]["비용누계"]) - float(B[pd_]["비용누계"])) / float(B[pd_]["NAV"]) * 100
     full = M.mstats(navs)["달"]
-    out = {}
+    raw = {}
     for m, x in mon.items():
-        if not ("201703" <= m <= "202608"):
-            continue
-        out[m] = {"달 수익 %": round(full[m] * 100, 3), **{k: round(v / x["A0"] * 100, 3) for k, v in x.items() if k not in ("A0", "바탕비용")},
-                  "바탕 비용(참고 · 바탕 NAV 대비 %)": round(x["바탕비용"], 3)}
-    loss = [m for m in out if out[m]["달 수익 %"] < 0]
-    S = lambda ms, k: round(sum(out[m][k] for m in ms), 2)  # noqa: E731
-    summ = {"손실 달": len(loss)}
+        if "201703" <= m <= "202608":
+            raw[m] = {"달 수익 %": full[m] * 100, **{kk: v / x["A0"] * 100 for kk, v in x.items() if kk != "A0"}}
+    gap = max(abs(v["달 수익 %"] - sum(w for kk, w in v.items() if kk != "달 수익 %")) for v in raw.values())
+    loss = [m for m in raw if raw[m]["달 수익 %"] < 0]                         # 원정밀도로 분류(표시만 반올림)
+    S = lambda ms, kk: sum(raw[m][kk] for m in ms)  # noqa: E731
+    R2 = lambda v: round(v, 2)  # noqa: E731
+    summ = {"손실 달": len(loss), "달 부분 합 대 달 수익 최대 차이(%p · 원정밀도 · 단순 합 복리 차이 포함)": gap,
+            "바탕 기타(15m · park · 반올림) 날 최대 |원|": max(other_abs), "봇 손익 합 0인데 봇별은 0 아닌 날(판 1이 0으로 지운 날)": zero_tot,
+            "추정 불가 날(봇별 · 손익 0 아닌 날만)": noest}
     for b in bots:
-        summ[f"{b}: 손실 달 합 시장 · 잔차(%p)"] = [S(loss, f"{b} 시장"), S(loss, f"{b} 잔차")]
-        summ[f"{b}: 전체 합 시장 · 잔차(%p)"] = [S(out, f"{b} 시장"), S(out, f"{b} 잔차")]
-    summ["덧붙임: 손실 달 합 레버리지 · 인버스 · 비용"] = [S(loss, "레버리지"), S(loss, "인버스 ETF"), S(loss, "덧붙임 비용")]
-    worst1d = [m for m in loss if out[m]["1d 시장"] + out[m]["1d 잔차"] == min(out[m][f"{b} 시장"] + out[m][f"{b} 잔차"] for b in bots)]
+        summ[f"{b}: 손실 달 합 설명 · 미설명 · 추정불가(%p)"] = [R2(S(loss, f"{b} 설명")), R2(S(loss, f"{b} 미설명")), R2(S(loss, f"{b} 추정불가"))]
+        summ[f"{b}: 114달 합 설명 · 미설명 · 추정불가(%p)"] = [R2(S(raw, f"{b} 설명")), R2(S(raw, f"{b} 미설명")), R2(S(raw, f"{b} 추정불가"))]
+    summ["덧붙임: 손실 달 합 레버리지 · 인버스 · 비용"] = [R2(S(loss, "레버리지")), R2(S(loss, "인버스 ETF")), R2(S(loss, "덧붙임 비용"))]
+    tb = lambda m, b: raw[m][f"{b} 설명"] + raw[m][f"{b} 미설명"] + raw[m][f"{b} 추정불가"]  # noqa: E731
+    worst1d = [m for m in loss if min(bots, key=lambda b: (tb(m, b), bots.index(b))) == "1d"]
     summ["1일봉이 바탕 봇 중 가장 크게 잃은 손실 달"] = len(worst1d)
-    summ["그 달들 1일봉 손실의 시장 몫 · 잔차 합(%p)"] = [S(worst1d, "1d 시장"), S(worst1d, "1d 잔차")]
-    base_neg = [m for m in loss if sum(out[m][f"{b} 시장"] + out[m][f"{b} 잔차"] for b in bots) < 0]
-    ov_neg = [m for m in loss if out[m]["레버리지"] + out[m]["인버스 ETF"] + out[m]["덧붙임 비용"] < 0]
+    summ["그 달들 1일봉 손실 설명 · 미설명 · 추정불가(%p)"] = [R2(S(worst1d, "1d 설명")), R2(S(worst1d, "1d 미설명")), R2(S(worst1d, "1d 추정불가"))]
+    ORDER4 = ("바탕 설명", "바탕 미설명", "레버리지", "인버스 ETF")          # 판 1과 같은 4갈래(동률이면 이 순서의 앞)
+    ORDER7 = ORDER4 + ("바탕 추정불가", "바탕 기타", "덧붙임 비용")
+
+    def comp(m):
+        return {"바탕 설명": sum(raw[m][f"{b} 설명"] for b in bots), "바탕 미설명": sum(raw[m][f"{b} 미설명"] for b in bots),
+                "레버리지": raw[m]["레버리지"], "인버스 ETF": raw[m]["인버스 ETF"], "바탕 추정불가": sum(raw[m][f"{b} 추정불가"] for b in bots),
+                "바탕 기타": raw[m]["바탕 기타"], "덧붙임 비용": raw[m]["덧붙임 비용"]}
+
+    def tally(ms, order):
+        out_ = {}
+        for m in ms:
+            c = comp(m)
+            kk = min(order, key=lambda q: (c[q], order.index(q)))
+            out_[kk] = out_.get(kk, 0) + 1
+        return out_
+    summ["손실 달: 4갈래 중 최대 음수 기여(달 수 · 판 1 정의)"] = tally(loss, ORDER4)
+    summ["손실 달: 7갈래 중 최대 음수 기여(달 수 · 추정불가 · 기타 · 비용 포함)"] = tally(loss, ORDER7)
+    base_neg = [m for m in loss if sum(tb(m, b) for b in bots) + raw[m]["바탕 기타"] < 0]
+    ov_neg = [m for m in loss if raw[m]["레버리지"] + raw[m]["인버스 ETF"] + raw[m]["덧붙임 비용"] < 0]
     both = sorted(set(base_neg) & set(ov_neg))
-    comp = lambda m: {"바탕 시장": sum(out[m][f"{b} 시장"] for b in bots), "바탕 잔차": sum(out[m][f"{b} 잔차"] for b in bots),  # noqa: E731
-                      "레버리지": out[m]["레버리지"], "인버스 ETF": out[m]["인버스 ETF"]}
     summ["바탕 · 덧붙임 둘 다 − 인 달"] = len(both)
-    summ["그 달들에서 가장 큰 음수 원인(달 수)"] = {}
-    for m in both:
-        c = comp(m)
-        k = min(c, key=c.get)
-        summ["그 달들에서 가장 큰 음수 원인(달 수)"][k] = summ["그 달들에서 가장 큰 음수 원인(달 수)"].get(k, 0) + 1
-    summ["손실 달 전체에서 가장 큰 음수 원인(달 수)"] = {}
-    for m in loss:
-        c = comp(m)
-        k = min(c, key=c.get)
-        summ["손실 달 전체에서 가장 큰 음수 원인(달 수)"][k] = summ["손실 달 전체에서 가장 큰 음수 원인(달 수)"].get(k, 0) + 1
+    summ["그 달들: 4갈래 중 최대 음수 기여"] = tally(both, ORDER4)
+    out = {m: {kk: round(v, 3) for kk, v in raw[m].items()} for m in raw}
     res = {"요약": summ, "손실 달": {m: out[m] for m in sorted(loss)}, "모든 달": out,
            "베타 평균(있는 날)": {b: round(float(np.mean([x for x in beta[b] if x is not None])), 3) for b in bots},
-           "범위": "이미 본 연속 장부 계좌의 귀속(새 규칙 손익 없음) · 시장 = 069500 · 업종 베타는 자료 부족으로 뺌 · 봇 몫은 덧붙임 판 '바탕' 손익을 z100g 봇별 손익 비율로 나눔 · 달 합은 달 초 NAV 기준 단순 합"}
+           "범위": "이미 본 연속 장부 계좌의 귀속(새 규칙 손익 없음) · '설명분' = 앞 120일 계좌 기여 베타 × 그날 069500 수익(사후 귀속 · 진입 신호 아님) · '미설명분'은 종목 고유 알파가 아니라 069500 하나로 설명 안 된 나머지(코스닥 · 업종 · 현금 · 노출 변화 · 추정 오차 포함) · 업종 베타 없음 · 봇 몫 = VB0 ÷ 전날 바탕 NAV × 봇 손익 · '최대 음수 기여'는 인과 판정 아님"}
     json.dump(res, open(out_path, "w"), ensure_ascii=False, indent=1)
     print(json.dumps(summ, ensure_ascii=False, indent=1))
 
