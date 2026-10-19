@@ -78,8 +78,7 @@ def short_line(line):
         if "자리 내줌" in status:
             name += " (규칙에 자리 내줌)"
         tail = (" 주문 들어감" + (" (살 수 있는 만큼으로 줄임)" if "줄임" in status else "")) if ok else " 주문 거절됨"
-        tag = {"흔들림 상한": "흔들림 상한 ", "사건 바구니": "바구니 ", "빈칸 엔진": "빈칸 엔진 "}.get(m.group(1), "")   # 어느 봇 주문인지(2026-10-19)
-        return f"{tag}모의 {m.group(2)}: {name}" + (f" {qty.group(1)}주" if qty else "") + tail
+        return f"모의 {m.group(2)}: {name}" + (f" {qty.group(1)}주" if qty else "") + tail
     m = re.match(r"🧪 모의투자\(([^)]*)\) (매수|매도) 건너뜀 · (.+)$", line)
     if m:
         return f"모의 {m.group(2)} 건너뜀: {_name(m.group(3))} ({m.group(3).split(' · ')[-1]})"
@@ -308,6 +307,9 @@ def main():
     url = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
     if not url:
         print("디스코드 웹훅이 설정되지 않아 보내지 않습니다.")
+        return 0
+    if os.environ.get("A_GROUP_DISCORD", "").strip().lower() != "on":     # A그룹 = 1시간봉 후보 · 최종본에서 1시간봉 안 씀(사용자 2026-10-19)
+        print("A그룹 알림은 끔(최종본에서 1시간봉 안 씀 · A_GROUP_DISCORD='on'이면 보냄).")
         return 0
     try:
         found = json.loads(Path("study/a_group.json").read_text(encoding="utf-8"))

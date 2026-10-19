@@ -324,8 +324,9 @@ def run(now=None):
     if not late:
         import acc_cap                   # 덜어내기가 말썽이면 오늘 새 매수만 멈춤(1일봉 팔기는 그대로 · fail-closed)
         cap_lines = acc_cap.trim_or_block(day, datetime.now(KST))
-        if cap_lines:
-            send(cap_lines[:1])
+        if cap_lines:                    # 흔들림 상한은 따로 한 통(1일봉 체결 알림에 섞지 않음 · 2026-10-19)
+            from notify_discord import brief
+            send(cap_lines[:1] + brief(cap_lines[1:]))
     prices = study.load_prices()
     # 자료 확인(사용자 2026-10-02): 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼 · 모자라면 팔기만 함(data_guard)
     import data_guard
@@ -382,7 +383,7 @@ def run(now=None):
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
     warn = [] if ready else ["1일봉 봇 오늘 새로 사기 멈춤(자료가 덜 들어옴, 팔기는 그대로)"]
     send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
-    paper = list(cap_lines)
+    paper = []
     if (sells or buys) and not late:
         try:
             import paper_trade

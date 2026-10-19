@@ -21,10 +21,27 @@ class FinalDiscordText(unittest.TestCase):
         self.assertIn("1일봉 모의", N.tidy("🧪 모의투자(1일봉 매수 후보) 주문 못 넣음"))
         self.assertNotIn("　", N.tidy("　까닭: 국면 상승"))
 
-    def test_bot_tag_kept(self):
-        self.assertEqual(N.short_line("🧪 모의투자(흔들림 상한) 매도 · 005930 10주 · 접수"), "흔들림 상한 모의 매도: 005930 10주 주문 들어감")
-        self.assertTrue(N.short_line("🧪 모의투자(사건 바구니) 매도 · 268280 3주 · 규칙에 자리 내줌 · 접수").startswith("바구니 모의 매도"))
+    def test_lines_have_no_bot_tag(self):
+        # 바구니 · 흔들림 상한 · 레버리지 봇은 각자 따로 한 통으로 보내므로 줄 안에 봇 이름을 붙이지 않음
+        self.assertEqual(N.short_line("🧪 모의투자(흔들림 상한) 매도 · 005930 10주 · 접수"), "모의 매도: 005930 10주 주문 들어감")
+        self.assertEqual(N._icon("사건 바구니 10월 16일 판단"), "🧺")
+        self.assertEqual(N._icon("🛡️ 계좌 흔들림 상한 · 허용 80% · 든 것 95%, 그중 16% 덜어냄(2건)"), "🛡️")
+        self.assertEqual(N._icon("레버리지 봇 10월 16일"), "📈")
 
+    def test_hourly_and_a_group_quiet(self):
+        import os
+        from unittest import mock
+        import hourly_a
+        os.environ.pop("HOURLY_DISCORD", None)
+        os.environ.pop("A_GROUP_DISCORD", None)
+        with mock.patch.object(N, "post", side_effect=AssertionError("보내면 안 됨")):
+            self.assertTrue(hourly_a.send(["1시간봉 봇 10시 3분 판단", "🟢 매수 삼성전자 4칸"]))
+        os.environ["DISCORD_WEBHOOK_URL"] = "https://example.invalid/hook"
+        try:
+            with mock.patch.object(N.requests, "post", side_effect=AssertionError("보내면 안 됨")):
+                self.assertEqual(N.main(), 0)
+        finally:
+            os.environ.pop("DISCORD_WEBHOOK_URL", None)
 
 if __name__ == "__main__":
     unittest.main()
