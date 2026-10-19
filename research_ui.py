@@ -347,7 +347,7 @@ def _fresh_ui():
 @st.fragment(run_every=60)
 def live_top_bar():
     """맨 위 제목 줄 + 가운데 코스피 · API 연결 불빛 + 모의투자 거래 내역. 1분마다 이 부분만 새로 그림.
-    2026-10-03 최종 조합: 1일봉 50 · 15분봉 50 · 빈칸 엔진 · 코스닥 인버스(남는 돈) — 1시간봉은 모의 주문을 쉬어 칸에서 뺌."""
+    한투 최종본(MIX-0054 · docs/PAPER-FINAL.md · 2026-10-19 연구 종료): 1일봉 50 · 바구니 30 · 빈칸 엔진 · 코스닥 인버스(남는 돈) · 레버리지 봇 40까지."""
     lights, at = api_lights()
     # 들고 있는 종목은 지금 값 · 오늘 +/− · 산 값 대비를 1분마다(사용자 2026-10-07 "코스피 장 마감처럼 내 지금 가격 … 실시간으로")
     books = {k: (repo_json_live(f'{k}/state.json'), repo_json_live(f'{k}/paper-orders.json'))
@@ -647,11 +647,14 @@ def rules_board():
                 + '</div>', unsafe_allow_html=True)
     parts = (('📅 1일봉 매매 규칙 · 하루 한 번 15:20 · 모의투자 몫 50%',
               CLOSE_RULES + close_panel(dtoday, dstate, dalerts)),
-             ('🧩 빈칸 엔진 · 🧺 사건 바구니 · 코스닥 인버스 모의투자 · 하루 한 번 15:10 · 규칙들이 안 쓰는 돈'
-              + (' · 사건 바구니 몫 30%' if final_on else ' · 사건 바구니 몫 50%(최종 판에서 30%)'),
+             ('🧺 사건 바구니 C 매매 규칙 · 하루 한 번 15:10 · 모의투자 몫 30%',
+              D.BASKET_RULES + D.basket_panel(*(repo_json_live(f'basket-live/{n}.json') for n in ('today', 'state', 'paper-orders')))),
+             ('🧩 빈칸 엔진 · 코스닥 인버스 모의투자 · 하루 한 번 15:10 · 다른 봇이 안 쓰는 돈',
               IDLE_RULES + idle_panel(itoday, istate, ibook)),
-             ('📈 레버리지 봇 · 오름장 레버리지 · 횡보장 인버스(각 40%) · 하루 한 번 15:10 엔진 뒤 · ' + ('켜짐' if final_on else '시작 날 정하면 켜짐'),
-              D.OVERLAY_RULES + D.overlay_panel(ostate, obook, regime)))
+             ('📈 레버리지 봇 · 오름장 레버리지 · 횡보장 인버스(각 40%) · 하루 한 번 15:10 엔진 뒤 · ' + ('켜짐' if final_on else '장부 기다림'),
+              D.OVERLAY_RULES + D.overlay_panel(ostate, obook, regime)),
+             ('🛡️ 계좌 흔들림 상한 · 1배 · 매일 15:20 덜어내기 점검',
+              D.ACC_CAP_RULES + D.acc_cap_panel(repo_json_live('acc-cap/log.json'))))
     for label, body in parts:
         with st.expander(label, expanded=False):
             st.markdown(body, unsafe_allow_html=True)

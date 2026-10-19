@@ -544,7 +544,7 @@ def header() -> str:
     )
 
 
-UI_VERSION = "10-15 · 한투 최종본(10-14) · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
+UI_VERSION = "10-19 · 연구 종료 · 한투 최종본(MIX-0054) 모의투자 · 키움 세 버전 시험 2"     # 화면 판 — 앱이 새 코드를 읽었는지 맨 위에서 확인
 UP, DOWN, FLAT = "#C0392B", "#1F5FBF", "#4A4339"       # 한국 시세판처럼 오름 빨강 · 내림 파랑
 
 
@@ -822,7 +822,7 @@ def stock_cards(report: dict | None, grade: dict | None, official: dict | None =
     group = (grade or {}).get("group")
     tone = STATUS.get(group)
     badge = (f'<span class="pxb-tag" style="color:{tone};background:{tone}1f">'
-             f'{_e({"A": "15분봉 매수 후보", "B": "조건 1~2개 미달", "밖": "조건 3개 이상 미달"}.get(group, f"{group}그룹"))}</span>') if tone else ""
+             f'{_e({"A": "1시간봉 알림 후보(주문 안 함)", "B": "조건 1~2개 미달", "밖": "조건 3개 이상 미달"}.get(group, f"{group}그룹"))}</span>') if tone else ""
     card_score = _card(
         0, "판단점수",
         f'<div class="pxb-value">{score}<small>/100</small></div>'
@@ -1132,7 +1132,7 @@ M15_RULES = (SORTIE_RULES
 # 빈칸 엔진 · 코스닥 과열 인버스(idle_live.py · 2026-10-03 배포) — 규칙들이 안 쓰는 돈을 굴림
 IDLE_RULES = """<div class="pxb"><div class="pxb-rules">
 <div class="pxb-rule x"><h4>언제 켜나<span>매일 15:10 판단</span></h4><dl>
-<dt>엔진</dt><dd>② · ③은 시장 폭 50% 미만(1일봉 · 15분봉 규칙이 못 사는 날) <b>그리고</b> 규칙들이 계좌의 20% 미만을 쓰고 있을 때만 · ① 급락 되돌림은 2026-10-04부터 뺌</dd>
+<dt>엔진</dt><dd>② · ③은 시장 폭 50% 미만(1일봉 정배열 갈래가 못 사는 날) <b>그리고</b> 규칙들이 계좌의 20% 미만을 쓰고 있을 때만 · ① 급락 되돌림은 2026-10-04부터 뺌</dd>
 <dt>돈</dt><dd>규칙들이 안 쓰는 몫만 씀 · 규칙이 살 돈이 모자라면 엔진이 산 것을 먼저 팔아 자리를 내줌</dd>
 <dt>때</dt><dd>15:10 값으로 판단 → 장중 시장가로 바로 사고팖(1일봉 15:20 판단보다 먼저)</dd>
 </dl></div>
@@ -1167,10 +1167,9 @@ IDLE_NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "25134
 # 최종 판 MIX-0054(사용자 2026-10-11 승인 · 연구 #224 · 운영 계산 #226 · 구현 #230) — 화면 글
 OVERLAY_NAME = {"122630": "KODEX 레버리지", "114800": "KODEX 인버스"}
 FINAL_MIX = ("1일봉 50% · 사건 바구니 30%(1일봉이 안 쓰는 몫) · 빈칸 엔진 · 코스닥 인버스(남는 돈) · "
-             "레버리지 봇(오름장 레버리지 · 횡보장 인버스 각 계좌 40%) · 15분봉 끔 · 계좌 흔들림 상한 그대로")
-NOW_MIX = "1일봉 50% · 15분봉 50% · 남는 돈은 빈칸 엔진 · 코스닥 과열 인버스 · 사건 바구니"
+             "레버리지 봇(오름장 레버리지 · 횡보장 인버스 각 계좌 40%) · 계좌 흔들림 상한 1배 · 1시간봉 알림만 · 15분봉 뺌")
 FINAL_ALLOC = ("최종 분배(사용자 2026-10-11 결정 · 연구 #255): 지금 판 100% · 후보 봇(해외 · 금 · 달러 · 채권 추세 바구니 · 해외 지수 갈아타기)은 "
-               "섞어도 효율이 거의 같아 넣지 않음 · 3개월 결론(2027-01-11) 때 다시 봄")
+               "섞어도 효율이 거의 같아 넣지 않음 · 3개월 결론(2027-01-11) 때 다시 봄 · 2026-10-19 연구 최종 종료(그 뒤 채택 없음 · 규칙 그대로)")
 # 해마다 수익(연구 셈 · MIX-0054 · 비용 포함 · 2017은 02-01부터 · 2026은 09-15까지) · 같은 기간 코스피(지수 종가)
 YEARLY = (("2017", 16.6, 19.3), ("2018", -2.3, -17.3), ("2019", 12.7, 7.7), ("2020", 62.7, 30.8), ("2021", 18.3, 3.6),
           ("2022", 12.8, -24.9), ("2023", 53.1, 18.7), ("2024", 0.8, -9.6), ("2025", 84.9, 75.6), ("2026", 100.7, 57.3))
@@ -1184,9 +1183,10 @@ def final_active(overlay_state: dict | None) -> bool:
 def mix_note(overlay_state: dict | None) -> str:
     """'통합 매매 규칙' 머리 한 줄(짧게 · 자세한 조합은 레버리지 봇 칸)."""
     if final_active(overlay_state):
-        return ("한투 최종본(2026-10-14 · MIX-0054) 운영 중 · 📅 1일봉 50% · 🧺 바구니 30% · 🧩 엔진 · 코스닥 인버스(남는 돈) · "
-                "📈 레버리지 봇 40%까지 · 🛡️ 계좌 흔들림 상한 · ⏰ 1시간봉 알림만 · ⏱️ 15분봉 뺌 · 판단 2027-01-11")
-    return "지금 1일봉 50% · 15분봉 50% · 남는 돈 엔진 · 바구니 · 최종 판(MIX-0054)은 시작 날을 정하면 켜짐"
+        return ("한투 최종본(MIX-0054) 모의투자 중 · 연구 종료(2026-10-19) · 📅 1일봉 50% · 🧺 바구니 30% · 🧩 엔진 · 코스닥 인버스(남는 돈) · "
+                "📈 레버리지 봇 40%까지 · 🛡️ 계좌 흔들림 상한 1배 · ⏰ 1시간봉 알림만 · ⏱️ 15분봉 뺌 · 판단 2027-01-11")
+    return ("한투 최종본(MIX-0054) · 레버리지 봇 장부(overlay-live/state.json)를 아직 못 읽었습니다 · "
+            "📅 1일봉 50% · 🧺 바구니 30% · 🧩 엔진 · 코스닥 인버스(남는 돈) · 📈 레버리지 봇 40%까지 · 🛡️ 흔들림 상한 1배 · ⏱️ 15분봉 뺌")
 
 
 OVERLAY_RULES = """<div class="pxb"><div class="pxb-rules">
@@ -1207,6 +1207,7 @@ OVERLAY_RULES = """<div class="pxb"><div class="pxb-rules">
 </dl></div>
 </div>
 <div class="pxb-rule-foot"><b>지난 성적 — 연구 셈</b>(MIX-0054 · 2017-02 ~ 2026-09-15 · 계좌 전체 · 15분봉 뺌 · 비용 포함) · 한 해 <b>+34.1%</b> · 가장 나쁜 하루 −13.0% · 가장 나쁜 달 −14.0%(2026-03) · 고점 대비 −21.8% · 이익 달 75 / 손실 달 41(64.7%) · 2018년만 −2.3% · 지금 조합(레버리지 봇 없음)은 +20.0% · −7.3% · <b>한계</b>: 같은 10년을 여러 번 써서 고른 값(독립 확인 기다림) · 레버리지 · 인버스 40%는 시험한 범위의 끝 · 손실 한도 −15%와 여유가 작음 · 연구는 종가 · 모의투자는 15:1x 값 · 앞으로도 같다는 보장은 없음</div>
+<div class="pxb-rule-foot"><b>미래 참조를 막아 다시 센 값 — 연구 최종(2026-10-19)</b>(같은 규칙 · 2017-02 ~ 2026-09 · 그날까지 나온 자료로만 판단 · 장부를 끊지 않고 이어 셈 · 비용 포함) · 한 해 <b>+33.0%</b> · 손실 달 40 / 114 · 가장 나쁜 달 −13.7% · 가장 나쁜 하루 −13.0% · 고점 대비 −21.8% · 손실 달을 줄이는 새 방법은 찾지 못해 규칙은 그대로 · 모의투자 판단은 3개월 기준(2027-01-11)으로만</div>
 <div class="pxb-rule-foot"><b>해마다 수익 — 연구 셈 대 코스피</b>(2017은 2월부터 · 2026은 9월 15일까지) · {YEARLY_LINE}</div>
 </div>"""
 OVERLAY_RULES = OVERLAY_RULES.replace("{YEARLY_LINE}", " · ".join(f"{y} <b>{a:+.1f}%</b>(코스피 {k:+.1f}%)" for y, a, k in YEARLY).replace("-", "−"))
@@ -1218,7 +1219,7 @@ def overlay_panel(state: dict | None, book: dict | None, regime: dict | None = N
     st_ = state or {}
     on = final_active(st_)
     head = ("<b>켜짐</b> · 마지막으로 돈 날 " + _e(as_day(st_.get("last_day")))) if on else \
-        "<b>아직 켜지 않음</b> · 사용자가 시작 날을 정하면 평일 15:10에 판단하고 한투 모의투자 계좌에만 주문합니다"
+        "<b>장부 기다림</b> · 레버리지 봇 장부(overlay-live/state.json)를 아직 못 읽었습니다 · 평일 15:10 엔진 뒤에 판단하고 한투 모의투자 계좌에만 주문합니다"
     body = f'<div class="pxb-note" style="margin-top:12px;line-height:1.75">{head}<br><small>최종 판: {_e(FINAL_MIX)}</small><br><small>{_e(FINAL_ALLOC)}</small>'
     if regime and regime.get("state"):
         body += f'<br>어제 장 끝 국면: <b>{_e(regime["state"])}</b>({_e(as_day(regime.get("day")))}) → 목표 ' + \
@@ -1248,7 +1249,7 @@ def overlay_mini(state: dict | None, book: dict | None, quotes: dict | None = No
     """머리 오른쪽 작은 칸: 레버리지 봇 모의투자(든 것 · 지금 값 · 최근 주문)."""
     st_ = state or {}
     held = {c: int(q) for c, q in (st_.get("held") or {}).items() if int(q) > 0}
-    line = ("켜짐" if final_active(st_) else "아직 켜지 않음") + f' · 들고 있는 {len(held)}종목'
+    line = ("켜짐" if final_active(st_) else "장부 기다림") + f' · 들고 있는 {len(held)}종목'
     rows = []
     for c, q in held.items():
         qq = (quotes or {}).get(c) or {}
@@ -1293,7 +1294,7 @@ def lever_card(state: dict | None, regime: dict | None = None, left_15m: int = 0
     if (regime or {}).get("day"):
         lines.append(f'국면 기준일 {_e(as_day(regime["day"]))}')
     lines.append("들고 있는 것: " + (" · ".join(f'{_e(OVERLAY_NAME.get(c, c))} {q:,}주' for c, q in held.items()) if held else "없음"))
-    lines.append(("켜짐 · 마지막으로 돈 날 " + _e(as_day(st_.get("last_day")))) if final_active(st_) else "아직 켜지 않음")
+    lines.append(("켜짐 · 마지막으로 돈 날 " + _e(as_day(st_.get("last_day")))) if final_active(st_) else "장부 기다림")
     if left_15m:
         lines.append(f"15분봉 봇은 꺼짐 · 남은 {left_15m}종목은 새로 사지 않고 제 규칙대로 팖")
     return head + '<div class="pxb"><div class="pxb-note" style="margin-top:8px;line-height:1.75">' + "<br>".join(lines) + "</div></div>"
@@ -1339,6 +1340,79 @@ def idle_panel(today: dict | None, state: dict | None, book: dict | None) -> str
     return f'<div class="pxb">{body}</div>' + ledger_panel("빈칸 엔진 · 코스닥 인버스 모의투자", state, book)
 
 
+
+# 사건 바구니 C(basket_live.py · 2026-10-07 · MIX-0054 몫 30%) — 화면 글 · 오늘 판단(basket-live/today.json)
+BASKET_RULES = """<div class="pxb"><div class="pxb-rules">
+<div class="pxb-rule x"><h4>사건<span>어제 공시 · 시총 200위 안</span></h4><dl>
+<dt>자사주 취득</dt><dd>어제 '자기주식취득' 공시 · 어제 하루 반응(전날 대비 − 200위 가운데값)이 −2%보다 나쁠 때만</dd>
+<dt>무상증자</dt><dd>반응과 상관없이</dd>
+<dt>겹침</dt><dd>같은 종목 · 같은 갈래는 20거래일 안 다시 안 셈</dd>
+</dl></div>
+<div class="pxb-rule"><h4>사고팔기<span>매일 15:10</span></h4><dl>
+<dt>사기</dt><dd>공시 다음 날 15:10 판단 → 시장가 · 빈 칸이 있을 때만 · 다른 봇이 든 종목은 안 삼</dd>
+<dt>칸</dt><dd>5칸 · 바구니 돈 = 1일봉 몫 가운데 1일봉이 안 쓰는 돈(최종본 몫 30%)</dd>
+<dt>팔기</dt><dd>산 날부터 20거래일째 15:10 시장가 · 손절 · 익절 없음</dd>
+<dt>차례</dt><dd>1일봉 &gt; 바구니 &gt; 빈칸 엔진 · 1일봉이 살 돈이 모자라면 엔진 것 다음 바구니 것을 팖</dd>
+</dl></div>
+</div></div>"""
+
+
+def basket_panel(today: dict | None, state: dict | None, book: dict | None) -> str:
+    """사건 바구니 C 오늘의 판단(15:10) · 어제 사건 · 들고 있는 것 · 장부."""
+    if not today or not today.get("date"):
+        body = '<div class="pxb-note" style="margin-top:12px;line-height:1.75"><b>오늘의 결과</b> · 아직 판단한 날이 없습니다.</div>'
+    else:
+        events = today.get("events") or []
+        ev = " · ".join(f"{_e(c)} {_e(k)}" for c, k in events) if events else "없음"
+        body = (f'<div class="pxb-note" style="margin-top:12px;line-height:1.75"><b>오늘의 결과</b> · {_e(as_day(today["date"]))} 15:10 판단 · '
+                f'어제({_e(as_day(today.get("t0")))}) 사건 {ev}<br><small>계산 {_e(today.get("made"))}</small></div>')
+        why = today.get("why") or []
+        if why:
+            body += '<ul class="pxb-note" style="margin:6px 0 0 18px">' + "".join(f"<li>{_e(w)}</li>" for w in why) + "</ul>"
+        orders = today.get("orders") or []
+        if orders:
+            body += ('<div class="pxb-note" style="margin-top:6px"><b>그날 주문</b></div><ul class="pxb-note" style="margin:4px 0 0 18px">'
+                     + "".join(f'<li>{"매수" if o.get("side") == "buy" else "매도"} · <b>{_e(o.get("code"))}</b> {_e(o.get("qty"))}주 · {_e(o.get("why"))}</li>'
+                               for o in orders) + "</ul>")
+        else:
+            body += '<div class="pxb-note" style="margin-top:6px">오늘은 사고판 것이 없습니다.</div>'
+    held = (state or {}).get("positions") or {}
+    if held:
+        rows = "".join(f'<li><b>{_e(c)}</b> · {_e(p.get("kind"))} · 산 값 {float(p.get("price") or 0):,.0f}원 · 산 날 {_e(as_day(p.get("day")))}</li>'
+                       for c, p in held.items())
+        body += (f'<div class="pxb-note" style="margin-top:10px"><b>들고 있는 것(모의투자)</b></div>'
+                 f'<ul class="pxb-note" style="margin:4px 0 0 18px">{rows}</ul>')
+    return f'<div class="pxb">{body}</div>' + ledger_panel("사건 바구니 C 모의투자", state, book)
+
+
+# 계좌 흔들림 상한(acc_cap.py · 1배 · 2026-10-12부터) — 화면 글 · 기록(acc-cap/log.json · 비율만)
+ACC_CAP_RULES = """<div class="pxb"><div class="pxb-rules">
+<div class="pxb-rule x"><h4>허용 비중<span>전날까지 값만</span></h4><dl>
+<dt>식</dt><dd>허용 비중 = min(1, 1.0911% ÷ 지금 든 것 전체의 지난 20거래일 하루 흔들림) · 1.0911% = 한 달 한도 15% ÷ 3 ÷ √21</dd>
+<dt>사기</dt><dd>15:10 바구니 · 엔진 · 15:20 1일봉 모두 '허용 비중 × 계좌 − 든 것'까지만 삼</dd>
+</dl></div>
+<div class="pxb-rule"><h4>덜어내기<span>매일 15:20 · 1일봉 판단 직전</span></h4><dl>
+<dt>언제</dt><dd>든 것 합이 허용 비중 × 계좌보다 크면 모든 봇의 든 것을 같은 비율로 덜어 팖</dd>
+<dt>막힘</dt><dd>상한 셈이나 덜어내기가 실패한 날은 새 매수만 멈춤(팔기는 그대로)</dd>
+<dt>레버리지 봇</dt><dd>상한은 레버리지 봇이 없는 것처럼 셈(연구와 같음)</dd>
+</dl></div>
+</div></div>"""
+
+
+def acc_cap_panel(log: list | None) -> str:
+    """계좌 흔들림 상한 최근 기록(acc-cap/log.json · 비율만 · 금액 없음)."""
+    rows = [r for r in (log or []) if isinstance(r, dict) and r.get("date")]
+    if not rows:
+        return '<div class="pxb"><div class="pxb-note" style="margin-top:12px">아직 기록이 없습니다(2026-10-12부터 매일 15:20).</div></div>'
+    def pct(v):
+        return "—" if v is None else f"{float(v) * 100:.0f}%"
+    items = "".join(f'<li>{_e(as_day(r["date"]))} · 허용 {pct(r.get("E"))} · 든 몫 {pct(r.get("held_share"))} · '
+                    f'덜어냄 {pct(r.get("trim_f"))} · {_e(r.get("why") or "")}'
+                    + (f' · 종가 확인 {_e(r.get("close_check"))}' if r.get("close_check") else "") + '</li>'
+                    for r in rows[-5:][::-1])
+    return (f'<div class="pxb"><div class="pxb-note" style="margin-top:12px"><b>최근 기록</b>(15:20 · 비율만)</div>'
+            f'<ul class="pxb-note" style="margin:4px 0 0 18px">{items}</ul></div>')
+
 GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75">
 <b>15분봉 매수 후보</b> · 어제 종가로 조건을 다 채운 종목(오늘 장중 15분봉 신호를 기다림)과 이 규칙이 들고 있는 종목<br>
 <b>1일봉 매수 후보</b> · 오늘 15:20에 고른 종목(오늘 종가에 삼)과 이 규칙이 들고 있는 종목<br>
@@ -1347,8 +1421,11 @@ GROUP_RULES = f"""<div class="pxb"><div class="pxb-note" style="line-height:1.75
 
 
 CLOSE_RULES = """<div class="pxb"><div class="pxb-rules">
-<div class="pxb-rule x"><h4>사는 조건<span>위 1시간봉 규칙과 같음 + 하나 더</span></h4><dl>
-<dt>조건</dt><dd>위 ① 추세 조건 또는 ② 정배열 조건 가운데 하나 + 공통 조건(수급) — 다만 어제가 아니라 <b>오늘 값</b>으로 판단</dd>
+<div class="pxb-rule x"><h4>사는 조건<span>오늘 15:20 값으로 판단</span></h4><dl>
+<dt>대상</dt><dd>코스피 시가총액 1~100위 종목</dd>
+<dt>① 추세</dt><dd>최근 20일 주가 흔들림이 작은 편(아래 40% 자리 이하) · 180일 이동평균선이 5거래일 동안 1.46% 이상 오름 · 60거래일 전보다 20% 이상 오름</dd>
+<dt>② 정배열</dt><dd>3·15·20·90·150·200일선이 차례대로 놓임 · 3일선이 200일선보다 19~53% 위 · 시장 폭 50% 이상</dd>
+<dt>수급</dt><dd>① 또는 ② 가운데 하나 + 5거래일 동안 외국인 · 투신은 사고 개인은 팖</dd>
 <dt>거름</dt><dd>최근 45일 사이 증권사 목표가(여러 증권사의 가운데 값)가 내린 종목은 사지 않음</dd>
 </dl></div>
 <div class="pxb-rule"><h4>매수<span>오늘 종가에</span></h4><dl>
