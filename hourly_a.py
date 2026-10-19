@@ -306,7 +306,7 @@ def make_plan():
     _save(PLAN, plan)
     state = _load(STATE, {"positions": {}, "pending": []})
     # 디스코드는 짧게(사용자 2026-10-06 "거두절미하고 요약버전으로 전부") — 후보 · 까닭 전부는 hourly-live/plan.json(대시보드)
-    lines = [f"1시간봉 봇 다음 거래일 후보 {len(cands)}개, 시장 폭 {found.get('breadth')}%"]
+    lines = [f"1시간봉 봇(알림만 · 주문 안 함) 다음 거래일 후보 {len(cands)}개, 시장 폭 {found.get('breadth')}%"]
     for c in sorted(cands, key=lambda c: (not c["추세문"], not c["3일연속"])):
         lines.append(f"• {c['name']} {size_of(c)}칸")
     # 들고 있는 정배열 매매: 오늘 종가로 일봉 정배열이 깨졌으면 내일 09:00 시가 청산
@@ -505,11 +505,11 @@ def run_live(now=None):
     fills = fill_lines(filled)
     from notify_discord import brief, short_item      # 디스코드는 짧게(사용자 2026-10-06) · 자세한 글은 alerts.json(대시보드)
     if (paper or fills) and not items:
-        send([f"1시간봉 봇 {now.hour}시 {now.minute}분 체결 결과"] + brief(fills + paper))
+        send([f"1시간봉 봇(알림만 · 주문 안 함) {now.hour}시 {now.minute}분 연습 계좌 체결"] + brief(fills + paper))
     if items:
         _log_alerts(items)
         icon = {"매수": "🟢", "자리 바꾸기": "🔄", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "못 삼": "⚫"}
-        head = f"1시간봉 봇 {now.hour}시 {now.minute}분 판단"
+        head = f"1시간봉 봇(알림만 · 주문 안 함) {now.hour}시 {now.minute}분 판단"
         send([head] + brief(fills) + [short_item(icon.get(k, "•"), k, t) for k, t, _ in items] + brief(paper))
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")
     return 0

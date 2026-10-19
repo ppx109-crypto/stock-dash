@@ -230,7 +230,7 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
                                "side": side, "qty": qty, "status": status, "order_no": no, "why": reason,
                                "price": now_price.get(code)})
         mark = "✅ 접수" if status.startswith("접수") else "❌ 거절"
-        short.append(f"🧺 {'매수' if side == 'buy' else '매도'} {names.get(code, code)} {qty:,}주 → {mark} · {reason.split(' — ')[-1]}")
+        short.append(f"🧺 바구니 {'매수' if side == 'buy' else '매도'} {names.get(code, code)} {qty:,}주 → {mark} · {reason.split(' — ')[-1]}")
     book["orders"] = book["orders"][-5000:]
     _save(BOOK, book)
     _save(STATE, new_state)
