@@ -404,8 +404,9 @@ def run(now=None):
     lines = [f"🧩 **빈칸 엔진 · {day[4:6]}-{day[6:]} 15:10 판단** (규칙 쓴 몫 {used * 100:.0f}% · 시장 폭 {breadth if breadth is not None else '?'}%)"]
     lines += ["· " + w for w in why]
     # 디스코드는 짧게(사용자 2026-10-06 "너무 길고 복잡하여서 간단하게") — 판단 까닭 전부는 작업 기록 · 대시보드(idle-live/today.json)에
-    short = [f"빈칸 엔진 {int(day[4:6])}월 {int(day[6:])}일 판단, 시장 폭 {breadth if breadth is not None else '모름'}%, 1일봉이 쓴 몫 {used * 100:.0f}%"]
-    short += b_short
+    short = [f"빈칸 엔진 {int(day[4:6])}월 {int(day[6:])}일 판단, 시장 폭 {breadth if breadth is not None else '모름'}%, 규칙이 쓴 몫 {used * 100:.0f}%"]
+    if b_short:                          # 사건 바구니는 따로 한 통(빈칸 엔진 알림에 섞지 않음 · 2026-10-19)
+        send([f"사건 바구니 {int(day[4:6])}월 {int(day[6:])}일 판단"] + b_short)
     done = []
     seen = {o["key"] for o in book["orders"]}
     for code, side, qty, reason in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저
@@ -463,11 +464,12 @@ def run(now=None):
     except Exception as e:               # 덧붙임이 말썽이어도 엔진 기록은 그대로
         print("덧붙임 실패 ·", type(e).__name__, e)
         ov = ["⚠️ 덧붙임 단계 실패(엔진은 그대로)"]
-    short += ov
+    if ov:                               # 레버리지 봇도 따로 한 통(2026-10-19)
+        send(ov if str(ov[0]).startswith("레버리지 봇") else [f"레버리지 봇 {int(day[4:6])}월 {int(day[6:])}일"] + ov)
     _save(TODAY, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "late": late, "breadth": breadth, "used": round(used, 3),
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
-    if orders or new_state.get("positions") or b_short or ov:
+    if orders or new_state.get("positions"):
         if not orders:
             short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
         send(short)

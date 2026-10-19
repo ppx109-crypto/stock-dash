@@ -251,7 +251,7 @@ def run_trim(day, now=None, broker=None):
     _save(LOG, log[-1000:])
     share = value / (cash + value) * 100 if cash + value > 0 else 0
     if plan:
-        lines.append(f"🛡️ 계좌 흔들림 상한 · 허용 {t['E'] * 100:.0f}% · 든 것 {share:.0f}% → {f * 100:.0f}% 덜어냄({len(plan)}건)")
+        lines.append(f"🛡️ 계좌 흔들림 상한 · 허용 {t['E'] * 100:.0f}% · 든 것 {share:.0f}%, 그중 {f * 100:.0f}% 덜어냄({len(plan)}건)")
         lines += [f"🧪 모의투자(흔들림 상한) 매도 · {o['code']} {o['qty']}주 · {o['status']}" for o in orders]
     else:
         print(f"계좌 흔들림 상한 · 허용 {t['E'] * 100:.0f}% · 든 것 {share:.0f}% → 덜어낼 것 없음")

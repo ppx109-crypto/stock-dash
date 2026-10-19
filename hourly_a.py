@@ -255,7 +255,11 @@ def _save(path, body):
 
 
 def send(lines):
-    """디스코드로 보냄. 웹훅은 GitHub Secrets의 DISCORD_WEBHOOK_URL에만 있고 어디에도 찍지 않음."""
+    """디스코드로 보냄. 웹훅은 GitHub Secrets의 DISCORD_WEBHOOK_URL에만 있고 어디에도 찍지 않음.
+    최종본에서 1시간봉은 쓰지 않음(사용자 2026-10-19 "1시간봉도 사용 안하니 삭제") → HOURLY_DISCORD='on'일 때만 보내고, 그 밖엔 작업 기록에만 찍음."""
+    if os.getenv("HOURLY_DISCORD", "").strip().lower() != "on":
+        print("디스코드 안 보냄(1시간봉 알림 끔):", " / ".join(str(x) for x in lines)[:300])
+        return True
     from notify_discord import post          # 다듬기(영어 · 기호 뺌) + 맨 앞 '☆한투'(사용자 2026-10-12)
     return post(lines)
 
@@ -505,7 +509,7 @@ def run_live(now=None):
     fills = fill_lines(filled)
     from notify_discord import brief, short_item      # 디스코드는 짧게(사용자 2026-10-06) · 자세한 글은 alerts.json(대시보드)
     if (paper or fills) and not items:
-        send([f"1시간봉 봇 {now.hour}시 {now.minute}분 체결 결과"] + brief(fills + paper))
+        send([f"1시간봉 봇 {now.hour}시 {now.minute}분 연습 계좌 체결"] + brief(fills + paper))
     if items:
         _log_alerts(items)
         icon = {"매수": "🟢", "자리 바꾸기": "🔄", "절반 익절": "🟡", "익절": "🔵", "손절": "🔴", "청산": "⚪", "못 삼": "⚫"}

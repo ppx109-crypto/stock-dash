@@ -39,20 +39,20 @@ def check(day: str, daily: dict, idle: dict, m15: dict, overlay: dict | None = N
     """빠진 · 늦은 봇마다 한 줄. 모두 괜찮으면 빈 목록."""
     bad = []
     if daily.get("date") != day:
-        bad.append(f"1일봉 봇이 오늘 돌지 않았어요(마지막 {daily.get('date') or '없음'}) → Actions 'Daily rule live'")
+        bad.append(f"1일봉 봇이 오늘 돌지 않았어요(마지막 {daily.get('date') or '없음'}) → 종가 작업을 손으로 다시 돌려 주세요")
     elif daily.get("late"):
         bad.append("1일봉 봇이 늦게 돌아 오늘 주문을 건너뛰었어요(15:28 넘음)")
     if day >= IDLE_START:
         if idle.get("date") != day:
-            bad.append(f"빈칸 엔진 · 코스닥 인버스가 오늘 돌지 않았어요(마지막 {idle.get('date') or '없음'}) → Actions 'Daily rule live'")
+            bad.append(f"빈칸 엔진 · 코스닥 인버스가 오늘 돌지 않았어요(마지막 {idle.get('date') or '없음'}) → 종가 작업을 손으로 다시 돌려 주세요")
         elif idle.get("late"):
             bad.append("빈칸 엔진 · 코스닥 인버스가 늦게 돌아 오늘 주문을 건너뛰었어요(15:18 넘음)")
     last = str(m15.get("last_bar") or "")
-    if not last.startswith(day) or last[8:] < "1500":
+    if day < MIX54_START and (not last.startswith(day) or last[8:] < "1500"):     # 최종본(MIX-0054)에서 15분봉 뺌 → 켠 뒤로는 안 봄(2026-10-19)
         bad.append(f"15분봉 봇이 오늘 끝까지 돌지 않았어요(마지막 봉 {last or '없음'}) → Actions 'M15 live'")
     if overlay is not None and day >= MIX54_START:
         if (overlay or {}).get("last_day") != day:
-            bad.append(f"레버리지 봇이 오늘 돌지 않았어요(마지막 {(overlay or {}).get('last_day') or '없음'}) → Actions 'Daily rule live'")
+            bad.append(f"레버리지 봇이 오늘 돌지 않았어요(마지막 {(overlay or {}).get('last_day') or '없음'}) → 종가 작업을 손으로 다시 돌려 주세요")
         for o in (overlay_book or {}).get("orders", []):
             if str(o.get("key", "")).startswith(day) and str(o.get("status", "")).startswith("실패"):
                 side = "매수" if o.get("side") == "buy" else "매도"

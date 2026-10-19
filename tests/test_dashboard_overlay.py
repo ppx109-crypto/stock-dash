@@ -10,12 +10,14 @@ ROOT = Path(__file__).resolve().parents[1]
 class FinalBoard(unittest.TestCase):
     def test_note_switches_when_final_runs(self):
         self.assertFalse(D.final_active(None))
-        self.assertIn("시작 날을 정하면 켜짐", D.mix_note(None))
-        self.assertIn("15분봉 50%", D.mix_note({}))
+        self.assertIn("아직 못 읽었습니다", D.mix_note(None))
+        self.assertNotIn("15분봉 50%", D.mix_note({}))
+        self.assertIn("흔들림 상한 1배", D.mix_note({}))
         on = {"last_day": "20261102", "held": {"122630": 10}, "B": 1.0, "applied": "상승"}
         self.assertTrue(D.final_active(on))
         note = D.mix_note(on)
-        self.assertIn("운영 중", note)
+        self.assertIn("모의투자 중", note)
+        self.assertIn("연구 종료", note)
         self.assertIn("바구니 30%", note)
         self.assertIn("15분봉 뺌", note)
 
@@ -29,7 +31,7 @@ class FinalBoard(unittest.TestCase):
 
     def test_panels_render(self):
         off = D.overlay_panel(None, None, {"day": "20261008", "state": "상승", "recent": [("20261008", "하락", "상승")]})
-        self.assertIn("아직 켜지 않음", off)
+        self.assertIn("장부 기다림", off)
         self.assertIn("KODEX 레버리지 40%", off)
         on = D.overlay_panel({"last_day": "20261102", "held": {"114800": 300}, "applied": None, "unconfirmed": {"left": {"122630": 5}}},
                              {"orders": [{"at": "2026-11-02 15:12", "side": "sell", "code": "122630", "qty": 5, "why": "국면 횡보", "status": "접수"}]})
@@ -39,7 +41,7 @@ class FinalBoard(unittest.TestCase):
         mini = D.overlay_mini({"last_day": "20261102", "held": {"122630": 7}}, None, {"122630": {"price": 12345.0, "rate": 1.2}})
         self.assertIn("12,345원", mini)
         self.assertIn("켜짐", mini)
-        self.assertIn("아직 켜지 않음", D.overlay_mini(None, None))
+        self.assertIn("장부 기다림", D.overlay_mini(None, None))
         self.assertIn("+34.1%", D.OVERLAY_RULES)
 
     def test_lever_card(self):
@@ -52,6 +54,33 @@ class FinalBoard(unittest.TestCase):
         self.assertIn("쉼(든 것을 모두 팖)", D.lever_card(on, {"day": "20261012", "state": "하락"}))
         self.assertIn("국면 셈 기다림", D.lever_card(None, {}))
         self.assertNotIn("덧붙임", D.OVERLAY_RULES + D.mix_note(on) + D.overlay_mini(on, None) + D.FINAL_MIX)
+
+
+    def test_basket_and_cap_panels(self):
+        today = {"date": "20261016", "t0": "20261015", "made": "2026-10-16 15:13", "events": [["268280", "자사주취득"]],
+                 "why": [], "orders": [{"code": "268280", "side": "buy", "qty": 3, "why": "바구니 — 자사주"}], "positions": {}}
+        state = {"positions": {"268280": {"day": "20261016", "price": 1000.0, "kind": "자사주취득"}}}
+        html = D.basket_panel(today, state, {"orders": [], "held": {}})
+        self.assertIn("268280 자사주취득", html)
+        self.assertIn("매수", html)
+        self.assertIn("들고 있는 것", html)
+        self.assertIn("아직 판단한 날이 없습니다", D.basket_panel(None, None, None))
+        self.assertIn("20거래일째", D.BASKET_RULES)
+        log = [{"date": "20261016", "E": 1.0, "held_share": 0.42, "trim_f": 0.0, "why": "상한 안", "close_check": "확인"}]
+        cap = D.acc_cap_panel(log)
+        self.assertIn("허용 100%", cap)
+        self.assertIn("든 몫 42%", cap)
+        self.assertNotIn("원", cap.replace("원정밀도", ""))
+        self.assertIn("아직 기록이 없습니다", D.acc_cap_panel(None))
+        self.assertIn("1.0911%", D.ACC_CAP_RULES)
+
+    def test_final_texts_have_no_old_mix(self):
+        self.assertIn("연구 종료", D.UI_VERSION)
+        self.assertIn("흔들림 상한 1배", D.FINAL_MIX)
+        self.assertNotIn("15분봉 규칙이 못 사는 날", D.IDLE_RULES)
+        self.assertNotIn("위 1시간봉 규칙과 같음", D.CLOSE_RULES)
+        self.assertIn("+33.0%", D.OVERLAY_RULES)
+        self.assertFalse(hasattr(D, "NOW_MIX"))
 
 
 if __name__ == "__main__":

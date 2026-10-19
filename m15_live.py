@@ -352,7 +352,14 @@ def run_live(now=None):
     _save(ALERTS, alerts[-500:])
     from notify_discord import brief, short_item      # 디스코드는 짧게(사용자 2026-10-06 "거두절미") · 자세한 글은 alerts.json
     lines = [f"15분봉 봇 {now.hour}시 {now.minute}분 판단"] + [short_item(ICON.get(k, "•"), k, t) for k, t, _ in items] + brief(paper)
-    if items or paper:
+    try:
+        import paper_trade as _pt
+        final_off = _pt.mix54_on(day)       # 최종본(MIX-0054)에서 15분봉 뺌 → 판단 알림은 보내지 않음(문제 알림만 · 2026-10-19)
+    except Exception:
+        final_off = False
+    if final_off:
+        lines = [p for p in paper if "문제" in p]
+    if (items or paper) and lines:
         A.send(lines)
     print(f"처리한 봉 {todo} · 알림 {len(items)}건 · 들고 있는 종목 {len(state.get('positions', {}))}개")
     return 0
