@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-12",
+  "fetched": "2026-10-19",
   "disclosures": [
+    {
+      "title": "결산실적공시예고(안내공시)              ",
+      "date": "20261019",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261019800376"
+    },
     {
       "title": "주요사항보고서(상각형조건부자본증권발행결정)",
       "date": "20261002",
@@ -69,11 +74,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260721",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260721000466"
-    },
-    {
-      "title": "결산실적공시예고(안내공시)              ",
-      "date": "20260720",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800463"
     }
   ]
 }

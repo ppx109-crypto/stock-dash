@@ -117,8 +117,23 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-16",
+  "fetched": "2026-10-19",
   "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20261019",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261019800489"
+    },
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20261019",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261019800484"
+    },
+    {
+      "title": "결산실적공시예고(안내공시)              ",
+      "date": "20261019",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261019800479"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20261016",
@@ -193,21 +208,6 @@
       "title": "[기재정정]주식매수선택권부여에관한신고",
       "date": "20260803",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000416"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260720",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800486"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260720",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800480"
-    },
-    {
-      "title": "결산실적공시예고(안내공시)              ",
-      "date": "20260720",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260720800471"
     }
   ]
 }
