@@ -38,7 +38,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-19",
+  "fetched": "2026-10-20",
   "disclosures": [
     {
       "title": "결산실적공시예고(안내공시)              ",
@@ -69,11 +69,6 @@
       "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
       "date": "20260727",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727800560"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260721",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260721000466"
     }
   ]
 }

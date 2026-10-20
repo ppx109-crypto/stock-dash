@@ -38,8 +38,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-16",
+  "fetched": "2026-10-20",
   "disclosures": [
+    {
+      "title": "특수관계인에대한채권매도",
+      "date": "20261020",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261020000339"
+    },
+    {
+      "title": "투자판단관련주요경영사항              ",
+      "date": "20261020",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261020800622"
+    },
     {
       "title": "계열금융회사의약관에의한금융거래-[유가증권-수익증권]",
       "date": "20261016",
