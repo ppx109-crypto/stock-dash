@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-20",
+  "fetched": "2026-10-21",
   "disclosures": [
+    {
+      "title": "자기주식취득결과보고서",
+      "date": "20261021",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261021000374"
+    },
     {
       "title": "주식등의대량보유상황보고서(일반)",
       "date": "20261020",
