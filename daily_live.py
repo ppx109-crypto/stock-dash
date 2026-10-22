@@ -269,7 +269,7 @@ def brief_decision(day, breadth, sells, buys, held):
         out.append(f"{kind}: {x['name']} {x['칸']}칸 팔기")
     for x in buys:
         out.append(f"매수: {x['name']} {x['칸']}칸 사기")
-    return [head] + out if out else [head, "오늘은 사고팔 것 없음"]
+    return [head] + out if out else [head, "1일봉은 오늘 사고팔 것 없음(다른 봇 주문은 각 봇 줄에)"]
 
 
 def _wait_until(hhmm):

@@ -224,6 +224,8 @@ def _icon(head):
 
 
 def _line_icon(line):
+    if "사고팔 것 없음" in line or "할 것 없음" in line:      # '사고팔'의 '팔'로 🔴(매도)가 붙어 계좌 전체가 거래 없음처럼 보였음(2026-10-22)
+        return "▫️"
     if "건너뜀" in line or "거절" in line or "실패" in line or "멈춤" in line:     # '모의 매수 건너뜀' · '주문 거절됨'이 🟢로 보이지 않게(2026-10-19)
         return "⏸️"
     if "매수" in line or "사기" in line:

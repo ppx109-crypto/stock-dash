@@ -14,6 +14,9 @@ class FinalDiscordText(unittest.TestCase):
         self.assertEqual(N._line_icon("모의 매수 건너뜀: 삼성전자 (최종본에서 이 규칙은 새 매수를 끔)"), "⏸️")
         self.assertEqual(N._line_icon("모의 매수: 삼성전자 3주 주문 거절됨"), "⏸️")
         self.assertEqual(N._line_icon("모의 매수: 삼성전자 3주 주문 들어감"), "🟢")
+        self.assertEqual(N._line_icon("1일봉은 오늘 사고팔 것 없음(다른 봇 주문은 각 봇 줄에)"), "▫️")   # 2026-10-22 🔴로 보였음
+        self.assertEqual(N._line_icon("들고 있음: 국고채10년 (오늘 사고팔 것 없음)"), "▫️")
+        self.assertEqual(N._line_icon("모의 매도: 삼성전자 3주 주문 들어감"), "🔴")
 
     def test_tidy_final_words(self):
         self.assertEqual(N.tidy("🧪 매수 KODEX 인버스 1,000주 → ✅ 접수"), "매수 KODEX 인버스 1,000주, 접수")
