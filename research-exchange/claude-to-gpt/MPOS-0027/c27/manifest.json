@@ -1,0 +1,193 @@
+{
+ "고정 나무": "9743cb802732ed381a15da9ae45109f3a0f8a2c9",
+ "자료 폴더 나무 해시(고정 나무)": {
+  "price-data": "d6b206fdc82d678313a813f59ac45ba2c7733cfc",
+  "share-data": "5b8fdc00d462f552a0e433f9c8d1a0e30cfea349",
+  "investor-data": "4dc1fa6559441a4a36af23a798235807bec96356",
+  "opinion-data": "7be366f24f5add148d30a70dcee9953ed8fcec87",
+  "etf-data": "1de1df4dd3ea1ee9451584b6ef65b4da40116f0c",
+  "event-data": "5774c3191ffdb4132d6057535a2761acc3d0c860",
+  "loan-data": "6b7febf9c10f165cdf3f6345d83f96a5dd53c05d"
+ },
+ "코드": {
+  "honest_cache.py": {
+   "sha256": "6082aa3b661d379dd0433d2671d17b400c581843d5b75b3fe73706a7cb93054a",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/honest_cache.py"
+  },
+  "make_honest_nrl.py": {
+   "sha256": "b1698257369c87987ffe9a9cbce27f3c25d46d8197b3b87ea97b91f6c5ce3d06",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/make_honest_nrl.py"
+  },
+  "confirm27.py": {
+   "sha256": "3fe0ee403a12900c7cc1211a4576a3124a03ac42c6c7a4ba558924a81d5a725e",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/confirm27.py"
+  },
+  "make_z100c.py": {
+   "sha256": "cf8b06e5c87032a09fcb33509159f7f1302995295fc47abeb9a96800f228dec1",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/make_z100c.py"
+  },
+  "c27_nav.py": {
+   "sha256": "13c5d280558e6b613e6e3690d1e95efa1bb057137098275d5228807521b2e292",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/c27_nav.py"
+  },
+  "perturb27.py": {
+   "sha256": "5f865c846d52e653d0372e8c3118984384e2bd19a020000188a77958f5d4d1f7",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/perturb27.py"
+  },
+  "honest_ledger.py": {
+   "sha256": "bf28fff4f54c406eee8b7301a81b9ca198a362915398ffb3dabae8ba2ab7e651",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/honest_ledger.py"
+  },
+  "recount_acct.py": {
+   "sha256": "19944dd9042496c98a0bfd331de99a22174fc0e2860f53ebb0c691892e735c07",
+   "실행 사본과 같음": true,
+   "원본": "research/pit26/recount_acct.py"
+  },
+  "z100g.py(MPOS-0012)": {
+   "sha256": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f"
+  },
+  "z100c.py(make_z100c로 생성)": {
+   "sha256": "60875c1aa572560cae56926ce8ece144db87f9acd05d0b2fd4c63890d3f393eb"
+  },
+  "tree_run.py(MPOS-0010)": {
+   "sha256": "f724a1c02efab095d160081840353c9d71b845672b655f5e75a1ba31ae7088f4"
+  }
+ },
+ "중간 산출물": {
+  "full_next.json.pkl": "28b4fcb771d53ddce4bdd5328d84d2e800279621bc19f204b3596c96fb6fd50e",
+  "full_same.json.pkl": "2aab74564435fa8cd94be671b62c130ec6fa3ae3cdab19cf865472e20c660914",
+  "nrl_N.pkl": "cfc22c3ffb808af58460c069c5ff4bff19cc5a3bb20602e8352f08d7914ed132",
+  "nrl_S.pkl": "aa7a050d165ba6b5a141812e3cf23a80ce63258834567dc9973097778b719c64",
+  "nrl_N = 8차 nrl_honest": true,
+  "ledger_N.json": "e84427d075eafc6af41f9f0b1ccd8c7778f9c1c86c828402c08a67d7e5cad5e0",
+  "ledger_N = 8차 led_HONEST": true,
+  "ledger_S.json": "8a0cb97d9df2aaa9b4bfeead556732dc29037bd8fda649ef6279ff9c4dc6c640",
+  "zc_N.csv": "6c8017cd3abc365fd19ec52da02b5cd2e8b739fd1885e109dfcab4e9ac0eacf5",
+  "zc_N.csv = z100g base_HONEST": true
+ },
+ "출력(research/pit26/c27)": {
+  "cmp_d_20201230.json": "463bc9c31f016468df0452072484d5ebffb8739f7c26e41eea40220ca9585d5d",
+  "cmp_d_20201230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_d_20221229.json": "1f5ee88c31440b6f6642b4cd4a9d1e4126a2147d1be9d616535d19daaf0c4b5d",
+  "cmp_d_20221229.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_d_20241230.json": "0e510dff142501c8fffb8920f1e18ae030dbf130da3a3dc2c1c3207bde6c6638",
+  "cmp_d_20241230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_dp2_N.json": "e8803fba83c9cd2fd893e0a7ac9f6e0ab4ed752d8e370fac8ff4b21c21497fa4",
+  "cmp_dp2_N.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_dp2_lag0.json": "cfaa18a3783d79dfcc829218bf2b3e0be595cbcc1326cc8705b438b77cbe7379",
+  "cmp_dp2_lag0.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_dp_N.json": "defcf42b8e8bbaa4bf635b566b664c388b24b6da4603676dc08afcad306866b4",
+  "cmp_dp_N.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_dp_lag0.json": "b570947e6dddc51adbb15a4f6bbb410acf9b75547910c74125be1caf56c1f7b7",
+  "cmp_dp_lag0.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_lead1d_20201230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_lead1d_20221229.json": "13d2a43f032554e2c386cd746a25b2d690482c15d59a910f63d3bf2eaa0456e9",
+  "cmp_lead1d_20221229.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_lead1d_20241230.json": "cd5364360500aefbed63896915bee13f98738be267fb881266e79c42d4988d53",
+  "cmp_lead1d_20241230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_lead1p_20201230.json": "cd2246b9d6b3cefc63bfc6dac60d44ae51c0ba0b8084d0406dd0e4496f5b2841",
+  "cmp_lead1p_20201230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_lead1p_20221229.json": "13d2a43f032554e2c386cd746a25b2d690482c15d59a910f63d3bf2eaa0456e9",
+  "cmp_lead1p_20221229.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_lead1p_20241230.json": "cd5364360500aefbed63896915bee13f98738be267fb881266e79c42d4988d53",
+  "cmp_lead1p_20241230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_p_20201230.json": "463bc9c31f016468df0452072484d5ebffb8739f7c26e41eea40220ca9585d5d",
+  "cmp_p_20201230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_p_20221229.json": "1f5ee88c31440b6f6642b4cd4a9d1e4126a2147d1be9d616535d19daaf0c4b5d",
+  "cmp_p_20221229.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cmp_p_20241230.json": "0e510dff142501c8fffb8920f1e18ae030dbf130da3a3dc2c1c3207bde6c6638",
+  "cmp_p_20241230.mods.json": "40c42636e420de2962e2001f1e2bc557dee2375d243e76ce4258c41183a483d6",
+  "cut_d_20201230.json": "6db313d28fd702e45b02222d3a5b13b772584ce8cffdac4761979357434668ae",
+  "cut_d_20221229.json": "9dc389928754089f12109345df427531b8fa6cc45241a35f2e25b6b04d269734",
+  "cut_d_20241230.json": "b60ec1db22ed9a9651f7a6d6fd27ee623647d12747ce996b5335731d3cc5f69f",
+  "cut_p_20201230.json": "07f70af2c5247ef66aabd992e64e87a576a693f8228d801773a7ee8792ef8942",
+  "cut_p_20221229.json": "b8f32fe39e29c7d0a48fbcb7338f1ce444168055c4d4ea13ee71490a67694489",
+  "cut_p_20241230.json": "caf3f34ef29bc5dbdf565a8bfb1782eab33d89378ccbaa57a086b77a8a85d436",
+  "dp2_N.json": "5a1ba3fcd85d3be0b18548a04e64a6a30b4801c0ddc798ef399f2be5af229abd",
+  "dp2_lag0.json": "207613f17e8712b5031ed0c2a02f22ef3558ebb84657f49f50b448d7a071ddad",
+  "dp_N.json": "6a9c4a448af94207bc04035ba68177ed87bd3d15e783df565d8121b6ba4cf87e",
+  "dp_lag0.json": "19ba9d51469b6f497162380743c861661c21c479ea595ab2bc7e00474c855651",
+  "events_N.json": "22f61b870cd85db98ceedf1fc6998ee47f279c225cbbfb3834f50b64a0c49a26",
+  "events_S.json": "6828f97644c704880a7f85d035fb34b421b2ed50e6ee581097d0ddf4d7756ffa",
+  "lag0_N.json": "2bf980d88322e03244c967ea0e660dfb4f4e0aa45cd70a10e5e17de67193abc6",
+  "lead1_N.json": "b7481f3606ca05d0c83db0642fb8470105ff082034dbb394865a040362dd9b21",
+  "lead1_d_20201230.log": "15280a6e2db0855734c06cda2935b84dde165773e2b07bb365a004fa27dcdd45",
+  "lead1_d_20221229.json": "014a895a2bab297e65e14ccc08b171bb6f2e9fcb2decdd819bf1034ab17bfad8",
+  "lead1_d_20241230.json": "82bd12067e4691607068d7b5cb5e636eee74b86afab83a21256ba33e3db45e90",
+  "lead1_p_20201230.json": "7679b7bab4568c678295039c5a6ee517b3de704868b2ee6a465d6baec3e92b20",
+  "lead1_p_20221229.json": "31ad246b0bb36401529b907217b32f1d40f4776344b3d0cc5c66a920707fe052",
+  "lead1_p_20241230.json": "5fa828a754a574cc32edd4f4fb7cb2450d8bd964ba926512e26af93d7b25e0a3",
+  "led_N.json": "9132f5d4a5dd2d6bb05187f5a02bb80e24637928939c1afc148cd468bba797d5",
+  "led_S.json": "74a552032cedd0082dcaadb5b72c1acd49e166aca384df32069723573a9a6d05",
+  "ledger_N.json": "e84427d075eafc6af41f9f0b1ccd8c7778f9c1c86c828402c08a67d7e5cad5e0",
+  "ledger_S.json": "8a0cb97d9df2aaa9b4bfeead556732dc29037bd8fda649ef6279ff9c4dc6c640",
+  "nav_cmp.json": "84a7792f9441c4824a8030cf2d81eb29abef25391d926c6578150ba9a97c2000",
+  "pre_N.json": "90b9beaec2bc8f4cd12c3dcb3acb59e0f379f009fd7a8315f61a9757c8285f42",
+  "pre_S.json": "e7cc1ddafbafc6a7e1bda421c4e627e0fcef307e666b6b0ab6a3e869fcafb41d",
+  "run4.sh": "5ab40e1b76d3fca82cddcf1bd05c9772dbc82cad0ae55403f2fdfe259c8ce22a",
+  "run5.sh": "62b17b438b3b98ff11e58b20d6a1179a3ad5df7cf18c516fcdaa456ff74ed0eb",
+  "sig_N.json": "e667cfada71809b18844568fb56d19a31ff474e171388f6ecc8db0b8475218a4",
+  "zc_N.csv.gz": "b0ab2b99a6da62fe86d96347f9d505e7865c2a2c9c92232faaa1b6e5d4330e65",
+  "zc_N.evt.json": "ad158911696e3d3730e4648beee79ed9a47828ce7e4ca36acc0df0b3ca02ce61",
+  "zc_Q.evt.json": "5362cedd78ca5b1c2cfa65744ef7f070db64f8ad3ab704f81e9ccf070978ee5e",
+  "zc_cd20201230.evt.json": "2e7e8ea42f6ac147eede450fa70a0dc273d131796000fcc144c0f065bdc00435",
+  "zc_cd20221229.evt.json": "849fac274fbd44901a54b212e10a7ef2a3b6830f242b65624fb386d01c655065",
+  "zc_cd20241230.evt.json": "5a3fd111c6317b3f4dfc236b2190832cd347ff7cc6f095ab0f062409630ebe20"
+ },
+ "명령": {
+  "대조": "c27/run4.sh(동시 2개 · 끝에 추가 당일 독 줄)",
+  "바탕": "c27/run5.sh",
+  "판 1(실패 · v1)": "nrl이 로더 바꿔 끼우기 전에 import된 confirm27 v1 — 결과 버림(scratchpad c27/v1)"
+ },
+ "환경": {
+  "CAPS_ADJ": "0",
+  "PYTHONHASHSEED": "0",
+  "NRL_CACHE": "c27/nrl_(N|S).pkl",
+  "바탕 등록값": "run5.sh ENVS(mpos12.ENV와 같음)"
+ },
+ "종료값(run4)": {
+  "pre_N": 0,
+  "pre_S": 0,
+  "led_N": 0,
+  "led_S": 0,
+  "lead1_N": 0,
+  "sig_N": 0,
+  "dp_N": 0,
+  "lag0_N": 0,
+  "dp_lag0": 0,
+  "cut_d_20201230": 0,
+  "cut_p_20201230": 0,
+  "lead1_d_20201230": 1,
+  "lead1_p_20201230": 0,
+  "cut_d_20221229": 0,
+  "cut_p_20221229": 0,
+  "lead1_d_20221229": 0,
+  "lead1_p_20221229": 0,
+  "cut_d_20241230": 0,
+  "cut_p_20241230": 0,
+  "lead1_d_20241230": 0,
+  "lead1_p_20241230": 0,
+  "cmp_d_20201230": 0,
+  "cmp_p_20201230": 0,
+  "cmp_lead1d_20201230": 1,
+  "cmp_lead1p_20201230": 0,
+  "cmp_d_20221229": 0,
+  "cmp_p_20221229": 0,
+  "cmp_lead1d_20221229": 0,
+  "cmp_lead1p_20221229": 0,
+  "cmp_d_20241230": 0,
+  "cmp_p_20241230": 0,
+  "cmp_lead1d_20241230": 0,
+  "cmp_lead1p_20241230": 0,
+  "cmp_dp_N": 0,
+  "cmp_dp_lag0": 0
+ },
+ "주의": "lead1_d_20201230 종료값 1 = 뒤 반 매매 60건 미만으로 lab.run None(돌연변이 판 · 대조 판정 밖)"
+}
