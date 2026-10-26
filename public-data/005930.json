@@ -389,8 +389,23 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-19",
+  "fetched": "2026-10-26",
   "disclosures": [
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20261026",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261026000017"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20261023",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000484"
+    },
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20261023",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000478"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20261019",
@@ -525,21 +540,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260826",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000445"
-    },
-    {
-      "title": "[기재정정]임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260826",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000434"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260824",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824000222"
-    },
-    {
-      "title": "기타경영사항(자율공시)              ",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800837"
     }
   ]
 }

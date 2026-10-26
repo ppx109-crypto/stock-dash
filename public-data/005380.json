@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-22",
+  "fetched": "2026-10-26",
   "disclosures": [
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20261023",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000336"
+    },
     {
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20261022",
@@ -535,11 +540,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260730",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260730000497"
-    },
-    {
-      "title": "풍문또는보도에대한해명(미확정)              ",
-      "date": "20260729",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260729800842"
     }
   ]
 }

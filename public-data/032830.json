@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-16",
+  "fetched": "2026-10-26",
   "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20261023",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261023000469"
+    },
     {
       "title": "계열금융회사의약관에의한금융거래-[유가증권-채권]",
       "date": "20261016",
@@ -109,46 +114,6 @@
       "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
       "date": "20260813",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813800256"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260727",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260727800655"
-    },
-    {
-      "title": "특수관계인으로부터주식의취득",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000660"
-    },
-    {
-      "title": "특수관계인으로부터주식의취득",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000657"
-    },
-    {
-      "title": "주식등의대량보유상황보고서(일반)",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000604"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000601"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000584"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000570"
-    },
-    {
-      "title": "특수관계인과의수익증권거래",
-      "date": "20260724",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260724000528"
     }
   ]
 }
