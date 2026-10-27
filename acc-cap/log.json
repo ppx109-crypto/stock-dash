@@ -78,5 +78,20 @@
   "held_share_close": 0.4865,
   "trim_f_close": 0.0,
   "trim_f_gap": 0.0
+ },
+ {
+  "date": "20261027",
+  "at": "2026-10-27 15:20",
+  "E": 1.0,
+  "sigma": 0.004639,
+  "why": "20260922 ~ 20261026 · 든 종목 1",
+  "held_share": 0.5451,
+  "trim_f": 0.0,
+  "trimmed_share": 0.0,
+  "orders": [],
+  "close_check": "확인",
+  "held_share_close": 0.5453,
+  "trim_f_close": 0.0,
+  "trim_f_gap": 0.0
  }
 ]
