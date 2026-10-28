@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-22",
+  "fetched": "2026-10-28",
   "disclosures": [
+    {
+      "title": "유형자산처분결정(종속회사의주요경영사항)              ",
+      "date": "20261027",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261027800571"
+    },
     {
       "title": "주요사항보고서(자기주식취득결정)",
       "date": "20261022",

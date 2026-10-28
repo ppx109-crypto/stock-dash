@@ -38,8 +38,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-26",
+  "fetched": "2026-10-28",
   "disclosures": [
+    {
+      "title": "의결권대리행사권유참고서류",
+      "date": "20261028",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000453"
+    },
+    {
+      "title": "주주총회소집공고",
+      "date": "20261028",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028000439"
+    },
     {
       "title": "신탁계약에의한취득상황보고서",
       "date": "20261026",
@@ -179,16 +189,6 @@
       "title": "증권신고서(채무증권)",
       "date": "20260819",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000353"
-    },
-    {
-      "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
-      "date": "20260819",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000279"
-    },
-    {
-      "title": "[기재정정]일괄신고서",
-      "date": "20260818",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260818000230"
     }
   ]
 }

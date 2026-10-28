@@ -38,8 +38,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-26",
+  "fetched": "2026-10-28",
   "disclosures": [
+    {
+      "title": "기업설명회(IR)개최(안내공시)              ",
+      "date": "20261028",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261028800567"
+    },
+    {
+      "title": "[기재정정]주요사항보고서(자본으로인정되는채무증권발행결정)",
+      "date": "20261027",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261027000012"
+    },
     {
       "title": "주식등의대량보유상황보고서(일반)",
       "date": "20261023",
