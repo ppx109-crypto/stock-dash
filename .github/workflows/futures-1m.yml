@@ -5,8 +5,7 @@ name: Futures 1min daily
 # 키움 파일과 같은 모양(datetime,code,open,high,low,close,volume) · 10-12 하루 411줄이 키움 파일과 한 칸도 안 다름(시험 확인).
 # 휴일이면 그날 줄이 없어 저장하지 않습니다. 같은 날을 다시 받으면 그날 줄만 바꿔 씁니다.
 on:
-  schedule:
-    - cron: '0 7 * * 1-5'          # 한국 시각 16:00(평일) — 15:45 단일가까지 끝난 뒤
+  # 2026-10-29 사용자 "한투 앱키 삭제해서 1m다운로드 중지해줘" — 날마다 16:00 예약을 뺌(손으로만 돌림).
   workflow_dispatch:
     inputs:
       day:
