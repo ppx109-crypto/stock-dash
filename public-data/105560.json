@@ -38,8 +38,43 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-28",
+  "fetched": "2026-10-29",
   "disclosures": [
+    {
+      "title": "상각형조건부자본증권발행결정(자회사의 주요경영사항)              ",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800570"
+    },
+    {
+      "title": "주요사항보고서(상각형조건부자본증권발행결정)",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029000407"
+    },
+    {
+      "title": "현금ㆍ현물배당결정              ",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800391"
+    },
+    {
+      "title": "현금ㆍ현물배당을위한주주명부폐쇄(기준일)결정              ",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800387"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)(자회사의 주요경영사항)              ",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800350"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)(자회사의 주요경영사항)              ",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800346"
+    },
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20261029",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261029800345"
+    },
     {
       "title": "의결권대리행사권유참고서류",
       "date": "20261028",
@@ -154,41 +189,6 @@
       "title": "[기재정정]증권신고서(채무증권)",
       "date": "20260825",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000479"
-    },
-    {
-      "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
-      "date": "20260825",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000422"
-    },
-    {
-      "title": "[기재정정]최대주주등소유주식변동신고서              ",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800672"
-    },
-    {
-      "title": "최대주주등소유주식변동신고서              ",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800357"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820800325"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820800322"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820800320"
-    },
-    {
-      "title": "증권신고서(채무증권)",
-      "date": "20260819",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000353"
     }
   ]
 }
