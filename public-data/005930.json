@@ -389,8 +389,23 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-29",
+  "fetched": "2026-10-30",
   "disclosures": [
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20261030",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000719"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20261030",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000716"
+    },
+    {
+      "title": "특수관계인으로부터주식의취득",
+      "date": "20261030",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261030000586"
+    },
     {
       "title": "기타경영사항(자율공시)              ",
       "date": "20261029",
@@ -525,21 +540,6 @@
       "title": "최대주주등소유주식변동신고서              ",
       "date": "20261002",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261002800981"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20261001",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000251"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20261001",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261001000203"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260922",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260922000524"
     }
   ]
 }
