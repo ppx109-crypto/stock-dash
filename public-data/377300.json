@@ -117,8 +117,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-22",
+  "fetched": "2026-11-02",
   "disclosures": [
+    {
+      "title": "[기재정정]주식매수선택권부여에관한신고",
+      "date": "20261102",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261102000253"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20261022",
@@ -203,16 +208,6 @@
       "title": "영업(잠정)실적(공정공시)              ",
       "date": "20260804",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804800285"
-    },
-    {
-      "title": "[기재정정]주식매수선택권부여에관한신고",
-      "date": "20260803",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000423"
-    },
-    {
-      "title": "[기재정정]주식매수선택권부여에관한신고",
-      "date": "20260803",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260803000416"
     }
   ]
 }

@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-30",
+  "fetched": "2026-11-02",
   "disclosures": [
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20261102",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261102800520"
+    },
     {
       "title": "풍문또는보도에대한해명(미확정)              ",
       "date": "20261030",
@@ -535,11 +540,6 @@
       "title": "주식소각결정              ",
       "date": "20260826",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800261"
-    },
-    {
-      "title": "[기재정정]생산중단              ",
-      "date": "20260824",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824800707"
     }
   ]
 }
