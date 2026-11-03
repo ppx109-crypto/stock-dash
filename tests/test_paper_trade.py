@@ -229,10 +229,10 @@ class Cash(unittest.TestCase):
         with mock.patch.dict(os.environ, env, clear=False):
             b = P.PaperBroker()
         with mock.patch.object(broker_kis.KIS, "balance", return_value={"cash": 100.0, "cash_d2": 27.0, "value": 73.0, "positions": []}):
-            got = b.balance()
+            got = b.balance(raw=True)      # 덧붙임 몫(실제 overlay-live 장부의 B)이 섞이지 않게 실제 잔고로 봄(2026-11-03: 장부 B가 생기자 시험이 깨짐)
         self.assertEqual((got["cash"], got["cash_today"]), (27.0, 100.0))
         with mock.patch.object(broker_kis.KIS, "balance", return_value={"cash": 100.0, "cash_d2": None, "value": 0, "positions": []}):
-            self.assertEqual(b.balance()["cash"], 100.0)
+            self.assertEqual(b.balance(raw=True)["cash"], 100.0)
 
 
 class DailyReserve(unittest.TestCase):
