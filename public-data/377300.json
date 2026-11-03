@@ -117,8 +117,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-02",
+  "fetched": "2026-11-03",
   "disclosures": [
+    {
+      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20261103",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261103800279"
+    },
+    {
+      "title": "영업(잠정)실적(공정공시)              ",
+      "date": "20261103",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261103800277"
+    },
     {
       "title": "[기재정정]주식매수선택권부여에관한신고",
       "date": "20261102",
@@ -198,16 +208,6 @@
       "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
       "date": "20260813",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260813001204"
-    },
-    {
-      "title": "연결재무제표기준영업(잠정)실적(공정공시)              ",
-      "date": "20260804",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804800290"
-    },
-    {
-      "title": "영업(잠정)실적(공정공시)              ",
-      "date": "20260804",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804800285"
     }
   ]
 }

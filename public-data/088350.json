@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-30",
+  "fetched": "2026-11-03",
   "disclosures": [
+    {
+      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
+      "date": "20261103",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261103000146"
+    },
     {
       "title": "증권신고서(채무증권)",
       "date": "20261030",

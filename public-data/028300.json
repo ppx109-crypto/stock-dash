@@ -389,7 +389,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-26",
+  "fetched": "2026-11-03",
   "disclosures": [
     {
       "title": "전환가액의조정              ",
@@ -450,11 +450,6 @@
       "title": "주요사항보고서(전환사채권발행결정)",
       "date": "20260805",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260805000480"
-    },
-    {
-      "title": "주식등의대량보유상황보고서(약식)",
-      "date": "20260804",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260804000426"
     }
   ]
 }
