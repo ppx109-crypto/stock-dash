@@ -7,7 +7,7 @@
 - 계좌 흔들림 상한: 이 기간 운영 기록에서 덜어낸 날이 없어 셈에서 뺌.
 - 비용: 사고팔 때 0.015% · 주식 팔 때 거래세 0.18%(ETF는 없음)."""
 import os, sys, json, math
-W, START = sys.argv[1], sys.argv[2]
+W, START = os.path.abspath(sys.argv[1]), os.path.abspath(sys.argv[2])   # 아래 chdir 뒤에도 상대 경로가 맞게
 os.chdir(W); sys.path[:0] = [W, os.path.join(W, "research")]
 import numpy as np
 import idle_live as IL, basket_live as BL, overlay_live as OV, study
