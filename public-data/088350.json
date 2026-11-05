@@ -38,8 +38,28 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-04",
+  "fetched": "2026-11-05",
   "disclosures": [
+    {
+      "title": "[기재정정]특수관계인에대한채권매도",
+      "date": "20261105",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261105000563"
+    },
+    {
+      "title": "[기재정정]투자판단관련주요경영사항              ",
+      "date": "20261105",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261105800898"
+    },
+    {
+      "title": "[발행조건확정]증권신고서(채무증권)",
+      "date": "20261105",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261105000520"
+    },
+    {
+      "title": "[기재정정]증권신고서(채무증권)",
+      "date": "20261105",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261105000517"
+    },
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20261104",
