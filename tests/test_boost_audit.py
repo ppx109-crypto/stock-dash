@@ -640,26 +640,50 @@ class Checks(unittest.TestCase):
         self.assertEqual(res["요약"]["보강 칸"], f"{days_in * 4 + 1}/80")      # 기대 실행일 빠짐 칸들 + 예정 무실행 날 실행 1칸
 
     def test_scheduler_skip_strain_and_verdict(self):
-        """엔진이 마감 뒤에 돈 날 바구니 · 덧붙임이 없는 것은 SCHEDULER · 기록 고장은 설명으로 못 덮음 · 보강 칸은 고유 칸 수."""
+        """엔진이 마감 뒤에 돈 날 바구니 · 덧붙임 기록이 없으면 각 칸에 빠짐(사실)과 SCHEDULER(원인 정황)가 함께 · 빠짐은 즉시 실패 ·
+        설명 · 맞는 작업 영수증이 있어도 같음 · 엔진이 제때면 SCHEDULER 없이 빠짐만 · 기록 고장은 즉시 실패 · 보강 칸은 고유 칸 수."""
         r = Repo()
         r.etf("29991231")
         head = r.commit("아침", "2026-10-30 09:00:00")
-        body = {"날": "20261030", "봇": "engine", "기록 시각(한국)": "2026-10-30 15:25:00", "작업 번호": "1", "작업 시도": "1",
-                "부른 까닭": "schedule", "판단 때 저장소 HEAD": head, "코드": None, "입력": None, "결과": {},
-                "주문 결과": {"late": True}, "덧붙인 시각(한국)": "2026-10-30 15:26:00"}
-        r.write("idle-live/audit/20261030-engine.json", body)
-        r.commit("Idle engine live", "2026-10-30 15:27:00")
-        with mock.patch.object(B, "ROOT", r.root):
-            res = B.audit("20261030", "20261030", causes={"20261030:engine": {"기록 고장": {"run_id": 42259467975}}}, run_days=rd(["20261030"]))
-        rows = {x["봇"]: x for x in res["줄들"]}
-        self.assertEqual([t for t, _ in rows["basket"]["문제"]], ["SCHEDULER"])
-        self.assertEqual([t for t, _ in rows["overlay"]["문제"]], ["SCHEDULER"])
-        self.assertIn("빠짐", [t for t, _ in rows["daily"]["문제"]])
-        eng = [t for t, _ in rows["engine"]["문제"]]
-        self.assertGreaterEqual(eng.count("SCHEDULER"), 1)
-        self.assertIn(("20261030:engine", "기록 고장"), [(k, t) for k, t, _ in res["요약"]["즉시 실패"]])
+
+        def engine(day, at, late):
+            return {"날": day, "봇": "engine", "기록 시각(한국)": f"{day[:4]}-{day[4:6]}-{day[6:]} {at}:00", "작업 번호": "1", "작업 시도": "1",
+                    "부른 까닭": "schedule", "판단 때 저장소 HEAD": head, "코드": None, "입력": None, "결과": {},
+                    "주문 결과": {"late": late}, "덧붙인 시각(한국)": f"{day[:4]}-{day[4:6]}-{day[6:]} {at}:30"}
+        r.write("idle-live/audit/20261030-engine.json", engine("20261030", "15:25", True))      # 마감 뒤
+        r.write("idle-live/audit/20261102-engine.json", engine("20261102", "15:11", False))     # 제때
+        tip = r.commit("Idle engine live", "2026-11-02 15:27:00")
+        ev = "42259467975"
+        runs = {ev: self.receipt(ev, "daily-live.yml", "2026-10-30T06:21:00Z", head_sha=tip)}
+        days = rd(["20261030", "20261102", "20261103"], trading=["20261030", "20261102", "20261103"])
+        results = []
+        for causes in ({}, {"20261030:basket": {"빠짐": {"원인": "SCHEDULER", "run_id": ev}, "SCHEDULER": {"run_id": ev}},
+                            "20261030:overlay": {"빠짐": {"원인": "SCHEDULER", "run_id": ev}, "SCHEDULER": {"run_id": ev}},
+                            "20261030:engine": {"기록 고장": {"run_id": ev}}}):
+            with mock.patch.object(B, "ROOT", r.root):
+                results.append(B.audit("20261030", "20261103", causes=causes, runs=runs, run_days=days))
+        res = results[0]
+        for k in ("즉시 실패", "남은 꼬리표", "판정", "보강 칸", "실행 보강 필요"):
+            self.assertEqual(results[1]["요약"][k], res["요약"][k], k)                  # 설명 · 맞는 영수증이 있어도 같음
+        self.assertTrue(any(n[6] and n[6].startswith("작업 영수증 맞음") for n in results[1]["요약"]["상황 기록(참고 · 판정에 안 씀)"]))
+        rows = {(x["날"], x["봇"]): [t for t, _ in x["문제"]] for x in res["줄들"]}
+        for bot in ("basket", "overlay"):
+            self.assertEqual(rows[("20261030", bot)], ["빠짐", "SCHEDULER"])           # 엔진 늦음: 사실 + 원인 정황
+            self.assertEqual(rows[("20261102", bot)], ["빠짐"])                        # 엔진 제때: 빠짐만
+        for bot in B.BOTS:
+            self.assertEqual(rows[("20261103", bot)], ["빠짐"])                        # 아무 기록 없는 날: 네 봇 모두 빠짐
+        self.assertIn("빠짐", rows[("20261030", "daily")])
+        self.assertGreaterEqual(rows[("20261030", "engine")].count("SCHEDULER"), 1)
+        for x in res["줄들"]:                                                            # 부재 불변식: 기록이 없으면 언제나 빠짐
+            if "기록 시각" not in x:
+                self.assertIn("빠짐", [t for t, _ in x["문제"]], (x["날"], x["봇"]))
+        fails = {(k, t) for k, t, _ in res["요약"]["즉시 실패"]}
+        for key in ("20261030:basket", "20261030:overlay", "20261102:basket", "20261102:overlay"):
+            self.assertIn((key, "빠짐"), fails)
+        self.assertIn(("20261030:engine", "기록 고장"), fails)
+        self.assertIn(("20261030:basket", "SCHEDULER"), {(k, t) for k, t, _ in res["요약"]["남은 꼬리표"]})
         self.assertEqual(res["요약"]["판정"], "실패")
-        self.assertEqual(res["요약"]["보강 칸"], "4/4")                # 엔진 칸에 꼬리표가 여럿이어도 한 칸
+        self.assertEqual(res["요약"]["보강 칸"], "11/12")   # 10-30 넷 + 11-02 셋(제때 엔진은 보강 꼬리표 없음) + 11-03 넷 · 분모 = 고정 3일 × 4
         self.assertTrue(res["요약"]["실행 보강 필요"])
 
     def test_planned_off_day_and_off_calendar(self):

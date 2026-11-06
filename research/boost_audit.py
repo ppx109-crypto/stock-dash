@@ -47,8 +47,8 @@ import audit_log as A          # noqa: E402
 BOTS = {"engine": "idle-live", "basket": "basket-live", "overlay": "overlay-live", "daily": "daily-live"}
 DECISION_MODULES = {"engine": ("idle_live", "idle_signal"), "basket": ("basket_live",), "overlay": ("overlay_live",), "daily": ("daily_live",)}
 CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL", "OFF_CALENDAR")
-HARD = ("미래", "재현", "기록 고장")                       # 설명으로 못 덮음(즉시 실패)
-MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 원인 꼬리표 + 근거로만 덮음(못 덮으면 즉시 실패)
+HARD = ("미래", "재현", "기록 고장")                       # 즉시 실패(면책 없음)
+MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 관측 사실 · 원인과 상관없이 즉시 실패(면책 없음 · 판 3 고침 6)
 STRAIN_TAGS = ("SCHEDULER", "OFF_CALENDAR") + MISSING   # 분모 밖 기록(OFF_CALENDAR)도 실행 보강 칸으로 셈(판 3 고침 3 · 보수적)
 RUN_ID = re.compile(r"[0-9]{10,}")       # GitHub Actions 작업 번호(10자리 이상 · 날짜 YYYYMMDD 8자리는 안 됨)
 COMMIT = re.compile(r"[0-9a-f]{7,40}")   # 커밋(저장소에 실제로 있고 끝점의 조상이어야 함)
@@ -742,12 +742,11 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None, runs=None):
                     row["문제"].append(("예정 무실행 날 실행", f"{str(planned_off[d].get('까닭', ''))[:40]} 날인데 기록이 있음"))
                 else:
                     row["문제"].append(("OFF_CALENDAR", "분모 파일의 기대 실행일이 아닌 날의 기록"))
-            if got is None:
+            if got is None:                              # 기대 실행일 · 분모 밖 기록 칸에서 기록이 없으면 언제나 빠짐(관측 사실 · 판 3 고침 7)
+                row["문제"].append(("빠짐", "기록 없음"))
                 eng = found.get((d, "engine"))
-                if bot in ("basket", "overlay") and eng and hhmm(eng[1]) > sess["마감"]["engine"]:
+                if bot in ("basket", "overlay") and eng and hhmm(eng[1]) > sess["마감"]["engine"]:   # 원인 정황은 따로 덧붙임
                     row["문제"].append(("SCHEDULER", f"엔진 기록 {hhmm(eng[1])} · 마감 뒤라 {bot}는 돌지 않음(설계대로)"))
-                else:
-                    row["문제"].append(("빠짐", "기록 없음"))
             else:
                 rel, body = got
                 bad = code_problems(body)
