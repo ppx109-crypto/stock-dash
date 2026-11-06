@@ -38,8 +38,23 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-02",
+  "fetched": "2026-11-06",
   "disclosures": [
+    {
+      "title": "[발행조건확정]증권신고서(채무증권)",
+      "date": "20261106",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261106000453"
+    },
+    {
+      "title": "[기재정정]증권신고서(채무증권)",
+      "date": "20261106",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261106000434"
+    },
+    {
+      "title": "[기재정정]주요사항보고서(상각형조건부자본증권발행결정)",
+      "date": "20261106",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261106000401"
+    },
     {
       "title": "증권신고서(채무증권)",
       "date": "20261102",
@@ -174,21 +189,6 @@
       "title": "증권발행실적보고서",
       "date": "20260831",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831001290"
-    },
-    {
-      "title": "투자설명서",
-      "date": "20260831",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831000056"
-    },
-    {
-      "title": "[첨부정정]증권신고서(채무증권)",
-      "date": "20260826",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826000090"
-    },
-    {
-      "title": "[발행조건확정]증권신고서(채무증권)",
-      "date": "20260825",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260825000482"
     }
   ]
 }
