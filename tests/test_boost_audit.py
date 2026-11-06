@@ -1,8 +1,9 @@
-"""BOOST-0001-A 감사 셈(research/boost_audit.py) 시험.
-- 임시 git 저장소에 봇과 같은 길(audit_log.record · after)로 기록 · 장부를 커밋해 끝점 커밋에서 읽고 셈(실제 git).
-- 고친 기록 · 장부 · 저장소(돌연변이)를 감사가 잡는지 먼저 확인(점검표 33)."""
+"""BOOST-0001-A 감사 셈(research/boost_audit.py · 판 3) 시험.
+- 임시 git 저장소에 코드 트리 · 자료 · 기록 · 장부를 봇과 같은 길로 커밋하고 끝점 커밋에서 읽어 셈(실제 git · 하위 작업 재현).
+- 고친 기록 · 장부 · 저장소 · 코드 판 · 분모(돌연변이)를 감사가 잡는지 먼저 확인(점검표 33)."""
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -19,16 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "research"))
 import boost_audit as B        # noqa: E402
 
-
-def real_closes(code):
-    body = json.loads((ROOT / "etf-data" / f"{code}.json").read_text(encoding="utf-8"))
-    return body
-
-
-def kst(day, hm):
-    return f"{day[:4]}-{day[4:6]}-{day[6:]} {hm}"
-
-
+SESS = json.loads((ROOT / "research-exchange/claude-to-gpt/BOOST-0001-A/run_days.json").read_text(encoding="utf-8"))["세션"]
 _REPOS = []
 
 
@@ -37,17 +29,39 @@ def tearDownModule():
         r.tmp.cleanup()
 
 
-class Repo:
-    """임시 git 저장소(커밋 시각을 정해서 남김 · 모듈 끝에 지움)."""
+def real_closes(code):
+    return json.loads((ROOT / "etf-data" / f"{code}.json").read_text(encoding="utf-8"))
 
-    def __init__(self):
+
+def real_cal():
+    return sorted({str(d) for d, c in real_closes("069500")["closes"] if c})
+
+
+def kst(day, hm):
+    return f"{day[:4]}-{day[4:6]}-{day[6:]} {hm}"
+
+
+def rd(run, trading=None, off=None):
+    """시험용 고정 분모."""
+    return {"거래일": trading or run, "기대 실행일": run, "예정 무실행": off or {}, "세션": SESS}
+
+
+class Repo:
+    """임시 git 저장소(코드 트리 포함 · 커밋 시각을 정해서 남김 · 모듈 끝에 지움)."""
+
+    def __init__(self, code=True):
         self.tmp = tempfile.TemporaryDirectory()
         _REPOS.append(self)
         self.root = Path(self.tmp.name)
         self.git("init", "-q", "-b", "main")
         self.git("config", "user.email", "t@t")
         self.git("config", "user.name", "t")
-        self.write("collect_kis_intraday.py", 'SPECIAL_HOURS = {\n    "20261119": "수능날 · 10:00 ~ 16:30",\n}\n')
+        if code:                                          # 판단 때 HEAD의 코드 트리(지금 작업 나무와 같은 판)
+            for p in list(ROOT.glob("*.py")) + list((ROOT / "research").glob("*.py")):
+                q = self.root / p.relative_to(ROOT)
+                q.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(p, q)
+        self.write("event-data/000000.json", {"rows": []})
 
     def git(self, *a, when=None):
         env = dict(os.environ)
@@ -65,12 +79,12 @@ class Repo:
         self.git("commit", "-q", "--allow-empty", "-m", msg, when=when)
         return self.git("rev-parse", "HEAD")
 
-    def etf(self, before):
-        """etf-data를 그날 앞 줄만으로(판단 때 판 흉내)."""
+    def etf(self, before, drop=()):
+        """etf-data를 그날 앞 줄만으로(판단 때 판 흉내) · drop = 빼 둘 (코드, 날)."""
         import idle_live as I
         for code in I.CODES:
             b = real_closes(code)
-            b["closes"] = [r for r in b["closes"] if str(r[0]) < before]
+            b["closes"] = [r for r in b["closes"] if str(r[0]) < before and (code, str(r[0])) not in drop]
             self.write(f"etf-data/{code}.json", b)
 
 
@@ -83,10 +97,10 @@ def engine_record(repo, day, head, run, extra_ledger=True, breadth=70.0):
         px, now_price = {}, {}
         for code in I.CODES:
             rows = [(str(d), float(c)) for d, c in real_closes(code)["closes"] if c]
-            h = [c for d, c in json.loads(Path(f"etf-data/{code}.json").read_text(encoding="utf-8"))["closes"] if c and str(d) < day]
+            h = I.history(code, day)
             now = dict(rows).get(day)
             if now is not None and len(h) >= 25:
-                px[code] = np.array([float(x) for x in h] + [now])
+                px[code] = np.array(h + [now])
                 now_price[code] = now
         state = json.loads(Path("idle-live/state.json").read_text(encoding="utf-8"))
         ledgers = ["idle-live/paper-orders.json", "idle-live/state.json"] + (["idle-live/extra.json"] if extra_ledger else [])
@@ -117,13 +131,12 @@ class EngineRepo(unittest.TestCase):
 
     def build(self, stale_next=False, tamper_after=False):
         r = Repo()
-        cal = sorted({str(d) for d, c in real_closes("069500")["closes"] if c})
+        cal = real_cal()
         d1, d2 = [d for d in cal if d >= "20261027"][:2]
         r.etf(d1)
         r.write("idle-live/state.json", {"positions": {}, "cool": 0})
         r.write("idle-live/paper-orders.json", {"orders": [], "held": {}})
         r.write("idle-live/extra.json", {"그대로": 1})
-        r.write("event-data/000000.json", {"rows": []})
         a = r.commit("아침", kst(d1, "09:00:00"))
         engine_record(r, d1, a, "11111111")
         c1 = r.commit("Idle engine live", kst(d1, "15:13:00"))
@@ -144,11 +157,12 @@ class EngineRepo(unittest.TestCase):
             r.git("merge", "-q", "--no-edit", "-X", "theirs", "old", when=kst(d2, "15:14:00"))
         r.etf("29991231")
         r.commit("Collect ETF", kst(d2, "19:30:00"))
+        self.days = rd([d1, d2], trading=[d for d in cal if d <= d2][-30:])
         return r, d1, d2, c1, c2
 
-    def run_audit(self, r, d1, d2):
+    def run_audit(self, r, d1, d2, run_days=None):
         with mock.patch.object(B, "ROOT", r.root):
-            return B.audit(d1, d2)
+            return B.audit(d1, d2, run_days=run_days or self.days)
 
     def engine_rows(self, res):
         return [x for x in res["줄들"] if x["봇"] == "engine"]
@@ -158,11 +172,24 @@ class EngineRepo(unittest.TestCase):
         res = self.run_audit(r, d1, d2)
         self.assertEqual(res["요약"]["불완전"], [])
         for row in self.engine_rows(res):
-            self.assertEqual(row["문제"], [], row)                   # 안 바뀐 장부(extra.json)도 문제 아님(H1)
+            self.assertEqual(row["문제"], [], row)                   # 안 바뀐 장부(extra.json)도 문제 아님
             self.assertEqual(row["재현"], "같음")
         fails = res["요약"]["즉시 실패"]
         self.assertTrue(fails and all(t == "빠짐" and not k.endswith(":engine") for k, t, _ in fails))
-        self.assertEqual(res["요약"]["판정"], "실패")               # 다른 세 봇 기록이 없음
+        self.assertEqual((res["요약"]["판정"], res["요약"]["기록 수"]), ("실패", "2/8"))
+        self.assertEqual(res["요약"]["범위"], "G2(결정 · 장부 · 주문 일치) · 원천 수집 시각 증명 아님")
+
+    def test_fixed_denominator(self):
+        """d2의 KODEX 200 줄과 엔진 기록을 모두 지워도 고정 분모라 d2 네 칸이 모두 빠짐(분모가 감사 대상 자료에 안 기댐)."""
+        r, d1, d2, *_ = self.build()
+        (r.root / "idle-live" / "audit" / f"{d2}-engine.json").unlink()
+        b = real_closes("069500")
+        b["closes"] = [x for x in b["closes"] if str(x[0]) != d2]
+        r.write("etf-data/069500.json", b)
+        r.commit("지움", kst(d2, "20:00:00"))
+        res = self.run_audit(r, d1, d2)
+        miss = sorted(k for k, t, _ in res["요약"]["즉시 실패"] if t == "빠짐" and k.startswith(d2))
+        self.assertEqual(miss, [f"{d2}:{b}" for b in sorted(B.BOTS)])
 
     def test_tampered_ledger_and_stale_head(self):
         r, d1, d2, *_ = self.build(tamper_after=True)
@@ -180,32 +207,100 @@ class EngineRepo(unittest.TestCase):
         body["곁"]["etf_asof"]["069500"]["last"] = d2                # 판단 날 자료가 섞였다고 적힌 기록 → 미래
         r.write(f"idle-live/audit/{d2}-engine.json", body)
         r.commit("고침", kst(d2, "20:00:00"))
-        rows = self.engine_rows(self.run_audit(r, d1, d2))
-        tags = [t for t, _ in rows[1]["문제"]]
-        self.assertIn("미래", tags)
-        self.assertIn("재현", tags)
-        self.assertIn("기록 고장", tags)                             # 판단한 작업이 올린 기록과 끝점 기록이 다름(나중에 고침)
+        tags = [t for t, _ in self.engine_rows(self.run_audit(r, d1, d2))[1]["문제"]]
+        for t in ("미래", "재현", "기록 고장"):                       # 기록 고장 = 판단한 작업이 올린 기록과 끝점 기록이 다름
+            self.assertIn(t, tags)
 
     def test_late_input(self):
-        """판단 때 HEAD에 어제 KODEX 200 줄이 없었다면: 지문은 같고(그 판으로 셈) 늦은 입력 꼬리표."""
+        """판단 때 HEAD에 어제 KODEX 200 줄이 없었다면: 다시 만들기는 같고(그 판으로 셈) 늦은 입력 꼬리표만."""
         r = Repo()
-        cal = sorted({str(d) for d, c in real_closes("069500")["closes"] if c})
+        cal = real_cal()
         d1 = [d for d in cal if d >= "20261027"][0]
         pd = B.prev_day(cal, d1)
-        r.etf(d1)
-        b = real_closes("069500")
-        b["closes"] = [x for x in b["closes"] if str(x[0]) < pd]
-        r.write("etf-data/069500.json", b)
+        r.etf(d1, drop={("069500", pd)})
         r.write("idle-live/state.json", {"positions": {}, "cool": 0})
         r.write("idle-live/paper-orders.json", {"orders": [], "held": {}})
-        r.write("event-data/000000.json", {"rows": []})
         a = r.commit("아침", kst(d1, "09:00:00"))
         engine_record(r, d1, a, "33333333", extra_ledger=False)
         r.commit("Idle engine live", kst(d1, "15:13:00"))
         r.etf("29991231")
         r.commit("Collect ETF", kst(d1, "19:30:00"))
-        rows = self.engine_rows(self.run_audit(r, d1, d1))
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit(d1, d1, run_days=rd([d1], trading=[d for d in cal if d <= d1][-30:]))
+        rows = self.engine_rows(res)
         self.assertEqual([t for t, _ in rows[0]["문제"]], ["LATE_INPUT"], rows[0]["문제"])
+
+
+class CodeVersion(unittest.TestCase):
+    """재현은 판단 때 HEAD의 코드 트리(+ 기록 블롭)에서만: 기록 뒤 코드가 바뀌어도 그 판 재현은 통과 · 지금 판은 실패 ·
+    그 트리에 없는 모듈을 작업 나무에서 끌어오지 않음."""
+
+    def old_module(self, name, src):
+        mod = types.ModuleType(name + "_old")
+        mod.__file__ = str(ROOT / f"{name}.py")
+        exec(compile(src, name + "_old", "exec"), mod.__dict__)
+        return mod
+
+    def daily_body(self, D):
+        held = {"000001": {"code": "000001", "name": "가", "kind": "추세", "price": 1000.0, "peak": 1300.0, "max_close": 1300.0,
+                           "last_close": 1200.0, "칸": 2, "처음칸": 2, "days": 5, "bought": "20261020"}}
+        cands = [{"code": c, "name": c, "추세문": True, "3일연속": False, "거래량비": 1.0, "정배열일수": 3, "추세 기울기": s}
+                 for c, s in (("000002", 2.0), ("000003", 1.0))]
+        now_price = {"000001": 1100.0, "000002": 500.0, "000003": 700.0}
+        inp = A.capture(dict(state={"positions": held}, cands=cands, now_price=now_price, aligned={"000001": False}, rate={}))
+        calls = []
+        s, b = D.decide({"positions": held}, cands, now_price, {"000001": False}, {}, A.recorder(lambda c, h: True, calls))
+        return {"날": "20261030", "봇": "daily", "입력": inp, "결과": A.plain({"sells": s, "buys": b}), "곁": {"kin_calls": calls}}
+
+    def test_daily_and_overlay_old_versions(self):
+        src_d = (ROOT / "daily_live.py").read_text(encoding="utf-8").replace('"① 추세 조건"', '"① 추세 조건(옛 판)"')
+        src_o = (ROOT / "overlay_live.py").read_text(encoding="utf-8").replace('"상승": ("122630", 0.4)', '"상승": ("122630", 0.3)')
+        self.assertIn("(옛 판)", src_d)
+        self.assertIn('("122630", 0.3)', src_o)
+        D, O = self.old_module("daily_live", src_d), self.old_module("overlay_live", src_o)
+        r = Repo()
+        r.write("daily_live.py", src_d)
+        r.write("overlay_live.py", src_o)
+        r.etf("20261031")
+        head = r.commit("옛 판", "2026-10-30 09:00:00")
+        daily = dict(self.daily_body(D), **{"판단 때 저장소 HEAD": head, "코드": {"daily_live.py": r.git("rev-parse", "HEAD:daily_live.py")}})
+        rows = [(str(d), float(c)) for d, c in real_closes("069500")["closes"] if c and str(d) < "20261030"]
+        state = O.states(rows)[rows[-1][0]]
+        st = {"applied": None, "rebalanced_month": None}
+        _, want, f = O.target_qty("상승", 1e7, 8e6, 1e7, 0.0, 100.0)
+        overlay = {"날": "20261030", "봇": "overlay", "판단 때 저장소 HEAD": head,
+                   "코드": {"overlay_live.py": r.git("rev-parse", "HEAD:overlay_live.py")},
+                   "입력": {"st": st, "day": "20261030", "prev_day": rows[-1][0], "stale": False, "state": state, "nav": 1e7,
+                            "rows_len": len(rows), "rows_last": [list(x) for x in rows[-3:]]},
+                   "결과": {"rebalance": O.needs_rebalance(st, state, "20261030")}, "곁": {"rows_digest": A.digest(rows)},
+                   "주문 결과": {"rebalance": True, "orders": [["122630", "buy", want]],
+                               "target": {"state": "상승", "nav_total": 1e7, "cash_b": 8e6, "nav_b": 1e7, "reserve": 0.0, "price": 100.0,
+                                          "cur": {}, "want": want, "f": f}}}
+        self.assertFalse(B.replay("daily", daily)[0])               # 지금 판(작업 나무)으로는 다름
+        self.assertFalse(B.replay_overlay_target(overlay)[0])
+        found = {("20261030", "daily"): ("daily-live/audit/20261030-daily.json", daily),
+                 ("20261030", "overlay"): ("overlay-live/audit/20261030-overlay.json", overlay)}
+        B.ERRS.clear()
+        with mock.patch.object(B, "ROOT", r.root):
+            got = B.check_groups(found)
+        self.assertEqual(B.ERRS, [])
+        d, o = got[("20261030", "daily")], got[("20261030", "overlay")]
+        self.assertTrue(d["same"] and d["isolated"], d)               # 판단 때 HEAD 판으로는 같음 · 모듈은 그 트리에서
+        self.assertTrue(o["same"] and o["target_ok"] and o["isolated"] and o["rebuild"] == [], o)
+
+    def test_missing_module_not_borrowed(self):
+        """판단 때 HEAD 트리에 daily_live.py가 없으면 작업 나무 것을 쓰지 않고 '재현 못 함(불완전)'."""
+        r = Repo()
+        (r.root / "daily_live.py").unlink()
+        head = r.commit("daily 없음", "2026-10-30 09:00:00")
+        import daily_live as D
+        body = dict(self.daily_body(D), **{"판단 때 저장소 HEAD": head, "코드": {"audit_log.py": r.git("rev-parse", "HEAD:audit_log.py")}})
+        B.ERRS.clear()
+        with mock.patch.object(B, "ROOT", r.root):
+            got = B.check_groups({("20261030", "daily"): ("x", body)})
+        self.assertEqual(got, {})
+        self.assertTrue(B.ERRS and "하위 작업" in B.ERRS[0])
+        B.ERRS.clear()
 
 
 class Basket(unittest.TestCase):
@@ -230,19 +325,18 @@ class Basket(unittest.TestCase):
                              capital=1e7, avail=5e6, names={"000004": "넷"}, others=set())
         self.assertTrue(any(s == "buy" for _, s, _, _ in o) and any(s == "sell" for _, s, _, _ in o))
         head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-        body = {"날": day, "봇": "basket", "판단 때 저장소 HEAD": head, "코드": {"basket_live.py": A.blob_id(ROOT / "basket_live.py")},
-                "입력": inp, "결과": A.plain({"orders": o, "new_state": st, "why": why}),
+        body = {"날": day, "봇": "basket", "판단 때 저장소 HEAD": head, "입력": inp, "결과": A.plain({"orders": o, "new_state": st, "why": why}),
                 "곁": A.plain({"days_since_calls": calls, "days_tail": days[-A.DAYS_TAIL:], "before": days[-3]})}
-        ctx = {"main_events": {"000002": [(t0, "자사주취득")], "000004": [(t0, "자사주취득")], "000005": [(t0, "무상증자")]},
-               "basket_inputs": lambda h, t, b: {"react": A.plain(react), "inside": A.plain(inside), "events": A.plain(ev)}}
+        ctx = {"main_events": {"000002": [(t0, "자사주취득")], "000004": [(t0, "자사주취득")], "000005": [(t0, "무상증자")]}}
         return body, days, ctx
 
     def test_replay_inputs_and_mutations(self):
         body, days, ctx = self.body()
-        self.assertEqual(B.replay_any("basket", body), (True, "같음"))
+        self.assertEqual(B.replay("basket", body)[::2], (True, "같음"))
         probs, info = B.inputs_check("basket", body, days, ctx)
         self.assertEqual(probs, [])
-        self.assertEqual(info, ["사건 종목 000002 지금 값 없음(결정과 무관)"])     # 앞 사건과 20거래일 안이라 어차피 셈 안 함
+        self.assertIn("사건 종목 000002 지금 값 없음(결정과 무관)", info)          # 앞 사건과 20거래일 안이라 어차피 셈 안 함
+        self.assertTrue(any(s.startswith("참고 · 판단 앞 마지막 공시 커밋") for s in info))   # 커밋 시각은 참고만(인증 아님)
         nop = json.loads(json.dumps(body))                                          # 값이 없어 못 산 경우는 BROKER
         del nop["입력"]["now_price"]["000004"]
         nop["결과"]["why"].append("넷 자사주 취득 · 반응 -3.0% — 살 돈이 모자람")
@@ -253,9 +347,7 @@ class Basket(unittest.TestCase):
         bad = json.loads(json.dumps(body))
         bad["곁"]["days_since_calls"][0][1] += 1
         self.assertIn("재현", [t for t, _ in B.inputs_check("basket", bad, days, ctx)[0]])
-        ctx2 = dict(ctx, basket_inputs=lambda h, t, b: {"react": {"000002": -0.06}, "inside": [], "events": []})
-        self.assertEqual([t for t, _ in B.inputs_check("basket", body, days, ctx2)[0]], ["재현"] * 3)     # 판단 때 판과 다른 입력
-        self.assertIn("LATE_INPUT", [t for t, _ in B.inputs_check("basket", body, days[:-2] + days[-1:], ctx)[0]])   # 목록 ≠ 달력
+        self.assertIn("LATE_INPUT", [t for t, _ in B.inputs_check("basket", body, days[:-2] + days[-1:], ctx)[0]])   # 목록 ≠ 분모 거래일
 
     def test_late_events_material_only(self):
         body, days, ctx = self.body()
@@ -263,19 +355,29 @@ class Basket(unittest.TestCase):
         body["입력"]["inside"] = body["입력"]["inside"] + ["000009", "000010"]
         body["입력"]["react"] = dict(body["입력"]["react"], **{"000009": -0.04, "000010": 0.03})
         ev2 = dict(ctx["main_events"], **{"000010": [(t0, "자사주취득")]})        # 반응 +3% → 결정 무관
-        ctx2 = dict(ctx, main_events=ev2, basket_inputs=lambda h, t, b: None)
-        probs, info = B.inputs_check("basket", body, days, ctx2)
+        probs, info = B.inputs_check("basket", body, days, {"main_events": ev2})
         self.assertEqual([t for t, _ in probs], [])
         self.assertTrue(any("결정과 무관" in s for s in info))
         ev3 = dict(ev2, **{"000009": [(t0, "자사주취득")]})                      # 반응 −4% → 결정이 달랐을 수 있음
-        probs, _ = B.inputs_check("basket", body, days, dict(ctx2, main_events=ev3))
+        probs, _ = B.inputs_check("basket", body, days, {"main_events": ev3})
         self.assertEqual([t for t, _ in probs], ["LATE_INPUT"])
+
+    def test_rebuild_real_data(self):
+        """판단 때 판 자료로 반응 · 200위 안 · t0 사건을 다시 셈(실제 자료 · 작업 나무 = 판단 때 판 흉내)."""
+        import basket_live as BL
+        import study
+        t0, before = "20261105", "20261104"
+        react, inside = BL.reactions(study.load_prices(), t0, before)
+        ev = BL.todays_events(BL.load_events(), t0, before)
+        body = {"날": "20261106", "입력": A.plain({"t0": t0, "react": react, "inside": inside, "events_t0": ev}), "곁": {"before": before}}
+        self.assertEqual(B.rebuild("basket", body), {"rebuild": []})
+        body["입력"]["react"] = dict(body["입력"]["react"], **{next(iter(react)): 0.5})
+        self.assertEqual(B.rebuild("basket", body), {"rebuild": ["바구니 react"]})
 
 
 class Daily(unittest.TestCase):
-    def body(self, module=None):
+    def body(self):
         import daily_live as D
-        D = module or D
         held = {"000001": {"code": "000001", "name": "가", "kind": "추세", "price": 1000.0, "peak": 1300.0, "max_close": 1300.0,
                            "last_close": 1200.0, "칸": 2, "처음칸": 2, "days": 5, "bought": "20261020"}}
         cands = [{"code": c, "name": c, "추세문": True, "3일연속": False, "거래량비": 1.0, "정배열일수": 3, "추세 기울기": s}
@@ -285,10 +387,9 @@ class Daily(unittest.TestCase):
         inp = A.capture(dict(state={"positions": held}, cands=cands, now_price=now_price, aligned=aligned, rate=rate))
         calls = []
         s, b = D.decide({"positions": held, "closed": []}, cands, now_price, aligned, rate, A.recorder(lambda c, h: c != "000003", calls))
-        body = json.loads(json.dumps({"날": "20261030", "판단 때 저장소 HEAD": "h", "입력": inp, "결과": A.plain({"sells": s, "buys": b}),
+        return json.loads(json.dumps({"날": "20261030", "판단 때 저장소 HEAD": "h", "입력": inp, "결과": A.plain({"sells": s, "buys": b}),
                                       "곁": A.plain({"kin_calls": calls, "ready": True, "expect": "20261029", "quotes": 4, "pool": 4,
                                                     "data_asof": {"max": "20261029", "today_or_later": 0, "codes": 4}})}))
-        return body
 
     def test_replay_nan_future_missing(self):
         body = self.body()
@@ -305,41 +406,16 @@ class Daily(unittest.TestCase):
         self.assertEqual([t for t, _ in B.inputs_check("daily", late, cal, None)[0]], ["LATE_INPUT", "BROKER", "BROKER"])
         broken = json.loads(json.dumps(body))
         del broken["곁"]["data_asof"]
-        broken["판단 때 저장소 HEAD"] = None
-        self.assertEqual([t for t, _ in B.inputs_check("daily", broken, cal, None)[0]], ["기록 고장", "기록 고장"])
-
-    def test_recorded_code_version(self):
-        """기록한 코드 판이 지금과 다르면 그 판(git 블롭)을 꺼내 하위 작업으로 재현(M2)."""
-        src = (ROOT / "daily_live.py").read_text(encoding="utf-8").replace('"① 추세 조건"', '"① 추세 조건(옛 판)"')
-        self.assertIn("(옛 판)", src)
-        mod = types.ModuleType("daily_old")
-        mod.__file__ = str(ROOT / "daily_live.py")
-        exec(compile(src, "daily_old", "exec"), mod.__dict__)
-        body = self.body(module=mod)
-        self.assertIn("(옛 판)", json.dumps(body["결과"], ensure_ascii=False))
-        r = Repo()
-        r.write("daily_live.py", src)
-        r.commit("옛 판", "2026-10-30 09:00:00")
-        body["코드"] = {"daily_live.py": r.git("rev-parse", "HEAD:daily_live.py")}
-        self.assertFalse(B.replay("daily", body)[0])                 # 지금 코드로는 다름
-        with mock.patch.object(B, "ROOT", r.root):
-            same, why = B.replay_any("daily", body)
-        self.assertTrue(same, why)
-        self.assertIn("기록한 코드 판", why)
-        body["코드"] = {"daily_live.py": "0" * 40}                   # 꺼낼 수 없는 판 → 불완전(봇 탓 아님)
-        B.ERRS.clear()
-        with mock.patch.object(B, "ROOT", r.root):
-            self.assertIsNone(B.replay_any("daily", body)[0])
-        self.assertTrue(B.ERRS)
-        B.ERRS.clear()
-        self.assertEqual(B.replay_any("daily", dict(body, 코드=None)), (False, "기록 고장(코드 판 없음)"))
+        self.assertEqual([t for t, _ in B.inputs_check("daily", broken, cal, None)[0]], ["기록 고장"])
+        self.assertEqual(B.code_problems(dict(body, 코드=None)), "기록 고장(코드 판 없음)")
+        self.assertEqual(B.code_problems(dict(body, **{"판단 때 저장소 HEAD": None})), "기록 고장(판단 때 HEAD 없음)")
 
 
 class Overlay(unittest.TestCase):
     def test_real_run_receipt_replays(self):
         from tests import test_audit_log as T
         orders, lines, st, body, _ = T.OverlayReceipt()._run(block=False)
-        self.assertEqual(B.replay_any("overlay", body), (True, "같음"))
+        self.assertEqual(B.replay("overlay", body)[::2], (True, "같음"))
         ok, why = B.replay_overlay_target(body)
         self.assertTrue(ok, why)
         self.assertEqual(B.orders_check("overlay", body), [])
@@ -354,15 +430,17 @@ class Overlay(unittest.TestCase):
 
 
 class Checks(unittest.TestCase):
+    S = SESS["보통"]
+
     def test_timing(self):
         b = {"기록 시각(한국)": "2026-11-09 15:11:00", "부른 까닭": "schedule", "곁": {"late_at_decision": False}, "주문 결과": {"late": False}}
-        self.assertEqual(B.timing("engine", b), ([], []))
+        self.assertEqual(B.timing("engine", b, self.S), ([], []))
         late = dict(b, **{"기록 시각(한국)": "2026-11-09 15:31:00", "부른 까닭": "workflow_dispatch", "주문 결과": {"late": True}})
-        probs, info = B.timing("daily", late)
-        self.assertEqual([t for t, _ in probs], ["SCHEDULER"])        # 손으로 불렀어도 늦으면 설명 필요(M1)
+        probs, info = B.timing("daily", late, self.S)
+        self.assertEqual([t for t, _ in probs], ["SCHEDULER"])        # 손으로 불렀어도 늦으면 설명 필요
         self.assertTrue(info and info[0].startswith("MANUAL"))
-        self.assertEqual([t for t, _ in B.timing("overlay", dict(b, **{"기록 시각(한국)": "2026-11-09 15:21:00"}))[0]], ["SCHEDULER"])
-        self.assertTrue(B.timing("engine", dict(b, **{"부른 까닭": None}))[1][0].endswith("작업 흐름 밖"))
+        self.assertEqual([t for t, _ in B.timing("overlay", dict(b, **{"기록 시각(한국)": "2026-11-09 15:21:00"}), self.S)[0]], ["SCHEDULER"])
+        self.assertTrue(B.timing("engine", dict(b, **{"부른 까닭": None}), self.S)[1][0].endswith("작업 흐름 밖"))
 
     def test_broker_and_orders(self):
         body = {"날": "20261109", "결과": {"orders": [["133690", "buy", 3, "r"], ["138230", "sell", 2, "r"]]}, "주문 결과": {"late": False},
@@ -387,22 +465,13 @@ class Checks(unittest.TestCase):
         self.assertTrue(B.explained(c, "20261109:basket", "빠짐"))
         self.assertFalse(B.explained(c, "20261109:basket", "BROKER"))
         self.assertTrue(B.explained(c, "20261109:basket", "LEDGER"))
-        self.assertFalse(B.explained(c, "20261110:basket", "빠짐"))      # 빈 글로는 못 덮음(M6)
+        self.assertFalse(B.explained(c, "20261110:basket", "빠짐"))      # 빈 글로는 못 덮음
         self.assertFalse(B.explained(c, "20261111:basket", "빠짐"))      # 원인 꼬리표가 정해진 것이 아님
 
-    def test_new_buys(self):
-        self.assertTrue(B.new_buys("engine", {"결과": {"orders": [["a", "buy", 1, "r"]]}}))
-        self.assertFalse(B.new_buys("basket", {"결과": {"orders": [["a", "sell", 1, "r"]]}}))
-        self.assertTrue(B.new_buys("overlay", {"결과": {"rebalance": True}, "주문 결과": {"orders": [["a", "buy", 3]]}}))
-        self.assertTrue(B.new_buys("daily", {"결과": {"sells": [], "buys": [{"code": "a"}]}}))
-
-    def test_scheduler_skip_and_verdict(self):
-        """엔진이 마감 뒤에 돈 날 바구니 · 덧붙임이 없는 것은 빠짐이 아니라 SCHEDULER · 재현 실패는 설명으로 못 덮음."""
+    def test_scheduler_skip_strain_and_verdict(self):
+        """엔진이 마감 뒤에 돈 날 바구니 · 덧붙임이 없는 것은 SCHEDULER · 기록 고장은 설명으로 못 덮음 · 보강 칸은 고유 칸 수."""
         r = Repo()
-        b = real_closes("069500")
-        b["closes"] = [x for x in b["closes"] if str(x[0]) <= "20261030"]
-        r.write("etf-data/069500.json", b)
-        r.write("event-data/000000.json", {"rows": []})
+        r.etf("29991231")
         head = r.commit("아침", "2026-10-30 09:00:00")
         body = {"날": "20261030", "봇": "engine", "기록 시각(한국)": "2026-10-30 15:25:00", "작업 번호": "1", "작업 시도": "1",
                 "부른 까닭": "schedule", "판단 때 저장소 HEAD": head, "코드": None, "입력": None, "결과": {},
@@ -410,34 +479,69 @@ class Checks(unittest.TestCase):
         r.write("idle-live/audit/20261030-engine.json", body)
         r.commit("Idle engine live", "2026-10-30 15:27:00")
         with mock.patch.object(B, "ROOT", r.root):
-            res = B.audit("20261030", "20261030", causes={"20261030:engine": {"기록 고장": "작업 12345678"}})
+            res = B.audit("20261030", "20261030", causes={"20261030:engine": {"기록 고장": "작업 12345678"}}, run_days=rd(["20261030"]))
         rows = {x["봇"]: x for x in res["줄들"]}
         self.assertEqual([t for t, _ in rows["basket"]["문제"]], ["SCHEDULER"])
         self.assertEqual([t for t, _ in rows["overlay"]["문제"]], ["SCHEDULER"])
         self.assertIn("빠짐", [t for t, _ in rows["daily"]["문제"]])
-        self.assertIn("SCHEDULER", [t for t, _ in rows["engine"]["문제"]])
+        eng = [t for t, _ in rows["engine"]["문제"]]
+        self.assertGreaterEqual(eng.count("SCHEDULER"), 1)
         self.assertIn(("20261030:engine", "기록 고장"), [(k, t) for k, t, _ in res["요약"]["즉시 실패"]])
         self.assertEqual(res["요약"]["판정"], "실패")
+        self.assertEqual(res["요약"]["보강 칸"], "4/4")                # 엔진 칸에 꼬리표가 여럿이어도 한 칸
+        self.assertTrue(res["요약"]["실행 보강 필요"])
 
-    def test_special_hours_day_not_counted(self):
-        """봇이 쉬도록 정한 날(수능날)은 기록이 없어도 빠짐이 아니고 감사 날에도 안 셈."""
+    def test_planned_off_day_and_off_calendar(self):
+        """예정 무실행 날(수능날)은 분모 밖 · 빠짐 아님 · 그날 기록이 있으면 '예정 무실행 날 실행' · 분모 밖 다른 날 기록은 OFF_CALENDAR."""
+        off = {"20261119": {"까닭": "수능날"}}
+        trading = ["20261118", "20261119", "20261120"]
         r = Repo()
-        b = real_closes("069500")
-        b["closes"] = [x for x in b["closes"] if str(x[0]) <= "20261106"] + [["20261118", 1.0], ["20261119", 1.0], ["20261120", 1.0]]
-        r.write("etf-data/069500.json", b)
-        r.write("event-data/000000.json", {"rows": []})
+        r.etf("29991231")
         r.commit("자료", "2026-11-20 19:30:00")
         with mock.patch.object(B, "ROOT", r.root):
-            res = B.audit("20261119", "20261119")
-            self.assertEqual((res["줄들"], res["요약"]["거래일"], res["요약"]["판정"]), ([], 0, "진행 중"))
-            self.assertEqual(res["요약"]["쉰 날(장 시간이 다른 날 · 설계대로)"], {"20261119": "수능날 · 10:00 ~ 16:30"})
-            res = B.audit("20261118", "20261120")
+            res = B.audit("20261118", "20261120", run_days=rd(["20261118", "20261120"], trading=trading, off=off))
         self.assertEqual(sorted({x["날"] for x in res["줄들"]}), ["20261118", "20261120"])
-
-    def test_end_commit_unreadable(self):
-        r = Repo()
+        self.assertEqual(res["요약"]["예정 무실행"], {"20261119": "수능날"})
+        self.assertEqual((res["요약"]["기대 실행일"], res["요약"]["기록 수"], res["요약"]["불완전"]), (2, "0/8", []))
+        b = {"날": "20261119", "봇": "daily", "기록 시각(한국)": "2026-11-19 15:21:00", "판단 때 저장소 HEAD": None, "입력": None}
+        r.write("daily-live/audit/20261119-daily.json", b)
+        r.write("daily-live/audit/20261121-daily.json", dict(b, 날="20261121"))
+        r.commit("기록", "2026-11-21 19:30:00")
         with mock.patch.object(B, "ROOT", r.root):
-            res = B.audit("20261030", "20261030", end_commit="없는커밋")
+            res = B.audit("20261118", "20261121", run_days=rd(["20261118", "20261120"], trading=trading, off=off))
+        tags = {x["날"]: [t for t, _ in x["문제"]] for x in res["줄들"] if x["봇"] == "daily"}
+        self.assertIn("예정 무실행 날 실행", tags["20261119"])
+        self.assertIn("OFF_CALENDAR", tags["20261121"])
+        self.assertEqual(res["요약"]["기대 실행일"], 2)               # 분모 밖 기록은 분모를 늘리지 않음
+        self.assertEqual(res["요약"]["분모 밖 기록 날"], ["20261119", "20261121"])
+
+    def test_special_hours_mismatch_incomplete(self):
+        """봇 코드의 쉬는 날(SPECIAL_HOURS)과 분모 파일의 예정 무실행이 다르면 불완전(빠짐 4칸 때문에 판정은 실패가 앞섬)."""
+        r = Repo()
+        r.etf("29991231")
+        r.commit("자료", "2026-11-20 19:30:00")
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit("20261118", "20261120", run_days=rd(["20261118", "20261119", "20261120"]))
+        self.assertEqual(res["요약"]["판정"], "실패")
+        self.assertTrue(any("예정 무실행" in e for e in res["요약"]["불완전"]))
+
+    def test_run_days_pinned_and_end_commit(self):
+        B.ERRS.clear()
+        rd0 = B.load_run_days()
+        self.assertEqual(B.ERRS, [])
+        self.assertEqual(len(rd0["기대 실행일"]), 20)
+        self.assertNotIn("20261119", rd0["기대 실행일"])
+        self.assertEqual((rd0["기대 실행일"][0], rd0["기대 실행일"][-1]), ("20261109", "20261207"))
+        with tempfile.TemporaryDirectory() as tmp:
+            p = Path(tmp) / "d.json"
+            p.write_text(json.dumps(dict(rd0, 기대실행일=[])), encoding="utf-8")
+            B.ERRS.clear()
+            B.load_run_days(p)
+            self.assertTrue(B.ERRS and "지문" in B.ERRS[0])           # 고정 분모를 바꾸면 불완전
+        B.ERRS.clear()
+        r = Repo(code=False)
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit("20261030", "20261030", end_commit="없는커밋", run_days=rd(["20261030"]))
         self.assertEqual(res["요약"]["판정"], "불완전(다시 셈)")
 
 

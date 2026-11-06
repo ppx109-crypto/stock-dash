@@ -1,19 +1,17 @@
-"""BOOST-0001-A 판단 기록 감사(사전등록 판 2의 셈 코드 · 읽기만 · 주문 없음 · 봇 규칙은 그대로).
+"""BOOST-0001-A 판단 기록 감사(사전등록 판 3의 셈 코드 · 읽기만 · 주문 없음 · 봇 규칙은 그대로).
 
-기록(<봇 장부 폴더>/audit/<날>-<봇>.json · audit_log.py)은 **끝점 커밋에서** 읽고, 하루 · 봇마다 봄:
- ① 재현   기록한 입력을 **기록한 코드 판**(블롭 id)의 판단 함수에 다시 넣으면 같은 결과인지(canon 글 비교 · nan 포함)
- ② 입력   실제 자료 날짜(1일봉 일봉 · 엔진 ETF · 덧붙임 종가 줄)가 어제 거래일인지 · 판단 날 이상 줄 → 미래(즉시 실패) ·
-          판단 때 저장소 판으로 입력을 다시 만들면 같은지(엔진 이력 · 덧붙임 종가 줄 · 국면 · 바구니 반응 · 200위 안 · t0 사건) ·
-          바구니 거래일 목록 = 감사 달력 · t0 공시 수집이 t0 날 19:20 뒤 · 판단 뒤 들어온 사건이 결정을 바꿨을 수 있는지 ·
-          결측(시장 폭 못 셈 · 지금 값 없음)
- ③ 때     주문 마감 뒤 · 봇의 늦음 → 부른 까닭과 상관없이 SCHEDULER(설명 필요) · 손으로 부른 것은 참고(MANUAL)
- ④ 장부   판단 뒤 기록을 처음 올린 커밋(같은 작업)에서 장부 지문이 같은지 · 앞 판단의 그 커밋이 이 판단 HEAD의 조상인지 ·
-          판단 앞 장부 = 판단 때 HEAD 판(같은 작업 안 자리 내주기 · 흔들림 덜어내기는 그 줄로 설명)
- ⑤ 증권사 주문 상태가 '접수'가 아님 · 수량 줄임
- ⑥ 빠짐 · 겹침 · 주문 빠짐  기록 없음 · 같은 날 다른 작업(번호 · 시도)이 판단을 또 적음 · 판단한 주문이 장부에 없음
-원인 꼬리표: LATE_INPUT · SCHEDULER · LEDGER · BROKER · MANUAL. 설명 파일(causes.json)의 근거는 작업 번호(8자리 이상) 또는 커밋.
-쓰기: python research/boost_audit.py --from 20261109 --to 20261204 [--causes 파일] [--out 폴더] [--end-commit 커밋]
-끝 상태: 0 = 진행 중 · 설명 필요 · 통과 / 1 = 실패 / 2 = 불완전(감사 쪽 읽기 실패 · 다시 셈)
+범위(판 3 · GPT #488 검토 뒤): **G2 — 결정 · 장부 · 주문 일치**. 후보 생성 앞 원천 자료(공시 · 수급 · 목표가 등)의 수집 시각 · 완전성은
+증명하지 않음(G1 원천 영수증 사슬은 따로 사전등록). 기록에 적힌 자료 날짜 점검은 '찾아내기'일 뿐 증명이 아님.
+
+기록(<봇 장부 폴더>/audit/<날>-<봇>.json · audit_log.py)은 **끝점 커밋에서** 읽고, 분모는 **고정 목록**(run_days.json · 지문 고정)만 씀:
+ ① 재현   판단 때 HEAD의 코드 트리(+ 기록한 블롭)를 격리한 하위 작업에서 판단 · 덧붙임 목표 · 입력 다시 만들기(엔진 이력 ·
+          덧붙임 종가 줄 · 국면 · 바구니 반응 · 200위 안 · t0 사건)를 하고 기록과 canon 글로 비교
+ ② 자료 날짜  1일봉 일봉 · 엔진 ETF · 덧붙임 종가 줄의 날짜(판단 날 이상 → 미래 · 어제 거래일 아님 → LATE_INPUT) · 결측
+ ③ 때     주문 마감 뒤 · 봇의 늦음 → 부른 까닭과 상관없이 SCHEDULER · 예약 아닌 실행은 참고(MANUAL)
+ ④ 장부   같은 작업 커밋의 장부 = 판단 뒤 지문 · 앞 판단 커밋이 이번 HEAD의 조상 · 판단 앞 장부 = HEAD 판(같은 작업 안 앞 단계는 그 줄로)
+ ⑤ 증권사 · ⑥ 주문 대조 · ⑦ 빠짐 · 겹침 · 예정 무실행 날 실행 · 분모 밖 기록(OFF_CALENDAR)
+쓰기: python research/boost_audit.py --from 20261109 --to 20261207 [--causes 파일] [--out 폴더] [--end-commit 커밋] [--days 분모 파일]
+끝 상태: 0 = 진행 중 · 설명 필요 · 통과 / 1 = 실패 / 2 = 불완전(감사 쪽 읽기 실패 · 분모 지문 다름 · 다시 셈)
 """
 import argparse
 import ast
@@ -22,7 +20,6 @@ import io
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 import tarfile
@@ -34,24 +31,27 @@ from zoneinfo import ZoneInfo
 import numpy as np
 
 KST = ZoneInfo("Asia/Seoul")
-CODE_ROOT = Path(__file__).resolve().parents[1]     # 재현에 쓰는 코드(기록한 판과 블롭 id가 다르면 기록한 판을 꺼내 하위 작업으로)
+CODE_ROOT = Path(__file__).resolve().parents[1]     # 감사 코드가 있는 작업 나무(재현에는 쓰지 않음 · 하위 작업은 판단 때 HEAD 트리만)
 ROOT = CODE_ROOT                                     # git 저장소(기록 · 자료 · 코드 판을 읽음)
-for _p in (str(CODE_ROOT), str(CODE_ROOT / "research")):    # 뒤에 붙임(하위 작업이 기록한 코드 판을 앞에 둘 수 있게)
-    if _p not in sys.path:
-        sys.path.append(_p)
+if os.environ.get("BOOSTA_SUB") != "1":              # 하위 작업 안에서는 작업 나무를 경로에 넣지 않음(판단 때 코드와 섞이지 않게)
+    for _p in (str(CODE_ROOT), str(CODE_ROOT / "research")):
+        if _p not in sys.path:
+            sys.path.append(_p)
 
 import audit_log as A          # noqa: E402
 
 BOTS = {"engine": "idle-live", "basket": "basket-live", "overlay": "overlay-live", "daily": "daily-live"}
-START = {"engine": "1510", "basket": "1510", "overlay": "1510", "daily": "1520"}      # 판단 시각(이 앞 기록 = 너무 이름)
-DEADLINE = {"engine": "1518", "basket": "1518", "overlay": "1520", "daily": "1528"}   # 주문 마감(이 뒤 기록 = 주문 못 냄)
-CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL")
-HARD = ("미래", "재현", "기록 고장")          # 설명으로 못 덮음(즉시 실패)
-MISSING = ("빠짐", "겹침", "주문 빠짐")       # 원인 꼬리표 + 근거로만 덮음(못 덮으면 즉시 실패)
+DECISION_MODULES = {"engine": ("idle_live", "idle_signal"), "basket": ("basket_live",), "overlay": ("overlay_live",), "daily": ("daily_live",)}
+CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL", "OFF_CALENDAR")
+HARD = ("미래", "재현", "기록 고장")                       # 설명으로 못 덮음(즉시 실패)
+MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 원인 꼬리표 + 근거로만 덮음(못 덮으면 즉시 실패)
+STRAIN_TAGS = ("SCHEDULER",) + MISSING
 EVIDENCE = re.compile(r"\d{8,}|\b[0-9a-f]{7,40}\b")
-EVENTS_DUE = "1920"            # 바구니 t0 공시: t0 날 19:20(평일 공시 수집 예약) 뒤 수집분이 판단 앞에 있어야 '제때'
-STRAIN = 0.10                  # 설명된 빠짐 + SCHEDULER가 봇 · 날의 10%를 넘으면 '실행 보강 필요'(판정과 함께 적음)
-END = "HEAD"                   # 끝점 커밋(audit()가 정해 고정 · git은 이 커밋까지만 봄 · 점검표 31)
+STRAIN = 0.10                  # 위 꼬리표가 하나라도 붙은 봇 × 날 칸이 10%를 넘으면 '실행 보강 필요'(판정과 함께 적음)
+RUN_DAYS_PATH = CODE_ROOT / "research-exchange" / "claude-to-gpt" / "BOOST-0001-A" / "run_days.json"
+RUN_DAYS_SHA = "a19eb525eedfdc9874f0c0af44039ae05db1aa4a17caef554b4eec44decdb811"    # 사전등록 판 3에 고정한 분모 파일
+EVENTS_DUE = "1920"            # (참고만) 바구니 t0 공시 수집 예정 시각 — 커밋 시각은 수집 시각 인증이 아님
+END = "HEAD"                   # 끝점 커밋(audit()가 정해 고정 · git은 이 커밋까지만 봄)
 ERRS = []                      # 감사 쪽 읽기 실패(하나라도 있으면 '불완전' · 봇 탓으로 세지 않음)
 
 
@@ -86,42 +86,26 @@ def is_ancestor(a, b):
     return None
 
 
-_FOLDERS = {}
-
-
-def folder_at(commit, folder):
-    """그 커밋의 작은 자료 폴더(etf-data)를 임시 폴더에 꺼냄. 못 꺼내면 None(읽기 실패로 셈 · 실패는 담아 두지 않음)."""
-    key = (commit, folder)
-    if key not in _FOLDERS:
-        try:
-            tmp = tempfile.mkdtemp(prefix="boostA-")
-            extract(commit, folder, tmp)
-            _FOLDERS[key] = Path(tmp) / folder
-        except Exception as e:
-            ERRS.append(f"{str(commit)[:12]}:{folder} 꺼내기 실패 · {type(e).__name__}")
-            return None
-    return _FOLDERS[key]
-
-
-def extract(commit, folder, into):
-    raw = git("archive", commit, folder, text=False)
+def extract(commit, paths, into):
+    raw = git("archive", commit, "--", *paths, text=False)
     with tarfile.open(fileobj=io.BytesIO(raw)) as tar:
         tar.extractall(into, filter="data")
 
 
-def calendar():
-    """거래일 = 끝점 커밋의 KODEX 200 종가가 있는 날(감사 때 앎 · 판단에는 안 씀)."""
-    txt = show(END, "etf-data/069500.json", required=True)
+def load_run_days(path=RUN_DAYS_PATH, want=RUN_DAYS_SHA):
+    """고정 분모 파일. 지문이 사전등록과 다르면 읽기 실패(불완전)로 셈."""
     try:
-        body = json.loads(txt) if txt else {}
-    except ValueError:
-        ERRS.append("etf-data/069500.json JSON 읽기 실패")
-        body = {}
-    return sorted({str(d) for d, c in body.get("closes", []) if c})
+        raw = Path(path).read_bytes()
+    except OSError:
+        ERRS.append(f"분모 파일 {path} 없음")
+        return None
+    if want and sha(raw) != want:
+        ERRS.append(f"분모 파일 지문 {sha(raw)[:12]} ≠ 사전등록 {want[:12]}")
+    return json.loads(raw.decode("utf-8"))
 
 
-def special_days():
-    """장 시간이 다른 날(봇이 자동 판단을 쉬도록 정한 날 · collect_kis_intraday.SPECIAL_HOURS · 끝점 커밋 판) → 감사 날에서 뺌."""
+def special_hours():
+    """봇이 쉬도록 정한 장 시간이 다른 날(collect_kis_intraday.SPECIAL_HOURS · 끝점 커밋 판) — 분모 파일의 예정 무실행과 대조용."""
     txt = show(END, "collect_kis_intraday.py", required=True)
     try:
         for node in ast.parse(txt or "").body:
@@ -164,24 +148,28 @@ def receipts(start, end):
     return out
 
 
-# ───────────────────────── 하위 작업(기록한 코드 판 · 판단 때 자료 판) ─────────────────────────
+# ───────────────────────── 하위 작업(판단 때 HEAD 코드 트리 + 기록 블롭 · 판단 때 자료) ─────────────────────────
 
-DRIVER = """import json, os, sys
-tmp, code, task = sys.argv[1:4]
+DRIVER = """import importlib.util, json, os, sys
+tmp, me, task = sys.argv[1:4]
+os.environ["BOOSTA_SUB"] = "1"
 sys.path[:0] = [tmp, os.path.join(tmp, "research")]
-sys.path += [code, os.path.join(code, "research")]
-import boost_audit as B
+spec = importlib.util.spec_from_file_location("boost_audit", me)
+B = importlib.util.module_from_spec(spec)
+sys.modules["boost_audit"] = B
+spec.loader.exec_module(B)
 payload = json.load(open(os.path.join(tmp, "payload.json"), encoding="utf-8"))
-print(json.dumps(B.task(task, payload), ensure_ascii=False))
+print(json.dumps(B.task(task, payload, tmp), ensure_ascii=False))
 """
 
 
-def run_at(task_name, payload, head=None, folders=(), blobs=None):
-    """판단 때 HEAD의 자료 폴더 + 기록한 코드 판(블롭)으로 하위 작업을 돌림 → 결과 dict. 못 하면 None(읽기 실패로 셈)."""
+def run_at(task_name, payload, head, folders=(), blobs=None):
+    """판단 때 HEAD의 코드 트리(루트 · research의 .py) + 자료 폴더 + 기록한 블롭으로 하위 작업 → 결과. 못 하면 None(읽기 실패로 셈)."""
     try:
         with tempfile.TemporaryDirectory(prefix="boostA-") as tmp:
+            extract(head, [":(glob)*.py", ":(glob)research/*.py"], tmp)
             for f in folders:
-                extract(head, f, tmp)
+                extract(head, [f], tmp)
             for rel, blob in (blobs or {}).items():
                 if rel.startswith(("/", "..")) or "/../" in rel or not re.fullmatch(r"[0-9a-f]{40}", str(blob)):
                     raise ValueError(f"이상한 코드 판 {rel}")
@@ -189,9 +177,9 @@ def run_at(task_name, payload, head=None, folders=(), blobs=None):
                 q.parent.mkdir(parents=True, exist_ok=True)
                 q.write_bytes(git("cat-file", "-p", blob, text=False))
             Path(tmp, "payload.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
-            env = {k: v for k, v in os.environ.items() if k != "CAPS_ADJ"}          # 작업 흐름과 같게(시총 고침 끔)
-            out = subprocess.run([sys.executable, "-c", DRIVER, tmp, str(CODE_ROOT), task_name], cwd=tmp, env=env,
-                                 capture_output=True, text=True, timeout=900)
+            env = {k: v for k, v in os.environ.items() if k not in ("CAPS_ADJ", "PYTHONPATH")}   # 작업 흐름과 같게 · 바깥 경로 안 섞임
+            out = subprocess.run([sys.executable, "-c", DRIVER, tmp, str(Path(__file__).resolve()), task_name], cwd=tmp, env=env,
+                                 capture_output=True, text=True, timeout=1800)
             if out.returncode != 0:
                 raise RuntimeError(out.stderr.strip().splitlines()[-1] if out.stderr.strip() else "끝 상태 ≠ 0")
             return json.loads(out.stdout.strip().splitlines()[-1])
@@ -200,24 +188,63 @@ def run_at(task_name, payload, head=None, folders=(), blobs=None):
         return None
 
 
-def task(name, p):
-    """하위 작업 안에서 도는 셈(cwd = 꺼낸 자료 폴더)."""
-    if name == "replay":
-        same, _, why = replay(p["bot"], p["body"])
-        return {"same": same, "why": why}
-    if name == "basket_inputs":
-        import basket_live as BL
-        import study
-        react, inside = BL.reactions(study.load_prices(), p["t0"], p["before"])
-        return {"react": A.plain(react), "inside": A.plain(inside),
-                "events": A.plain(BL.todays_events(BL.load_events(), p["t0"], p["before"]))}
-    raise ValueError(name)
+def task(name, p, tmp):
+    """하위 작업 안에서 도는 셈(cwd = 꺼낸 트리 · 코드는 그 트리에서만)."""
+    if name != "check_group":
+        raise ValueError(name)
+    out = []
+    for item in p["items"]:
+        bot, body = item["bot"], item["body"]
+        r = {"key": item["key"]}
+        same, _, why = replay(bot, body)
+        r["same"], r["why"] = same, why
+        if bot == "overlay":
+            r["target_ok"], r["target_why"] = replay_overlay_target(body)
+        r.update(rebuild(bot, body))
+        mods = {m: getattr(sys.modules.get(m), "__file__", None) for m in DECISION_MODULES[bot] + ("audit_log",)}
+        r["isolated"] = all(f and os.path.realpath(f).startswith(os.path.realpath(tmp)) for f in mods.values())
+        out.append(r)
+    return {"items": out}
+
+
+def rebuild(bot, body):
+    """판단 때 HEAD의 코드 · 자료로 입력을 다시 만들어 기록과 비교 → {"rebuild": [다른 것 목록]}."""
+    day, i, x = body["날"], body.get("입력") or {}, body.get("곁") or {}
+    bad = []
+    try:
+        if bot == "engine":
+            import idle_live as I
+            for code, n in (x.get("px_len") or {}).items():
+                now = (i.get("now_price") or {}).get(code)
+                full = np.array(I.history(code, day) + [now], float) if now is not None else None
+                tail = (i.get("px") or {}).get(code) or []
+                if full is None or len(full) != n or A.digest(full) != (x.get("px_digest") or {}).get(code) \
+                        or A.canon(full[-len(tail):].tolist() if tail else []) != A.canon(tail):
+                    bad.append(f"{code} 가격 이력")
+        elif bot == "overlay":
+            import overlay_live as O
+            rows = O.closes(before=day)
+            if A.digest(rows) != x.get("rows_digest"):
+                bad.append("KODEX 200 종가 줄")
+            elif rows and not i.get("stale") and O.states(rows)[rows[-1][0]] != i.get("state"):
+                bad.append("국면")
+        elif bot == "basket" and i.get("t0") and x.get("before"):
+            import basket_live as BL
+            import study
+            react, inside = BL.reactions(study.load_prices(), i["t0"], x["before"])
+            got = {"react": react, "inside": inside, "events": BL.todays_events(BL.load_events(), i["t0"], x["before"])}
+            for k, rec in (("react", i.get("react")), ("inside", i.get("inside")), ("events", i.get("events_t0"))):
+                if A.canon(got[k]) != A.canon(rec):
+                    bad.append(f"바구니 {k}")
+    except Exception as e:
+        bad.append(f"다시 만들기 오류 {type(e).__name__}")
+    return {"rebuild": bad}
 
 
 # ───────────────────────── ① 재현 ─────────────────────────
 
 def replay(bot, body):
-    """(같음 여부, 다시 낸 결과, 까닭) — 지금 불러온 코드로. 물은 적 없는 질문 · 같은 질문에 다른 답이면 재현 실패."""
+    """(같음 여부, 다시 낸 결과, 까닭) — 불러온 코드로(하위 작업 안에서는 판단 때 HEAD 트리). 물은 적 없는 질문 · 답이 둘이면 실패."""
     import basket_live as BL
     import daily_live as D
     import idle_live as I
@@ -253,25 +280,10 @@ def replay(bot, body):
             return False, None, "모르는 봇"
     except KeyError as e:
         return False, None, f"기록에 없는 값을 물음 · {e}"
-    except Exception as e:                          # 재현 중 오류도 재현 실패(감사가 멈추지 않게)
+    except Exception as e:
         return False, None, f"재현 중 오류 · {type(e).__name__}"
     same = A.canon(got) == A.canon(body.get("결과"))
     return same, A.plain(got), "같음" if same else "다름"
-
-
-def replay_any(bot, body):
-    """기록한 코드 판으로 재현. (같음 · 다름 · None = 코드 판을 못 꺼냄(불완전), 까닭)."""
-    rec = body.get("코드")
-    if not isinstance(rec, dict) or not rec or any(not v for v in rec.values()):
-        return False, "기록 고장(코드 판 없음)"
-    now = {p: A.safe(lambda p=p: A.blob_id(CODE_ROOT / p)) for p in rec}
-    if now == rec:
-        same, _, why = replay(bot, body)
-        return same, why
-    got = run_at("replay", {"bot": bot, "body": body}, blobs=rec)
-    if got is None:
-        return None, "기록한 코드 판으로 재현 못 함(불완전)"
-    return got["same"], got["why"] + "(기록한 코드 판)"
 
 
 def replay_overlay_target(body):
@@ -293,27 +305,44 @@ def replay_overlay_target(body):
     return same, "같음" if same else f"다름(수량 {want} · 몫 {f} · 주문 {orders})"
 
 
-# ───────────────────────── ② 입력 ─────────────────────────
+def code_problems(body):
+    """기록한 코드 판 · HEAD가 재현에 쓸 수 있는 꼴인지(아니면 기록 고장)."""
+    rec, head = body.get("코드"), body.get("판단 때 저장소 HEAD")
+    if not head:
+        return "기록 고장(판단 때 HEAD 없음)"
+    if not isinstance(rec, dict) or not rec or any(not re.fullmatch(r"[0-9a-f]{40}", str(v or "")) for v in rec.values()):
+        return "기록 고장(코드 판 없음)"
+    if body.get("입력") is None:
+        return "기록 고장(입력 없음)"
+    return None
 
-def etf_rows(folder, code, sort=True):
-    """etf-data 종가 줄. sort=True는 덧붙임 closes()와 같게(날짜 차례) · False는 엔진 history()와 같게(파일 차례 그대로)."""
-    try:
-        body = json.loads((folder / f"{code}.json").read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        ERRS.append(f"{folder}/{code}.json 읽기 실패")
-        return []
-    rows = [(str(d), float(c)) for d, c in body.get("closes", []) if c]
-    return sorted(rows) if sort else rows
 
+def check_groups(found):
+    """기록을 (판단 때 HEAD · 기록 블롭)으로 묶어 하위 작업 한 번씩 → {(날, 봇): 결과}. 실패한 묶음은 결과 없음(불완전)."""
+    groups = {}
+    for (d, bot), (rel, body) in found.items():
+        if code_problems(body):
+            continue
+        k = (body["판단 때 저장소 HEAD"], json.dumps(body["코드"], sort_keys=True))
+        groups.setdefault(k, []).append({"key": f"{d}:{bot}", "bot": bot, "body": body})
+    out = {}
+    for (head, blobs), items in groups.items():
+        folders = ["etf-data"] + (["price-data", "share-data", "event-data"] if any(it["bot"] == "basket" for it in items) else [])
+        got = run_at("check_group", {"items": items}, head, folders=folders, blobs=json.loads(blobs))
+        for r in (got or {}).get("items", []):
+            d, bot = r["key"].split(":")
+            out[(d, bot)] = r
+    return out
+
+
+# ───────────────────────── ② 자료 날짜 · 결측 ─────────────────────────
 
 def inputs_check(bot, body, cal, ctx):
-    """(문제 [(꼬리표, 글)], 참고 [글]). ctx: 감사 끝점의 공시 자료(main_events) · 바구니 하위 작업 함수(basket_inputs)."""
+    """(문제, 참고). 기록에 적힌 자료 날짜 · 결측만 봄(원천 수집 시각 증명 아님). 코드에 기대는 다시 만들기는 하위 작업(rebuild)에서."""
     day, i, x = body["날"], body.get("입력") or {}, body.get("곁") or {}
     pd = prev_day(cal, day)
     head = body.get("판단 때 저장소 HEAD")
     out, info = [], []
-    if not head:
-        out.append(("기록 고장", "판단 때 저장소 HEAD 기록 없음"))
     if bot == "daily":
         asof = x.get("data_asof")
         if not isinstance(asof, dict):
@@ -321,7 +350,7 @@ def inputs_check(bot, body, cal, ctx):
         elif asof.get("today_or_later") or (asof.get("max") and asof["max"] >= day):
             out.append(("미래", f"판단 날 이상 일봉 줄 {asof.get('today_or_later')}종목 · 마지막 {asof.get('max')}"))
         if x.get("expect") != pd:
-            out.append(("LATE_INPUT", f"증권사 기대일 {x.get('expect')} · 감사 달력 어제 거래일 {pd}"))
+            out.append(("LATE_INPUT", f"증권사 기대일 {x.get('expect')} · 분모 파일 어제 거래일 {pd}"))
         if not x.get("ready"):
             out.append(("LATE_INPUT", f"일봉 자료 준비 안 됨 → 새로 사기 멈춤 · {str(x.get('data_why'))[:60]}"))
         if x.get("quotes") is not None and x.get("pool") and x["quotes"] < x["pool"]:
@@ -343,40 +372,21 @@ def inputs_check(bot, body, cal, ctx):
             out.append(("LATE_INPUT", "시장 폭 못 셈 → 100으로 봄(엔진 끔)"))
         if x.get("px_missing"):
             out.append(("BROKER", f"지금 값 · 이력 없는 ETF {x['px_missing']} → 판단에서 빠짐"))
-        folder = folder_at(head, "etf-data") if head else None
-        lens = (x.get("px_len") or {}) if folder is not None else {}
-        for code, n in lens.items():
-            rows = [(d, c) for d, c in etf_rows(folder, code, sort=False) if d < day]      # idle_live.history와 같은 길
-            now = (i.get("now_price") or {}).get(code)
-            full = [c for _, c in rows] + [now]
-            tail = (i.get("px") or {}).get(code) or []
-            same = now is not None and len(full) == n and A.digest(np.array(full, float)) == (x.get("px_digest") or {}).get(code) \
-                and A.canon(full[-len(tail):] if tail else []) == A.canon(tail)
-            if not same:
-                out.append(("재현", f"{code} 가격 이력을 판단 때 판으로 다시 만들면 다름"))
     elif bot == "overlay":
-        import overlay_live as O
         rows_last = i.get("rows_last") or []
         last = rows_last[-1][0] if rows_last else None
         if last and last >= day:
             out.append(("미래", f"KODEX 200 종가 줄 마지막 {last} ≥ 판단 날"))
         elif i.get("stale") or last != pd:
             out.append(("LATE_INPUT", f"KODEX 200 마지막 {last or '-'} · 어제 거래일 {pd}(맞추지 않음)"))
-        folder = folder_at(head, "etf-data") if head else None
-        if folder is not None:
-            rows = [r for r in etf_rows(folder, O.SIGNAL) if r[0] < day]
-            if A.digest(rows) != x.get("rows_digest"):
-                out.append(("재현", "KODEX 200 종가 줄을 판단 때 판으로 다시 만들면 다름"))
-            elif rows and not i.get("stale") and O.states(rows)[rows[-1][0]] != i.get("state"):
-                out.append(("재현", "국면을 다시 셈하면 다름"))
     elif bot == "basket":
         import basket_live as BL
         tail = x.get("days_tail") or []
         if i.get("t0") != pd:
             out.append(("LATE_INPUT", f"t0 {i.get('t0')} · 어제 거래일 {pd}"))
-        want = [d for d in cal if d < day][-(len(tail) - 1):] + [day] if len(tail) > 1 else [day]
-        if tail != want:
-            out.append(("LATE_INPUT", "거래일 목록이 감사 달력과 다름(날짜 셈이 어긋날 수 있음)"))
+        lo = cal[0] if cal else day
+        if not tail or tail[-1] != day or [d for d in tail[:-1] if d >= lo] != [d for d in cal if lo <= d < day]:
+            out.append(("LATE_INPUT", "거래일 목록이 분모 파일의 거래일과 다름(날짜 셈이 어긋날 수 있음)"))
         for d, n in x.get("days_since_calls", []):          # 날짜 셈 답을 거래일 목록으로 다시 확인
             if d in tail:
                 ok = n == len(tail) - 1 - tail.index(d)
@@ -387,19 +397,12 @@ def inputs_check(bot, body, cal, ctx):
             if not ok:
                 out.append(("재현", f"날짜 셈 {d} → {n}이 거래일 목록과 다름"))
         if head and i.get("t0") and x.get("before"):
-            got = ctx["basket_inputs"](head, i["t0"], x["before"])
-            if got is not None:
-                for k, rec in (("react", i.get("react")), ("inside", i.get("inside")), ("events", i.get("events_t0"))):
-                    if A.canon(got[k]) != A.canon(rec):
-                        out.append(("재현", f"바구니 {k}를 판단 때 판으로 다시 셈하면 다름"))
             try:
                 ct = git("log", "-1", "--format=%ct", head, "--", "event-data").strip()
-                at = datetime.fromtimestamp(int(ct), KST).strftime("%Y%m%d%H%M") if ct else None
+                at = datetime.fromtimestamp(int(ct), KST).strftime("%Y%m%d %H%M") if ct else None
+                info.append(f"참고 · 판단 앞 마지막 공시 커밋 {at}(커밋 시각 · 수집 시각 인증 아님 · t0 수집 예정 {i['t0']} {EVENTS_DUE})")
             except (RuntimeError, ValueError):
-                ERRS.append(f"{day}:basket 공시 수집 시각 읽기 실패")
-                at = None
-            if at is not None and at < i["t0"] + EVENTS_DUE:
-                out.append(("LATE_INPUT", f"판단 앞 마지막 공시 수집 {at[:8]} {at[8:]} · t0 수집 예정 {i['t0']} {EVENTS_DUE} 전"))
+                ERRS.append(f"{day}:basket 공시 커밋 시각 읽기 실패")
             now = set(BL.todays_events(ctx["main_events"], i["t0"], x["before"]))
             extra = sorted(now - {tuple(e) for e in i.get("events_t0", [])})
             inside, react = set(i.get("inside", [])), i.get("react", {})
@@ -422,36 +425,37 @@ def main_events_at(commit):
     import basket_live as BL
     try:
         with tempfile.TemporaryDirectory(prefix="boostA-") as tmp:
-            extract(commit, "event-data", tmp)
+            extract(commit, ["event-data"], tmp)
             return BL.load_events(folder=str(Path(tmp) / "event-data"))
     except Exception as e:
         ERRS.append(f"끝점 공시 자료 꺼내기 실패 · {type(e).__name__}")
         return {}
 
 
-# ───────────────────────── ③ 때 · ⑤ 증권사 · 주문 대조 ─────────────────────────
+# ───────────────────────── ③ 때 · ⑤ 증권사 · ⑥ 주문 대조 ─────────────────────────
 
 def hhmm(body):
     return (body.get("기록 시각(한국)") or "")[11:16].replace(":", "")
 
 
-def timing(bot, body):
+def timing(bot, body, sess):
     """(문제, 참고). 늦어 주문을 못 낸 것은 부른 까닭과 상관없이 SCHEDULER(설명 필요)."""
     out, info = [], []
+    start, deadline = sess["판단"][bot], sess["마감"][bot]
     t, res, x = hhmm(body), body.get("주문 결과") or {}, body.get("곁") or {}
     late = res.get("late") if "late" in res else (x.get("late_at_decision") if bot == "engine" else x.get("late"))
     ev = body.get("부른 까닭")
-    if late or not t or t > DEADLINE[bot]:
-        out.append(("SCHEDULER", f"기록 {t or '-'} · 주문 마감 {DEADLINE[bot]} 넘음(주문 못 냄 · 부른 까닭 {ev or '작업 흐름 밖'})"))
-    if t and t < START[bot]:
-        out.append(("SCHEDULER", f"기록 {t} · 판단 시각 {START[bot]} 전"))
+    if late or not t or t > deadline:
+        out.append(("SCHEDULER", f"기록 {t or '-'} · 주문 마감 {deadline} 넘음(주문 못 냄 · 부른 까닭 {ev or '작업 흐름 밖'})"))
+    if t and t < start:
+        out.append(("SCHEDULER", f"기록 {t} · 판단 시각 {start} 전"))
     if ev != "schedule":
         info.append(f"MANUAL · 부른 까닭 {ev or '작업 흐름 밖'}")
     return out, info
 
 
 def book_rows(body):
-    """오늘 장부 주문(봇 장부에 적힌 그날 주문 · 자리 내주기 · 비켜 두기 · 흔들림 덜어내기 포함) + 덧붙임 접수 결과."""
+    """오늘 장부 주문(봇 장부에 적힌 그날 주문 · 자리 내주기 · 비켜 두기 · 흔들림 덜어내기 포함)."""
     rows, bad = [], []
     for path, got in (body.get("오늘 장부 주문") or {}).items():
         if isinstance(got, list):
@@ -503,7 +507,7 @@ def orders_check(bot, body):
     return out
 
 
-# ───────────────────────── ④ 장부 · ⑥ 겹침 ─────────────────────────
+# ───────────────────────── ④ 장부 · ⑦ 겹침 ─────────────────────────
 
 def versions_of(rel):
     """기록 파일의 판들 [(커밋, 내용)] (오래된 → 새 · 끝점까지)."""
@@ -579,16 +583,6 @@ def duplicates(vers):
     return [("겹침", f"판단을 적은 작업(번호 · 시도) {len(runs)}개")] if len(runs) > 1 else []
 
 
-def new_buys(bot, body):
-    """그 판단에 새로 사기가 있었는지(G1 '입력 시각 문' 그림자 셈용 · 보고만)."""
-    out = body.get("결과") or {}
-    if bot in ("engine", "basket"):
-        return any(len(o) > 1 and o[1] == "buy" for o in out.get("orders", []))
-    if bot == "overlay":
-        return bool(out.get("rebalance")) and any(o[1] == "buy" for o in (body.get("주문 결과") or {}).get("orders") or [])
-    return bool(out.get("buys"))
-
-
 # ───────────────────────── 하루 · 기간 ─────────────────────────
 
 def explained(causes, key, tag):
@@ -600,68 +594,82 @@ def explained(causes, key, tag):
     return bool(e) and bool(EVIDENCE.search(str(e)))
 
 
-def audit(start, end, causes=None, end_commit="HEAD"):
-    try:
-        return _audit(start, end, causes, end_commit)
-    finally:                                          # 꺼낸 임시 폴더는 셈이 끝나면 지움(디스크)
-        for p in _FOLDERS.values():
-            shutil.rmtree(p.parent, ignore_errors=True)
-        _FOLDERS.clear()
+def incomplete(start, end):
+    return {"요약": {"기간": [start, end], "끝점 커밋": None, "불완전": list(ERRS), "판정": "불완전(다시 셈)"}, "줄들": []}
 
 
-def _audit(start, end, causes, end_commit):
+def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
+    """run_days = 고정 분모(없으면 사전등록 지문을 확인하며 읽음)."""
     global END
     ERRS.clear()
-    _FOLDERS.clear()
+    if run_days is None:
+        run_days = load_run_days()
     try:
         END = git("rev-parse", "--verify", f"{end_commit}^{{commit}}").strip()
     except RuntimeError:
         ERRS.append(f"끝점 커밋 {end_commit}을 못 읽음")
-        return {"요약": {"기간": [start, end], "끝점 커밋": None, "불완전": list(ERRS), "판정": "불완전(다시 셈)"}, "줄들": []}
-    cal = calendar()
+        return incomplete(start, end)
+    if run_days is None:
+        return incomplete(start, end)
+    cal = list(run_days["거래일"])
+    sess = run_days["세션"]["보통"]
+    planned_off = dict(run_days.get("예정 무실행") or {})
+    days = [d for d in run_days["기대 실행일"] if start <= d <= end]
+    bots_off = {d for d in special_hours() if start <= d <= end}
+    if bots_off != {d for d in planned_off if start <= d <= end}:
+        ERRS.append(f"봇이 쉬는 날 {sorted(bots_off)} ≠ 분모 파일 예정 무실행 {sorted(d for d in planned_off if start <= d <= end)}")
     found = receipts(start, end)
-    special = special_days()
-    skipped = sorted(d for d in cal if start <= d <= end and d in special and not any(k[0] == d for k in found))
-    days = sorted(({d for d in cal if start <= d <= end} - set(skipped)) | {d for d, _ in found})
-    ctx = {"main_events": main_events_at(END),
-           "basket_inputs": lambda head, t0, before: run_at("basket_inputs", {"t0": t0, "before": before}, head=head,
-                                                             folders=("price-data", "share-data", "event-data"))}
+    ctx = {"main_events": main_events_at(END)}
+    checked = check_groups(found)
     causes = causes or {}
     rows, fails, needs = [], [], []
     for bot in BOTS:
         prev_commit = None
-        for d in days:
+        for d in sorted(set(days) | {d for d, b in found if b == bot}):
             key = f"{d}:{bot}"
-            row = {"날": d, "봇": bot, "문제": [], "참고": []}
+            row = {"날": d, "봇": bot, "문제": [], "참고": [], "분모": d in days}
             got = found.get((d, bot))
+            if d not in days:
+                if d in planned_off:
+                    row["문제"].append(("예정 무실행 날 실행", f"{str(planned_off[d].get('까닭', ''))[:40]} 날인데 기록이 있음"))
+                else:
+                    row["문제"].append(("OFF_CALENDAR", "분모 파일의 기대 실행일이 아닌 날의 기록"))
             if got is None:
                 eng = found.get((d, "engine"))
-                if bot in ("basket", "overlay") and eng and hhmm(eng[1]) > DEADLINE["engine"]:
+                if bot in ("basket", "overlay") and eng and hhmm(eng[1]) > sess["마감"]["engine"]:
                     row["문제"].append(("SCHEDULER", f"엔진 기록 {hhmm(eng[1])} · 마감 뒤라 {bot}는 돌지 않음(설계대로)"))
                 else:
                     row["문제"].append(("빠짐", "기록 없음"))
             else:
                 rel, body = got
-                same, why = replay_any(bot, body)
-                row["재현"] = why
-                if same is False:
-                    row["문제"].append(("기록 고장" if why.startswith("기록 고장") else "재현", why))
-                if bot == "overlay":
-                    ok, why_t = replay_overlay_target(body)
-                    row["맞춤 재현"] = why_t
-                    if ok is False:
-                        row["문제"].append(("재현", "맞춤 " + why_t))
+                bad = code_problems(body)
+                r = checked.get((d, bot))
+                if bad:
+                    row["문제"].append(("기록 고장", bad))
+                elif r is None:
+                    row["재현"] = "판단 때 코드 판으로 재현 못 함(불완전)"
+                else:
+                    row["재현"] = r["why"]
+                    if r["same"] is False:
+                        row["문제"].append(("기록 고장" if r["why"].startswith("기록 고장") else "재현", r["why"]))
+                    if not r.get("isolated"):
+                        row["문제"].append(("재현", "하위 작업이 판단 때 코드 트리 밖 모듈을 불러옴"))
+                    if bot == "overlay":
+                        row["맞춤 재현"] = r.get("target_why")
+                        if r.get("target_ok") is False:
+                            row["문제"].append(("재현", "맞춤 " + str(r.get("target_why"))))
+                    for what in r.get("rebuild", []):
+                        row["문제"].append(("재현", f"{what}을(를) 판단 때 판으로 다시 만들면 다름"))
                 if "주문 결과" not in body:
                     row["문제"].append(("빠짐", "판단 뒤 기록(주문 결과) 없음"))
                 p1, i1 = inputs_check(bot, body, cal, ctx)
-                p2, i2 = timing(bot, body)
+                p2, i2 = timing(bot, body, sess)
                 vers = versions_of(rel)
                 p3, i3, commit = ledger_check(bot, rel, body, prev_commit, vers)
                 prev_commit = commit or prev_commit
                 row["문제"] += p1 + p2 + broker_check(bot, body) + orders_check(bot, body) + p3 + duplicates(vers)
                 row["참고"] += i1 + i2 + i3
                 row["기록 시각"], row["부른 까닭"] = body.get("기록 시각(한국)"), body.get("부른 까닭")
-                row["G1 문이면 달라짐"] = any(t == "LATE_INPUT" for t, _ in row["문제"]) and new_buys(bot, body)
                 row["주문"] = [[o.get("code"), o.get("side"), str(o.get("status", ""))[:20]] for o in book_rows(body)[0]]
             for tag, text in row["문제"]:
                 if tag in HARD:
@@ -673,22 +681,29 @@ def _audit(start, end, causes, end_commit):
                     needs.append((key, tag, text))
             row["설명"] = causes.get(key, {})
             rows.append(row)
+    in_rows = [r for r in rows if r["분모"]]
     n_cells = len(days) * len(BOTS)
-    strain = sum(1 for r in rows for t, _ in r["문제"] if t == "SCHEDULER" or t in MISSING)
-    orders = [o for r in rows for o in r.get("주문", [])]
+    strain = sum(1 for r in in_rows if any(t in STRAIN_TAGS for t, _ in r["문제"]))     # 고유 봇 × 날 칸 수
+    orders = [o for r in in_rows for o in r.get("주문", [])]
+    try:
+        me = {"boost_audit.py 블롭": A.blob_id(Path(__file__).resolve()),
+              "감사 작업 나무 HEAD": subprocess.run(["git", "rev-parse", "HEAD"], cwd=CODE_ROOT, capture_output=True, text=True).stdout.strip()}
+    except Exception:
+        me = None
+    all_days = run_days["기대 실행일"]
     summary = {
-        "기간": [start, end], "끝점 커밋": END, "거래일": len(days), "기록 수": f"{len(found)}/{n_cells}",
-        "쉰 날(장 시간이 다른 날 · 설계대로)": {d: special[d] for d in skipped},
+        "기간": [start, end], "끝점 커밋": END, "감사 코드": me, "범위": "G2(결정 · 장부 · 주문 일치) · 원천 수집 시각 증명 아님",
+        "기대 실행일": len(days), "기록 수": f"{sum(1 for k in found if k[0] in days)}/{n_cells}",
+        "예정 무실행": {d: v.get("까닭") for d, v in planned_off.items() if start <= d <= end},
+        "분모 밖 기록 날": sorted({d for d, _ in found} - set(days)),
         "꼬리표 수": {c: sum(1 for r in rows for t, _ in r["문제"] if t == c) for c in CODES + MISSING + HARD},
         "즉시 실패": fails, "설명 안 된 꼬리표": needs, "불완전": list(ERRS),
-        "손으로 부른 기록": sum(1 for r in rows if r.get("부른 까닭") not in (None, "schedule") and "기록 시각" in r),
+        "손으로 부른 기록": sum(1 for r in in_rows if r.get("부른 까닭") not in (None, "schedule") and "기록 시각" in r),
         "주문 접수율": f"{sum(1 for o in orders if o[2].startswith('접수'))}/{len(orders)}",
-        "실행 보강 필요": bool(n_cells) and strain / n_cells > STRAIN,
-        "G1 그림자(보고만)": {"늦은 입력 판단": sum(1 for r in rows if any(t == "LATE_INPUT" for t, _ in r["문제"])),
-                           "그중 새로 산 판단(문이면 안 샀을 것)": sum(1 for r in rows if r.get("G1 문이면 달라짐"))},
+        "보강 칸": f"{strain}/{n_cells}", "실행 보강 필요": bool(n_cells) and strain / n_cells > STRAIN,
         "기준 ① · ②": "월 점검 셈(tools/bt_mix54.py · reconcile)으로 따로 보고(이 셈 밖)",
-        "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else "진행 중" if len(days) < 20
-                 else "통과" if not needs else "설명 필요")}
+        "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else
+                 "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "설명 필요")}
     return {"요약": summary, "줄들": rows}
 
 
@@ -699,16 +714,25 @@ def main(argv=None):
     ap.add_argument("--causes", default=str(CODE_ROOT / "research" / "boost_a" / "causes.json"))
     ap.add_argument("--out", default=str(CODE_ROOT / "research" / "boost_a"))
     ap.add_argument("--end-commit", default="HEAD")
+    ap.add_argument("--days", default=str(RUN_DAYS_PATH))
     a = ap.parse_args(argv)
     cpath = Path(a.causes)
     causes = json.loads(cpath.read_text(encoding="utf-8")) if cpath.is_file() else {}
-    res = audit(a.start, a.end, causes, end_commit=a.end_commit)
+    ERRS.clear()
+    rd = load_run_days(a.days)
+    errs0 = list(ERRS)
+    res = audit(a.start, a.end, causes, end_commit=a.end_commit, run_days=rd) if rd else incomplete(a.start, a.end)
+    if errs0:                                     # 분모 파일 지문이 다르면 불완전
+        res["요약"]["불완전"] = errs0 + res["요약"].get("불완전", [])
+        if res["요약"]["판정"] != "실패":
+            res["요약"]["판정"] = "불완전(다시 셈)"
     res["요약"]["설명 파일 지문"] = A.file_digest(cpath) if cpath.is_file() else None
+    res["요약"]["분모 파일 지문"] = A.file_digest(a.days)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / f"audit-{a.end}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     s = res["요약"]
-    print(f"BOOST-0001-A 감사 {a.start} ~ {a.end} · 끝점 {str(s.get('끝점 커밋'))[:12]} · 거래일 {s.get('거래일')} · "
+    print(f"BOOST-0001-A 감사 {a.start} ~ {a.end} · 끝점 {str(s.get('끝점 커밋'))[:12]} · 기대 실행일 {s.get('기대 실행일')} · "
           f"기록 {s.get('기록 수')} · 판정 {s['판정']}" + (" · 실행 보강 필요" if s.get("실행 보강 필요") else ""))
     print("꼬리표:", " · ".join(f"{k} {v}" for k, v in (s.get("꼬리표 수") or {}).items() if v) or "없음")
     for e in s.get("불완전", []):
