@@ -45,14 +45,15 @@ DECISION_MODULES = {"engine": ("idle_live", "idle_signal"), "basket": ("basket_l
 CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL", "OFF_CALENDAR")
 HARD = ("미래", "재현", "기록 고장")                       # 설명으로 못 덮음(즉시 실패)
 MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 원인 꼬리표 + 근거로만 덮음(못 덮으면 즉시 실패)
-STRAIN_TAGS = ("SCHEDULER",) + MISSING
+STRAIN_TAGS = ("SCHEDULER", "OFF_CALENDAR") + MISSING   # 분모 밖 기록(OFF_CALENDAR)도 실행 보강 칸으로 셈(판 3 고침 3 · 보수적)
 ALLOWED = {                    # 빠짐류를 덮을 수 있는 원인 꼬리표(사전등록 판 3 고침 2 고정 · MANUAL · OFF_CALENDAR는 면책 원인 아님)
     "빠짐": ("SCHEDULER", "LATE_INPUT", "BROKER", "LEDGER"),
     "겹침": ("SCHEDULER", "LEDGER"),
     "주문 빠짐": ("BROKER", "LEDGER"),
     "예정 무실행 날 실행": (),  # 어떤 원인으로도 덮지 못함(즉시 실패)
 }
-EVIDENCE = re.compile(r"\d{8,}|\b[0-9a-f]{7,40}\b")
+RUN_ID = re.compile(r"[0-9]{10,}")       # GitHub Actions 작업 번호(10자리 이상 · 날짜 YYYYMMDD 8자리는 안 됨)
+COMMIT = re.compile(r"[0-9a-f]{7,40}")   # 커밋(저장소에 실제로 있어야 함 · git cat-file로 확인)
 STRAIN = 0.10                  # 위 꼬리표가 하나라도 붙은 고유 봇 × 날 칸 ÷ 고정 80칸 > 10%면 '실행 보강 필요'(판정과 함께 적음)
 RUN_DAYS_PATH = CODE_ROOT / "research-exchange" / "claude-to-gpt" / "BOOST-0001-A" / "run_days.json"
 RUN_DAYS_SHA = "a19eb525eedfdc9874f0c0af44039ae05db1aa4a17caef554b4eec44decdb811"    # 사전등록 판 3에 고정한 분모 파일
@@ -601,13 +602,29 @@ def duplicates(vers):
 
 # ───────────────────────── 하루 · 기간 ─────────────────────────
 
+def commit_exists(c):
+    out = subprocess.run(["git", "cat-file", "-e", f"{c}^{{commit}}"], cwd=ROOT, capture_output=True)
+    return out.returncode == 0
+
+
+def receipt_ok(e):
+    """설명의 영수증: 구조화된 칸 run_id(작업 번호 10자리 이상) 또는 commit(저장소에 있는 커밋) 가운데 하나 이상이 맞아야 함.
+    자유 글('근거')만으로는 안 됨(날짜 · 아무 숫자 · 일반 hex 글로 덮지 못하게)."""
+    if not isinstance(e, dict):
+        return False
+    run = str(e.get("run_id", "")).strip()
+    com = str(e.get("commit", "")).strip().lower()
+    return bool(RUN_ID.fullmatch(run)) or bool(COMMIT.fullmatch(com) and commit_exists(com))
+
+
 def explained(causes, key, tag):
+    """설명 꼴(사전등록 판 3 고침 3): {"원인": 허용 원인(빠짐류만), "run_id": …, "commit": …, "근거": "글"}."""
     e = (causes.get(key) or {}).get(tag)
+    if not receipt_ok(e):
+        return False
     if tag in MISSING:
-        return isinstance(e, dict) and e.get("원인") in ALLOWED.get(tag, ()) and bool(EVIDENCE.search(str(e.get("근거", ""))))
-    if isinstance(e, dict):
-        e = e.get("근거")
-    return bool(e) and bool(EVIDENCE.search(str(e)))
+        return e.get("원인") in ALLOWED.get(tag, ())
+    return True
 
 
 def strain(rows, n_fixed):
@@ -726,6 +743,8 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
         "주문 접수율": f"{sum(1 for o in orders if o[2].startswith('접수'))}/{len(orders)}",
         "보강 칸": f"{n_strain}/{n_fixed}", "실행 보강 필요": need,
         "기준 ① · ②": "월 점검 셈(tools/bt_mix54.py · reconcile)으로 따로 보고(이 셈 밖)",
+        "설명 영수증": [[k, t, e.get("run_id"), e.get("commit"), explained(causes, k, t)]
+                    for k, tags in sorted(causes.items()) for t, e in sorted((tags or {}).items()) if isinstance(e, dict)],
         "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else
                  "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "설명 필요")}
     return {"요약": summary, "줄들": rows}
