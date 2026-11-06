@@ -158,11 +158,39 @@ class Events(unittest.TestCase):
         C.iloc[i0 + 1 + 20:, C.columns.get_loc("000001")] = 102.0           # 다른 종목 하나 +2%
         C.iloc[i0, C.columns.get_loc("000007")] = 50.0                      # t0 종가(들어감이 t0이면 틀린 값이 나옴)
         e = E.events_table(C, self.member, [("000007", self.days[i0], 30.0, "N1")], h=20)["큰 수주(≥20%)"][0]
-        self.assertEqual((e["t0"], e["들어감"], e["나감"]), (self.days[i0], self.days[i0 + 1], self.days[i0 + 21]))
+        self.assertEqual((e["t0"], e["들어감"], e["예정 나감"], e["실제 나감"]),
+                         (self.days[i0], self.days[i0 + 1], self.days[i0 + 21], self.days[i0 + 21]))
+        self.assertEqual((e["들어감 가격"], e["나감 가격"], e["기준 구성 수"]), (110.0, 121.0, 49))
         self.assertAlmostEqual(e["기준 평균"], 0.02 / 49)                   # 사건 종목 뺀 49종목 평균
         self.assertAlmostEqual(e["초과(비용 전)"], 0.10 - 0.02 / 49)
         st = E.event_stats([e, dict(e, 종목="000008", t0="20200301"), dict(e, 종목="000009", t0="20200401")], 0.01)
         self.assertAlmostEqual(st["평균"], 0.10 - 0.02 / 49 - 0.01)
+
+    def test_exit_missing_scheduled_day_only(self):
+        """GPT 판 2 고칠 것: 예정 나감 날만 비면 하루 앞 값 · 실제 나감 날을 영수증에 남김."""
+        C = self.C.copy()
+        i0 = 2
+        j = C.columns.get_loc("000007")
+        C.iloc[i0 + 1:, j] = 100.0
+        C.iloc[i0 + 20, j] = 105.0
+        C.iloc[i0 + 21, j] = float("nan")
+        e = E.events_table(C, self.member, [("000007", self.days[i0], 30.0, "N1")], h=20)["큰 수주(≥20%)"][0]
+        self.assertEqual((e["예정 나감"], e["실제 나감"]), (self.days[i0 + 21], self.days[i0 + 20]))
+        self.assertAlmostEqual(e["초과(비용 전)"], 0.05)
+        st = E.event_stats([e, dict(e, 종목="000008", t0="20200301"), dict(e, 종목="000009", t0="20200401")], 0.0)
+        self.assertEqual((st["일찍 나감(값 빔)"], st["일찍 나감 몫"]), (3, 1.0))
+
+    def test_exit_missing_several_days(self):
+        C = self.C.copy()
+        i0 = 2
+        j = C.columns.get_loc("000007")
+        C.iloc[i0 + 1:, j] = 100.0
+        C.iloc[i0 + 17, j] = 90.0
+        C.iloc[i0 + 18:i0 + 22, j] = float("nan")                         # 나흘 빔(정지 꼴)
+        e = E.events_table(C, self.member, [("000007", self.days[i0], 30.0, "N1")], h=20)["큰 수주(≥20%)"][0]
+        self.assertEqual(e["실제 나감"], self.days[i0 + 17])
+        self.assertAlmostEqual(e["나감 가격"], 90.0)
+        self.assertAlmostEqual(e["초과(비용 전)"], -0.10)
 
     def test_later_prices_do_not_change_selection(self):
         evs = [("000007", self.days[2], 30.0, "N1")]

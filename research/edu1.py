@@ -1,4 +1,4 @@
-"""EDU-0001 — 교육자료(PlanX 12강) 아이디어 A단계 시험(사전등록 research-exchange/claude-to-gpt/EDU-0001/PREREG.md · 판 2).
+"""EDU-0001 — 교육자료(PlanX 12강) 아이디어 A단계 시험(사전등록 research-exchange/claude-to-gpt/EDU-0001/PREREG.md · 판 3).
 
 T1 이익의 질(4강) · T3 퀀트 보드 세 칸(3강 접힌 칸) · T2 큰 수주(6 · 9강 공급계약 '매출액 대비 %').
 판 2(GPT #485 고칠 것 4 + 대리 검토 높음 5 · 중간 · 낮음 반영 · 셈 전):
@@ -452,7 +452,8 @@ def cross(C, caps, qb, cb, smoke=False):
     for d in sig:
         codes = sorted(caps.top(d, 100))
         sc = day_scores(d, codes, qb, cb, caps.size(d))
-        one = {"날": d, "대상": len(codes), "T1 점수": len(sc["T1"]), "T3 점수": len(sc["T3"])}
+        one = {"날": d, "대상": len(codes), "T1 점수": len(sc["T1"]), "T3 점수": len(sc["T3"]),
+               "시총 아는 종목": len(caps.size(d)), "가격 있는 종목": int(C.loc[d].notna().sum())}
         if smoke:
             rows.append(one)
             continue
@@ -485,7 +486,10 @@ def judge_cross(rows, name):
         for p, a, b in PERIODS + (("전체", "0", "9"),):
             rs = [r[key] for r in rows if key in r and a <= r["날"] < b]
             mean = lambda f: float(np.mean([x[f] for x in rs])) if rs else None
-            per[p] = {"달": len(rs), "Q5-Q1": mean("Q5-Q1"), "Q1-기준": mean("Q1-기준"), "Q5-기준": mean("Q5-기준"),
+            inp = [r for r in rows if a <= r["날"] < b]
+            per[p] = {"달": len(rs), "판단 달(전체)": len(inp), "빠진 달": len(inp) - len(rs),
+                      "점수 몫(대상 100 대비 평균)": float(np.mean([r[f"{name} 점수"] / r["대상"] for r in inp])) if inp else None,
+                      "Q5-Q1": mean("Q5-Q1"), "Q1-기준": mean("Q1-기준"), "Q5-기준": mean("Q5-기준"),
                       "Q1-대상(진단)": mean("Q1-대상(진단)"), "HH t(Q5-Q1)": hh_t([x["Q5-Q1"] for x in rs], lag)}
         out[f"h{h}"] = per
     p60 = out["h60"]
@@ -537,12 +541,12 @@ GROUPS = (("큰 수주(≥20%)", lambda x: x >= 20), ("공급계약 전체", lam
 
 
 def last_valid(col, lo, hi):
-    """col[lo..hi] 안에서 hi부터 거꾸로 첫 값 있는 칸(나감 날 값이 비면 창 안 마지막 값)."""
+    """col[lo..hi] 안에서 hi부터 거꾸로 첫 값 있는 칸 → (칸 번호, 값) · 없으면 (None, None)(나감 날 값이 비면 창 안 마지막 값)."""
     for k in range(hi, lo - 1, -1):
         v = col[k]
         if v == v:
-            return v
-    return None
+            return k, float(v)
+    return None, None
 
 
 def events_table(C, member, evs, h=H_T2):
@@ -564,7 +568,7 @@ def events_table(C, member, evs, h=H_T2):
         if code not in uni:
             continue
         a = arr[i0 + 1, col[code]]
-        b = last_valid(arr[:, col[code]], i0 + 2, i0 + 1 + h)
+        kb, b = last_valid(arr[:, col[code]], i0 + 2, i0 + 1 + h)
         if not (a == a and a > 0) or b is None:
             continue
         rs = []
@@ -572,7 +576,7 @@ def events_table(C, member, evs, h=H_T2):
             if c == code or c not in col:
                 continue
             x = arr[i0 + 1, col[c]]
-            y = last_valid(arr[:, col[c]], i0 + 2, i0 + 1 + h)
+            _, y = last_valid(arr[:, col[c]], i0 + 2, i0 + 1 + h)   # 기준도 같은 마지막 값 규칙
             if x == x and x > 0 and y is not None:
                 rs.append(y / x - 1)
         if len(rs) < 40:
@@ -587,7 +591,8 @@ def events_table(C, member, evs, h=H_T2):
                 continue
             last_kept[k] = i0
             picked[g].append({"종목": code, "접수번호": no, "접수일": rday, "t0": days[i0], "들어감": days[i0 + 1],
-                              "나감": days[i0 + 1 + h], "비율": ratio, "기준 평균": m, "초과(비용 전)": ex0})
+                              "예정 나감": days[i0 + 1 + h], "실제 나감": days[kb], "들어감 가격": float(a), "나감 가격": b,
+                              "비율": ratio, "기준 평균": m, "기준 구성 수": len(rs), "초과(비용 전)": ex0})
     return picked
 
 
@@ -606,7 +611,9 @@ def event_stats(sel, cost):
         by_s[e["종목"]] = by_s.get(e["종목"], 0.0) + x
         by_m[e["t0"][:6]] = by_m.get(e["t0"][:6], 0.0) + x
     ab, abm = sum(abs(v) for v in by_s.values()), sum(abs(v) for v in by_m.values())
-    return {"사건": len(xs), "종목": len(by_s), "평균": float(np.mean(xs)), "가운데": float(np.median(xs)),
+    early = sum(1 for e in sel if e["실제 나감"] < e["예정 나감"])
+    return {"사건": len(xs), "종목": len(by_s), "일찍 나감(값 빔)": early, "일찍 나감 몫": early / len(xs),
+            "평균": float(np.mean(xs)), "가운데": float(np.median(xs)),
             "이긴 몫": float(np.mean(np.array(xs) > 0)), "분기 t(CR1)": tq, "종목 t(CR1)": ts,
             "작은 t": min(tq, ts) if tq is not None and ts is not None else None,
             "한 종목 몫(절댓값)": max(abs(v) for v in by_s.values()) / ab if ab > 0 else None,
@@ -661,7 +668,12 @@ def main():
     rows = cross(C, caps, qb, cb)
     evs = contract_events(CONTRACT)
     picked = events_table(C, lambda d: caps.top(d, 200), evs)
-    res = {"과제": "EDU-0001 A단계(판 2)", "자료 판": pins, "자료 끝": DATA_END, "판단 달": len(rows),
+    cover = {}
+    for p, a, b in PERIODS:
+        inp = [r for r in rows if a <= r["날"] < b]
+        cover[p] = {"판단 달": len(inp), "시총 아는 종목(평균)": float(np.mean([r["시총 아는 종목"] for r in inp])),
+                    "가격 있는데 시총 모름(평균)": float(np.mean([r["가격 있는 종목"] - r["시총 아는 종목"] for r in inp]))}
+    res = {"과제": "EDU-0001 A단계(판 3)", "자료 판": pins, "자료 끝": DATA_END, "판단 달": len(rows), "덮음(대상 = 시총을 아는 범위)": cover,
            "T1 이익의 질": judge_cross(rows, "T1"), "T3 퀀트 보드": judge_cross(rows, "T3"), "T2 큰 수주": judge_events(picked)}
     (OUT / "result.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUT / "rows.json").write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
@@ -685,7 +697,7 @@ def snapshot(day_list, cut):
                              sort_keys=True, ensure_ascii=False, default=str)
     evs = [e for e in contract_events(CONTRACT) if e[1] <= cut]
     pk = events_table(C, lambda d: caps.top(d, 200), evs)
-    return snap, json.dumps({g: [e for e in v if e["나감"] <= cut] for g, v in pk.items()}, sort_keys=True, ensure_ascii=False)
+    return snap, json.dumps({g: [e for e in v if e["예정 나감"] <= cut] for g, v in pk.items()}, sort_keys=True, ensure_ascii=False)
 
 
 def guard_one(kind, cut, full=None):
