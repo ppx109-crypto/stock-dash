@@ -462,26 +462,74 @@ class Checks(unittest.TestCase):
         daily["주문 결과"]["paper"] = []
         self.assertEqual([t for t, _ in B.orders_check("daily", daily)], ["주문 빠짐"])
 
+    HEAD = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+
+    @classmethod
+    def receipt(cls, rid, path, created, repo="ppx109-crypto/stock-dash", **over):
+        r = {"repository": repo, "id": int(rid), "path": f".github/workflows/{path}", "head_sha": cls.HEAD, "event": "schedule",
+             "run_attempt": 1, "status": "completed", "conclusion": "success", "created_at": created,
+             "html_url": f"https://github.com/{repo}/actions/runs/{rid}"}
+        r.update(over)
+        return {k: v for k, v in r.items() if v is not None}
+
+    @property
+    def RUNS(self):
+        R = self.receipt
+        return {"42259467975": R("42259467975", "daily-live.yml", "2026-11-09T06:31:00Z"),
+                "42250000001": R("42250000001", "etf-prices.yml", "2026-11-06T10:40:00Z", conclusion="failure"),
+                "42250000002": R("42250000002", "daily-live.yml", "2026-11-09T06:31:00Z", repo="someone/other"),
+                "42250000003": R("42250000003", "daily-live.yml", "2026-11-12T06:31:00Z"),
+                "42250000004": R("42250000004", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha="0" * 40),
+                "42250000005": R("42250000005", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=None),
+                "42250000006": R("42250000006", "daily-live.yml", "2026-11-09T06:31:00Z", conclusion=None),
+                "42250000007": R("42250000007", "daily-live.yml", "2026-11-09T06:31:00Z", id=42250000008)}
+    CAL = ["20261106", "20261109", "20261110", "20261111", "20261112"]
+
+    def ok(self, e, tag, key="20261109:basket", runs=None, root=ROOT, end=None):
+        with mock.patch.object(B, "ROOT", root), mock.patch.object(B, "END", end or self.HEAD):  # 앞 시험이 끝점을 바꿔 두었어도 같게
+            return B.explained({key: {tag: e}}, key, tag, self.RUNS if runs is None else runs, self.CAL)
+
     def test_causes_format(self):
-        """설명은 구조화된 영수증(run_id 10자리 이상 또는 저장소에 있는 commit)이 있어야 함 · 날짜 · 아무 숫자 · 일반 hex 글은 안 됨."""
-        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-        run = {"run_id": 42259467975, "근거": "15:31 시작"}
-        good = {"20261109:basket": {"빠짐": dict(run, 원인="SCHEDULER"), "LEDGER": {"commit": head[:10]},
-                                    "주문 빠짐": {"원인": "BROKER", "commit": head}, "BROKER": {"run_id": "4225946797"}}}
-        for tag in ("빠짐", "LEDGER", "주문 빠짐", "BROKER"):
-            self.assertTrue(B.explained(good, "20261109:basket", tag), tag)
-        bad_receipts = [{"근거": "20261109"}, {"근거": "날짜 20261109 · 작업 42259467975"}, {"run_id": "20261109"},
-                        {"run_id": 12345678}, {"run_id": "작업 42259467975"}, {"commit": "abcdef1"}, {"commit": "deadbeefcafe"},
-                        {"commit": "날짜20261109"}, "작업 42259467975", "", None]
-        for e in bad_receipts:                                        # 자유 글 · 날짜 · 8자리 숫자 · 저장소에 없는 hex는 못 덮음
-            self.assertFalse(B.explained({"k": {"BROKER": e}}, "k", "BROKER"), e)
-            self.assertFalse(B.explained({"k": {"빠짐": dict(e, 원인="SCHEDULER") if isinstance(e, dict) else e}}, "k", "빠짐"), e)
-        wrong = {"k": {"빠짐": dict(run, 원인="MANUAL"), "주문 빠짐": dict(run, 원인="OFF_CALENDAR"),
-                       "예정 무실행 날 실행": dict(run, 원인="MANUAL"), "겹침": dict(run, 원인="BROKER")}}
-        for tag in ("빠짐", "주문 빠짐", "예정 무실행 날 실행", "겹침"):     # 허용 표에 없는 원인은 영수증이 맞아도 못 덮음
-            self.assertFalse(B.explained(wrong, "k", tag), tag)
-        for cause in B.CODES:                                           # 예정 무실행 날 실행은 어떤 원인으로도 못 덮음
-            self.assertFalse(B.explained({"k": {"예정 무실행 날 실행": dict(run, 원인=cause)}}, "k", "예정 무실행 날 실행"))
+        """설명 영수증: run_id는 작업 영수증 파일에 있고 이 저장소 · 원인에 맞는 작업 흐름 · 그 날(또는 앞 거래일) 작업이어야 함 ·
+        자유 글 · 날짜 · 형식만 맞는 번호 · 다른 저장소 · 다른 날 작업은 안 됨."""
+        self.assertTrue(self.ok({"원인": "SCHEDULER", "run_id": 42259467975, "근거": "15:31 시작"}, "빠짐"))
+        self.assertTrue(self.ok({"run_id": "42259467975"}, "BROKER"))
+        self.assertTrue(self.ok({"run_id": 42250000001}, "LATE_INPUT"))           # 앞 거래일(11-06) ETF 수집 작업 = 늦은 입력 영수증
+        self.assertFalse(self.ok({"run_id": 42250000001}, "SCHEDULER"))           # 원인과 작업 흐름이 안 맞음
+        for e in ({"run_id": 9999999999}, {"run_id": 42259467976}, {"run_id": 42250000002}, {"run_id": 42250000003},
+                  {"run_id": 42250000004}, {"run_id": 42250000005}, {"run_id": 42250000006}, {"run_id": 42250000007},
+                  {"근거": "20261109"}, {"근거": "날짜 20261109 · 작업 42259467975"}, {"run_id": "20261109"}, {"run_id": 12345678},
+                  {"run_id": "작업 42259467975"}, {"commit": "abcdef1"}, {"commit": "deadbeefcafe"}, {"commit": "날짜20261109"},
+                  "작업 42259467975", "", None):
+            self.assertFalse(self.ok(e, "BROKER"), e)                               # 없는 번호 · 다른 저장소 · 다른 날 · 형식만 · 자유 글
+            self.assertFalse(self.ok(dict(e, 원인="SCHEDULER") if isinstance(e, dict) else e, "빠짐"), e)
+        self.assertFalse(self.ok({"run_id": 42259467975}, "BROKER", key="20261111:basket"))   # 그 날 · 앞 거래일 작업이 아님
+        wrong = {"원인": "MANUAL", "run_id": 42259467975}
+        for tag, cause in (("빠짐", "MANUAL"), ("주문 빠짐", "OFF_CALENDAR"), ("예정 무실행 날 실행", "MANUAL"), ("겹침", "BROKER")):
+            self.assertFalse(self.ok(dict(wrong, 원인=cause), tag), tag)          # 허용 표에 없는 원인은 영수증이 맞아도 못 덮음
+        for cause in B.CODES:                                                     # 예정 무실행 날 실행은 어떤 원인으로도 못 덮음
+            self.assertFalse(self.ok({"원인": cause, "run_id": 42259467975}, "예정 무실행 날 실행"))
+
+    def test_commit_must_be_end_ancestor(self):
+        """commit 영수증은 저장소에 있고 감사 끝점의 조상이어야 함(합쳐지지 않은 가지 커밋 · 없는 커밋은 안 됨)."""
+        r = Repo(code=False)
+        r.write("a.txt", "1")
+        base = r.commit("바탕", "2026-11-09 09:00:00")
+        r.git("checkout", "-q", "-b", "side")
+        r.write("b.txt", "2")
+        side = r.commit("가지", "2026-11-09 10:00:00")
+        r.git("checkout", "-q", "main")
+        r.write("c.txt", "3")
+        tip = r.commit("끝", "2026-11-09 11:00:00")
+        at = dict(root=r.root, end=tip)
+        self.assertTrue(self.ok({"commit": base}, "LEDGER", **at))
+        self.assertTrue(self.ok({"원인": "LEDGER", "commit": base[:12]}, "주문 빠짐", **at))
+        self.assertFalse(self.ok({"commit": side}, "LEDGER", **at))                 # 저장소에는 있으나 끝점 조상 아님
+        self.assertFalse(self.ok({"commit": "0" * 40}, "LEDGER", **at))
+        runs = {"42259467975": self.receipt("42259467975", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=base),
+                "42259467976": self.receipt("42259467976", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=side)}
+        self.assertTrue(self.ok({"run_id": 42259467975}, "BROKER", runs=runs, **at))     # 작업 커밋이 끝점 조상
+        self.assertFalse(self.ok({"run_id": 42259467976}, "BROKER", runs=runs, **at))    # 작업 커밋이 합쳐지지 않은 가지
 
     def test_wrong_causes_stay_failures(self):
         """빠짐+MANUAL · 주문 빠짐+OFF_CALENDAR · 예정 무실행 날 실행+MANUAL은 감사 판정에서도 즉시 실패로 남음."""

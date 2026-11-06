@@ -53,7 +53,13 @@ ALLOWED = {                    # 빠짐류를 덮을 수 있는 원인 꼬리표
     "예정 무실행 날 실행": (),  # 어떤 원인으로도 덮지 못함(즉시 실패)
 }
 RUN_ID = re.compile(r"[0-9]{10,}")       # GitHub Actions 작업 번호(10자리 이상 · 날짜 YYYYMMDD 8자리는 안 됨)
-COMMIT = re.compile(r"[0-9a-f]{7,40}")   # 커밋(저장소에 실제로 있어야 함 · git cat-file로 확인)
+COMMIT = re.compile(r"[0-9a-f]{7,40}")   # 커밋(저장소에 실제로 있고 끝점의 조상이어야 함)
+REPO = "ppx109-crypto/stock-dash"
+RUNS_PATH = CODE_ROOT / "research" / "boost_a" / "runs.json"    # GitHub Actions API에서 받아 커밋한 작업 영수증(결과 PR에 지문)
+WORKFLOWS = {                             # 원인별로 영수증이 될 수 있는 작업 흐름(봇은 모두 daily-live.yml 안에서 돎)
+    "SCHEDULER": ("daily-live.yml",), "BROKER": ("daily-live.yml",), "LEDGER": ("daily-live.yml",), "OFF_CALENDAR": ("daily-live.yml",),
+    "LATE_INPUT": ("daily-live.yml", "etf-prices.yml", "daily-prices.yml", "events.yml", "kis-extra-history.yml", "daily-close-check.yml"),
+}
 STRAIN = 0.10                  # 위 꼬리표가 하나라도 붙은 고유 봇 × 날 칸 ÷ 고정 80칸 > 10%면 '실행 보강 필요'(판정과 함께 적음)
 RUN_DAYS_PATH = CODE_ROOT / "research-exchange" / "claude-to-gpt" / "BOOST-0001-A" / "run_days.json"
 RUN_DAYS_SHA = "a19eb525eedfdc9874f0c0af44039ae05db1aa4a17caef554b4eec44decdb811"    # 사전등록 판 3에 고정한 분모 파일
@@ -607,24 +613,60 @@ def commit_exists(c):
     return out.returncode == 0
 
 
-def receipt_ok(e):
-    """설명의 영수증: 구조화된 칸 run_id(작업 번호 10자리 이상) 또는 commit(저장소에 있는 커밋) 가운데 하나 이상이 맞아야 함.
-    자유 글('근거')만으로는 안 됨(날짜 · 아무 숫자 · 일반 hex 글로 덮지 못하게)."""
+def load_runs(path=RUNS_PATH):
+    """작업 영수증 파일 {run_id: {repository, id, path, head_sha, event, run_attempt, status, conclusion, created_at, html_url}}."""
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+RUN_FIELDS = ("repository", "id", "path", "head_sha", "event", "run_attempt", "status", "conclusion", "created_at", "html_url")
+
+
+def run_ok(run_id, day, cause, runs, cal):
+    """run_id가 작업 영수증 파일에 있고 · 칸이 다 있으며 · 이 저장소 작업이고 · 그 작업의 커밋(head_sha)이 끝점의 조상이며 ·
+    원인에 맞는 작업 흐름이고 · 그 날(또는 앞 거래일) 만든 작업인지(성공 · 실패는 따지지 않음 · 실패한 작업도 증거)."""
+    rid = str(run_id).strip()
+    r = (runs or {}).get(rid)
+    if not RUN_ID.fullmatch(rid) or not isinstance(r, dict) or any(k not in r for k in RUN_FIELDS):
+        return False
+    if r.get("repository") != REPO or str(r.get("id")) != rid or \
+            not str(r.get("html_url", "")).startswith(f"https://github.com/{REPO}/actions/runs/{rid}"):
+        return False
+    sha_ = str(r.get("head_sha", "")).lower()
+    if not re.fullmatch(r"[0-9a-f]{40}", sha_) or not commit_exists(sha_) or is_ancestor(sha_, END) is not True:
+        return False
+    if str(r.get("path", "")).rsplit("/", 1)[-1] not in WORKFLOWS.get(cause, ()):
+        return False
+    try:
+        made = datetime.strptime(str(r.get("created_at")), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC")).astimezone(KST)
+    except ValueError:
+        return False
+    return made.strftime("%Y%m%d") in {day, prev_day(cal or [], day)}
+
+
+def commit_ok(com):
+    """commit이 저장소에 있고 감사 끝점의 조상인지."""
+    com = str(com).strip().lower()
+    return bool(COMMIT.fullmatch(com)) and commit_exists(com) and is_ancestor(com, END) is True
+
+
+def explained(causes, key, tag, runs=None, cal=None):
+    """설명 꼴(사전등록 판 3 고침 4): {"원인": 허용 원인(빠짐류만), "run_id": 작업 영수증 파일에 있는 작업, "commit": 끝점 조상 커밋, "근거": "글"}.
+    run_id는 작업 영수증 파일(API 칸 그대로)과 저장소 · 작업 커밋(끝점 조상) · 원인별 작업 흐름 · 날짜(그 날 또는 앞 거래일)를 대조 ·
+    자유 글만으로는 안 됨."""
+    e = (causes.get(key) or {}).get(tag)
     if not isinstance(e, dict):
         return False
-    run = str(e.get("run_id", "")).strip()
-    com = str(e.get("commit", "")).strip().lower()
-    return bool(RUN_ID.fullmatch(run)) or bool(COMMIT.fullmatch(com) and commit_exists(com))
-
-
-def explained(causes, key, tag):
-    """설명 꼴(사전등록 판 3 고침 3): {"원인": 허용 원인(빠짐류만), "run_id": …, "commit": …, "근거": "글"}."""
-    e = (causes.get(key) or {}).get(tag)
-    if not receipt_ok(e):
-        return False
     if tag in MISSING:
-        return e.get("원인") in ALLOWED.get(tag, ())
-    return True
+        if e.get("원인") not in ALLOWED.get(tag, ()):
+            return False
+        cause = e["원인"]
+    else:
+        cause = tag
+    day = key.split(":")[0]
+    return (bool(e.get("run_id")) and run_ok(e["run_id"], day, cause, runs, cal)) or (bool(e.get("commit")) and commit_ok(e["commit"]))
 
 
 def strain(rows, n_fixed):
@@ -637,8 +679,8 @@ def incomplete(start, end):
     return {"요약": {"기간": [start, end], "끝점 커밋": None, "불완전": list(ERRS), "판정": "불완전(다시 셈)"}, "줄들": []}
 
 
-def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
-    """run_days = 고정 분모(없으면 사전등록 지문을 확인하며 읽음)."""
+def audit(start, end, causes=None, end_commit="HEAD", run_days=None, runs=None):
+    """run_days = 고정 분모(없으면 사전등록 지문을 확인하며 읽음) · runs = 작업 영수증(없으면 빈 것 · run_id 설명은 인정 안 됨)."""
     global END
     ERRS.clear()
     if run_days is None:
@@ -715,9 +757,9 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
                 if tag in HARD:
                     fails.append((key, tag, text))
                 elif tag in MISSING:
-                    if not explained(causes, key, tag):
+                    if not explained(causes, key, tag, runs, cal):
                         fails.append((key, tag, text))
-                elif tag in CODES and not explained(causes, key, tag):
+                elif tag in CODES and not explained(causes, key, tag, runs, cal):
                     needs.append((key, tag, text))
             row["설명"] = causes.get(key, {})
             rows.append(row)
@@ -743,7 +785,8 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
         "주문 접수율": f"{sum(1 for o in orders if o[2].startswith('접수'))}/{len(orders)}",
         "보강 칸": f"{n_strain}/{n_fixed}", "실행 보강 필요": need,
         "기준 ① · ②": "월 점검 셈(tools/bt_mix54.py · reconcile)으로 따로 보고(이 셈 밖)",
-        "설명 영수증": [[k, t, e.get("run_id"), e.get("commit"), explained(causes, k, t)]
+        "설명 영수증": [[k, t, e.get("run_id"), (runs or {}).get(str(e.get("run_id")), {}).get("html_url"), e.get("commit"),
+                      "끝점 조상" if e.get("commit") and commit_ok(e["commit"]) else None, explained(causes, k, t, runs, cal)]
                     for k, tags in sorted(causes.items()) for t, e in sorted((tags or {}).items()) if isinstance(e, dict)],
         "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else
                  "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "설명 필요")}
@@ -758,19 +801,21 @@ def main(argv=None):
     ap.add_argument("--out", default=str(CODE_ROOT / "research" / "boost_a"))
     ap.add_argument("--end-commit", default="HEAD")
     ap.add_argument("--days", default=str(RUN_DAYS_PATH))
+    ap.add_argument("--runs", default=str(RUNS_PATH))
     a = ap.parse_args(argv)
     cpath = Path(a.causes)
     causes = json.loads(cpath.read_text(encoding="utf-8")) if cpath.is_file() else {}
     ERRS.clear()
     rd = load_run_days(a.days)
     errs0 = list(ERRS)
-    res = audit(a.start, a.end, causes, end_commit=a.end_commit, run_days=rd) if rd else incomplete(a.start, a.end)
+    res = audit(a.start, a.end, causes, end_commit=a.end_commit, run_days=rd, runs=load_runs(a.runs)) if rd else incomplete(a.start, a.end)
     if errs0:                                     # 분모 파일 지문이 다르면 불완전
         res["요약"]["불완전"] = errs0 + res["요약"].get("불완전", [])
         if res["요약"]["판정"] != "실패":
             res["요약"]["판정"] = "불완전(다시 셈)"
     res["요약"]["설명 파일 지문"] = A.file_digest(cpath) if cpath.is_file() else None
     res["요약"]["분모 파일 지문"] = A.file_digest(a.days)
+    res["요약"]["작업 영수증 파일 지문"] = A.file_digest(a.runs)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / f"audit-{a.end}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
