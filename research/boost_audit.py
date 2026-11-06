@@ -188,10 +188,19 @@ def run_at(task_name, payload, head, folders=(), blobs=None):
         return None
 
 
+def tree_digest(tmp):
+    """격리 재현 트리 지문 = 꺼낸 루트 · research `.py` 파일들의 (경로, sha256) 목록의 sha256."""
+    rows = []
+    for p in sorted(list(Path(tmp).glob("*.py")) + list((Path(tmp) / "research").glob("*.py"))):
+        rows.append(f"{p.relative_to(tmp).as_posix()}\t{sha(p.read_bytes())}")
+    return hashlib.sha256("\n".join(rows).encode("utf-8")).hexdigest()
+
+
 def task(name, p, tmp):
     """하위 작업 안에서 도는 셈(cwd = 꺼낸 트리 · 코드는 그 트리에서만)."""
     if name != "check_group":
         raise ValueError(name)
+    tree = tree_digest(tmp)
     out = []
     for item in p["items"]:
         bot, body = item["bot"], item["body"]
@@ -203,8 +212,9 @@ def task(name, p, tmp):
         r.update(rebuild(bot, body))
         mods = {m: getattr(sys.modules.get(m), "__file__", None) for m in DECISION_MODULES[bot] + ("audit_log",)}
         r["isolated"] = all(f and os.path.realpath(f).startswith(os.path.realpath(tmp)) for f in mods.values())
+        r["tree"] = tree
         out.append(r)
-    return {"items": out}
+    return {"items": out, "tree": tree}
 
 
 def rebuild(bot, body):
@@ -650,6 +660,7 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
                     row["재현"] = "판단 때 코드 판으로 재현 못 함(불완전)"
                 else:
                     row["재현"] = r["why"]
+                    row["재현 트리"] = {"판단 때 HEAD": body.get("판단 때 저장소 HEAD"), "기록 블롭": body.get("코드"), "트리 지문": r.get("tree")}
                     if r["same"] is False:
                         row["문제"].append(("기록 고장" if r["why"].startswith("기록 고장") else "재현", r["why"]))
                     if not r.get("isolated"):
@@ -693,6 +704,7 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
     all_days = run_days["기대 실행일"]
     summary = {
         "기간": [start, end], "끝점 커밋": END, "감사 코드": me, "범위": "G2(결정 · 장부 · 주문 일치) · 원천 수집 시각 증명 아님",
+        "재현 트리 지문": sorted({r["재현 트리"]["트리 지문"] for r in rows if r.get("재현 트리")} - {None}),
         "기대 실행일": len(days), "기록 수": f"{sum(1 for k in found if k[0] in days)}/{n_cells}",
         "예정 무실행": {d: v.get("까닭") for d, v in planned_off.items() if start <= d <= end},
         "분모 밖 기록 날": sorted({d for d, _ in found} - set(days)),

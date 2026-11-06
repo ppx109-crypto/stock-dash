@@ -174,6 +174,8 @@ class EngineRepo(unittest.TestCase):
         for row in self.engine_rows(res):
             self.assertEqual(row["문제"], [], row)                   # 안 바뀐 장부(extra.json)도 문제 아님
             self.assertEqual(row["재현"], "같음")
+            self.assertRegex(row["재현 트리"]["트리 지문"], r"^[0-9a-f]{64}$")
+        self.assertEqual(len(res["요약"]["재현 트리 지문"]), 1)        # 두 날 모두 같은 코드 트리
         fails = res["요약"]["즉시 실패"]
         self.assertTrue(fails and all(t == "빠짐" and not k.endswith(":engine") for k, t, _ in fails))
         self.assertEqual((res["요약"]["판정"], res["요약"]["기록 수"]), ("실패", "2/8"))
@@ -287,6 +289,8 @@ class CodeVersion(unittest.TestCase):
         d, o = got[("20261030", "daily")], got[("20261030", "overlay")]
         self.assertTrue(d["same"] and d["isolated"], d)               # 판단 때 HEAD 판으로는 같음 · 모듈은 그 트리에서
         self.assertTrue(o["same"] and o["target_ok"] and o["isolated"] and o["rebuild"] == [], o)
+        self.assertRegex(d["tree"], r"^[0-9a-f]{64}$")             # 격리 재현 트리 지문(같은 묶음이면 같음)
+        self.assertEqual(d["tree"], o["tree"])
 
     def test_missing_module_not_borrowed(self):
         """판단 때 HEAD 트리에 daily_live.py가 없으면 작업 나무 것을 쓰지 않고 '재현 못 함(불완전)'."""
