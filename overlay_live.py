@@ -27,6 +27,12 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+try:                                     # 판단 기록장(관측 전용 · BOOST-0001-A): 불러온 코드 판(블롭 id)을 적어 감사가 같은 판으로 재현
+    import audit_log as _audit
+    _CODE = _audit.file_ids(__file__)
+except Exception:                        # 기록장이 없거나 말썽이어도 매매는 그대로(기록만 건너뜀)
+    _audit, _CODE = None, None
+
 KST = ZoneInfo("Asia/Seoul")
 HOME = Path("overlay-live")
 STATE = HOME / "state.json"
@@ -343,7 +349,14 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             prev_day = None
     stale = not rows or not prev_day or rows[-1][0] != prev_day
     state = None if stale else states(rows)[rows[-1][0]]
-    if stale or not needs_rebalance(st, state, day):
+    # 판단 기록장(관측 전용 · 식은 모두 safe 안 · 실패해도 매매 그대로): 판단 앞 입력 → 맞출지 판단(원래 식과 같음) → 기록
+    ov_in = _audit.safe(lambda: _audit.capture(dict(st=st, day=day, prev_day=prev_day, stale=stale, state=state, nav=nav,
+                                                    rows_len=len(rows), rows_last=rows[-3:]))) if _audit else None
+    reb = (not stale) and needs_rebalance(st, state, day)
+    if _audit:
+        _audit.safe(lambda: _audit.record(STATE, day, "overlay", ov_in, {"rebalance": reb}, ledgers=(STATE, BOOK), code=_CODE,
+                                          extra={"rows_digest": _audit.digest(rows)}))
+    if stale or not reb:
         save_state(st)                               # 손실 알림 기록 먼저(prepare가 장부를 다시 읽음)
         prepare(broker, reserve, now, quote)         # 맞추지 않는 날도 15:20 1일봉 몫은 비켜 둠
         st = load_state()
@@ -351,6 +364,9 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
         save_state(st)
         if stale:
             lines.append(f"⚠️ 덧붙임: 어제({prev_day or '?'}) KODEX 200 종가가 아직 없어 오늘은 맞추지 않음(자료 마지막 {rows[-1][0] if rows else '?'})")
+        if _audit:
+            _audit.safe(lambda: _audit.after(STATE, day, "overlay", {"rebalance": False, "stale": stale}, ledgers=(STATE, BOOK),
+                                             books=(BOOK,)))
         return lines
     view = base_view(raw, st)
     cash_b = float(view.get("cash") or 0)
@@ -362,8 +378,15 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     if code_new and not px_new:
         st["last_day"] = day
         save_state(st)
+        if _audit:
+            _audit.safe(lambda: _audit.after(STATE, day, "overlay", {"rebalance": True, "skipped": "지금 값 없음", "code": code_new},
+                                             ledgers=(STATE, BOOK), books=(BOOK,)))
         return lines + [f"⚠️ 덧붙임: {NAME.get(code_new, code_new)} 지금 값을 못 받아 오늘은 맞추지 않음"]
+    target_in = _audit.safe(lambda: _audit.capture(dict(state=state, nav_total=nav, cash_b=cash_b, nav_b=nav_b,
+                                                        reserve=reserve * P.MKT_MARGIN, price=px_new, cur=cur))) if _audit else None
     _, want, f = target_qty(state, nav, cash_b, nav_b, reserve * P.MKT_MARGIN, px_new)
+    if _audit and target_in is not None:
+        _audit.safe(lambda: target_in.update(want=want, f=f))
     orders = []
     for c, q in cur.items():
         if c != code_new:
@@ -376,6 +399,7 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             orders.append((code_new, "buy", diff))
     before = {p["code"]: int(p["quantity"]) for p in raw.get("positions", [])}
     done, sells, buy_failed = [], {}, False
+    sent = []                                         # 판단 기록장용(주문마다 접수 결과 · 주문 · 장부는 그대로)
     for c, side, q in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저(연속 매매라 판 돈이 바로 풀림)
         broker._overlay_buying = side == "buy"
         no, status = "", ""
@@ -399,6 +423,9 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             broker._overlay_buying = False
         log_order({"key": f"{day}:{side}:{c}", "at": now.strftime("%Y-%m-%d %H:%M"), "code": c, "name": NAME.get(c, c), "side": side,
                    "qty": q, "status": status, "order_no": no, "why": f"국면 {state} · 목표 몫 {f:.2f}", "price": quote(c) if c != code_new else px_new})
+        if _audit:
+            _audit.safe(lambda: sent.append({"code": c, "side": side, "qty": q, "status": status,
+                                             "at": datetime.now(KST).strftime("%H:%M:%S")}))
         lines.append(f"🧪 모의투자(덧붙임) {'매수' if side == 'buy' else '매도'} · {NAME.get(c, c)}({c}) {q:,}주 · {status}")
         time.sleep(0.3)
     # 체결 확인: 판 종목은 실제 잔고가 판 만큼 줄었는지(최대 OVERLAY_FILL_TRIES번) · 장부는 확인된 실제 수량으로만
@@ -417,6 +444,10 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
         st = {"held": cur, "B": float(st.get("B") or 0), "applied": None, "rebalanced_month": st.get("rebalanced_month"),
               "last_day": day, "pending": sorted(codes), **keep}
         save_state(st)
+        if _audit:
+            _audit.safe(lambda: _audit.after(STATE, day, "overlay", {"rebalance": True, "target": target_in, "orders": orders,
+                                                                     "sent": sent, "after_balance": None},
+                                             ledgers=(STATE, BOOK), books=(BOOK,)))
         return lines + ["⚠️ 덧붙임: 주문 뒤 잔고를 못 읽어 장부를 그대로 두고 내일 다시 맞춤"]
     held, px = {}, {}
     for c in codes:
@@ -437,5 +468,9 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     if buy_failed:
         lines.append(f"⚠️ 덧붙임: {NAME.get(code_new, code_new)} 사기가 안 됨 → 장부에 '맞춤 끝'으로 적지 않고 다음 거래일에 다시 맞춤")
     save_state(st)
+    if _audit:
+        _audit.safe(lambda: _audit.after(STATE, day, "overlay", {"rebalance": True, "target": target_in, "orders": orders,
+                                                                 "sent": sent, "held_after": held, "complete": complete},
+                                         ledgers=(STATE, BOOK), books=(BOOK,)))
     lines.insert(0, f"레버리지 봇 {int(day[4:6])}월 {int(day[6:])}일, 국면 {state}(어제 장 끝 기준), 목표 {NAME.get(code_new, '없음')} {f * 100:.0f}%")
     return lines
