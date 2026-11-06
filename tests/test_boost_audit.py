@@ -506,15 +506,15 @@ class Checks(unittest.TestCase):
 
     def ok(self, e, tag, key="20261109:basket", runs=None, root=ROOT, end=None):
         with mock.patch.object(B, "ROOT", root), mock.patch.object(B, "END", end or self.HEAD):  # 앞 시험이 끝점을 바꿔 두었어도 같게
-            return B.explained({key: {tag: e}}, key, tag, self.RUNS if runs is None else runs, self.CAL)
+            return B.receipt_matches(e, key, tag, self.RUNS if runs is None else runs, self.CAL)
 
-    def test_causes_format(self):
-        """설명 영수증: run_id는 영수증 파일에 있고 판 3 고침 5 꼴 · 이 저장소 main의 끝난 작업 · 주소 정확히 · 원인에 맞는 작업 흐름 ·
-        그 날(또는 앞 거래일) 작업이어야 함 · commit만 · 자유 글 · 날짜 · 형식만 맞는 번호 · 다른 저장소 · 다른 날 작업은 안 됨."""
+    def test_receipt_note_format(self):
+        """상황 기록의 작업 영수증 대조(참고만): run_id는 영수증 파일에 있고 판 3 고침 5 꼴 · 이 저장소 main의 끝난 작업 · 주소 정확히 ·
+        작업 흐름 · 그 날(또는 앞 거래일)이어야 '맞음' · commit만 · 자유 글 · 날짜 · 형식만 맞는 번호 · 다른 저장소 · 다른 날은 '안 맞음'."""
         self.assertTrue(self.ok({"원인": "SCHEDULER", "run_id": 42259467975, "근거": "15:31 시작"}, "빠짐"))
         self.assertTrue(self.ok({"run_id": "42259467975"}, "BROKER"))
-        self.assertTrue(self.ok({"run_id": 42250000001}, "LATE_INPUT"))           # 앞 거래일(11-06) ETF 수집 실패 작업 = 늦은 입력 영수증
-        self.assertFalse(self.ok({"run_id": 42250000001}, "SCHEDULER"))           # 원인과 작업 흐름이 안 맞음
+        self.assertTrue(self.ok({"run_id": 42250000001}, "LATE_INPUT"))           # 앞 거래일(11-06) ETF 수집 실패 작업
+        self.assertFalse(self.ok({"run_id": 42250000001}, "SCHEDULER"))           # 작업 흐름이 안 맞음
         others = ({"근거": "20261109"}, {"근거": "날짜 20261109 · 작업 42259467975"}, {"run_id": "20261109"}, {"run_id": 12345678},
                   {"run_id": "작업 42259467975"}, {"commit": "abcdef1"}, {"commit": "deadbeefcafe"}, {"commit": "날짜20261109"},
                   {"commit": self.HEAD}, {"commit": self.HEAD[:10]}, "작업 42259467975", "", None)
@@ -522,11 +522,6 @@ class Checks(unittest.TestCase):
             self.assertFalse(self.ok(e, "BROKER"), e)                               # 변조 · 없는 번호 · 다른 저장소 · 다른 날 · commit만 · 자유 글
             self.assertFalse(self.ok(dict(e, 원인="SCHEDULER") if isinstance(e, dict) else e, "빠짐"), e)
         self.assertFalse(self.ok({"run_id": 42259467975}, "BROKER", key="20261111:basket"))   # 그 날 · 앞 거래일 작업이 아님
-        wrong = {"원인": "MANUAL", "run_id": 42259467975}
-        for tag, cause in (("빠짐", "MANUAL"), ("주문 빠짐", "OFF_CALENDAR"), ("예정 무실행 날 실행", "MANUAL"), ("겹침", "BROKER")):
-            self.assertFalse(self.ok(dict(wrong, 원인=cause), tag), tag)          # 허용 표에 없는 원인은 영수증이 맞아도 못 덮음
-        for cause in B.CODES:                                                     # 예정 무실행 날 실행은 어떤 원인으로도 못 덮음
-            self.assertFalse(self.ok({"원인": cause, "run_id": 42259467975}, "예정 무실행 날 실행"))
 
     def test_real_api_receipt(self):
         """실제 작업 API 응답 원문(tests/fixtures · 2026-11-06 daily-live 작업)이 변환기를 거쳐 통과 · 저장소 묶음 · 주소 변조는 거부.
@@ -536,7 +531,7 @@ class Checks(unittest.TestCase):
         def ok(raw=None, rec=None, key="20261106:daily", tag="SCHEDULER"):
             rec = B.receipt_from_api(raw, B.api_url(rid)) if rec is None else rec
             with mock.patch.object(B, "commit_exists", return_value=True), mock.patch.object(B, "is_ancestor", return_value=True):
-                return B.explained({key: {tag: {"run_id": rid}}}, key, tag, {rid: rec}, self.CAL)
+                return B.receipt_matches({"run_id": rid}, key, tag, {rid: rec}, self.CAL)
 
         def raw_with(fn):
             raw = json.loads(json.dumps(self.RAW))
@@ -561,9 +556,9 @@ class Checks(unittest.TestCase):
                      ("request_url", rec["request_url"].replace("ppx109-crypto", "someone"))):
             self.assertFalse(ok(rec=dict(rec, **{k: v})), (k, v))                # 주소는 정확히 같아야 함
 
-    def test_bare_commit_never_exempts(self):
-        """commit만으로는 면책 안 됨(바탕 · 무관 문서만 고친 · 다른 날 · 끝점 자신 · 가지 · 없는 커밋 모두) ·
-        작업 영수증은 작업 커밋이 끝점 조상일 때만 · commit 칸은 결과에 참고로만."""
+    def test_receipt_note_commit(self):
+        """commit만으로는 작업 영수증 '맞음'이 아님(바탕 · 무관 문서만 고친 · 다른 날 · 끝점 자신 · 가지 · 없는 커밋 모두) ·
+        작업 영수증은 작업 커밋이 끝점 조상일 때만 '맞음' · commit 칸은 결과에 참고로만."""
         r = Repo(code=False)
         r.write("a.txt", "1")
         base = r.commit("바탕", "2026-11-01 09:00:00")
@@ -581,32 +576,42 @@ class Checks(unittest.TestCase):
             self.assertFalse(self.ok({"원인": "LEDGER", "commit": com}, "주문 빠짐", **at), com)
         runs = {"42259467975": self.receipt("42259467975", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=base),
                 "42259467976": self.receipt("42259467976", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=side)}
-        self.assertTrue(self.ok({"run_id": 42259467975, "commit": side}, "BROKER", runs=runs, **at))   # 면책은 작업 영수증으로
+        self.assertTrue(self.ok({"run_id": 42259467975, "commit": side}, "BROKER", runs=runs, **at))
         self.assertFalse(self.ok({"run_id": 42259467976}, "BROKER", runs=runs, **at))                 # 작업 커밋이 합쳐지지 않은 가지
         with mock.patch.object(B, "ROOT", r.root), mock.patch.object(B, "END", tip):
             self.assertEqual((B.commit_ok(base), B.commit_ok(side)), (True, False))                     # 결과의 참고 칸
 
-    def test_wrong_causes_stay_failures(self):
-        """빠짐+MANUAL · 주문 빠짐+OFF_CALENDAR · 예정 무실행 날 실행+MANUAL은 감사 판정에서도 즉시 실패로 남음."""
+    def test_no_exemption(self):
+        """면책 없음(판 3 고침 6): 모든 꼬리표에 맞는 작업 영수증(그 날 정상 성공 daily-live 예약 작업)과 원인을 적어도
+        즉시 실패 · 남은 꼬리표 · 판정 · 보강 칸이 설명이 없을 때와 똑같음 · 상황 기록에는 '맞음'으로 적힘."""
         off = {"20261119": {"까닭": "수능날"}}
         r = Repo()
         r.etf("29991231")
         b = {"날": "20261119", "봇": "daily", "기록 시각(한국)": "2026-11-19 15:21:00", "판단 때 저장소 HEAD": None, "입력": None}
         r.write("daily-live/audit/20261119-daily.json", b)
         sha_ = r.commit("기록", "2026-11-20 19:30:00")
-        ev = 42259467975
-        runs = {str(ev): self.receipt(str(ev), "daily-live.yml", "2026-11-18T06:21:00Z", head_sha=sha_)}   # 맞는 작업 영수증이어도
-        causes = {"20261118:daily": {"빠짐": {"원인": "MANUAL", "run_id": ev}},
-                  "20261119:daily": {"예정 무실행 날 실행": {"원인": "MANUAL", "run_id": ev}, "기록 고장": {"run_id": ev}}}
+        ev = "42259467975"
+        runs = {ev: self.receipt(ev, "daily-live.yml", "2026-11-18T06:21:00Z", head_sha=sha_)}   # 정상 성공 예약 작업
+        days = rd(["20261118", "20261120"], trading=["20261118", "20261119", "20261120"], off=off)
         with mock.patch.object(B, "ROOT", r.root):
-            res = B.audit("20261118", "20261120", causes=causes, runs=runs,
-                          run_days=rd(["20261118", "20261120"], trading=["20261118", "20261119", "20261120"], off=off))
-        fails = {(k, t) for k, t, _ in res["요약"]["즉시 실패"]}
+            bare = B.audit("20261118", "20261120", causes={}, runs=runs, run_days=days)
+            tags = {(f"{x['날']}:{x['봇']}", t) for x in bare["줄들"] for t, _ in x["문제"]}
+            causes = {}
+            for k, t in tags:
+                causes.setdefault(k, {})[t] = {"원인": "SCHEDULER" if t in B.MISSING else t, "run_id": ev, "근거": "정상 작업"}
+            res = B.audit("20261118", "20261120", causes=causes, runs=runs, run_days=days)
+        S0, S1 = bare["요약"], res["요약"]
+        for k in ("즉시 실패", "남은 꼬리표", "판정", "보강 칸", "실행 보강 필요"):
+            self.assertEqual(S1[k], S0[k], k)
+        self.assertEqual(S1["판정"], "실패")
+        fails, needs = {(k, t) for k, t, _ in S1["즉시 실패"]}, {(k, t) for k, t, _ in S1["남은 꼬리표"]}
         self.assertIn(("20261118:daily", "빠짐"), fails)
         self.assertIn(("20261119:daily", "예정 무실행 날 실행"), fails)
-        body = {"날": "20261109", "결과": {"orders": [["138230", "sell", 2, "r"]]}, "주문 결과": {"late": False}, "오늘 장부 주문": {}}
-        self.assertEqual([t for t, _ in B.orders_check("engine", body)], ["주문 빠짐"])
-        self.assertFalse(self.ok({"원인": "OFF_CALENDAR", "run_id": ev}, "주문 빠짐", key="20261109:engine"))
+        for k, t in tags:                                                        # 모든 꼬리표가 판정에 그대로 남음
+            self.assertIn((k, t), needs if t in B.CODES else fails, (k, t))
+        self.assertTrue(any(t in B.CODES for _, t in tags) and any(t in B.MISSING for _, t in tags))   # 두 갈래가 다 시험됨
+        notes = S1["상황 기록(참고 · 판정에 안 씀)"]
+        self.assertTrue(any(n[0] == "20261118:daily" and n[6] and n[6].startswith("작업 영수증 맞음") for n in notes))
 
     def test_strain_fixed_80(self):
         """실행 보강률 분모는 언제나 고정 칸(20일 × 4 = 80): 8/80 아님 · 9/80 필요 · 부분 기간 4문제 = 4/80 · 예정 무실행 날 기록 하나 더 = 5/80."""

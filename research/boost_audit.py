@@ -10,8 +10,12 @@
  ③ 때     주문 마감 뒤 · 봇의 늦음 → 부른 까닭과 상관없이 SCHEDULER · 예약 아닌 실행은 참고(MANUAL)
  ④ 장부   같은 작업 커밋의 장부 = 판단 뒤 지문 · 앞 판단 커밋이 이번 HEAD의 조상 · 판단 앞 장부 = HEAD 판(같은 작업 안 앞 단계는 그 줄로)
  ⑤ 증권사 · ⑥ 주문 대조 · ⑦ 빠짐 · 겹침 · 예정 무실행 날 실행 · 분모 밖 기록(OFF_CALENDAR)
-쓰기: python research/boost_audit.py --from 20261109 --to 20261207 [--causes 파일] [--out 폴더] [--end-commit 커밋] [--days 분모 파일]
-끝 상태: 0 = 진행 중 · 설명 필요 · 통과 / 1 = 실패 / 2 = 불완전(감사 쪽 읽기 실패 · 분모 지문 다름 · 다시 셈)
+판정(판 3 고침 6): 면책 없음 — 미래 · 재현 · 기록 고장 · 빠짐 · 겹침 · 주문 빠짐 · 예정 무실행 날 실행은 원인과 상관없이 실패,
+          자동 원인 꼬리표(LATE_INPUT · SCHEDULER · LEDGER · BROKER · OFF_CALENDAR)가 하나라도 남으면 '꼬리표 남음'(운영 검토).
+          설명 파일(--causes) · 작업 영수증(--runs)은 상황 기록(참고)으로만 결과에 적고 판정에 쓰지 않음.
+쓰기: python research/boost_audit.py --from 20261109 --to 20261207 [--causes 파일] [--runs 파일] [--out 폴더] [--end-commit 커밋] [--days 분모 파일]
+      python research/boost_audit.py --add-run <run_id> [--runs 파일]   (작업 API 응답 → 작업 영수증 · 상황 기록용)
+끝 상태: 0 = 진행 중 · 꼬리표 남음 · 통과 / 1 = 실패 / 2 = 불완전(감사 쪽 읽기 실패 · 분모 지문 다름 · 다시 셈)
 """
 import argparse
 import ast
@@ -46,17 +50,11 @@ CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL", "OFF_CALENDAR"
 HARD = ("미래", "재현", "기록 고장")                       # 설명으로 못 덮음(즉시 실패)
 MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 원인 꼬리표 + 근거로만 덮음(못 덮으면 즉시 실패)
 STRAIN_TAGS = ("SCHEDULER", "OFF_CALENDAR") + MISSING   # 분모 밖 기록(OFF_CALENDAR)도 실행 보강 칸으로 셈(판 3 고침 3 · 보수적)
-ALLOWED = {                    # 빠짐류를 덮을 수 있는 원인 꼬리표(사전등록 판 3 고침 2 고정 · MANUAL · OFF_CALENDAR는 면책 원인 아님)
-    "빠짐": ("SCHEDULER", "LATE_INPUT", "BROKER", "LEDGER"),
-    "겹침": ("SCHEDULER", "LEDGER"),
-    "주문 빠짐": ("BROKER", "LEDGER"),
-    "예정 무실행 날 실행": (),  # 어떤 원인으로도 덮지 못함(즉시 실패)
-}
 RUN_ID = re.compile(r"[0-9]{10,}")       # GitHub Actions 작업 번호(10자리 이상 · 날짜 YYYYMMDD 8자리는 안 됨)
 COMMIT = re.compile(r"[0-9a-f]{7,40}")   # 커밋(저장소에 실제로 있고 끝점의 조상이어야 함)
 REPO = "ppx109-crypto/stock-dash"
 RUNS_PATH = CODE_ROOT / "research" / "boost_a" / "runs.json"    # GitHub Actions API에서 받아 커밋한 작업 영수증(결과 PR에 지문)
-WORKFLOWS = {                             # 원인별로 영수증이 될 수 있는 작업 흐름(봇은 모두 daily-live.yml 안에서 돎)
+WORKFLOWS = {                             # (상황 기록 대조용 · 판정에 안 씀) 원인별로 볼 작업 흐름(봇은 모두 daily-live.yml 안에서 돎)
     "SCHEDULER": ("daily-live.yml",), "BROKER": ("daily-live.yml",), "LEDGER": ("daily-live.yml",), "OFF_CALENDAR": ("daily-live.yml",),
     "LATE_INPUT": ("daily-live.yml", "etf-prices.yml", "daily-prices.yml", "events.yml", "kis-extra-history.yml", "daily-close-check.yml"),
 }
@@ -462,7 +460,7 @@ def hhmm(body):
 
 
 def timing(bot, body, sess):
-    """(문제, 참고). 늦어 주문을 못 낸 것은 부른 까닭과 상관없이 SCHEDULER(설명 필요)."""
+    """(문제, 참고). 늦어 주문을 못 낸 것은 부른 까닭과 상관없이 SCHEDULER(꼬리표 · 운영 검토)."""
     out, info = [], []
     start, deadline = sess["판단"][bot], sess["마감"][bot]
     t, res, x = hhmm(body), body.get("주문 결과") or {}, body.get("곁") or {}
@@ -688,19 +686,14 @@ def commit_ok(com):
     return bool(COMMIT.fullmatch(com)) and commit_exists(com) and is_ancestor(com, END) is True
 
 
-def explained(causes, key, tag, runs=None, cal=None):
-    """설명 꼴(사전등록 판 3 고침 5): {"원인": 허용 원인(빠짐류만), "run_id": 영수증 파일에 있는 작업, "commit": 참고, "근거": "글"}.
-    면책은 검증된 작업 영수증(run_ok)만 · commit만 · 자유 글만으로는 안 됨(조상 커밋은 그 날 · 봇 · 원인의 사건 증거가 아님)."""
-    e = (causes.get(key) or {}).get(tag)
-    if not isinstance(e, dict):
+def receipt_matches(e, key, tag, runs=None, cal=None):
+    """(참고만 · 판정에 안 씀 · 판 3 고침 6) 설명에 적은 run_id가 작업 영수증 대조(저장소 · 주소 · main · 끝난 작업 · 작업 흐름 ·
+    작업 커밋 · 날)에 맞는지. 작업이 있었다는 것만 보일 뿐 원인(스케줄러 · 증권사 · 장부 · 늦은 입력)의 증거가 아니므로
+    어떤 꼬리표도 지우지 않음. commit만 · 자유 글만이면 False."""
+    if not isinstance(e, dict) or not e.get("run_id"):
         return False
-    if tag in MISSING:
-        if e.get("원인") not in ALLOWED.get(tag, ()):
-            return False
-        cause = e["원인"]
-    else:
-        cause = tag
-    return bool(e.get("run_id")) and run_ok(e["run_id"], key.split(":")[0], cause, runs, cal)
+    cause = e.get("원인") if tag in MISSING else tag
+    return run_ok(e["run_id"], key.split(":")[0], cause, runs, cal)
 
 
 def strain(rows, n_fixed):
@@ -788,14 +781,11 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None, runs=None):
                 row["기록 시각"], row["부른 까닭"] = body.get("기록 시각(한국)"), body.get("부른 까닭")
                 row["주문"] = [[o.get("code"), o.get("side"), str(o.get("status", ""))[:20]] for o in book_rows(body)[0]]
             for tag, text in row["문제"]:
-                if tag in HARD:
+                if tag in HARD or tag in MISSING:            # 원인과 상관없이 실패(면책 없음 · 판 3 고침 6)
                     fails.append((key, tag, text))
-                elif tag in MISSING:
-                    if not explained(causes, key, tag, runs, cal):
-                        fails.append((key, tag, text))
-                elif tag in CODES and not explained(causes, key, tag, runs, cal):
+                elif tag in CODES:                           # 자동 원인 꼬리표 · 면책 없음 · 운영 검토
                     needs.append((key, tag, text))
-            row["설명"] = causes.get(key, {})
+            row["상황 기록(참고)"] = causes.get(key, {})
             rows.append(row)
     in_rows = [r for r in rows if r["분모"]]
     n_cells = len(days) * len(BOTS)                                   # 기록 완성률용(부른 기간)
@@ -814,19 +804,32 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None, runs=None):
         "예정 무실행": {d: v.get("까닭") for d, v in planned_off.items() if start <= d <= end},
         "분모 밖 기록 날": sorted({d for d, _ in found} - set(days)),
         "꼬리표 수": {c: sum(1 for r in rows for t, _ in r["문제"] if t == c) for c in CODES + MISSING + HARD},
-        "즉시 실패": fails, "설명 안 된 꼬리표": needs, "불완전": list(ERRS),
+        "즉시 실패": fails, "남은 꼬리표": needs, "불완전": list(ERRS),
         "손으로 부른 기록": sum(1 for r in in_rows if r.get("부른 까닭") not in (None, "schedule") and "기록 시각" in r),
         "주문 접수율": f"{sum(1 for o in orders if o[2].startswith('접수'))}/{len(orders)}",
         "보강 칸": f"{n_strain}/{n_fixed}", "실행 보강 필요": need,
         "기준 ① · ②": "월 점검 셈(tools/bt_mix54.py · reconcile)으로 따로 보고(이 셈 밖)",
-        "설명 영수증": [[k, t, e.get("run_id"), ((runs or {}).get(str(e.get("run_id"))) or {}).get("html_url"),
-                      ((runs or {}).get(str(e.get("run_id"))) or {}).get("raw_sha256"), e.get("commit"),
-                      ("끝점 조상(참고 · 면책 아님)" if commit_ok(e["commit"]) else "끝점 조상 아님(참고)") if e.get("commit") else None,
-                      explained(causes, k, t, runs, cal)]
-                    for k, tags in sorted(causes.items()) for t, e in sorted((tags or {}).items()) if isinstance(e, dict)],
         "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else
-                 "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "설명 필요")}
+                 "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "꼬리표 남음")}
+    n_errs = len(ERRS)
+    summary["상황 기록(참고 · 판정에 안 씀)"] = notes_of(causes, runs, cal)   # 판정이 정해진 뒤에 적음
+    del ERRS[n_errs:]                         # 상황 기록 대조에서 난 읽기 실패는 판정 · 불완전에 넣지 않음
     return {"요약": summary, "줄들": rows}
+
+
+def notes_of(causes, runs, cal):
+    """상황 기록 칸: [열쇠, 꼬리표, 적은 원인, run_id, 작업 주소, 원문 지문, 작업 영수증 대조, commit, commit 참고]."""
+    out = []
+    for k, tags in sorted((causes or {}).items()):
+        for t, e in sorted((tags or {}).items()) if isinstance(tags, dict) else ():
+            if not isinstance(e, dict):
+                continue
+            rec = (runs or {}).get(str(e.get("run_id"))) or {}
+            out.append([k, t, e.get("원인"), e.get("run_id"), rec.get("html_url"), rec.get("raw_sha256"),
+                        ("작업 영수증 맞음(작업 존재만 · 원인 증거 아님)" if receipt_matches(e, k, t, runs, cal) else "작업 영수증 안 맞음")
+                        if e.get("run_id") else None,
+                        e.get("commit"), ("끝점 조상(참고)" if commit_ok(e["commit"]) else "끝점 조상 아님(참고)") if e.get("commit") else None])
+    return out
 
 
 def main(argv=None):
@@ -870,8 +873,8 @@ def main(argv=None):
         print("읽기 실패:", e)
     for f in s.get("즉시 실패", []):
         print("즉시 실패:", *f)
-    for u in s.get("설명 안 된 꼬리표", []):
-        print("설명 필요:", *u)
+    for u in s.get("남은 꼬리표", []):
+        print("남은 꼬리표:", *u)
     return 1 if s["판정"] == "실패" else 2 if s["판정"].startswith("불완전") else 0
 
 
