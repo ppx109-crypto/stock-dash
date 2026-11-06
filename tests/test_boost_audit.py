@@ -47,6 +47,7 @@ class Repo:
         self.git("init", "-q", "-b", "main")
         self.git("config", "user.email", "t@t")
         self.git("config", "user.name", "t")
+        self.write("collect_kis_intraday.py", 'SPECIAL_HOURS = {\n    "20261119": "수능날 · 10:00 ~ 16:30",\n}\n')
 
     def git(self, *a, when=None):
         env = dict(os.environ)
@@ -417,6 +418,21 @@ class Checks(unittest.TestCase):
         self.assertIn("SCHEDULER", [t for t, _ in rows["engine"]["문제"]])
         self.assertIn(("20261030:engine", "기록 고장"), [(k, t) for k, t, _ in res["요약"]["즉시 실패"]])
         self.assertEqual(res["요약"]["판정"], "실패")
+
+    def test_special_hours_day_not_counted(self):
+        """봇이 쉬도록 정한 날(수능날)은 기록이 없어도 빠짐이 아니고 감사 날에도 안 셈."""
+        r = Repo()
+        b = real_closes("069500")
+        b["closes"] = [x for x in b["closes"] if str(x[0]) <= "20261106"] + [["20261118", 1.0], ["20261119", 1.0], ["20261120", 1.0]]
+        r.write("etf-data/069500.json", b)
+        r.write("event-data/000000.json", {"rows": []})
+        r.commit("자료", "2026-11-20 19:30:00")
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit("20261119", "20261119")
+            self.assertEqual((res["줄들"], res["요약"]["거래일"], res["요약"]["판정"]), ([], 0, "진행 중"))
+            self.assertEqual(res["요약"]["쉰 날(장 시간이 다른 날 · 설계대로)"], {"20261119": "수능날 · 10:00 ~ 16:30"})
+            res = B.audit("20261118", "20261120")
+        self.assertEqual(sorted({x["날"] for x in res["줄들"]}), ["20261118", "20261120"])
 
     def test_end_commit_unreadable(self):
         r = Repo()

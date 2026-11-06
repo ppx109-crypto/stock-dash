@@ -16,6 +16,7 @@
 끝 상태: 0 = 진행 중 · 설명 필요 · 통과 / 1 = 실패 / 2 = 불완전(감사 쪽 읽기 실패 · 다시 셈)
 """
 import argparse
+import ast
 import hashlib
 import io
 import json
@@ -117,6 +118,19 @@ def calendar():
         ERRS.append("etf-data/069500.json JSON 읽기 실패")
         body = {}
     return sorted({str(d) for d, c in body.get("closes", []) if c})
+
+
+def special_days():
+    """장 시간이 다른 날(봇이 자동 판단을 쉬도록 정한 날 · collect_kis_intraday.SPECIAL_HOURS · 끝점 커밋 판) → 감사 날에서 뺌."""
+    txt = show(END, "collect_kis_intraday.py", required=True)
+    try:
+        for node in ast.parse(txt or "").body:
+            if isinstance(node, ast.Assign) and any(getattr(t, "id", "") == "SPECIAL_HOURS" for t in node.targets):
+                return {str(k): str(v) for k, v in ast.literal_eval(node.value).items()}
+    except (SyntaxError, ValueError):
+        pass
+    ERRS.append("장 시간이 다른 날 목록(SPECIAL_HOURS)을 못 읽음")
+    return {}
 
 
 def prev_day(cal, day):
@@ -606,7 +620,9 @@ def _audit(start, end, causes, end_commit):
         return {"요약": {"기간": [start, end], "끝점 커밋": None, "불완전": list(ERRS), "판정": "불완전(다시 셈)"}, "줄들": []}
     cal = calendar()
     found = receipts(start, end)
-    days = sorted({d for d in cal if start <= d <= end} | {d for d, _ in found})
+    special = special_days()
+    skipped = sorted(d for d in cal if start <= d <= end and d in special and not any(k[0] == d for k in found))
+    days = sorted(({d for d in cal if start <= d <= end} - set(skipped)) | {d for d, _ in found})
     ctx = {"main_events": main_events_at(END),
            "basket_inputs": lambda head, t0, before: run_at("basket_inputs", {"t0": t0, "before": before}, head=head,
                                                              folders=("price-data", "share-data", "event-data"))}
@@ -662,6 +678,7 @@ def _audit(start, end, causes, end_commit):
     orders = [o for r in rows for o in r.get("주문", [])]
     summary = {
         "기간": [start, end], "끝점 커밋": END, "거래일": len(days), "기록 수": f"{len(found)}/{n_cells}",
+        "쉰 날(장 시간이 다른 날 · 설계대로)": {d: special[d] for d in skipped},
         "꼬리표 수": {c: sum(1 for r in rows for t, _ in r["문제"] if t == c) for c in CODES + MISSING + HARD},
         "즉시 실패": fails, "설명 안 된 꼬리표": needs, "불완전": list(ERRS),
         "손으로 부른 기록": sum(1 for r in rows if r.get("부른 까닭") not in (None, "schedule") and "기록 시각" in r),
