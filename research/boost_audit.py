@@ -46,8 +46,14 @@ CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL", "OFF_CALENDAR"
 HARD = ("미래", "재현", "기록 고장")                       # 설명으로 못 덮음(즉시 실패)
 MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 원인 꼬리표 + 근거로만 덮음(못 덮으면 즉시 실패)
 STRAIN_TAGS = ("SCHEDULER",) + MISSING
+ALLOWED = {                    # 빠짐류를 덮을 수 있는 원인 꼬리표(사전등록 판 3 고침 2 고정 · MANUAL · OFF_CALENDAR는 면책 원인 아님)
+    "빠짐": ("SCHEDULER", "LATE_INPUT", "BROKER", "LEDGER"),
+    "겹침": ("SCHEDULER", "LEDGER"),
+    "주문 빠짐": ("BROKER", "LEDGER"),
+    "예정 무실행 날 실행": (),  # 어떤 원인으로도 덮지 못함(즉시 실패)
+}
 EVIDENCE = re.compile(r"\d{8,}|\b[0-9a-f]{7,40}\b")
-STRAIN = 0.10                  # 위 꼬리표가 하나라도 붙은 봇 × 날 칸이 10%를 넘으면 '실행 보강 필요'(판정과 함께 적음)
+STRAIN = 0.10                  # 위 꼬리표가 하나라도 붙은 고유 봇 × 날 칸 ÷ 고정 80칸 > 10%면 '실행 보강 필요'(판정과 함께 적음)
 RUN_DAYS_PATH = CODE_ROOT / "research-exchange" / "claude-to-gpt" / "BOOST-0001-A" / "run_days.json"
 RUN_DAYS_SHA = "a19eb525eedfdc9874f0c0af44039ae05db1aa4a17caef554b4eec44decdb811"    # 사전등록 판 3에 고정한 분모 파일
 EVENTS_DUE = "1920"            # (참고만) 바구니 t0 공시 수집 예정 시각 — 커밋 시각은 수집 시각 인증이 아님
@@ -598,10 +604,16 @@ def duplicates(vers):
 def explained(causes, key, tag):
     e = (causes.get(key) or {}).get(tag)
     if tag in MISSING:
-        return isinstance(e, dict) and e.get("원인") in CODES and bool(EVIDENCE.search(str(e.get("근거", ""))))
+        return isinstance(e, dict) and e.get("원인") in ALLOWED.get(tag, ()) and bool(EVIDENCE.search(str(e.get("근거", ""))))
     if isinstance(e, dict):
         e = e.get("근거")
     return bool(e) and bool(EVIDENCE.search(str(e)))
+
+
+def strain(rows, n_fixed):
+    """실행 보강: 대상 꼬리표가 하나라도 붙은 고유 (날, 봇) 칸 수(분모 밖 예정 무실행 날 실행 · 분모 밖 기록 칸 포함) ÷ 고정 칸 수."""
+    cells = {(r["날"], r["봇"]) for r in rows if any(t in STRAIN_TAGS for t, _ in r["문제"])}
+    return len(cells), n_fixed, bool(n_fixed) and len(cells) / n_fixed > STRAIN
 
 
 def incomplete(start, end):
@@ -693,8 +705,8 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
             row["설명"] = causes.get(key, {})
             rows.append(row)
     in_rows = [r for r in rows if r["분모"]]
-    n_cells = len(days) * len(BOTS)
-    strain = sum(1 for r in in_rows if any(t in STRAIN_TAGS for t, _ in r["문제"]))     # 고유 봇 × 날 칸 수
+    n_cells = len(days) * len(BOTS)                                   # 기록 완성률용(부른 기간)
+    n_strain, n_fixed, need = strain(rows, len(run_days["기대 실행일"]) * len(BOTS))   # 실행 보강률용(언제나 고정 80칸)
     orders = [o for r in in_rows for o in r.get("주문", [])]
     try:
         me = {"boost_audit.py 블롭": A.blob_id(Path(__file__).resolve()),
@@ -712,7 +724,7 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None):
         "즉시 실패": fails, "설명 안 된 꼬리표": needs, "불완전": list(ERRS),
         "손으로 부른 기록": sum(1 for r in in_rows if r.get("부른 까닭") not in (None, "schedule") and "기록 시각" in r),
         "주문 접수율": f"{sum(1 for o in orders if o[2].startswith('접수'))}/{len(orders)}",
-        "보강 칸": f"{strain}/{n_cells}", "실행 보강 필요": bool(n_cells) and strain / n_cells > STRAIN,
+        "보강 칸": f"{n_strain}/{n_fixed}", "실행 보강 필요": need,
         "기준 ① · ②": "월 점검 셈(tools/bt_mix54.py · reconcile)으로 따로 보고(이 셈 밖)",
         "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else
                  "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "설명 필요")}

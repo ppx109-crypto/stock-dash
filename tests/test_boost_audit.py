@@ -463,14 +463,68 @@ class Checks(unittest.TestCase):
         self.assertEqual([t for t, _ in B.orders_check("daily", daily)], ["주문 빠짐"])
 
     def test_causes_format(self):
-        c = {"20261109:basket": {"빠짐": {"원인": "SCHEDULER", "근거": "작업 19283746501 · 15:31 시작"}, "BROKER": "근거 없음",
-                                 "LEDGER": {"근거": "커밋 a1b2c3d4e5"}},
-             "20261110:basket": {"빠짐": ""}, "20261111:basket": {"빠짐": {"원인": "모름", "근거": "작업 19283746501"}}}
+        ev = "작업 19283746501 · 15:31 시작"
+        c = {"20261109:basket": {"빠짐": {"원인": "SCHEDULER", "근거": ev}, "BROKER": "근거 없음",
+                                 "LEDGER": {"근거": "커밋 a1b2c3d4e5"}, "주문 빠짐": {"원인": "BROKER", "근거": ev}},
+             "20261110:basket": {"빠짐": ""}, "20261111:basket": {"빠짐": {"원인": "모름", "근거": ev}}}
         self.assertTrue(B.explained(c, "20261109:basket", "빠짐"))
+        self.assertTrue(B.explained(c, "20261109:basket", "주문 빠짐"))
         self.assertFalse(B.explained(c, "20261109:basket", "BROKER"))
         self.assertTrue(B.explained(c, "20261109:basket", "LEDGER"))
         self.assertFalse(B.explained(c, "20261110:basket", "빠짐"))      # 빈 글로는 못 덮음
         self.assertFalse(B.explained(c, "20261111:basket", "빠짐"))      # 원인 꼬리표가 정해진 것이 아님
+        bad = {"k": {"빠짐": {"원인": "MANUAL", "근거": ev}, "주문 빠짐": {"원인": "OFF_CALENDAR", "근거": ev},
+                     "예정 무실행 날 실행": {"원인": "MANUAL", "근거": ev}, "겹침": {"원인": "BROKER", "근거": ev}}}
+        for tag in ("빠짐", "주문 빠짐", "예정 무실행 날 실행", "겹침"):     # 허용 표에 없는 원인은 근거 꼴이 좋아도 못 덮음
+            self.assertFalse(B.explained(bad, "k", tag), tag)
+        for cause in B.CODES:                                           # 예정 무실행 날 실행은 어떤 원인으로도 못 덮음
+            self.assertFalse(B.explained({"k": {"예정 무실행 날 실행": {"원인": cause, "근거": ev}}}, "k", "예정 무실행 날 실행"))
+
+    def test_wrong_causes_stay_failures(self):
+        """빠짐+MANUAL · 주문 빠짐+OFF_CALENDAR · 예정 무실행 날 실행+MANUAL은 감사 판정에서도 즉시 실패로 남음."""
+        off = {"20261119": {"까닭": "수능날"}}
+        r = Repo()
+        r.etf("29991231")
+        b = {"날": "20261119", "봇": "daily", "기록 시각(한국)": "2026-11-19 15:21:00", "판단 때 저장소 HEAD": None, "입력": None}
+        r.write("daily-live/audit/20261119-daily.json", b)
+        r.commit("기록", "2026-11-20 19:30:00")
+        ev = "작업 19283746501"
+        causes = {"20261118:daily": {"빠짐": {"원인": "MANUAL", "근거": ev}},
+                  "20261119:daily": {"예정 무실행 날 실행": {"원인": "MANUAL", "근거": ev}, "기록 고장": ev}}
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit("20261118", "20261120", causes=causes,
+                          run_days=rd(["20261118", "20261120"], trading=["20261118", "20261119", "20261120"], off=off))
+        fails = {(k, t) for k, t, _ in res["요약"]["즉시 실패"]}
+        self.assertIn(("20261118:daily", "빠짐"), fails)
+        self.assertIn(("20261119:daily", "예정 무실행 날 실행"), fails)
+        body = {"날": "20261109", "결과": {"orders": [["138230", "sell", 2, "r"]]}, "주문 결과": {"late": False}, "오늘 장부 주문": {}}
+        self.assertEqual([t for t, _ in B.orders_check("engine", body)], ["주문 빠짐"])
+        self.assertFalse(B.explained({"20261109:engine": {"주문 빠짐": {"원인": "OFF_CALENDAR", "근거": ev}}}, "20261109:engine", "주문 빠짐"))
+
+    def test_strain_fixed_80(self):
+        """실행 보강률 분모는 언제나 고정 칸(20일 × 4 = 80): 8/80 아님 · 9/80 필요 · 부분 기간 4문제 = 4/80 · 예정 무실행 날 기록 하나 더 = 5/80."""
+        def rows(n, tag="SCHEDULER"):
+            return [{"날": f"d{i // 4}", "봇": f"b{i % 4}", "문제": [(tag, ""), ("빠짐", "")]} for i in range(n)]
+        self.assertEqual(B.strain(rows(8), 80), (8, 80, False))
+        self.assertEqual(B.strain(rows(9), 80), (9, 80, True))
+        self.assertEqual(B.strain(rows(3) + [{"날": "x", "봇": "y", "문제": [("LATE_INPUT", "")]}], 80)[0], 3)   # 대상 아닌 꼬리표는 안 셈
+        run = [f"202611{d:02d}" for d in (9, 10, 11, 12, 13, 16, 17, 18, 20, 23, 24, 25, 26, 27, 30)] + ["20261201", "20261202", "20261203",
+                                                                                                       "20261204", "20261207"]
+        trading = sorted(set(run) | {"20261106", "20261119"})
+        off = {"20261119": {"까닭": "수능날"}}
+        r = Repo()
+        r.etf("29991231")
+        r.commit("자료", "2026-11-09 19:30:00")
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit("20261109", "20261109", run_days=rd(run, trading=trading, off=off))
+        self.assertEqual((res["요약"]["보강 칸"], res["요약"]["실행 보강 필요"], res["요약"]["기록 수"]), ("4/80", False, "0/4"))
+        r.write("daily-live/audit/20261119-daily.json", {"날": "20261119", "봇": "daily", "기록 시각(한국)": "2026-11-19 15:21:00",
+                                                        "판단 때 저장소 HEAD": None, "입력": None})
+        r.commit("기록", "2026-11-19 19:30:00")
+        with mock.patch.object(B, "ROOT", r.root):
+            res = B.audit("20261109", "20261119", run_days=rd(run, trading=trading, off=off))
+        days_in = len([d for d in run if d <= "20261119"])
+        self.assertEqual(res["요약"]["보강 칸"], f"{days_in * 4 + 1}/80")      # 기대 실행일 빠짐 칸들 + 예정 무실행 날 실행 1칸
 
     def test_scheduler_skip_strain_and_verdict(self):
         """엔진이 마감 뒤에 돈 날 바구니 · 덧붙임이 없는 것은 SCHEDULER · 기록 고장은 설명으로 못 덮음 · 보강 칸은 고유 칸 수."""
