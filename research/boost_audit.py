@@ -614,48 +614,83 @@ def commit_exists(c):
 
 
 def load_runs(path=RUNS_PATH):
-    """작업 영수증 파일 {run_id: {repository, id, path, head_sha, event, run_attempt, status, conclusion, created_at, html_url}}."""
+    """작업 영수증 파일 {run_id: receipt_from_api()가 만든 영수증}."""
     try:
         return json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return {}
 
 
-RUN_FIELDS = ("repository", "id", "path", "head_sha", "event", "run_attempt", "status", "conclusion", "created_at", "html_url")
+RECEIPT_SCHEMA = "boost-run-receipt/1"
+RECEIPT_FIELDS = ("schema_version", "request_url", "raw_sha256", "repository_full_name", "head_repository_full_name", "id", "url",
+                  "html_url", "path", "head_branch", "head_sha", "event", "run_attempt", "status", "conclusion", "created_at")
+
+
+def api_url(run_id):
+    return f"https://api.github.com/repos/{REPO}/actions/runs/{run_id}"
+
+
+def receipt_from_api(raw, request_url):
+    """GitHub Actions 작업 API 응답 원문(dict) → 작업 영수증(결정적 변환 · 판 3 고침 5).
+    원문은 커밋 작성자 메일 등이 들어 있어 저장하지 않고, 요청 주소와 원문 지문(sha256 · 열쇠 차례 무관)을 함께 둠.
+    저장소 칸은 원문대로 묶음(repository.full_name) — 묶음이 아니거나 칸이 없으면 예외(영수증을 만들지 않음)."""
+    return {"schema_version": RECEIPT_SCHEMA, "request_url": request_url, "raw_sha256": A.digest(raw),
+            "repository_full_name": raw["repository"]["full_name"], "head_repository_full_name": raw["head_repository"]["full_name"],
+            "id": raw["id"], "url": raw["url"], "html_url": raw["html_url"], "path": raw["path"], "head_branch": raw["head_branch"],
+            "head_sha": raw["head_sha"], "event": raw["event"], "run_attempt": raw["run_attempt"], "status": raw["status"],
+            "conclusion": raw["conclusion"], "created_at": raw["created_at"]}
+
+
+def add_run(run_id, path=RUNS_PATH):
+    """작업 API에서 원문을 받아 영수증으로 바꿔 영수증 파일에 더함(손으로 쓰지 않음 · 감사 판정 길에서는 부르지 않음)."""
+    rid = str(int(run_id))
+    url = api_url(rid)
+    out = subprocess.run(["curl", "-sS", "-f", "-H", "Accept: application/vnd.github+json", url], capture_output=True, text=True, timeout=60)
+    if out.returncode != 0:
+        raise RuntimeError(f"작업 {rid} 응답을 못 받음")
+    rec = receipt_from_api(json.loads(out.stdout), url)
+    runs = load_runs(path)
+    runs[rid] = rec
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps(dict(sorted(runs.items())), ensure_ascii=False, indent=1), encoding="utf-8")
+    return rec
 
 
 def run_ok(run_id, day, cause, runs, cal):
-    """run_id가 작업 영수증 파일에 있고 · 칸이 다 있으며 · 이 저장소 작업이고 · 그 작업의 커밋(head_sha)이 끝점의 조상이며 ·
-    원인에 맞는 작업 흐름이고 · 그 날(또는 앞 거래일) 만든 작업인지(성공 · 실패는 따지지 않음 · 실패한 작업도 증거)."""
+    """run_id 영수증이 판 3 고침 5 꼴이고 · 이 저장소 main의 끝난 작업이며 · 주소가 정확히 그 작업이고 · 작업 커밋(head_sha)이
+    저장소에 있고 끝점의 조상이며 · 작업 흐름이 원인에 맞고 · 그 날(또는 앞 거래일) 만든 작업인지(성공 · 실패는 안 따짐)."""
     rid = str(run_id).strip()
     r = (runs or {}).get(rid)
-    if not RUN_ID.fullmatch(rid) or not isinstance(r, dict) or any(k not in r for k in RUN_FIELDS):
+    if not RUN_ID.fullmatch(rid) or not isinstance(r, dict) or any(k not in r for k in RECEIPT_FIELDS):
         return False
-    if r.get("repository") != REPO or str(r.get("id")) != rid or \
-            not str(r.get("html_url", "")).startswith(f"https://github.com/{REPO}/actions/runs/{rid}"):
+    if r["schema_version"] != RECEIPT_SCHEMA or r["request_url"] != api_url(rid) or r["url"] != api_url(rid) or \
+            not re.fullmatch(r"[0-9a-f]{64}", str(r["raw_sha256"])):
         return False
-    sha_ = str(r.get("head_sha", "")).lower()
+    if r["repository_full_name"] != REPO or r["head_repository_full_name"] != REPO or r["head_branch"] != "main" or \
+            type(r["id"]) is not int or r["id"] != int(rid) or r["html_url"] != f"https://github.com/{REPO}/actions/runs/{rid}" or \
+            r["status"] != "completed":
+        return False
+    if r["path"] not in {f".github/workflows/{w}" for w in WORKFLOWS.get(cause, ())}:
+        return False
+    sha_ = str(r["head_sha"])
     if not re.fullmatch(r"[0-9a-f]{40}", sha_) or not commit_exists(sha_) or is_ancestor(sha_, END) is not True:
         return False
-    if str(r.get("path", "")).rsplit("/", 1)[-1] not in WORKFLOWS.get(cause, ()):
-        return False
     try:
-        made = datetime.strptime(str(r.get("created_at")), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC")).astimezone(KST)
+        made = datetime.strptime(str(r["created_at"]), "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=ZoneInfo("UTC")).astimezone(KST)
     except ValueError:
         return False
     return made.strftime("%Y%m%d") in {day, prev_day(cal or [], day)}
 
 
 def commit_ok(com):
-    """commit이 저장소에 있고 감사 끝점의 조상인지."""
+    """(참고만) commit이 저장소에 있고 감사 끝점의 조상인지 — 사건 영수증이 아니므로 면책에는 쓰지 않음(판 3 고침 5)."""
     com = str(com).strip().lower()
     return bool(COMMIT.fullmatch(com)) and commit_exists(com) and is_ancestor(com, END) is True
 
 
 def explained(causes, key, tag, runs=None, cal=None):
-    """설명 꼴(사전등록 판 3 고침 4): {"원인": 허용 원인(빠짐류만), "run_id": 작업 영수증 파일에 있는 작업, "commit": 끝점 조상 커밋, "근거": "글"}.
-    run_id는 작업 영수증 파일(API 칸 그대로)과 저장소 · 작업 커밋(끝점 조상) · 원인별 작업 흐름 · 날짜(그 날 또는 앞 거래일)를 대조 ·
-    자유 글만으로는 안 됨."""
+    """설명 꼴(사전등록 판 3 고침 5): {"원인": 허용 원인(빠짐류만), "run_id": 영수증 파일에 있는 작업, "commit": 참고, "근거": "글"}.
+    면책은 검증된 작업 영수증(run_ok)만 · commit만 · 자유 글만으로는 안 됨(조상 커밋은 그 날 · 봇 · 원인의 사건 증거가 아님)."""
     e = (causes.get(key) or {}).get(tag)
     if not isinstance(e, dict):
         return False
@@ -665,8 +700,7 @@ def explained(causes, key, tag, runs=None, cal=None):
         cause = e["원인"]
     else:
         cause = tag
-    day = key.split(":")[0]
-    return (bool(e.get("run_id")) and run_ok(e["run_id"], day, cause, runs, cal)) or (bool(e.get("commit")) and commit_ok(e["commit"]))
+    return bool(e.get("run_id")) and run_ok(e["run_id"], key.split(":")[0], cause, runs, cal)
 
 
 def strain(rows, n_fixed):
@@ -785,8 +819,10 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None, runs=None):
         "주문 접수율": f"{sum(1 for o in orders if o[2].startswith('접수'))}/{len(orders)}",
         "보강 칸": f"{n_strain}/{n_fixed}", "실행 보강 필요": need,
         "기준 ① · ②": "월 점검 셈(tools/bt_mix54.py · reconcile)으로 따로 보고(이 셈 밖)",
-        "설명 영수증": [[k, t, e.get("run_id"), (runs or {}).get(str(e.get("run_id")), {}).get("html_url"), e.get("commit"),
-                      "끝점 조상" if e.get("commit") and commit_ok(e["commit"]) else None, explained(causes, k, t, runs, cal)]
+        "설명 영수증": [[k, t, e.get("run_id"), ((runs or {}).get(str(e.get("run_id"))) or {}).get("html_url"),
+                      ((runs or {}).get(str(e.get("run_id"))) or {}).get("raw_sha256"), e.get("commit"),
+                      ("끝점 조상(참고 · 면책 아님)" if commit_ok(e["commit"]) else "끝점 조상 아님(참고)") if e.get("commit") else None,
+                      explained(causes, k, t, runs, cal)]
                     for k, tags in sorted(causes.items()) for t, e in sorted((tags or {}).items()) if isinstance(e, dict)],
         "판정": ("실패" if fails else "불완전(다시 셈)" if ERRS else
                  "진행 중" if start > all_days[0] or end < all_days[-1] else "통과" if not needs else "설명 필요")}
@@ -795,14 +831,21 @@ def audit(start, end, causes=None, end_commit="HEAD", run_days=None, runs=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--from", dest="start", required=True)
-    ap.add_argument("--to", dest="end", required=True)
+    ap.add_argument("--from", dest="start")
+    ap.add_argument("--to", dest="end")
     ap.add_argument("--causes", default=str(CODE_ROOT / "research" / "boost_a" / "causes.json"))
     ap.add_argument("--out", default=str(CODE_ROOT / "research" / "boost_a"))
     ap.add_argument("--end-commit", default="HEAD")
     ap.add_argument("--days", default=str(RUN_DAYS_PATH))
     ap.add_argument("--runs", default=str(RUNS_PATH))
+    ap.add_argument("--add-run", help="작업 API에서 영수증을 받아 영수증 파일에 더하고 끝냄(감사는 안 함)")
     a = ap.parse_args(argv)
+    if a.add_run:
+        rec = add_run(a.add_run, a.runs)
+        print(f"작업 영수증 더함 {rec['id']} · {rec['path']} · {rec['event']} · {rec['created_at']} · {rec['status']}/{rec['conclusion']}")
+        return 0
+    if not (a.start and a.end):
+        ap.error("--from · --to 가 필요합니다")
     cpath = Path(a.causes)
     causes = json.loads(cpath.read_text(encoding="utf-8")) if cpath.is_file() else {}
     ERRS.clear()

@@ -463,45 +463,63 @@ class Checks(unittest.TestCase):
         self.assertEqual([t for t, _ in B.orders_check("daily", daily)], ["주문 빠짐"])
 
     HEAD = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+    RAW = json.loads((ROOT / "tests" / "fixtures" / "boost_run_42227497428.json").read_text(encoding="utf-8"))  # 실제 API 응답 원문
 
     @classmethod
-    def receipt(cls, rid, path, created, repo="ppx109-crypto/stock-dash", **over):
-        r = {"repository": repo, "id": int(rid), "path": f".github/workflows/{path}", "head_sha": cls.HEAD, "event": "schedule",
-             "run_attempt": 1, "status": "completed", "conclusion": "success", "created_at": created,
-             "html_url": f"https://github.com/{repo}/actions/runs/{rid}"}
-        r.update(over)
-        return {k: v for k, v in r.items() if v is not None}
+    def receipt(cls, rid, wf, created, repo="ppx109-crypto/stock-dash", head_sha=None, drop=(), **over):
+        """실제 응답 원문의 꼴을 그대로 두고 값만 바꾼 뒤 변환기(receipt_from_api)를 거친 영수증 · over / drop은 변환 뒤 변조."""
+        raw = json.loads(json.dumps(cls.RAW))
+        raw.update(id=int(rid), url=f"https://api.github.com/repos/{repo}/actions/runs/{rid}", path=f".github/workflows/{wf}",
+                   html_url=f"https://github.com/{repo}/actions/runs/{rid}", created_at=created, head_sha=head_sha or cls.HEAD)
+        raw["repository"]["full_name"] = raw["head_repository"]["full_name"] = repo
+        rec = B.receipt_from_api(raw, f"https://api.github.com/repos/{repo}/actions/runs/{rid}")
+        rec.update(over)
+        for k in drop:
+            rec.pop(k)
+        return rec
 
     @property
     def RUNS(self):
-        R = self.receipt
-        return {"42259467975": R("42259467975", "daily-live.yml", "2026-11-09T06:31:00Z"),
+        R, d = self.receipt, ("daily-live.yml", "2026-11-09T06:31:00Z")
+        bad = {"42250000004": dict(head_sha="0" * 40), "42250000005": dict(drop=("head_sha",)), "42250000006": dict(drop=("conclusion",)),
+               "42250000007": dict(id=42250000008), "42250000009": dict(html_url=self.html("42250000009") + "/attempts/1"),
+               "42250000010": dict(status="in_progress"), "42250000011": dict(head_branch="claude/x"),
+               "42250000012": dict(schema_version="boost-run-receipt/0"), "42250000013": dict(raw_sha256="0" * 63),
+               "42250000014": dict(path=".github/workflows/daily-live.yml@main"),
+               "42250000015": dict(repository_full_name="ppx109-crypto/stock-dash2"),
+               "42250000016": dict(url="https://api.github.com/repos/ppx109-crypto/stock-dash/actions/runs/42250000017"),
+               "42250000017": dict(head_repository_full_name="someone/stock-dash"),
+               "42250000018": dict(html_url=self.html("42250000018") + "0"),
+               "42250000019": dict(request_url="https://api.github.com/repos/someone/other/actions/runs/42250000019")}
+        runs = {"42259467975": R("42259467975", *d),
                 "42250000001": R("42250000001", "etf-prices.yml", "2026-11-06T10:40:00Z", conclusion="failure"),
-                "42250000002": R("42250000002", "daily-live.yml", "2026-11-09T06:31:00Z", repo="someone/other"),
-                "42250000003": R("42250000003", "daily-live.yml", "2026-11-12T06:31:00Z"),
-                "42250000004": R("42250000004", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha="0" * 40),
-                "42250000005": R("42250000005", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=None),
-                "42250000006": R("42250000006", "daily-live.yml", "2026-11-09T06:31:00Z", conclusion=None),
-                "42250000007": R("42250000007", "daily-live.yml", "2026-11-09T06:31:00Z", id=42250000008)}
+                "42250000002": R("42250000002", *d, repo="someone/other"),
+                "42250000003": R("42250000003", "daily-live.yml", "2026-11-12T06:31:00Z")}
+        runs.update({k: R(k, *d, **v) for k, v in bad.items()})
+        return runs
+    BAD_RUNS = (9999999999, 42259467976, 42250000002, 42250000003) + tuple(range(42250000004, 42250000020))
     CAL = ["20261106", "20261109", "20261110", "20261111", "20261112"]
+
+    @staticmethod
+    def html(rid):
+        return f"https://github.com/ppx109-crypto/stock-dash/actions/runs/{rid}"
 
     def ok(self, e, tag, key="20261109:basket", runs=None, root=ROOT, end=None):
         with mock.patch.object(B, "ROOT", root), mock.patch.object(B, "END", end or self.HEAD):  # 앞 시험이 끝점을 바꿔 두었어도 같게
             return B.explained({key: {tag: e}}, key, tag, self.RUNS if runs is None else runs, self.CAL)
 
     def test_causes_format(self):
-        """설명 영수증: run_id는 작업 영수증 파일에 있고 이 저장소 · 원인에 맞는 작업 흐름 · 그 날(또는 앞 거래일) 작업이어야 함 ·
-        자유 글 · 날짜 · 형식만 맞는 번호 · 다른 저장소 · 다른 날 작업은 안 됨."""
+        """설명 영수증: run_id는 영수증 파일에 있고 판 3 고침 5 꼴 · 이 저장소 main의 끝난 작업 · 주소 정확히 · 원인에 맞는 작업 흐름 ·
+        그 날(또는 앞 거래일) 작업이어야 함 · commit만 · 자유 글 · 날짜 · 형식만 맞는 번호 · 다른 저장소 · 다른 날 작업은 안 됨."""
         self.assertTrue(self.ok({"원인": "SCHEDULER", "run_id": 42259467975, "근거": "15:31 시작"}, "빠짐"))
         self.assertTrue(self.ok({"run_id": "42259467975"}, "BROKER"))
-        self.assertTrue(self.ok({"run_id": 42250000001}, "LATE_INPUT"))           # 앞 거래일(11-06) ETF 수집 작업 = 늦은 입력 영수증
+        self.assertTrue(self.ok({"run_id": 42250000001}, "LATE_INPUT"))           # 앞 거래일(11-06) ETF 수집 실패 작업 = 늦은 입력 영수증
         self.assertFalse(self.ok({"run_id": 42250000001}, "SCHEDULER"))           # 원인과 작업 흐름이 안 맞음
-        for e in ({"run_id": 9999999999}, {"run_id": 42259467976}, {"run_id": 42250000002}, {"run_id": 42250000003},
-                  {"run_id": 42250000004}, {"run_id": 42250000005}, {"run_id": 42250000006}, {"run_id": 42250000007},
-                  {"근거": "20261109"}, {"근거": "날짜 20261109 · 작업 42259467975"}, {"run_id": "20261109"}, {"run_id": 12345678},
+        others = ({"근거": "20261109"}, {"근거": "날짜 20261109 · 작업 42259467975"}, {"run_id": "20261109"}, {"run_id": 12345678},
                   {"run_id": "작업 42259467975"}, {"commit": "abcdef1"}, {"commit": "deadbeefcafe"}, {"commit": "날짜20261109"},
-                  "작업 42259467975", "", None):
-            self.assertFalse(self.ok(e, "BROKER"), e)                               # 없는 번호 · 다른 저장소 · 다른 날 · 형식만 · 자유 글
+                  {"commit": self.HEAD}, {"commit": self.HEAD[:10]}, "작업 42259467975", "", None)
+        for e in tuple({"run_id": x} for x in self.BAD_RUNS) + others:
+            self.assertFalse(self.ok(e, "BROKER"), e)                               # 변조 · 없는 번호 · 다른 저장소 · 다른 날 · commit만 · 자유 글
             self.assertFalse(self.ok(dict(e, 원인="SCHEDULER") if isinstance(e, dict) else e, "빠짐"), e)
         self.assertFalse(self.ok({"run_id": 42259467975}, "BROKER", key="20261111:basket"))   # 그 날 · 앞 거래일 작업이 아님
         wrong = {"원인": "MANUAL", "run_id": 42259467975}
@@ -510,11 +528,47 @@ class Checks(unittest.TestCase):
         for cause in B.CODES:                                                     # 예정 무실행 날 실행은 어떤 원인으로도 못 덮음
             self.assertFalse(self.ok({"원인": cause, "run_id": 42259467975}, "예정 무실행 날 실행"))
 
-    def test_commit_must_be_end_ancestor(self):
-        """commit 영수증은 저장소에 있고 감사 끝점의 조상이어야 함(합쳐지지 않은 가지 커밋 · 없는 커밋은 안 됨)."""
+    def test_real_api_receipt(self):
+        """실제 작업 API 응답 원문(tests/fixtures · 2026-11-06 daily-live 작업)이 변환기를 거쳐 통과 · 저장소 묶음 · 주소 변조는 거부.
+        작업 커밋 대조는 CI의 얕은 가져오기에 그 커밋이 없어 이 시험에서만 참으로 두고, 실제 git 대조는 test_bare_commit_never_exempts에서 함."""
+        rid = str(self.RAW["id"])
+
+        def ok(raw=None, rec=None, key="20261106:daily", tag="SCHEDULER"):
+            rec = B.receipt_from_api(raw, B.api_url(rid)) if rec is None else rec
+            with mock.patch.object(B, "commit_exists", return_value=True), mock.patch.object(B, "is_ancestor", return_value=True):
+                return B.explained({key: {tag: {"run_id": rid}}}, key, tag, {rid: rec}, self.CAL)
+
+        def raw_with(fn):
+            raw = json.loads(json.dumps(self.RAW))
+            fn(raw)
+            return raw
+        rec = B.receipt_from_api(self.RAW, B.api_url(rid))
+        self.assertEqual((rec["repository_full_name"], rec["raw_sha256"]), ("ppx109-crypto/stock-dash", A.digest(self.RAW)))
+        self.assertTrue(ok(self.RAW))
+        self.assertTrue(ok(self.RAW, key="20261109:daily"))                     # 앞 거래일 작업
+        self.assertTrue(ok(self.RAW, tag="LATE_INPUT"))
+        self.assertTrue(ok(rec=json.loads(json.dumps(rec))))                     # 파일로 썼다 읽어도(온라인 API 없이) 같음
+        self.assertFalse(ok(self.RAW, key="20261110:daily"))
+        self.assertFalse(ok(raw_with(lambda r: r["repository"].update(full_name="someone/stock-dash"))))
+        self.assertFalse(ok(raw_with(lambda r: r["head_repository"].update(full_name="someone/stock-dash"))))
+        for broken in (lambda r: r.update(repository="ppx109-crypto/stock-dash"), lambda r: r.pop("repository"),
+                       lambda r: r["head_repository"].pop("full_name")):
+            with self.assertRaises((TypeError, KeyError)):                     # 묶음이 아니거나 칸이 없으면 영수증을 못 만듦
+                B.receipt_from_api(raw_with(broken), B.api_url(rid))
+        flat = {k: self.RAW[k] for k in ("id", "path", "head_sha", "event", "run_attempt", "status", "conclusion", "created_at", "html_url")}
+        self.assertFalse(ok(rec=dict(flat, repository="ppx109-crypto/stock-dash")))   # 고침 4의 자체 요약 꼴은 거부
+        for k, v in (("html_url", rec["html_url"] + "/attempts/1"), ("html_url", rec["html_url"] + "0"), ("url", rec["url"] + "0"),
+                     ("request_url", rec["request_url"].replace("ppx109-crypto", "someone"))):
+            self.assertFalse(ok(rec=dict(rec, **{k: v})), (k, v))                # 주소는 정확히 같아야 함
+
+    def test_bare_commit_never_exempts(self):
+        """commit만으로는 면책 안 됨(바탕 · 무관 문서만 고친 · 다른 날 · 끝점 자신 · 가지 · 없는 커밋 모두) ·
+        작업 영수증은 작업 커밋이 끝점 조상일 때만 · commit 칸은 결과에 참고로만."""
         r = Repo(code=False)
         r.write("a.txt", "1")
-        base = r.commit("바탕", "2026-11-09 09:00:00")
+        base = r.commit("바탕", "2026-11-01 09:00:00")
+        r.write("notes.md", "x")
+        doc = r.commit("문서만", "2026-11-09 09:30:00")
         r.git("checkout", "-q", "-b", "side")
         r.write("b.txt", "2")
         side = r.commit("가지", "2026-11-09 10:00:00")
@@ -522,14 +576,15 @@ class Checks(unittest.TestCase):
         r.write("c.txt", "3")
         tip = r.commit("끝", "2026-11-09 11:00:00")
         at = dict(root=r.root, end=tip)
-        self.assertTrue(self.ok({"commit": base}, "LEDGER", **at))
-        self.assertTrue(self.ok({"원인": "LEDGER", "commit": base[:12]}, "주문 빠짐", **at))
-        self.assertFalse(self.ok({"commit": side}, "LEDGER", **at))                 # 저장소에는 있으나 끝점 조상 아님
-        self.assertFalse(self.ok({"commit": "0" * 40}, "LEDGER", **at))
+        for com in (base, base[:12], doc, tip, side, "0" * 40):
+            self.assertFalse(self.ok({"commit": com}, "LEDGER", **at), com)
+            self.assertFalse(self.ok({"원인": "LEDGER", "commit": com}, "주문 빠짐", **at), com)
         runs = {"42259467975": self.receipt("42259467975", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=base),
                 "42259467976": self.receipt("42259467976", "daily-live.yml", "2026-11-09T06:31:00Z", head_sha=side)}
-        self.assertTrue(self.ok({"run_id": 42259467975}, "BROKER", runs=runs, **at))     # 작업 커밋이 끝점 조상
-        self.assertFalse(self.ok({"run_id": 42259467976}, "BROKER", runs=runs, **at))    # 작업 커밋이 합쳐지지 않은 가지
+        self.assertTrue(self.ok({"run_id": 42259467975, "commit": side}, "BROKER", runs=runs, **at))   # 면책은 작업 영수증으로
+        self.assertFalse(self.ok({"run_id": 42259467976}, "BROKER", runs=runs, **at))                 # 작업 커밋이 합쳐지지 않은 가지
+        with mock.patch.object(B, "ROOT", r.root), mock.patch.object(B, "END", tip):
+            self.assertEqual((B.commit_ok(base), B.commit_ok(side)), (True, False))                     # 결과의 참고 칸
 
     def test_wrong_causes_stay_failures(self):
         """빠짐+MANUAL · 주문 빠짐+OFF_CALENDAR · 예정 무실행 날 실행+MANUAL은 감사 판정에서도 즉시 실패로 남음."""
@@ -538,19 +593,20 @@ class Checks(unittest.TestCase):
         r.etf("29991231")
         b = {"날": "20261119", "봇": "daily", "기록 시각(한국)": "2026-11-19 15:21:00", "판단 때 저장소 HEAD": None, "입력": None}
         r.write("daily-live/audit/20261119-daily.json", b)
-        r.commit("기록", "2026-11-20 19:30:00")
+        sha_ = r.commit("기록", "2026-11-20 19:30:00")
         ev = 42259467975
+        runs = {str(ev): self.receipt(str(ev), "daily-live.yml", "2026-11-18T06:21:00Z", head_sha=sha_)}   # 맞는 작업 영수증이어도
         causes = {"20261118:daily": {"빠짐": {"원인": "MANUAL", "run_id": ev}},
                   "20261119:daily": {"예정 무실행 날 실행": {"원인": "MANUAL", "run_id": ev}, "기록 고장": {"run_id": ev}}}
         with mock.patch.object(B, "ROOT", r.root):
-            res = B.audit("20261118", "20261120", causes=causes,
+            res = B.audit("20261118", "20261120", causes=causes, runs=runs,
                           run_days=rd(["20261118", "20261120"], trading=["20261118", "20261119", "20261120"], off=off))
         fails = {(k, t) for k, t, _ in res["요약"]["즉시 실패"]}
         self.assertIn(("20261118:daily", "빠짐"), fails)
         self.assertIn(("20261119:daily", "예정 무실행 날 실행"), fails)
         body = {"날": "20261109", "결과": {"orders": [["138230", "sell", 2, "r"]]}, "주문 결과": {"late": False}, "오늘 장부 주문": {}}
         self.assertEqual([t for t, _ in B.orders_check("engine", body)], ["주문 빠짐"])
-        self.assertFalse(B.explained({"20261109:engine": {"주문 빠짐": {"원인": "OFF_CALENDAR", "run_id": ev}}}, "20261109:engine", "주문 빠짐"))
+        self.assertFalse(self.ok({"원인": "OFF_CALENDAR", "run_id": ev}, "주문 빠짐", key="20261109:engine"))
 
     def test_strain_fixed_80(self):
         """실행 보강률 분모는 언제나 고정 칸(20일 × 4 = 80): 8/80 아님 · 9/80 필요 · 부분 기간 4문제 = 4/80 · 예정 무실행 날 기록 하나 더 = 5/80."""
