@@ -22,6 +22,12 @@ import math
 import statistics
 from pathlib import Path
 
+try:                                     # 판단 기록장(관측 전용 · BOOST-0001-A): 불러온 코드 판(블롭 id)을 적어 감사가 같은 판으로 재현
+    import audit_log as _audit
+    _CODE = _audit.file_ids(__file__)
+except Exception:                        # 기록장이 없거나 말썽이어도 매매는 그대로(기록만 건너뜀)
+    _audit, _CODE = None, None
+
 HOME = Path("basket-live")
 STATE = HOME / "state.json"
 BOOK = HOME / "paper-orders.json"
@@ -195,8 +201,18 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
         p = quote(code)
         if p:
             now_price[code] = p
-    orders, new_state, why = step(state, day, t0, days_since, ev, react, inside, held, now_price,
-                                  capital=max(0.0, capital), avail=avail, names=names, others=set(others))
+    # 판단 기록장(관측 전용 · 식은 모두 safe 안 · 실패해도 매매 그대로): 판단 앞 입력 → 날짜 셈 질문과 답 → 기록
+    basket_in = _audit.safe(lambda: _audit.capture(dict(
+        state=state, day=day, t0=t0, events_t0=ev, react=react, inside=inside, held=held, now_price=now_price,
+        capital=max(0.0, capital), avail=avail, others=set(others),
+        names={c: names[c] for c in {c for c, _ in ev} | set(held) | set(state.get("positions", {})) if c in names}))) if _audit else None
+    ds_calls = []
+    orders, new_state, why = step(state, day, t0, _audit.recorder(days_since, ds_calls) if _audit else days_since, ev, react, inside,
+                                  held, now_price, capital=max(0.0, capital), avail=avail, names=names, others=set(others))
+    if _audit:
+        _audit.safe(lambda: _audit.record(STATE, day, "basket", basket_in, {"orders": orders, "new_state": new_state, "why": why},
+                                          ledgers=(BOOK, STATE), code=_CODE, extra={
+            "before": before, "days_since_calls": ds_calls, "days_tail": days[-_audit.DAYS_TAIL:], "days_len": len(days)}))
     book = _load(BOOK, {"orders": [], "held": {}})
     book.setdefault("held", {})
     seen = {o["key"] for o in book["orders"]}
@@ -238,4 +254,7 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
     val = sum(int(q) * (now_price.get(c) or float(account.get(c, {}).get("price") or 0)) for c, q in book["held"].items())
+    if _audit:
+        _audit.safe(lambda: _audit.after(STATE, day, "basket", {"spent": spent, "value_after": val}, ledgers=(BOOK, STATE),
+                                         books=(BOOK,)))
     return short, val, spent

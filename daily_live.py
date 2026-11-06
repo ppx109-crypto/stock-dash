@@ -24,6 +24,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+try:                                     # 판단 기록장(관측 전용 · BOOST-0001-A): 불러온 코드 판(블롭 id)을 적어 감사가 같은 판으로 재현
+    import audit_log as _audit
+    _CODE = _audit.file_ids(__file__)
+except Exception:                        # 기록장이 없거나 말썽이어도 매매는 그대로(기록만 건너뜀)
+    _audit, _CODE = None, None
+
 KST = ZoneInfo("Asia/Seoul")
 HOME = Path("daily-live")
 STATE = HOME / "state.json"
@@ -379,7 +385,18 @@ def run(now=None):
     rate = {c: q.get("rate") for c, q in quotes.items()}
     if not ready:
         cands = []           # 자료가 덜 들어왔으면 새로 사지 않음 · 들고 있는 종목 팔기는 그대로(사용자 2026-10-02)
-    sells, buys = decide(state, cands, now_price, aligned, rate, kin_ok)
+    # 판단 기록장(관측 전용): 판단 앞에 입력을 뜨고 · 닮음 질문과 답을 적고 · 판단 뒤 기록(식은 모두 safe 안 · 실패해도 매매 그대로)
+    daily_in = _audit.safe(lambda: _audit.capture(dict(state={"positions": state.get("positions", {})}, cands=cands,
+                                                       now_price=now_price, aligned=aligned, rate=rate))) if _audit else None
+    kin_calls = []
+    sells, buys = decide(state, cands, now_price, aligned, rate, _audit.recorder(kin_ok, kin_calls) if _audit else kin_ok)
+    if _audit:
+        _audit.safe(lambda: _audit.record(STATE, day, "daily", daily_in, {"sells": sells, "buys": buys},
+                                          ledgers=(STATE, _pt.DAILY_BOOK), code=_CODE, extra={
+            "kin_calls": kin_calls, "state_digest": _audit.digest(state), "ready": ready, "expect": last, "data_why": why,
+            "data_asof": _audit.price_asof(prices, day), "breadth": found.get("breadth"), "late": late,
+            "quotes": len(quotes), "pool": len(pool), "cut_out": [x.get("code") for x in cut_out],
+            "bought": {c: p.get("bought") for c, p in held.items()}}))
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
     warn = [] if ready else ["1일봉 봇 오늘 새로 사기 멈춤(자료가 덜 들어옴, 팔기는 그대로)"]
     send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
@@ -409,6 +426,9 @@ def run(now=None):
     fills = settle(state, day, sells, buys, close)
     state["last_day"] = day
     _save(STATE, state)
+    if _audit:
+        _audit.safe(lambda: _audit.after(STATE, day, "daily", {"paper": paper, "fills": fills, "close": close, "late": late},
+                                         ledgers=(STATE, _pt.DAILY_BOOK), books=(_pt.DAILY_BOOK,)))
     _save(RESULT, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "breadth": found.get("breadth"),
                    "candidates": [{k: c.get(k) for k in ("code", "name", "갈래", "추세문", "3일연속", "거래량비", "정배열일수", "칸",
                                                           "추세 기울기")} for c in cands],

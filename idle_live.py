@@ -33,6 +33,12 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent / "research"))
 import idle_signal  # noqa: E402
 
+try:                                     # 판단 기록장(관측 전용 · BOOST-0001-A): 불러온 코드 판(블롭 id)을 적어 감사가 같은 판으로 재현
+    import audit_log as _audit
+    _CODE = _audit.file_ids(__file__, idle_signal.__file__)
+except Exception:                        # 기록장이 없거나 말썽이어도 매매는 그대로(기록만 건너뜀)
+    _audit, _CODE = None, None
+
 KST = ZoneInfo("Asia/Seoul")
 HOME = Path("idle-live")
 STATE = HOME / "state.json"
@@ -387,8 +393,21 @@ def run(now=None):
     cash_for_engine = max(0.0, cash - (b_spent * paper_trade.MKT_MARGIN if b_spent > 0 else b_spent) - reserve * paper_trade.MKT_MARGIN)
     if cap is not None:
         cash_for_engine = min(cash_for_engine, max(0.0, cap - max(0.0, b_spent)))
+    # 판단 기록장(관측 전용 · 식은 모두 safe 안 · 실패해도 매매 그대로): 판단 앞 입력 → 판단 → 기록
+    engine_in = _audit.safe(lambda: _audit.capture(dict(
+        state=state, day=day, px={c: a[-_audit.PX_TAIL:] for c, a in px.items()}, breadth=breadth if breadth is not None else 100.0,
+        used=used, total=total, cash=cash_for_engine, held=held, now_price=now_price, is_week_end=week_end(day),
+        reserve=reserve + basket_after))) if _audit else None
     orders, new_state, why = step(state, day, px, breadth if breadth is not None else 100.0, used, total, cash_for_engine, held,
                                   now_price, week_end(day), reserve=reserve + basket_after)
+    if _audit:
+        _audit.safe(lambda: _audit.record(STATE, day, "engine", engine_in, {"orders": orders, "new_state": new_state, "why": why},
+                                          ledgers=(paper_trade.IDLE_BOOK, STATE), code=_CODE, extra={
+            "px_len": {c: len(a) for c, a in px.items()}, "px_digest": {c: _audit.digest(a) for c, a in px.items()},
+            "px_missing": [c for c in CODES if c not in px], "etf_asof": _audit.etf_asof(CODES, day),
+            "breadth_raw": breadth, "stop_buys": stop_buys, "cap": cap, "reserve": reserve, "basket_after": basket_after,
+            "b_spent": b_spent, "room_note": room_note,
+            "late_at_decision": datetime.now(KST).strftime("%H%M") > LAST_ORDER}))
     if basket_after > 0 or b_short:
         why.insert(0, f"사건 바구니가 든 것 약 {basket_after / 1e4:,.0f}만 원(엔진 몫에서 먼저 뺌)")
     if reserve_note:
@@ -469,6 +488,9 @@ def run(now=None):
     _save(TODAY, {"date": day, "made": datetime.now(KST).strftime("%Y-%m-%d %H:%M"), "late": late, "breadth": breadth, "used": round(used, 3),
                   "why": why, "orders": [{"code": c, "side": s, "qty": q, "why": r} for c, s, q, r in orders],
                   "positions": new_state.get("positions", {})})
+    if _audit:
+        _audit.safe(lambda: _audit.after(STATE, day, "engine", {"late": late}, ledgers=(paper_trade.IDLE_BOOK, STATE),
+                                         books=(paper_trade.IDLE_BOOK,)))
     if orders or new_state.get("positions"):
         if not orders:
             short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
