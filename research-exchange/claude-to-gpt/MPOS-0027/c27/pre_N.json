@@ -1,0 +1,34 @@
+{
+ "모드": "PRE",
+ "캐시": "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/c27/nrl_N.pkl",
+ "공시 자름": [
+  null,
+  "drop"
+ ],
+ "당일 독": null,
+ "돌연변이": "none",
+ "적용 증거: FLOW 마지막 날 · TARGETS 마지막 날 · 당일 독 날 외국인 값(첫 종목)": [
+  "20261008",
+  "20261008",
+  null
+ ],
+ "rule._calm None": true,
+ "CALM_MONTH None": true,
+ "trend_leg: 조용한 합성 행 참 · 시끄러운 행 거짓": [
+  true,
+  false
+ ],
+ "FLOW 종목 = inside ∩ 수급 파일": true,
+ "000500 양성(FLOW · TARGETS · inside 행)": [
+  true,
+  true,
+  8
+ ],
+ "합성 음성(수급 파일 없는 종목 teacher)": false,
+ "목표가 감싸기 = 원 함수(모든 종목)": true,
+ "kin 지문(가격 rows 묶음)": "c80ffb173e8a8cccc1aa8215cfba6b35401f6f84c6078d333364a48241fad13f",
+ "inside 행": 239300,
+ "FLOW 종목": 235,
+ "TARGETS 종목": 226,
+ "통과": true
+}

@@ -1,0 +1,23 @@
+{
+ "정의 커밋(셈 전)": "4720ca6d6 research/pit26/SEAM_FIX.md",
+ "새 컨테이너 재현(모두 같음)": {
+  "/tmp/rev-full.pkl(brk_build 7acae41e · 자료 9cca27244)": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "정직 캐시 inside 지문": "33b5522b14cf29ea…(8차와 같음)",
+  "nrl_N.pkl": "cfc22c3ffb808af58460c069c5ff4bff19cc5a3bb20602e8352f08d7914ed132",
+  "이어 붙인 장부(e84427d0 기대)": "e84427d075eafc6af41f9f0b1ccd8c7778f9c1c86c828402c08a67d7e5cad5e0",
+  "이어 붙인 바탕(6c8017cd 기대)": "6c8017cd3abc365fd19ec52da02b5cd2e8b739fd1885e109dfcab4e9ac0eacf5",
+  "계좌": "33.34% · 손실 달 40(8차와 같음)"
+ },
+ "연속 장부": "c97b1b9a4c7674c29081b1176006e31df5704ce74951735ac2a07691575e8f1a",
+ "연속 바탕": "890a315a2f84a0b6e819606d4ebbfa78e9bccb12404988345f6acb29ca4694b7",
+ "코드": {
+  "honest_cache.py": "6082aa3b661d379dd0433d2671d17b400c581843d5b75b3fe73706a7cb93054a",
+  "run_honest.py": "753d218e36f2f7a583eb34b6b3de1f14efc98f060fa29e4e5c25ea3f718017c8",
+  "make_honest_nrl.py": "8f0e41d4615674a9ebece2c89c161a2b055a3ceb780b48eae9b8d7b9bf6ff083",
+  "honest_ledger.py": "5be7c9ec6029c896a4e66e66e78b6614cc0a024404887cad8e9a7a25e8cb5ac1",
+  "recount_acct.py": "19944dd9042496c98a0bfd331de99a22174fc0e2860f53ebb0c691892e735c07"
+ },
+ "z100g": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+ "regime_dev.py(5dff6d067)": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+ "환경 차이": "새 컨테이너 numpy 2.4.6 · pandas 2.3.3 설치 · 고정 나무 study/features.json은 빈 자리표시 파일(nrl 캐시 시각 비교용 · 내용 안 읽음) · 만들기 단계 nrl은 빈 캐시"
+}
