@@ -53,7 +53,9 @@ INV_TAKE, INV_STOP, INV_DAYS = 0.015, -0.015, 10          # INV_TAKE = 익절 �
 INV_TAKE_K, INV_TAKE_HI, INV_SIG_N = 0.25, 0.025, 60     # 익절 = clip(0.25 × σ60 × √10, 1.5%, 2.5%)(RNA 26라운드 D11b)
 NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
         "133690": "TIGER 미국나스닥100", "132030": "KODEX 골드선물(H)", "148070": "KOSEF 국고채10년", "229200": "KODEX 코스닥150"}
-# 주 마지막 거래일을 알려고 쓰는 휴장일(평일만 · 틀려도 그 주 고르기가 하루 늦거나 한 주 밀릴 뿐)
+# 주 마지막 거래일을 알려고 쓰는 휴장일(평일만 · 틀려도 그 주 고르기가 하루 늦거나 한 주 밀릴 뿐).
+# BOOST-0001-D D5(2b단계): 판 고정 달력(calendar/)을 읽을 수 있으면 next_trading_day는 달력으로 정하고, 못 읽으면 이 목록 그대로
+# (그런 날은 어차피 D5 문이 닫혀 새 매수가 없음 · 엔진 판단을 바꾸지 않으려고 남겨 둠).
 HOLIDAYS = {"20261005", "20261009", "20261225", "20261231",          # 20261005 개천절 대체공휴일
             "20270101", "20270208", "20270209", "20270301", "20270505", "20270513", "20270816",
             "20270914", "20270915", "20270916", "20271004", "20271011", "20271227", "20271231"}
@@ -72,6 +74,14 @@ def inv_take(q_closes):
 
 
 def next_trading_day(day):
+    """다음 거래일: 판 고정 달력으로 정할 수 있으면 그 날(trade_calendar.next_day) · 못 정하면 예전처럼 평일 · HOLIDAYS로."""
+    try:
+        import trade_calendar
+        got = trade_calendar.next_day(day)
+    except Exception:
+        got = None
+    if got:
+        return got
     d = date(int(day[:4]), int(day[4:6]), int(day[6:]))
     while True:
         d += timedelta(days=1)
@@ -373,6 +383,9 @@ def run(now=None):
             px[code] = np.array(h + [now_price[code]])
     # BOOST-0001-D D2: 엔진 ETF 7개가 판단에 쓴 종가 마지막 날 = 달력 P인지(하나라도 아니면 엔진만 새 매수 막음 · 바구니 · 덧붙임은 그대로)
     gate.check_etf(etf_last_days(day))
+    # BOOST-0001-D D3: HEAD에 오늘 t0(달력 P)의 공시 아침 최종 확인 manifest(ok · 판단 전 완료)가 있고 그 트리 지문 = 지금 event-data일 때만
+    # 바구니 새 매수(아니면 바구니만 막음 · 20거래일 팔기는 그대로 · 엔진 · 덧붙임은 그대로)
+    gate.check_events()
     try:
         breadth = live_breadth(client, day)
     except Exception as e:           # 시장 폭을 못 세면 새로 사지 않고 팔 것만(엔진 끔으로 봄)

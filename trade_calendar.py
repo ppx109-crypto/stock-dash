@@ -1,5 +1,6 @@
 """판 고정 거래 달력 읽기 · 검증(BOOST-0001-D 사전등록 판 3 §1.4 · D5 · 1단계: 읽기 · 검증만 · 만드는 도구는 다음 단계).
 2a단계: last_days(D4 '최근 5거래일') · latest_done(수급 · 거래량 수집기 목표 날)을 더함 — 둘 다 같은 판만 읽음.
+2b단계: next_day(빈칸 엔진 주 끝) · 판을 만드는 도구는 tools/build_calendar.py(1차 KRX 휴장일 · 2차 KIS 국내휴장일조회가 날마다 같을 때만 새 판).
 
 - 파일: calendar/krx-<해>-v<번호>.json. 공지가 바뀌면 새 번호 판을 더하고 옛 판은 덮지 않음 → 그 해의 **가장 큰 번호 판**만 씀
   (가장 큰 판이 깨졌거나 지문이 안 맞으면 작은 판으로 내려가지 않고 '못 정함' · 옛 공지로 조용히 돌아가지 않게).
@@ -146,6 +147,28 @@ def last_days(day, n, folder=None):
             out.append(k)
             if len(out) == n:
                 return out[::-1]
+    return None
+
+
+def next_day(day, folder=None):
+    """D 다음 거래일 — 판 고정 달력만으로(2b단계 · 빈칸 엔진 '주 끝' 판단). 해를 넘기면 다음 해 판도 있어야 함.
+    못 정하면 None(판 없음 · 지문 불일치 · 판에 없는 날을 만남 · BACK일 안에 거래일 없음 → 부르는 쪽은 예전 방식)."""
+    try:
+        day = str(day)
+        d = date(int(day[:4]), int(day[4:6]), int(day[6:]))
+    except (TypeError, ValueError):
+        return None
+    years = {}
+    for _ in range(BACK):
+        d += timedelta(days=1)
+        k = d.strftime("%Y%m%d")
+        if k[:4] not in years:
+            years[k[:4]] = load_year(k[:4], folder)
+        y = years[k[:4]]
+        if y is None or k not in y["days"]:
+            return None
+        if y["days"][k] is not None:
+            return k
     return None
 
 

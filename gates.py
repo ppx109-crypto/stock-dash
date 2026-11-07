@@ -11,6 +11,8 @@
 - 2a단계(원천별 신선도 · 그 판단만 닫음): D2 엔진 ETF 종가 마지막 날 = 달력 P(check_etf · engine) ·
   D4 (가) 수급 풀 건강도 90%(check_flow_pool · daily) · (나) 주문 안전 거르기(keep_flow_exact · 1일봉 후보 단계 · 빠진 기회 기록).
   점검 칸은 판단별 checks(snapshot · gates/<날>.json)에 남김.
+- 2b단계: D3 바구니 문(check_events · basket만 닫음) — HEAD의 그날 t0 아침 최종 확인 공시 manifest와 지금 event-data 트리 지문 결속
+  (셈은 event_manifest.py · 수집기와 같은 함수) · manifest id는 바구니 점검 칸 events에.
 """
 import hashlib
 import json
@@ -175,10 +177,10 @@ class Gates:
             self.close(self.active, why)
 
     def set_smoke(self, ok, why, body=None):
-        """§5: 시작 전 점검 파일(gate-smoke/<날>.json). 없거나 ok가 아니면 이 실행의 활성 판단 모두 닫음."""
+        """§5: 시작 전 점검 파일(gate-smoke/<날>-<작업 번호>-<시도>.json · 자기 작업 것만). 없거나 ok가 아니면 이 실행의 활성 판단 모두 닫음."""
         b = body if isinstance(body, dict) else {}
         self._run()["smoke"] = {"ok": bool(ok), "why": why, "version": b.get("version"), "sha256": b.get("sha256"),
-                                "run_id": b.get("run_id")}
+                                "run_id": b.get("run_id"), "run_attempt": b.get("run_attempt")}
         if not ok:
             self.close(self.active, why or "시작 전 점검 실패")
 
@@ -243,6 +245,26 @@ class Gates:
                 self.close("engine", f"엔진 ETF 종가 마지막 날이 달력 앞 거래일 {p}과 다름 · " + (" · ".join(bad) if bad else "ETF 목록 없음"))
         except Exception as e:
             self.close("engine", f"엔진 ETF 종가 날짜 셈 오류 · {type(e).__name__}")
+
+    def check_events(self, now=None, folder=None, data=None, git=True):
+        """D3 바구니 문(2b단계 · §1.2): 판단 때 HEAD에 오늘 t0(달력 P)의 **아침 최종 확인 manifest**(query_begin = query_end = t0 ·
+        D = 오늘 · ok · 저장됨 · 완료 시각 < 판단 시각 · 여럿이면 첫 성공)가 있고 그 event_data_tree_digest가 지금 event-data 트리
+        지문과 같을 때만 basket을 열어 둠 · 아니면 **basket만** 닫음(까닭 · manifest id · 지문은 바구니 점검 칸 events).
+        19:20 정기 기록만 있으면 닫힘. 달력 P를 못 정했으면 이미 D5 길로 닫혀 있음(그래도 열려 있으면 닫음). 예외 없음."""
+        try:
+            import event_manifest
+            p = self.calendar_p()
+            ok, why, info = event_manifest.morning_check(p, self.day, now or datetime.now(KST), folder=folder, data=data, git=git)
+            info = dict(info, ok=ok, why=why)
+            self._check("basket")["events"] = _copy(info)
+            if not p:
+                if self.allows_new_risk("basket"):
+                    self.close("basket", "달력 앞 거래일을 몰라 공시 확인 manifest를 못 견줌")
+                return
+            if not ok:
+                self.close("basket", "공시 아침 최종 확인 · " + why)
+        except Exception as e:
+            self.close("basket", f"공시 확인 셈 오류 · {type(e).__name__}")
 
     def check_flow_pool(self, pool, day, rows_of):
         """D4 (가) 수급 풀 건강도: 결정과 무관한 고정 풀(전날 시총 150위 + 1일봉 보유 종목)의 investor-data에서 판단 날 앞 마지막 날 =

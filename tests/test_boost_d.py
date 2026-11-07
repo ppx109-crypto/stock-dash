@@ -7,7 +7,10 @@
   BASE 커밋이 있는 곳(로컬)에서는 그 얼린 결과가 정말 BASE 코드의 결과인지도 다시 돌려 확인(얕은 받기 CI에서는 그 하나만 건너뜀).
 - 2a단계: D2(엔진 ETF 마지막 날 = 달력 P → 엔진만 닫음) · D4 두 층(풀 건강도 89% / 90% · 후보 단계 주문 안전 거르기 ·
   낡은 상위 1 + 정상 차순위 1 + 빈 칸 1 → 정상 차순위를 삼) · 수급 수집 목표 P · D7 거래량 건너뛰기 · 감사 셈 문 양방향(끝까지 이은 시험).
-- 실제 증권사 · DART를 부르지 않음 · 비밀값 없음(가짜 키 글자만)."""
+- 2b단계: D3 공시 manifest(쪽 완결성 · 빈 응답 · 오류 status · 0건 정상 · digest 불일치 · 아침 최종 확인 첫 성공만 · 바구니 문이
+  HEAD의 manifest · 트리 지문 결속) · D5 달력 만드는 도구(두 원천 같음 / 다름 / 조회 실패 / 같은 내용 / 바뀐 공지 / 해 넘김) ·
+  엔진 주 끝(달력 · HOLIDAYS 같으면 결과 같음) · 시작 전 점검 파일 작업마다(git pull --rebase 실험) · 수급 수집 목록 + 1일봉 풀.
+- 실제 증권사 · DART · KRX를 부르지 않음 · 비밀값 없음(가짜 키 글자만)."""
 import copy
 import hashlib
 import json
@@ -33,6 +36,8 @@ SCENARIOS = ("engine", "engine_room", "engine_swap", "daily", "daily_multi")
 DAY, P = "20261111", "20261110"                            # 수요일 · 앞 거래일(화)
 HOLIDAYS_2026 = ("20261005", "20261009", "20261225", "20261231")
 MARK = "@@BOOSTD@@"
+SMOKE = f"gate-smoke/{DAY}-local-0.json"                   # 2b단계: 시작 전 점검 파일은 작업마다 다른 이름(로컬 = <날>-local-0)
+MANIFEST = f"event-manifest/{P}-local-0.json"              # 2b단계 D3: 가짜 세상의 공시 아침 최종 확인 manifest(t0 = P)
 NEW_ONLY = ("gates/", "idle-live/near-now.json")           # 새 코드만 쓰는 기록(문 상태 · D1 사본) — 바이트 비교에서 뺌
 ENV = {"PAPER_TRADING": "on", "PAPER_START": "", "KIS_PAPER_APP_KEY": "가짜", "IDLE_START": "", "DAILY_START": "",
        "MIX54": "on", "MIX54_START": "20261001", "PAPER_ROOM_WAIT": "0", "OVERLAY_FILL_TRIES": "2",
@@ -238,20 +243,58 @@ def build_world(root, kind, opt):
     if opt.get("calendar", True):
         write_calendar(root / "calendar", 2026, holidays=HOLIDAYS_2026)
     if opt.get("smoke", True):
-        w(f"gate-smoke/{DAY}.json", {"date": DAY, "ok": True, "version": 1, "sha256": None, "P": P, "reasons": [], "run_id": None})
+        w(SMOKE, {"date": DAY, "ok": True, "version": 1, "sha256": None, "P": P, "reasons": [], "run_id": None})
     for rel in opt.get("block", ()):                      # 쓰기를 막을 자리(그 이름의 파일을 먼저 만들어 폴더를 못 만들게)
         w(rel, "막음")
     for rel in opt.get("block_dir", ()):                  # 그 이름의 폴더를 먼저 만들어 파일을 못 쓰게
         (root / rel).mkdir(parents=True, exist_ok=True)
     for rel, body in (opt.get("extra_files") or {}).items():
         w(rel, body)
+    man = opt.get("manifest", "final")                    # 2b단계 D3: 공시 아침 최종 확인 manifest(None = 없음 · 'regular' · dict = 칸 바꿈)
+    if man:
+        w(MANIFEST, manifest_body(root / "event-data", **({"mode": man} if isinstance(man, str) else man)))
+    if opt.get("git", True):                              # 판단 때 HEAD 확인(D3) — 가짜 세상 전체를 한 커밋으로
+        git_commit_all(root)
+    for rel, body in (opt.get("after_commit") or {}).items():      # 커밋 뒤에 고친 파일(HEAD와 다름)
+        w(rel, body)
     return px, Broker(500_000 if room else 50_000_000, positions, px), prices
+
+
+def tree_sha(folder):
+    """사전등록 §1.2 정의 그대로(event_manifest.py와 따로 셈): event-data/*.json 이름 차례 [경로, 파일 sha256] → 빈칸 없는 JSON → sha256."""
+    items = [[f"event-data/{p.name}", hashlib.sha256(p.read_bytes()).hexdigest()]
+             for p in sorted(Path(folder).glob("*.json"), key=lambda q: q.name)]
+    return hashlib.sha256(json.dumps(items, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
+def manifest_body(data, t0=P, day=DAY, mode="final", done="2026-11-10T23:25:00Z", **kw):
+    """공시 manifest 본문(모든 칸 · 기본 = D 아침 08:25 한국 시각에 끝난 성공 · 트리 지문은 data 폴더 그대로)."""
+    body = {"kind": "event-manifest", "version": 1, "mode": mode, "t0": t0, "D": day if mode == "final" else None,
+            "query_begin": t0, "query_end": t0, "request_started_at_utc": "2026-11-10T23:20:00Z",
+            "response_received_at_utc": ["2026-11-10T23:20:01Z"], "status": "000", "total_count": 1, "total_page": 1,
+            "pages_received": 1, "rows_received": 1, "retry_count": 0, "pages": [], "normalized_query_digest": "1" * 64,
+            "normalized_event_digest": "2" * 64, "events": 1, "stored_event_digest": "2" * 64,
+            "event_data_tree_digest": tree_sha(data), "GITHUB_RUN_ID": None, "GITHUB_RUN_ATTEMPT": None,
+            "GITHUB_WORKFLOW_SHA": None, "persisted": True, "ok": True, "why": "", "completed_at_utc": done}
+    body.update(kw)
+    return body
+
+
+def git_commit_all(root, message="가짜 세상"):
+    """root를 git 저장소로 만들고(없으면) 모든 파일을 한 커밋에(바깥 GIT_* 값에 끌려가지 않게 · 서명 · 갈고리 끔)."""
+    env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+    env.update(GIT_AUTHOR_NAME="시험", GIT_AUTHOR_EMAIL="t@example.invalid", GIT_COMMITTER_NAME="시험",
+               GIT_COMMITTER_EMAIL="t@example.invalid")
+    cmds = ([] if (Path(root) / ".git").exists() else [["-c", "init.defaultBranch=main", "init", "-q"]]) + [
+        ["add", "-A"], ["-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", "commit", "-q", "--allow-empty", "-m", message]]
+    for args in cmds:
+        subprocess.run(["git", *args], cwd=str(root), env=env, check=True, capture_output=True, timeout=60)
 
 
 def _snapshot_files(root):
     out = {}
     for p in sorted(root.rglob("*")):
-        if p.is_file():
+        if p.is_file() and ".git" not in p.relative_to(root).parts:          # 가짜 세상의 git 저장소 속은 빼고(2b단계)
             try:
                 out[p.relative_to(root).as_posix()] = p.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
@@ -263,7 +306,8 @@ def world_run(kind, **opt):
     """가짜 세상에서 봇 한 번(engine* = idle_live.run 15:05 시작 · daily = daily_live.run 15:20 시작) → 결과 dict.
     opt: sync_ok(저장소 맞추기 값을 바꿔 끼움) · refresh(hourly_a.refresh_near를 바꿔 끼움) · missing(시세 없는 코드) ·
     calendar · smoke(파일을 둘지) · live_p · prices_last · m15_body · block · block_dir · start(시 · 분 · 초) · spy(덧붙임 인자 기록) ·
-    2a단계: etf_stale(P 줄이 빠진 엔진 ETF) · flow_stale(수급이 P−1에서 끝나는 종목) · flow_files · found(1일봉 후보) · daily_cells."""
+    2a단계: etf_stale(P 줄이 빠진 엔진 ETF) · flow_stale(수급이 P−1에서 끝나는 종목) · flow_files · found(1일봉 후보) · daily_cells.
+    2b단계: manifest(공시 아침 확인 · None = 없음 · 'regular' · dict = 칸 바꿈) · git(가짜 세상을 커밋할지) · after_commit(커밋 뒤 고친 파일)."""
     import importlib
     import acc_cap  # noqa: F401  (가짜 시계를 끼우기 전에 모두 불러 둠 · 실행 중 처음 불러 가짜 시계가 남지 않게)
     import audit_log  # noqa: F401
@@ -281,7 +325,7 @@ def world_run(kind, **opt):
     import overlay_live
     import paper_trade
     import study
-    for name in ("gates", "gate_smoke", "trade_calendar"):          # 새 모듈(고치기 전 코드로 돌 때도 있어도 그만)
+    for name in ("gates", "gate_smoke", "trade_calendar", "event_manifest"):   # 새 모듈(고치기 전 코드로 돌 때도 있어도 그만)
         try:
             importlib.import_module(name)
         except ImportError:
@@ -603,7 +647,7 @@ class GateBox(TmpCwd):
         import gates
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
         Path("gate-smoke").mkdir()
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True, "version": 1}), encoding="utf-8")
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True, "version": 1}), encoding="utf-8")
         g = gates.begin(DAY, "engine", True, live_p=P)
         self.assertTrue(all(g.allows_new_risk(d) for d in ("engine", "basket", "overlay")), g.reasons())
         g.bind_d1({"ok": True, "id": "a" * 64, "expected_p": P, "at": "2026-11-11 15:05", "path": "/숨김"})
@@ -626,7 +670,7 @@ class GateBox(TmpCwd):
         import gates
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
         Path("gate-smoke").mkdir()
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         self.assertTrue(gates.begin(DAY, "daily", True, live_p=P).allows_new_risk("daily"))
         cases = {"저장소": dict(sync_ok=False), "다름": dict(live_p="20261109"), "못 받아": dict(live_p=None)}
         for word, kw in cases.items():
@@ -634,11 +678,11 @@ class GateBox(TmpCwd):
             g = gates.begin(DAY, "daily", args["sync_ok"], live_p=args["live_p"])
             self.assertFalse(g.allows_new_risk("daily"), word)
             self.assertTrue(any(word in r for r in g.reasons()), (word, g.reasons()))
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": False, "reasons": ["달력 없음"]}), encoding="utf-8")
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": False, "reasons": ["달력 없음"]}), encoding="utf-8")
         g = gates.begin(DAY, "engine", True, live_p=P)
         self.assertFalse(any(g.allows_new_risk(d) for d in ("engine", "basket", "overlay")))
         self.assertTrue(any("시작 전 점검" in r for r in g.reasons()))
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         shutil.rmtree("calendar")
         g = gates.begin(DAY, "engine", True, live_p=P)
         self.assertTrue(any("달력" in r for r in g.reasons()) and not g.allows_new_risk("engine"))
@@ -663,22 +707,25 @@ class Smoke(TmpCwd):
     def test_fail_and_rejections(self):
         import gate_smoke
         self.assertEqual(gate_smoke.main([DAY]), 0, "점검이 실패해도 작업을 멈추지 않음")
-        body = json.loads(Path(f"gate-smoke/{DAY}.json").read_text(encoding="utf-8"))
+        body = json.loads(Path(SMOKE).read_text(encoding="utf-8"))
         self.assertFalse(body["ok"])
         self.assertTrue(any("달력" in r for r in body["reasons"]))
         ok, why, _ = gate_smoke.status(DAY)
         self.assertFalse(ok)
         self.assertIn("점검 실패", why)
         self.assertEqual(gate_smoke.status("20261112")[:2], (False, "시작 전 점검 파일이 없음"))
-        Path("gate-smoke/20261112.json").write_text("{", encoding="utf-8")
+        Path("gate-smoke/20261112-local-0.json").write_text("{", encoding="utf-8")
         self.assertFalse(gate_smoke.status("20261112")[0])
-        Path("gate-smoke/20261113.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        Path("gate-smoke/20261113-local-0.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         self.assertIn("오늘 것이 아님", gate_smoke.status("20261113")[1])
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True, "run_id": "1"}), encoding="utf-8")
-        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "2"}):
+        Path(f"gate-smoke/{DAY}-2-0.json").write_text(json.dumps({"date": DAY, "ok": True, "run_id": "1"}), encoding="utf-8")
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "2"}):                 # 이름은 작업 2 것인데 본문은 작업 1 것
             self.assertIn("이 작업의 것이 아님", gate_smoke.status(DAY)[1])
+        Path(f"gate-smoke/{DAY}-1-0.json").write_text(json.dumps({"date": DAY, "ok": True, "run_id": "1"}), encoding="utf-8")
         with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "1"}):
             self.assertTrue(gate_smoke.status(DAY)[0])
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "3"}):                 # 다른 작업 파일만 있으면 '없음'(자기 것만 읽음)
+            self.assertEqual(gate_smoke.status(DAY)[:2], (False, "시작 전 점검 파일이 없음"))
 
     def test_old_output_check_catches_broken_verifier(self):
         import gate_smoke
@@ -1172,7 +1219,7 @@ class GateEtf(TmpCwd):
         if calendar:
             write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
         Path("gate-smoke").mkdir(exist_ok=True)
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         return gates.begin(DAY, "engine", True, live_p=P)
 
     def test_engine_only_with_code_and_day(self):
@@ -1229,7 +1276,7 @@ class FlowCwd(TmpCwd):
         import gates
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
         Path("gate-smoke").mkdir(exist_ok=True)
-        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         return gates.begin(DAY, "daily", True, live_p=P)
 
     @staticmethod
@@ -1603,11 +1650,789 @@ class Structure2a(unittest.TestCase):
         self.assertIn("continue-on-error: true", step)
         self.assertIn("timeout-minutes:", step)
         idle = wf[wf.rindex("- name:", 0, first):wf.index("python daily_live.py")]
-        self.assertLess(idle.index('git commit -q -m "Gate smoke"'), idle.index("python idle_live.py"),
-                        "점검 파일은 봇의 저장소 맞추기(git pull --rebase) 전에 로컬 커밋")
+        # 2b단계 §3: 점검 파일이 작업마다 다른 새 파일(추적 밖)이라 봇의 저장소 맞추기(git pull --rebase)를 막지 않음 → 예전 로컬 커밋은 뺌
+        # (실제 git으로 확인하는 시험: SmokeRunName.test_untracked_new_file_does_not_block_pull_rebase)
+        self.assertNotIn('git commit -q -m "Gate smoke"', idle)
+        self.assertLess(idle.index("python idle_live.py"), idle.index("git add -A gates gate-smoke"), "점검 · 문 기록은 봇이 돈 뒤 함께 올림")
         for part in (idle, wf[wf.index("python daily_live.py"):]):
             self.assertLess(part.index("mkdir -p gates gate-smoke"), part.index("git add -A gates gate-smoke"))
         self.assertNotIn("tests.test_boost_d", wf, "매매 전 시험 단계는 그대로(무거운 시험은 CI 전체 discover)")
+
+
+# ───────────────────────── 2b단계: D3 공시 manifest(수집기 · 쪽 완결성 · 아침 최종 확인) ─────────────────────────
+
+def drow(code, title, day=P, no=1):
+    """가짜 OpenDART 공시검색 한 줄."""
+    return {"corp_name": f"회사{code}", "stock_code": code, "report_nm": title, "rcept_dt": day, "rcept_no": f"{day}{no:06d}"}
+
+
+ROWS_T0 = [drow("000040", "주요사항보고서(무상증자결정)", no=1), drow("000020", "주요사항보고서(자기주식취득결정)", no=2),
+           drow("999999", "주요사항보고서(유상증자결정)", no=3), drow("000040", "주주총회소집공고", no=4),
+           drow("000030", "현금ㆍ현물배당결정", no=5)]
+CODES_T0 = ["000020", "000030", "000040"]
+EVENTS_T0 = [["000020", P, "자사주취득", "주요사항보고서(자기주식취득결정)"], ["000030", P, "배당", "현금ㆍ현물배당결정"],
+             ["000040", P, "무상증자", "주요사항보고서(무상증자결정)"]]
+
+
+class FakeDart:
+    """가짜 OpenDART(dart_raw · 본문 그대로): 물은 접수일(bgn_de ~ end_de) 줄을 per줄씩 쪽으로 나눠 줌 · 0줄이면 013 ·
+    override[쪽] = 차례로 줄 본문(예외면 올림) · dates=False면 날짜를 가리지 않음(고장 흉내)."""
+
+    def __init__(self, rows=(), per=2, override=None, dates=True):
+        self.rows, self.per, self.dates, self.calls = list(rows), per, dates, []
+        self.override = {k: list(v) for k, v in (override or {}).items()}
+
+    def dart_raw(self, endpoint, **params):
+        assert endpoint == "list.json" and "corp_code" not in params and "crtfc_key" not in params
+        self.calls.append(dict(params))
+        page = params["page_no"]
+        if self.override.get(page):
+            got = self.override[page].pop(0)
+            if isinstance(got, Exception):
+                raise got
+            return got
+        rows = [r for r in self.rows if not self.dates or params["bgn_de"] <= r["rcept_dt"] <= params["end_de"]]
+        if not rows:
+            return {"status": "013", "message": "조회된 데이타가 없습니다."}
+        return {"status": "000", "message": "정상", "page_no": page, "page_count": self.per, "total_count": len(rows),
+                "total_page": -(-len(rows) // self.per), "list": rows[(page - 1) * self.per: page * self.per]}
+
+
+class EventCwd(TmpCwd):
+    """D3 시험 도움: 쉬지 않는 수집기 · 씨앗 공시 파일(다른 날 줄) · 판 고정 달력."""
+
+    def setUp(self):
+        super().setUp()
+        import collect_events
+        self.CE = collect_events
+        self.keep = mock.patch.multiple(collect_events, PAUSE=0, RETRY_WAIT=0)
+        self.keep.start()
+        Path("event-data").mkdir()
+        for code in CODES_T0:
+            Path(f"event-data/{code}.json").write_text(json.dumps(
+                {"code": code, "fetched": "2026-11-07", "rows": [{"date": "20261102", "kind": "공급계약", "title": "단일판매ㆍ공급계약체결"}]},
+                ensure_ascii=False), encoding="utf-8")
+
+    def tearDown(self):
+        self.keep.stop()
+        super().tearDown()
+
+    @staticmethod
+    def data_bytes():
+        return {p.name: p.read_bytes() for p in sorted(Path("event-data").glob("*.json"))}
+
+    @staticmethod
+    def manifests():
+        return sorted(p.name for p in Path("event-manifest").glob("*.json")) if Path("event-manifest").exists() else []
+
+
+class EventFetch(EventCwd):
+    def test_complete_pages_and_manifest_fields(self):
+        import event_manifest as M
+        fake = FakeDart(ROWS_T0, per=2)
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "77", "GITHUB_RUN_ATTEMPT": "2", "GITHUB_WORKFLOW_SHA": "c" * 40}):
+            body, path = self.CE.collect_day(fake, CODES_T0, P, "final", day=DAY)
+        self.assertTrue(body["ok"], body["why"])
+        self.assertEqual(path.as_posix(), f"event-manifest/{P}-77-2.json")
+        self.assertEqual(json.loads(path.read_text(encoding="utf-8")), body, "파일 = 본문")
+        for k in M.FIELDS:
+            self.assertIn(k, body)
+        self.assertEqual((body["query_begin"], body["query_end"], body["t0"], body["D"], body["mode"]), (P, P, P, DAY, "final"))
+        self.assertEqual((body["status"], body["total_count"], body["total_page"], body["pages_received"], body["rows_received"],
+                          body["retry_count"], body["persisted"]), ("000", 5, 3, 3, 5, 0, True))
+        self.assertEqual(len(body["response_received_at_utc"]), 3, "쪽마다 받은 시각")
+        self.assertTrue(all(M.parse_utc(x) for x in body["response_received_at_utc"] + [body["request_started_at_utc"],
+                                                                                        body["completed_at_utc"]]))
+        self.assertEqual((body["GITHUB_RUN_ID"], body["GITHUB_RUN_ATTEMPT"], body["GITHUB_WORKFLOW_SHA"]), ("77", "2", "c" * 40))
+        self.assertEqual(body["normalized_event_digest"], hashlib.sha256(json.dumps(EVENTS_T0, sort_keys=True, separators=(",", ":"),
+                                                                                    ensure_ascii=False).encode()).hexdigest())
+        self.assertEqual(body["stored_event_digest"], body["normalized_event_digest"])
+        self.assertEqual(body["t0_events"], EVENTS_T0, "manifest의 t0 사건 집합(H-D3 대조용)")
+        self.assertEqual(body["event_data_tree_digest"], tree_sha("event-data"), "저장 뒤 트리 지문(사전등록 정의)")
+        self.assertRegex(body["normalized_query_digest"], r"^[0-9a-f]{64}$")
+        self.assertEqual([(c["bgn_de"], c["end_de"], c["page_no"], c["page_count"], c["sort"], c["sort_mth"]) for c in fake.calls],
+                         [(P, P, n, 100, "date", "asc") for n in (1, 2, 3)], "query_begin = query_end = t0 · 끝 쪽까지")
+        rows = json.loads(Path("event-data/000040.json").read_text(encoding="utf-8"))["rows"]
+        self.assertIn({"date": P, "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"}, rows)
+        self.assertFalse(Path("event-data/999999.json").exists(), "대상 밖 종목은 안 씀")
+
+    def test_incomplete_pages_write_no_data(self):
+        page2 = FakeDart(ROWS_T0, per=2).dart_raw("list.json", bgn_de=P, end_de=P, page_no=2)
+        cases = {
+            "쪽 빠짐(둘째 쪽 013)": ({2: [{"status": "013", "message": "조회된 데이타가 없습니다."}]}, "일찍 끊김"),
+            "쪽 번호 어긋남": ({3: [dict(page2, page_no=2)]}, "칸이 이상함"),
+            "빈 응답": ({1: [{}]}, "빈 응답"),
+            "오류 status": ({1: [{"status": "020", "message": "요청 제한"}]}, "오류 status 020"),
+            "점검 중(다시 물어도)": ({1: [{"status": "800"}] * 3}, "오류 status 800"),
+            "연결 오류(다시 물어도)": ({2: [RuntimeError("끊김")] * 3}, "응답을 못 받음"),
+            "줄 수 모자람": ({2: [dict(page2, list=page2["list"][:1])]}, "받은 줄 4 ≠ 총 건수 5"),
+            "접수번호 겹침": ({2: [dict(page2, list=ROWS_T0[:2])]}, "겹친 줄 2개"),
+            "총 쪽 수 바뀜": ({2: [dict(page2, total_page=4)]}, "첫 쪽"),
+        }
+        before = self.data_bytes()
+        for name, (override, word) in cases.items():
+            with self.subTest(name):
+                body, path = self.CE.collect_day(FakeDart(ROWS_T0, per=2, override=override), CODES_T0, P, "final", day=DAY)
+                self.assertFalse(body["ok"], name)
+                self.assertFalse(body["persisted"], "끝 쪽까지 못 받으면 저장하지 않음")
+                self.assertIn(word, body["why"])
+                self.assertEqual(self.data_bytes(), before, "event-data 그대로(중간판 없음)")
+                self.assertFalse(json.loads(path.read_text(encoding="utf-8"))["ok"], "실패 manifest도 남김(감사용)")
+                if name.startswith("쪽 빠짐"):
+                    self.assertLess(body["pages_received"], body["total_page"])
+                if name.startswith("점검 중") or name.startswith("연결 오류"):
+                    self.assertEqual(body["retry_count"], 2)
+        ok, _ = self.CE.collect_day(FakeDart(ROWS_T0, per=2, override={1: [RuntimeError("한 번 끊김")]}), CODES_T0, P, "final", day=DAY)
+        self.assertEqual((ok["ok"], ok["retry_count"]), (True, 1), "한 번 끊겼다 다시 받으면 성공(다시 물은 수를 적음)")
+
+    def test_zero_rows_013_is_normal_and_stale_t0_row_mismatch(self):
+        import event_manifest as M
+        body, _ = self.CE.collect_day(FakeDart([]), CODES_T0, P, "final", day=DAY)
+        self.assertTrue(body["ok"], body["why"])
+        self.assertEqual((body["status"], body["total_count"], body["total_page"], body["pages_received"], body["events"]),
+                         ("013", 0, 0, 0, 0), "첫 쪽 013 = 정상 0건(OpenDART 안내 '조회된 데이타가 없습니다')")
+        self.assertEqual(body["normalized_event_digest"], M.digest([]))
+        old = json.loads(Path("event-data/000040.json").read_text(encoding="utf-8"))
+        old["rows"].append({"date": P, "kind": "무상증자", "title": "옛 제목(응답에 없음)"})
+        Path("event-data/000040.json").write_text(json.dumps(old, ensure_ascii=False), encoding="utf-8")
+        body, _ = self.CE.collect_day(FakeDart(ROWS_T0), CODES_T0, P, "final", day=DAY)
+        self.assertEqual((body["ok"], body["persisted"]), (False, True), "저장은 됐지만 저장된 t0 목록 ≠ 응답 → ok 거짓")
+        self.assertIn("저장된 t0 사건 4개가 응답의 t0 사건 3개와 다름", body["why"])
+        self.assertNotEqual(body["stored_event_digest"], body["normalized_event_digest"])
+
+    def test_other_day_rows_in_t0_query_fail(self):
+        body, _ = self.CE.collect_day(FakeDart(ROWS_T0[:2] + [drow("000030", "현금ㆍ현물배당결정", day=DAY, no=9)], dates=False),
+                                      CODES_T0, P, "final", day=DAY)
+        self.assertFalse(body["ok"])
+        self.assertIn("다른 접수일 줄 1개", body["why"])
+
+    def test_recent_incomplete_raises_and_legacy_provider(self):
+        before = self.data_bytes()
+        with self.assertRaises(self.CE.Incomplete):
+            self.CE.recent(FakeDart(ROWS_T0, override={2: [{"status": "020"}]}), CODES_T0, 5, today=DAY)
+        self.assertEqual(self.data_bytes(), before, "예전처럼 조용히 앞 쪽만 저장하지 않음")
+
+        class Legacy:                                  # 예전 꼴(Official.dart): 013이면 None · 000이면 본문
+            def __init__(self, answer):
+                self.answer, self.calls = answer, 0
+
+            def dart(self, endpoint, **params):
+                self.calls += 1
+                return self.answer
+        self.assertEqual(self.CE.recent(Legacy(None), CODES_T0, 5, today=DAY), 0, "013(None) = 정상 0건")
+        with self.assertRaises(self.CE.Incomplete):            # 쪽 칸이 없는 본문은 완결성을 못 봄 → 저장 안 함
+            self.CE.recent(Legacy({"list": ROWS_T0, "total_page": 1}), CODES_T0, 5, today=DAY)
+        self.assertEqual(self.data_bytes(), before)
+        fake = FakeDart(ROWS_T0, per=10)
+        with mock.patch.object(self.CE, "datetime", Clock((8, 20, 0)).dt_class()):     # 한국 08:20 = UTC 전날 23:20
+            self.CE.recent(fake, CODES_T0, 5)
+        self.assertEqual((fake.calls[0]["bgn_de"], fake.calls[0]["end_de"]), ("20261106", DAY), "끝 날은 한국 날짜(러너 UTC 날짜 아님)")
+
+    def test_verify_run(self):
+        self.assertEqual(self.CE.verify_run(), 0, "이 작업의 manifest가 없으면 자료만")
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "5", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.CE.collect_day(FakeDart(ROWS_T0), CODES_T0, P, "final", day=DAY)
+            self.assertEqual(self.CE.verify_run(), 0)
+            Path("event-data/000030.json").write_text("{}", encoding="utf-8")         # manifest를 쓴 뒤 자료가 바뀜
+            self.assertEqual(self.CE.verify_run(), 1)
+        Path("event-manifest/20261109-9-1.json").write_text("{", encoding="utf-8")      # 다른 작업의 깨진 파일은 안 봄
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "6", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(self.CE.verify_run(), 0)
+        Path(f"event-manifest/{P}-6-1.json").write_text(json.dumps({"kind": "event-manifest"}), encoding="utf-8")
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "6", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(self.CE.verify_run(), 1, "칸이 빠진 manifest")
+
+
+class EventFinalCheck(EventCwd):
+    def test_calendar_holiday_and_t0_guards(self):
+        fake = FakeDart(ROWS_T0)
+        self.assertEqual(self.CE.final_check(fake, CODES_T0, DAY), 1, "달력이 없으면 실패")
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026 + (DAY,))
+        self.assertEqual(self.CE.final_check(fake, CODES_T0, DAY), 0, "휴장이면 하지 않음")
+        write_calendar("calendar", 2026, version=2, holidays=HOLIDAYS_2026)
+        self.assertEqual(self.CE.final_check(fake, CODES_T0, DAY, t0="20261109"), 1, "t0가 달력 P와 다르면 하지 않음")
+        self.assertEqual((fake.calls, self.manifests()), ([], []))
+
+    def test_first_success_only_and_retry_after_failure(self):
+        import event_manifest as M
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        bad = FakeDart(ROWS_T0, override={1: [{"status": "800"}] * 3})
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "1", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(self.CE.final_check(bad, CODES_T0, DAY), 1, "08:20 실패")
+        self.assertIsNone(M.first_ok(P, DAY))
+        good = FakeDart(ROWS_T0)
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "2", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(self.CE.final_check(good, CODES_T0, DAY), 0, "10:20 다시 → 성공")
+        self.assertEqual(M.first_ok(P, DAY), f"{P}-2-1.json")
+        again = FakeDart(ROWS_T0)
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "3", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(self.CE.final_check(again, CODES_T0, DAY, t0=P), 0, "12:20 → 이미 성공 → 건너뜀")
+        self.assertEqual(again.calls, [], "다시 묻지 않음")
+        self.assertEqual(self.manifests(), [f"{P}-1-1.json", f"{P}-2-1.json"], "첫 성공만(셋째 manifest 없음)")
+        body = json.loads(Path(f"event-manifest/{P}-2-1.json").read_text(encoding="utf-8"))
+        self.assertEqual((body["mode"], body["D"], body["ok"]), ("final", DAY, True))
+
+    def test_regular_window_and_t0_record(self):
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        fake = FakeDart(ROWS_T0 + [drow("000020", "주요사항보고서(무상증자결정)", day=DAY, no=7)], per=10)
+        self.assertEqual(self.CE.regular(fake, CODES_T0, 5, DAY), 0)
+        self.assertEqual([(c["bgn_de"], c["end_de"]) for c in fake.calls], [("20261106", DAY), (DAY, DAY)], "이어 받기 + 그날 t0")
+        body = json.loads(Path(f"event-manifest/{DAY}-local-0.json").read_text(encoding="utf-8"))
+        self.assertEqual((body["mode"], body["t0"], body["D"], body["ok"]), ("regular", DAY, None, True))
+        shutil.rmtree("calendar")
+        shutil.rmtree("event-manifest")
+        self.assertEqual(self.CE.regular(FakeDart([], per=10), CODES_T0, 5, DAY), 0, "달력을 못 읽으면 이어 받기만")
+        self.assertEqual(self.manifests(), [])
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertEqual(self.CE.regular(FakeDart(ROWS_T0, per=10, override={1: [{"status": "020"}]}), CODES_T0, 5, DAY), 1,
+                         "이어 받기가 끊기면 작업 실패로 드러냄(그날 기록은 따로 남김)")
+        self.assertEqual(self.manifests(), [f"{DAY}-local-0.json"])
+
+    def test_main_dispatch(self):
+        got = []
+        with mock.patch.object(self.CE, "Official", lambda: "가짜"), mock.patch.object(self.CE, "codes_to_collect", lambda: CODES_T0), \
+                mock.patch.object(self.CE, "final_check", lambda prov, codes, today, t0=None: got.append((prov, today, t0)) or 0), \
+                mock.patch.object(self.CE, "kst_today", lambda: DAY), mock.patch.object(self.CE, "verify_run", lambda: 7):
+            self.assertEqual(self.CE.main(["verify"]), 7)
+            self.assertEqual(self.CE.main(["final"]), 0)
+            self.assertEqual(self.CE.main(["final", "auto"]), 0)
+            self.assertEqual(self.CE.main(["final", P]), 0)
+        self.assertEqual(got, [("가짜", DAY, None), ("가짜", DAY, None), ("가짜", DAY, P)])
+
+
+# ───────────────────────── 2b단계: D3 바구니 문(HEAD의 아침 최종 확인 manifest · 트리 지문) ─────────────────────────
+
+class EventGate(TmpCwd):
+    DECIDED = datetime(2026, 11, 11, 15, 10, tzinfo=KST)
+
+    def setUp(self):
+        super().setUp()
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        Path("gate-smoke").mkdir()
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        Path("event-data").mkdir()
+        Path("event-data/000040.json").write_text(json.dumps({"code": "000040", "rows": [
+            {"date": P, "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"}]}, ensure_ascii=False), encoding="utf-8")
+        Path("event-data/README.txt").write_text("json 아님 · 지문에 안 들어감", encoding="utf-8")
+
+    @staticmethod
+    def put(name=MANIFEST, **kw):
+        Path(name).parent.mkdir(parents=True, exist_ok=True)
+        Path(name).write_text(json.dumps(manifest_body("event-data", **kw), ensure_ascii=False), encoding="utf-8")
+
+    def gate(self):
+        import gates
+        g = gates.begin(DAY, "engine", True, live_p=P)
+        g.check_events(now=self.DECIDED)
+        return g
+
+    def assertBasketOnly(self, g, word):
+        self.assertFalse(g.allows_new_risk("basket"))
+        self.assertTrue(g.allows_new_risk("engine") and g.allows_new_risk("overlay"), "바구니만 닫음")
+        why = " / ".join(g.reasons(("basket",)))
+        self.assertIn("공시", why)
+        self.assertIn(word, why)
+        self.assertIn("사건 바구니", g.warn_line())
+        self.assertNotIn("빈칸 엔진", g.warn_line())
+
+    def test_tree_digest_definition(self):
+        import event_manifest as M
+        self.assertEqual(M.tree_digest("event-data"), tree_sha("event-data"))
+        other = Path("elsewhere/deep/event-data")
+        shutil.copytree("event-data", other)
+        (other / "sub").mkdir()
+        (other / "sub" / "x.json").write_text("{}", encoding="utf-8")         # 아래 폴더는 안 봄(바구니처럼 *.json만)
+        self.assertEqual(M.tree_digest(other), M.tree_digest("event-data"), "폴더 자리와 무관 · 경로는 'event-data/<이름>'")
+        empty = hashlib.sha256(b"[]").hexdigest()
+        self.assertEqual(M.tree_digest("없는 폴더"), empty)
+        Path("event-data/000040.json").write_text("{}", encoding="utf-8")
+        self.assertNotEqual(M.tree_digest("event-data"), M.tree_digest(other), "내용이 바뀌면 지문이 바뀜")
+
+    def test_committed_morning_manifest_opens(self):
+        self.put()
+        git_commit_all(self.root)
+        g = self.gate()
+        self.assertTrue(g.allows_new_risk("basket"), g.reasons())
+        ev = g.snapshot("basket")["checks"]["events"]
+        self.assertEqual((ev["id"], ev["ok"], ev["t0"], ev["D"], ev["head"]), (f"{P}-local-0.json", True, P, DAY, {"ok": True, "why": ""}))
+        self.assertEqual(ev["tree"], ev["manifest_tree"])
+        self.assertEqual(ev["decided_at_utc"], "2026-11-11T06:10:00Z")
+        self.assertEqual(g.snapshot("engine")["checks"], {}, "점검 칸은 바구니에만")
+
+    def test_closures_close_basket_only(self):
+        cases = {
+            "manifest 없음": (dict(manifest=False), "없음"),
+            "19:20 정기만": (dict(mode="regular"), "19:20 정기 기록만"),
+            "ok 거짓": (dict(ok=False, why="쪽 빠짐"), "ok 거짓"),
+            "query_end ≠ t0": (dict(query_end=DAY), "질의 날"),
+            "판단 뒤 완료": (dict(done="2026-11-11T06:10:00Z"), "판단 시각보다 늦음"),
+            "다른 날 확인": (dict(day="20261110"), "다른 날"),
+            "저장 안 됨": (dict(persisted=False), "persisted"),
+            "트리 지문 다름": (dict(event_data_tree_digest="0" * 64), "트리 지문"),
+            "깨진 manifest": (dict(broken=True), "읽을 수 있는"),
+        }
+        for name, (kw, word) in cases.items():
+            with self.subTest(name):
+                shutil.rmtree(".git", ignore_errors=True)
+                shutil.rmtree("event-manifest", ignore_errors=True)
+                kw = dict(kw)
+                if kw.pop("broken", False):
+                    Path("event-manifest").mkdir()
+                    Path(MANIFEST).write_text("{", encoding="utf-8")
+                elif kw.pop("manifest", True):
+                    self.put(**kw)
+                git_commit_all(self.root)
+                self.assertBasketOnly(self.gate(), word)
+
+    def test_head_checks(self):
+        import event_manifest as M
+        self.put()
+        g = self.gate()                                                    # git 저장소가 아님
+        self.assertBasketOnly(g, "git 저장소가 아니라")
+        git_commit_all(self.root)
+        self.assertTrue(self.gate().allows_new_risk("basket"))
+        late = f"event-manifest/{P}-9-1.json"                              # 더 먼저 끝난(= 첫 성공) manifest인데 커밋 안 됨 → HEAD와 다름
+        self.put(late, GITHUB_RUN_ID="9", GITHUB_RUN_ATTEMPT="1", done="2026-11-10T23:00:00Z")
+        self.assertBasketOnly(self.gate(), "HEAD")
+        Path(late).unlink()
+        body = json.loads(Path("event-data/000040.json").read_text(encoding="utf-8"))
+        body["rows"].append({"date": P, "kind": "자사주취득", "title": "커밋 뒤 끼어든 줄"})
+        Path("event-data/000040.json").write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
+        self.put()                                                        # manifest도 바뀐 자료에 맞춰 고쳤지만 둘 다 커밋 안 됨
+        ok, why, info = M.morning_check(P, DAY, self.DECIDED)
+        self.assertFalse(ok)
+        self.assertIn("HEAD", why)
+        self.assertEqual(info["tree"], info["manifest_tree"], "지문은 맞아도 HEAD 그대로가 아니면 닫힘")
+        git_commit_all(self.root)
+        self.assertTrue(self.gate().allows_new_risk("basket"), "같은 내용을 커밋하면 열림")
+
+    def test_first_success_only(self):
+        import event_manifest as M
+        self.put()                                                         # 08:25 성공(첫 성공)
+        self.put(f"event-manifest/{P}-8-1.json", GITHUB_RUN_ID="8", GITHUB_RUN_ATTEMPT="1", done="2026-11-11T01:25:00Z")
+        git_commit_all(self.root)
+        ok, why, info = M.morning_check(P, DAY, self.DECIDED)
+        self.assertTrue(ok, why)
+        self.assertEqual(info["id"], f"{P}-local-0.json", "먼저 끝난 첫 성공")
+        self.assertEqual(len(info["candidates"]), 2)
+        self.put(event_data_tree_digest="f" * 64)                          # 첫 성공의 지문이 지금 자료와 다르면 뒤 성공으로 바꾸지 않음
+        git_commit_all(self.root)
+        ok, why, info = M.morning_check(P, DAY, self.DECIDED)
+        self.assertFalse(ok)
+        self.assertEqual(info["id"], f"{P}-local-0.json")
+        self.assertIn("트리 지문", why)
+
+    def test_unknown_p_or_error_closes(self):
+        import gates
+        self.put()
+        git_commit_all(self.root)
+        g = gates.Gates(DAY, "engine")                                     # 달력 칸 없음 → P 모름
+        g.check_events(now=self.DECIDED)
+        self.assertFalse(g.allows_new_risk("basket"))
+        self.assertTrue(g.allows_new_risk("engine"))
+        with mock.patch("event_manifest.morning_check", side_effect=RuntimeError("말썽")):
+            self.assertBasketOnly(self.gate(), "셈 오류")
+
+
+class EngineEventsRun(unittest.TestCase):
+    def test_morning_manifest_opens_basket(self):
+        out = world_run("engine")
+        self.assertIn("000040", [o[0] for o in buys(out)], "바구니 무상증자 매수(문 열림)")
+        ev = audit_of(out, "basket")["곁"]["gates"]["checks"]["events"]
+        self.assertEqual((ev["id"], ev["ok"], ev["head"]["ok"]), (f"{P}-local-0.json", True, True))
+        self.assertEqual(gates_file(out)["checks"]["basket"]["events"]["id"], f"{P}-local-0.json")
+
+    def test_no_or_bad_manifest_closes_basket_only(self):
+        changed = {"event-data/000040.json": {"rows": [{"date": P, "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"},
+                                                       {"date": P, "kind": "무상증자", "title": "커밋 뒤 끼어든 줄"}]}}
+        cases = {"manifest 없음": dict(manifest=None), "19:20 정기만": dict(manifest="regular"),
+                 "ok 거짓": dict(manifest={"ok": False}), "판단 뒤 완료": dict(manifest={"done": "2026-11-11T06:11:00Z"}),
+                 "커밋 뒤 자료 바뀜": dict(after_commit=changed), "git 아님": dict(git=False)}
+        for name, kw in cases.items():
+            with self.subTest(name):
+                out = world_run("engine", **kw)
+                g = gates_file(out)
+                self.assertFalse(g["decisions"]["basket"]["open"], g["decisions"]["basket"])
+                self.assertTrue(g["decisions"]["engine"]["open"] and g["decisions"]["overlay"]["open"], "엔진 · 덧붙임은 그대로")
+                self.assertEqual(sorted(o[0] for o in buys(out)), ["122630", "133690", "148070"], "바구니 매수만 빠짐")
+                self.assertIn(("000020", 200), sells(out), "바구니 20거래일 팔기는 그대로")
+                warn = [r for rows in out["discord"] for r in rows if r.startswith("⚠️ 새 매수 막음")]
+                self.assertEqual(len(warn), 1)
+                self.assertIn("사건 바구니", warn[0])
+                self.assertNotIn("빈칸 엔진", warn[0])
+                self.assertFalse(audit_of(out, "basket")["곁"]["gates"]["open"])
+
+    def test_audit_clean_when_basket_closed(self):
+        if str(ROOT / "research") not in sys.path:
+            sys.path.insert(0, str(ROOT / "research"))
+        import boost_audit
+        out = world_run("engine", manifest=None)
+        for bot in ("engine", "basket", "overlay"):
+            self.assertEqual(boost_audit.orders_check(bot, audit_of(out, bot)), [], bot)
+
+
+# ───────────────────────── 2b단계: D5 달력 만드는 도구(1차 KRX · 2차 KIS) ─────────────────────────
+
+# data.krx.co.kr 휴장일 조회(B125.bld)가 2026-11-07에 준 값 그대로(고정 자료 · 시험은 인터넷을 안 부름)
+KRX_2026 = ("20260101", "20260216", "20260217", "20260218", "20260302", "20260501", "20260505", "20260525", "20260603", "20260717",
+            "20260817", "20260924", "20260925", "20261005", "20261009", "20261225", "20261231")
+KRX_2027 = ("20270101", "20270208", "20270209", "20270301", "20270503", "20270505", "20270513", "20270719", "20270816", "20270914",
+            "20270915", "20270916", "20271004", "20271011", "20271227", "20271231")
+
+
+def build_tool():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("build_calendar", ROOT / "tools" / "build_calendar.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def krx_raw(year, holidays):
+    return json.dumps({"controller": "bldAttendant", "dir": "comm", "result": {"block1": [{"calnd_dd": d} for d in holidays]},
+                       "cmd": "executeForResourceBundle"}, separators=(",", ":")).encode("utf-8")
+
+
+class FakeGet:
+    """가짜 KRX(requests.get 자리): 해마다 원문 · 상태 · 예외."""
+
+    def __init__(self, by_year, status=200, boom=None):
+        self.by_year, self.status, self.boom, self.calls = dict(by_year), status, boom, []
+
+    def __call__(self, url, params=None, headers=None, timeout=None):
+        self.calls.append((url, dict(params or {}), dict(headers or {})))
+        if self.boom:
+            raise self.boom
+        return type("R", (), {"status_code": self.status, "content": self.by_year[int(params["search_bas_yy"])]})()
+
+
+class FakeKis:
+    """가짜 KIS 국내휴장일조회(_market_rows 자리): BASS_DT부터 per일 치(달력 날)를 줌 · opnd_yn은 holidays로 · 바꿀 날 · 끊길 날."""
+
+    def __init__(self, holidays, per=20, flip=(), stop_after=None, boom=None, bad=None):
+        self.off, self.per, self.flip, self.stop_after, self.boom, self.bad = set(holidays), per, set(flip), stop_after, boom, bad
+        self.calls = []
+
+    def _market_rows(self, path, tr_id, params, what, key=None):
+        self.calls.append(dict(params))
+        assert (path, tr_id, key) == ("/uapi/domestic-stock/v1/quotations/chk-holiday", "CTCA0903R", "output")
+        assert set(params) == {"BASS_DT", "CTX_AREA_NK", "CTX_AREA_FK"}
+        if self.boom:
+            raise self.boom
+        d = date(int(params["BASS_DT"][:4]), int(params["BASS_DT"][4:6]), int(params["BASS_DT"][6:]))
+        rows = []
+        for _ in range(self.per):
+            k = d.strftime("%Y%m%d")
+            if self.stop_after and k > self.stop_after:
+                break
+            trade = d.weekday() < 5 and k not in self.off
+            if k in self.flip:
+                trade = not trade
+            rows.append({"bass_dt": k, "wday_dvsn_cd": f"{(d.weekday() + 1) % 7 + 1:02d}", "bzdy_yn": "Y" if trade else "N",
+                         "tr_day_yn": "Y" if trade else "N", "opnd_yn": self.bad if self.bad and k == params["BASS_DT"] else
+                         ("Y" if trade else "N"), "sttl_day_yn": "Y" if trade else "N"})
+            d += timedelta(days=1)
+        return rows
+
+
+class CalendarBuild(TmpCwd):
+    def setUp(self):
+        super().setUp()
+        self.B = build_tool()
+        self.keep = mock.patch.object(self.B, "KIS_PAUSE", 0)
+        self.keep.start()
+
+    def tearDown(self):
+        self.keep.stop()
+        super().tearDown()
+
+    def run_tool(self, years, krx=None, kis=None, get=None):
+        get = get or FakeGet({2026: krx_raw(2026, KRX_2026), 2027: krx_raw(2027, KRX_2027)})
+        kis = kis or FakeKis(KRX_2026 + KRX_2027)
+        return self.B.main([str(y) for y in years], client=kis, get=get, folder="calendar")
+
+    def files(self):
+        return sorted(p.name for p in Path("calendar").glob("*.json")) if Path("calendar").exists() else []
+
+    def test_same_sources_write_v1_in_trade_calendar_shape(self):
+        import trade_calendar as C
+        kis = FakeKis(KRX_2026, per=20)
+        get = FakeGet({2026: krx_raw(2026, KRX_2026)})
+        self.assertEqual(self.run_tool([2026], kis=kis, get=get), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json"])
+        body = json.loads(Path("calendar/krx-2026-v1.json").read_text(encoding="utf-8"))
+        self.assertEqual(body["days"], calendar_body(2026, holidays=KRX_2026)["days"], "1단계 합성 판과 같은 꼴 · 같은 날들")
+        got = C.load_year("2026", "calendar")
+        self.assertEqual((got["version"], got["sha256"]), (1, C.normalized_digest(body["days"])))
+        self.assertEqual(body["raw_sha256"], hashlib.sha256(krx_raw(2026, KRX_2026)).hexdigest(), "원문 지문 = KRX 응답 바이트")
+        self.assertIn(body["raw_sha256"][:16], body["notice_no"])
+        self.assertIn("key=B125.bld", body["source_url"])
+        self.assertIn("search_bas_yy=2026", body["source_url"])
+        self.assertTrue(body["source_url"].startswith("https://data.krx.co.kr/comm/bldAttendant/executeForResourceBundle.cmd"))
+        self.assertRegex(body["fetched_at_utc"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+        self.assertRegex(body["effective_from"], r"^\d{8}$")
+        self.assertEqual(body["parser_version"], "build_calendar 1")
+        self.assertEqual((body["secondary"]["tr_id"], body["secondary"]["field"], body["secondary"]["agree_days"]), ("CTCA0903R", "opnd_yn", 365))
+        self.assertEqual(body["secondary"]["calls"], len(kis.calls))
+        self.assertEqual(len(kis.calls), 19, "기준일자를 받은 마지막 날 다음 날로 옮기며 그해를 다 덮음(20일씩 → 19번)")
+        self.assertEqual([c["BASS_DT"] for c in kis.calls[:3]], ["20260101", "20260121", "20260210"])
+        self.assertEqual(get.calls[0][1], {"baseName": "krx.mdc.i18n.component", "key": "B125.bld", "search_bas_yy": "2026"})
+        self.assertEqual(body["days"]["20261119"], {"open": "0900", "close": "1530"}, "수능날 특수 세션은 원천에 없으니 넣지 않음")
+        info = C.day_info(DAY, folder="calendar")
+        self.assertEqual((info["P"], info["trading"]), (P, True))
+        self.assertEqual(self.B.check("calendar"), 0)
+
+    def test_mismatch_or_fetch_failure_writes_nothing(self):
+        cases = {
+            "두 원천 다름(KIS가 성탄절을 개장일로)": dict(kis=FakeKis(KRX_2026, flip=("20261225",))),
+            "두 원천 다름(KRX가 한 날을 빠뜨림)": dict(get=FakeGet({2026: krx_raw(2026, KRX_2026[:-1])})),
+            "KRX 연결 오류": dict(get=FakeGet({}, boom=ConnectionError("끊김"))),
+            "KRX HTTP 500": dict(get=FakeGet({2026: b""}, status=500)),
+            "KRX가 로그인 화면(HTML)": dict(get=FakeGet({2026: "<html>로그인</html>".encode("utf-8")})),
+            "KRX 휴장일 0개": dict(get=FakeGet({2026: krx_raw(2026, ())})),
+            "KRX에 다른 해 날짜": dict(get=FakeGet({2026: krx_raw(2026, KRX_2026 + ("20270101",))})),
+            "KIS 연결 오류": dict(kis=FakeKis(KRX_2026, boom=RuntimeError("거절"))),
+            "KIS가 그해를 다 안 줌": dict(kis=FakeKis(KRX_2026, stop_after="20261130")),
+            "KIS 칸 이상": dict(kis=FakeKis(KRX_2026, bad="?")),
+        }
+        for name, kw in cases.items():
+            with self.subTest(name):
+                shutil.rmtree("calendar", ignore_errors=True)
+                kw.setdefault("get", FakeGet({2026: krx_raw(2026, KRX_2026)}))
+                kw.setdefault("kis", FakeKis(KRX_2026))
+                self.assertEqual(self.run_tool([2026], **kw), 1, name)
+                self.assertEqual(self.files(), [], "아무 판도 안 씀")
+                said = " ".join(" ".join(str(a) for a in c.args) for c in __import__("builtins").print.call_args_list[-2:])
+                self.assertIn("2026년 달력 판을 쓰지 않음", said)
+        said = " ".join(" ".join(str(a) for a in c.args) for c in __import__("builtins").print.call_args_list)
+        self.assertIn("20261225 KRX 휴장 / KIS 거래", said, "다른 날을 까닭에 적음")
+
+    def test_rerun_same_content_and_changed_notice(self):
+        import trade_calendar as C
+        self.assertEqual(self.run_tool([2026]), 0)
+        v1 = Path("calendar/krx-2026-v1.json").read_bytes()
+        self.assertEqual(self.run_tool([2026]), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json"], "같은 내용이면 새 판 없음")
+        said = " ".join(str(c.args[0]) for c in __import__("builtins").print.call_args_list if c.args)
+        self.assertIn("새 판 없음", said)
+        extra = KRX_2026 + ("20261120",)                                 # 임시 휴장 공지 → 두 원천 모두 바뀜
+        self.assertEqual(self.run_tool([2026], get=FakeGet({2026: krx_raw(2026, extra)}), kis=FakeKis(extra)), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json", "krx-2026-v2.json"])
+        self.assertEqual(Path("calendar/krx-2026-v1.json").read_bytes(), v1, "옛 판은 덮지 않음")
+        self.assertEqual(C.load_year("2026", "calendar")["version"], 2)
+        self.assertEqual(C.day_info("20261123", folder="calendar")["P"], "20261119", "새 판(11-20 휴장)으로 앞 거래일이 바뀜")
+        Path("calendar/krx-2026-v2.json").write_text("{", encoding="utf-8")       # 가장 큰 판이 깨지면 확인 실패
+        self.assertEqual(self.B.check("calendar"), 1)
+
+    def test_year_boundary(self):
+        import idle_live
+        import trade_calendar as C
+        self.assertEqual(self.run_tool([2026, 2027]), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json", "krx-2027-v1.json"])
+        info = C.day_info("20270104", folder="calendar")
+        self.assertEqual((info["P"], info["version"], info["p_version"]), ("20261230", 1, 1))
+        self.assertEqual(C.next_day("20261230", folder="calendar"), "20270104")
+        with mock.patch.object(C, "FOLDER", Path("calendar")):
+            self.assertEqual(idle_live.next_trading_day("20261230"), "20270104")
+            self.assertEqual(idle_live.next_trading_day("20270430"), "20270504", "KRX 2027-05-03 휴장(HOLIDAYS에 없음)은 달력이 이김")
+
+    def test_years_args_and_client(self):
+        self.assertEqual(self.B.default_years(datetime(2026, 11, 7, tzinfo=KST)), [2026])
+        self.assertEqual(self.B.default_years(datetime(2026, 12, 1, tzinfo=KST)), [2026, 2027])
+        self.assertEqual(self.B.main(["20x6"], client=FakeKis(KRX_2026), get=FakeGet({}), folder="calendar"), 1)
+        with mock.patch.dict(os.environ, {"CAL_YEARS": "2026"}):
+            self.assertEqual(self.B.main([], client=FakeKis(KRX_2026), get=FakeGet({2026: krx_raw(2026, KRX_2026)}), folder="calendar"), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json"])
+        import broker_kis
+        with mock.patch.object(broker_kis, "market", side_effect=broker_kis.BrokerError("키 없음")):
+            self.assertEqual(self.B.main(["2026"], get=FakeGet({}), folder="calendar"), 1, "증권사 연결을 못 만들면 쓰지 않음")
+
+
+# ───────────────────────── 2b단계: 빈칸 엔진 '주 끝' — 달력이 있으면 달력 · 없으면 HOLIDAYS ─────────────────────────
+
+class EngineWeekEnd(TmpCwd):
+    def table(self, days):
+        import idle_live
+        return {d: (idle_live.next_trading_day(d), idle_live.week_end(d)) for d in days}
+
+    def test_same_as_holidays_then_calendar_wins(self):
+        import idle_live
+        days = [d.strftime("%Y%m%d") for d in (date(2026, 10, 1) + timedelta(days=k) for k in range(450))
+                if d.weekday() < 5 and d.year <= 2027]
+        before = self.table(days)                                         # 달력 없음 = 예전 HOLIDAYS 그대로
+        self.assertEqual(before["20261224"], ("20261228", True))
+        self.assertEqual(before["20270430"], ("20270503", True))
+        h26 = tuple(sorted(h for h in idle_live.HOLIDAYS if h.startswith("2026")))
+        h27 = tuple(sorted(h for h in idle_live.HOLIDAYS if h.startswith("2027")))
+        write_calendar("calendar", 2026, holidays=h26)
+        write_calendar("calendar", 2027, holidays=h27)
+        self.assertEqual(self.table(days), before, "달력이 HOLIDAYS와 같은 날들이면 결과가 하나도 안 바뀜")
+        write_calendar("calendar", 2027, version=2, holidays=KRX_2027)     # KRX 2027(05-03 · 07-19 더 있음)
+        after = self.table(days)
+        self.assertEqual(after["20270430"], ("20270504", True), "달력이 이김")
+        self.assertEqual({d: v[1] for d, v in after.items()}, {d: v[1] for d, v in before.items()}, "주 끝 판단은 이 해에도 같음(월요일 휴장)")
+        write_calendar("calendar", 2027, version=3, sha="f" * 64)          # 다음 해 판이 깨짐 → 그 구간은 HOLIDAYS로
+        self.assertEqual(idle_live.next_trading_day("20261230"), "20270104")
+        self.assertEqual(idle_live.next_trading_day("20261009"), "20261012", "2026 판은 그대로 씀")
+
+
+# ───────────────────────── 2b단계: 시작 전 점검 파일 이름(작업마다) · git pull --rebase 실험 ─────────────────────────
+
+class SmokeRunName(TmpCwd):
+    def test_names_and_two_runs_same_day(self):
+        import gate_smoke
+        self.assertEqual(gate_smoke.path_for(DAY).as_posix(), SMOKE)
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "123", "GITHUB_RUN_ATTEMPT": "2"}):
+            self.assertEqual(gate_smoke.path_for(DAY).as_posix(), f"gate-smoke/{DAY}-123-2.json")
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "../x", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(gate_smoke.path_for(DAY).as_posix(), f"gate-smoke/{DAY}-local-1.json", "이상한 값은 이름에 안 씀")
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "1", "GITHUB_RUN_ATTEMPT": "1"}):
+            gate_smoke.main([DAY])                                       # 앞 작업: 달력 없음 → 실패 파일
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "2", "GITHUB_RUN_ATTEMPT": "1"}):
+            gate_smoke.main([DAY])                                       # 뒤 작업: 통과 파일(앞 파일을 덮지 않음)
+            self.assertTrue(gate_smoke.status(DAY)[0])
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "1", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertFalse(gate_smoke.status(DAY)[0], "앞 작업은 자기 실패 파일을 그대로 봄")
+        self.assertEqual(sorted(os.listdir("gate-smoke")), [f"{DAY}-1-1.json", f"{DAY}-2-1.json"])
+        Path(f"gate-smoke/{DAY}-5-2.json").write_text(json.dumps({"date": DAY, "ok": True, "run_id": "5", "run_attempt": "1"}),
+                                                      encoding="utf-8")
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "5", "GITHUB_RUN_ATTEMPT": "2"}):
+            self.assertIn("이 작업의 것이 아님", gate_smoke.status(DAY)[1], "본문의 시도 번호가 다름")
+
+    def test_manifest_binding_smoke_catches_broken_verifier(self):
+        import event_manifest
+        import gate_smoke
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertTrue(gate_smoke.check(DAY)["ok"], gate_smoke.check(DAY)["reasons"])
+        with mock.patch.object(event_manifest, "morning_check", lambda *a, **k: (True, "", {})):    # 무엇이든 통과시키는 고장
+            body = gate_smoke.check(DAY)
+        self.assertFalse(body["ok"])
+        self.assertTrue(any("19:20 정기만 manifest를 통과시킴" in r for r in body["reasons"]), body["reasons"])
+        with mock.patch.object(event_manifest, "morning_check", lambda *a, **k: (False, "고장", {})):  # 무엇이든 막는 고장
+            self.assertIn("맞는 아침 확인 manifest를 거부함", gate_smoke.check(DAY)["reasons"])
+
+    def test_untracked_new_file_does_not_block_pull_rebase(self):
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        env.update(GIT_AUTHOR_NAME="시험", GIT_AUTHOR_EMAIL="t@example.invalid", GIT_COMMITTER_NAME="시험",
+                   GIT_COMMITTER_EMAIL="t@example.invalid")
+
+        def git(cwd, *args):
+            return subprocess.run(["git", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", *args], cwd=cwd, env=env,
+                                  capture_output=True, text=True, timeout=60)
+        git(".", "init", "-q", "--bare", "remote.git")
+        git(".", "-c", "init.defaultBranch=main", "clone", "-q", "remote.git", "a")
+        Path("a/gate-smoke").mkdir()
+        Path(f"a/gate-smoke/{DAY}-1-1.json").write_text("{}", encoding="utf-8")
+        Path("a/idle-live").mkdir()
+        Path("a/idle-live/state.json").write_text("{}", encoding="utf-8")
+        git("a", "checkout", "-q", "-b", "main")
+        git("a", "add", "-A")
+        git("a", "commit", "-q", "-m", "바탕")
+        git("a", "push", "-q", "origin", "main")
+        git(".", "clone", "-q", "-b", "main", "remote.git", "b")
+        Path("a/idle-live/state.json").write_text('{"x": 1}', encoding="utf-8")       # 다른 작업이 15:10 전에 올린 커밋
+        git("a", "commit", "-qam", "다른 작업")
+        git("a", "push", "-q", "origin", "main")
+        Path(f"b/gate-smoke/{DAY}-2-1.json").write_text('{"ok": true}', encoding="utf-8")    # 이 작업의 새 점검 파일(추적 밖)
+        got = git("b", "pull", "-q", "--rebase", "origin", "main")
+        self.assertEqual(got.returncode, 0, got.stderr)
+        self.assertEqual(json.loads(Path("b/idle-live/state.json").read_text(encoding="utf-8")), {"x": 1})
+        Path(f"b/gate-smoke/{DAY}-1-1.json").write_text('{"다시 씀": 1}', encoding="utf-8")   # 대조: 예전 방식(같은 이름 추적 파일을 고침)
+        Path("a/idle-live/state.json").write_text('{"x": 2}', encoding="utf-8")
+        git("a", "commit", "-qam", "또 다른 작업")
+        git("a", "push", "-q", "origin", "main")
+        self.assertNotEqual(git("b", "pull", "-q", "--rebase", "origin", "main").returncode, 0, "추적 파일을 고치면 실패(예전 로컬 커밋이 필요했던 까닭)")
+
+
+# ───────────────────────── 2b단계: D4 보강 — 수급 수집 목록에 1일봉 풀 ─────────────────────────
+
+class InvestorPool(TmpCwd):
+    def setUp(self):
+        super().setUp()
+        import collect_investor_history as C
+        self.C = C
+        Path("study").mkdir()
+        Path("study/flow_universe.json").write_text(json.dumps({"codes": ["000001", "000002"]}), encoding="utf-8")
+        Path("daily-live").mkdir()
+        Path("daily-live/state.json").write_text(json.dumps({"positions": {"000009": {"code": "000009"}}}), encoding="utf-8")
+        last5 = weekdays_until(P, 5)
+        self.prices = {f"{i:06d}": {"name": f"종목{i}", "rows": [(d, 100.0) for d in last5]} for i in range(1, 6)}
+        self.prices["000006"] = {"name": "낡음", "rows": [(d, 100.0) for d in weekdays_until(weekdays_until(P, 2)[0], 5)]}
+        import caps
+        import study
+        self.patches = [mock.patch.object(study, "load_prices", lambda *a, **k: copy.deepcopy(self.prices)),
+                        mock.patch.object(caps, "tag", lambda rows, top=100: [r.update({caps.RANK: i + 1}) for i, r in enumerate(rows)])]
+        for x in self.patches:
+            x.start()
+
+    def tearDown(self):
+        for x in self.patches:
+            x.stop()
+        super().tearDown()
+
+    def test_pool_added_only_for_daily_default_set(self):
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        with mock.patch.object(self.C, "target_day", lambda now=None, folder=None: (P, True)):
+            self.assertEqual(self.C.daily_pool(), ["000001", "000002", "000003", "000004", "000005", "000009"],
+                             "전날(P) 일봉이 있는 종목의 150위 + 보유 · P 일봉이 없는 종목은 빠짐(1일봉 풀과 같은 식)")
+            self.assertEqual(self.C.codes_to_collect(), ["000001", "000002", "000003", "000004", "000005", "000009"], "목록 + 풀(겹침 없음)")
+            with mock.patch.dict(os.environ, {"INVESTOR_CODES": "000001"}):
+                self.assertEqual(self.C.codes_to_collect(), ["000001"], "묶음 수집은 그대로")
+            with mock.patch.object(self.C, "FULL", True):
+                self.assertEqual(self.C.codes_to_collect(), ["000001", "000002"], "전체 칸 수집은 그대로")
+        with mock.patch.object(self.C, "target_day", side_effect=RuntimeError("말썽")):
+            self.assertEqual(self.C.codes_to_collect(), ["000001", "000002"], "풀 셈이 말썽이면 예전 목록대로(수집은 멈추지 않음)")
+
+    def test_pool_size_150(self):
+        import caps
+        self.prices = {f"{i:06d}": {"name": str(i), "rows": [(d, 100.0) for d in weekdays_until(P, 5)]} for i in range(1, 201)}
+        Path("daily-live/state.json").write_text(json.dumps({"positions": {"000300": {}}}), encoding="utf-8")
+        with mock.patch.object(self.C, "target_day", lambda now=None, folder=None: (P, True)), \
+                mock.patch.object(caps, "tag", lambda rows, top=100: [r.update({caps.RANK: i + 1}) for i, r in enumerate(
+                    sorted(rows, key=lambda r: r["code"]))]):
+            pool = self.C.daily_pool()
+        self.assertEqual(len(pool), 151, "150위 + 보유 1")
+        self.assertEqual((pool[0], pool[149], pool[150]), ("000001", "000150", "000300"))
+        self.assertNotIn("000151", pool)
+
+
+class Structure2b(unittest.TestCase):
+    def test_engine_checks_events_before_basket(self):
+        text = (ROOT / "idle_live.py").read_text(encoding="utf-8")
+        run = text[text.index("def run(now=None):"):]
+        marks = ['gate = gates.begin(day, "engine", sync_ok', "gate.check_etf(etf_last_days(day))", "gate.check_events()",
+                 'if not gate.allows_new_risk("basket"):', "basket_live.run("]
+        at = [run.index(m) for m in marks]
+        self.assertEqual(at, sorted(at), "D3 공시 확인은 바구니를 부르기 전")
+
+    def test_events_workflow(self):
+        wf = (ROOT / ".github" / "workflows" / "events.yml").read_text(encoding="utf-8")
+        for cron in ("'20 23 * * 0-4'", "'20 1 * * 1-5'", "'20 3 * * 1-5'", "'20 10 * * 1-5'", "'30 3 * * 6'"):
+            self.assertIn(f"cron: {cron}", wf)
+        self.assertIn('python collect_events.py final "$EVENT_T0"', wf)
+        save = wf[wf.index("- name: 자료 · manifest"):]
+        self.assertIn("if: always()", save)
+        self.assertIn("set -euo pipefail", save)
+        self.assertNotIn("|| true", save)
+        self.assertNotIn("2>/dev/null", save)
+        marks = ["mkdir -p event-data event-manifest", "python collect_events.py verify", "git add -A -- event-data", 'git add -- "$m"',
+                 "git commit -q -m"]
+        at = [save.index(m) for m in marks]
+        self.assertEqual(at, sorted(at), "각각 확인 → 따로 staging → 같은 한 커밋")
+        self.assertEqual(save.count("git commit"), 1)
+        self.assertIn('event-manifest/*-"$GITHUB_RUN_ID"-"$GITHUB_RUN_ATTEMPT".json', save, "이 작업의 manifest만")
+
+    def test_calendar_workflow(self):
+        wf = (ROOT / ".github" / "workflows" / "calendar.yml").read_text(encoding="utf-8")
+        self.assertIn("workflow_dispatch:", wf)
+        self.assertRegex(wf, r"cron: '\d+ \d+ 1 \* \*'", "매월 1회")
+        self.assertIn("python tools/build_calendar.py", wf)
+        self.assertIn("KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}", wf)
+        self.assertIn("KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}", wf)
+        self.assertEqual([x.strip() for x in wf.splitlines() if "git add" in x and not x.strip().startswith("#")], ["git add -- calendar"])
+        self.assertLess(wf.index("python tools/build_calendar.py --check"), wf.index("git add -- calendar"))
+        self.assertNotIn("|| true", wf)
 
 
 if __name__ == "__main__" and "--golden" in sys.argv:

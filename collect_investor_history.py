@@ -12,6 +12,8 @@
 BOOST-0001-D D4: '실행 시각의 어제' 대신 판 고정 달력의 목표 날(P = 오늘 한국 날짜 앞 마지막 거래일 · 장이 끝나
 자료가 나왔을 가장 늦은 거래일)을 밝혀 묻고, 그 날로 물은 응답의 마지막 날이 P가 아니면 그 종목 파일을 고치지 않고
 한 줄만 찍습니다. 달력을 못 읽으면 예전 방식(실행 시각의 어제 · 확인 없음) 그대로 모읍니다(수집을 멈추지 않음).
+2b단계(D4 보강): 매일 수집(INVESTOR_CODES 없이 · 기본 칸)은 1일봉 수급 풀(전날 시총 150위 + 1일봉 보유 종목 · daily_live.run의
+풀과 같은 식)도 더해 받습니다 — 목록 밖 종목(예: 005850 · 009970)이 늘 낡아 풀 건강도를 깎던 것을 막음(2026-11-07 기준 4종목 더함).
 """
 import json
 import os
@@ -35,6 +37,32 @@ COLS = (("date",) + tuple(n for n, _ in broker_kis.KIS.INVESTORS_ALL) + ("종가
 MAX_ASKS = 400 if FULL else 200   # 한 종목에 물을 수 있는 가장 많은 횟수(서른 거래일씩). 막힌 응답이 끝없이 돌지 않게.
 
 
+POOL = 150                 # 1일봉 수급 풀 크기(daily_live.POOL과 같음 · 전날 시총 150위)
+
+
+def daily_pool():
+    """BOOST-0001-D D4 보강: 1일봉 수급 풀(daily_live.run과 같은 식 — 일봉 마지막 날이 기대 날(달력 P · 못 정하면 가장 많은 종목의 마지막 날)인
+    종목을 caps 순위로 매긴 150위 + 1일봉 보유 종목) → 코드 목록(정렬). 셈이 말썽이면 빈 목록(수집은 예전 목록대로 · 한 줄만 찍음)."""
+    try:
+        import caps
+        import data_guard
+        import study
+        day, exact = target_day()
+        prices = study.load_prices()
+        _, last, _ = data_guard.daily_ready(prices, day if exact else None)
+        yest = [{"code": c, "date": v["rows"][-1][0], "price": v["rows"][-1][1]} for c, v in prices.items() if v["rows"][-1][0] == last]
+        caps.tag(yest, POOL)
+        pool = {r["code"] for r in yest if r.get(caps.RANK) is not None and r.get(caps.RANK) <= POOL}
+        try:
+            held = set((json.loads(Path("daily-live/state.json").read_text(encoding="utf-8")).get("positions") or {}))
+        except (OSError, ValueError, AttributeError):
+            held = set()
+        return sorted(str(c) for c in pool | held)
+    except Exception as e:
+        print(f"1일봉 수급 풀을 셈하지 못해 예전 목록만 받음 · {type(e).__name__}", flush=True)
+        return []
+
+
 def codes_to_collect():
     picked = [c.strip() for c in os.getenv("INVESTOR_CODES", "").split(",") if c.strip()]
     if not picked:
@@ -49,6 +77,14 @@ def codes_to_collect():
                                                        found.get("picks", []) + found.get("b_group", [])]))
         except (OSError, ValueError, KeyError, TypeError):
             pass
+        # BOOST-0001-D D4 보강: 1일봉 수급 풀(전날 시총 150위 + 보유)도 받음 — 풀 건강도(investor-data 마지막 날 = P 비율)가 목록 밖 종목 때문에
+        # 깎이지 않게(기본 칸 수집만 · 전체 칸 INVESTOR_SET=full과 묶음 수집 INVESTOR_CODES는 그대로)
+        if not FULL:
+            have = set(str(c) for c in picked)
+            extra = [c for c in daily_pool() if c not in have]
+            if extra:
+                print(f"1일봉 수급 풀 가운데 목록 밖 {len(extra)}종목도 받음 · " + " · ".join(extra[:10]), flush=True)
+            picked = list(picked) + extra
     return [str(c) for c in picked if re.fullmatch(r"[0-9]{6}", str(c))]
 
 

@@ -35,8 +35,10 @@ jobs:
           python-version: '3.11'
       - run: pip install requests numpy
       - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal tests.test_basket_live tests.test_acc_cap tests.test_overlay_live -v
-      # BOOST-0001-D §5 시작 전 점검(첫 15:10 주문 단계 앞 · 증권사 · DART를 부르지 않는 빠르고 결정적인 점검 → gate-smoke/<날>.json).
-      # 실패 · 시간 초과여도 매매 단계는 그대로 돎 — 봇이 이 파일이 없거나 · 이 작업 것이 아니거나 · ok가 아니면 그 실행의 새 매수만 막음(팔기는 그대로).
+      # BOOST-0001-D §5 시작 전 점검(첫 15:10 주문 단계 앞 · 증권사 · DART를 부르지 않는 빠르고 결정적인 점검 → gate-smoke/<날>-<작업 번호>-<시도>.json).
+      # 실패 · 시간 초과여도 매매 단계는 그대로 돎 — 봇이 자기 작업 파일이 없거나 · ok가 아니면 그 실행의 새 매수만 막음(팔기는 그대로).
+      # 2b단계: 작업마다 다른 새 파일(추적 밖)이라 봇의 15:10 저장소 맞추기(git pull --rebase)를 막지 않음 → 예전 '점검 파일 로컬 커밋'은 뺌
+      # (2026-11-07 실험: 추적 밖 새 파일 + 원격 새 커밋 → pull --rebase 성공 · 같은 이름 추적 파일을 고치면 'unstaged changes'로 실패).
       - name: 시작 전 점검(BOOST-0001-D · 새 매수 문)
         continue-on-error: true
         timeout-minutes: 3
@@ -46,11 +48,6 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          # 점검 파일을 먼저 로컬 커밋(올리기는 아래에서 함께): 봇의 15:10 저장소 맞추기(git pull --rebase)는 고친 추적 파일이 있으면
-          # 실패해 새 매수를 모두 막으므로(D6) — 같은 날 앞 작업이 이미 올린 gate-smoke/<날>.json을 이 작업이 다시 쓴 경우
-          mkdir -p gate-smoke
-          git add -A gate-smoke || echo '⚠️ 점검 파일을 staging하지 못함'
-          if ! git diff --cached --quiet; then git commit -q -m "Gate smoke" || echo '⚠️ 점검 파일을 커밋하지 못함'; fi
           status=0; python idle_live.py || status=$?
           mkdir -p idle-live basket-live overlay-live discord-digest
           git add -A idle-live basket-live overlay-live discord-digest

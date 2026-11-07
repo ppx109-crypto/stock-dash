@@ -1,0 +1,70 @@
+name: Trade calendar
+# BOOST-0001-D D5(사전등록 판 3 §1.4 · 2b단계) 판 고정 거래 달력 calendar/krx-<해>-v<번호>.json을 만듭니다(tools/build_calendar.py).
+# 1차 = KRX 정보데이터시스템 휴장일 조회(data.krx.co.kr · B125.bld) · 2차 = 한투 국내휴장일조회(CTCA0903R · 조회만 · 실전 시세 키).
+# 두 원천이 그해 모든 날에서 같을 때만 새 판을 씀 · 같은 내용이면 새 판 없음 · 옛 판은 덮지 않음 · 다르거나 조회 실패면 쓰지 않고 작업 실패로 드러냄.
+# 사용: Actions → Trade calendar → Run workflow(해를 비우면 올해, 12월이면 다음 해도 · 예: 2026,2027). 매월 1일 한 번 자동.
+# 봇(엔진 · 바구니 · 덧붙임 · 1일봉)은 그날이 실린 판이 없으면 새 매수를 막으므로, 합친 뒤 첫 판을 먼저 만들어야 함.
+on:
+  workflow_dispatch:
+    inputs:
+      years:
+        description: '만들 해(쉼표 구분 · 비우면 올해, 12월이면 다음 해도)'
+        required: false
+        default: ''
+  schedule:
+    - cron: '17 12 1 * *'   # 매월 1일 21:17 한국 시각(장 · 봇 시간 밖 · 한투 잦은 호출을 피해 달에 한 번)
+permissions:
+  contents: write
+concurrency:
+  group: trade-calendar
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: ./.github/actions/kis-token-open   # 오늘 받아 둔 한투 토큰을 잠긴 보관함에서 꺼냄(하루 1회 원칙)
+        continue-on-error: true
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: 달력 판 만들기(두 원천이 날마다 같을 때만)
+        run: python tools/build_calendar.py
+        env:
+          CAL_YEARS: ${{ inputs.years || '' }}
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+      - name: calendar/만 올림(새로 쓴 판이 있으면 · 한 해가 실패해도 다른 해의 검증된 판은 올림)
+        if: always()
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          mkdir -p calendar
+          python tools/build_calendar.py --check     # 해마다 가장 큰 판이 trade_calendar로 읽히고 지문이 맞는지(아니면 멈춤 · 커밋 없음)
+          git add -- calendar
+          if git diff --cached --quiet; then
+            echo '새 달력 판이 없어 커밋하지 않습니다.'
+          else
+            git commit -q -m 'Trade calendar version'
+            ok=0
+            for try in 1 2 3 4 5; do
+              if git pull -q --rebase origin main && git push -q; then ok=1; break; fi
+              if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then git rebase --abort; fi
+              echo "올리기 다시 시도 $try"; sleep $((try * 7))
+            done
+            [ "$ok" = 1 ] || { echo '저장소에 올리지 못했습니다.'; exit 1; }
+          fi
+      - if: always()
+        uses: ./.github/actions/kis-token-close  # 새로 받은 토큰이면 잠가서 보관함에 넣음
+        continue-on-error: true
+        with:
+          real-secret: ${{ secrets.KIS_APP_SECRET }}
