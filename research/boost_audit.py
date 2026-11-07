@@ -48,7 +48,7 @@ BOTS = {"engine": "idle-live", "basket": "basket-live", "overlay": "overlay-live
 DECISION_MODULES = {"engine": ("idle_live", "idle_signal"), "basket": ("basket_live",), "overlay": ("overlay_live",), "daily": ("daily_live",)}
 CODES = ("LATE_INPUT", "SCHEDULER", "LEDGER", "BROKER", "MANUAL", "OFF_CALENDAR")
 HARD = ("미래", "재현", "기록 고장")                       # 즉시 실패(면책 없음)
-MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행")  # 관측 사실 · 원인과 상관없이 즉시 실패(면책 없음 · 판 3 고침 6)
+MISSING = ("빠짐", "겹침", "주문 빠짐", "예정 무실행 날 실행", "금지 주문")  # 관측 사실 · 원인과 상관없이 즉시 실패(면책 없음 · 판 3 고침 6 · 8)
 STRAIN_TAGS = ("SCHEDULER", "OFF_CALENDAR") + MISSING   # 분모 밖 기록(OFF_CALENDAR)도 실행 보강 칸으로 셈(판 3 고침 3 · 보수적)
 RUN_ID = re.compile(r"[0-9]{10,}")       # GitHub Actions 작업 번호(10자리 이상 · 날짜 YYYYMMDD 8자리는 안 됨)
 COMMIT = re.compile(r"[0-9a-f]{7,40}")   # 커밋(저장소에 실제로 있고 끝점의 조상이어야 함)
@@ -509,9 +509,18 @@ def orders_check(bot, body):
     day, rows = body["날"], book_rows(body)[0]
     keys = {str(o.get("key", "")) for o in rows}
     if bot in ("engine", "basket"):
+        # 흔들림 상한이 막힌 날(기록 곁 칸 stop_buys)은 엔진이 판단 기록 뒤 매수를 뺌(idle_live.drop_buys · 설계대로) → 팔기만 대조(판 3 고침 8)
+        stop = bot == "engine" and (body.get("곁") or {}).get("stop_buys") is True
         for o in (body.get("결과") or {}).get("orders", []):
+            if stop and o[1] == "buy":                # 판단 원본의 매수는 막힌 날 실제 주문 계약 밖(없어야 정상)
+                continue
             if f"{day}:{o[1]}:{o[0]}" not in keys:
                 out.append(("주문 빠짐", f"{o[0]} {o[1]} 판단했으나 장부에 없음"))
+        if stop:                                     # 반대 방향: 막힌 날 엔진 장부에 매수 줄(접수 · 시도 · 실패 모두)이 있으면 금지 주문
+            for o in rows:
+                if str(o.get("side", "")) == "buy" or str(o.get("key", "")).startswith(f"{day}:buy:"):
+                    out.append(("금지 주문", f"{o.get('key')} 흔들림 상한이 막힌 날 엔진 매수 장부 줄 · {str(o.get('status', ''))[:20]}"))
+
     elif bot == "overlay":
         sent = {(o.get("code"), o.get("side")) for o in res.get("sent") or []}
         for o in res.get("orders") or []:
