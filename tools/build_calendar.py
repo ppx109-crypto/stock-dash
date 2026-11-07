@@ -187,7 +187,8 @@ def kis_fetch(client, year, pause=None, max_calls=KIS_MAX_CALLS):
             rows = client._market_rows(KIS_PATH, KIS_TR, {"BASS_DT": start, "CTX_AREA_NK": "", "CTX_AREA_FK": ""}, "국내휴장일",
                                        key="output")
         except Exception as e:
-            raise CalendarError(f"KIS 휴장일 조회 실패 · {type(e).__name__}") from None
+            # 증권사 오류 문장(broker_kis가 만든 한국어 문장 · 거절 코드)만 앞 80자 — 응답 본문 · 키는 들어가지 않음(까닭을 작업 기록에서 보려고)
+            raise CalendarError(f"KIS 휴장일 조회 실패 · {type(e).__name__} · {str(e)[:80]}") from None
         calls += 1
         newest = None
         for row in rows:
