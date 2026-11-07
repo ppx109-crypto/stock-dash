@@ -519,19 +519,58 @@ def run_live(now=None):
     return 0
 
 
-def refresh_near(now=None, client=None, out=None):
+def _clock():
+    """마감(deadline) 검사용 지금 시각(시험에서 바꿔 끼움)."""
+    return datetime.now(KST)
+
+
+def _save_atomic(path, body):
+    """같은 폴더의 임시 파일에 다 쓴 뒤 바꿔 끼움(반쯤 쓴 파일이 그 이름으로 보이지 않게)."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    try:
+        tmp.write_text(json.dumps(body, ensure_ascii=False, indent=1), encoding="utf-8")
+        os.replace(tmp, path)
+    except Exception:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
+
+
+def pool_digest(pool):
+    """다시 센 풀(코드 목록)의 지문 — 풀 칸과 견줘 본문이 스스로 맞는지 봄(BOOST-0001-D D1)."""
+    return hashlib.sha256(json.dumps(list(pool), separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def refresh_near(now=None, client=None, out=None, expected_p=None, deadline=None):
     """장중 매시: 지금 값(그 시각 현재가를 오늘 종가로 보고) · 전날 수급까지로 1시간봉 후보 조건을 다시 세어
     '조건이 1개만 모자란 종목'과 '지금 값이면 충족하는 종목'을 판정 시각과 함께 near-now.json에 남김(사용자 요청 2026-10-02
-    "매시간 판정하고 판정된 시각 남겨줘"). 매매 판단(plan.json · 저녁에 정한 후보)은 바꾸지 않음 — 보기용."""
+    "매시간 판정하고 판정된 시각 남겨줘"). 매매 판단(plan.json · 저녁에 정한 후보)은 바꾸지 않음 — 보기용.
+
+    BOOST-0001-D D1(사전등록 판 3 §1.1 · 빈칸 엔진 실행이 15:05에 같은 작업 안에서 다시 셈):
+      expected_p(판 고정 달력의 앞 거래일)를 주면 계약 판 — 어제 일봉 마지막 날(source_p)이 expected_p와 다르면 · 풀 시세가 하나라도
+      빠지면(80% 허용 안 씀) 쓰지 않고 1 · 본문에 expected_p · source_p · pool · pool_digest · quotes_expected · quotes_got을 더해
+      out에 원자적으로 씀. deadline(시각)을 주면 시세마다 · 쓰기 직전에 마감을 보고 넘으면 쓰지 않고 2.
+      둘 다 안 주면 지금과 똑같이 동작(m15-live · hourly-live가 그대로 씀)."""
     import broker_kis
     import caps
     import final_group
     import study
+    contract = expected_p is not None
+
+    def late():
+        return deadline is not None and _clock() > deadline
     now = now or datetime.now(KST)
     day, hhmm = now.strftime("%Y%m%d"), now.strftime("%H%M")
     if now.weekday() >= 5 or not ("0900" <= hhmm <= "1600"):
         print("장중이 아니라 충족 미달 다시 세기는 넘어갑니다.")
         return 0
+    if late():
+        print("마감을 넘겨 충족 미달 다시 세기는 넘어갑니다.")
+        return 2
     client = client or broker_kis.market()
     import collect_kis_intraday as I
     if not I.market_open_today(client, day):
@@ -542,16 +581,29 @@ def refresh_near(now=None, client=None, out=None):
     if not last:
         print("어제 일봉이 없어 충족 미달 다시 세기는 넘어갑니다.")
         return 1
+    if contract and last != str(expected_p):
+        print(f"어제 일봉 마지막 날 {last}이 달력 앞 거래일 {expected_p}과 달라 다시 세지 않습니다.")
+        return 1
     yest = [{"code": c, "date": v["rows"][-1][0], "price": v["rows"][-1][1]} for c, v in prices.items()
             if v.get("rows") and v["rows"][-1][0] == last]
     caps.tag(yest, NEAR_POOL)
     pool = sorted(r["code"] for r in yest if (r.get(caps.RANK) or 999) <= NEAR_POOL)
+    if contract and not pool:
+        print("다시 셀 풀이 비어 넘어갑니다.")
+        return 1
     quotes = {}
     for code in pool:
+        if late():
+            print("마감을 넘겨 충족 미달 다시 세기를 멈춥니다.")
+            return 2
         try:
             quotes[code] = client.quote(code)
         except broker_kis.BrokerError:
             continue
+    got = [c for c in pool if (quotes.get(c) or {}).get("price") and quotes[c]["price"] > 0] if contract else []
+    if contract and len(got) != len(pool):
+        print(f"지금 값을 다 받지 못해({len(got)}/{len(pool)}) 다시 세지 않습니다(빠짐 0만 씀).")
+        return 1
     if len(quotes) < len(pool) * 0.8:
         print(f"지금 값을 너무 적게 받아({len(quotes)}/{len(pool)}) 충족 미달 다시 세기는 넘어갑니다.")
         return 1
@@ -576,7 +628,13 @@ def refresh_near(now=None, client=None, out=None):
             "picks_daily": [p for p in picks if p["code"] not in cut],
             "near_daily": [{"code": p["code"], "name": p.get("name"), "모자란 수": 1, "가까운 갈래": p.get("갈래"),
                             "모자란 것": {"거름": ["최근 45일 사이 증권사 목표가가 내림"]}} for p in picks if p["code"] in cut] + near}
-    _save(out or NEAR_NOW, body)
+    if contract:
+        body.update({"expected_p": str(expected_p), "source_p": last, "pool": pool, "pool_digest": pool_digest(pool),
+                     "quotes_expected": len(pool), "quotes_got": len(got)})
+    if late():
+        print("마감을 넘겨 다시 센 것을 쓰지 않습니다.")
+        return 2
+    (_save_atomic if contract else _save)(out or NEAR_NOW, body)
     print(f"충족 미달 다시 셈 · {body['at']} · 1개 모자람 {len(body['near'])} · 지금 값이면 충족 {len(body['picks'])}")
     return 0
 

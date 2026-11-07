@@ -164,10 +164,12 @@ def held_now(account):
     return {c: min(int(q), int(account.get(c, {}).get("quantity", 0))) for c, q in (book.get("held") or {}).items() if int(q) > 0}
 
 
-def run(client, broker, day, account, total, capital, avail, quote, days, others=()):
+def run(client, broker, day, account, total, capital, avail, quote, days, others=(), gate=None):
     """15:10 바구니 하루. account: {코드: 잔고 줄} · capital: 바구니 돈(원 · 1일봉 몫의 쉬는 돈 — 연구 P4b와 같게) ·
     avail: 쓸 수 있는 현금 · others: 다른 규칙 · 엔진이 들고 있는 종목(바구니는 안 삼 · 한 종목 40% 한도 지키기) ·
     quote(code) → 지금 값 또는 None · days: 오늘까지 거래일(오래된 → 오늘).
+    BOOST-0001-D: 새 위험 증가가 막힌 날은 부르는 쪽이 capital = avail = 0을 넘김(step이 사지 않고 20거래일 팔기만 함) ·
+    gate = 문 기록(gates.Gates.snapshot('basket') · 판단 기록 곁 칸에만 씀).
     돌려줌: (디스코드 줄들, 오늘 주문 뒤 바구니 평가액, 오늘 바구니가 쓴 현금(산 것 − 판 것))."""
     import broker_kis
     import data_guard
@@ -212,7 +214,8 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
     if _audit:
         _audit.safe(lambda: _audit.record(STATE, day, "basket", basket_in, {"orders": orders, "new_state": new_state, "why": why},
                                           ledgers=(BOOK, STATE), code=_CODE, extra={
-            "before": before, "days_since_calls": ds_calls, "days_tail": days[-_audit.DAYS_TAIL:], "days_len": len(days)}))
+            "before": before, "days_since_calls": ds_calls, "days_tail": days[-_audit.DAYS_TAIL:], "days_len": len(days),
+            "gates": gate}))
     book = _load(BOOK, {"orders": [], "held": {}})
     book.setdefault("held", {})
     seen = {o["key"] for o in book["orders"]}

@@ -53,7 +53,9 @@ INV_TAKE, INV_STOP, INV_DAYS = 0.015, -0.015, 10          # INV_TAKE = 익절 �
 INV_TAKE_K, INV_TAKE_HI, INV_SIG_N = 0.25, 0.025, 60     # 익절 = clip(0.25 × σ60 × √10, 1.5%, 2.5%)(RNA 26라운드 D11b)
 NAME = {"069500": "KODEX 200", "138230": "KOSEF 미국달러선물", "251340": "KODEX 코스닥150선물인버스",
         "133690": "TIGER 미국나스닥100", "132030": "KODEX 골드선물(H)", "148070": "KOSEF 국고채10년", "229200": "KODEX 코스닥150"}
-# 주 마지막 거래일을 알려고 쓰는 휴장일(평일만 · 틀려도 그 주 고르기가 하루 늦거나 한 주 밀릴 뿐)
+# 주 마지막 거래일을 알려고 쓰는 휴장일(평일만 · 틀려도 그 주 고르기가 하루 늦거나 한 주 밀릴 뿐).
+# BOOST-0001-D D5(2b단계): 판 고정 달력(calendar/)을 읽을 수 있으면 next_trading_day는 달력으로 정하고, 못 읽으면 이 목록 그대로
+# (그런 날은 어차피 D5 문이 닫혀 새 매수가 없음 · 엔진 판단을 바꾸지 않으려고 남겨 둠).
 HOLIDAYS = {"20261005", "20261009", "20261225", "20261231",          # 20261005 개천절 대체공휴일
             "20270101", "20270208", "20270209", "20270301", "20270505", "20270513", "20270816",
             "20270914", "20270915", "20270916", "20271004", "20271011", "20271227", "20271231"}
@@ -72,6 +74,14 @@ def inv_take(q_closes):
 
 
 def next_trading_day(day):
+    """다음 거래일: 판 고정 달력으로 정할 수 있으면 그 날(trade_calendar.next_day) · 못 정하면 예전처럼 평일 · HOLIDAYS로."""
+    try:
+        import trade_calendar
+        got = trade_calendar.next_day(day)
+    except Exception:
+        got = None
+    if got:
+        return got
     d = date(int(day[:4]), int(day[4:6]), int(day[6:]))
     while True:
         d += timedelta(days=1)
@@ -227,6 +237,19 @@ def history(code, day):
     return [float(c) for d, c in body.get("closes", []) if c and str(d) < day]
 
 
+def etf_last_days(day):
+    """BOOST-0001-D D2: 엔진 ETF 7개(CODES)마다 판단에 쓴 종가의 마지막 날(history와 같은 거르기 · D 앞 · 못 읽으면 None · 예외 없음)."""
+    out = {}
+    for code in CODES:
+        try:
+            body = _load(Path("etf-data") / f"{code}.json", {})
+            used = [str(d) for d, c in body.get("closes", []) if c and str(d) < day]
+            out[code] = used[-1] if used else None
+        except Exception:
+            out[code] = None
+    return out
+
+
 def live_breadth(client, day):
     """1일봉 봇과 같은 길로 지금 시장 폭(%)을 셈(전날 시총 150위 지금 값 → final_group.compute)."""
     import caps
@@ -256,6 +279,16 @@ def _wait_until(hhmm):
         time.sleep(15)
 
 
+def _live_prev(client, day):
+    """2차 대조용 앞 거래일(증권사 지수 일봉 · 못 받으면 None · 예외 없음)."""
+    try:
+        import data_guard
+        return data_guard.prev_trading_day(client, day)
+    except Exception as e:
+        print("앞 거래일 대조값을 못 받음 ·", type(e).__name__)
+        return None
+
+
 def drop_buys(orders, state, new_state):
     """계좌 흔들림 상한이 막힌 날: 엔진 매수를 빼고, 안 산 종목은 상태도 예전 그대로(팔기는 그대로)."""
     for code in {o[0] for o in orders if o[1] == "buy"}:
@@ -266,8 +299,22 @@ def drop_buys(orders, state, new_state):
     return [o for o in orders if o[1] != "buy"]
 
 
+def d1_recount(day):
+    """BOOST-0001-D D1(사전등록 판 3 §1.1): 15:05에 같은 실행 안에서 1일봉 후보를 다시 셈 → 결과 칸(예외 없음 · 실패면 ok 거짓).
+    P는 판 고정 달력(trade_calendar)에서 · 결과는 저장소 밖 임시 폴더에만(15:10 저장소 맞추기를 막지 않게)."""
+    import broker_kis
+    import paper_trade
+    import trade_calendar
+    try:
+        info = trade_calendar.day_info(day)
+        return paper_trade.d1_recompute(day, broker_kis.market(), (info or {}).get("P"), now=datetime.now(KST))
+    except Exception as e:
+        return {"ok": False, "why": f"다시 셈을 시작하지 못함 · {type(e).__name__}"}
+
+
 def run(now=None):
     import broker_kis
+    import gates
     import paper_trade
     from daily_live import send
     now = now or datetime.now(KST)
@@ -287,8 +334,11 @@ def run(now=None):
     if not ok:
         print(why_off)
         return 0
+    # BOOST-0001-D D1: 15:05:00에 1일봉 후보를 다시 셈(마감 15:09:30 · 저장소 밖 임시 폴더) → 검증 통과한 것만 15:10 비켜 두기에 씀
+    _wait_until(paper_trade.D1_AT)
+    d1 = d1_recount(day)
     _wait_until(DECIDE_AT)
-    paper_trade.sync_repo()                         # 기다리는 동안 다른 작업이 올린 장부를 받아 맞춤
+    sync_ok = paper_trade.sync_repo()               # 기다리는 동안 다른 작업이 올린 장부를 받아 맞춤 · 실패면 새 위험 증가 막음(D6)
     ok, why_off = paper_trade.enabled(datetime.now(KST))       # 기다리는 동안 끄기 스위치가 올라왔을 수 있음
     if not ok:
         print(why_off)
@@ -309,6 +359,14 @@ def run(now=None):
     if not CI.market_open_today(client, day):
         print(f"{day}은 장이 열리지 않은 날로 보여 넘어갑니다.")
         return 0
+    # BOOST-0001-D 문(엔진 · 바구니 · 덧붙임): 저장소 맞추기(D6) · 판 고정 달력 + 증권사 앞 거래일 대조(D5) · 시작 전 점검(§5) ·
+    # 15:05 다시 셈(D1 · 엔진 · 바구니 · 덧붙임이 같은 비켜 두기 값을 씀). 닫히면 새 위험 증가만 막고 팔기 · 줄이기는 그대로.
+    gate = gates.begin(day, "engine", sync_ok, live_p=_live_prev(client, day))
+    gate.bind_d1(d1)
+    basis = paper_trade.d1_basis(d1, day, gate.calendar_p()) if gate.d1_ok() else None
+    if gate.d1_ok() and basis is None:
+        gate.fail_d1("검증 뒤 다시 셈 파일이 바뀌었거나 근거를 못 고름")
+    paper_trade.d1_keep(d1)                         # 기록용 사본 idle-live/near-now.json(저장소 맞추기 뒤에만 · 실패해도 그대로)
     now_price = {}
     for code in CODES:
         try:
@@ -323,6 +381,11 @@ def run(now=None):
         h = history(code, day)
         if code in now_price and len(h) >= 25:
             px[code] = np.array(h + [now_price[code]])
+    # BOOST-0001-D D2: 엔진 ETF 7개가 판단에 쓴 종가 마지막 날 = 달력 P인지(하나라도 아니면 엔진만 새 매수 막음 · 바구니 · 덧붙임은 그대로)
+    gate.check_etf(etf_last_days(day))
+    # BOOST-0001-D D3: HEAD에 오늘 t0(달력 P)의 공시 아침 최종 확인 manifest(ok · 판단 전 완료)가 있고 그 트리 지문 = 지금 event-data일 때만
+    # 바구니 새 매수(아니면 바구니만 막음 · 20거래일 팔기는 그대로 · 엔진 · 덧붙임은 그대로)
+    gate.check_events()
     try:
         breadth = live_breadth(client, day)
     except Exception as e:           # 시장 폭을 못 세면 새로 사지 않고 팔 것만(엔진 끔으로 봄)
@@ -341,9 +404,12 @@ def run(now=None):
     used = max(0.0, (value - engine_value) / total) if total > 0 else 1.0
     # 15:20 1일봉이 살 몫은 미리 비켜 둠(15:20은 동시호가라 그때 엔진을 팔아도 15:30에야 돈이 풀림 · 2026-10-06 감시자 검토).
     # 켜고 끄는 판단(used)은 연구 그대로 두고 돈만 뺌. 현금이 모자라면 지금(연속 매매 중) 엔진 것을 팔아 자리를 냄(규칙이 먼저).
+    # BOOST-0001-D D1: 비켜 두기는 15:05 다시 셈의 검증 통과 근거(basis)로만 셈 · 실패면 옛 판정을 쓰지 않고 0(엔진 · 바구니 · 덧붙임 새 매수는 막힘)
     room_note = []
-    reserve, reserve_note = (paper_trade.daily_reserve(day, total, {**{c: q.get("price") for c, q in account.items()}, **now_price})
+    reserve, reserve_note = (paper_trade.daily_reserve(day, total, {**{c: q.get("price") for c, q in account.items()}, **now_price},
+                                                       near_files=(Path(basis["path"]),) if basis else ())
                               if total > 0 else (0.0, ""))
+    gate.set_reserve(reserve, basis)                 # 엔진 · 바구니 · 덧붙임 기록에 같은 비켜 두기 금액 · 근거(D1 성공 id)를 결속
     if reserve > 0 and held and reserve * paper_trade.MKT_MARGIN > cash * 0.98:
         balance, room_note = paper_trade.make_room(broker, balance, reserve, datetime.now(KST))
         if room_note:
@@ -383,10 +449,11 @@ def run(now=None):
             others = set()
             for bk in (paper_trade.DAILY_BOOK, paper_trade.M15_BOOK, paper_trade.BOOK, paper_trade.IDLE_BOOK):
                 others |= {c for c, q in ((_load(bk, {}) or {}).get("held") or {}).items() if int(q) > 0}
-            b_short, basket_after, b_spent = basket_live.run(client, broker, day, account, total, b_capital,
-                                                             max(0.0, min(cash - reserve * paper_trade.MKT_MARGIN,
-                                                                          cap if cap is not None else float("inf"))),
-                                                             quote, days, others)
+            b_avail = max(0.0, min(cash - reserve * paper_trade.MKT_MARGIN, cap if cap is not None else float("inf")))
+            if not gate.allows_new_risk("basket"):  # 새 위험 증가 막음: 돈 0을 넘겨 사지 않고 20거래일 팔기만(바구니 step은 돈 0이면 안 삼)
+                b_capital, b_avail = 0.0, 0.0
+            b_short, basket_after, b_spent = basket_live.run(client, broker, day, account, total, b_capital, b_avail,
+                                                             quote, days, others, gate=gate.snapshot("basket"))
         except Exception as e:                       # 바구니가 말썽이어도 엔진은 그대로
             print("사건 바구니 실패 ·", type(e).__name__, e)
             b_short = ["⚠️ 사건 바구니 단계 실패(엔진은 그대로 돎)"]
@@ -407,7 +474,7 @@ def run(now=None):
             "px_missing": [c for c in CODES if c not in px], "etf_asof": _audit.etf_asof(CODES, day),
             "breadth_raw": breadth, "stop_buys": stop_buys, "cap": cap, "reserve": reserve, "basket_after": basket_after,
             "b_spent": b_spent, "room_note": room_note,
-            "late_at_decision": datetime.now(KST).strftime("%H%M") > LAST_ORDER}))
+            "late_at_decision": datetime.now(KST).strftime("%H%M") > LAST_ORDER, "gates": gate.snapshot("engine")}))
     if basket_after > 0 or b_short:
         why.insert(0, f"사건 바구니가 든 것 약 {basket_after / 1e4:,.0f}만 원(엔진 몫에서 먼저 뺌)")
     if reserve_note:
@@ -417,6 +484,11 @@ def run(now=None):
         why.insert(0, "⚠️ 계좌 흔들림 상한 셈 실패 → 오늘 새 매수 멈춤(팔기는 그대로)")
     elif cap is not None:
         why.insert(0, f"계좌 흔들림 상한: 더 살 수 있는 돈 약 {cap / 1e4:,.0f}만 원")
+    if not gate.allows_new_risk("engine"):          # BOOST-0001-D: 새 위험 증가 막음(팔기 · 기간 청산 · 자리 내주기는 그대로)
+        orders = drop_buys(orders, state, new_state)
+        why.insert(0, "⚠️ 새 매수 막음(" + " / ".join(gate.reasons(("engine",))) + ") → 엔진은 팔 것만")
+    gate_warn = gate.warn_line()
+    gate.save()                                      # 그날 문 상태(15:20 1일봉 실행이 이어 읽음 · 실패해도 매매는 그대로)
     if breadth is None:
         why.insert(0, "⚠️ 시장 폭을 못 세어 엔진을 끈 것으로 봄(팔 것만)")
     late = datetime.now(KST).strftime("%H%M") > LAST_ORDER
@@ -424,6 +496,8 @@ def run(now=None):
     lines += ["· " + w for w in why]
     # 디스코드는 짧게(사용자 2026-10-06 "너무 길고 복잡하여서 간단하게") — 판단 까닭 전부는 작업 기록 · 대시보드(idle-live/today.json)에
     short = [f"빈칸 엔진 {int(day[4:6])}월 {int(day[6:])}일 판단, 시장 폭 {breadth if breadth is not None else '모름'}%, 규칙이 쓴 몫 {used * 100:.0f}%"]
+    if gate_warn:                        # 막은 까닭은 문 기록(gates/<날>.json)에 · 디스코드는 ⚠️ 한 줄(엔진 · 바구니 · 덧붙임 함께)
+        short.append(gate_warn)
     if b_short:                          # 사건 바구니는 따로 한 통(빈칸 엔진 알림에 섞지 않음 · 2026-10-19)
         send([f"사건 바구니 {int(day[4:6])}월 {int(day[6:])}일 판단"] + b_short)
     done = []
@@ -478,8 +552,9 @@ def run(now=None):
     ov = []
     try:                                 # 덧붙임(MIX-0054 · 레버리지 · 횡보 인버스) — 엔진 뒤 연속 매매 중 · 꺼져 있으면 아무것도 안 함
         import overlay_live
-        if not late:
-            ov = overlay_live.run(broker, client, day, reserve=reserve)
+        if not late:                     # 문이 닫히면 매수 다리만 뺌(팔기 · 줄이기 · 1일봉 몫 덜어 두기는 그대로 · BOOST-0001-D)
+            ov = overlay_live.run(broker, client, day, reserve=reserve, buy_ok=gate.allows_new_risk("overlay"),
+                                  gate=gate.snapshot("overlay"))
     except Exception as e:               # 덧붙임이 말썽이어도 엔진 기록은 그대로
         print("덧붙임 실패 ·", type(e).__name__, e)
         ov = ["⚠️ 덧붙임 단계 실패(엔진은 그대로)"]
@@ -491,8 +566,9 @@ def run(now=None):
     if _audit:
         _audit.safe(lambda: _audit.after(STATE, day, "engine", {"late": late}, ledgers=(paper_trade.IDLE_BOOK, STATE),
                                          books=(paper_trade.IDLE_BOOK,)))
-    if orders or new_state.get("positions"):
-        if not orders:
+    gate.save()
+    if orders or new_state.get("positions") or gate_warn:
+        if not orders and new_state.get("positions"):
             short.append("들고 있음: " + " · ".join(NAME.get(c, c) for c in new_state["positions"]) + " (오늘 사고팔 것 없음)")
         send(short)
     print("\n".join(lines))

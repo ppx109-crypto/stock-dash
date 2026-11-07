@@ -8,6 +8,12 @@
 한 종목을 다 받으면 그 자리에서 저장합니다. 도중에 멈춰도 다시 돌리면 받은 데서 이어 갑니다.
 끝에 닿은 종목(2017년에 닿았거나 상장일에 닿음)은 '처음까지'로 적어 다시 묻지 않고, 그 뒤로는
 새로 생긴 날만 앞쪽에 붙입니다. 조회 전용이며 주문과 무관합니다.
+
+BOOST-0001-D D4: '실행 시각의 어제' 대신 판 고정 달력의 목표 날(P = 오늘 한국 날짜 앞 마지막 거래일 · 장이 끝나
+자료가 나왔을 가장 늦은 거래일)을 밝혀 묻고, 그 날로 물은 응답의 마지막 날이 P가 아니면 그 종목 파일을 고치지 않고
+한 줄만 찍습니다. 달력을 못 읽으면 예전 방식(실행 시각의 어제 · 확인 없음) 그대로 모읍니다(수집을 멈추지 않음).
+2b단계(D4 보강): 매일 수집(INVESTOR_CODES 없이 · 기본 칸)은 1일봉 수급 풀(전날 시총 150위 + 1일봉 보유 종목 · daily_live.run의
+풀과 같은 식)도 더해 받습니다 — 목록 밖 종목(예: 005850 · 009970)이 늘 낡아 풀 건강도를 깎던 것을 막음(2026-11-07 기준 4종목 더함).
 """
 import json
 import os
@@ -31,6 +37,32 @@ COLS = (("date",) + tuple(n for n, _ in broker_kis.KIS.INVESTORS_ALL) + ("종가
 MAX_ASKS = 400 if FULL else 200   # 한 종목에 물을 수 있는 가장 많은 횟수(서른 거래일씩). 막힌 응답이 끝없이 돌지 않게.
 
 
+POOL = 150                 # 1일봉 수급 풀 크기(daily_live.POOL과 같음 · 전날 시총 150위)
+
+
+def daily_pool():
+    """BOOST-0001-D D4 보강: 1일봉 수급 풀(daily_live.run과 같은 식 — 일봉 마지막 날이 기대 날(달력 P · 못 정하면 가장 많은 종목의 마지막 날)인
+    종목을 caps 순위로 매긴 150위 + 1일봉 보유 종목) → 코드 목록(정렬). 셈이 말썽이면 빈 목록(수집은 예전 목록대로 · 한 줄만 찍음)."""
+    try:
+        import caps
+        import data_guard
+        import study
+        day, exact = target_day()
+        prices = study.load_prices()
+        _, last, _ = data_guard.daily_ready(prices, day if exact else None)
+        yest = [{"code": c, "date": v["rows"][-1][0], "price": v["rows"][-1][1]} for c, v in prices.items() if v["rows"][-1][0] == last]
+        caps.tag(yest, POOL)
+        pool = {r["code"] for r in yest if r.get(caps.RANK) is not None and r.get(caps.RANK) <= POOL}
+        try:
+            held = set((json.loads(Path("daily-live/state.json").read_text(encoding="utf-8")).get("positions") or {}))
+        except (OSError, ValueError, AttributeError):
+            held = set()
+        return sorted(str(c) for c in pool | held)
+    except Exception as e:
+        print(f"1일봉 수급 풀을 셈하지 못해 예전 목록만 받음 · {type(e).__name__}", flush=True)
+        return []
+
+
 def codes_to_collect():
     picked = [c.strip() for c in os.getenv("INVESTOR_CODES", "").split(",") if c.strip()]
     if not picked:
@@ -45,6 +77,14 @@ def codes_to_collect():
                                                        found.get("picks", []) + found.get("b_group", [])]))
         except (OSError, ValueError, KeyError, TypeError):
             pass
+        # BOOST-0001-D D4 보강: 1일봉 수급 풀(전날 시총 150위 + 보유)도 받음 — 풀 건강도(investor-data 마지막 날 = P 비율)가 목록 밖 종목 때문에
+        # 깎이지 않게(기본 칸 수집만 · 전체 칸 INVESTOR_SET=full과 묶음 수집 INVESTOR_CODES는 그대로)
+        if not FULL:
+            have = set(str(c) for c in picked)
+            extra = [c for c in daily_pool() if c not in have]
+            if extra:
+                print(f"1일봉 수급 풀 가운데 목록 밖 {len(extra)}종목도 받음 · " + " · ".join(extra[:10]), flush=True)
+            picked = list(picked) + extra
     return [str(c) for c in picked if re.fullmatch(r"[0-9]{6}", str(c))]
 
 
@@ -79,17 +119,40 @@ def _before(day):
     return d.strftime("%Y%m%d")
 
 
-def fill(client, code, today):
-    """한 종목을 채웁니다. (새로 붙인 줄 수, 물은 횟수)."""
+class NotLatest(Exception):
+    """목표 날(달력 P)로 물은 응답의 마지막 날이 P가 아님 → 그 종목 파일을 고치지 않음(BOOST-0001-D D4)."""
+
+
+def target_day(now=None, folder=None):
+    """물을 목표 날 → (날, 달력으로 정했나). 판 고정 달력의 P(오늘 한국 날짜 앞 마지막 거래일).
+    달력을 못 읽으면 (실행 시각의 어제, 거짓) — 예전 방식 그대로."""
+    today = (now or datetime.now(ZoneInfo("Asia/Seoul"))).strftime("%Y%m%d")
+    try:
+        import trade_calendar
+        p = trade_calendar.latest_done(today, folder=folder)
+    except Exception:
+        p = None
+    return (p, True) if p else (_before(today), False)
+
+
+def fill(client, code, today, expect=None):
+    """한 종목을 채웁니다. (새로 붙인 줄 수, 물은 횟수).
+    expect(달력 목표 P · BOOST-0001-D)를 주면 today로 물은 응답의 마지막 날이 expect인지 보고, 아니면 저장하지 않고 NotLatest를 올립니다."""
     body = load(code)
     have = {r[0]: r for r in body["rows"]}
     added = asks = 0
+
+    def ask(cursor):
+        got = _ask(client, code, cursor)
+        if expect is not None and cursor == today and (not got or got[-1]["date"] != expect):
+            raise NotLatest(got[-1]["date"] if got else None)
+        return got
     # 1) 앞쪽: 마지막으로 받은 날 뒤에 생긴 날을 붙입니다.
     if have:
         cursor = today
         newest = max(have)
         while cursor > newest and asks < MAX_ASKS:
-            got = _ask(client, code, cursor)
+            got = ask(cursor)
             asks += 1
             fresh = [g for g in got if g["date"] not in have]
             for g in fresh:
@@ -101,7 +164,7 @@ def fill(client, code, today):
     # 2) 뒤쪽: 아직 처음까지 닿지 않았으면 가장 옛날 날의 하루 앞을 물어 거슬러 갑니다.
     cursor = _before(min(have)) if have else today
     while not body.get("처음까지") and cursor >= START and asks < MAX_ASKS:
-        got = _ask(client, code, cursor)
+        got = ask(cursor)
         asks += 1
         fresh = [g for g in got if g["date"] not in have]
         for g in fresh:
@@ -147,19 +210,23 @@ def main():
         print("증권사 연결을 만들지 못했습니다 ·", error)
         return 1
     # 오늘 날짜로 물으면 장중에는 거절됩니다(확인할 때 지난날로 물은 것은 됐습니다). 어제까지만 묻습니다.
-    today = _before(datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d"))
+    # BOOST-0001-D D4: 판 고정 달력의 목표 날(P)을 밝혀 묻고 응답 마지막 날 = P를 확인 · 달력을 못 읽으면 예전 방식(실행 시각의 어제)
+    today, exact = target_day()
+    expect = today if exact else None
+    print(f"수급 목표 날 {today} · " + ("판 고정 달력의 앞 거래일(응답 마지막 날을 확인)" if exact
+                                         else "달력을 못 읽어 실행 시각의 어제까지(예전 방식 · 확인 없음)"), flush=True)
     # 한 번 묻는 데 1초 남짓 걸려(대부분 기다림) 한 줄로는 274종목에 아홉 시간이 넘습니다. 네 갈래로
     # 겹쳐 묻습니다. 호출 사이 간격은 broker_kis가 프로세스 전체로 지키므로 초당 호출 수는 늘지 않습니다.
     from concurrent.futures import ThreadPoolExecutor, as_completed
     import threading
     lock = threading.Lock()
-    state = {"done": 0, "failed": 0, "in_a_row": 0, "stop": False}
+    state = {"done": 0, "failed": 0, "in_a_row": 0, "stop": False, "not_latest": 0}
 
     def one(code):
         if state["stop"]:
             return
         try:
-            added, asks = _patiently(lambda: fill(client, code, today))
+            added, asks = _patiently(lambda: fill(client, code, today, expect))
             body = load(code)
             rows = body["rows"]
             with lock:
@@ -168,6 +235,12 @@ def main():
                 print(f"{code} · 새 줄 {added} · 물음 {asks} · "
                       f"{rows[0][0] if rows else '-'}~{rows[-1][0] if rows else '-'} · "
                       f"{'처음까지' if body.get('처음까지') else '이어 받을 것 있음'}", flush=True)
+        except NotLatest as stale:
+            with lock:                       # 증권사는 답했으므로 잇단 실패로 세지 않음 · 파일은 그대로
+                state["not_latest"] += 1
+                state["in_a_row"] = 0
+                print(f"{code} · 응답 마지막 날 {stale.args[0] if stale.args and stale.args[0] else '없음'} ≠ 목표 {today} → 파일 그대로",
+                      flush=True)
         except broker_kis.BrokerError as error:
             with lock:
                 state["failed"] += 1
@@ -181,11 +254,12 @@ def main():
         for job in as_completed([pool.submit(one, code) for code in codes]):
             job.result()
     done, failed = state["done"], state["failed"]
+    tail = f" · 목표 날 아님(그대로) {state['not_latest']}" if state["not_latest"] else ""
     if state["stop"]:
         print(f"잇달아 {STOP_AFTER}번 실패해 멈춥니다.", flush=True)
-        print(f"끝 · 받은 종목 {done} · 실패 {failed}")
+        print(f"끝 · 받은 종목 {done} · 실패 {failed}{tail}")
         return 2
-    print(f"끝 · 받은 종목 {done} · 실패 {failed}")
+    print(f"끝 · 받은 종목 {done} · 실패 {failed}{tail}")
     return 0
 
 

@@ -35,6 +35,14 @@ jobs:
           python-version: '3.11'
       - run: pip install requests numpy
       - run: python -m unittest tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal tests.test_basket_live tests.test_acc_cap tests.test_overlay_live -v
+      # BOOST-0001-D §5 시작 전 점검(첫 15:10 주문 단계 앞 · 증권사 · DART를 부르지 않는 빠르고 결정적인 점검 → gate-smoke/<날>-<작업 번호>-<시도>.json).
+      # 실패 · 시간 초과여도 매매 단계는 그대로 돎 — 봇이 자기 작업 파일이 없거나 · ok가 아니면 그 실행의 새 매수만 막음(팔기는 그대로).
+      # 2b단계: 작업마다 다른 새 파일(추적 밖)이라 봇의 15:10 저장소 맞추기(git pull --rebase)를 막지 않음 → 예전 '점검 파일 로컬 커밋'은 뺌
+      # (2026-11-07 실험: 추적 밖 새 파일 + 원격 새 커밋 → pull --rebase 성공 · 같은 이름 추적 파일을 고치면 'unstaged changes'로 실패).
+      - name: 시작 전 점검(BOOST-0001-D · 새 매수 문)
+        continue-on-error: true
+        timeout-minutes: 3
+        run: python gate_smoke.py
       - name: 사건 바구니 C · 빈칸 엔진 · 코스닥 과열 인버스(15:10 판단 · 모의투자 주문 · 1일봉보다 먼저)
         continue-on-error: true
         run: |
@@ -43,6 +51,8 @@ jobs:
           status=0; python idle_live.py || status=$?
           mkdir -p idle-live basket-live overlay-live discord-digest
           git add -A idle-live basket-live overlay-live discord-digest
+          mkdir -p gates gate-smoke           # BOOST-0001-D 문 기록 · 시작 전 점검(따로 staging: 말썽이어도 위 장부는 그대로 올림)
+          git add -A gates gate-smoke || echo '⚠️ 문 기록을 staging하지 못함(장부는 그대로 올림)'
           if ! git diff --cached --quiet; then
             git commit -q -m "Idle engine live"
             ok=0
@@ -81,6 +91,8 @@ jobs:
           status=0; python daily_live.py || status=$?
           mkdir -p daily-live basket-live m15-live hourly-live overlay-live discord-digest
           git add -A daily-live idle-live basket-live m15-live hourly-live overlay-live discord-digest    # 흔들림 상한이 다른 규칙 장부에서 덜어낸 기록도
+          mkdir -p gates gate-smoke           # BOOST-0001-D 문 기록(1일봉 문 · sync_ok 더함 · 따로 staging: 말썽이어도 위 장부는 그대로 올림)
+          git add -A gates gate-smoke || echo '⚠️ 문 기록을 staging하지 못함(장부는 그대로 올림)'
           if [ -f acc-cap/log.json ]; then git add acc-cap/log.json; fi
           if ! git diff --cached --quiet; then
             git commit -q -m "Daily rule live"

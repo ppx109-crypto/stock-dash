@@ -1,9 +1,16 @@
 name: Disclosure events
 # 공시 제목을 날짜와 함께 모읍니다. 본문은 받지 않습니다.
+# BOOST-0001-D D3(사전등록 판 3 §1.2 · 2b단계): 평일 아침 최종 확인(08:20 · 10:20 · 12:20 한국 시각 · 첫 성공만 · 이미 그날 성공했으면 건너뜀)이
+# t0(판 고정 달력의 앞 거래일)를 끝 쪽까지 묻고 공시 manifest(event-manifest/<t0>-<작업 번호>-<시도>.json)를 남깁니다.
+# 15:10 사건 바구니는 HEAD에 이 아침 확인 manifest(ok · 판단 전 완료)가 있고 그 트리 지문 = event-data일 때만 새로 삼(19:20 기록은 문을 안 엶).
+# 자료와 manifest는 각각 있는지 · 맞는지 확인한 뒤 따로 staging하고 같은 한 커밋에 넣습니다(중간판 없음 · 실패는 작업 실패로 드러냄).
 on:
   schedule:
-    - cron: '30 3 * * 6'   # 토 12:30 한국 시각 — 새 종목이 들어와도 공시 목록이 따라가게(종목마다 처음부터)
-    - cron: '20 10 * * 1-5' # 평일 19:20 한국 시각 — 최근 5일 시장 전체 공시만 이어 받기(2026-10-03 · 분위기 점수용 · 수십 번 조회)
+    - cron: '30 3 * * 6'    # 토 12:30 한국 시각 — 새 종목이 들어와도 공시 목록이 따라가게(종목마다 처음부터)
+    - cron: '20 10 * * 1-5' # 평일 19:20 한국 시각 — 최근 5일 시장 전체 공시 이어 받기(2026-10-03 · 분위기 점수용) + 그날 t0 기록 manifest
+    - cron: '20 23 * * 0-4' # 평일 08:20 한국 시각(UTC 전날 23:20 · 일 ~ 목) — D 아침 최종 확인
+    - cron: '20 1 * * 1-5'  # 평일 10:20 한국 시각 — 아침 확인 다시(앞이 빠졌거나 실패했을 때만 묻고, 이미 성공했으면 건너뜀)
+    - cron: '20 3 * * 1-5'  # 평일 12:20 한국 시각 — 아침 확인 마지막(15:10 판단 전에 성공이 필요)
   workflow_dispatch:
     inputs:
       codes:
@@ -18,6 +25,10 @@ on:
         description: '최근 며칠만 이어 받기(0 = 종목마다 처음부터)'
         required: false
         default: '0'
+      final:
+        description: "아침 최종 확인으로 돌리기('auto' = 오늘의 앞 거래일 · 비우면 위 갈래)"
+        required: false
+        default: ''
 permissions:
   contents: write
 concurrency:
@@ -29,29 +40,52 @@ jobs:
     timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: pip install requests
-      - run: python collect_events.py
+      - name: 공시 모으기
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_MODE" = final ]; then
+            python collect_events.py final "$EVENT_T0"
+          else
+            python collect_events.py
+          fi
         env:
           DART_CRTFC_KEY: ${{ secrets.DART_CRTFC_KEY }}
           EVENT_CODES: ${{ inputs.codes || '' }}
           EVENT_FIRST: ${{ inputs.first || '20150101' }}
           EVENT_RECENT_DAYS: ${{ github.event.schedule == '20 10 * * 1-5' && '5' || inputs.recent || '0' }}
-      - name: Save when something changed
+          EVENT_MODE: ${{ (github.event.schedule == '20 23 * * 0-4' || github.event.schedule == '20 1 * * 1-5' || github.event.schedule == '20 3 * * 1-5' || inputs.final != '') && 'final' || '' }}
+          EVENT_T0: ${{ inputs.final || 'auto' }}
+      - name: 자료 · manifest를 각각 확인하고 같은 한 커밋에
         if: always()
         run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          mkdir -p event-data
-          git add -A event-data
+          mkdir -p event-data event-manifest
+          # ① 이 작업의 manifest마다 꼴 · '저장 뒤 자료 트리 지문 = manifest 칸'(manifest를 쓴 뒤 자료가 바뀌지 않음)을 확인 — 틀리면 여기서 멈춤(커밋 없음)
+          python collect_events.py verify
+          # ② 자료와 manifest를 따로 staging(각각 실패하면 작업 실패) → ③ 같은 한 커밋
+          git add -A -- event-data
+          for m in event-manifest/*-"$GITHUB_RUN_ID"-"$GITHUB_RUN_ATTEMPT".json; do
+            [ -f "$m" ] || continue
+            git add -- "$m"
+          done
           if git diff --cached --quiet; then
-            echo '바뀐 공시가 없어 커밋하지 않습니다.'
+            echo '바뀐 공시 · manifest가 없어 커밋하지 않습니다.'
           else
-            git commit -m 'Refresh disclosure events'
-            # 다른 작업과 같은 순간에 올리면 거절됨 → 받아 합친 뒤 다시(최대 5번) · 실패한 합치기는 되돌림(2026-10-06 검토)
+            git commit -q -m 'Refresh disclosure events'
+            # 다른 작업과 같은 순간에 올리면 거절됨 → 받아 합친 뒤 다시(최대 5번) · 실패한 합치기는 되돌림(되돌릴 것이 있을 때만)
             ok=0
-            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && ok=1 && break; git rebase --abort 2>/dev/null || true; echo "올리기 다시 시도 $try"; sleep $((try * 7)); done
+            for try in 1 2 3 4 5; do
+              if git pull -q --rebase origin main && git push -q; then ok=1; break; fi
+              if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then git rebase --abort; fi
+              echo "올리기 다시 시도 $try"; sleep $((try * 7))
+            done
             [ "$ok" = 1 ] || { echo '저장소에 올리지 못했습니다.'; exit 1; }
           fi

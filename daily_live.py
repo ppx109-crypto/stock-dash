@@ -305,8 +305,9 @@ def run(now=None):
             send([f"⚠️ 1일봉 {day[4:6]}-{day[6:]} 판단 못 함 · 작업이 {now.strftime('%H:%M')}에야 돌아 장이 끝남(휴장일이면 무시)"])
         return 0
     _wait_until(DECIDE_AT)
+    import gates
     import paper_trade as _pt
-    _pt.sync_repo()                                 # 기다리는 동안 빈칸 엔진 · 장중 상주가 올린 장부를 받아 맞춤(2026-10-06 감시자 검토)
+    sync_ok = _pt.sync_repo()                       # 기다리는 동안 빈칸 엔진 · 장중 상주가 올린 장부를 받아 맞춤(2026-10-06 감시자 검토) · 실패면 새 매수 막음(D6)
     state = _load(STATE, {"positions": {}, "closed": []})
     if state.get("last_day") == day:
         print("오늘은 이미 처리했습니다.")
@@ -336,7 +337,10 @@ def run(now=None):
     prices = study.load_prices()
     # 자료 확인(사용자 2026-10-02): 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼 · 모자라면 팔기만 함(data_guard)
     import data_guard
-    ready, last, why = data_guard.daily_ready(prices, data_guard.prev_trading_day(client, day))
+    live_p = data_guard.prev_trading_day(client, day)
+    ready, last, why = data_guard.daily_ready(prices, live_p)
+    # BOOST-0001-D 문(daily): 저장소 맞추기(D6) · 판 고정 달력 + 증권사 앞 거래일 대조(D5) · 시작 전 점검(§5) → 닫히면 새로 사지 않음(팔기는 그대로)
+    gate = gates.begin(day, "daily", sync_ok, live_p=live_p)
     print("자료 확인 ·", why)
     if not last or last >= day:
         print("일봉 자료가 어제 것까지 있지 않아 넘어갑니다.")
@@ -344,6 +348,15 @@ def run(now=None):
     yest = [{"code": c, "date": v["rows"][-1][0], "price": v["rows"][-1][1]} for c, v in prices.items() if v["rows"][-1][0] == last]
     caps.tag(yest, POOL)
     pool = {r["code"] for r in yest if (r.get(caps.RANK) or 999) <= POOL} | set(state.get("positions", {}))
+    flow_cache = {}
+
+    def flow_of(code):                   # 수급 줄(investor-data · 이 실행 안에서 종목마다 한 번만 읽음)
+        if code not in flow_cache:
+            flow_cache[code] = final_group.flow_rows(code)
+        return flow_cache[code]
+    # BOOST-0001-D D4 (가) 수급 풀 건강도: 결정과 무관한 고정 풀(전날 시총 150위 + 들고 있는 종목 = 위 pool)의
+    # investor-data 마지막 날 = 달력 P 비율이 90% 미만이면 새로 사지 않음(팔기는 그대로) · 풀 목록 · 지문 · 비율은 문 기록에
+    gate.check_flow_pool(pool, day, flow_of)
     quotes = {}
     for code in sorted(pool):
         try:
@@ -383,8 +396,16 @@ def run(now=None):
                          {c: p.get("bought") for c, p in held.items()})
     now_price = {c: q["price"] for c, q in quotes.items()}
     rate = {c: q.get("rate") for c, q in quotes.items()}
+    # BOOST-0001-D D4 (나) 주문 안전: 수급이 정확히 달력 최근 5거래일(P로 끝남)이고 외국인 · 투신 · 개인 칸이 다 있는 후보만 decide에 넘김
+    # (decide의 기울기 정렬 · 빈 칸 자르기 앞 → 낡은 위 후보가 칸을 차지하지 않음 · 10일 낡음 허용으로만 통과한 후보는 빠진 기회로 기록)
+    cands, flow_missed = gate.keep_flow_exact(cands, day, flow_of)
+    if flow_missed:
+        print("수급 자료가 앞 거래일까지 다 있지 않아 뺀 후보(빠진 기회) ·",
+              " · ".join(f"{x.get('name')}({x.get('code')}) {x.get('why')}" for x in flow_missed))
     if not ready:
         cands = []           # 자료가 덜 들어왔으면 새로 사지 않음 · 들고 있는 종목 팔기는 그대로(사용자 2026-10-02)
+    if not gate.allows_new_risk("daily"):
+        cands = []           # BOOST-0001-D 문이 닫힘: 자료 덜 들어온 날과 같은 길(새로 사지 않음 · 팔기는 그대로)
     # 판단 기록장(관측 전용): 판단 앞에 입력을 뜨고 · 닮음 질문과 답을 적고 · 판단 뒤 기록(식은 모두 safe 안 · 실패해도 매매 그대로)
     daily_in = _audit.safe(lambda: _audit.capture(dict(state={"positions": state.get("positions", {})}, cands=cands,
                                                        now_price=now_price, aligned=aligned, rate=rate))) if _audit else None
@@ -396,9 +417,15 @@ def run(now=None):
             "kin_calls": kin_calls, "state_digest": _audit.digest(state), "ready": ready, "expect": last, "data_why": why,
             "data_asof": _audit.price_asof(prices, day), "breadth": found.get("breadth"), "late": late,
             "quotes": len(quotes), "pool": len(pool), "cut_out": [x.get("code") for x in cut_out],
-            "bought": {c: p.get("bought") for c, p in held.items()}}))
+            "bought": {c: p.get("bought") for c, p in held.items()}, "gates": gate.snapshot("daily")}))
+    gate.save()                          # 그날 문 상태에 daily 문 · sync_ok를 더함(실패해도 매매는 그대로)
     # 판단하자마자 알림(1시간봉 알림과 같은 꼴 · 사용자 요청 2026-10-01): 무엇을 사고팔지 · 까닭 · 지금 값
     warn = [] if ready else ["1일봉 봇 오늘 새로 사기 멈춤(자료가 덜 들어옴, 팔기는 그대로)"]
+    if flow_missed and ready and gate.allows_new_risk("daily"):      # 문은 열렸지만 수급 거르기로 뺀 후보(빠진 기회 · 자세한 것은 문 기록)
+        warn.append(f"⚠️ 1일봉 수급 자료가 앞 거래일까지 다 있지 않은 후보 {len(flow_missed)}개는 안 삼(빠진 기회 · 팔기는 그대로)")
+    gate_warn = gate.warn_line()
+    if gate_warn:                        # 막은 까닭은 문 기록(gates/<날>.json)에 · 디스코드는 ⚠️ 한 줄
+        warn.append(gate_warn)
     send(warn + brief_decision(day, found.get("breadth"), sells, buys, held))
     paper = []
     if (sells or buys) and not late:

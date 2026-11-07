@@ -286,7 +286,8 @@ def enabled(now=None):
 
 def sync_repo():
     """작업이 기다리는 동안(14:40 → 15:10 · 15:20) 다른 작업(장중 상주)이 올린 기록을 받아 맞춤 — 낡은 장부로 판단 · 저장하다
-    부딪히지 않게(2026-10-06 감시자 검토). LIVE_GIT_SYNC=1인 작업에서만. 실패하면 합치기를 되돌리고 False."""
+    부딪히지 않게(2026-10-06 감시자 검토). LIVE_GIT_SYNC=1인 작업에서만. 실패하면 합치기를 되돌리고 False.
+    BOOST-0001-D(D6): 엔진 · 1일봉 실행이 이 값을 받아 False면 그 실행의 활성 판단 모두 새 위험 증가를 막음(gates.Gates.set_sync)."""
     if os.getenv("LIVE_GIT_SYNC") != "1":
         return True
     import subprocess
@@ -309,7 +310,8 @@ def daily_reserve(day, total, prices, near_files=(Path("m15-live/near-now.json")
     """15:20 1일봉이 살 몫(원) — 빈칸 엔진이 15:10에 비켜 둘 돈(2026-10-06 감시자 검토).
     15:20은 마감 동시호가라 그때 엔진을 팔아도 15:30에야 체결돼 1일봉이 살 돈이 안 풀림 → 엔진이 미리 남겨 둠.
     장중 15분마다 그 시각 값으로 다시 센 '1일봉 후보(지금 값이면)'(near-now.json의 picks_daily · 오늘 것 중 가장 늦은 판정)가
-    있으면 후보마다 4칸(1일봉 최대 크기)으로 보고, 1일봉 몫 가운데 아직 안 쓴 만큼까지. 판정은 15:10 전 값만 씀(미래 참조 없음)."""
+    있으면 후보마다 4칸(1일봉 최대 크기)으로 보고, 1일봉 몫 가운데 아직 안 쓴 만큼까지. 판정은 15:10 전 값만 씀(미래 참조 없음).
+    BOOST-0001-D(D1): 빈칸 엔진은 near_files에 15:05 다시 셈의 검증 통과 근거(d1_basis) 하나만 넘기고, 실패면 빈 목록(비켜 두기 0)."""
     try:
         return _daily_reserve(day, total, prices, near_files)
     except Exception as e:                          # 파일 모양이 이상해도 엔진이 하루를 통째로 쉬지 않게(비켜 두기만 못 함)
@@ -343,6 +345,177 @@ def _daily_reserve(day, total, prices, near_files):
     reserve = max(0.0, min(want, share - held))
     names = " · ".join(str(p.get("name") or p.get("code")) for p in picks[:3])
     return reserve, f"1일봉 후보({names} · {str(last.get('at'))[11:16]} 판정) 몫 약 {reserve / 1e4:,.0f}만 원을 비켜 둠"
+
+
+# ───────────────────────── BOOST-0001-D D1: 15:05 같은 작업 안 다시 셈(사전등록 판 3 §1.1) ─────────────────────────
+# 빈칸 엔진 실행이 15:05:00에 1일봉 후보를 다시 세어(hourly_a.refresh_near 계약 판) 저장소 **밖** 고유 임시 폴더에 쓰고,
+# 아래 검증을 모두 통과한 것만 비켜 두기(daily_reserve)에 씀. 실패면 옛 파일(m15-live · hourly-live · idle-live near-now)을 절대 쓰지 않고
+# 비켜 두기 0 · 엔진 · 바구니 · 덧붙임의 새 위험 증가를 막음(문은 gates.py). 저장소 안 파일을 15:05에 고치면 15:10 sync_repo(git pull)가
+# '바뀐 파일 있음'으로 실패하므로, 기록용 사본(idle-live/near-now.json)은 sync 뒤에만 씀(d1_keep).
+D1_AT = "1505"                         # 시작(HHMM · 이 분이 되면)
+D1_DEADLINE = (15, 9, 30)              # 절대 마감(시 · 분 · 초) — 넘으면 실패
+NEAR_FILES = (Path("m15-live/near-now.json"), Path("hourly-live/near-now.json"))
+
+
+def _clock():
+    """마감 검사용 지금 시각(시험에서 바꿔 끼움)."""
+    return datetime.now(KST)
+
+
+def d1_deadline(day):
+    return datetime(int(day[:4]), int(day[4:6]), int(day[6:]), *D1_DEADLINE, tzinfo=KST)
+
+
+def d1_check(body, day, p):
+    """D1 판정 본문 검증(계약 칸 모두) → (통과, 까닭).
+    date = D · at ≥ 14:30(그날) · expected_p = source_p = 달력 P · 풀 지문 = 풀 칸의 지문 · 기대 시세 수 = 받은 시세 수 = 풀 수(빠짐 0) ·
+    picks_daily 목록 있음. 반환 값 0 · 출력 있음 · 마감 안은 부르는 쪽(d1_recompute)이 봄."""
+    import hourly_a
+    if not isinstance(body, dict):
+        return False, "본문 꼴이 다름"
+    if str(body.get("date")) != str(day):
+        return False, f"판정 날 {body.get('date')}이 오늘 {day}이 아님(옛 출력)"
+    at = str(body.get("at") or "")
+    if at[:10].replace("-", "") != str(day) or at[11:16] < "14:30":
+        return False, f"판정 시각 {at or '?'}이 오늘 14:30 뒤가 아님"
+    if not p or str(body.get("expected_p")) != str(p):
+        return False, f"expected_p {body.get('expected_p')}이 달력 앞 거래일 {p}과 다름"
+    if str(body.get("source_p")) != str(p):
+        return False, f"source_p(어제 일봉 마지막 날) {body.get('source_p')}이 달력 앞 거래일 {p}과 다름"
+    pool = body.get("pool")
+    if not isinstance(pool, list) or not pool or body.get("pool_digest") != hourly_a.pool_digest(pool):
+        return False, "풀 지문이 풀과 맞지 않음"
+    exp, got = body.get("quotes_expected"), body.get("quotes_got")
+    if not (isinstance(exp, int) and isinstance(got, int) and exp == len(pool) and got == len(pool)):
+        return False, f"시세 빠짐(받음 {got} · 기대 {exp} · 풀 {len(pool)})"
+    if not isinstance(body.get("picks_daily"), list):
+        return False, "1일봉 후보 칸이 없음"
+    return True, ""
+
+
+def d1_recompute(day, client, p, now=None, deadline=None, base=None, refresh=None):
+    """15:05 다시 셈 한 번 → 결과 칸(dict · 예외 없음).
+    ok · why · rc(반환 값) · id(본문 sha256) · path(검증 통과 뒤 원자적으로 바꿔 끼운 파일 · 저장소 밖) · at · expected_p · source_p ·
+    pool_digest · quotes_expected · quotes_got · started · ended · deadline.
+    다시 셈은 일꾼 실(thread)에서 돌리고 마감까지만 기다림(넘으면 실패 · 일꾼은 다음 마감 검사에서 멈추고 쓰지 않음)."""
+    import hashlib
+    import tempfile
+    import threading
+    now = now or _clock()
+    deadline = deadline or d1_deadline(day)
+    res = {"ok": False, "why": "", "rc": None, "id": None, "path": None, "at": None, "expected_p": p, "source_p": None,
+           "pool_digest": None, "quotes_expected": None, "quotes_got": None,
+           "started": _clock().strftime("%Y-%m-%d %H:%M:%S"), "ended": None, "deadline": deadline.strftime("%Y-%m-%d %H:%M:%S")}
+
+    def done(why):
+        res["why"] = why
+        res["ended"] = _clock().strftime("%Y-%m-%d %H:%M:%S")
+        return res
+    if not p:
+        return done("달력에서 앞 거래일(P)을 못 정함")
+    if _clock() >= deadline:
+        return done("시작 때 이미 마감(15:09:30)을 넘음")
+    try:
+        folder = Path(tempfile.mkdtemp(prefix=f"d1-{day}-", dir=base or os.getenv("RUNNER_TEMP") or None))
+    except OSError as e:
+        return done(f"임시 폴더를 못 만듦 · {type(e).__name__}")
+    tmp, final = folder / "near-now.part.json", folder / "near-now.json"
+    if refresh is None:
+        import hourly_a
+        refresh = hourly_a.refresh_near
+    box = {}
+
+    def work():
+        try:
+            box["rc"] = refresh(now, client, out=tmp, expected_p=p, deadline=deadline)
+        except Exception as e:
+            box["err"] = type(e).__name__
+    worker = threading.Thread(target=work, name="d1-recount", daemon=True)
+    worker.start()
+    worker.join(max(0.0, (deadline - _clock()).total_seconds()))
+    if worker.is_alive():
+        return done("시간 초과(15:09:30까지 끝나지 않음)")
+    if "err" in box:
+        return done(f"다시 셈 중 예외 · {box['err']}")
+    res["rc"] = box.get("rc")
+    if res["rc"] != 0:
+        return done(f"다시 셈 반환 값 {res['rc']}")
+    if _clock() > deadline:
+        return done("마감(15:09:30) 뒤에 끝남")
+    try:
+        raw = tmp.read_bytes()
+    except OSError:
+        return done("출력 없음(반환 값 0인데 새 파일을 안 씀)")
+    try:
+        body = json.loads(raw.decode("utf-8"))
+    except ValueError:
+        return done("출력이 깨짐")
+    ok, why = d1_check(body, day, p)
+    if not ok:
+        return done(why)
+    try:
+        os.replace(tmp, final)                       # 검증을 통과한 뒤에만 바꿔 끼움
+    except OSError as e:
+        return done(f"출력을 바꿔 끼우지 못함 · {type(e).__name__}")
+    res.update(ok=True, id=hashlib.sha256(raw).hexdigest(), path=str(final), at=body["at"], source_p=body["source_p"],
+               pool_digest=body["pool_digest"], quotes_expected=body["quotes_expected"], quotes_got=body["quotes_got"])
+    return done("")
+
+
+def d1_basis(d1, day, p, others=NEAR_FILES):
+    """비켜 두기 근거 = 검증을 통과한 판정 가운데 가장 늦은 것(§1.1). D1이 실패면 None(옛 파일을 절대 쓰지 않음).
+    후보: D1 결과(지문이 그대로일 때만) + 장중 판정들(같은 d1_check를 통과할 때만 — 지금 m15 · 1시간봉 판정은 expected_p · 시세 수 칸이 없어
+    통과하지 못하므로 실제로는 D1 결과). → {"source", "path", "sha256", "at"} 또는 None(예외 없음)."""
+    try:
+        return _d1_basis(d1, day, p, others)
+    except Exception as e:
+        print("비켜 두기 근거 고르기 실패 ·", type(e).__name__)
+        return None
+
+
+def _d1_basis(d1, day, p, others):
+    import hashlib
+    if not isinstance(d1, dict) or not d1.get("ok") or not d1.get("path"):
+        return None
+    got = []
+    for source, path in [("d1", Path(d1["path"]))] + [(str(f), Path(f)) for f in others]:
+        try:
+            raw = path.read_bytes()
+            body = json.loads(raw.decode("utf-8"))
+        except (OSError, ValueError):
+            continue
+        sha = hashlib.sha256(raw).hexdigest()
+        if source == "d1" and sha != d1.get("id"):
+            return None                              # 검증 뒤 D1 파일이 바뀜 → 실패로 봄
+        if d1_check(body, day, p)[0]:
+            got.append({"source": source, "path": str(path), "sha256": sha, "at": str(body.get("at"))})
+    if not got or got[0]["source"] != "d1":
+        return None
+    return max(got, key=lambda b: (b["at"], b["source"] == "d1"))
+
+
+def d1_keep(d1, dest=Path("idle-live/near-now.json")):
+    """기록용 사본 — 저장소 맞추기(sync) **뒤에만** 부름 · 지문이 그대로일 때만 원자적으로 · 실패해도 매매는 그대로 → 참/거짓."""
+    import hashlib
+    dest = Path(dest)
+    tmp = dest.with_name(f"{dest.name}.{os.getpid()}.tmp")
+    try:
+        if not isinstance(d1, dict) or not d1.get("ok") or not d1.get("path"):
+            return False
+        raw = Path(d1["path"]).read_bytes()
+        if hashlib.sha256(raw).hexdigest() != d1.get("id"):
+            return False
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        tmp.write_bytes(raw)
+        os.replace(tmp, dest)
+        return True
+    except Exception as e:
+        print("1일봉 다시 셈 사본 저장 실패(매매는 그대로) ·", type(e).__name__)
+        try:
+            tmp.unlink()
+        except Exception:
+            pass
+        return False
 
 
 def book_path(strategy="1h"):
