@@ -1,0 +1,10 @@
+{
+ "gpt_pr": 273,
+ "gpt_comment_id": 6126393903,
+ "gpt_comment_url": "https://github.com/ppx109-crypto/stock-dash/pull/273#issuecomment-6126393903",
+ "reviewed_head": "f0745a32510885ad179e4e1b3266cbb4625d44e5",
+ "picks": [
+  "botORB_or30_filterFalse"
+ ],
+ "note": "시험 1(2026-09-01 ~ 10-12)은 비독립 구간(엔진 접촉 있음 · 값 안 봄) · 채택은 시험 2에서만"
+}
