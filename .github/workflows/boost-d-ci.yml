@@ -1,8 +1,10 @@
 name: BOOST-D CI
 # BOOST-0001-D 필수 CI(GPT 구현 검토 6705430244 §2-C · 2c단계) — 기존 check.yml(main 전체 시험)은 건드리지 않음.
-# ① D 묶음(필수): tests.test_boost_d와 D가 고친 봇 · 수집기 · 감사 시험이 모두 통과해야 green.
+# ① D 묶음(필수): tests.test_boost_d와 D가 고친 봇 · 수집기 · 감사 시험이 모두 통과하고, 모은 시험 이름 · 개수 · 지문 · 도구 지문이
+#    고정 파일(tests/fixtures/boost_d_required_tests.json)과 같고 건너뜀 0이어야 green(GPT 구현 검토 판 2 §2-B) · 이름 목록을 artifact(d-bundle)로.
 # ② 차이 검사(필수): 같은 러너에서 기준(PR이면 PR의 base · 아니면 main과의 merge-base)과 지금 판의 `discover -s tests` 실패 · 오류 이름
-#    집합을 견줘 '지금 실패 ⊆ 기준 실패'일 때만 green(새 실패가 하나라도 있으면 red) · 두 집합과 차이를 작업 요약 · artifact(test-diff)로 남김.
+#    집합을 견줘 '지금 실패 ⊆ 기준 실패'이고 시험 수 ≥ 기준 · 건너뜀 ≤ 기준 · 빠진 시험 0 · 새로 건너뜀 0일 때만 green ·
+#    두 집합 · 불변식 · 차이를 작업 요약 · artifact(test-diff)로 남김.
 # 키 · 증권사 없음(시험은 가짜 · 고정 자료).
 on:
   pull_request:
@@ -28,8 +30,14 @@ jobs:
           python-version: '3.11'
           cache: pip
       - run: pip install -r requirements.txt
-      - name: D 묶음(모두 통과해야 green)
-        run: python -m unittest -v tests.test_boost_d tests.test_audit_log tests.test_boost_audit tests.test_daily_live tests.test_paper_trade tests.test_idle_live tests.test_idle_signal tests.test_basket_live tests.test_acc_cap tests.test_overlay_live tests.test_hourly_a tests.test_collect_events tests.test_investor_history
+      - name: D 묶음(모두 통과 · 고정 목록과 같아야 green)
+        run: python tools/test_diff.py --bundle tests/fixtures/boost_d_required_tests.json --out d-bundle
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: d-bundle
+          path: d-bundle/
+          if-no-files-found: warn
   full-diff:
     name: 전체 시험 차이 검사(지금 실패 ⊆ 기준 실패)
     runs-on: ubuntu-latest

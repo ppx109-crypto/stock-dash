@@ -18,6 +18,9 @@
   unknown(원천 없음)이거나 봇 기준 09:00 ~ 15:30과 다르면 모든 활성 판단 닫음 ③ 부트스트랩 문(§4-4): gates/ARMED.json(사람이 합친 뒤
   첫 실제 실행 영수증을 확인하고 적은 달력 sha256 · 확인 날 · 작업 번호)이 없거나 그 sha256이 지금 판과 다르면 모든 활성 판단 닫음
   (까닭 '첫 실행 확인 전').
+- 2c단계 고침(GPT 구현 검토 판 2 · 6708390773 §2-A): ARMED.json에 **세션 검토 영수증**(session_review — 검토자 · 검토 날 ·
+  평소 세션의 주소 · 원문 sha256 · 원문에서 읽은 개장 · 마감 · 시행 날 · 특수 세션마다 같은 칸)이 있어야 하고, 그 값이 지금 판의 세션
+  영수증과 칸마다 같아야 열림(원문 지문은 '그 주소의 바이트'만 묶으므로 사람이 원문 뜻을 읽고 적은 영수증을 판과 대조).
 """
 import hashlib
 import json
@@ -426,20 +429,67 @@ def _smoke(g, day, folder):
 
 
 def _armed(g, day):
+    import trade_calendar
     cal = (g.body["runs"].get(g.run) or {}).get("calendar") or {}
-    ok, why, info = armed_status(cal.get("sha256"), day, folder=g.folder)
+    year = trade_calendar.load_year(str(day)[:4], folder=g.calendar_folder)
+    sessions = year["sessions"] if year and cal.get("sha256") and year["sha256"] == cal.get("sha256") else None
+    ok, why, info = armed_status(cal.get("sha256"), day, folder=g.folder, sessions=sessions)
     g.set_armed(ok, why, info)
 
 
-def armed_status(calendar_sha256, day, folder=None):
-    """부트스트랩 문(GPT 구현 검토 6705430244 §4-4): 합친 뒤 첫 실제 실행 영수증(D · P · 세션 · 원천 지문 · 금지 매수 0)을 사람이 확인하기
-    전에는 새 위험 증가를 열지 않음. 문 폴더의 ARMED.json = {"calendar_sha256": 확인한 판 고정 달력 sha256(그 판의 정규화 지문),
-    "confirmed_on": 확인 날 YYYYMMDD, "run_id": 확인한 작업 번호} (사람이 쓰고 커밋 · 봇은 읽기만).
-    → (열림, 까닭, 기록 칸). 파일 없음 · 깨짐 · 칸 이상 · 확인 날이 오늘(day)보다 뒤 · 달력 sha256이 지금 판(calendar_sha256)과 다르면 닫힘
-    (까닭은 언제나 '첫 실행 확인 전'으로 시작). 예외 없음."""
+REVIEW_KEYS = (("source_url", "source_url"), ("raw_sha256", "raw_sha256"), ("read_open", "open"), ("read_close", "close"),
+               ("read_effective_from", "effective_from"))       # 세션 검토 영수증 칸 → 판 세션 영수증 칸
+
+
+def review_problems(review, sessions, day):
+    """ARMED.json의 세션 검토 영수증(session_review)을 지금 판의 세션 영수증(sessions)과 대조 → 문제 목록(비면 맞음).
+    꼴: {"reviewer": 검토자(비지 않은 글), "reviewed_on": YYYYMMDD(오늘 앞이나 오늘), "regular": {"source_url", "raw_sha256",
+    "read_open", "read_close", "read_effective_from"}, "special": [{"date", 같은 칸 …}]} — 평소 세션 · 판의 특수 세션마다 칸이 같아야 함
+    (특수 세션 날 목록도 같아야 함 · 검토 안 된 특수 세션이 있으면 닫힘)."""
+    if not isinstance(sessions, dict) or not isinstance(sessions.get("regular"), dict):
+        return ["지금 판의 세션 영수증을 못 읽어 대조하지 못함"]
+    if not isinstance(review, dict):
+        return ["세션 검토 영수증(session_review) 없음"]
+    bad = []
+    who, on = review.get("reviewer"), str(review.get("reviewed_on") or "")
+    if not (isinstance(who, str) and who.strip()):
+        bad.append("검토자 칸")
+    try:
+        datetime.strptime(on, "%Y%m%d")
+        if not re.fullmatch(r"\d{8}", on) or on > str(day):
+            raise ValueError
+    except ValueError:
+        bad.append("검토 날 칸(YYYYMMDD · 오늘 뒤 아님)")
+
+    def same(got, want, name):
+        if not isinstance(got, dict):
+            return [f"{name} 검토 칸 없음"]
+        return [f"{name} {k}" for k, w in REVIEW_KEYS if got.get(k) != want.get(w)]
+    bad += same(review.get("regular"), sessions["regular"], "평소 세션")
+    want = {str(x.get("date")): x for x in sessions.get("special") or [] if isinstance(x, dict)}
+    rows = review.get("special") if isinstance(review.get("special"), list) else None
+    if rows is None:
+        bad.append("특수 세션 검토 목록 꼴")
+    else:
+        got = {str(x.get("date")): x for x in rows if isinstance(x, dict)}
+        if len(got) != len(rows) or set(got) != set(want):
+            bad.append(f"특수 세션 날 목록(판 {sorted(want)} · 검토 {sorted(got)})")
+        else:
+            for d in sorted(want):
+                bad += same(got[d], want[d], f"특수 세션 {d}")
+    return bad
+
+
+def armed_status(calendar_sha256, day, folder=None, sessions=None):
+    """부트스트랩 문(GPT 구현 검토 6705430244 §4-4 · 판 2 §2-A): 합친 뒤 첫 실제 실행 영수증(D · P · 세션 · 원천 지문 · 금지 매수 0)과
+    세션 원문 뜻을 사람이 확인하기 전에는 새 위험 증가를 열지 않음. 문 폴더의 ARMED.json = {"calendar_sha256": 확인한 판 고정 달력
+    sha256(그 판의 정규화 지문), "confirmed_on": 확인 날 YYYYMMDD, "run_id": 확인한 작업 번호, "session_review": 세션 검토 영수증
+    (review_problems 꼴)} (사람이 쓰고 커밋 · 봇은 읽기만). sessions = 지금 판(calendar_sha256인 판)의 세션 영수증.
+    → (열림, 까닭, 기록 칸). 파일 없음 · 깨짐 · 칸 이상 · 확인 날이 오늘(day)보다 뒤 · 달력 sha256이 지금 판과 다름 · 세션 검토 영수증이
+    없거나 판과 다르면 닫힘(까닭은 언제나 '첫 실행 확인 전'으로 시작). 예외 없음."""
     folder = Path(folder) if folder is not None else FOLDER
     info = {"file": (folder / ARMED).as_posix(), "calendar_sha256": None, "confirmed_on": None, "run_id": None,
-            "current_calendar_sha256": calendar_sha256}
+            "current_calendar_sha256": calendar_sha256, "session_review": None}
     try:
         raw = (folder / ARMED).read_text(encoding="utf-8")
     except OSError:
@@ -470,6 +520,11 @@ def armed_status(calendar_sha256, day, folder=None):
     if not calendar_sha256 or sha != calendar_sha256:
         return False, (f"{ARMED_WHY}(확인한 달력 sha256 {sha[:12]}이 지금 판 "
                        f"{str(calendar_sha256)[:12] if calendar_sha256 else '없음'}과 다름 · 새 판이면 다시 확인)"), info
+    review = body.get("session_review")
+    info["session_review"] = review if isinstance(review, dict) else None
+    problems = review_problems(review, sessions, day)
+    if problems:
+        return False, f"{ARMED_WHY}(세션 검토 영수증 · " + " · ".join(problems[:4]) + ")", info
     return True, "", info
 
 

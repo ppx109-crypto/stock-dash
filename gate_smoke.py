@@ -8,7 +8,8 @@
   ⑤ 공시 manifest 결속(2b단계 · D3 · 2c단계 범위): 바구니 문 검사(event_manifest.morning_check)가 맞는 아침 최종 확인(주말 낀 범위 ·
      범위 안 주말 접수 사건 포함)만 통과시키고 19:20 정기만 · ok 거짓 · 판단 뒤 완료 · 질의 날 다름 · 질의 시작이 t0 하루 · 질의 지문 다름 ·
      트리 지문 다름 · 범위 안 사건이 manifest에서 빠짐을 거부하는지(합성 · 임시 폴더 · 실제 manifest가 있는지는 보지 않음)
-  ⑥ 첫 실행 확인 문(2c단계 · GPT §4-4): gates.armed_status가 ARMED.json 없음 · 달력 sha256 다름 · 확인 날이 뒤를 거부하고 맞는 것만 통과시키는지
+  ⑥ 첫 실행 확인 문(2c단계 · GPT §4-4 · 판 2 §2-A): gates.armed_status가 ARMED.json 없음 · 달력 sha256 다름 · 확인 날이 뒤 ·
+     세션 검토 영수증 없음 · 검토 시각이 판과 다름을 거부하고 맞는 것만 통과시키는지
      (합성 · 임시 폴더) · 오늘 판의 세션이 unknown이면 그것도 까닭으로 적음
 결과: gate-smoke/<날>-<작업 번호>-<시도>.json(ok · 판 · 까닭 · 로컬은 <날>-local-0.json) — 2b단계부터 작업마다 다른 이름이라 같은 날
 뒤 작업이 앞 작업 파일을 덮지 않고, 새 파일은 추적 밖이라 15:10 저장소 맞추기(git pull --rebase)를 막지 않음(로컬 커밋 필요 없음).
@@ -120,16 +121,26 @@ def _armed_check(day):
     import gates
     bad = []
     sha = "a" * 64
+    reg = {"source_url": "https://regulation.krx.co.kr/hours", "notice_no": None, "effective_from": day, "raw_sha256": "c" * 64,
+           "open": "0900", "close": "1530"}
+    sessions = {"regular": reg, "special": []}
+    review = {"reviewer": "점검", "reviewed_on": day, "special": [],
+              "regular": {"source_url": reg["source_url"], "raw_sha256": reg["raw_sha256"], "read_open": "0900", "read_close": "1530",
+                          "read_effective_from": day}}
+    good = {"calendar_sha256": sha, "confirmed_on": day, "run_id": "1", "session_review": review}
     with tempfile.TemporaryDirectory() as tmp:
-        if gates.armed_status(sha, day, folder=tmp)[0]:
+        if gates.armed_status(sha, day, folder=tmp, sessions=sessions)[0]:
             bad.append("ARMED.json이 없는데 통과시킴")
         f = Path(tmp) / gates.ARMED
-        for name, body, want in (("맞는 확인", {"calendar_sha256": sha, "confirmed_on": day, "run_id": "1"}, True),
-                                 ("달력 sha256 다름", {"calendar_sha256": "b" * 64, "confirmed_on": day, "run_id": "1"}, False),
-                                 ("확인 날이 뒤", {"calendar_sha256": sha, "confirmed_on": "29991231", "run_id": "1"}, False),
-                                 ("작업 번호 없음", {"calendar_sha256": sha, "confirmed_on": day}, False)):
+        for name, body, want in (("맞는 확인", good, True),
+                                 ("달력 sha256 다름", dict(good, calendar_sha256="b" * 64), False),
+                                 ("확인 날이 뒤", dict(good, confirmed_on="29991231"), False),
+                                 ("작업 번호 없음", {k: v for k, v in good.items() if k != "run_id"}, False),
+                                 ("세션 검토 영수증 없음", {k: v for k, v in good.items() if k != "session_review"}, False),
+                                 ("세션 검토 시각 다름", dict(good, session_review=dict(review, regular=dict(review["regular"],
+                                                                                               read_close="1600"))), False)):
             f.write_text(json.dumps(body), encoding="utf-8")
-            ok, why, _ = gates.armed_status(sha, day, folder=tmp)
+            ok, why, _ = gates.armed_status(sha, day, folder=tmp, sessions=sessions)
             if ok != want:
                 bad.append(f"첫 실행 확인 문이 '{name}'을 {'거부함' if want else '통과시킴'}")
             elif not ok and not why.startswith(gates.ARMED_WHY):

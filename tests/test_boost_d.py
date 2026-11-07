@@ -100,11 +100,22 @@ def write_calendar(folder, year, version=1, **kw):
     return p
 
 
+def session_review(sessions, reviewer="시험 검토자", on="20261110"):
+    """판 세션 영수증 → 세션 검토 영수증(사람이 원문을 읽고 적은 칸 흉내 · 판과 칸마다 같음)."""
+    def row(x):
+        return {"source_url": x["source_url"], "raw_sha256": x["raw_sha256"], "read_open": x["open"], "read_close": x["close"],
+                "read_effective_from": x["effective_from"]}
+    return {"reviewer": reviewer, "reviewed_on": on, "regular": row(sessions["regular"]),
+            "special": [dict(row(x), date=x["date"]) for x in sessions.get("special") or []]}
+
+
 def arm(gates_folder="gates", calendar_folder="calendar", year=2026, on="20261110", run_id="1", **kw):
-    """부트스트랩 문(2c단계): 지금 판의 달력 sha256으로 gates/ARMED.json을 씀(사람이 첫 실행 영수증을 확인한 뒤 적는 파일 흉내)."""
+    """부트스트랩 문(2c단계): 지금 판의 달력 sha256 · 세션 검토 영수증으로 gates/ARMED.json을 씀(사람이 첫 실행 영수증 · 세션 원문을
+    확인한 뒤 적는 파일 흉내)."""
     import trade_calendar
     cal = trade_calendar.load_year(year, calendar_folder)
-    body = {"calendar_sha256": cal["sha256"] if cal else "0" * 64, "confirmed_on": on, "run_id": run_id}
+    body = {"calendar_sha256": cal["sha256"] if cal else "0" * 64, "confirmed_on": on, "run_id": run_id,
+            "session_review": session_review(cal["sessions"], on=on) if cal else None}
     body.update(kw)
     p = Path(gates_folder) / "ARMED.json"
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -3192,12 +3203,32 @@ class Arming(TmpCwd):
         self.assertShut(self.begin(), "깨짐")
         Path("gates/ARMED.json").write_text("[]", encoding="utf-8")
         self.assertShut(self.begin(), "꼴")
+        cal = C.load_year("2026")
+        good = session_review(cal["sessions"])
+        reviews = {"세션 검토 영수증 없음": ({"session_review": None}, "세션 검토 영수증(session_review) 없음"),
+                   "검토자 빔": ({"session_review": dict(good, reviewer=" ")}, "검토자 칸"),
+                   "검토 날이 오늘보다 뒤": ({"session_review": dict(good, reviewed_on="20261112")}, "검토 날 칸"),
+                   "평소 원문 sha256 다름": ({"session_review": dict(good, regular=dict(good["regular"], raw_sha256="e" * 64))},
+                                    "평소 세션 raw_sha256"),
+                   "읽은 마감 다름": ({"session_review": dict(good, regular=dict(good["regular"], read_close="1600"))}, "평소 세션 read_close"),
+                   "읽은 시행 날 다름": ({"session_review": dict(good, regular=dict(good["regular"], read_effective_from="20260601"))},
+                                  "평소 세션 read_effective_from"),
+                   "주소 다름": ({"session_review": dict(good, regular=dict(good["regular"], source_url="https://www.krx.co.kr/x"))},
+                              "평소 세션 source_url"),
+                   "판에 없는 특수 세션 검토": ({"session_review": dict(good, special=[dict(good["regular"], date="20261119")])},
+                                      "특수 세션 날 목록"),
+                   "특수 목록 꼴": ({"session_review": dict(good, special=None)}, "특수 세션 검토 목록 꼴")}
+        for name, (kw, word) in reviews.items():
+            with self.subTest(name):
+                arm(**kw)
+                self.assertShut(self.begin(), word)
         body = arm(run_id=4321)                                             # 작업 번호는 수로 적어도 됨
         g = self.begin()
         self.assertTrue(all(g.allows_new_risk(d) for d in g.active), g.reasons())
         got = g.snapshot("basket")["armed"]
         self.assertEqual((got["ok"], got["calendar_sha256"], got["confirmed_on"], got["run_id"], got["current_calendar_sha256"]),
                          (True, sha, "20261110", 4321, sha))
+        self.assertEqual(got["session_review"]["regular"]["read_open"], "0900", "검토 영수증이 판단 기록에 남음")
         self.assertEqual(body["calendar_sha256"], sha)
         write_calendar("calendar", 2026, version=2, holidays=HOLIDAYS_2026 + ("20261120",))   # 새 판 → 다시 확인 전까지 닫힘
         self.assertShut(self.begin(), "새 판이면 다시 확인")
@@ -3395,12 +3426,133 @@ class CiDiff(TmpCwd):
             self.assertEqual(T.main(["--base", base, "--out", str(Path("out5").resolve()), "--root", str(Path("repo").resolve())]), 1,
                              "한 판이라도 끝까지 못 돌리면 red")
 
+    def test_invariants_block_deleted_skipped_and_hidden_tests(self):
+        T = diff_tool()
+        base = {"tests_run": 3, "ids": ["m.T.a", "m.T.b", "m.T.c"], "skipped": 0, "skipped_ids": []}
+        self.assertTrue(T.invariants(base, dict(base))["invariants_ok"], "같으면 맞음")
+        more = {"tests_run": 4, "ids": ["m.T.a", "m.T.b", "m.T.c", "m.T.d"], "skipped": 0, "skipped_ids": []}
+        self.assertTrue(T.invariants(base, more)["invariants_ok"], "시험을 더하면 맞음")
+        cases = {
+            "시험 지움": ({"tests_run": 2, "ids": ["m.T.a", "m.T.b"], "skipped": 0, "skipped_ids": []},
+                       {"tests_run", "collected", "missing_tests"}, ["m.T.c"], []),
+            "건너뛰기 더함": ({"tests_run": 3, "ids": base["ids"], "skipped": 1, "skipped_ids": ["m.T.b"]},
+                         {"skipped", "newly_skipped"}, [], ["m.T.b"]),
+            "지우고 새 이름으로 채움(수는 같음)": ({"tests_run": 3, "ids": ["m.T.a", "m.T.b", "m.T.z"], "skipped": 0, "skipped_ids": []},
+                                       {"missing_tests"}, ["m.T.c"], []),
+            "옛 꼴(이름 목록 없음)": ({"tests_run": 3, "skipped": 0}, {"collected", "missing_tests", "newly_skipped"}, [], []),
+        }
+        for name, (head, broken, missing, newly) in cases.items():
+            with self.subTest(name):
+                got = T.invariants(base, head)
+                self.assertFalse(got["invariants_ok"])
+                self.assertEqual({k for k, v in got["invariants"].items() if not v}, broken)
+                self.assertEqual((got["missing_tests"], got["newly_skipped"]), (missing, newly))
+
+    def test_end_to_end_deleted_or_skipped_tests_are_red(self):
+        T = diff_tool()
+        Path("repo/tests").mkdir(parents=True)
+        self.git("-c", "init.defaultBranch=main", "init", "-q", cwd="repo")
+        Path("repo/tests/test_x.py").write_text(MINI_TESTS, encoding="utf-8")
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "기준")
+        base = self.git("rev-parse", "HEAD")
+        heads = {
+            "통과하던 시험 지움": (MINI_TESTS.replace("    def test_pass(self):\n        self.assertTrue(True)\n\n", ""),
+                            "missing_tests", ["test_x.T.test_pass"]),
+            "통과하던 시험 건너뜀": (MINI_TESTS.replace("    def test_pass(self):", "    @unittest.skip(\"숨김\")\n    def test_pass(self):"),
+                             "newly_skipped", ["test_x.T.test_pass"]),
+            "기존 실패를 건너뛰어 숨김": (MINI_TESTS.replace("    def test_old_fail(self):",
+                                                     "    @unittest.skip(\"숨김\")\n    def test_old_fail(self):"),
+                               "newly_skipped", ["test_x.T.test_old_fail"]),
+        }
+        for i, (name, (text, key, want)) in enumerate(heads.items()):
+            with self.subTest(name):
+                self.assertNotEqual(text, MINI_TESTS, "바꿀 자리를 찾음")
+                shutil.rmtree("repo/tests/__pycache__", ignore_errors=True)       # 같은 크기 · 같은 초에 고친 파일의 옛 캐시를 안 읽게
+                Path("repo/tests/test_x.py").write_text(text, encoding="utf-8")
+                out = Path(f"inv{i}").resolve()
+                rc = T.main(["--base", base, "--out", str(out), "--root", str(Path("repo").resolve())])
+                diff = json.loads((out / "diff.json").read_text(encoding="utf-8"))
+                self.assertEqual((rc, diff["green"], diff[key]), (1, False, want), name)
+                self.assertEqual(diff["new_failures"], [], "새 실패가 없어도 red(지우기 · 건너뛰기로 green이 못 됨)")
+                self.assertIn(want[0], (out / "summary.md").read_text(encoding="utf-8"))
+
+    def test_bundle_pin_equal_ids_counts_skips_and_tool(self):
+        T = diff_tool()
+        Path("mini/tests").mkdir(parents=True)
+        three = """import unittest
+
+
+class B(unittest.TestCase):
+    def test_a(self):
+        self.assertTrue(True)
+
+    def test_b(self):
+        self.assertTrue(True)
+
+    def test_c(self):
+        self.assertTrue(True)
+"""
+        Path("mini/tests/test_y.py").write_text(three, encoding="utf-8")
+        root, pin = str(Path("mini").resolve()), str(Path("pin.json").resolve())
+        self.assertEqual(T.main(["--pin", pin, "--modules", "tests.test_y", "--root", root]), 0)
+        body = json.loads(Path(pin).read_text(encoding="utf-8"))
+        self.assertEqual((body["kind"], body["modules"], body["count"], body["ids"]),
+                         ("boost-d-required-tests/1", ["tests.test_y"], 3, ["tests.test_y.B.test_a", "tests.test_y.B.test_b",
+                                                                            "tests.test_y.B.test_c"]))
+        self.assertEqual(body["tool_sha256"], hashlib.sha256((ROOT / "tools" / "test_diff.py").read_bytes()).hexdigest())
+        self.assertEqual(T.main(["--bundle", pin, "--out", str(Path("b0").resolve()), "--root", root]), 0, "고정 목록과 같으면 green")
+        self.assertEqual(Path("b0/ids.txt").read_text(encoding="utf-8").split(), body["ids"], "모은 이름 목록을 결과로 남김")
+        cases = {
+            "시험 지움": (three.replace("    def test_c(self):\n        self.assertTrue(True)\n", ""), None, "ids_equal_pin", "missing"),
+            "고정 안 한 시험 더함": (three + "\n    def test_d(self):\n        self.assertTrue(True)\n", None, "ids_equal_pin", "extra"),
+            "건너뜀": (three.replace("    def test_b(self):", "    @unittest.skip(\"숨김\")\n    def test_b(self):"), None, "no_skips",
+                    "skipped_ids"),
+            "실패": (three.replace("def test_a(self):\n        self.assertTrue(True)", "def test_a(self):\n        self.assertTrue(False)"),
+                   None, "no_failures", "failed"),
+            "도구 지문 다름": (three, {"tool_sha256": "0" * 64}, "tool_sha_equal_pin", None),
+            "고정 개수만 고침": (three, {"count": 2}, "count_equal_pin", None),
+        }
+        for i, (name, (text, change, check, key)) in enumerate(cases.items()):
+            with self.subTest(name):
+                shutil.rmtree("mini/tests/__pycache__", ignore_errors=True)
+                Path("mini/tests/test_y.py").write_text(text, encoding="utf-8")
+                use = pin
+                if change:
+                    use = str(Path(f"pin{i}.json").resolve())
+                    Path(use).write_text(json.dumps(dict(body, **change), ensure_ascii=False), encoding="utf-8")
+                out = Path(f"b{i + 1}").resolve()
+                self.assertEqual(T.main(["--bundle", use, "--out", str(out), "--root", root]), 1, name)
+                got = json.loads((out / "check.json").read_text(encoding="utf-8"))
+                self.assertFalse(got["checks"][check], name)
+                if key:
+                    self.assertTrue(got[key], name)
+        Path("mini/tests/test_y.py").write_text("import 없는_모듈_입니다\n" + three, encoding="utf-8")
+        before = Path(pin).read_bytes()
+        self.assertEqual(T.main(["--pin", pin, "--root", root]), 1, "불러오기 실패가 있으면 고정 파일을 다시 쓰지 않음")
+        self.assertEqual(Path(pin).read_bytes(), before)
+        self.assertEqual(T.main(["--bundle", str(Path("없는.json").resolve()), "--out", str(Path("bx").resolve()), "--root", root]), 1)
+
+    def test_repo_pin_is_current(self):
+        """저장소의 D 묶음 고정 파일 = 지금 모듈에서 모은 시험 이름 · 개수 · 지문 · 도구 지문(시험 파일이나 도구를 고치면 고정 파일도 다시 써야 함)."""
+        T = diff_tool()
+        pin = json.loads((ROOT / "tests" / "fixtures" / "boost_d_required_tests.json").read_text(encoding="utf-8"))
+        self.assertEqual(pin["modules"], D_BUNDLE.split(), "고정 파일 모듈 = 작업 흐름의 D 묶음")
+        ids = T.collect_ids(ROOT, pin["modules"])
+        self.assertIsNotNone(ids)
+        self.assertEqual(sorted(set(pin["ids"]) - set(ids)), [], "고정 목록에만 있는 시험(지움 · 이름 바꿈)")
+        self.assertEqual(sorted(set(ids) - set(pin["ids"])), [], "고정 파일에 없는 시험 → python tools/test_diff.py --pin 다시 쓰기")
+        self.assertEqual((pin["count"], pin["ids_sha256"], pin["tool_sha256"]),
+                         (len(ids), T.ids_sha(ids), hashlib.sha256((ROOT / "tools" / "test_diff.py").read_bytes()).hexdigest()))
+
     def test_workflow_files(self):
         wf = (ROOT / ".github" / "workflows" / "boost-d-ci.yml").read_text(encoding="utf-8")
         self.assertIn("pull_request:", wf)
         self.assertIn("workflow_dispatch:", wf)
         self.assertIn("claude/boost-d-fixes", wf)
-        self.assertIn(f"python -m unittest -v {D_BUNDLE}", wf, "D 묶음 그대로(필수 job)")
+        self.assertIn("python tools/test_diff.py --bundle tests/fixtures/boost_d_required_tests.json --out d-bundle", wf,
+                      "D 묶음(필수 job) = 고정 목록 대조")
+        self.assertNotIn("python -m unittest -v", wf, "고정 목록 대조를 거치지 않는 옛 실행을 남기지 않음")
         self.assertIn("python tools/test_diff.py", wf)
         self.assertIn("github.event.pull_request.base.sha", wf)
         self.assertIn("git merge-base origin/main HEAD", wf)
