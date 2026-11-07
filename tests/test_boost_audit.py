@@ -457,10 +457,21 @@ class Checks(unittest.TestCase):
         self.assertEqual(B.orders_check("engine", dict(body, **{"주문 결과": {"late": True}})), [])
         # 판 3 고침 8: 흔들림 상한이 막힌 날(곁 stop_buys True)은 엔진이 기록 뒤 매수를 빼므로 매수는 대조 밖 · 팔기는 그대로 대조
         blocked = dict(body, **{"결과": {"orders": [["251340", "buy", 5, "r"], ["138230", "sell", 2, "r"]]}, "곁": {"stop_buys": True}})
-        self.assertEqual(B.orders_check("engine", blocked), [("주문 빠짐", "138230 sell 판단했으나 장부에 없음")])
+        self.assertEqual([t for t, _ in B.orders_check("engine", blocked)], ["주문 빠짐", "금지 주문"])   # 장부의 133690 매수 줄은 막힌 날 금지
         self.assertEqual([t for t, _ in B.orders_check("engine", dict(blocked, **{"곁": {"stop_buys": False}}))], ["주문 빠짐", "주문 빠짐"])
         self.assertEqual(len(B.orders_check("engine", dict(blocked, **{"곁": {}}))), 2)                 # 칸 없으면 예전 그대로
         self.assertEqual(len(B.orders_check("basket", dict(blocked, **{"곁": {"stop_buys": True}}))), 2)  # 바구니는 막힘 칸과 무관(판단 앞에 돈으로 막음)
+        # 반대 방향(GPT #491): 막힌 날 엔진 장부에 매수 줄이 있으면(접수든 실패든) '금지 주문' 즉시 실패
+        sold = {"key": "20261109:sell:138230", "code": "138230", "side": "sell", "status": "접수"}
+        ok_day = dict(blocked, **{"오늘 장부 주문": {"idle-live/paper-orders.json": [sold]}})
+        self.assertEqual(B.orders_check("engine", ok_day), [])                                            # 1: 매수 없음 · 팔기 있음
+        for st in ("접수", "실패 · x"):
+            bad = dict(blocked, **{"오늘 장부 주문": {"idle-live/paper-orders.json": [
+                sold, {"key": "20261109:buy:251340", "code": "251340", "side": "buy", "status": st}]}})
+            self.assertEqual([t for t, _ in B.orders_check("engine", bad)], ["금지 주문"], st)               # 2: 금지 매수
+        self.assertIn("금지 주문", B.MISSING)                                                               # 면책 없는 즉시 실패 묶음
+        no_sell = dict(blocked, **{"오늘 장부 주문": {"idle-live/paper-orders.json": []}})
+        self.assertEqual([t for t, _ in B.orders_check("engine", no_sell)], ["주문 빠짐"])                  # 3: 팔기 빠짐
         daily = {"날": "20261109", "결과": {"sells": [{"code": "000001", "type": "sell"}], "buys": [{"code": "000002", "type": "buy"}]},
                  "주문 결과": {"late": False, "paper": ["🧪 모의투자(1일봉) 매수 건너뜀 · 둘(000002) · 살 돈이 모자람(1주 미만)"]},
                  "오늘 장부 주문": {"daily-live/paper-orders.json": [{"key": "202611091520:sell:000001:20261109", "status": "접수"}]}}
