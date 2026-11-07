@@ -509,9 +509,14 @@ def orders_check(bot, body):
     day, rows = body["날"], book_rows(body)[0]
     keys = {str(o.get("key", "")) for o in rows}
     if bot in ("engine", "basket"):
+        # 흔들림 상한이 막힌 날(기록 곁 칸 stop_buys)은 엔진이 판단 기록 뒤 매수를 뺌(idle_live.drop_buys · 설계대로) → 팔기만 대조(판 3 고침 8)
+        stop = bot == "engine" and (body.get("곁") or {}).get("stop_buys") is True
         for o in (body.get("결과") or {}).get("orders", []):
+            if stop and o[1] == "buy":
+                continue
             if f"{day}:{o[1]}:{o[0]}" not in keys:
                 out.append(("주문 빠짐", f"{o[0]} {o[1]} 판단했으나 장부에 없음"))
+
     elif bot == "overlay":
         sent = {(o.get("code"), o.get("side")) for o in res.get("sent") or []}
         for o in res.get("orders") or []:
