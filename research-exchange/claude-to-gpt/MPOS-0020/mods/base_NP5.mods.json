@@ -1,0 +1,69 @@
+{
+ "모듈": {
+  "basket_live": [
+   "TREE/research/mix0053/basket_live.py",
+   "e962d5914201feb98b3adfa67c351bf6f229b2863fdee77cdd4bfbba0f36846c"
+  ],
+  "caps": [
+   "TREE/caps.py",
+   "8da24e031c222c5a9eca7ff4859c993baaac449d1c74664a9e84208812f90c78"
+  ],
+  "events": [
+   "TREE/events.py",
+   "5740e041eb8260c152694b3ad0b30358d1396041621d50281faee8042e5aa23d"
+  ],
+  "final_group": [
+   "TREE/final_group.py",
+   "130abf9c7e840acf3d8d28bb21a497297715823632bedafb178e349cc15a167a"
+  ],
+  "final_study": [
+   "TREE/final_study.py",
+   "989b915c481a5aaddb7aef97459c1fdeae02caf99e4db1205b0eda4f615e91d2"
+  ],
+  "idle_live": [
+   "TREE/research/mix0053/idle_live.py",
+   "bd299046ae71ecf8dc424f4efea5960bb7db996a88d872c3d60b321f7cf3ecac"
+  ],
+  "idle_signal": [
+   "TREE/research/idle_signal.py",
+   "e87dea82a952b512a4e35913c0248a2d7bbd1738fd7b9ec067d62bcfeec893ec"
+  ],
+  "lab": [
+   "TREE/lab.py",
+   "c693d9268dbc8fc7f2db904971533fa7aac5957f72beff70f96672676934ff96"
+  ],
+  "nrl": [
+   "TREE/nrl.py",
+   "18a653db8d9e6698e1fe8b8c2cefeb1ae785a9834fdaf4180958bbb55963718f"
+  ],
+  "perf2": [
+   "TREE/research/perf2.py",
+   "551e83f1053af7599dbc93422e5a08de456b319e05e73c42da44aaff027e0dd3"
+  ],
+  "rule": [
+   "TREE/rule.py",
+   "a52b695123aa2bced7fedbb130f43b586c86c24274760cbed13f7c9fb4e8b9ed"
+  ],
+  "study": [
+   "TREE/study.py",
+   "6dc91a6fc83a0f8cc3f2ac02fa14f28d6d8360bb3e429e9c1916e0e728c5fb25"
+  ],
+  "trend": [
+   "TREE/trend.py",
+   "ed532340400b9bfdf4064f2a561db61044ed31dc9dee52116ace372c1cf14946"
+  ],
+  "z001": [
+   "TREE/research/z001.py",
+   "a7d41404b2d20ff84305a70f2b7a9ddbd56aea5a342a70da18ebadcb923ac96f"
+  ]
+ },
+ "바깥": [],
+ "sys.path 앞": [
+  "TREE",
+  "TREE",
+  "TREE/research/mix0053/research",
+  "TREE/research/mix0053",
+  "TREE/research",
+  "TREE"
+ ]
+}
