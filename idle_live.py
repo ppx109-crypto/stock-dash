@@ -44,6 +44,7 @@ HOME = Path("idle-live")
 STATE = HOME / "state.json"
 TODAY = HOME / "today.json"
 DECIDE_AT, LAST_ORDER = "1510", "1518"
+D1_SYNC_AT = "1504"                       # 3단계 고침: 15:05 D1 다시 셈 앞에 저장소를 맞춤(맞춘 HEAD 자료로 다시 셈)
 DIP, DOL, INV, K200, Q150 = "069500", "138230", "251340", "069500", "229200"
 ROT = idle_signal.ROT
 CODES = sorted({DIP, DOL, INV, K200, Q150, *ROT})
@@ -335,8 +336,10 @@ def run(now=None):
         print(why_off)
         return 0
     # BOOST-0001-D D1: 15:05:00에 1일봉 후보를 다시 셈(마감 15:09:30 · 저장소 밖 임시 폴더) → 검증 통과한 것만 15:10 비켜 두기에 씀
-    _wait_until(paper_trade.D1_AT)
-    d1 = d1_recount(day)
+    _wait_until(D1_SYNC_AT)
+    d1_sync = paper_trade.sync_repo()               # 3단계 고침(2026-11-08 조사): D1 다시 셈도 맞춘 HEAD 자료로 — 작업 시작(09:40) 때 판이면
+    _wait_until(paper_trade.D1_AT)                  # 낮에 들어온 아침 바로잡기(관측 10:16 ~ 12:33) · 보충 수급이 빠짐 · 실패면 D1 실패(엔진 · 바구니 · 덧붙임 닫힘)
+    d1 = d1_recount(day) if d1_sync else {"ok": False, "why": "D1 앞 저장소 맞추기 실패(맞춘 HEAD로 다시 셀 수 없음)"}
     _wait_until(DECIDE_AT)
     sync_ok = paper_trade.sync_repo()               # 기다리는 동안 다른 작업이 올린 장부를 받아 맞춤 · 실패면 새 위험 증가 막음(D6)
     ok, why_off = paper_trade.enabled(datetime.now(KST))       # 기다리는 동안 끄기 스위치가 올라왔을 수 있음

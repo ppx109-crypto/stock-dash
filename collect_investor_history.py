@@ -14,6 +14,9 @@ BOOST-0001-D D4: '실행 시각의 어제' 대신 판 고정 달력의 목표 �
 한 줄만 찍습니다. 달력을 못 읽으면 예전 방식(실행 시각의 어제 · 확인 없음) 그대로 모읍니다(수집을 멈추지 않음).
 2b단계(D4 보강): 매일 수집(INVESTOR_CODES 없이 · 기본 칸)은 1일봉 수급 풀(전날 시총 150위 + 1일봉 보유 종목 · daily_live.run의
 풀과 같은 식)도 더해 받습니다 — 목록 밖 종목(예: 005850 · 009970)이 늘 낡아 풀 건강도를 깎던 것을 막음(2026-11-07 기준 4종목 더함).
+3단계 고침(2026-11-08 조사): 저녁 사슬(daily-prices)이 자정 전에 이 단계에 닿으면 목표 날이 그 앞 거래일이라 P 수급이 안 붙음
+(main 기록 10-14 ~ 11-06 18거래일 중 5일: 15:20 판단 때 005930 수급 마지막 날 = P−1) → 아침 보충(INVESTOR_TOPUP=1 · daily-close-check.yml):
+1일봉 수급 풀만 · 앞쪽(P까지)만 붙이고 거슬러 받기는 안 함 · 이미 P가 있으면 묻지 않음(목표 날 = 달력 P · 아침이라 지난날로 물음).
 """
 import json
 import os
@@ -29,6 +32,7 @@ import broker_kis
 # INVESTOR_SET=full: 증권사가 주는 모든 투자자 칸(금융투자 · 은행 · 보험 · 기타법인 · 외국인 등록/비등록 …)을
 # 가장 옛날까지 investor-full/에 따로 모읍니다(수급 갈래 연구 · 사용자 2026-10-02). 기본은 지금 그대로입니다.
 FULL = os.getenv("INVESTOR_SET", "").strip() == "full"
+TOPUP = os.getenv("INVESTOR_TOPUP", "").strip() == "1" and not FULL   # 아침 보충: 1일봉 수급 풀 · 앞쪽만(3단계 고침)
 OUT = Path("investor-full" if FULL else "investor-data")
 UNIVERSE = Path("study") / "flow_universe.json"
 START = os.getenv("INVESTOR_START", "20060101" if FULL else "20170101")   # 찔러보기(2026-10-02): 2008-06은 값 있음 · 2005-06 앞은 칸만 있고 빔
@@ -65,6 +69,8 @@ def daily_pool():
 
 def codes_to_collect():
     picked = [c.strip() for c in os.getenv("INVESTOR_CODES", "").split(",") if c.strip()]
+    if not picked and TOPUP:                       # 아침 보충: 1일봉 수급 풀(전날 시총 150위 + 보유)만 · 셈 못 하면 빈 목록(작업 실패로 드러남)
+        return [str(c) for c in daily_pool() if re.fullmatch(r"[0-9]{6}", str(c))]
     if not picked:
         try:
             picked = json.loads(UNIVERSE.read_text(encoding="utf-8")).get("codes", [])
@@ -135,9 +141,10 @@ def target_day(now=None, folder=None):
     return (p, True) if p else (_before(today), False)
 
 
-def fill(client, code, today, expect=None):
+def fill(client, code, today, expect=None, front_only=False):
     """한 종목을 채웁니다. (새로 붙인 줄 수, 물은 횟수).
-    expect(달력 목표 P · BOOST-0001-D)를 주면 today로 물은 응답의 마지막 날이 expect인지 보고, 아니면 저장하지 않고 NotLatest를 올립니다."""
+    expect(달력 목표 P · BOOST-0001-D)를 주면 today로 물은 응답의 마지막 날이 expect인지 보고, 아니면 저장하지 않고 NotLatest를 올립니다.
+    front_only(아침 보충)면 앞쪽(마지막 날 뒤 ~ today)만 붙이고 거슬러 받기(2)는 하지 않음 · 붙은 줄이 없으면 파일을 쓰지 않음."""
     body = load(code)
     have = {r[0]: r for r in body["rows"]}
     added = asks = 0
@@ -161,6 +168,12 @@ def fill(client, code, today, expect=None):
             if not got or got[0]["date"] <= newest or not fresh:
                 break
             cursor = _before(got[0]["date"])
+    if front_only:                                 # 아침 보충: 거슬러 받기 없이 붙은 것만 저장(없으면 파일 그대로)
+        if added:
+            body["rows"] = [have[d] for d in sorted(have) if d >= START]
+            body["cols"] = list(COLS)
+            save(body)
+        return added, asks
     # 2) 뒤쪽: 아직 처음까지 닿지 않았으면 가장 옛날 날의 하루 앞을 물어 거슬러 갑니다.
     cursor = _before(min(have)) if have else today
     while not body.get("처음까지") and cursor >= START and asks < MAX_ASKS:
@@ -226,7 +239,7 @@ def main():
         if state["stop"]:
             return
         try:
-            added, asks = _patiently(lambda: fill(client, code, today, expect))
+            added, asks = _patiently(lambda: fill(client, code, today, expect, front_only=TOPUP))
             body = load(code)
             rows = body["rows"]
             with lock:

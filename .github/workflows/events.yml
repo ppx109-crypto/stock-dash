@@ -31,6 +31,10 @@ on:
         description: "아침 최종 확인으로 돌리기('auto' = 오늘의 앞 거래일 · 비우면 위 갈래)"
         required: false
         default: ''
+      force:
+        description: "평일 낮(08:00 ~ 19:00)에도 정기 · 전체 수집을 돌리기('1' · 그날 바구니 문이 닫힐 수 있음)"
+        required: false
+        default: ''
 permissions:
   contents: write
 concurrency:
@@ -63,6 +67,7 @@ jobs:
           EVENT_RECENT_DAYS: ${{ github.event.schedule == '20 10 * * 1-5' && '5' || inputs.recent || '0' }}
           EVENT_MODE: ${{ (github.event.schedule == '20 23 * * 0-4' || github.event.schedule == '20 1 * * 1-5' || github.event.schedule == '20 3 * * 1-5' || inputs.final != '') && 'final' || '' }}
           EVENT_T0: ${{ inputs.final || 'auto' }}
+          EVENT_FORCE: ${{ inputs.force || '' }}   # 3단계 고침: 정기 · 전체가 평일 낮에 밀려 돌면 건너뜀(아침 확인 뒤 트리 지문을 안 바꾸게)
       - name: 자료 · manifest를 각각 확인하고 같은 한 커밋에
         if: always()
         run: |

@@ -21,6 +21,9 @@
 - 2c단계 고침(GPT 구현 검토 판 2 · 6708390773 §2-A): ARMED.json에 **세션 검토 영수증**(session_review — 검토자 · 검토 날 ·
   평소 세션의 주소 · 원문 sha256 · 원문에서 읽은 개장 · 마감 · 시행 날 · 특수 세션마다 같은 칸)이 있어야 하고, 그 값이 지금 판의 세션
   영수증과 칸마다 같아야 열림(원문 지문은 '그 주소의 바이트'만 묶으므로 사람이 원문 뜻을 읽고 적은 영수증을 판과 대조).
+- 3단계 고침(GPT 구현 검토 판 3 · 6709669142 §2-A · §2-B): 세션 검토 영수증의 읽은 날 칸을 read_verified_from(원문을 읽어 확인한 날) ·
+  read_source_effective_from(원천이 밝힌 시행 날 · 없으면 null)로 나눠 판과 대조 · 특수 세션 예외 공지 검토 지평(exceptions:
+  reviewed_through · review_sha256)도 판과 같아야 열림.
 """
 import hashlib
 import json
@@ -438,14 +441,16 @@ def _armed(g, day):
 
 
 REVIEW_KEYS = (("source_url", "source_url"), ("raw_sha256", "raw_sha256"), ("read_open", "open"), ("read_close", "close"),
-               ("read_effective_from", "effective_from"))       # 세션 검토 영수증 칸 → 판 세션 영수증 칸
+               ("read_verified_from", "verified_from"), ("read_source_effective_from", "source_effective_from"))   # 세션 검토 영수증 칸 → 판 칸
+EXCEPTION_REVIEW_KEYS = ("reviewed_through", "review_sha256")    # 특수 세션 예외 공지 검토 지평(판 sessions.exceptions와 같아야 함)
 
 
 def review_problems(review, sessions, day):
     """ARMED.json의 세션 검토 영수증(session_review)을 지금 판의 세션 영수증(sessions)과 대조 → 문제 목록(비면 맞음).
     꼴: {"reviewer": 검토자(비지 않은 글), "reviewed_on": YYYYMMDD(오늘 앞이나 오늘), "regular": {"source_url", "raw_sha256",
-    "read_open", "read_close", "read_effective_from"}, "special": [{"date", 같은 칸 …}]} — 평소 세션 · 판의 특수 세션마다 칸이 같아야 함
-    (특수 세션 날 목록도 같아야 함 · 검토 안 된 특수 세션이 있으면 닫힘)."""
+    "read_open", "read_close", "read_verified_from", "read_source_effective_from"}, "special": [{"date", 같은 칸 …}],
+    "exceptions": {"reviewed_through", "review_sha256"}} — 평소 세션 · 판의 특수 세션마다 칸이 같아야 함(특수 세션 날 목록도 같아야 함 ·
+    검토 안 된 특수 세션이 있으면 닫힘) · 예외 공지 검토 지평 · 영수증 지문도 판과 같아야 함."""
     if not isinstance(sessions, dict) or not isinstance(sessions.get("regular"), dict):
         return ["지금 판의 세션 영수증을 못 읽어 대조하지 못함"]
     if not isinstance(review, dict):
@@ -477,6 +482,14 @@ def review_problems(review, sessions, day):
         else:
             for d in sorted(want):
                 bad += same(got[d], want[d], f"특수 세션 {d}")
+    exc_want = sessions.get("exceptions") if isinstance(sessions.get("exceptions"), dict) else None
+    exc_got = review.get("exceptions") if isinstance(review.get("exceptions"), dict) else None
+    if exc_want is None:
+        bad.append("판에 예외 공지 검토 지평이 없음")
+    elif exc_got is None:
+        bad.append("예외 공지 검토 지평 칸 없음")
+    else:
+        bad += [f"예외 공지 검토 {k}" for k in EXCEPTION_REVIEW_KEYS if exc_got.get(k) != exc_want.get(k)]
     return bad
 
 

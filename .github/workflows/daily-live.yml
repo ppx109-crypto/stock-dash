@@ -51,6 +51,7 @@ jobs:
           status=0; python idle_live.py || status=$?
           mkdir -p idle-live basket-live overlay-live discord-digest
           git add -A idle-live basket-live overlay-live discord-digest
+          if [ -f study/names.json ]; then git add study/names.json; fi   # 3단계 고침: 이름표를 고쳤으면 함께(안 올리면 다음 pull --rebase가 'unstaged changes'로 실패)
           mkdir -p gates gate-smoke           # BOOST-0001-D 문 기록 · 시작 전 점검(따로 staging: 말썽이어도 위 장부는 그대로 올림)
           git add -A gates gate-smoke || echo '⚠️ 문 기록을 staging하지 못함(장부는 그대로 올림)'
           if ! git diff --cached --quiet; then
@@ -91,6 +92,7 @@ jobs:
           status=0; python daily_live.py || status=$?
           mkdir -p daily-live basket-live m15-live hourly-live overlay-live discord-digest
           git add -A daily-live idle-live basket-live m15-live hourly-live overlay-live discord-digest    # 흔들림 상한이 다른 규칙 장부에서 덜어낸 기록도
+          if [ -f study/names.json ]; then git add study/names.json; fi   # 3단계 고침: 1일봉 단계는 DART 키가 있어 이름표(study/names.json)를 고칠 수 있음 → 함께 올림
           mkdir -p gates gate-smoke           # BOOST-0001-D 문 기록(1일봉 문 · sync_ok 더함 · 따로 staging: 말썽이어도 위 장부는 그대로 올림)
           git add -A gates gate-smoke || echo '⚠️ 문 기록을 staging하지 못함(장부는 그대로 올림)'
           if [ -f acc-cap/log.json ]; then git add acc-cap/log.json; fi

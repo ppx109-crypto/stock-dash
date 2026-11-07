@@ -13,8 +13,10 @@
   diff.json(두 집합 · 새 실패 · 고쳐진 것 · 불변식 · 빠진 시험 · 새로 건너뜀 · 판정) · summary.md(같은 목록) — GITHUB_STEP_SUMMARY가 있으면
   summary.md를 거기에도 덧붙임.
 - D 묶음 고정(--bundle 고정 파일): 고정 파일(tests/fixtures/boost_d_required_tests.json)의 모듈만 돌려 **모은 시험 이름 = 고정 목록 ·
-  개수 = 고정 개수 · 목록 지문 = 고정 지문 · 실패 · 오류 · 건너뜀 0 · 이 도구 sha256 = 고정 값**일 때만 green. 필수 시험 파일이나 이 도구를
-  고치면 고정 파일도 함께 다시 써야 함(--pin · 모두 통과할 때만 씀) → 지운 시험 · 바꾼 도구가 고정 파일 차이로 검토에 드러남.
+  개수 = 고정 개수 · 목록 지문 = 고정 지문 · 실패 · 오류 · 건너뜀 0 · 이 도구 sha256 = 고정 값 · 필수 시험 파일과 그 파일이 부르는 시험 자료
+  (tests/fixtures/ · 고정 파일 자신 뺌)의 sha256 = 고정 값**일 때만 green(3단계 고침 · GPT 구현 검토 판 3 §2-C: 이름을 그대로 둔 채 단언을
+  약하게 바꾸거나 본문을 비우거나 시험 자료를 조용히 바꿔도 red). 필수 시험 파일 · 시험 자료 · 이 도구를 고치면 고정 파일도 함께 다시 써야 함
+  (--pin · 이름을 돌리지 않고 모음 · 불러오기 실패면 거부) → 고친 사실이 고정 파일 차이(파일 지문 · 이름 목록)로 검토에 드러남.
 사용: python tools/test_diff.py --base <커밋> --out <폴더> [--start tests] [--timeout 초]
       python tools/test_diff.py --bundle <고정 파일> --out <폴더>        (D 묶음 · 필수 job)
       python tools/test_diff.py --pin <고정 파일> [--modules "모듈 …"]    (고정 파일 다시 쓰기)
@@ -57,7 +59,8 @@ body = {"tests_run": res.testsRun, "collected": len(ids), "ids": ids,
 with open(out, "w", encoding="utf-8") as f:
     json.dump(body, f, ensure_ascii=False, indent=1)
 """
-PIN_KIND = "boost-d-required-tests/1"
+PIN_KIND = "boost-d-required-tests/2"          # 2: 필수 시험 파일 · 시험 자료 sha256 묶음(3단계 고침)
+PIN_NAME = "boost_d_required_tests.json"
 COLLECT = r"""
 import json, sys, unittest
 out, names = sys.argv[1], [x for x in sys.argv[2].split(",") if x]
@@ -154,6 +157,35 @@ def invariants(base, head):
             "base_skipped": base.get("skipped"), "head_skipped": head.get("skipped")}
 
 
+def file_sha(path):
+    """파일 바이트 sha256(없으면 None)."""
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def pinned_files(root, modules, pin_path=None):
+    """D 묶음 고정에 묶는 파일(3단계 고침): 모듈 소스(tests.test_x → tests/test_x.py) + 그 소스가 이름으로 부르는 tests/fixtures/ 파일
+    (고정 파일 자신 · .gitattributes 뺌) → [{"path", "sha256"}](경로 차례 · 없는 모듈 파일은 sha256 None)."""
+    root = Path(root)
+    out, texts = {}, []
+    for m in modules:
+        rel = Path(*str(m).split(".")).with_suffix(".py").as_posix()
+        out[rel] = file_sha(root / rel)
+        try:
+            texts.append((root / rel).read_text(encoding="utf-8", errors="replace"))
+        except OSError:
+            pass
+    skip = {".gitattributes", Path(pin_path).name if pin_path else PIN_NAME}
+    fx = root / "tests" / "fixtures"
+    if fx.is_dir():
+        for f in sorted(fx.iterdir()):
+            if f.is_file() and f.name not in skip and any(f.name in t for t in texts):
+                out[f.relative_to(root).as_posix()] = file_sha(f)
+    return [{"path": k, "sha256": v} for k, v in sorted(out.items())]
+
+
 def ids_sha(ids):
     """시험 이름 목록 지문(정렬 · 빈칸 없는 JSON · UTF-8 → sha256)."""
     return hashlib.sha256(json.dumps(sorted(ids), ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
@@ -164,11 +196,15 @@ def tool_sha():
     return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
-def bundle_check(pin, body):
-    """D 묶음 결과(body) ↔ 고정 파일(pin) → {"green", "checks", "missing", "extra", …}."""
+def bundle_check(pin, body, root=None, pin_path=None):
+    """D 묶음 결과(body) ↔ 고정 파일(pin) → {"green", "checks", "missing", "extra", "changed_files", …}."""
     ids = body.get("ids") or []
     want = pin.get("ids") or []
     missing, extra = sorted(set(want) - set(ids)), sorted(set(ids) - set(want))
+    now_files = pinned_files(root or ROOT, pin.get("modules") or [], pin_path)
+    pinned = {x.get("path"): x.get("sha256") for x in pin.get("files") or [] if isinstance(x, dict)}
+    current = {x["path"]: x["sha256"] for x in now_files}
+    changed = sorted(k for k in set(pinned) | set(current) if pinned.get(k) != current.get(k) or current.get(k) is None)
     checks = {"no_failures": not failed_set(body),
               "no_skips": int(body.get("skipped") or 0) == 0 and not body.get("skipped_ids"),
               "all_run": int(body.get("tests_run") or 0) == len(ids),
@@ -176,9 +212,11 @@ def bundle_check(pin, body):
               "count_equal_pin": len(ids) == pin.get("count") == len(want),
               "ids_sha_equal_pin": ids_sha(ids) == pin.get("ids_sha256") == ids_sha(want),
               "tool_sha_equal_pin": tool_sha() == pin.get("tool_sha256"),
+              "files_equal_pin": bool(pinned) and not changed,
               "pin_kind": pin.get("kind") == PIN_KIND}
     return {"green": all(checks.values()), "checks": checks, "missing": missing, "extra": extra, "count": len(ids),
-            "pin_count": pin.get("count"), "failed": sorted(failed_set(body)), "skipped_ids": body.get("skipped_ids") or []}
+            "pin_count": pin.get("count"), "failed": sorted(failed_set(body)), "skipped_ids": body.get("skipped_ids") or [],
+            "changed_files": changed}
 
 
 def load_pin(path):
@@ -202,14 +240,14 @@ def run_bundle(pin_path, out, root=None, timeout=3600):
     if body is None:
         print("⚠️ red · D 묶음을 끝까지 못 돌림")
         return 1
-    got = bundle_check(pin, body)
+    got = bundle_check(pin, body, root, pin_path)
     (out / "check.json").write_text(json.dumps(got, ensure_ascii=False, indent=1), encoding="utf-8")
     (out / "ids.txt").write_text("\n".join(body.get("ids") or []) + "\n", encoding="utf-8")
     lines = ["## D 묶음 시험(필수 · 고정 목록 대조)", "", f"- 판정: {'green' if got['green'] else 'red'}",
              f"- 모은 시험 {got['count']}개 · 고정 {got['pin_count']}개 · 모듈 {len(pin['modules'])}개", ""]
     lines += [f"- {k}: {'맞음' if v else '어김'}" for k, v in got["checks"].items()]
     for title, key in (("고정 목록에만(빠진 시험)", "missing"), ("지금에만(고정 파일에 없는 시험)", "extra"), ("실패 · 오류", "failed"),
-                       ("건너뜀", "skipped_ids")):
+                       ("건너뜀", "skipped_ids"), ("고정 지문과 다른 시험 파일 · 시험 자료", "changed_files")):
         lines += ["", f"### {title} ({len(got[key])})"] + ([f"- `{x}`" for x in got[key]] or ["- (없음)"])
     md = "\n".join(lines)
     (out / "summary.md").write_text(md + "\n", encoding="utf-8")
@@ -234,7 +272,11 @@ def write_pin(pin_path, modules=None, root=None, timeout=3600):
     if not ids or any(x.startswith(LOAD_FAILED) for x in ids):
         print("⚠️ 고정 파일을 쓰지 않음 · 시험 이름을 못 모았거나 불러오기 실패가 있음")
         return 1
-    pin = {"kind": PIN_KIND, "modules": modules, "count": len(ids), "ids_sha256": ids_sha(ids), "tool_sha256": tool_sha(), "ids": ids}
+    pin = {"kind": PIN_KIND, "modules": modules, "count": len(ids), "ids_sha256": ids_sha(ids), "tool_sha256": tool_sha(),
+           "files": pinned_files(root, modules, pin_path), "ids": ids}
+    if any(x["sha256"] is None for x in pin["files"]):
+        print("⚠️ 고정 파일을 쓰지 않음 · 모듈 소스 파일이 없음")
+        return 1
     Path(pin_path).parent.mkdir(parents=True, exist_ok=True)
     Path(pin_path).write_text(json.dumps(pin, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     gone = sorted(set((old or {}).get("ids") or []) - set(ids))

@@ -1,5 +1,5 @@
 {
- "kind": "boost-d-required-tests/1",
+ "kind": "boost-d-required-tests/2",
  "modules": [
   "tests.test_boost_d",
   "tests.test_audit_log",
@@ -15,9 +15,79 @@
   "tests.test_collect_events",
   "tests.test_investor_history"
  ],
- "count": 335,
- "ids_sha256": "924c17283047cde24c836a5d75cb91e1679df61ce80bff180b1b0aca8508074e",
- "tool_sha256": "66d812404b5ebb0d17b0e7b10b8e6b77ae7783457598c0e748354da182a811ab",
+ "count": 342,
+ "ids_sha256": "2af8fbc37bce727abcbee331564517efd71ce833ddfaf035e8fa1c5cab352617",
+ "tool_sha256": "8165bea881493a54603855a7e02a059f95ba74dbbac8d92ba6cfe02199d61b91",
+ "files": [
+  {
+   "path": "tests/fixtures/boost_d_golden.json",
+   "sha256": "f192245279496bece47f29386f442e9f33ffa20b65dca2aee40f052f27644660"
+  },
+  {
+   "path": "tests/fixtures/boost_run_42227497428.json",
+   "sha256": "79f61bfdcf438d2a4fde776b04ad265750f4cb76d3ccae90b00d2f638842dfd1"
+  },
+  {
+   "path": "tests/fixtures/krx_regular_session_RGL03010100T1.html",
+   "sha256": "fb10f1d109b37e8ab1f06c277a7f4a091a73fd398e4c7b3890caae12efdc1ffb"
+  },
+  {
+   "path": "tests/fixtures/overlay_states.json",
+   "sha256": "9410396be7302bda30edd9a92080cd7e563f0110af61da896cd64f4a7630f200"
+  },
+  {
+   "path": "tests/test_acc_cap.py",
+   "sha256": "6cac0c5240ce078c393360b0cc722c48172f56faa4e9383f31663f0f9a8e3a3e"
+  },
+  {
+   "path": "tests/test_audit_log.py",
+   "sha256": "233b43ab83f10a2576e134ea4d11c01cca8dc9380f6985bd872d910a9ed34974"
+  },
+  {
+   "path": "tests/test_basket_live.py",
+   "sha256": "f8ea6f11cf10a2868fc26a9ed2a2c275e75f30faeab01a8e19b7ed7831e27891"
+  },
+  {
+   "path": "tests/test_boost_audit.py",
+   "sha256": "892b0ab5c0c1e196f5c64d026280067aaeb6a8f6b0fff1b4d7b4dfe6718055d9"
+  },
+  {
+   "path": "tests/test_boost_d.py",
+   "sha256": "8f4b7a60e183734d90de17025bebb90dac76a9304ef1f6dbe671933c96fe4a84"
+  },
+  {
+   "path": "tests/test_collect_events.py",
+   "sha256": "689627012464aa0fa8b442c5d83e834795007a582991ad77593f46daebf72194"
+  },
+  {
+   "path": "tests/test_daily_live.py",
+   "sha256": "94421a69306dc7fd6bae97140cd8ffdaa32f1fe51a1852fb4c1c804661cb3038"
+  },
+  {
+   "path": "tests/test_hourly_a.py",
+   "sha256": "e0350afb6b7fd379a8b57c7f88ff264af360abc0e56c86f3e70584b6c30c24fa"
+  },
+  {
+   "path": "tests/test_idle_live.py",
+   "sha256": "e907e8d27af15da3c847999ca2185dcd05842def761e286bd79f6b1ebcd79d09"
+  },
+  {
+   "path": "tests/test_idle_signal.py",
+   "sha256": "c3b7e6dc2e338038186d2563b02c19321e1d8288bec743ee20e20fbeab27aaa0"
+  },
+  {
+   "path": "tests/test_investor_history.py",
+   "sha256": "06383f9c7d085a2e1276ec9145cb72e64eb075344a81bc380d713a30d8cc1426"
+  },
+  {
+   "path": "tests/test_overlay_live.py",
+   "sha256": "25aef6ebe07ce95f5215fe232a1cd4134f4500e69cb41ec95ad4e4a959443017"
+  },
+  {
+   "path": "tests/test_paper_trade.py",
+   "sha256": "1b611761a34a9a2fcfc6577a27fd1d40846863ea1ee7e2e1a0d349cc4ff89dbc"
+  }
+ ],
  "ids": [
   "tests.test_acc_cap.FailClosed.test_block_survives_later_room",
   "tests.test_acc_cap.FailClosed.test_broker_error_reason_kept",
@@ -146,6 +216,7 @@
   "tests.test_boost_d.EngineRun.test_calendar_cross_check_and_smoke_close_all",
   "tests.test_boost_d.EngineRun.test_d1_fail_overlay_swap_sells_only",
   "tests.test_boost_d.EngineRun.test_d1_failures_close_three",
+  "tests.test_boost_d.EngineRun.test_d1_sync_fail_closes_three_sells_kept",
   "tests.test_boost_d.EngineRun.test_open_gates_records_and_d1_binding",
   "tests.test_boost_d.EngineRun.test_record_and_gate_write_failures_do_not_stop_trading",
   "tests.test_boost_d.EngineRun.test_sync_fail_blocks_new_risk_only",
@@ -172,7 +243,12 @@
   "tests.test_boost_d.EventWindow.test_saturday_filing_in_manifest_opens_removed_closes",
   "tests.test_boost_d.EventWindow.test_t0_only_manifest_closes_and_final_check_requeries",
   "tests.test_boost_d.EventWindow.test_window_equals_basket_todays_events",
+  "tests.test_boost_d.ExceptionHorizon.test_after_horizon_unknown_missing_review_and_binding",
+  "tests.test_boost_d.ExceptionHorizon.test_special_after_horizon_is_unknown",
   "tests.test_boost_d.FlowBeforeCut.test_stale_top_normal_second_one_slot",
+  "tests.test_boost_d.FreshTree.test_events_daytime_hold",
+  "tests.test_boost_d.FreshTree.test_sync_clears_file_caches",
+  "tests.test_boost_d.FreshTree.test_workflows_topup_names_and_force",
   "tests.test_boost_d.GateBox.test_begin_closes_for_each_cause",
   "tests.test_boost_d.GateBox.test_close_allow_and_unknown",
   "tests.test_boost_d.GateBox.test_corrupt_or_unwritable_file",
@@ -189,6 +265,7 @@
   "tests.test_boost_d.InvestorTarget.test_fill_checks_last_day_and_keeps_file",
   "tests.test_boost_d.InvestorTarget.test_main_one_line_and_file_untouched",
   "tests.test_boost_d.InvestorTarget.test_target_day",
+  "tests.test_boost_d.InvestorTarget.test_topup_front_only_and_pool",
   "tests.test_boost_d.OverlayBuyOk.test_buy_signal_blocked_then_next_day",
   "tests.test_boost_d.OverlayBuyOk.test_prepare_still_runs_when_blocked",
   "tests.test_boost_d.OverlayBuyOk.test_reduce_and_sell_all_allowed",

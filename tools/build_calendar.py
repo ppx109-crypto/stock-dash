@@ -30,8 +30,15 @@
     확인된 overlay가 없음(예: 20261119 수능 · 20270104 새해 첫 거래일 — 09:00 ~ 15:30을 쓰지 않음 · SPECIAL_HOURS로 봇이 쉬는 것은 그대로) ·
     새해 첫 거래일(늦게 여는 날)인데 확인된 overlay가 없음 · 평소 영수증 시행 날 앞.
   overlay 꼴: {"kind": "krx-session-overlay", "year": "2026",
-               "regular": {"source_url", "notice_no", "effective_from", "raw_sha256", "open", "close"},
-               "special": [{"date", "source_url", "notice_no", "effective_from", "raw_sha256", "open", "close"}], "unknown": ["YYYYMMDD"]}
+               "regular": {"source_url", "notice_no", "source_effective_from", "verified_from", "raw_sha256", "open", "close"},
+               "special": [{"date", "source_url", "notice_no", "source_effective_from", "verified_from", "raw_sha256", "open", "close"}],
+               "unknown": ["YYYYMMDD"],
+               "exceptions_review": {"reviewed_through", "verified_at", "reviewer", "method", "sources": [{"url", "fetched_at_utc", "raw_sha256", "what"}]}}
+  3단계 고침(GPT 구현 검토 판 3 · 6709669142): ① source_effective_from = 원천이 밝힌 시행 날(원문에 없으면 null) · verified_from = 사람이
+  원문을 읽고 뜻을 확인한 날 → 평소 세션 적용 하한 = max(둘) — '처음 읽은 날'을 원천 시행 날로 적지 않음 ② exceptions_review = 특수 세션
+  예외(임시 변경) 공지 검토 지평 — 평소 표는 기본 시각만 증명하고 임시 변경 공지가 '없음'은 증명하지 못하므로, 검토한 끝 날(reviewed_through)
+  뒤 거래일은 모두 session unknown · 검토 영수증 sha256(review_sha256)과 지평을 판 지문에 묶음 · 없으면 판을 쓰지 않음 · 판을 갱신할 때
+  사람이 다시 검토해 지평을 앞으로 옮김(KRX 공지 목록 완전성 영수증은 이 환경에서 그 사이트들이 막혀 아직 못 만듦).
   주소 · 지문은 사람이 공식 원문을 읽고 적음(처음에는 마른 실행이 받아 둔 원문 · 지문을 보고 적음). 특수 세션 공지는 꼴이 해마다 달라(PDF 등)
   표를 읽지 않고 원문 지문 + 사람이 옮겨 적은 시각만 씀(평소 세션만 원문 표 대조).
 판 쓰기: 두 원천이 그해 모든 날에서 거래일 여부가 같고 평소 세션 영수증이 확인될 때만. 다르거나 · 한쪽이라도 조회 실패 · 그해를 다 못 받음 ·
@@ -239,14 +246,46 @@ def _entry_problems(x, year, special):
     if not (isinstance(o, str) and isinstance(c, str) and re.fullmatch(r"([01]\d|2[0-3])[0-5]\d", o)
             and re.fullmatch(r"([01]\d|2[0-3])[0-5]\d", c) and o < c):
         bad.append("개장 · 마감 꼴")
-    if _day(str(x["effective_from"] or "")) is None or not re.fullmatch(r"\d{8}", str(x["effective_from"] or "")):
-        bad.append("시행 날 꼴")
+    if _day(str(x["verified_from"] or "")) is None or not re.fullmatch(r"\d{8}", str(x["verified_from"] or "")):
+        bad.append("확인한 날(verified_from) 꼴")
+    if x["source_effective_from"] is not None and (_day(str(x["source_effective_from"])) is None
+                                                   or not re.fullmatch(r"\d{8}", str(x["source_effective_from"]))):
+        bad.append("원천 시행 날(source_effective_from) 꼴")
     if x["notice_no"] is not None and not isinstance(x["notice_no"], str):
         bad.append("공지 번호 꼴")
     if special and not (re.fullmatch(r"\d{8}", str(x["date"] or "")) and str(x["date"])[:4] == f"{int(year):04d}"
                         and _day(str(x["date"])) is not None):
         bad.append("날 꼴(그 해의 날이 아님)")
     return bad
+
+
+def _review_problems(r):
+    """특수 세션 예외 공지 검토 영수증 꼴 문제(비면 맞음): reviewed_through(YYYYMMDD) · verified_at(글) · reviewer(글) · method(글) ·
+    sources(목록 · 칸마다 url(https) · fetched_at_utc(글) · raw_sha256(64자 또는 null) · what(글))."""
+    if not isinstance(r, dict):
+        return ["dict가 아님"]
+    bad = [f"{k} 빠짐" for k in ("reviewed_through", "verified_at", "reviewer", "method", "sources") if k not in r]
+    if bad:
+        return bad
+    if _day(str(r["reviewed_through"] or "")) is None or not re.fullmatch(r"\d{8}", str(r["reviewed_through"] or "")):
+        bad.append("reviewed_through 꼴")
+    for k in ("verified_at", "reviewer", "method"):
+        if not (isinstance(r[k], str) and r[k].strip()):
+            bad.append(f"{k} 빔")
+    src = r["sources"]
+    if not isinstance(src, list) or not src:
+        bad.append("sources가 빈 목록")
+    else:
+        for i, x in enumerate(src):
+            if not (isinstance(x, dict) and str(x.get("url", "")).startswith("https://") and isinstance(x.get("fetched_at_utc"), str)
+                    and isinstance(x.get("what"), str) and (x.get("raw_sha256") is None or re.fullmatch(r"[0-9a-f]{64}", str(x["raw_sha256"])))):
+                bad.append(f"sources[{i}] 꼴")
+    return bad
+
+
+def review_digest(review):
+    """검토 영수증 sha256(열쇠 차례 · 빈칸 없는 JSON · UTF-8) — 판 지문 · ARMED 세션 검토 영수증이 이 값을 묶음."""
+    return _sha(json.dumps(review, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8"))
 
 
 def load_overlay(year, folder=None):
@@ -285,6 +324,8 @@ def load_overlay(year, folder=None):
         if not isinstance(unknown, list) or not all(isinstance(d, str) and re.fullmatch(r"\d{8}", d) and d[:4] == f"{int(year):04d}"
                                                     and _day(d) is not None for d in unknown):
             bad.append("unknown 목록 꼴")
+        if body.get("exceptions_review") is not None:
+            bad += [f"exceptions_review {w}" for w in _review_problems(body["exceptions_review"])]
     if bad:
         raise CalendarError(f"세션 overlay {p.name} 꼴이 이상함 · " + " · ".join(bad[:5]))
     return body, sha
@@ -413,6 +454,12 @@ def plan_sessions(year, trading, overlay, get, now=None, raws=None, known=None):
     reg, why = verify_receipt(reg_entry, get, now, raws, "regular-session", check=regular_check(reg_entry))
     if reg is None:
         raise CalendarError(f"평소 세션 원천을 확인하지 못함 · {why}")
+    review = (overlay or {}).get("exceptions_review")
+    if not review:
+        raise CalendarError(f"특수 세션 예외 공지 검토 영수증이 없음(calendar/sessions-{int(year):04d}.json의 exceptions_review — 검토한 끝 날 · "
+                            "검토자 · 방법 · 근거)")
+    through = review["reviewed_through"]
+    floor = trade_calendar.regular_floor(reg)
     tset = set(trading)
     special, failed = {}, {}
     for x in overlay.get("special") or []:
@@ -428,6 +475,10 @@ def plan_sessions(year, trading, overlay, get, now=None, raws=None, known=None):
     first = trading[0] if trading else None
     entries, unknown = {}, []
     for d in trading:
+        if d > through:                                            # 3단계 고침: 예외 공지 검토 지평 뒤는 특수 세션이 확인돼도 unknown
+            entries[d] = {"session": "unknown"}
+            unknown.append({"date": d, "why": f"특수 세션 예외 공지 검토 지평({through}) 뒤"})
+            continue
         if d in special:
             entries[d] = {"open": special[d]["open"], "close": special[d]["close"], "session": "special"}
             continue
@@ -439,8 +490,8 @@ def plan_sessions(year, trading, overlay, get, now=None, raws=None, known=None):
             why = f"봇 특수 세션 목록(SPECIAL_HOURS · {known[d]})에 있는데 확인된 공식 overlay가 없음"
         elif d == first:
             why = "새해 첫 거래일(늦게 여는 날)인데 확인된 공식 overlay가 없음"
-        elif d < reg["effective_from"]:
-            why = f"평소 세션 영수증 시행 날({reg['effective_from']}) 앞"
+        elif d < floor:
+            why = f"평소 세션 적용 하한({floor} = max(확인한 날 verified_from, 원천 시행 날 source_effective_from)) 앞"
         else:
             why = ""
         if why:
@@ -448,7 +499,10 @@ def plan_sessions(year, trading, overlay, get, now=None, raws=None, known=None):
             unknown.append({"date": d, "why": why})
         else:
             entries[d] = {"open": reg["open"], "close": reg["close"]}
-    sessions = {"regular": reg, "special": [special[d] for d in sorted(special)], "unknown": unknown, "note": SESSION_NOTE}
+    exceptions = {"reviewed_through": through, "review_sha256": review_digest(review), "reviewer": review["reviewer"],
+                  "verified_at": review["verified_at"]}
+    sessions = {"regular": reg, "special": [special[d] for d in sorted(special) if d <= through], "unknown": unknown,
+                "exceptions": exceptions, "note": SESSION_NOTE}       # 지평 밖 특수 영수증은 판에 안 넣음(그날은 unknown)
     return sessions, entries
 
 

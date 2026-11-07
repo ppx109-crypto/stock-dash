@@ -291,19 +291,42 @@ def sync_repo():
     if os.getenv("LIVE_GIT_SYNC") != "1":
         return True
     import subprocess
-    for _ in range(2):
-        try:                                       # 멈추거나 실패해도 봇은 있는 기록으로 계속(죽지 않게)
-            if subprocess.run("git pull -q --rebase origin main", shell=True, timeout=60).returncode == 0:
-                return True
-        except (subprocess.TimeoutExpired, OSError):
-            pass
-        try:
-            subprocess.run("git rebase --abort", shell=True, stderr=subprocess.DEVNULL, timeout=30)
-        except (subprocess.TimeoutExpired, OSError):
-            pass
-        time.sleep(3)
-    print("저장소를 최신으로 맞추지 못함(있는 기록으로 계속)")
-    return False
+    try:
+        for _ in range(2):
+            try:                                   # 멈추거나 실패해도 봇은 있는 기록으로 계속(죽지 않게)
+                if subprocess.run("git pull -q --rebase origin main", shell=True, timeout=60).returncode == 0:
+                    return True
+            except (subprocess.TimeoutExpired, OSError):
+                pass
+            try:
+                subprocess.run("git rebase --abort", shell=True, stderr=subprocess.DEVNULL, timeout=30)
+            except (subprocess.TimeoutExpired, OSError):
+                pass
+            time.sleep(3)
+        print("저장소를 최신으로 맞추지 못함(있는 기록으로 계속)")
+        return False
+    finally:
+        clear_file_caches()
+
+
+FILE_CACHE_MODULES = ("caps", "events", "money")   # 자료 파일을 lru_cache로 읽어 두는 모듈(주식 수 · 공시 · 거래대금)
+
+
+def clear_file_caches():
+    """3단계 고침(2026-11-08 조사): 저장소를 맞춘 뒤 이미 불러온 모듈의 파일 캐시(lru_cache)를 비움 — 같은 프로세스에서 15:05 D1이 읽어 둔
+    주식 수(caps.raw_timeline) 등이 15:10 판단에 그대로 쓰이지 않고, 맞춘 HEAD 내용을 다시 읽게. 불러오지 않은 모듈은 건드리지 않음 · 예외 없음."""
+    import sys
+    for name in FILE_CACHE_MODULES:
+        mod = sys.modules.get(name)
+        if mod is None:
+            continue
+        for attr in list(vars(mod).values()):
+            clear = getattr(attr, "cache_clear", None)
+            if callable(clear):
+                try:
+                    clear()
+                except Exception:
+                    pass
 
 
 def daily_reserve(day, total, prices, near_files=(Path("m15-live/near-now.json"), Path("hourly-live/near-now.json"))):

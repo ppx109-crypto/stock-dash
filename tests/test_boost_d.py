@@ -69,10 +69,15 @@ REAL_REGULAR_SHA = "fb10f1d109b37e8ab1f06c277a7f4a091a73fd398e4c7b3890caae12efdc
 
 def regular_receipt(year, sha="1" * 64, **kw):
     """평소 세션 영수증(2c단계 · 가짜 원문 지문 · 개장 09:00 · 마감 15:30)."""
-    body = {"source_url": REGULAR_URL, "notice_no": None, "effective_from": f"{year}0101", "raw_sha256": sha, "open": "0900",
-            "close": "1530"}
+    body = {"source_url": REGULAR_URL, "notice_no": None, "source_effective_from": None, "verified_from": f"{year}0101", "raw_sha256": sha,
+            "open": "0900", "close": "1530"}                   # 3단계 고침: 원천 시행 날(없음) · 원문을 읽어 확인한 날 따로
     body.update(kw)
     return body
+
+
+def exceptions_core(year, through=None, sha="e" * 64):
+    """판의 특수 세션 예외 공지 검토 지평(3단계 고침 · 기본 = 그 해 끝까지 검토함)."""
+    return {"reviewed_through": through or f"{year}1231", "review_sha256": sha}
 
 
 def calendar_body(year, holidays=(), special=None, sha=None, sessions=None, unknown=()):
@@ -86,7 +91,10 @@ def calendar_body(year, holidays=(), special=None, sha=None, sessions=None, unkn
     for k in unknown:
         days[k] = {"session": "unknown"}
     days.update(special or {})
-    sessions = sessions if sessions is not None else {"regular": regular_receipt(year), "special": []}
+    sessions = dict(sessions) if sessions is not None else {"regular": regular_receipt(year), "special": []}
+    sessions.setdefault("exceptions", exceptions_core(year))   # 3단계 고침: 지평을 일부러 빼려면 sessions에 "exceptions": None
+    if sessions["exceptions"] is None:
+        del sessions["exceptions"]
     return {"source_url": "https://example.invalid/krx-holiday-notice", "notice_no": f"시험-{year}",
             "fetched_at_utc": "2026-11-01T00:00:00Z", "effective_from": f"{year}0101", "parser_version": "시험 1",
             "raw_sha256": "0" * 64, "normalized_sha256": sha or trade_calendar.normalized_digest(days, sessions), "days": days,
@@ -104,9 +112,11 @@ def session_review(sessions, reviewer="시험 검토자", on="20261110"):
     """판 세션 영수증 → 세션 검토 영수증(사람이 원문을 읽고 적은 칸 흉내 · 판과 칸마다 같음)."""
     def row(x):
         return {"source_url": x["source_url"], "raw_sha256": x["raw_sha256"], "read_open": x["open"], "read_close": x["close"],
-                "read_effective_from": x["effective_from"]}
+                "read_verified_from": x["verified_from"], "read_source_effective_from": x["source_effective_from"]}
+    exc = sessions.get("exceptions") or {}
     return {"reviewer": reviewer, "reviewed_on": on, "regular": row(sessions["regular"]),
-            "special": [dict(row(x), date=x["date"]) for x in sessions.get("special") or []]}
+            "special": [dict(row(x), date=x["date"]) for x in sessions.get("special") or []],
+            "exceptions": {"reviewed_through": exc.get("reviewed_through"), "review_sha256": exc.get("review_sha256")}}
 
 
 def arm(gates_folder="gates", calendar_folder="calendar", year=2026, on="20261110", run_id="1", **kw):
@@ -373,7 +383,7 @@ def _snapshot_files(root):
 
 def world_run(kind, **opt):
     """가짜 세상에서 봇 한 번(engine* = idle_live.run 15:05 시작 · daily = daily_live.run 15:20 시작) → 결과 dict.
-    opt: sync_ok(저장소 맞추기 값을 바꿔 끼움) · refresh(hourly_a.refresh_near를 바꿔 끼움) · missing(시세 없는 코드) ·
+    opt: sync_ok(15:10 · 15:20 저장소 맞추기 값을 바꿔 끼움) · d1_sync_ok(3단계 고침: 엔진 15:04 D1 앞 맞추기 값) · refresh(hourly_a.refresh_near를 바꿔 끼움) · missing(시세 없는 코드) ·
     calendar · smoke(파일을 둘지) · live_p · prices_last · m15_body · block · block_dir · start(시 · 분 · 초) · spy(덧붙임 인자 기록) ·
     2a단계: etf_stale(P 줄이 빠진 엔진 ETF) · flow_stale(수급이 P−1에서 끝나는 종목) · flow_files · found(1일봉 후보) · daily_cells.
     2b단계: manifest(공시 아침 확인 · None = 없음 · 'regular' · dict = 칸 바꿈) · git(가짜 세상을 커밋할지) · after_commit(커밋 뒤 고친 파일).
@@ -453,11 +463,15 @@ def world_run(kind, **opt):
             st.enter_context(mock.patch.object(daily_live, "kin_checker", lambda *a, **k: (lambda code, holding: True)))
             st.enter_context(mock.patch.object(lab, "moves", lambda live: {}))
             st.enter_context(mock.patch.object(notify_discord, "post", lambda rows, paper=True: sent.append([str(r) for r in rows]) or True))
-            if "sync_ok" in opt or "sync_spy" in opt:
-                def sync():
+            if "sync_ok" in opt or "sync_spy" in opt or "d1_sync_ok" in opt:
+                sync_seq = ([opt.get("d1_sync_ok", True)] if not kind.startswith("daily") else []) + [opt.get("sync_ok", True)]
+                sync_calls = []
+
+                def sync():                               # 3단계 고침: 엔진은 15:04(D1 앞) · 15:10 두 번 · 1일봉은 15:20 한 번
                     if "sync_spy" in opt:                 # 저장소 맞추기 때 저장소 안 파일 모습(15:05 다시 셈이 저장소를 안 건드렸는지)
                         opt["sync_spy"].append(_snapshot_files(root))
-                    return opt.get("sync_ok", True)
+                    sync_calls.append(1)
+                    return sync_seq[min(len(sync_calls), len(sync_seq)) - 1]
                 st.enter_context(mock.patch.object(paper_trade, "sync_repo", sync))
             if opt.get("refresh") is not None:
                 st.enter_context(mock.patch.object(hourly_a, "refresh_near", opt["refresh"]))
@@ -1106,7 +1120,8 @@ class EngineRun(unittest.TestCase):
         self.assertEqual(sorted(o[0] for o in buys(out)), ["000040", "122630", "133690", "148070"])
         g = gates_file(out)
         self.assertTrue(all(g["decisions"][d]["open"] for d in ("engine", "basket", "overlay")), g)
-        self.assertEqual(spy[0], out["before"], "15:05 다시 셈은 저장소 안 파일을 안 고침(15:10 저장소 맞추기 전)")
+        self.assertEqual(len(spy), 2, "엔진은 15:04(D1 앞) · 15:10 두 번 맞춤")
+        self.assertEqual(spy[-1], out["before"], "15:05 다시 셈은 저장소 안 파일을 안 고침(15:10 저장소 맞추기 전)")
         kept = out["files"]["idle-live/near-now.json"]
         body = json.loads(kept)
         self.assertEqual((body["date"], body["expected_p"], body["source_p"], body["quotes_got"]), (DAY, P, P, body["quotes_expected"]))
@@ -1130,6 +1145,18 @@ class EngineRun(unittest.TestCase):
         self.assertNotIn("000040", json.loads(out["files"]["basket-live/state.json"])["positions"])
         self.assertEqual(sorted(json.loads(out["files"]["idle-live/state.json"])["positions"]), [], "안 산 엔진 종목은 상태에도 없음")
         self.assertEqual(json.loads(out["files"]["overlay-live/state.json"])["applied"], "pending")
+
+    def test_d1_sync_fail_closes_three_sells_kept(self):
+        """3단계 고침: 15:04 D1 앞 저장소 맞추기가 실패하면 D1을 작업 시작 때 판으로 다시 세지 않고 실패(엔진 · 바구니 · 덧붙임 닫힘)."""
+        out = world_run("engine", d1_sync_ok=False)
+        g = gates_file(out)
+        self.assertEqual((g["d1"]["ok"], g["runs"]["engine"]["sync_ok"]), (False, True), "15:10 맞추기는 성공 · D1만 실패")
+        self.assertIn("D1 앞 저장소 맞추기 실패", g["d1"]["why"])
+        for d in ("engine", "basket", "overlay"):
+            self.assertFalse(g["decisions"][d]["open"], d)
+        self.assertEqual(buys(out), [], "새 매수 0")
+        self.assertIn(("000020", 200), sells(out), "바구니 20거래일 팔기는 그대로")
+        self.assertNotIn("idle-live/near-now.json", out["files"], "다시 세지 않았으므로 사본도 없음")
 
     def test_d1_failures_close_three(self):
         gate = threading.Event()
@@ -1243,10 +1270,12 @@ class SameAsBefore(unittest.TestCase):
 
 class Structure(unittest.TestCase):
     def test_engine_order_of_steps(self):
-        """엔진 실행 차례: 15:05 다시 셈 → 15:10 기다림 → 저장소 맞추기(값을 받음) → 문 → 사본(맞추기 뒤에만)."""
+        """엔진 실행 차례: 15:04 저장소 맞추기(3단계 고침) → 15:05 다시 셈(맞추기 실패면 D1 실패) → 15:10 기다림 → 저장소 맞추기(값을 받음) →
+        문 → 사본(맞추기 뒤에만)."""
         text = (ROOT / "idle_live.py").read_text(encoding="utf-8")
         run = text[text.index("def run(now=None):"):]
-        marks = ["_wait_until(paper_trade.D1_AT)", "d1 = d1_recount(day)", "_wait_until(DECIDE_AT)", "sync_ok = paper_trade.sync_repo()",
+        marks = ["_wait_until(D1_SYNC_AT)", "d1_sync = paper_trade.sync_repo()", "_wait_until(paper_trade.D1_AT)",
+                 "d1 = d1_recount(day) if d1_sync else", "_wait_until(DECIDE_AT)", "sync_ok = paper_trade.sync_repo()",
                  'gate = gates.begin(day, "engine", sync_ok', "gate.bind_d1(d1)", "paper_trade.d1_keep(d1)"]
         at = [run.index(m) for m in marks]
         self.assertEqual(at, sorted(at))
@@ -1624,6 +1653,26 @@ class InvestorTarget(TmpCwd):
         self.assertFalse(Path("investor-data/000003.json").exists(), "새 종목도 만들지 않음")
         C.fill(self.Fake(self.DAYS, {"000002": p1}), "000002", P)          # 달력을 못 읽은 날(확인 없음) → 예전처럼 붙임
         self.assertEqual(C.load("000002")["rows"][-1][0], p1)
+
+    def test_topup_front_only_and_pool(self):
+        """3단계 고침: 아침 보충(INVESTOR_TOPUP)은 1일봉 수급 풀만 · 앞쪽(P까지)만 붙이고 거슬러 받지 않음 · 붙은 게 없으면 파일 그대로."""
+        C = self.C
+        body = {"code": "000001", "cols": list(C.COLS), "rows": [[d, -1.0, 1.0, 0.0, 2.0, 0.0, 0.0, 100.0] for d in self.DAYS[5:-2]],
+                "처음까지": False}                                    # 앞쪽이 P−1까지 · 아직 처음까지 안 닿음(거슬러 받을 것이 남음)
+        C.save(body)
+        fake = self.Fake(self.DAYS, {})
+        added, asks = C.fill(fake, "000001", P, expect=P, front_only=True)
+        rows = C.load("000001")["rows"]
+        self.assertEqual((added, asks, rows[-1][0], rows[0][0]), (2, 1, P, self.DAYS[5]), "P−1 · P 두 줄만 붙임 · 거슬러 안 물음")
+        self.assertEqual(fake.asks, [("000001", P)])
+        raw = Path("investor-data/000001.json").read_bytes()
+        again = self.Fake(self.DAYS, {})
+        self.assertEqual(C.fill(again, "000001", P, expect=P, front_only=True), (0, 0), "이미 P가 있으면 묻지 않음")
+        self.assertEqual(Path("investor-data/000001.json").read_bytes(), raw, "붙은 게 없으면 파일 그대로")
+        with mock.patch.object(C, "TOPUP", True), mock.patch.object(C, "daily_pool", lambda: ["000777", "000001", "abc"]):
+            self.assertEqual(C.codes_to_collect(), ["000777", "000001"], "아침 보충은 1일봉 수급 풀만(전체 목록 아님)")
+        with mock.patch.object(C, "TOPUP", True), mock.patch.object(C, "daily_pool", lambda: []):
+            self.assertEqual(C.codes_to_collect(), [], "풀을 못 세면 빈 목록 → 작업 실패로 드러남")
 
     def test_main_one_line_and_file_untouched(self):
         import builtins
@@ -2213,11 +2262,28 @@ def overlay_body(year, regular=True, special=(), unknown=None, **kw):
         body["regular"] = regular_receipt(year, sha=hashlib.sha256(REGULAR_RAW).hexdigest())
     elif regular:
         body["regular"] = regular
-    body["special"] = [{"date": d, "source_url": url, "notice_no": f"시험공지-{d}", "effective_from": d,
+    body["special"] = [{"date": d, "source_url": url, "notice_no": f"시험공지-{d}", "source_effective_from": d, "verified_from": "20261101",
                         "raw_sha256": raw if isinstance(raw, str) else hashlib.sha256(raw).hexdigest(), "open": o, "close": c}
                        for d, url, raw, o, c in special]
     if unknown is not None:
         body["unknown"] = list(unknown)
+    body["exceptions_review"] = exceptions_review(year)       # 3단계 고침: 예외 공지 검토 지평(빼려면 exceptions_review=None)
+    body.update(kw)
+    if body.get("exceptions_review") is None:
+        body.pop("exceptions_review", None)
+    return body
+
+
+def B_review_ok(B, review):
+    """달력 도구의 예외 공지 검토 영수증 꼴 검사(비면 맞음)."""
+    return B._review_problems(review)
+
+
+def exceptions_review(year, through=None, **kw):
+    """overlay의 특수 세션 예외 공지 검토 영수증(사람이 공지를 검토한 끝 날 · 방법 · 근거 흉내)."""
+    body = {"reviewed_through": through or f"{year}1231", "verified_at": "2026-11-08T07:00:00+09:00", "reviewer": "시험 검토자",
+            "method": "시험 고정 자료(공지 목록 흉내)", "sources": [{"url": "https://regulation.krx.co.kr/notice-list", "fetched_at_utc":
+                                                          "2026-11-07T22:00:00Z", "raw_sha256": None, "what": "시험 공지 목록"}]}
     body.update(kw)
     return body
 
@@ -2820,8 +2886,8 @@ SUNEUNG = "20261119"
 
 
 def suneung_receipt(**kw):
-    body = {"date": SUNEUNG, "source_url": SUNEUNG_URL, "notice_no": "시험공지-수능", "effective_from": SUNEUNG,
-            "raw_sha256": hashlib.sha256(SUNEUNG_RAW).hexdigest(), "open": "1000", "close": "1630"}
+    body = {"date": SUNEUNG, "source_url": SUNEUNG_URL, "notice_no": "시험공지-수능", "source_effective_from": SUNEUNG,
+            "verified_from": "20261101", "raw_sha256": hashlib.sha256(SUNEUNG_RAW).hexdigest(), "open": "1000", "close": "1630"}
     body.update(kw)
     return body
 
@@ -2888,7 +2954,12 @@ class SessionCalendar(TmpCwd):
             "https 아님": dict(sessions={"regular": dict(reg, source_url="http://global.krx.co.kr/hours"), "special": []}),
             "krx 흉내 주소": dict(sessions={"regular": dict(reg, source_url="https://krx.co.kr.example.net/hours"), "special": []}),
             "원문 지문 꼴": dict(sessions={"regular": dict(reg, raw_sha256="xyz"), "special": []}),
-            "평소 영수증 시행 날 앞의 평소 날": dict(sessions={"regular": dict(reg, effective_from="20260601"), "special": []}),
+            "평소 영수증 확인한 날 앞의 평소 날": dict(sessions={"regular": dict(reg, verified_from="20260601"), "special": []}),
+            "원천 시행 날 앞의 평소 날": dict(sessions={"regular": dict(reg, source_effective_from="20260601"), "special": []}),
+            "확인한 날 칸 없음": dict(sessions={"regular": {k: v for k, v in reg.items() if k != "verified_from"}, "special": []}),
+            "예외 공지 검토 지평 없음": dict(sessions={"regular": reg, "special": [], "exceptions": None}),
+            "검토 지평 뒤에 평소 날": dict(sessions={"regular": reg, "special": [], "exceptions": exceptions_core(2026, "20261120")}),
+            "검토 지평 영수증 지문 꼴": dict(sessions={"regular": reg, "special": [], "exceptions": exceptions_core(2026, sha="x")}),
             "평소 영수증 시각이 판과 다름": dict(sessions={"regular": dict(reg, close="1600"), "special": []}),
             "평소 영수증 없음": dict(sessions={"special": []}),
             "unknown 꼴에 다른 칸": dict(special={DAY: {"session": "unknown", "open": "0900"}}),
@@ -3087,6 +3158,61 @@ class SessionBuild(CalendarToolCwd):
         self.assertEqual(self.files(), [])
 
 
+class ExceptionHorizon(CalendarToolCwd):
+    """3단계 고침(GPT 구현 검토 판 3 §2-B): 특수 세션 예외 공지 검토 지평 — 그 뒤 거래일은 unknown · 영수증이 없으면 새 판 없음 · 지평 · 지문이 판에 묶임."""
+
+    def days(self, v=1):
+        return json.loads(Path(f"calendar/krx-2026-v{v}.json").read_text(encoding="utf-8"))
+
+    def test_after_horizon_unknown_missing_review_and_binding(self):
+        import trade_calendar as C
+        write_overlay(2026, exceptions_review=exceptions_review(2026, "20261120"),
+                      special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")])
+        get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages={REGULAR_URL: REGULAR_RAW, SUNEUNG_URL: SUNEUNG_RAW})
+        self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0)
+        body = self.days()
+        self.assertEqual(body["days"]["20261120"], {"open": "0900", "close": "1530"}, "지평 날까지는 평소")
+        self.assertEqual(body["days"][SUNEUNG], {"open": "1000", "close": "1630", "session": "special"}, "지평 안 특수 세션은 그대로")
+        for d in ("20261123", "20261201", "20261230"):
+            self.assertEqual(body["days"][d], {"session": "unknown"}, d)
+            self.assertEqual(C.day_info(d, folder="calendar")["session"], "unknown")
+        why = {u["date"]: u["why"] for u in body["sessions"]["unknown"]}
+        self.assertIn("특수 세션 예외 공지 검토 지평(20261120) 뒤", why["20261123"])
+        exc = body["sessions"]["exceptions"]
+        self.assertEqual((exc["reviewed_through"], exc["review_sha256"]),
+                         ("20261120", self.B.review_digest(exceptions_review(2026, "20261120"))))
+        v1 = Path("calendar/krx-2026-v1.json").read_bytes()
+        cases = {
+            "검토 영수증 없음": (dict(exceptions_review=None), "특수 세션 예외 공지 검토 영수증이 없음"),
+            "근거 목록 빔": (dict(exceptions_review=exceptions_review(2026, "20261120", sources=[])), "꼴이 이상함"),
+            "끝 날 꼴": (dict(exceptions_review=exceptions_review(2026, "2026-11-20")), "꼴이 이상함"),
+            "검토자 빔": (dict(exceptions_review=exceptions_review(2026, "20261120", reviewer=" ")), "꼴이 이상함"),
+        }
+        for name, (kw, word) in cases.items():
+            with self.subTest(name):
+                write_overlay(2026, **kw)
+                self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 1, name)
+                self.assertEqual(self.files(), ["krx-2026-v1.json"], "옛 판 유지 · 새 판 없음")
+                self.assertEqual(Path("calendar/krx-2026-v1.json").read_bytes(), v1)
+                said = " ".join(" ".join(str(a) for a in c.args) for c in __import__("builtins").print.call_args_list[-2:])
+                self.assertIn(word, said)
+        write_overlay(2026, exceptions_review=exceptions_review(2026, "20261120", method="같은 끝 날 · 다른 검토 기록"),
+                      special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")])
+        self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json", "krx-2026-v2.json"], "검토 영수증이 바뀌면(지문) 새 판 → ARMED 다시 확인")
+        write_overlay(2026, exceptions_review=exceptions_review(2026, "20261204"), special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")])
+        self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0)
+        self.assertEqual(self.days(3)["days"]["20261203"], {"open": "0900", "close": "1530"}, "지평을 옮기면 그 사이 날이 평소로")
+        self.assertEqual(self.days(3)["days"]["20261207"], {"session": "unknown"})
+
+    def test_special_after_horizon_is_unknown(self):
+        write_overlay(2026, exceptions_review=exceptions_review(2026, "20261118"),
+                      special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")])
+        get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages={REGULAR_URL: REGULAR_RAW, SUNEUNG_URL: SUNEUNG_RAW})
+        self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0)
+        self.assertEqual(self.days()["days"][SUNEUNG], {"session": "unknown"}, "지평 밖 특수 세션도 unknown(그 사이 날을 검토하지 않았으므로)")
+
+
 class RegularSource(CalendarToolCwd):
     """2c단계 고침(2026-11-07 · 마른 실행 실패 '평소 세션 원천 영수증이 없음'): 평소 세션 원천 = 거래소 규정/제도의 정규장 표.
     실제 원문 사본으로 표 읽기 · 저장소 overlay(2026 · 2027)가 그 원문을 고정 · 원문 표 시각 ≠ overlay 시각 · 표 꼴이 바뀌면 새 판 없음."""
@@ -3103,20 +3229,25 @@ class RegularSource(CalendarToolCwd):
             with self.subTest(year):
                 body, _ = self.B.load_overlay(year, folder=ROOT / "calendar")
                 reg = body["regular"]
-                self.assertEqual((reg["source_url"], reg["raw_sha256"], reg["open"], reg["close"], reg["effective_from"],
-                                  reg["notice_no"]), (REGULAR_URL, REAL_REGULAR_SHA, "0900", "1530", "20261107", None))
+                self.assertEqual((reg["source_url"], reg["raw_sha256"], reg["open"], reg["close"], reg["verified_from"],
+                                  reg["source_effective_from"], reg["notice_no"]),
+                                 (REGULAR_URL, REAL_REGULAR_SHA, "0900", "1530", "20261107", None, None),
+                                 "원문에 시행 날이 없어 원천 시행 날 null · 처음 읽어 확인한 날 따로(GPT 판 3 §2-A)")
+                self.assertNotIn("effective_from", reg, "옛 이름(시행 날)으로 적지 않음")
+                rev = body["exceptions_review"]
+                self.assertEqual(B_review_ok(self.B, rev), [], "예외 공지 검토 영수증 꼴")
                 self.assertEqual(self.B.regular_check(reg)(raw), "", "저장소 overlay 시각 = 원문 표 시각")
                 self.assertEqual((body["special"], body["unknown"]), ([], []), "특수 세션은 공식 공지가 확인된 뒤에만 적음")
 
     def test_build_with_real_page_and_changed_pages_keep_old_version(self):
         raw = self.page()
-        write_overlay(2026, regular=regular_receipt(2026, sha=REAL_REGULAR_SHA, effective_from="20261107"))
+        write_overlay(2026, regular=regular_receipt(2026, sha=REAL_REGULAR_SHA, verified_from="20261107"))
         get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages={REGULAR_URL: raw})
         self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0)
         v1 = Path("calendar/krx-2026-v1.json").read_bytes()
         body = json.loads(v1)
         self.assertEqual((body["parser_version"], body["days"]["20261118"]), ("build_calendar 3", {"open": "0900", "close": "1530"}))
-        self.assertEqual(body["days"]["20261106"], {"session": "unknown"}, "시행 날(처음 확인한 날 11-07) 앞 거래일은 unknown")
+        self.assertEqual(body["days"]["20261106"], {"session": "unknown"}, "확인한 날(11-07) 앞 거래일은 unknown")
         self.assertEqual(body["days"][SUNEUNG], {"session": "unknown"}, "수능 날은 공식 공지 overlay 전까지 unknown")
         self.assertIn(REGULAR_URL, [c[0] for c in get.calls], "도구가 정규장 안내 주소를 직접 받음")
         text = raw.decode("utf-8")
@@ -3138,7 +3269,7 @@ class RegularSource(CalendarToolCwd):
         for name, (kw, page, word) in cases.items():
             with self.subTest(name):
                 data = page.encode("utf-8") if page is not None else raw.decode("utf-8").encode("euc-kr", "replace")
-                write_overlay(2026, regular=regular_receipt(2026, sha=hashlib.sha256(data).hexdigest(), effective_from="20261107", **kw))
+                write_overlay(2026, regular=regular_receipt(2026, sha=hashlib.sha256(data).hexdigest(), verified_from="20261107", **kw))
                 get = FakeGet({2026: krx_raw(2026, extra)}, pages={REGULAR_URL: data})
                 self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(extra)), 1, name)
                 self.assertEqual(self.files(), ["krx-2026-v1.json"], "옛 판 유지 · 새 판 없음")
@@ -3150,7 +3281,7 @@ class RegularSource(CalendarToolCwd):
     def test_dry_run_logs_digest_and_hours(self):
         import builtins
         raw = self.page()
-        write_overlay(2026, regular=regular_receipt(2026, sha=REAL_REGULAR_SHA, effective_from="20261107"))
+        write_overlay(2026, regular=regular_receipt(2026, sha=REAL_REGULAR_SHA, verified_from="20261107"))
         get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages={REGULAR_URL: raw})
         self.assertEqual(self.B.main(["2026", "--dry-run", "--out", "dry"], client=FakeKis(KRX_2026), get=get, folder="calendar"), 0)
         said = [" ".join(str(a) for a in c.args) for c in builtins.print.call_args_list]
@@ -3211,8 +3342,17 @@ class Arming(TmpCwd):
                    "평소 원문 sha256 다름": ({"session_review": dict(good, regular=dict(good["regular"], raw_sha256="e" * 64))},
                                     "평소 세션 raw_sha256"),
                    "읽은 마감 다름": ({"session_review": dict(good, regular=dict(good["regular"], read_close="1600"))}, "평소 세션 read_close"),
-                   "읽은 시행 날 다름": ({"session_review": dict(good, regular=dict(good["regular"], read_effective_from="20260601"))},
-                                  "평소 세션 read_effective_from"),
+                   "읽은 확인 날 다름": ({"session_review": dict(good, regular=dict(good["regular"], read_verified_from="20260601"))},
+                                  "평소 세션 read_verified_from"),
+                   "읽은 원천 시행 날 다름": ({"session_review": dict(good, regular=dict(good["regular"],
+                                                                                     read_source_effective_from="20260601"))},
+                                      "평소 세션 read_source_effective_from"),
+                   "예외 공지 검토 지평 칸 없음": ({"session_review": {k: v for k, v in good.items() if k != "exceptions"}},
+                                        "예외 공지 검토 지평 칸 없음"),
+                   "예외 공지 검토 끝 날 다름": ({"session_review": dict(good, exceptions=dict(good["exceptions"], reviewed_through="20261130"))},
+                                       "예외 공지 검토 reviewed_through"),
+                   "예외 공지 검토 영수증 지문 다름": ({"session_review": dict(good, exceptions=dict(good["exceptions"], review_sha256="0" * 64))},
+                                          "예외 공지 검토 review_sha256"),
                    "주소 다름": ({"session_review": dict(good, regular=dict(good["regular"], source_url="https://www.krx.co.kr/x"))},
                               "평소 세션 source_url"),
                    "판에 없는 특수 세션 검토": ({"session_review": dict(good, special=[dict(good["regular"], date="20261119")])},
@@ -3293,6 +3433,72 @@ class Smoke2c(TmpCwd):
         self.assertFalse(body["ok"])
         self.assertEqual(body["session"], "unknown")
         self.assertIn("달력에 오늘 세션 원천이 없음(session unknown)", body["reasons"])
+
+
+class FreshTree(TmpCwd):
+    """3단계 고침(2026-11-08 조사): 저장소를 맞추면 파일 캐시를 비움 · 공시 정기 · 전체 수집은 평일 낮에 밀려 돌면 건너뜀."""
+
+    def test_sync_clears_file_caches(self):
+        import caps
+        import paper_trade
+        Path("share-data").mkdir()
+        Path("share-data/999999.json").write_text(json.dumps({"날": [["20260101", 100]]}), encoding="utf-8")
+        caps.raw_timeline.cache_clear()
+        self.assertEqual(caps.raw_timeline("999999"), (("20260101", 100),))
+        Path("share-data/999999.json").write_text(json.dumps({"날": [["20260101", 100], ["20261101", 120]]}), encoding="utf-8")
+        self.assertEqual(caps.raw_timeline("999999"), (("20260101", 100),), "캐시는 옛 값(같은 프로세스)")
+        os.environ["LIVE_GIT_SYNC"] = "1"
+        ok = type("R", (), {"returncode": 0})()
+        with mock.patch("subprocess.run", lambda *a, **k: ok):
+            self.assertTrue(paper_trade.sync_repo())
+        self.assertEqual(caps.raw_timeline("999999")[-1], ("20261101", 120), "맞춘 뒤에는 새 내용을 읽음")
+        Path("share-data/999999.json").write_text(json.dumps({"날": [["20260101", 100]]}), encoding="utf-8")
+        bad = type("R", (), {"returncode": 1})()
+        with mock.patch("subprocess.run", lambda *a, **k: bad), mock.patch("time.sleep", lambda s: None):
+            self.assertFalse(paper_trade.sync_repo())
+        self.assertEqual(caps.raw_timeline("999999"), (("20260101", 100),), "맞추기가 실패해도 캐시는 비움(지금 트리를 다시 읽음)")
+        caps.raw_timeline.cache_clear()
+
+    def test_events_daytime_hold(self):
+        import collect_events as CE
+        cases = {(2026, 11, 10, 8, 0): True, (2026, 11, 10, 7, 59): False, (2026, 11, 10, 12, 30): True, (2026, 11, 10, 18, 59): True,
+                 (2026, 11, 10, 19, 0): False, (2026, 11, 10, 23, 30): False, (2026, 11, 14, 12, 30): False, (2026, 11, 9, 9, 15): True}
+        for (y, m, d, hh, mm), want in cases.items():
+            with self.subTest(f"{m}-{d} {hh}:{mm:02d}"):
+                self.assertEqual(CE.daytime_hold(datetime(y, m, d, hh, mm, tzinfo=KST)), want)
+        os.environ["EVENT_FORCE"] = "1"
+        self.assertFalse(CE.daytime_hold(datetime(2026, 11, 10, 12, 30, tzinfo=KST)), "EVENT_FORCE=1이면 건너뛰지 않음")
+        del os.environ["EVENT_FORCE"]
+
+        def boom(*a, **k):
+            raise AssertionError("낮에는 정기 · 전체 수집을 시작하지 않아야 함")
+        with mock.patch.object(CE, "daytime_hold", lambda now=None: True), mock.patch.object(CE, "codes_to_collect", boom), \
+                mock.patch.object(CE, "Official", boom):
+            self.assertEqual(CE.main([]), 0, "정기 · 전체는 건너뜀(끝 값 0)")
+        seen = []
+        with mock.patch.object(CE, "daytime_hold", lambda now=None: True), mock.patch.object(CE, "codes_to_collect", lambda: ["000001"]), \
+                mock.patch.object(CE, "Official", lambda: "가짜"), \
+                mock.patch.object(CE, "final_check", lambda provider, codes, today, t0: seen.append((provider, codes, t0)) or 0):
+            self.assertEqual(CE.main(["final", "auto"]), 0)
+        self.assertEqual(seen, [("가짜", ["000001"], None)], "아침 최종 확인은 낮에도 그대로")
+
+    def test_workflows_topup_names_and_force(self):
+        close = (ROOT / ".github" / "workflows" / "daily-close-check.yml").read_text(encoding="utf-8")
+        step = close[close.index("- name: 앞 거래일 수급 보충"):close.index("- name: 바뀐 게 있으면 A그룹")]
+        self.assertLess(close.index("- name: 최근 일봉 다시 확인 · 바로잡기"), close.index("- name: 앞 거래일 수급 보충"))
+        for need in ("python collect_investor_history.py", "INVESTOR_TOPUP: '1'", "git add -A investor-data ||", "exit $status",
+                     "KIS_ENV: real"):
+            self.assertIn(need, step, need)
+        self.assertNotIn("|| true", step, "실패를 숨기지 않음")
+        self.assertNotIn("2>/dev/null", step)
+        live = (ROOT / ".github" / "workflows" / "daily-live.yml").read_text(encoding="utf-8")
+        engine = live[live.index("- name: 사건 바구니 C"):live.index("- name: 종가 출격 판단")]
+        daily = live[live.index("- name: 종가 출격 판단"):]
+        for part in (engine, daily):
+            self.assertIn("if [ -f study/names.json ]; then git add study/names.json; fi", part)
+            self.assertLess(part.index("study/names.json"), part.index('git commit -q -m'))
+        ev = (ROOT / ".github" / "workflows" / "events.yml").read_text(encoding="utf-8")
+        self.assertIn("EVENT_FORCE: ${{ inputs.force || '' }}", ev)
 
 
 class Structure2c(unittest.TestCase):
@@ -3482,6 +3688,8 @@ class CiDiff(TmpCwd):
         Path("mini/tests").mkdir(parents=True)
         three = """import unittest
 
+FIX = "mini_fix.json"                 # 시험 자료(이름으로 부름 → 고정 파일에 지문이 묶임)
+
 
 class B(unittest.TestCase):
     def test_a(self):
@@ -3494,12 +3702,18 @@ class B(unittest.TestCase):
         self.assertTrue(True)
 """
         Path("mini/tests/test_y.py").write_text(three, encoding="utf-8")
+        Path("mini/tests/fixtures").mkdir()
+        Path("mini/tests/fixtures/mini_fix.json").write_text('{"값": 1}', encoding="utf-8")
+        Path("mini/tests/fixtures/other.json").write_text('{"안 부름": 1}', encoding="utf-8")
         root, pin = str(Path("mini").resolve()), str(Path("pin.json").resolve())
         self.assertEqual(T.main(["--pin", pin, "--modules", "tests.test_y", "--root", root]), 0)
         body = json.loads(Path(pin).read_text(encoding="utf-8"))
         self.assertEqual((body["kind"], body["modules"], body["count"], body["ids"]),
-                         ("boost-d-required-tests/1", ["tests.test_y"], 3, ["tests.test_y.B.test_a", "tests.test_y.B.test_b",
+                         ("boost-d-required-tests/2", ["tests.test_y"], 3, ["tests.test_y.B.test_a", "tests.test_y.B.test_b",
                                                                             "tests.test_y.B.test_c"]))
+        self.assertEqual([x["path"] for x in body["files"]], ["tests/fixtures/mini_fix.json", "tests/test_y.py"],
+                         "모듈 소스 + 그 소스가 부르는 시험 자료만(안 부르는 자료 · 고정 파일 자신은 뺌)")
+        self.assertEqual(body["files"][1]["sha256"], hashlib.sha256(Path("mini/tests/test_y.py").read_bytes()).hexdigest())
         self.assertEqual(body["tool_sha256"], hashlib.sha256((ROOT / "tools" / "test_diff.py").read_bytes()).hexdigest())
         self.assertEqual(T.main(["--bundle", pin, "--out", str(Path("b0").resolve()), "--root", root]), 0, "고정 목록과 같으면 green")
         self.assertEqual(Path("b0/ids.txt").read_text(encoding="utf-8").split(), body["ids"], "모은 이름 목록을 결과로 남김")
@@ -3512,11 +3726,16 @@ class B(unittest.TestCase):
                    None, "no_failures", "failed"),
             "도구 지문 다름": (three, {"tool_sha256": "0" * 64}, "tool_sha_equal_pin", None),
             "고정 개수만 고침": (three, {"count": 2}, "count_equal_pin", None),
+            "이름은 그대로 · 단언만 약하게": (three.replace("def test_c(self):\n        self.assertTrue(True)",
+                                                   "def test_c(self):\n        pass"), None, "files_equal_pin", "changed_files"),
+            "시험 자료를 조용히 바꿈": ("FIXTURE", None, "files_equal_pin", "changed_files"),
+            "옛 꼴 고정(파일 지문 없음)": (three, {"files": None, "kind": "boost-d-required-tests/1"}, "files_equal_pin", None),
         }
         for i, (name, (text, change, check, key)) in enumerate(cases.items()):
             with self.subTest(name):
                 shutil.rmtree("mini/tests/__pycache__", ignore_errors=True)
-                Path("mini/tests/test_y.py").write_text(text, encoding="utf-8")
+                Path("mini/tests/fixtures/mini_fix.json").write_text('{"값": 2}' if text == "FIXTURE" else '{"값": 1}', encoding="utf-8")
+                Path("mini/tests/test_y.py").write_text(three if text == "FIXTURE" else text, encoding="utf-8")
                 use = pin
                 if change:
                     use = str(Path(f"pin{i}.json").resolve())
@@ -3544,6 +3763,10 @@ class B(unittest.TestCase):
         self.assertEqual(sorted(set(ids) - set(pin["ids"])), [], "고정 파일에 없는 시험 → python tools/test_diff.py --pin 다시 쓰기")
         self.assertEqual((pin["count"], pin["ids_sha256"], pin["tool_sha256"]),
                          (len(ids), T.ids_sha(ids), hashlib.sha256((ROOT / "tools" / "test_diff.py").read_bytes()).hexdigest()))
+        now = T.pinned_files(ROOT, pin["modules"], ROOT / "tests" / "fixtures" / "boost_d_required_tests.json")
+        self.assertEqual(pin["files"], now, "필수 시험 파일 · 시험 자료 지문 = 고정 값(고쳤으면 --pin 다시 쓰기)")
+        self.assertEqual(len([x for x in now if x["path"].startswith("tests/test_")]), len(pin["modules"]))
+        self.assertIn("tests/fixtures/boost_d_golden.json", [x["path"] for x in now], "얼린 결과 자료도 묶음")
 
     def test_workflow_files(self):
         wf = (ROOT / ".github" / "workflows" / "boost-d-ci.yml").read_text(encoding="utf-8")

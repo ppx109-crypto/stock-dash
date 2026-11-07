@@ -7,13 +7,17 @@
 
 - 파일: calendar/krx-<해>-v<번호>.json. 공지가 바뀌면 새 번호 판을 더하고 옛 판은 덮지 않음 → 그 해의 **가장 큰 번호 판**만 씀
   (가장 큰 판이 깨졌거나 지문이 안 맞으면 작은 판으로 내려가지 않고 '못 정함' · 옛 공지로 조용히 돌아가지 않게).
-- 칸(모두 있어야 함): source_url(원천 주소) · notice_no(공지 번호) · fetched_at_utc · effective_from(시행 날) · parser_version ·
+- 칸(모두 있어야 함): source_url(원천 주소) · notice_no(공지 번호) · fetched_at_utc · effective_from(이 판을 쓰기 시작한 날 = 만든 날 · 원천의 시행 날 아님) · parser_version ·
   raw_sha256(원문 지문) · normalized_sha256(정규화 달력 지문) · days(날마다 개장 · 마감) · sessions(세션 영수증).
 - days: {"YYYYMMDD": 값}. 값 = null(휴장) · {"open": "HHMM", "close": "HHMM"}(평소 세션 · 평소 영수증의 개장 · 마감과 같아야 함) ·
   {"open", "close", "session": "special"}(특수 세션 · 같은 날 특수 영수증과 같아야 함) · {"session": "unknown"}(거래일 · 세션 원천 없음).
   판에 없는 날은 '못 정함'(휴장으로 보지 않음).
 - sessions: {"regular": 영수증, "special": [영수증 + "date"], ...설명 칸}. 영수증 = source_url(https · krx.co.kr 공식 주소) · notice_no ·
-  effective_from · raw_sha256 · open · close(+ 받은 시각 등 설명 칸). 평소 세션은 effective_from 날부터만 씀(그 앞 거래일은 unknown이어야 함).
+  source_effective_from · verified_from · raw_sha256 · open · close(+ 받은 시각 등 설명 칸). 평소 세션은 적용 하한(regular_floor)부터만 씀(그 앞 거래일은 unknown이어야 함).
+- 3단계 고침(GPT 구현 검토 판 3 · 6709669142 §2-A · §2-B): 영수증의 시행 날을 둘로 나눔 — source_effective_from(원천이 밝힌 시행 날 ·
+  확인 못 하면 null) · verified_from(사람이 원문을 읽고 뜻을 확인한 날 · 평소 세션 적용 하한 = max(verified_from, source_effective_from)).
+  sessions.exceptions = 특수 세션 예외 공지 검토 지평(reviewed_through · review_sha256): 그 날 뒤 거래일은 모두 unknown이어야 함
+  (평소 표는 기본 시각만 증명하고 임시 변경 공지가 '없음'은 증명하지 못하므로 · 검토 지평도 판 지문에 묶음).
 - 정규화 지문 = {"days": days, "sessions": 세션 영수증 핵심(받은 시각 · 설명 칸 뺌)}을 열쇠 차례 · 빈칸 없는 JSON(UTF-8)으로 만든 sha256 ·
   읽을 때마다 다시 셈해 파일에 적힌 값과 맞아야 씀(세션 영수증도 판 지문에 묶임).
 - 1차 권위는 KRX 공식 공지(판) · 2차 대조(실시간 API의 앞 거래일)는 호출부가 넘긴 값과 견주기만 함(cross_check).
@@ -30,7 +34,8 @@ from urllib.parse import urlsplit
 FOLDER = Path("calendar")
 FIELDS = ("source_url", "notice_no", "fetched_at_utc", "effective_from", "parser_version", "raw_sha256",
           "normalized_sha256", "days", "sessions")
-SESSION_KEYS = ("source_url", "notice_no", "effective_from", "raw_sha256", "open", "close")    # 세션 영수증 핵심(판 지문에 들어감)
+SESSION_KEYS = ("source_url", "notice_no", "source_effective_from", "verified_from", "raw_sha256", "open", "close")   # 세션 영수증 핵심(판 지문)
+EXCEPTION_KEYS = ("reviewed_through", "review_sha256")   # 특수 세션 예외 공지 검토 지평 핵심(판 지문 · 3단계 고침)
 OFFICIAL_HOST = "krx.co.kr"                # 세션 원천은 한국거래소 공식 주소만(krx.co.kr · *.krx.co.kr · https)
 _NAME = re.compile(r"krx-(\d{4})-v(\d+)\.json")
 _HHMM = re.compile(r"([01]\d|2[0-3])[0-5]\d")
@@ -58,7 +63,14 @@ def session_core(sessions):
         row = {"date": x.get("date")}
         row.update({k: x.get(k) for k in SESSION_KEYS})
         rows.append(row)
-    return {"regular": {k: reg.get(k) for k in SESSION_KEYS}, "special": sorted(rows, key=lambda r: str(r["date"]))}
+    exc = sessions.get("exceptions") if isinstance(sessions.get("exceptions"), dict) else {}
+    return {"regular": {k: reg.get(k) for k in SESSION_KEYS}, "special": sorted(rows, key=lambda r: str(r["date"])),
+            "exceptions": {k: exc.get(k) for k in EXCEPTION_KEYS}}
+
+
+def regular_floor(reg):
+    """평소 세션 적용 하한 = max(verified_from(원문을 읽어 확인한 날), source_effective_from(원천이 밝힌 시행 날 · 없으면 안 봄))."""
+    return max(str(reg.get("verified_from") or ""), str(reg.get("source_effective_from") or ""))
 
 
 def normalized_digest(days, sessions):
@@ -117,12 +129,15 @@ def _valid_days(days, year):
 
 
 def _receipt_ok(x, year=None, special=False):
-    """세션 영수증 꼴: 공식 주소 · 원문 sha256 · 시행 날 · 개장 < 마감 · 공지 번호(글 또는 없음) · 특수면 그 해의 날."""
+    """세션 영수증 꼴: 공식 주소 · 원문 sha256 · 확인한 날(verified_from) · 원천 시행 날(source_effective_from · 날 또는 null) · 개장 < 마감 ·
+    공지 번호(글 또는 없음) · 특수면 그 해의 날."""
     if not isinstance(x, dict) or any(k not in x for k in SESSION_KEYS):
         return False
     if not official_url(x.get("source_url")) or not _SHA.fullmatch(str(x.get("raw_sha256") or "")):
         return False
-    if not _real_day(x.get("effective_from")) or not _hhmm_pair(x):
+    if not _real_day(x.get("verified_from")) or not _hhmm_pair(x):
+        return False
+    if x.get("source_effective_from") is not None and not _real_day(x.get("source_effective_from")):
         return False
     if x.get("notice_no") is not None and not isinstance(x.get("notice_no"), str):
         return False
@@ -134,9 +149,12 @@ def _valid_sessions(sessions, days, year):
     unknown 날 = 특수 영수증 없음 · 특수 영수증마다 그날이 특수 꼴(세션을 지어낸 판 · 영수증 없는 시각은 못 씀)."""
     if not isinstance(sessions, dict):
         return False
-    reg, special = sessions.get("regular"), sessions.get("special")
+    reg, special, exc = sessions.get("regular"), sessions.get("special"), sessions.get("exceptions")
     if not _receipt_ok(reg) or not isinstance(special, list):
         return False
+    if not isinstance(exc, dict) or not _real_day(exc.get("reviewed_through")) or not _SHA.fullmatch(str(exc.get("review_sha256") or "")):
+        return False                                           # 특수 세션 예외 공지 검토 지평이 없는 판은 못 씀(3단계 고침)
+    through, floor = exc["reviewed_through"], regular_floor(reg)
     by_day = {}
     for x in special:
         if not _receipt_ok(x, year, special=True) or x["date"] in by_day:
@@ -146,8 +164,10 @@ def _valid_sessions(sessions, days, year):
         if v is None:
             continue
         kind = v.get("session")
+        if kind != "unknown" and k > through:                  # 검토 지평 뒤 거래일은 unknown이어야 함
+            return False
         if kind is None:
-            if (v["open"], v["close"]) != (reg["open"], reg["close"]) or k < reg["effective_from"] or k in by_day:
+            if (v["open"], v["close"]) != (reg["open"], reg["close"]) or k < floor or k in by_day:
                 return False
         elif kind == "special":
             x = by_day.get(k)

@@ -458,11 +458,29 @@ def verify_run(folder=None, data=None):
     return 1 if bad else 0
 
 
+HOLD_FROM, HOLD_TO = "0800", "1900"      # 평일 이 사이(한국 시각)에는 정기 · 전체 수집을 건너뜀(아침 최종 확인 ~ 판단 · 3단계 고침)
+
+
+def daytime_hold(now=None):
+    """3단계 고침(2026-11-08 조사): 정기(평일 19:20) · 전체(토요일) 수집이 GitHub 예약 밀림으로 평일 낮(08:00 ~ 19:00 한국 시각)에 돌면
+    건너뜀 → 참. 아침 최종 확인(08:20 · 10:20 · 12:20) 뒤에 event-data를 다시 쓰면(정기는 최근 5일 사건이 있는 파일의 'recent' 칸을
+    늘 다시 씀) 트리 지문이 바뀌어 그날 바구니 문이 닫히는 헛막음이 생김 — 건너뛴 날 자료는 다음 19:20 정기(최근 5일) · 토요일 전체가 채움.
+    EVENT_FORCE=1이면 건너뛰지 않음(사람이 일부러 돌릴 때)."""
+    if os.getenv("EVENT_FORCE", "").strip() == "1":
+        return False
+    now = (now or datetime.now(KST)).astimezone(KST)
+    return now.weekday() < 5 and HOLD_FROM <= now.strftime("%H%M") < HOLD_TO
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
     mode = argv[0] if argv else os.getenv("EVENT_MODE", "").strip()
     if mode == "verify":
         return verify_run()
+    if mode != "final" and daytime_hold():
+        print("평일 낮(08:00 ~ 19:00 한국 시각)이라 정기 · 전체 공시 수집을 건너뜀 — 아침 최종 확인 뒤 event-data를 바꾸지 않게"
+              "(다음 19:20 정기가 최근 5일을 채움 · 일부러 돌리려면 EVENT_FORCE=1)")
+        return 0
     codes = codes_to_collect()
     if not codes:
         print("모을 종목이 없습니다.")
