@@ -3,18 +3,26 @@
 - 자리: event-manifest/<t0>-<작업 번호>-<시도>.json(자료 폴더 event-data/ 밖 · 로컬 실행은 <t0>-local-0.json).
 - 갈래(mode): final = D 아침 최종 확인(평일 08:20 · 10:20 · 12:20 예약 · 첫 성공만) — **바구니 문을 여는 것은 이것뿐** ·
   regular = 19:20 정기 수집이 남기는 그날 t0 기록(문을 열지 않음 · 감사용).
-- 칸: query_begin · query_end(= t0 · 판 고정 달력) · request_started_at_utc · response_received_at_utc(쪽마다) · status · total_count ·
-  total_page · pages_received · retry_count · normalized_query_digest · normalized_event_digest(응답의 t0 사건 목록) ·
+- 칸: query_begin · query_end(= 확인 범위 · 판 고정 달력 · 아래 2c단계) · request_started_at_utc · response_received_at_utc(쪽마다) ·
+  status · total_count · total_page · pages_received · retry_count · normalized_query_digest · normalized_event_digest(응답의 범위 안 사건 목록) ·
   event_data_tree_digest(저장 뒤 event-data 트리) · GITHUB_RUN_ID · GITHUB_RUN_ATTEMPT · GITHUB_WORKFLOW_SHA · persisted · ok
-  (+ 곁 칸: mode · t0 · D · pages · rows_received · t0_events(정규화 t0 사건 목록 · H-D3 대조용) · stored_event_digest · completed_at_utc · why).
+  (+ 곁 칸: mode · t0 · D · window_before · calendar_sha256 · pages · rows_received · t0_events(정규화 범위 안 사건 목록 = 바구니의 t0 사건 ·
+  H-D3 대조용) · stored_event_digest · completed_at_utc · why).
 - ok(수집기가 정함) = 모든 쪽 status 정상(OpenDART '000' · 첫 쪽 '013' 정상 0건은 예외) · pages_received == total_page ·
-  (사전등록보다 엄격히) 받은 줄 수 = total_count · 접수번호 겹침 없음 · 저장된 event-data의 t0 사건 목록 지문 = normalized_event_digest ·
-  저장 성공(persisted).
+  (사전등록보다 엄격히) 받은 줄 수 = total_count · 접수번호 겹침 없음 · 범위 밖 접수일 줄 없음 · 저장된 event-data의 범위 안 사건 목록 지문 =
+  normalized_event_digest · 저장 성공(persisted).
 - event_data_tree_digest = event-data/*.json을 이름 차례로 [경로, 파일 sha256] 목록 → 빈칸 없는 JSON → sha256
   (경로는 언제나 'event-data/<이름>' — 폴더가 어디 있든 같은 값 · 수집기와 바구니가 이 함수 하나를 씀).
-- 바구니 문(morning_check): 판단 때 HEAD에 그날 t0의 final manifest(query_begin = query_end = t0 · D = 오늘 · ok · 저장됨 ·
-  완료 시각 < 판단 시각)가 있고 그 트리 지문이 지금 event-data 트리 지문과 같을 때만 열림. 여럿이면 먼저 끝난 **첫 성공만** 씀.
+- 바구니 문(morning_check): 판단 때 HEAD에 그날 t0의 final manifest(D = 오늘 · ok · 저장됨 · 완료 시각 < 판단 시각)가 있고 그 트리 지문이
+  지금 event-data 트리 지문과 같을 때만 열림. 여럿이면 먼저 끝난 **첫 성공만** 씀.
   HEAD 확인: git으로 event-data/와 그 manifest 파일이 추적되고 고친 · 새 파일이 없는지(git이 없거나 저장소가 아니면 닫힘).
+- 2c단계(GPT 구현 검토 6705430244 §2-A · 확인 범위 = 바구니 입력 창): 바구니는 t0 사건을 '앞 거래일 < 접수일 ≤ t0'로 읽음
+  (basket_live.todays_events · 주말 · 휴일 접수도 t0 사건). 그래서 확인 범위는 query_window(t0) = (t0의 앞 거래일 다음 달력일 ~ t0)
+  (판 고정 달력으로 셈 · 예: 금요일 다음 t0가 월요일이면 토 ~ 월). 수집기와 문이 같은 함수를 씀:
+  · manifest의 query_begin · query_end = 그 범위 · normalized_query_digest = 그 범위의 질의 지문(QUERY 칸) ·
+    normalized_event_digest · stored_event_digest = 그 범위 안 사건(t0_events) 지문.
+  · 문은 달력으로 다시 셈한 정확한 범위인지 · 질의 지문이 그 범위 것인지 보고, 첫 성공을 고른 뒤 지금 event-data에서 그 범위 사건을 다시 모아
+    지문이 manifest의 사건 지문과 같은지까지 봄(manifest에서 빠진 공시가 자료에 있으면 닫힘).
 - 증권사 · DART를 부르지 않음(파일과 git만 읽음).
 """
 import hashlib
@@ -22,7 +30,7 @@ import json
 import os
 import re
 import subprocess
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 DATA = Path("event-data")
@@ -34,6 +42,7 @@ FIELDS = ("query_begin", "query_end", "request_started_at_utc", "response_receiv
           "pages_received", "retry_count", "normalized_query_digest", "normalized_event_digest", "event_data_tree_digest",
           "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_WORKFLOW_SHA", "persisted", "ok")
 UTC_FORM = "%Y-%m-%dT%H:%M:%SZ"
+QUERY = {"page_count": 100, "sort": "date", "sort_mth": "asc"}     # 공시검색 물음 칸(수집기 · 문이 같은 값으로 질의 지문을 셈)
 _SHA = re.compile(r"[0-9a-f]{64}")
 _DAY = re.compile(r"\d{8}")
 _PART = re.compile(r"[A-Za-z0-9]+")
@@ -73,22 +82,49 @@ def normalize(events):
     return [list(x) for x in sorted({(str(c), str(d), str(k), str(t)[:60]) for c, d, k, t in events})]
 
 
-def stored_events(t0, folder=None):
-    """저장된 event-data(모든 파일 · 바구니가 읽는 그대로)의 t0 사건 → 정규화 목록. 파일이 깨졌으면 예외(부르는 쪽이 실패로 셈)."""
+def day_after(day):
+    """YYYYMMDD 다음 달력일."""
+    d = date(int(day[:4]), int(day[4:6]), int(day[6:])) + timedelta(days=1)
+    return d.strftime("%Y%m%d")
+
+
+def query_window(t0, folder=None):
+    """바구니가 t0 사건으로 읽는 접수일 창(basket_live.todays_events: 앞 거래일 < 접수일 ≤ t0)과 같은 확인 범위 — 판 고정 달력으로만 셈.
+    → {"begin": t0의 앞 거래일 다음 달력일, "end": t0, "before": t0의 앞 거래일, "calendar_sha256", "calendar_version",
+    "p_calendar_sha256"} 또는 None(판이 없음 · t0가 판에 없음 · t0가 거래일이 아님 · 앞 거래일을 못 찾음)."""
+    import trade_calendar
+    t0 = str(t0 or "")
+    if not _DAY.fullmatch(t0):
+        return None
+    info = trade_calendar.day_info(t0, folder=folder)
+    if not info or not info.get("trading") or not _DAY.fullmatch(str(info.get("P") or "")):
+        return None
+    return {"begin": day_after(info["P"]), "end": t0, "before": info["P"], "calendar_sha256": info.get("sha256"),
+            "calendar_version": info.get("version"), "p_calendar_sha256": info.get("p_sha256")}
+
+
+def stored_events(begin, end=None, folder=None):
+    """저장된 event-data(모든 파일 · 바구니가 읽는 그대로)에서 접수일이 begin ~ end(둘 다 포함 · end 없으면 begin 하루)인 사건 →
+    정규화 목록. 파일이 깨졌으면 예외(부르는 쪽이 실패로 셈)."""
+    begin = str(begin)
+    end = begin if end is None else str(end)
     folder = Path(folder) if folder is not None else DATA
     out = []
     for p in sorted(folder.glob("*.json"), key=lambda q: q.name):
         body = json.loads(p.read_text(encoding="utf-8"))
         for r in body.get("rows") or []:
-            if str(r.get("date")) == str(t0):
-                out.append((p.stem, str(t0), r.get("kind"), r.get("title")))
+            d = str(r.get("date"))
+            if _DAY.fullmatch(d) and begin <= d <= end:
+                out.append((p.stem, d, r.get("kind"), r.get("title")))
     return normalize(out)
 
 
-def query_digest(begin, end, page_count, sort, sort_mth):
-    """정규화 질의 지문(키 · 쪽 번호는 뺌)."""
-    return digest({"endpoint": "list.json", "bgn_de": str(begin), "end_de": str(end), "page_count": int(page_count),
-                   "sort": str(sort), "sort_mth": str(sort_mth), "corp_code": None})
+def query_digest(begin, end, page_count=None, sort=None, sort_mth=None):
+    """정규화 질의 지문(키 · 쪽 번호는 뺌 · 칸을 안 주면 QUERY 값)."""
+    return digest({"endpoint": "list.json", "bgn_de": str(begin), "end_de": str(end),
+                   "page_count": int(QUERY["page_count"] if page_count is None else page_count),
+                   "sort": str(QUERY["sort"] if sort is None else sort),
+                   "sort_mth": str(QUERY["sort_mth"] if sort_mth is None else sort_mth), "corp_code": None})
 
 
 # ───────────────────────── 파일 ─────────────────────────
@@ -155,12 +191,14 @@ def shape_problems(body, name):
     return bad
 
 
-def first_ok(t0, day, folder=None):
-    """수집기: 이미 그날(D) t0 아침 최종 확인이 성공했으면 그 이름(첫 성공만 · 다시 묻지 않음) · 없으면 None."""
+def first_ok(t0, day, folder=None, window=None):
+    """수집기: 이미 그날(D) t0 아침 최종 확인이 성공했으면 그 이름(첫 성공만 · 다시 묻지 않음) · 없으면 None.
+    window(query_window 결과)를 주면 질의 범위가 그 범위와 같은 성공만 셈(예전 t0 하루 질의 성공으로 건너뛰지 않음)."""
     good = []
     for name, body in load_all(t0, folder):
         if not shape_problems(body, name) and body.get("mode") == "final" and body.get("ok") is True \
-                and body.get("persisted") is True and str(body.get("D")) == str(day) and parse_utc(body.get("completed_at_utc")):
+                and body.get("persisted") is True and str(body.get("D")) == str(day) and parse_utc(body.get("completed_at_utc")) \
+                and (window is None or (str(body.get("query_begin")), str(body.get("query_end"))) == (window["begin"], window["end"])):
             good.append((body["completed_at_utc"], name))
     return min(good)[1] if good else None
 
@@ -195,13 +233,16 @@ def head_clean(data, manifest, cwd=None):
 
 # ───────────────────────── 바구니 문 ─────────────────────────
 
-def _why_not(body, name, t0, day, decided):
-    """final manifest 하나가 문을 열 수 없는 까닭(없으면 '')."""
+def _why_not(body, name, t0, day, decided, win):
+    """final manifest 하나가 문을 열 수 없는 까닭(없으면 ''). win = 달력으로 셈한 확인 범위(query_window)."""
     bad = shape_problems(body, name)
     if bad:
         return "꼴 이상 · " + " · ".join(bad[:3])
-    if str(body.get("query_begin")) != str(t0) or str(body.get("query_end")) != str(t0) or str(body.get("t0")) != str(t0):
-        return f"질의 날(query_begin {body.get('query_begin')} · query_end {body.get('query_end')})이 t0 {t0}와 다름"
+    if str(body.get("t0")) != str(t0) or (str(body.get("query_begin")), str(body.get("query_end"))) != (win["begin"], win["end"]):
+        return (f"질의 날(query_begin {body.get('query_begin')} · query_end {body.get('query_end')})이 달력 확인 범위 "
+                f"{win['begin']} ~ {win['end']}(t0 {t0})와 다름")
+    if str(body.get("normalized_query_digest")) != query_digest(win["begin"], win["end"]):
+        return f"질의 지문(normalized_query_digest)이 확인 범위 {win['begin']} ~ {win['end']}의 지문과 다름"
     if str(body.get("D")) != str(day):
         return f"다른 날({body.get('D')})의 확인"
     if body.get("ok") is not True:
@@ -216,23 +257,29 @@ def _why_not(body, name, t0, day, decided):
     return ""
 
 
-def morning_check(t0, day, decided_at, folder=None, data=None, git=True):
-    """바구니 문(§1.2) → (열림, 까닭, 기록 칸). decided_at = 판단 시각(시간대 있는 datetime). 예외 없음(셈이 말썽이면 닫힘)."""
+def morning_check(t0, day, decided_at, folder=None, data=None, git=True, calendar_folder=None, window=None):
+    """바구니 문(§1.2 · 2c단계 범위) → (열림, 까닭, 기록 칸). decided_at = 판단 시각(시간대 있는 datetime).
+    window = 확인 범위(query_window 꼴 · 안 주면 calendar_folder의 판 고정 달력으로 셈). 예외 없음(셈이 말썽이면 닫힘)."""
     folder = Path(folder) if folder is not None else FOLDER
     data = Path(data) if data is not None else DATA
-    info = {"t0": t0, "D": day, "decided_at_utc": None, "id": None, "completed_at_utc": None, "manifest_tree": None,
-            "tree": None, "head": None, "candidates": []}
+    info = {"t0": t0, "D": day, "decided_at_utc": None, "window": None, "window_before": None, "window_calendar_sha256": None,
+            "id": None, "completed_at_utc": None, "manifest_tree": None, "tree": None, "manifest_event_digest": None,
+            "stored_event_digest": None, "events": None, "head": None, "candidates": []}
     try:
         decided = decided_at.astimezone(timezone.utc)
         info["decided_at_utc"] = decided.strftime(UTC_FORM)
         if not t0:
             return False, "앞 거래일(t0)을 몰라 공시 확인을 못 함", info
+        win = dict(window) if window else query_window(t0, calendar_folder)
+        if not win or str(win.get("end")) != str(t0) or not _DAY.fullmatch(str(win.get("begin") or "")) or win["begin"] > win["end"]:
+            return False, f"판 고정 달력으로 t0 {t0}의 공시 확인 범위(앞 거래일 다음 날 ~ t0)를 못 정함", info
+        info.update(window=[win["begin"], win["end"]], window_before=win.get("before"), window_calendar_sha256=win.get("calendar_sha256"))
         found = load_all(t0, folder)
         good = []
         for name, body in found:
             mode = body.get("mode") if isinstance(body, dict) else None
             if mode == "final":
-                why = _why_not(body, name, t0, day, decided)
+                why = _why_not(body, name, t0, day, decided, win)
             elif mode == "regular":
                 why = "19:20 정기 기록(문을 열지 않음)"
             else:
@@ -251,10 +298,16 @@ def morning_check(t0, day, decided_at, folder=None, data=None, git=True):
                 return False, "읽을 수 있는 아침 최종 확인 manifest가 없음", info
             return False, "아침 최종 확인을 쓸 수 없음 · " + " / ".join(f"{c['id']} {c['why']}" for c in finals[:3]), info
         done, name, body = min(good, key=lambda x: (x[0], x[1]))           # 첫 성공만
-        info.update(id=name, completed_at_utc=done, manifest_tree=body["event_data_tree_digest"])
+        info.update(id=name, completed_at_utc=done, manifest_tree=body["event_data_tree_digest"],
+                    manifest_event_digest=body.get("normalized_event_digest"))
         info["tree"] = tree_digest(data)
         if info["tree"] != body["event_data_tree_digest"]:
             return False, f"지금 공시 자료 트리 지문이 아침 확인 manifest({name})와 다름(확인 뒤 event-data가 바뀜)", info
+        stored = stored_events(win["begin"], win["end"], data)            # 바구니가 읽을 범위 사건을 지금 자료에서 다시 모음
+        info.update(stored_event_digest=digest(stored), events=len(stored))
+        if info["stored_event_digest"] != body.get("normalized_event_digest") or info["stored_event_digest"] != body.get("stored_event_digest"):
+            return False, (f"지금 event-data의 확인 범위({win['begin']} ~ {win['end']}) 사건 {len(stored)}개 지문이 아침 확인 manifest({name})의 "
+                           "사건 지문과 다름(manifest에 없는 공시가 바구니 입력에 있음)"), info
         if git:
             ok, why = head_clean(data, folder / name)
             info["head"] = {"ok": ok, "why": why}

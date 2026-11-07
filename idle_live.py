@@ -435,6 +435,8 @@ def run(now=None):
     b_short, basket_after, b_spent = [], basket_value, 0.0
     if datetime.now(KST).strftime("%H%M") <= LAST_ORDER:
         days = [str(d) for d, c in _load(Path("etf-data") / f"{K200}.json", {}).get("closes", []) if c and str(d) < day] + [day]
+        # BOOST-0001-D D3(2c단계): 바구니가 실제로 읽을 사건 창(이 days에서 t0 바로 앞 날 < 접수일 ≤ t0)이 공시 확인 범위와 같을 때만 바구니 새 매수
+        gate.check_basket_window(days)
 
         def quote(code):
             try:

@@ -2,8 +2,12 @@ name: Trade calendar
 # BOOST-0001-D D5(사전등록 판 3 §1.4 · 2b단계) 판 고정 거래 달력 calendar/krx-<해>-v<번호>.json을 만듭니다(tools/build_calendar.py).
 # 1차 = KRX 정보데이터시스템 휴장일 조회(data.krx.co.kr · B125.bld) · 2차 = 한투 국내휴장일조회(CTCA0903R · 조회만 · 실전 시세 키).
 # 두 원천이 그해 모든 날에서 같을 때만 새 판을 씀 · 같은 내용이면 새 판 없음 · 옛 판은 덮지 않음 · 다르거나 조회 실패면 쓰지 않고 작업 실패로 드러냄.
+# 2c단계(GPT 구현 검토 6705430244 §2-B): 개장 · 마감은 calendar/sessions-<해>.json(세션 overlay)의 KRX 공식 원천 영수증(주소 · 원문 sha256)을
+# 도구가 받아 지문이 맞을 때만 적음 · 평소 세션 원천이 없거나 지문이 다르면 새 판을 안 씀(옛 판 유지) · 원천 없는 거래일은 session unknown(그날 새 매수 막힘).
+# overlay를 처음 적을 때는 Trade calendar dry run(calendar-dry.yml)이 남긴 원문 · 지문을 사람이 읽고 적음.
 # 사용: Actions → Trade calendar → Run workflow(해를 비우면 올해, 12월이면 다음 해도 · 예: 2026,2027). 매월 1일 한 번 자동.
-# 봇(엔진 · 바구니 · 덧붙임 · 1일봉)은 그날이 실린 판이 없으면 새 매수를 막으므로, 합친 뒤 첫 판을 먼저 만들어야 함.
+# 봇(엔진 · 바구니 · 덧붙임 · 1일봉)은 그날이 실린 판이 없으면 새 매수를 막으므로, 합친 뒤 첫 판을 먼저 만들어야 함
+# (그 뒤에도 gates/ARMED.json — 첫 실제 실행 영수증을 사람이 확인하고 적는 파일 — 이 그 판의 sha256과 맞기 전에는 새 매수가 막힘).
 on:
   workflow_dispatch:
     inputs:

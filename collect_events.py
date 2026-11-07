@@ -8,7 +8,9 @@
 말로 갈래를 나눕니다.
 
 BOOST-0001-D D3(사전등록 판 3 §1.2 · 2b단계): 시장 전체 목록은 쪽 완결성(status · page_no · total_count · total_page)을 보고
-끝 쪽까지 다 받았을 때만 저장합니다. t0 하루를 묻는 확인 수집은 공시 manifest(event-manifest/ · event_manifest.py)를 남깁니다.
+끝 쪽까지 다 받았을 때만 저장합니다. 확인 수집은 공시 manifest(event-manifest/ · event_manifest.py)를 남깁니다.
+2c단계(GPT 구현 검토 6705430244 §2-A): 확인 범위 = 바구니 입력 창 = t0의 앞 거래일 다음 달력일 ~ t0(event_manifest.query_window ·
+판 고정 달력 · 예: 금요일 다음 t0가 월요일이면 토 ~ 월) — 주말 · 휴일 접수도 바구니가 t0 사건으로 읽으므로 같이 묻고 같이 지문에 묶습니다.
   python collect_events.py final [t0]  → D 아침 최종 확인(평일 08:20 · 10:20 · 12:20 · 첫 성공만 · 바구니 문을 여는 유일한 기록)
   EVENT_RECENT_DAYS=5 python collect_events.py → 19:20 정기(최근 5일 이어 받기 + 그날 t0 기록 manifest · 문은 안 엶)
   python collect_events.py verify       → 작업 흐름 저장 단계(git add 앞)에서 이 작업의 manifest와 자료 트리 지문이 맞는지
@@ -122,7 +124,7 @@ def gather(provider, corp, begin, end):
 #   → 013은 오류가 아니라 '조회 결과 0건'을 알리는 정보 코드라, **첫 쪽 013 = 정상 0건**(total_count 0 · total_page 0)으로 받아
 #     manifest ok가 될 수 있게 함. 둘째 쪽부터 013이면 앞 쪽이 말한 쪽 수보다 일찍 끊긴 것이라 실패.
 #   800(시스템 점검) · 900(정의되지 않은 오류) · 연결 오류만 잠깐 쉬고 다시 물음(retry_count) · 나머지 오류 status는 바로 실패.
-PAGE_COUNT = 100
+PAGE_COUNT = event_manifest.QUERY["page_count"]          # 문과 같은 물음 칸(질의 지문)
 MAX_PAGES = 500
 OK_STATUS, NO_DATA = "000", "013"
 AGAIN = ("800", "900")
@@ -166,7 +168,8 @@ def fetch_list(provider, begin, end):
     """OpenDART 공시검색(시장 전체 · 종목 지정 없음)을 begin ~ end로 끝 쪽까지 받음 → (줄 목록, 기록 칸).
     쪽마다 status · page_no · total_count · total_page를 보고 하나라도 어긋나면 complete = False(까닭 why) · 줄 목록은 빈 것(쓰지 않음).
     끝까지 받았어도 pages_received == total_page · 받은 줄 수 == total_count · 접수번호 겹침 없음이어야 complete."""
-    base = {"bgn_de": begin, "end_de": end, "page_count": PAGE_COUNT, "sort": "date", "sort_mth": "asc"}
+    base = {"bgn_de": begin, "end_de": end, "page_count": PAGE_COUNT, "sort": event_manifest.QUERY["sort"],
+            "sort_mth": event_manifest.QUERY["sort_mth"]}
     info = {"query_begin": begin, "query_end": end, "request_started_at_utc": event_manifest.utc_now(),
             "response_received_at_utc": [], "pages": [], "status": None, "total_count": None, "total_page": None,
             "pages_received": 0, "rows_received": 0, "retry_count": 0, "complete": False, "why": ""}
@@ -313,48 +316,59 @@ def recent(provider, codes, days, today=None):
     return added
 
 
-def collect_day(provider, codes, t0, mode, day=None, folder=None):
-    """t0 하루(query_begin = query_end = t0)를 끝 쪽까지 묻고 · 대상 종목(목록 + 이미 파일이 있는 종목) 사건을 저장하고 ·
-    저장된 event-data의 t0 사건 목록 지문 = 응답 지문인지 보고 · manifest를 씀 → (본문, 경로)."""
+def collect_day(provider, codes, t0, mode, day=None, folder=None, window=None, calendar_folder=None):
+    """확인 범위(window = event_manifest.query_window(t0) · 안 주면 판 고정 달력으로 셈: t0의 앞 거래일 다음 달력일 ~ t0)를 끝 쪽까지
+    묻고 · 대상 종목(목록 + 이미 파일이 있는 종목) 사건을 저장하고 · 저장된 event-data의 범위 안 사건 목록 지문 = 응답 지문인지 보고 ·
+    manifest를 씀 → (본문, 경로). 범위 밖 접수일 줄이 하나라도 오면 실패(범위 안의 다른 날 · 주말 접수는 정상)."""
     want = set(codes) | {p.stem for p in OUT.glob("*.json") if re.fullmatch(r"[0-9]{6}", p.stem)}
-    found, info = fetch_list(provider, t0, t0)
-    events, other = [], 0
-    for row in found:
-        if str(row.get("rcept_dt", "")) != str(t0):
-            other += 1
-            continue
-        code = str(row.get("stock_code") or "").strip()
-        kind = kind_of(row.get("report_nm"))
-        if code in want and kind:
-            events.append((code, t0, kind, str(row.get("report_nm", ""))[:60]))
-    complete = info["complete"] and not other
-    why = info["why"] or (f"t0만 물었는데 다른 접수일 줄 {other}개" if other else "")
-    norm = event_manifest.normalize(events)
+    win = window if window is not None else event_manifest.query_window(t0, calendar_folder)
     rid, att = event_manifest.run_tag()
     body = {"kind": event_manifest.KIND, "version": event_manifest.VERSION, "mode": mode, "t0": t0, "D": day,
-            "query_begin": t0, "query_end": t0, "request_started_at_utc": info["request_started_at_utc"],
-            "response_received_at_utc": info["response_received_at_utc"], "status": info["status"],
-            "total_count": info["total_count"], "total_page": info["total_page"], "pages_received": info["pages_received"],
-            "rows_received": info["rows_received"], "retry_count": info["retry_count"], "pages": info["pages"],
-            "normalized_query_digest": event_manifest.query_digest(t0, t0, PAGE_COUNT, "date", "asc"),
-            "normalized_event_digest": event_manifest.digest(norm), "events": len(norm), "t0_events": norm,
-            "stored_event_digest": None,
-            "event_data_tree_digest": None, "GITHUB_RUN_ID": None if rid == "local" else rid,
-            "GITHUB_RUN_ATTEMPT": None if rid == "local" else att, "GITHUB_WORKFLOW_SHA": os.getenv("GITHUB_WORKFLOW_SHA"),
-            "persisted": False, "ok": False, "why": why, "completed_at_utc": None}
-    if complete:
-        try:
-            new = {}
-            for c, d, k, t in norm:
-                new.setdefault(c, []).append({"date": d, "kind": k, "title": t})
-            merge(new)
-            stored = event_manifest.stored_events(t0, OUT)
-            body["stored_event_digest"] = event_manifest.digest(stored)
-            body["persisted"] = True
-            if body["stored_event_digest"] != body["normalized_event_digest"]:
-                body["why"] = f"저장된 t0 사건 {len(stored)}개가 응답의 t0 사건 {len(norm)}개와 다름"
-        except Exception as e:
-            body["why"] = f"저장 실패 · {type(e).__name__}"
+            "query_begin": win["begin"] if win else None, "query_end": t0, "window_before": win.get("before") if win else None,
+            "calendar_sha256": win.get("calendar_sha256") if win else None, "request_started_at_utc": None,
+            "response_received_at_utc": [], "status": None, "total_count": None, "total_page": None, "pages_received": 0,
+            "rows_received": 0, "retry_count": 0, "pages": [], "normalized_query_digest": None, "normalized_event_digest": None,
+            "events": 0, "t0_events": [], "stored_event_digest": None, "event_data_tree_digest": None,
+            "GITHUB_RUN_ID": None if rid == "local" else rid, "GITHUB_RUN_ATTEMPT": None if rid == "local" else att,
+            "GITHUB_WORKFLOW_SHA": os.getenv("GITHUB_WORKFLOW_SHA"), "persisted": False, "ok": False, "why": "",
+            "completed_at_utc": None}
+    complete, info = False, {"pages_received": 0, "total_page": None, "total_count": None}
+    if not win or str(win.get("end")) != str(t0):
+        body["why"] = f"판 고정 달력으로 t0 {t0}의 확인 범위(앞 거래일 다음 날 ~ t0)를 못 정함"
+    else:
+        begin, end = win["begin"], win["end"]
+        found, info = fetch_list(provider, begin, end)
+        events, other = [], 0
+        for row in found:
+            got = str(row.get("rcept_dt", ""))
+            if not (re.fullmatch(r"[0-9]{8}", got) and begin <= got <= end):
+                other += 1
+                continue
+            code = str(row.get("stock_code") or "").strip()
+            kind = kind_of(row.get("report_nm"))
+            if code in want and kind:
+                events.append((code, got, kind, str(row.get("report_nm", ""))[:60]))
+        complete = info["complete"] and not other
+        norm = event_manifest.normalize(events)
+        body.update(request_started_at_utc=info["request_started_at_utc"], response_received_at_utc=info["response_received_at_utc"],
+                    status=info["status"], total_count=info["total_count"], total_page=info["total_page"],
+                    pages_received=info["pages_received"], rows_received=info["rows_received"], retry_count=info["retry_count"],
+                    pages=info["pages"], normalized_query_digest=event_manifest.query_digest(begin, end),
+                    normalized_event_digest=event_manifest.digest(norm), events=len(norm), t0_events=norm,
+                    why=info["why"] or (f"확인 범위 {begin} ~ {end} 밖의 다른 접수일 줄 {other}개" if other else ""))
+        if complete:
+            try:
+                new = {}
+                for c, d, k, t in norm:
+                    new.setdefault(c, []).append({"date": d, "kind": k, "title": t})
+                merge(new)
+                stored = event_manifest.stored_events(begin, end, OUT)
+                body["stored_event_digest"] = event_manifest.digest(stored)
+                body["persisted"] = True
+                if body["stored_event_digest"] != body["normalized_event_digest"]:
+                    body["why"] = f"저장된 t0 사건 {len(stored)}개가 응답의 t0 사건 {len(norm)}개와 다름(범위 {begin} ~ {end})"
+            except Exception as e:
+                body["why"] = f"저장 실패 · {type(e).__name__}"
     try:
         body["event_data_tree_digest"] = event_manifest.tree_digest(OUT)
     except Exception as e:
@@ -365,9 +379,9 @@ def collect_day(provider, codes, t0, mode, day=None, folder=None):
     path = event_manifest.write(body, folder if folder is not None else MANIFEST)
     if path is None:
         body["ok"] = False
-    print(f"공시 확인({'아침 최종' if mode == 'final' else '19:20 정기'}) t0 {t0} · 쪽 {info['pages_received']}/{info['total_page']} · "
-          f"총 {info['total_count']}건 · t0 대상 사건 {len(norm)} · {'성공' if body['ok'] else '실패 · ' + str(body['why'])} · "
-          f"manifest {path.name if path else '못 씀'}")
+    print(f"공시 확인({'아침 최종' if mode == 'final' else '19:20 정기'}) t0 {t0} · 범위 {body['query_begin']} ~ {body['query_end']} · "
+          f"쪽 {info['pages_received']}/{info['total_page']} · 총 {info['total_count']}건 · 범위 대상 사건 {body['events']} · "
+          f"{'성공' if body['ok'] else '실패 · ' + str(body['why'])} · manifest {path.name if path else '못 씀'}")
     return body, path
 
 
@@ -386,16 +400,21 @@ def final_check(provider, codes, today, t0=None, folder=None, calendar_folder=No
     if t0 and str(t0) != p:
         print(f"물은 t0 {t0}가 달력 앞 거래일 {p}과 달라 하지 않음")
         return 1
-    done = event_manifest.first_ok(p, today, folder if folder is not None else MANIFEST)
+    win = event_manifest.query_window(p, calendar_folder)          # 바구니 입력 창과 같은 범위(t0의 앞 거래일 다음 날 ~ t0)
+    if not win:
+        print(f"판 고정 달력으로 t0 {p}의 확인 범위를 못 정해 아침 확인을 못 함(오늘 바구니 새 매수는 막힘)")
+        return 1
+    done = event_manifest.first_ok(p, today, folder if folder is not None else MANIFEST, window=win)
     if done:
         print(f"오늘 아침 확인이 이미 성공함({done}) → 다시 묻지 않음(첫 성공만 씀)")
         return 0
-    body, path = collect_day(provider, codes, p, "final", day=today, folder=folder)
+    body, path = collect_day(provider, codes, p, "final", day=today, folder=folder, window=win)
     return 0 if body["ok"] and path else 1
 
 
 def regular(provider, codes, days, today, folder=None, calendar_folder=None):
-    """19:20 정기: 최근 days일 이어 받기(예전 그대로 · 쪽 완결성 검사) + 그날 t0(= 오늘 · 달력 거래일일 때) 기록 manifest(문은 안 엶)."""
+    """19:20 정기: 최근 days일 이어 받기(예전 그대로 · 쪽 완결성 검사) + 그날 t0(= 오늘 · 달력 거래일일 때) 기록 manifest(문은 안 엶 ·
+    범위는 다음 날 바구니 입력 창과 같은 '오늘의 앞 거래일 다음 날 ~ 오늘')."""
     import trade_calendar
     status = 0
     try:
@@ -403,10 +422,11 @@ def regular(provider, codes, days, today, folder=None, calendar_folder=None):
     except Incomplete:
         status = 1
     info = trade_calendar.day_info(today, folder=calendar_folder)
-    if not info or not info["trading"]:
+    win = event_manifest.query_window(today, calendar_folder) if info and info["trading"] else None
+    if not win:
         print("오늘을 달력에서 거래일로 못 정해 19:20 기록(manifest)은 남기지 않음")
         return status
-    body, path = collect_day(provider, codes, today, "regular", folder=folder)
+    body, path = collect_day(provider, codes, today, "regular", folder=folder, window=win)
     return status if body["ok"] and path else 1
 
 

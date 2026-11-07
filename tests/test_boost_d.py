@@ -10,6 +10,9 @@
 - 2b단계: D3 공시 manifest(쪽 완결성 · 빈 응답 · 오류 status · 0건 정상 · digest 불일치 · 아침 최종 확인 첫 성공만 · 바구니 문이
   HEAD의 manifest · 트리 지문 결속) · D5 달력 만드는 도구(두 원천 같음 / 다름 / 조회 실패 / 같은 내용 / 바뀐 공지 / 해 넘김) ·
   엔진 주 끝(달력 · HOLIDAYS 같으면 결과 같음) · 시작 전 점검 파일 작업마다(git pull --rebase 실험) · 수급 수집 목록 + 1일봉 풀.
+- 2c단계(GPT 구현 검토 6705430244): A 공시 확인 범위 = 바구니 입력 창(토 · 일 접수 반례 · 범위 · 질의 지문 · 사건 지문 · 바구니 실제 창) ·
+  B 세션을 지어내지 않음(평소 · 특수 세션 영수증 · unknown 날 문 닫힘 · 수능 · 연말 · 연초 고정 자료 · 지문 변조 · 원천 누락 · 마른 실행) ·
+  C 전체 시험 차이 검사(tools/test_diff.py) · 작업 흐름 · 부트스트랩 문(gates/ARMED.json).
 - 실제 증권사 · DART · KRX를 부르지 않음 · 비밀값 없음(가짜 키 글자만)."""
 import copy
 import hashlib
@@ -59,18 +62,33 @@ def weekdays_until(end, n):
     return out[::-1]
 
 
-def calendar_body(year, holidays=(), special=None, sha=None):
-    """판 고정 달력 판 본문(그 해 모든 날 · 주말 · 휴장 = null · 평일 09:00 ~ 15:30)."""
+REGULAR_URL = "https://global.krx.co.kr/contents/GLB/06/0602/0602010201/GLB0602010201T1.jsp"
+
+
+def regular_receipt(year, sha="1" * 64, **kw):
+    """평소 세션 영수증(2c단계 · 가짜 원문 지문 · 개장 09:00 · 마감 15:30)."""
+    body = {"source_url": REGULAR_URL, "notice_no": None, "effective_from": f"{year}0101", "raw_sha256": sha, "open": "0900",
+            "close": "1530"}
+    body.update(kw)
+    return body
+
+
+def calendar_body(year, holidays=(), special=None, sha=None, sessions=None, unknown=()):
+    """판 고정 달력 판 본문(그 해 모든 날 · 주말 · 휴장 = null · 평일 09:00 ~ 15:30 · 2c단계: 평소 세션 영수증 · unknown = 세션 원천 없는 날)."""
     import trade_calendar
     days, d = {}, date(year, 1, 1)
     while d.year == year:
         k = d.strftime("%Y%m%d")
         days[k] = None if d.weekday() >= 5 or k in holidays else {"open": "0900", "close": "1530"}
         d += timedelta(days=1)
+    for k in unknown:
+        days[k] = {"session": "unknown"}
     days.update(special or {})
+    sessions = sessions if sessions is not None else {"regular": regular_receipt(year), "special": []}
     return {"source_url": "https://example.invalid/krx-holiday-notice", "notice_no": f"시험-{year}",
             "fetched_at_utc": "2026-11-01T00:00:00Z", "effective_from": f"{year}0101", "parser_version": "시험 1",
-            "raw_sha256": "0" * 64, "normalized_sha256": sha or trade_calendar.normalized_digest(days), "days": days}
+            "raw_sha256": "0" * 64, "normalized_sha256": sha or trade_calendar.normalized_digest(days, sessions), "days": days,
+            "sessions": sessions}
 
 
 def write_calendar(folder, year, version=1, **kw):
@@ -78,6 +96,18 @@ def write_calendar(folder, year, version=1, **kw):
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(calendar_body(year, **kw), ensure_ascii=False), encoding="utf-8")
     return p
+
+
+def arm(gates_folder="gates", calendar_folder="calendar", year=2026, on="20261110", run_id="1", **kw):
+    """부트스트랩 문(2c단계): 지금 판의 달력 sha256으로 gates/ARMED.json을 씀(사람이 첫 실행 영수증을 확인한 뒤 적는 파일 흉내)."""
+    import trade_calendar
+    cal = trade_calendar.load_year(year, calendar_folder)
+    body = {"calendar_sha256": cal["sha256"] if cal else "0" * 64, "confirmed_on": on, "run_id": run_id}
+    body.update(kw)
+    p = Path(gates_folder) / "ARMED.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
+    return body
 
 
 STOCKS = {"000010": ("가", 50000.0), "000020": ("나", 10000.0), "000030": ("다", 20000.0), "000040": ("라", 5000.0)}
@@ -242,6 +272,8 @@ def build_world(root, kind, opt):
                                       "rebalanced_month": "202611", "last_day": P, "signal_day": days[-2]})
     if opt.get("calendar", True):
         write_calendar(root / "calendar", 2026, holidays=HOLIDAYS_2026)
+        if opt.get("armed", True):                        # 2c단계 부트스트랩 문: 사람이 확인한 달력 sha256(armed=False면 없음 · dict면 칸 바꿈)
+            arm(root / "gates", root / "calendar", **(opt["armed"] if isinstance(opt.get("armed"), dict) else {}))
     if opt.get("smoke", True):
         w(SMOKE, {"date": DAY, "ok": True, "version": 1, "sha256": None, "P": P, "reasons": [], "run_id": None})
     for rel in opt.get("block", ()):                      # 쓰기를 막을 자리(그 이름의 파일을 먼저 만들어 폴더를 못 만들게)
@@ -267,15 +299,39 @@ def tree_sha(folder):
     return hashlib.sha256(json.dumps(items, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
-def manifest_body(data, t0=P, day=DAY, mode="final", done="2026-11-10T23:25:00Z", **kw):
-    """공시 manifest 본문(모든 칸 · 기본 = D 아침 08:25 한국 시각에 끝난 성공 · 트리 지문은 data 폴더 그대로)."""
+def canon_sha(x):
+    """사전등록 §1.2 정의 그대로(event_manifest.py와 따로 셈): 열쇠 차례 · 빈칸 없는 JSON(UTF-8) → sha256."""
+    return hashlib.sha256(json.dumps(x, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
+def query_sha(begin, end):
+    """정규화 질의 지문(event_manifest.query_digest와 따로 셈 · 키 · 쪽 번호 뺌 · 물음 칸 100 · date · asc)."""
+    return canon_sha({"endpoint": "list.json", "bgn_de": begin, "end_de": end, "page_count": 100, "sort": "date", "sort_mth": "asc",
+                      "corp_code": None})
+
+
+def window_events(data, begin, end):
+    """data 폴더(event-data)의 접수일 begin ~ end 사건 → [코드, 날, 갈래, 제목 60자] 정렬 · 겹침 없음(event_manifest와 따로 셈)."""
+    got = set()
+    for f in sorted(Path(data).glob("*.json")):
+        for r in json.loads(f.read_text(encoding="utf-8")).get("rows") or []:
+            if begin <= str(r.get("date")) <= end:
+                got.add((f.stem, str(r["date"]), str(r.get("kind")), str(r.get("title"))[:60]))
+    return [list(x) for x in sorted(got)]
+
+
+def manifest_body(data, t0=P, day=DAY, mode="final", done="2026-11-10T23:25:00Z", begin=None, **kw):
+    """공시 manifest 본문(모든 칸 · 기본 = D 아침 08:25 한국 시각에 끝난 성공 · 트리 지문은 data 폴더 그대로 ·
+    2c단계: 질의 범위 begin ~ t0(기본 t0 하루 = 가짜 세상 화요일 t0의 바구니 창) · 질의 지문 · 범위 사건 지문을 data 폴더로 셈)."""
+    begin = begin or t0
+    events = window_events(data, begin, t0)
     body = {"kind": "event-manifest", "version": 1, "mode": mode, "t0": t0, "D": day if mode == "final" else None,
-            "query_begin": t0, "query_end": t0, "request_started_at_utc": "2026-11-10T23:20:00Z",
+            "query_begin": begin, "query_end": t0, "request_started_at_utc": "2026-11-10T23:20:00Z",
             "response_received_at_utc": ["2026-11-10T23:20:01Z"], "status": "000", "total_count": 1, "total_page": 1,
-            "pages_received": 1, "rows_received": 1, "retry_count": 0, "pages": [], "normalized_query_digest": "1" * 64,
-            "normalized_event_digest": "2" * 64, "events": 1, "stored_event_digest": "2" * 64,
-            "event_data_tree_digest": tree_sha(data), "GITHUB_RUN_ID": None, "GITHUB_RUN_ATTEMPT": None,
-            "GITHUB_WORKFLOW_SHA": None, "persisted": True, "ok": True, "why": "", "completed_at_utc": done}
+            "pages_received": 1, "rows_received": 1, "retry_count": 0, "pages": [], "normalized_query_digest": query_sha(begin, t0),
+            "normalized_event_digest": canon_sha(events), "events": len(events), "t0_events": events,
+            "stored_event_digest": canon_sha(events), "event_data_tree_digest": tree_sha(data), "GITHUB_RUN_ID": None,
+            "GITHUB_RUN_ATTEMPT": None, "GITHUB_WORKFLOW_SHA": None, "persisted": True, "ok": True, "why": "", "completed_at_utc": done}
     body.update(kw)
     return body
 
@@ -307,7 +363,8 @@ def world_run(kind, **opt):
     opt: sync_ok(저장소 맞추기 값을 바꿔 끼움) · refresh(hourly_a.refresh_near를 바꿔 끼움) · missing(시세 없는 코드) ·
     calendar · smoke(파일을 둘지) · live_p · prices_last · m15_body · block · block_dir · start(시 · 분 · 초) · spy(덧붙임 인자 기록) ·
     2a단계: etf_stale(P 줄이 빠진 엔진 ETF) · flow_stale(수급이 P−1에서 끝나는 종목) · flow_files · found(1일봉 후보) · daily_cells.
-    2b단계: manifest(공시 아침 확인 · None = 없음 · 'regular' · dict = 칸 바꿈) · git(가짜 세상을 커밋할지) · after_commit(커밋 뒤 고친 파일)."""
+    2b단계: manifest(공시 아침 확인 · None = 없음 · 'regular' · dict = 칸 바꿈) · git(가짜 세상을 커밋할지) · after_commit(커밋 뒤 고친 파일).
+    2c단계: armed(부트스트랩 문 파일 · False = 없음 · dict = 칸 바꿈) · live_seq(증권사 앞 거래일을 부를 때마다 차례로 줄 값)."""
     import importlib
     import acc_cap  # noqa: F401  (가짜 시계를 끼우기 전에 모두 불러 둠 · 실행 중 처음 불러 가짜 시계가 남지 않게)
     import audit_log  # noqa: F401
@@ -374,7 +431,9 @@ def world_run(kind, **opt):
             found = opt.get("found") or (FOUND_MULTI if kind == "daily_multi" else FOUND)
             st.enter_context(mock.patch.object(final_group, "compute", lambda prices=None, flow_day=None, calm=None: copy.deepcopy(found)))
             st.enter_context(mock.patch.object(collect_kis_intraday, "market_open_today", lambda client, today, bots=True: True))
-            st.enter_context(mock.patch.object(data_guard, "prev_trading_day", lambda client, day: opt.get("live_p", P)))
+            seq = list(opt.get("live_seq") or [])          # 2c단계: 증권사 앞 거래일을 부를 때마다 다르게(문 셈 뒤 바뀐 날 흉내)
+            st.enter_context(mock.patch.object(data_guard, "prev_trading_day",
+                                               lambda client, day: seq.pop(0) if seq else opt.get("live_p", P)))
             st.enter_context(mock.patch.object(daily_live, "target_cut", lambda code, day, back_days=45: False))
             st.enter_context(mock.patch.object(daily_live, "steady3", lambda code, day: False))
             st.enter_context(mock.patch.object(daily_live, "volume_ratio", lambda code, day, v: None))
@@ -549,7 +608,7 @@ class Calendar(TmpCwd):
         self.assertIsNone(C.day_info(DAY), "판 없음")
         body = calendar_body(2026)
         del body["days"][DAY]
-        body["normalized_sha256"] = C.normalized_digest(body["days"])
+        body["normalized_sha256"] = C.normalized_digest(body["days"], body["sessions"])
         Path("calendar").mkdir()
         Path("calendar/krx-2026-v1.json").write_text(json.dumps(body), encoding="utf-8")
         self.assertIsNone(C.day_info(DAY), "판에 없는 날")
@@ -646,6 +705,7 @@ class GateBox(TmpCwd):
     def test_snapshot_fields_and_d1_binding(self):
         import gates
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        arm()
         Path("gate-smoke").mkdir()
         Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True, "version": 1}), encoding="utf-8")
         g = gates.begin(DAY, "engine", True, live_p=P)
@@ -669,6 +729,7 @@ class GateBox(TmpCwd):
     def test_begin_closes_for_each_cause(self):
         import gates
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        arm()
         Path("gate-smoke").mkdir()
         Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         self.assertTrue(gates.begin(DAY, "daily", True, live_p=P).allows_new_risk("daily"))
@@ -1106,8 +1167,8 @@ class EngineRun(unittest.TestCase):
 
     def test_record_and_gate_write_failures_do_not_stop_trading(self):
         normal = world_run("engine")
-        out = world_run("engine", block=("idle-live/audit", "basket-live/audit", "overlay-live/audit", "gates"),
-                        block_dir=("idle-live/near-now.json",))
+        out = world_run("engine", block=("idle-live/audit", "basket-live/audit", "overlay-live/audit"),
+                        block_dir=("idle-live/near-now.json", "gates/20261111.json"))     # 2c단계: gates/ARMED.json이 있어야 해 문 파일 자리를 폴더로 막음
         self.assertEqual(out["rc"], 0)
         self.assertEqual(out["orders"], normal["orders"])
         self.assertEqual(out["audit"], {}, "기록은 못 남겨도")
@@ -1133,7 +1194,7 @@ class DailyRun(unittest.TestCase):
 
     def test_record_and_gate_write_failures_do_not_stop_daily(self):
         normal = world_run("daily")
-        out = world_run("daily", block=("daily-live/audit", "gates"))
+        out = world_run("daily", block=("daily-live/audit",), block_dir=("gates/20261111.json",))
         self.assertEqual((out["rc"], out["orders"]), (0, normal["orders"]))
         self.assertEqual(out["audit"], {})
 
@@ -1197,7 +1258,7 @@ class CalendarDays(TmpCwd):
         self.assertIsNone(C.last_days("2026-11-11", 5))
         body = calendar_body(2026, holidays=HOLIDAYS_2026)
         del body["days"]["20261105"]                                    # P − 3이 판에 없음
-        body["normalized_sha256"] = C.normalized_digest(body["days"])
+        body["normalized_sha256"] = C.normalized_digest(body["days"], body["sessions"])
         Path("calendar/krx-2026-v2.json").write_text(json.dumps(body), encoding="utf-8")
         self.assertEqual(C.day_info(DAY)["P"], P, "앞 거래일(P)은 그대로 정해짐")
         self.assertIsNone(C.last_days(DAY, 5), "판에 없는 날을 만나면 못 정함(휴장으로 보지 않음)")
@@ -1218,6 +1279,7 @@ class GateEtf(TmpCwd):
         import gates
         if calendar:
             write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+            arm()
         Path("gate-smoke").mkdir(exist_ok=True)
         Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         return gates.begin(DAY, "engine", True, live_p=P)
@@ -1275,6 +1337,7 @@ class FlowCwd(TmpCwd):
     def gate(self):
         import gates
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        arm()
         Path("gate-smoke").mkdir(exist_ok=True)
         Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         return gates.begin(DAY, "daily", True, live_p=P)
@@ -1311,7 +1374,7 @@ class GateFlow(FlowCwd):
         g = self.gate()
         body = calendar_body(2026, holidays=HOLIDAYS_2026)
         del body["days"]["20261105"]
-        body["normalized_sha256"] = C.normalized_digest(body["days"])
+        body["normalized_sha256"] = C.normalized_digest(body["days"], body["sessions"])
         Path("calendar/krx-2026-v2.json").write_text(json.dumps(body), encoding="utf-8")
         g.check_flow_pool(["000001"], DAY, final_group.flow_rows)       # P는 알지만 최근 5거래일을 못 정함
         self.assertFalse(g.allows_new_risk("daily"))
@@ -1727,6 +1790,10 @@ class EventCwd(TmpCwd):
 
 
 class EventFetch(EventCwd):
+    def setUp(self):
+        super().setUp()
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)        # 2c단계: collect_day는 판 고정 달력으로 확인 범위(P 하루)를 셈
+
     def test_complete_pages_and_manifest_fields(self):
         import event_manifest as M
         fake = FakeDart(ROWS_T0, per=2)
@@ -1908,6 +1975,7 @@ class EventGate(TmpCwd):
     def setUp(self):
         super().setUp()
         write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        arm()
         Path("gate-smoke").mkdir()
         Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
         Path("event-data").mkdir()
@@ -2093,17 +2161,57 @@ def krx_raw(year, holidays):
                        "cmd": "executeForResourceBundle"}, separators=(",", ":")).encode("utf-8")
 
 
-class FakeGet:
-    """가짜 KRX(requests.get 자리): 해마다 원문 · 상태 · 예외."""
+# 2c단계 세션 원천 고정 자료(가짜 원문 · 시험은 인터넷을 안 부름): 평소 정규장 안내 · 수능날 공지 · 새해 첫 거래일 공지
+REGULAR_RAW = "<html>KRX 정규장 매매 시간 09:00 ~ 15:30 (시험 고정 자료)</html>".encode("utf-8")
+SUNEUNG_URL = "https://www.krx.co.kr/2026_suneung_ko.pdf"
+SUNEUNG_RAW = "%PDF-1.4 2026학년도 수능일 증권 · 파생상품시장 개장 10:00 · 마감 16:30 (시험 고정 자료)".encode("utf-8")
+NEWYEAR_URL = "https://www.krx.co.kr/2027_opening_ko.pdf"
+NEWYEAR_RAW = "%PDF-1.4 2027년 개장일 10:00 개장 (시험 고정 자료)".encode("utf-8")
 
-    def __init__(self, by_year, status=200, boom=None):
+
+class FakeGet:
+    """가짜 KRX(requests.get 자리): 휴장일 조회(물음 칸 있음)는 해마다 원문 · 상태 · 예외 ·
+    2c단계 세션 원천(물음 칸 없음)은 pages{주소: 원문 또는 예외} — 없는 주소는 HTTP 404 · 기본 pages = 평소 정규장 안내만."""
+
+    def __init__(self, by_year, status=200, boom=None, pages=None, moved=()):
         self.by_year, self.status, self.boom, self.calls = dict(by_year), status, boom, []
+        self.pages = {REGULAR_URL: REGULAR_RAW} if pages is None else dict(pages)
+        self.moved = set(moved)                             # 이 주소는 공식 주소 밖으로 옮겨 간 응답(redirect 흉내)
 
     def __call__(self, url, params=None, headers=None, timeout=None):
         self.calls.append((url, dict(params or {}), dict(headers or {})))
+        if params is None:                                  # 세션 원천(공식 안내 · 공지 원문)
+            got = self.pages.get(url)
+            if isinstance(got, Exception):
+                raise got
+            final = "https://login.example.net/moved" if url in self.moved else url
+            return type("R", (), {"status_code": 200 if got is not None else 404, "content": got or b"", "url": final})()
         if self.boom:
             raise self.boom
         return type("R", (), {"status_code": self.status, "content": self.by_year[int(params["search_bas_yy"])]})()
+
+
+def overlay_body(year, regular=True, special=(), unknown=None, **kw):
+    """세션 overlay(calendar/sessions-<해>.json) — 평소 세션 영수증은 REGULAR_RAW 지문 · special은 [날, 주소, 원문, 개장, 마감]."""
+    body = {"kind": "krx-session-overlay", "year": str(year)}
+    if regular is True:
+        body["regular"] = regular_receipt(year, sha=hashlib.sha256(REGULAR_RAW).hexdigest())
+    elif regular:
+        body["regular"] = regular
+    body["special"] = [{"date": d, "source_url": url, "notice_no": f"시험공지-{d}", "effective_from": d,
+                        "raw_sha256": raw if isinstance(raw, str) else hashlib.sha256(raw).hexdigest(), "open": o, "close": c}
+                       for d, url, raw, o, c in special]
+    if unknown is not None:
+        body["unknown"] = list(unknown)
+    body.update(kw)
+    return body
+
+
+def write_overlay(year, folder="calendar", **kw):
+    p = Path(folder) / f"sessions-{year}.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(overlay_body(year, **kw), ensure_ascii=False), encoding="utf-8")
+    return p
 
 
 class FakeKis:
@@ -2135,12 +2243,16 @@ class FakeKis:
         return rows
 
 
-class CalendarBuild(TmpCwd):
+class CalendarToolCwd(TmpCwd):
+    """달력 도구 시험 도움(시험 없음): 쉬지 않는 KIS · 평소 세션 overlay · 도구 실행 · 판 파일 목록."""
+
     def setUp(self):
         super().setUp()
         self.B = build_tool()
         self.keep = mock.patch.object(self.B, "KIS_PAUSE", 0)
         self.keep.start()
+        write_overlay(2026)                                # 2c단계: 평소 세션 영수증(공식 안내 원문 지문)이 있어야 판을 씀
+        write_overlay(2027)
 
     def tearDown(self):
         self.keep.stop()
@@ -2152,8 +2264,10 @@ class CalendarBuild(TmpCwd):
         return self.B.main([str(y) for y in years], client=kis, get=get, folder="calendar")
 
     def files(self):
-        return sorted(p.name for p in Path("calendar").glob("*.json")) if Path("calendar").exists() else []
+        return sorted(p.name for p in Path("calendar").glob("krx-*.json")) if Path("calendar").exists() else []
 
+
+class CalendarBuild(CalendarToolCwd):
     def test_same_sources_write_v1_in_trade_calendar_shape(self):
         import trade_calendar as C
         kis = FakeKis(KRX_2026, per=20)
@@ -2161,9 +2275,10 @@ class CalendarBuild(TmpCwd):
         self.assertEqual(self.run_tool([2026], kis=kis, get=get), 0)
         self.assertEqual(self.files(), ["krx-2026-v1.json"])
         body = json.loads(Path("calendar/krx-2026-v1.json").read_text(encoding="utf-8"))
-        self.assertEqual(body["days"], calendar_body(2026, holidays=KRX_2026)["days"], "1단계 합성 판과 같은 꼴 · 같은 날들")
+        self.assertEqual(body["days"], calendar_body(2026, holidays=KRX_2026, unknown=("20260102", "20261119"))["days"],
+                         "1단계 합성 판과 같은 꼴 · 같은 날들(2c단계: 새해 첫 거래일 · 수능날은 세션 원천이 없어 unknown)")
         got = C.load_year("2026", "calendar")
-        self.assertEqual((got["version"], got["sha256"]), (1, C.normalized_digest(body["days"])))
+        self.assertEqual((got["version"], got["sha256"]), (1, C.normalized_digest(body["days"], body["sessions"])))
         self.assertEqual(body["raw_sha256"], hashlib.sha256(krx_raw(2026, KRX_2026)).hexdigest(), "원문 지문 = KRX 응답 바이트")
         self.assertIn(body["raw_sha256"][:16], body["notice_no"])
         self.assertIn("key=B125.bld", body["source_url"])
@@ -2171,13 +2286,20 @@ class CalendarBuild(TmpCwd):
         self.assertTrue(body["source_url"].startswith("https://data.krx.co.kr/comm/bldAttendant/executeForResourceBundle.cmd"))
         self.assertRegex(body["fetched_at_utc"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
         self.assertRegex(body["effective_from"], r"^\d{8}$")
-        self.assertEqual(body["parser_version"], "build_calendar 1")
+        self.assertEqual(body["parser_version"], "build_calendar 2")
         self.assertEqual((body["secondary"]["tr_id"], body["secondary"]["field"], body["secondary"]["agree_days"]), ("CTCA0903R", "opnd_yn", 365))
         self.assertEqual(body["secondary"]["calls"], len(kis.calls))
         self.assertEqual(len(kis.calls), 19, "기준일자를 받은 마지막 날 다음 날로 옮기며 그해를 다 덮음(20일씩 → 19번)")
         self.assertEqual([c["BASS_DT"] for c in kis.calls[:3]], ["20260101", "20260121", "20260210"])
         self.assertEqual(get.calls[0][1], {"baseName": "krx.mdc.i18n.component", "key": "B125.bld", "search_bas_yy": "2026"})
-        self.assertEqual(body["days"]["20261119"], {"open": "0900", "close": "1530"}, "수능날 특수 세션은 원천에 없으니 넣지 않음")
+        self.assertEqual(body["days"]["20261119"], {"session": "unknown"},
+                         "수능날: 봇 특수 세션 목록에 있는데 공식 overlay가 없어 unknown(09:00 ~ 15:30을 지어내지 않음 · GPT §2-B)")
+        reg = body["sessions"]["regular"]
+        self.assertEqual((reg["source_url"], reg["raw_sha256"], reg["open"], reg["close"]),
+                         (REGULAR_URL, hashlib.sha256(REGULAR_RAW).hexdigest(), "0900", "1530"), "평소 세션 = 공식 원천 영수증(받은 원문 지문)")
+        self.assertRegex(reg["fetched_at_utc"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
+        self.assertEqual(body["sessions"]["special"], [])
+        self.assertEqual({u["date"] for u in body["sessions"]["unknown"]}, {"20260102", "20261119"})
         info = C.day_info(DAY, folder="calendar")
         self.assertEqual((info["P"], info["trading"]), (P, True))
         self.assertEqual(self.B.check("calendar"), 0)
@@ -2433,6 +2555,786 @@ class Structure2b(unittest.TestCase):
         self.assertEqual([x.strip() for x in wf.splitlines() if "git add" in x and not x.strip().startswith("#")], ["git add -- calendar"])
         self.assertLess(wf.index("python tools/build_calendar.py --check"), wf.index("git add -- calendar"))
         self.assertNotIn("|| true", wf)
+
+
+# ───────────────────────── 2c단계 A: D3 확인 범위 = 바구니 입력 창(GPT 구현 검토 6705430244 §2-A) ─────────────────────────
+
+FRI, SAT, SUN, MON, TUE = "20261113", "20261114", "20261115", "20261116", "20261117"
+
+
+class EventWindow(EventCwd):
+    """확인 범위(event_manifest.query_window)가 바구니 todays_events 창(앞 거래일 < 접수일 ≤ t0)과 같음 · 토요일 접수 반례."""
+
+    DECIDED = datetime(2026, 11, 17, 15, 10, tzinfo=KST)               # 화요일 15:10(t0 = 월요일)
+
+    def setUp(self):
+        super().setUp()
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        write_calendar("calendar", 2027, holidays=KRX_2027)
+        arm()
+        Path("gate-smoke").mkdir(exist_ok=True)
+        Path(f"gate-smoke/{TUE}-local-0.json").write_text(json.dumps({"date": TUE, "ok": True}), encoding="utf-8")
+
+    def gate(self):
+        import gates
+        g = gates.begin(TUE, "engine", True, live_p=MON)
+        g.check_events(now=self.DECIDED)
+        return g
+
+    def test_window_equals_basket_todays_events(self):
+        import basket_live as B
+        import event_manifest as M
+        import trade_calendar as C
+        trading = sorted(k for y in ("2026", "2027") for k, v in C.load_year(y, "calendar")["days"].items() if v is not None)
+        seen, d = 0, date(2026, 1, 6)
+        while d <= date(2027, 3, 31):
+            D = d.strftime("%Y%m%d")
+            d += timedelta(days=1)
+            info = C.day_info(D, folder="calendar")
+            if not info or not info["trading"]:
+                continue
+            t0 = info["P"]
+            win = M.query_window(t0, "calendar")
+            days = [k for k in trading if k < D] + [D]                     # 바구니의 days(etf-data 거래일 + 오늘)와 같은 꼴
+            before = days[days.index(t0) - 1]                              # basket_live.run이 쓰는 before
+            self.assertEqual((win["begin"], win["end"], win["before"]), (M.day_after(before), t0, before), D)
+            lo = date(int(before[:4]), int(before[4:6]), int(before[6:])) - timedelta(days=6)
+            span = [(lo + timedelta(days=k)).strftime("%Y%m%d") for k in range(16)]
+            events = {x: [(x, "무상증자"), (x, "공급계약")] for x in span}      # 코드 자리에 날을 넣어 어느 날이 들어갔는지 봄
+            got = {c for c, _ in B.todays_events(events, t0, before)}
+            want = {x for x in span if win["begin"] <= x <= win["end"]}
+            self.assertEqual(got, want, f"{D}: 바구니 창(before < 접수일 ≤ t0) = 확인 범위")
+            self.assertEqual(want, {x for x in span if before < x <= t0})
+            seen += 1
+        self.assertGreater(seen, 280)
+        cases = {TUE: (SAT, MON), DAY: (P, P), "20261007": ("20261003", "20261006"), "20270105": ("20261231", "20270104")}
+        for D, (b, e) in cases.items():
+            t0 = C.day_info(D, folder="calendar")["P"]
+            got = M.query_window(t0, "calendar")
+            self.assertEqual((got["begin"], got["end"]), (b, e), f"{D}: 금요일 다음 월요일 t0 = 토 ~ 월 · 휴일 · 해 넘김")
+        self.assertIsNone(M.query_window(SAT, "calendar"), "t0가 휴장이면 범위 없음")
+        self.assertIsNone(M.query_window("20251230", "calendar"), "판에 없는 날")
+        self.assertIsNone(M.query_window(None, "calendar"))
+
+    def test_saturday_filing_in_manifest_opens_removed_closes(self):
+        """토요일 접수 1건이 월요일 t0 바구니 신호에 들어감 → manifest에 있으면 문 열림 · manifest에서 빼면 닫힘."""
+        import basket_live as B
+        import event_manifest as M
+        rows = [drow("000040", "주요사항보고서(무상증자결정)", day=SAT, no=1), drow("000020", "주요사항보고서(자기주식취득결정)", day=MON, no=2)]
+        fake = FakeDart(rows, per=1)
+        self.assertEqual(self.CE.final_check(fake, CODES_T0, TUE), 0)
+        self.assertEqual({(c["bgn_de"], c["end_de"]) for c in fake.calls}, {(SAT, MON)}, "토 ~ 월을 한 범위로 끝 쪽까지 물음")
+        path = Path(f"event-manifest/{MON}-local-0.json")
+        body = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual((body["query_begin"], body["query_end"], body["window_before"], body["ok"]), (SAT, MON, FRI, True))
+        self.assertIn(["000040", SAT, "무상증자", "주요사항보고서(무상증자결정)"], body["t0_events"])
+        self.assertEqual(body["normalized_query_digest"], query_sha(SAT, MON), "질의 지문 = 범위 전체(따로 셈)")
+        self.assertEqual(body["normalized_event_digest"], canon_sha(window_events("event-data", SAT, MON)), "사건 지문 = 범위 전체(따로 셈)")
+        self.assertIn(("000040", "무상증자"), B.todays_events(B.load_events(), MON, FRI), "바구니가 읽는 t0 사건에 토요일 공시가 들어감")
+        git_commit_all(self.root)
+        g = self.gate()
+        self.assertTrue(g.allows_new_risk("basket"), g.reasons())
+        ev = g.snapshot("basket")["checks"]["events"]
+        self.assertEqual((ev["window"], ev["window_before"], ev["events"]), ([SAT, MON], FRI, 2))
+        self.assertEqual(ev["stored_event_digest"], body["normalized_event_digest"])
+        # 반례: manifest에서 토요일 공시를 뺌(사건 목록 · 지문만 고침 · 자료 트리는 그대로) → 지금 자료의 범위 사건과 달라 닫힘
+        cut = dict(body, t0_events=[e for e in body["t0_events"] if e[1] != SAT])
+        cut["normalized_event_digest"] = cut["stored_event_digest"] = canon_sha(cut["t0_events"])
+        path.write_text(json.dumps(cut, ensure_ascii=False), encoding="utf-8")
+        git_commit_all(self.root)
+        g = self.gate()
+        self.assertFalse(g.allows_new_risk("basket"))
+        self.assertTrue(g.allows_new_risk("engine") and g.allows_new_risk("overlay"), "바구니만 닫음")
+        self.assertTrue(any("manifest에 없는 공시" in r for r in g.reasons(("basket",))), g.reasons(("basket",)))
+        path.write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")         # 다시 넣으면 열림
+        git_commit_all(self.root)
+        self.assertTrue(self.gate().allows_new_risk("basket"))
+
+    def test_t0_only_manifest_closes_and_final_check_requeries(self):
+        """예전처럼 t0 하루(월)만 물은 성공 manifest → 범위가 달라 닫힘 · 아침 확인은 그것을 첫 성공으로 치지 않고 범위로 다시 물음."""
+        import event_manifest as M
+        rows = [drow("000040", "주요사항보고서(무상증자결정)", day=SAT, no=1), drow("000020", "주요사항보고서(자기주식취득결정)", day=MON, no=2)]
+        old, _ = self.CE.collect_day(FakeDart(rows, per=1), CODES_T0, MON, "final", day=TUE, window={"begin": MON, "end": MON, "before": SUN})
+        self.assertTrue(old["ok"], "t0 하루 범위로는 완결(그 범위 자체는 맞음)")
+        git_commit_all(self.root)
+        g = self.gate()
+        self.assertFalse(g.allows_new_risk("basket"))
+        self.assertTrue(any("질의 날" in r and f"{SAT} ~ {MON}" in r for r in g.reasons(("basket",))), g.reasons(("basket",)))
+        win = M.query_window(MON, "calendar")
+        self.assertIsNone(M.first_ok(MON, TUE, window=win), "범위가 다른 성공은 첫 성공이 아님")
+        self.assertEqual(M.first_ok(MON, TUE), f"{MON}-local-0.json", "범위를 안 보면(예전) 건너뛰었을 것")
+        again = FakeDart(rows, per=1)
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "2", "GITHUB_RUN_ATTEMPT": "1"}):
+            self.assertEqual(self.CE.final_check(again, CODES_T0, TUE), 0)
+        self.assertEqual({(c["bgn_de"], c["end_de"]) for c in again.calls}, {(SAT, MON)}, "범위로 다시 물음")
+        git_commit_all(self.root)
+        g = self.gate()
+        self.assertTrue(g.allows_new_risk("basket"), g.reasons())
+        self.assertEqual(g.snapshot("basket")["checks"]["events"]["id"], f"{MON}-2-1.json")
+
+    def test_collect_range_pages_zero_and_out_of_range(self):
+        win = {"begin": SAT, "end": MON, "before": FRI}
+        rows = [drow("000040", "주요사항보고서(무상증자결정)", day=SAT, no=1), drow("000030", "현금ㆍ현물배당결정", day=SUN, no=2),
+                drow("000020", "주요사항보고서(자기주식취득결정)", day=MON, no=3)]
+        zero, _ = self.CE.collect_day(FakeDart([]), CODES_T0, MON, "final", day=TUE, window=win)
+        self.assertEqual((zero["ok"], zero["status"], zero["total_count"], zero["query_begin"]), (True, "013", 0, SAT), "범위 0건(013) = 정상")
+        body, _ = self.CE.collect_day(FakeDart(rows, per=1), CODES_T0, MON, "final", day=TUE, window=win)
+        self.assertEqual((body["ok"], body["total_page"], body["pages_received"], body["events"]), (True, 3, 3, 3),
+                         "범위 안 토 · 일 · 월 접수는 정상(다른 날 줄 아님) · 쪽 넘김 끝까지")
+        self.assertEqual(sorted({e[1] for e in body["t0_events"]}), [SAT, SUN, MON])
+        out_row = rows + [drow("000030", "현금ㆍ현물배당결정", day=FRI, no=9)]
+        before = self.data_bytes()
+        with mock.patch.dict(os.environ, {"GITHUB_RUN_ID": "8", "GITHUB_RUN_ATTEMPT": "1"}):
+            bad, _ = self.CE.collect_day(FakeDart(out_row, per=10, dates=False), CODES_T0, MON, "final", day=TUE, window=win)
+        self.assertFalse(bad["ok"])
+        self.assertIn(f"확인 범위 {SAT} ~ {MON} 밖의 다른 접수일 줄 1개", bad["why"], "범위 밖 날만 금지")
+        self.assertEqual(self.data_bytes(), before, "범위 밖 줄이 섞이면 저장하지 않음")
+        cut, _ = self.CE.collect_day(FakeDart(rows, per=1, override={2: [{"status": "013"}]}), CODES_T0, MON, "final", day=TUE, window=win)
+        self.assertFalse(cut["ok"])
+        self.assertIn("일찍 끊김", cut["why"])
+        none, _ = self.CE.collect_day(FakeDart(rows), CODES_T0, SAT, "final", day=TUE)
+        self.assertFalse(none["ok"])
+        self.assertIn("확인 범위", none["why"], "달력으로 범위를 못 정하면(휴장 t0) 실패 manifest")
+
+    def test_regular_record_uses_next_day_basket_window(self):
+        fake = FakeDart([drow("000040", "주요사항보고서(무상증자결정)", day=SAT, no=1)], per=10)
+        self.assertEqual(self.CE.regular(fake, CODES_T0, 5, MON), 0)
+        self.assertEqual([(c["bgn_de"], c["end_de"]) for c in fake.calls], [("20261111", MON), (SAT, MON)], "이어 받기 + 다음 날 바구니 창")
+        body = json.loads(Path(f"event-manifest/{MON}-local-0.json").read_text(encoding="utf-8"))
+        self.assertEqual((body["mode"], body["query_begin"], body["query_end"], body["ok"]), ("regular", SAT, MON, True))
+
+    def test_gate_checks_exact_range_and_query_digest(self):
+        Path("event-data/000040.json").write_text(json.dumps({"code": "000040", "rows": [
+            {"date": SAT, "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"}]}, ensure_ascii=False), encoding="utf-8")
+
+        def put(**kw):
+            shutil.rmtree("event-manifest", ignore_errors=True)
+            Path("event-manifest").mkdir()
+            kw.setdefault("begin", SAT)
+            Path(f"event-manifest/{MON}-local-0.json").write_text(json.dumps(
+                manifest_body("event-data", t0=MON, day=TUE, done="2026-11-16T23:25:00Z", **kw), ensure_ascii=False),
+                encoding="utf-8")
+            git_commit_all(self.root)
+            return self.gate()
+        self.assertTrue(put().allows_new_risk("basket"))
+        for name, kw, word in (("범위가 하루 넓음", dict(begin=FRI), "질의 날"), ("범위가 t0 하루", dict(begin=MON), "질의 날"),
+                               ("질의 끝이 다름", dict(query_end=TUE), "질의 날"),
+                               ("질의 지문이 t0 하루 것", dict(normalized_query_digest=query_sha(MON, MON)), "질의 지문")):
+            with self.subTest(name):
+                g = put(**kw)
+                self.assertFalse(g.allows_new_risk("basket"))
+                self.assertTrue(any(word in r for r in g.reasons(("basket",))), g.reasons(("basket",)))
+
+
+class BasketWindowGate(TmpCwd):
+    """바구니가 실제로 읽을 창(etf-data 거래일에서 t0 바로 앞 날)이 확인 범위와 같아야 열림(check_basket_window)."""
+
+    def gate(self, window=(P, P)):
+        import gates
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        arm()
+        Path("gate-smoke").mkdir(exist_ok=True)
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        g = gates.begin(DAY, "engine", True, live_p=P)
+        g._check("basket")["events"] = {"window": list(window) if window else None}
+        return g
+
+    def test_same_window_opens_hole_or_missing_closes(self):
+        days = weekdays_until(P, 30) + [DAY]
+        g = self.gate()
+        g.check_basket_window(days)
+        self.assertTrue(g.allows_new_risk("basket"), g.reasons())
+        self.assertEqual(g.snapshot("basket")["checks"]["basket_window"], {"t0": P, "before": "20261109", "window": [P, P],
+                                                                           "checked": [P, P]})
+        cases = {"etf-data에 빈 날(앞 거래일 빠짐 → 창이 넓어짐)": ([x for x in days if x != "20261109"], None),
+                 "t0가 거래일 목록에 없음": ([x for x in days if x != P], None),
+                 "확인 범위 없음": (days, ()),
+                 "확인 범위가 다름": (days, ("20261107", P))}
+        for name, (got_days, window) in cases.items():
+            with self.subTest(name):
+                g = self.gate(window=(P, P) if window is None else window)
+                g.check_basket_window(got_days)
+                self.assertFalse(g.allows_new_risk("basket"))
+                self.assertTrue(g.allows_new_risk("engine") and g.allows_new_risk("overlay"), "바구니만 닫음")
+                self.assertTrue(any("바구니 사건 창" in r for r in g.reasons(("basket",))), g.reasons(("basket",)))
+
+    def test_unknown_p_or_error(self):
+        import gates
+        g = gates.Gates(DAY, "engine")
+        g.check_basket_window(weekdays_until(P, 5) + [DAY])
+        self.assertFalse(g.allows_new_risk("basket"))
+        g = self.gate()
+        g.check_basket_window(None)
+        self.assertFalse(g.allows_new_risk("basket"), "창을 못 셈 → 닫힘")
+
+
+class BasketWindowRun(unittest.TestCase):
+    def test_live_t0_changed_after_gate_buys_nothing(self):
+        """문 셈 때 증권사 앞 거래일은 화요일(달력과 같음)인데 바구니 안에서 다시 물으니 월요일 → 확인 안 된 창으로 사지 않음."""
+        extra = {"event-data/000030.json": {"code": "000030", "rows": [
+            {"date": "20261109", "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"}]}}
+        normal = world_run("engine", extra_files=extra)
+        self.assertIn("000040", [o[0] for o in buys(normal)])
+        self.assertNotIn("000030", [o[0] for o in buys(normal)], "월요일 공시는 화요일 t0 창 밖이라 원래도 안 삼")
+        out = world_run("engine", extra_files=extra, live_seq=[P, P, "20261109"])     # 문 셈 · 시장 폭 · 바구니 차례
+        g = gates_file(out)
+        self.assertTrue(g["decisions"]["basket"]["open"], "문 셈 때는 맞았음")
+        self.assertEqual([o[0] for o in buys(out) if o[0] in ("000030", "000040")], [], "바구니 매수 0")
+        self.assertIn(("000020", 200), sells(out), "20거래일 팔기는 그대로")
+        why = audit_of(out, "basket")["결과"]["why"]
+        self.assertTrue(any("공시 확인 범위와 달라" in w for w in why), why)
+        import basket_live
+        with mock.patch.object(basket_live, "window_matches", lambda *a: True):     # 방어를 끄면 확인 안 된 창의 공시를 삼(반례가 진짜임)
+            off = world_run("engine", extra_files=extra, live_seq=[P, P, "20261109"])
+        self.assertIn("000030", [o[0] for o in buys(off)])
+
+    def test_window_matches(self):
+        import basket_live as B
+        snap = {"checks": {"events": {"window": [SAT, MON]}}}
+        self.assertTrue(B.window_matches(snap, MON, FRI))
+        self.assertFalse(B.window_matches(snap, MON, SAT), "앞 날이 다르면 창이 다름")
+        self.assertFalse(B.window_matches(snap, TUE, FRI))
+        self.assertFalse(B.window_matches({"checks": {}}, MON, FRI))
+        self.assertFalse(B.window_matches(snap, None, None))
+        self.assertFalse(B.window_matches({"checks": {"events": {"window": "깨짐"}}}, MON, FRI))
+
+
+# ───────────────────────── 2c단계 B: D5 세션을 지어내지 않음(GPT 구현 검토 6705430244 §2-B) ─────────────────────────
+
+SUNEUNG = "20261119"
+
+
+def suneung_receipt(**kw):
+    body = {"date": SUNEUNG, "source_url": SUNEUNG_URL, "notice_no": "시험공지-수능", "effective_from": SUNEUNG,
+            "raw_sha256": hashlib.sha256(SUNEUNG_RAW).hexdigest(), "open": "1000", "close": "1630"}
+    body.update(kw)
+    return body
+
+
+class SessionCalendar(TmpCwd):
+    """판 고정 달력 읽기: 세션 unknown · 특수 세션 영수증 · 지어낸 시각 거부 · 문이 unknown · 특수 날을 닫음."""
+
+    def smoke(self, day):
+        Path("gate-smoke").mkdir(exist_ok=True)
+        Path(f"gate-smoke/{day}-local-0.json").write_text(json.dumps({"date": day, "ok": True}), encoding="utf-8")
+
+    def test_unknown_day_closes_all_normal_day_opens(self):
+        import gates
+        import trade_calendar as C
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026, unknown=(DAY,))
+        arm()
+        info = C.day_info(DAY)
+        self.assertEqual((info["trading"], info["session"], info["open"], info["close"], info["session_sha256"], info["P"]),
+                         (True, "unknown", None, None, None, P), "세션 원천 없는 날 = 거래일 · 개장 · 마감 없음")
+        self.assertEqual(C.day_info("20261112")["P"], DAY, "unknown 날도 거래일(앞 거래일 셈)")
+        self.smoke(DAY)
+        for run in ("engine", "daily"):
+            g = gates.begin(DAY, run, True, live_p=P)
+            self.assertFalse(any(g.allows_new_risk(d) for d in g.active), run)
+            self.assertTrue(any("세션 원천이 없음" in r for r in g.reasons()), g.reasons())
+            snap = g.snapshot(g.active[0])
+            self.assertEqual((snap["session"], snap["session_kind"], snap["session_sha256"]), ({"open": None, "close": None}, "unknown", None))
+        self.smoke("20261112")
+        g = gates.begin("20261112", "engine", True, live_p=DAY)
+        self.assertTrue(all(g.allows_new_risk(d) for d in g.active), g.reasons())
+        snap = g.snapshot("engine")
+        self.assertEqual((snap["session"], snap["session_kind"], snap["session_sha256"]),
+                         ({"open": "0900", "close": "1530"}, "regular", "1" * 64), "정상 날: 평소 세션 영수증 지문")
+
+    def test_special_session_receipt_and_gate(self):
+        import gates
+        import trade_calendar as C
+        sessions = {"regular": regular_receipt(2026), "special": [suneung_receipt()]}
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026, sessions=sessions,
+                       special={SUNEUNG: {"open": "1000", "close": "1630", "session": "special"}})
+        arm(on="20261118")
+        info = C.day_info(SUNEUNG)
+        self.assertEqual((info["session"], info["open"], info["close"], info["session_sha256"]),
+                         ("special", "1000", "1630", hashlib.sha256(SUNEUNG_RAW).hexdigest()))
+        self.assertEqual(C.day_info("20261120")["P"], SUNEUNG)
+        self.smoke(SUNEUNG)
+        g = gates.begin(SUNEUNG, "engine", True, live_p="20261118")
+        self.assertFalse(any(g.allows_new_risk(d) for d in g.active))
+        self.assertTrue(any("10:00 ~ 16:30" in r and "봇 기준 09:00 ~ 15:30과 다름" in r for r in g.reasons()), g.reasons())
+
+    def test_synthesized_or_mismatched_sessions_are_rejected(self):
+        import trade_calendar as C
+        reg, spec = regular_receipt(2026), suneung_receipt()
+        both = {"regular": reg, "special": [spec]}
+        cases = {
+            "평소 꼴 날에 지어낸 10:00 ~ 16:30": dict(special={SUNEUNG: {"open": "1000", "close": "1630"}}),
+            "특수 꼴인데 영수증 없음": dict(special={SUNEUNG: {"open": "1000", "close": "1630", "session": "special"}}),
+            "영수증은 있는데 그날이 평소 꼴": dict(sessions=both),
+            "영수증은 있는데 그날이 unknown": dict(sessions=both, unknown=(SUNEUNG,)),
+            "특수 시각이 영수증과 다름": dict(sessions=both, special={SUNEUNG: {"open": "1000", "close": "1530", "session": "special"}}),
+            "같은 날 영수증 둘": dict(sessions={"regular": reg, "special": [spec, spec]},
+                                 special={SUNEUNG: {"open": "1000", "close": "1630", "session": "special"}}),
+            "공식 주소 아님": dict(sessions={"regular": dict(reg, source_url="https://example.com/hours"), "special": []}),
+            "https 아님": dict(sessions={"regular": dict(reg, source_url="http://global.krx.co.kr/hours"), "special": []}),
+            "krx 흉내 주소": dict(sessions={"regular": dict(reg, source_url="https://krx.co.kr.example.net/hours"), "special": []}),
+            "원문 지문 꼴": dict(sessions={"regular": dict(reg, raw_sha256="xyz"), "special": []}),
+            "평소 영수증 시행 날 앞의 평소 날": dict(sessions={"regular": dict(reg, effective_from="20260601"), "special": []}),
+            "평소 영수증 시각이 판과 다름": dict(sessions={"regular": dict(reg, close="1600"), "special": []}),
+            "평소 영수증 없음": dict(sessions={"special": []}),
+            "unknown 꼴에 다른 칸": dict(special={DAY: {"session": "unknown", "open": "0900"}}),
+            "모르는 세션 갈래": dict(special={DAY: {"open": "0900", "close": "1530", "session": "half"}}),
+        }
+        for name, kw in cases.items():
+            with self.subTest(name):
+                shutil.rmtree("calendar", ignore_errors=True)
+                write_calendar("calendar", 2026, **kw)
+                self.assertIsNone(C.load_year("2026"), name)
+                self.assertIsNone(C.day_info(DAY), name)
+        body = calendar_body(2026)
+        del body["sessions"]
+        Path("calendar/krx-2026-v2.json").write_text(json.dumps(body), encoding="utf-8")
+        self.assertIsNone(C.load_year("2026"), "세션 칸 없는 판(예전 꼴 · 09:00 ~ 15:30 상수)은 못 씀")
+
+    def test_session_receipts_are_bound_to_calendar_sha(self):
+        import trade_calendar as C
+        a = calendar_body(2026)
+        b = calendar_body(2026, sessions={"regular": regular_receipt(2026, sha="3" * 64), "special": []})
+        self.assertNotEqual(a["normalized_sha256"], b["normalized_sha256"], "평소 영수증 원문 지문이 바뀌면 판 지문이 바뀜")
+        c = calendar_body(2026, sessions={"regular": dict(regular_receipt(2026), fetched_at_utc="2026-11-01T00:00:00Z"), "special": [],
+                                           "unknown": [], "note": "설명", "overlay_sha256": "9" * 64})
+        self.assertEqual(c["normalized_sha256"], a["normalized_sha256"], "받은 시각 · 설명 칸은 판 지문에 안 들어감")
+        tampered = copy.deepcopy(a)
+        tampered["sessions"]["regular"]["raw_sha256"] = "3" * 64                  # 영수증만 고치고 지문은 옛 그대로
+        Path("calendar").mkdir()
+        Path("calendar/krx-2026-v1.json").write_text(json.dumps(tampered), encoding="utf-8")
+        self.assertIsNone(C.load_year("2026"), "영수증을 고치면 지문이 안 맞아 못 씀")
+        for x in ("https://krx.co.kr/a", "https://global.krx.co.kr/b", "https://www.krx.co.kr/c.pdf", "https://kind.krx.co.kr/d"):
+            self.assertTrue(C.official_url(x), x)
+        for x in ("http://krx.co.kr/a", "https://krx.co.kr.evil.example/a", "https://evilkrx.co.kr/a", "ftp://krx.co.kr/a", None, ""):
+            self.assertFalse(C.official_url(x), x)
+
+
+class SessionBuild(CalendarToolCwd):
+    """달력 도구(2c단계): 세션은 overlay 공식 원천을 받아 지문이 맞을 때만 · 아니면 unknown · 평소 세션 원천이 없으면 새 판 없음."""
+
+    def pages(self, **extra):
+        got = {REGULAR_URL: REGULAR_RAW, SUNEUNG_URL: SUNEUNG_RAW, NEWYEAR_URL: NEWYEAR_RAW}
+        got.update(extra)
+        return got
+
+    def days(self, year=2026):
+        return json.loads(Path(f"calendar/krx-{year}-v1.json").read_text(encoding="utf-8"))
+
+    def test_suneung_special_unknown_tamper_and_missing_source(self):
+        import trade_calendar as C
+        sha = hashlib.sha256(SUNEUNG_RAW).hexdigest()
+        cases = {
+            "공식 overlay 확인": (dict(special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")]), {}, "special"),
+            "overlay 없음(SPECIAL_HOURS)": (dict(), {}, "unknown"),
+            "overlay 지문 변조": (dict(special=[(SUNEUNG, SUNEUNG_URL, "f" * 64, "1000", "1630")]), {}, "unknown"),
+            "원천 누락(404)": (dict(special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")]), {SUNEUNG_URL: None}, "unknown"),
+            "원천 연결 오류": (dict(special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")]),
+                         {SUNEUNG_URL: ConnectionError("끊김")}, "unknown"),
+            "공식 주소 밖으로 옮겨 감": (dict(special=[(SUNEUNG, SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")]), {"moved": True}, "unknown"),
+        }
+        for name, (ov, pages, kind) in cases.items():
+            with self.subTest(name):
+                shutil.rmtree("calendar", ignore_errors=True)
+                write_overlay(2026, **ov)
+                moved = pages.pop("moved", False)
+                pg = self.pages(**pages)
+                pg = {k: v for k, v in pg.items() if v is not None}
+                get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages=pg, moved={SUNEUNG_URL} if moved else ())
+                self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0, name)
+                body = self.days()
+                entry = body["days"][SUNEUNG]
+                info = C.day_info(SUNEUNG, folder="calendar")
+                if kind == "special":
+                    self.assertEqual(entry, {"open": "1000", "close": "1630", "session": "special"})
+                    self.assertEqual(info["session_sha256"], sha)
+                    rec = body["sessions"]["special"][0]
+                    self.assertEqual((rec["date"], rec["source_url"], rec["raw_sha256"], rec["notice_no"]),
+                                     (SUNEUNG, SUNEUNG_URL, sha, f"시험공지-{SUNEUNG}"))
+                    self.assertIn(SUNEUNG_URL, [c[0] for c in get.calls], "도구가 그 주소를 직접 받음")
+                else:
+                    self.assertEqual(entry, {"session": "unknown"}, "09:00 ~ 15:30을 쓰지 않음")
+                    self.assertEqual((info["session"], info["open"], info["close"]), ("unknown", None, None))
+                    why = [u["why"] for u in body["sessions"]["unknown"] if u["date"] == SUNEUNG][0]
+                    word = {"overlay 없음(SPECIAL_HOURS)": "SPECIAL_HOURS", "overlay 지문 변조": "원문 sha256",
+                            "원천 누락(404)": "HTTP 404", "원천 연결 오류": "ConnectionError", "공식 주소 밖으로 옮겨 감": "redirect"}[name]
+                    self.assertIn(word, why)
+                    self.assertEqual(body["sessions"]["special"], [])
+                self.assertEqual(body["days"]["20261118"], {"open": "0900", "close": "1530"}, "다른 날은 평소 세션 영수증")
+
+    def test_year_end_new_year_and_special_hours_days(self):
+        import collect_kis_intraday as CI
+        import trade_calendar as C
+        self.assertEqual(self.run_tool([2026, 2027], get=FakeGet({2026: krx_raw(2026, KRX_2026), 2027: krx_raw(2027, KRX_2027)},
+                                                                  pages=self.pages())), 0)
+        d26, d27 = self.days(2026)["days"], self.days(2027)["days"]
+        self.assertEqual((d26["20261230"], d26["20261231"]), ({"open": "0900", "close": "1530"}, None), "연말: 마지막 거래일 평소 · 12-31 휴장")
+        self.assertEqual(d26["20260102"], {"session": "unknown"}, "연초: 새해 첫 거래일(늦게 여는 날) · overlay 없음")
+        self.assertEqual(d27["20270104"], {"session": "unknown"}, "2027 새해 첫 거래일 · SPECIAL_HOURS · overlay 없음")
+        info = C.day_info("20270104", folder="calendar")
+        self.assertEqual((info["P"], info["session"], info["open"]), ("20261230", "unknown", None))
+        self.assertEqual(C.day_info("20270105", folder="calendar")["P"], "20270104")
+        for day in CI.SPECIAL_HOURS:
+            got = (d26 if day.startswith("2026") else d27).get(day) if day[:4] in ("2026", "2027") else None
+            if got is not None:
+                self.assertNotEqual(got, {"open": "0900", "close": "1530"}, f"{day}: 봇 특수 세션 목록에 있는 날은 평소 시각을 쓰지 않음")
+        write_overlay(2027, special=[("20270104", NEWYEAR_URL, NEWYEAR_RAW, "1000", "1530")])
+        self.assertEqual(self.run_tool([2027], get=FakeGet({2027: krx_raw(2027, KRX_2027)}, pages=self.pages()),
+                                       kis=FakeKis(KRX_2027)), 0)
+        self.assertEqual(json.loads(Path("calendar/krx-2027-v2.json").read_text(encoding="utf-8"))["days"]["20270104"],
+                         {"open": "1000", "close": "1530", "session": "special"}, "공식 공지가 확인된 뒤에만 특수 세션")
+        self.assertEqual(C.day_info("20270104", folder="calendar")["session"], "special")
+
+    def test_regular_source_missing_or_bad_keeps_old_version(self):
+        self.assertEqual(self.run_tool([2026]), 0)
+        v1 = Path("calendar/krx-2026-v1.json").read_bytes()
+        extra = KRX_2026 + ("20261120",)                                   # 새 휴장 공지가 있어도 평소 세션 원천이 없으면 새 판을 안 씀
+        sha = hashlib.sha256(REGULAR_RAW).hexdigest()
+        cases = {
+            "평소 세션 영수증 없음": (dict(regular=False), {}, "평소 세션 원천 영수증이 없음"),
+            "overlay 파일 없음": (None, {}, "평소 세션 원천 영수증이 없음"),
+            "평소 원문 지문 변조": (dict(regular=regular_receipt(2026, sha="e" * 64)), {}, "평소 세션 원천을 확인하지 못함"),
+            "평소 원천 못 받음": (dict(), {"pages": {}}, "HTTP 404"),
+            "공식 주소 아님": (dict(regular=regular_receipt(2026, sha=sha, source_url="https://example.com/hours")), {}, "꼴이 이상함"),
+            "overlay 깨짐": ("{", {}, "JSON이 아님"),
+            "특수 세션 날이 휴장": (dict(special=[("20261225", SUNEUNG_URL, SUNEUNG_RAW, "1000", "1630")]), {}, "거래일이 아님"),
+        }
+        for name, (ov, kw, word) in cases.items():
+            with self.subTest(name):
+                op = Path("calendar/sessions-2026.json")
+                if ov is None:
+                    op.unlink(missing_ok=True)
+                elif isinstance(ov, str):
+                    op.write_text(ov, encoding="utf-8")
+                else:
+                    write_overlay(2026, **ov)
+                get = FakeGet({2026: krx_raw(2026, extra)}, pages=kw.get("pages"))
+                self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(extra)), 1, name)
+                self.assertEqual(self.files(), ["krx-2026-v1.json"], "옛 판 유지 · 새 판 없음")
+                self.assertEqual(Path("calendar/krx-2026-v1.json").read_bytes(), v1)
+                said = " ".join(" ".join(str(a) for a in c.args) for c in __import__("builtins").print.call_args_list[-2:])
+                self.assertIn("2026년 달력 판을 쓰지 않음", said)
+                self.assertIn(word, said)
+
+    def test_same_content_no_new_version_and_core_change(self):
+        self.assertEqual(self.run_tool([2026]), 0)
+        self.assertEqual(self.run_tool([2026]), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json"], "받은 시각만 다르면 같은 내용")
+        write_overlay(2026, memo="설명 칸만 더함")
+        self.assertEqual(self.run_tool([2026]), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json"], "overlay 설명 칸만 바뀌면 새 판 없음")
+        write_overlay(2026, regular=regular_receipt(2026, sha=hashlib.sha256(REGULAR_RAW).hexdigest(), notice_no="KRX 공지 1"))
+        self.assertEqual(self.run_tool([2026]), 0)
+        self.assertEqual(self.files(), ["krx-2026-v1.json", "krx-2026-v2.json"], "영수증 핵심(공지 번호)이 바뀌면 새 판")
+
+    def test_dry_run_writes_only_out_folder(self):
+        import trade_calendar as C
+        self.assertEqual(self.B.main(["2026", "--dry-run", "--out", "dry"], client=FakeKis(KRX_2026),
+                                     get=FakeGet({2026: krx_raw(2026, KRX_2026)}), folder="calendar"), 0)
+        self.assertEqual(self.files(), [], "calendar/에는 아무 판도 안 씀")
+        summary = json.loads(Path("dry/2026/summary.json").read_text(encoding="utf-8"))
+        cand = json.loads(Path("dry/2026/candidate.json").read_text(encoding="utf-8"))
+        self.assertEqual((summary["ok"], summary["would_write_version"], summary["same_as_version"]), (True, 1, None))
+        self.assertEqual(summary["normalized_sha256"], cand["normalized_sha256"])
+        self.assertEqual(summary["normalized_sha256"], C.normalized_digest(cand["days"], cand["sessions"]))
+        self.assertEqual(summary["raw_files"]["krx-holidays.json"]["sha256"], hashlib.sha256(krx_raw(2026, KRX_2026)).hexdigest())
+        self.assertEqual(summary["raw_files"]["regular-session"]["sha256"], hashlib.sha256(REGULAR_RAW).hexdigest())
+        self.assertEqual(Path("dry/2026/raw/regular-session").read_bytes(), REGULAR_RAW, "원문 그대로")
+        self.assertEqual(cand["days"][SUNEUNG], {"session": "unknown"})
+        self.assertIn(SUNEUNG, [u["date"] for u in summary["unknown"]])
+        self.assertRegex(summary["digests"]["kis_raw_sha256"], r"^[0-9a-f]{64}$")
+        for f in Path("dry").rglob("*"):
+            if f.is_file():
+                for key in (b'"bass_dt"', b'"wday_dvsn_cd"', b'"sttl_day_yn"'):
+                    self.assertNotIn(key, f.read_bytes(), f"{f}: 증권사 응답 본문(줄)은 남기지 않음 · 지문만")
+        self.assertEqual(self.run_tool([2026]), 0)
+        v1 = json.loads(Path("calendar/krx-2026-v1.json").read_text(encoding="utf-8"))
+        self.assertEqual(v1["normalized_sha256"], cand["normalized_sha256"], "마른 실행 후보 = 실제 판(받은 시각 빼고)")
+        self.assertEqual(self.B.main(["2026", "--dry-run", "--out", "dry2"], client=FakeKis(KRX_2026),
+                                     get=FakeGet({2026: krx_raw(2026, KRX_2026)}), folder="calendar"), 0)
+        again = json.loads(Path("dry2/2026/summary.json").read_text(encoding="utf-8"))
+        self.assertEqual((again["would_write_version"], again["same_as_version"]), (None, 1))
+        self.assertEqual(self.files(), ["krx-2026-v1.json"])
+        for bad in (["2026", "--out", "dry3"], ["2026", "--dry-run"], ["--dry-run", "--out"], ["2026", "--모름"]):
+            self.assertEqual(self.B.main(bad, client=FakeKis(KRX_2026), get=FakeGet({}), folder="calendar"), 1, bad)
+        self.assertFalse(Path("dry3").exists())
+
+    def test_dry_run_without_overlay_saves_candidate_source(self):
+        Path("calendar/sessions-2026.json").unlink()
+        self.assertEqual(self.B.main(["2026", "--dry-run", "--out", "dry"], client=FakeKis(KRX_2026),
+                                     get=FakeGet({2026: krx_raw(2026, KRX_2026)}), folder="calendar"), 1)
+        summary = json.loads(Path("dry/2026/summary.json").read_text(encoding="utf-8"))
+        self.assertFalse(summary["ok"])
+        self.assertIn("평소 세션 원천 영수증이 없음", summary["error"])
+        self.assertEqual(summary["regular_candidates"], [REGULAR_URL])
+        self.assertEqual(summary["raw_files"]["regular-candidate-1"]["sha256"], hashlib.sha256(REGULAR_RAW).hexdigest(),
+                         "사람이 읽고 overlay에 적을 원문 · 지문")
+        self.assertFalse(Path("dry/2026/candidate.json").exists())
+        self.assertEqual(self.files(), [])
+
+
+# ───────────────────────── 2c단계: 부트스트랩 문(GPT 구현 검토 6705430244 §4-4 · gates/ARMED.json) ─────────────────────────
+
+class Arming(TmpCwd):
+    def setUp(self):
+        super().setUp()
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        Path("gate-smoke").mkdir()
+        Path(SMOKE).write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+
+    def begin(self, run="engine"):
+        import gates
+        return gates.begin(DAY, run, True, live_p=P)
+
+    def assertShut(self, g, word):
+        self.assertFalse(any(g.allows_new_risk(d) for d in g.active), g.reasons())
+        hit = [r for r in g.reasons() if r.startswith("첫 실행 확인 전")]
+        self.assertTrue(hit and any(word in r for r in hit), (word, g.reasons()))
+
+    def test_missing_mismatch_bad_future_and_ok(self):
+        import trade_calendar as C
+        for run in ("engine", "daily"):
+            self.assertShut(self.begin(run), "없음")
+        self.assertFalse(self.begin().snapshot("engine")["armed"]["ok"])
+        sha = C.load_year("2026")["sha256"]
+        cases = {"달력 sha256 다름": ({"calendar_sha256": "f" * 64}, "다름"), "확인 날이 오늘보다 뒤": ({"confirmed_on": "20261112"}, "뒤"),
+                 "확인 날 꼴": ({"confirmed_on": "2026-11-10"}, "확인 날 칸"), "작업 번호 없음": ({"run_id": None}, "작업 번호 칸"),
+                 "작업 번호 꼴": ({"run_id": "12a"}, "작업 번호 칸"), "sha256 꼴": ({"calendar_sha256": sha.upper()}, "달력 sha256 칸")}
+        for name, (kw, word) in cases.items():
+            with self.subTest(name):
+                arm(**kw)
+                self.assertShut(self.begin(), word)
+        Path("gates/ARMED.json").write_text("{", encoding="utf-8")
+        self.assertShut(self.begin(), "깨짐")
+        Path("gates/ARMED.json").write_text("[]", encoding="utf-8")
+        self.assertShut(self.begin(), "꼴")
+        body = arm(run_id=4321)                                             # 작업 번호는 수로 적어도 됨
+        g = self.begin()
+        self.assertTrue(all(g.allows_new_risk(d) for d in g.active), g.reasons())
+        got = g.snapshot("basket")["armed"]
+        self.assertEqual((got["ok"], got["calendar_sha256"], got["confirmed_on"], got["run_id"], got["current_calendar_sha256"]),
+                         (True, sha, "20261110", 4321, sha))
+        self.assertEqual(body["calendar_sha256"], sha)
+        write_calendar("calendar", 2026, version=2, holidays=HOLIDAYS_2026 + ("20261120",))   # 새 판 → 다시 확인 전까지 닫힘
+        self.assertShut(self.begin(), "새 판이면 다시 확인")
+
+    def test_gates_file_keeps_armed_and_daily_reads_own(self):
+        import gates
+        arm()
+        g = self.begin("engine")
+        g.save()
+        body = json.loads(Path(f"gates/{DAY}.json").read_text(encoding="utf-8"))
+        self.assertTrue(body["runs"]["engine"]["armed"]["ok"])
+        Path("gates/ARMED.json").unlink()
+        d = gates.begin(DAY, "daily", True, live_p=P)
+        self.assertFalse(d.allows_new_risk("daily"), "1일봉 실행도 자기 차례에 ARMED를 다시 봄")
+        self.assertTrue(d.allows_new_risk("engine"), "엔진 실행이 적은 판단은 그대로")
+
+
+class ArmingRun(unittest.TestCase):
+    def test_unarmed_world_blocks_new_risk_only(self):
+        for name, armed in (("ARMED 없음", False), ("다른 달력 sha256", {"calendar_sha256": "f" * 64})):
+            with self.subTest(name):
+                out = world_run("engine", armed=armed)
+                g = gates_file(out)
+                for d in ("engine", "basket", "overlay"):
+                    self.assertFalse(g["decisions"][d]["open"], d)
+                    self.assertTrue(any(r.startswith("첫 실행 확인 전") for r in g["decisions"][d]["reasons"]))
+                self.assertEqual(buys(out), [], "엔진 · 바구니 · 덧붙임 매수 0")
+                self.assertIn(("000020", 200), sells(out), "바구니 20거래일 팔기는 그대로")
+                self.assertIn(("138230", 1000), sells(out), "엔진 규칙 매도는 그대로")
+                daily = world_run("daily", armed=armed)
+                self.assertEqual(daily["orders"], [["000010", "sell", 100]], "1일봉 매수 0 · 팔기는 그대로")
+
+
+# ───────────────────────── 2c단계: 시작 전 점검(범위 · 첫 실행 확인 문 · 세션) ─────────────────────────
+
+class Smoke2c(TmpCwd):
+    def test_smoke_catches_broken_window_and_armed_checks(self):
+        import event_manifest
+        import gate_smoke
+        import gates
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertTrue(gate_smoke.check(DAY)["ok"], gate_smoke.check(DAY)["reasons"])
+        real = event_manifest.morning_check
+
+        def t0_only(t0, day, decided_at, folder=None, data=None, git=True, calendar_folder=None, window=None):
+            return real(t0, day, decided_at, folder=folder, data=data, git=git, window={"begin": t0, "end": t0, "before": None})
+        with mock.patch.object(event_manifest, "morning_check", t0_only):    # 범위를 t0 하루로만 보는 고장(예전 셈)
+            reasons = gate_smoke.check(DAY)["reasons"]
+        self.assertIn("맞는 아침 확인 manifest를 거부함", reasons, "주말 낀 범위 manifest를 못 여는 고장을 잡음")
+        with mock.patch.object(gates, "armed_status", lambda *a, **k: (True, "", {})):
+            reasons = gate_smoke.check(DAY)["reasons"]
+        self.assertTrue(any("ARMED.json이 없는데 통과시킴" in r for r in reasons), reasons)
+        with mock.patch.object(gates, "armed_status", lambda *a, **k: (False, "첫 실행 확인 전(고장)", {})):
+            reasons = gate_smoke.check(DAY)["reasons"]
+        self.assertTrue(any("'맞는 확인'을 거부함" in r for r in reasons), reasons)
+        self.assertFalse(Path("gates").exists(), "점검은 실제 gates/를 안 건드림")
+
+    def test_smoke_reports_unknown_session(self):
+        import gate_smoke
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026, unknown=(DAY,))
+        body = gate_smoke.check(DAY)
+        self.assertFalse(body["ok"])
+        self.assertEqual(body["session"], "unknown")
+        self.assertIn("달력에 오늘 세션 원천이 없음(session unknown)", body["reasons"])
+
+
+class Structure2c(unittest.TestCase):
+    def test_engine_checks_basket_window_before_basket(self):
+        text = (ROOT / "idle_live.py").read_text(encoding="utf-8")
+        run = text[text.index("def run(now=None):"):]
+        marks = ["gate.check_events()", 'days = [str(d) for d, c in _load(Path("etf-data") / f"{K200}.json"',
+                 "gate.check_basket_window(days)", 'if not gate.allows_new_risk("basket"):', "basket_live.run("]
+        at = [run.index(m) for m in marks]
+        self.assertEqual(at, sorted(at), "바구니 창 검사는 같은 days로 · 바구니를 부르기 전")
+
+    def test_snapshot_keys(self):
+        import gate_smoke
+        for k in ("session_kind", "session_sha256", "armed"):
+            self.assertIn(k, gate_smoke.SNAP_KEYS)
+
+
+# ───────────────────────── 2c단계 C: 필수 CI · 전체 시험 차이 검사 · 달력 마른 실행 작업 흐름 ─────────────────────────
+
+D_BUNDLE = ("tests.test_boost_d tests.test_audit_log tests.test_boost_audit tests.test_daily_live tests.test_paper_trade "
+            "tests.test_idle_live tests.test_idle_signal tests.test_basket_live tests.test_acc_cap tests.test_overlay_live "
+            "tests.test_hourly_a tests.test_collect_events tests.test_investor_history")
+
+
+def diff_tool():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("test_diff", ROOT / "tools" / "test_diff.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+MINI_TESTS = '''import unittest
+
+
+class T(unittest.TestCase):
+    def test_pass(self):
+        self.assertTrue(True)
+
+    def test_old_fail(self):
+        self.assertEqual(1, 2)
+
+    @unittest.skip("건너뜀")
+    def test_skip(self):
+        raise RuntimeError
+
+    @unittest.expectedFailure
+    def test_expected(self):
+        self.assertEqual(1, 2)
+'''
+
+
+class CiDiff(TmpCwd):
+    def git(self, *args, cwd="repo"):
+        env = {k: v for k, v in os.environ.items() if not k.startswith("GIT_")}
+        env.update(GIT_AUTHOR_NAME="시험", GIT_AUTHOR_EMAIL="t@example.invalid", GIT_COMMITTER_NAME="시험",
+                   GIT_COMMITTER_EMAIL="t@example.invalid")
+        got = subprocess.run(["git", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", *args], cwd=cwd, env=env,
+                             capture_output=True, text=True, timeout=120)
+        self.assertEqual(got.returncode, 0, got.stderr)
+        return got.stdout.strip()
+
+    def test_compare_sets(self):
+        T = diff_tool()
+        got = T.compare({"a.T.x", "b.T.y"}, {"a.T.x"})
+        self.assertEqual((got["green"], got["new_failures"], got["fixed"]), (True, [], ["b.T.y"]))
+        got = T.compare({"a.T.x"}, {"a.T.x", "c.T.z"})
+        self.assertEqual((got["green"], got["new_failures"], got["base_failed"], got["head_failed"]),
+                         (False, ["c.T.z"], ["a.T.x"], ["a.T.x", "c.T.z"]))
+        self.assertTrue(T.compare(set(), set())["green"])
+        md = T.summary_md(got, {"base": "b" * 40, "head": "h" * 40, "base_tests": 3, "head_tests": 4})
+        self.assertIn("- `c.T.z`", md)
+        self.assertIn("red", md)
+
+    def test_runner_collects_failures_errors_and_import_errors(self):
+        T = diff_tool()
+        Path("mini/tests").mkdir(parents=True)
+        Path("mini/tests/test_x.py").write_text(MINI_TESTS + '''
+
+    def test_error(self):
+        raise RuntimeError("오류")
+
+    @unittest.expectedFailure
+    def test_unexpected_pass(self):
+        self.assertTrue(True)
+''', encoding="utf-8")
+        Path("mini/tests/test_broken.py").write_text("import 없는_모듈_입니다\n", encoding="utf-8")
+        body = T.run_suite(Path("mini").resolve(), Path("out/x.json").resolve())
+        self.assertEqual(body["tests_run"], 7)
+        bad = T.failed_set(body)
+        self.assertEqual(sorted(bad), ["test_x.T.test_error", "test_x.T.test_old_fail", "test_x.T.test_unexpected_pass",
+                                       "unittest.loader._FailedTest.test_broken"])
+        self.assertIn("test_x.T.test_old_fail", bad)
+        self.assertIn("test_x.T.test_error", bad)
+        self.assertIn("test_x.T.test_unexpected_pass", bad)
+        self.assertTrue(any("test_broken" in x for x in bad), "불러오기 실패도 오류로 셈")
+        self.assertNotIn("test_x.T.test_skip", bad)
+        self.assertNotIn("test_x.T.test_expected", bad)
+        self.assertNotIn("test_x.T.test_pass", bad)
+
+    def test_end_to_end_green_red_with_worktree(self):
+        T = diff_tool()
+        Path("repo/tests").mkdir(parents=True)
+        self.git("-c", "init.defaultBranch=main", "init", "-q", cwd="repo")
+        Path("repo/tests/test_x.py").write_text(MINI_TESTS, encoding="utf-8")
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", "기준")
+        base = self.git("rev-parse", "HEAD")
+        rc = T.main(["--base", base, "--out", str(Path("out1").resolve()), "--root", str(Path("repo").resolve())])
+        diff = json.loads(Path("out1/diff.json").read_text(encoding="utf-8"))
+        self.assertEqual((rc, diff["green"], diff["base_failed"], diff["head_failed"]), (0, True, ["test_x.T.test_old_fail"],
+                                                                                       ["test_x.T.test_old_fail"]),
+                         "같은 기존 실패만 있으면 green")
+        Path("repo/tests/test_x.py").write_text(MINI_TESTS + '''
+    def test_new_fail(self):
+        self.assertEqual("새", "실패")
+''', encoding="utf-8")
+        rc = T.main(["--base", base, "--out", str(Path("out2").resolve()), "--root", str(Path("repo").resolve())])
+        diff = json.loads(Path("out2/diff.json").read_text(encoding="utf-8"))
+        self.assertEqual((rc, diff["green"], diff["new_failures"], diff["head_dirty"]), (1, False, ["test_x.T.test_new_fail"], True),
+                         "커밋 안 한 고침의 새 실패도 red")
+        self.assertIn("test_x.T.test_new_fail", Path("out2/summary.md").read_text(encoding="utf-8"))
+        Path("repo/tests/test_x.py").write_text(MINI_TESTS.replace("self.assertEqual(1, 2)\n\n    @unittest.skip",
+                                                                   "self.assertEqual(1, 1)\n\n    @unittest.skip"), encoding="utf-8")
+        rc = T.main(["--base", base, "--out", str(Path("out3").resolve()), "--root", str(Path("repo").resolve())])
+        diff = json.loads(Path("out3/diff.json").read_text(encoding="utf-8"))
+        self.assertEqual((rc, diff["fixed"], diff["head_failed"]), (0, ["test_x.T.test_old_fail"], []), "기존 실패를 고치면 green")
+        self.assertEqual(self.git("worktree", "list").count("\n"), 0, "기준 판 worktree는 지움")
+        self.assertEqual(T.main(["--base", "없는커밋", "--out", str(Path("out4").resolve()), "--root", str(Path("repo").resolve())]), 1)
+        with mock.patch.object(T, "run_suite", lambda *a, **k: None):
+            self.assertEqual(T.main(["--base", base, "--out", str(Path("out5").resolve()), "--root", str(Path("repo").resolve())]), 1,
+                             "한 판이라도 끝까지 못 돌리면 red")
+
+    def test_workflow_files(self):
+        wf = (ROOT / ".github" / "workflows" / "boost-d-ci.yml").read_text(encoding="utf-8")
+        self.assertIn("pull_request:", wf)
+        self.assertIn("workflow_dispatch:", wf)
+        self.assertIn("claude/boost-d-fixes", wf)
+        self.assertIn(f"python -m unittest -v {D_BUNDLE}", wf, "D 묶음 그대로(필수 job)")
+        self.assertIn("python tools/test_diff.py", wf)
+        self.assertIn("github.event.pull_request.base.sha", wf)
+        self.assertIn("git merge-base origin/main HEAD", wf)
+        self.assertIn("actions/upload-artifact@v4", wf)
+        self.assertIn("fetch-depth: 0", wf)
+        self.assertNotIn("secrets.", wf, "키 없음")
+        self.assertNotIn("continue-on-error", wf, "실패를 숨기지 않음")
+        dry = (ROOT / ".github" / "workflows" / "calendar-dry.yml").read_text(encoding="utf-8")
+        self.assertIn("python tools/build_calendar.py --dry-run --out calendar-dry", dry)
+        for word in ("git push", "git commit", "git add"):
+            self.assertNotIn(word, dry, "커밋 · 올리기 없음")
+        cal = (ROOT / ".github" / "workflows" / "calendar.yml").read_text(encoding="utf-8")
+        for line in ("KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}", "KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}", "KIS_ENV: real"):
+            self.assertIn(line, dry, "달력 작업과 같은 Secrets 이름(시세용 연결 broker_kis.market)")
+            self.assertIn(line, cal)
+        self.assertIn("actions/upload-artifact@v4", dry)
+        self.assertIn("contents: read", dry)
+        self.assertIn("tools/build_calendar.py", dry)
+        self.assertIn("trade_calendar.py", dry)
 
 
 if __name__ == "__main__" and "--golden" in sys.argv:

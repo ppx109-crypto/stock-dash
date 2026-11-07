@@ -13,10 +13,16 @@
   점검 칸은 판단별 checks(snapshot · gates/<날>.json)에 남김.
 - 2b단계: D3 바구니 문(check_events · basket만 닫음) — HEAD의 그날 t0 아침 최종 확인 공시 manifest와 지금 event-data 트리 지문 결속
   (셈은 event_manifest.py · 수집기와 같은 함수) · manifest id는 바구니 점검 칸 events에.
+- 2c단계(GPT 구현 검토 6705430244): ① D3 확인 범위 = 바구니 입력 창(event_manifest.query_window · 달력) · 바구니가 실제로 읽을 창
+  (etf-data 거래일에서 t0 바로 앞 날 < 접수일 ≤ t0)도 그 범위와 같아야 열림(check_basket_window) ② D5 세션: 판에서 오늘 세션이
+  unknown(원천 없음)이거나 봇 기준 09:00 ~ 15:30과 다르면 모든 활성 판단 닫음 ③ 부트스트랩 문(§4-4): gates/ARMED.json(사람이 합친 뒤
+  첫 실제 실행 영수증을 확인하고 적은 달력 sha256 · 확인 날 · 작업 번호)이 없거나 그 sha256이 지금 판과 다르면 모든 활성 판단 닫음
+  (까닭 '첫 실행 확인 전').
 """
 import hashlib
 import json
 import os
+import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
@@ -34,6 +40,9 @@ D1_KEYS = ("ok", "why", "rc", "id", "at", "expected_p", "source_p", "pool_digest
 FLOW_KEYS = ("외국인", "투신", "개인")    # D4: final_group.flow_before가 더하는 칸(외국인 · 기관(투신) · 개인)
 FLOW_DAYS = 5                            # D4: 수급 거래일 수(final_group.FLOW_DAYS와 같음)
 FLOW_POOL_MIN = (9, 10)                  # D4 (가) 문턱 90% — 정수 비로 견줌(맞는 수 × 10 ≥ 풀 수 × 9 · 소수 반올림 없음)
+BOT_SESSION = ("0900", "1530")           # D5: 봇 시각표(15:05 · 15:10 · 15:20)가 기준으로 삼는 정규장 개장 · 마감
+ARMED = "ARMED.json"                     # 부트스트랩 문 파일(문 폴더 안 · 사람이 확인하고 커밋 · 봇은 읽기만)
+ARMED_WHY = "첫 실행 확인 전"
 
 
 def _now():
@@ -81,7 +90,7 @@ class Gates:
         self.calendar_folder = None                        # 판 고정 달력 폴더(begin이 넣음 · D4 최근 5거래일)
         self._flow_days = None                             # D4: 달력 최근 5거래일(P로 끝남 · check_flow_pool이 정함)
         self.body["runs"][run] = {"started": _now(), "sync_ok": None, "head": None, "calendar": None, "live_p": None,
-                                  "cross_ok": None, "smoke": None}
+                                  "cross_ok": None, "smoke": None, "armed": None}
         if run == "engine":
             self.body["d1"] = None
 
@@ -159,11 +168,12 @@ class Gates:
             self.close(self.active, "저장소를 최신으로 맞추지 못함(sync_repo 실패 · 낡은 장부로 판단할 수 있음)")
 
     def set_calendar(self, info, live_p=None):
-        """D5: 판 고정 달력 정보와 2차 대조(실시간 앞 거래일). 못 정함 · 휴장 · 불일치면 이 실행의 활성 판단 모두 닫음."""
+        """D5: 판 고정 달력 정보와 2차 대조(실시간 앞 거래일). 못 정함 · 휴장 · 불일치 · 세션 unknown(원천 없음) ·
+        세션이 봇 기준(09:00 ~ 15:30)과 다름이면 이 실행의 활성 판단 모두 닫음(2c단계: 세션을 지어내지 않음)."""
         import trade_calendar
         r = self._run()
-        r["calendar"] = {k: info.get(k) for k in ("D", "trading", "open", "close", "P", "sha256", "version",
-                                                    "p_sha256", "p_version")} if info else None
+        r["calendar"] = {k: info.get(k) for k in ("D", "trading", "open", "close", "session", "session_sha256", "P", "sha256",
+                                                    "version", "p_sha256", "p_version")} if info else None
         r["live_p"] = live_p
         if not info:
             self.close(self.active, "판 고정 달력으로 오늘 · 앞 거래일을 못 정함(판 없음 · 지문 불일치 · 판에 없는 날)")
@@ -171,10 +181,21 @@ class Gates:
             return
         if not info.get("trading"):
             self.close(self.active, "판 고정 달력에서 오늘은 휴장")
+        elif info.get("session") == "unknown" or not info.get("open") or not info.get("close"):
+            self.close(self.active, "판 고정 달력에 오늘 세션 원천이 없음(session unknown · 개장 · 마감 모름)")
+        elif (info.get("open"), info.get("close")) != BOT_SESSION:
+            o, c = str(info.get("open")), str(info.get("close"))
+            self.close(self.active, f"오늘 세션 {o[:2]}:{o[2:]} ~ {c[:2]}:{c[2:]}({info.get('session')})이 봇 기준 09:00 ~ 15:30과 다름")
         ok, why = trade_calendar.cross_check(info, live_p)
         r["cross_ok"] = ok
         if not ok:
             self.close(self.active, why)
+
+    def set_armed(self, ok, why, info=None):
+        """부트스트랩 문(GPT 구현 검토 §4-4): ARMED.json 확인 결과를 적고, 아니면 이 실행의 활성 판단 모두 닫음."""
+        self._run()["armed"] = dict(info or {}, ok=bool(ok), why=why)
+        if not ok:
+            self.close(self.active, why or ARMED_WHY)
 
     def set_smoke(self, ok, why, body=None):
         """§5: 시작 전 점검 파일(gate-smoke/<날>-<작업 번호>-<시도>.json · 자기 작업 것만). 없거나 ok가 아니면 이 실행의 활성 판단 모두 닫음."""
@@ -247,14 +268,16 @@ class Gates:
             self.close("engine", f"엔진 ETF 종가 날짜 셈 오류 · {type(e).__name__}")
 
     def check_events(self, now=None, folder=None, data=None, git=True):
-        """D3 바구니 문(2b단계 · §1.2): 판단 때 HEAD에 오늘 t0(달력 P)의 **아침 최종 확인 manifest**(query_begin = query_end = t0 ·
-        D = 오늘 · ok · 저장됨 · 완료 시각 < 판단 시각 · 여럿이면 첫 성공)가 있고 그 event_data_tree_digest가 지금 event-data 트리
-        지문과 같을 때만 basket을 열어 둠 · 아니면 **basket만** 닫음(까닭 · manifest id · 지문은 바구니 점검 칸 events).
+        """D3 바구니 문(2b단계 · §1.2 · 2c단계 범위): 판단 때 HEAD에 오늘 t0(달력 P)의 **아침 최종 확인 manifest**(질의 범위 = 달력으로
+        셈한 바구니 입력 창 'P의 앞 거래일 다음 날 ~ P' · 질의 지문 · D = 오늘 · ok · 저장됨 · 완료 시각 < 판단 시각 · 여럿이면 첫 성공)가
+        있고 그 event_data_tree_digest가 지금 event-data 트리 지문과 같고 · 지금 자료의 그 범위 사건 지문이 manifest 사건 지문과 같을 때만
+        basket을 열어 둠 · 아니면 **basket만** 닫음(까닭 · manifest id · 범위 · 지문은 바구니 점검 칸 events).
         19:20 정기 기록만 있으면 닫힘. 달력 P를 못 정했으면 이미 D5 길로 닫혀 있음(그래도 열려 있으면 닫음). 예외 없음."""
         try:
             import event_manifest
             p = self.calendar_p()
-            ok, why, info = event_manifest.morning_check(p, self.day, now or datetime.now(KST), folder=folder, data=data, git=git)
+            ok, why, info = event_manifest.morning_check(p, self.day, now or datetime.now(KST), folder=folder, data=data, git=git,
+                                                         calendar_folder=self.calendar_folder)
             info = dict(info, ok=ok, why=why)
             self._check("basket")["events"] = _copy(info)
             if not p:
@@ -265,6 +288,29 @@ class Gates:
                 self.close("basket", "공시 아침 최종 확인 · " + why)
         except Exception as e:
             self.close("basket", f"공시 확인 셈 오류 · {type(e).__name__}")
+
+    def check_basket_window(self, days):
+        """D3(2c단계): 바구니가 실제로 읽을 사건 창 — basket_live.run과 같은 셈(days = etf-data 거래일 + 오늘 · t0 = 달력 P ·
+        before = days에서 t0 바로 앞 날 · before < 접수일 ≤ t0) — 이 check_events가 확인한 범위(begin ~ end)와 같은지
+        (begin = before 다음 달력일 · end = t0) → 다르면 **basket만** 닫음(etf-data에 빈 날이 있어 창이 넓어지는 헛통과 막기).
+        check_events 뒤 · 바구니 앞에서 부름. 달력 P를 모르면 이미 닫힘(까닭 더하지 않음). 예외 없음."""
+        try:
+            import event_manifest
+            p = self.calendar_p()
+            win = (self._check("basket").get("events") or {}).get("window")
+            got = [str(d) for d in days or []]
+            before = got[got.index(p) - 1] if p in got and got.index(p) > 0 else None
+            want = [event_manifest.day_after(before), p] if before else None
+            self._check("basket")["basket_window"] = {"t0": p, "before": before, "window": want, "checked": win}
+            if not p:
+                if self.allows_new_risk("basket"):
+                    self.close("basket", "달력 앞 거래일을 몰라 바구니 사건 창을 못 견줌")
+                return
+            if not win or want != list(win):
+                self.close("basket", f"바구니 사건 창({before} < 접수일 ≤ {p})이 공시 확인 범위"
+                                     f"({' ~ '.join(win) if win else '없음'})와 다름")
+        except Exception as e:
+            self.close("basket", f"바구니 사건 창 셈 오류 · {type(e).__name__}")
 
     def check_flow_pool(self, pool, day, rows_of):
         """D4 (가) 수급 풀 건강도: 결정과 무관한 고정 풀(전날 시총 150위 + 1일봉 보유 종목)의 investor-data에서 판단 날 앞 마지막 날 =
@@ -334,9 +380,10 @@ class Gates:
             return {"decision": decision_id, "open": self.allows_new_risk(decision_id), "reasons": list(cur.get("reasons") or []),
                     "run": RUN_OF.get(decision_id), "D": cal.get("D") or self.day, "P": cal.get("P"),
                     "session": {"open": cal.get("open"), "close": cal.get("close")} if cal else None,
+                    "session_kind": cal.get("session"), "session_sha256": cal.get("session_sha256"),
                     "calendar_sha256": cal.get("sha256"), "calendar_version": cal.get("version"),
                     "p_calendar_sha256": cal.get("p_sha256"), "live_p": r.get("live_p"), "cross_ok": r.get("cross_ok"),
-                    "sync_ok": r.get("sync_ok"), "head": r.get("head"), "smoke": _copy(r.get("smoke")),
+                    "sync_ok": r.get("sync_ok"), "head": r.get("head"), "smoke": _copy(r.get("smoke")), "armed": _copy(r.get("armed")),
                     "d1": _copy(self.body.get("d1")), "checks": _copy((self.body.get("checks") or {}).get(decision_id) or {})}
         except Exception as e:
             return {"decision": decision_id, "open": False, "reasons": [f"문 기록 만들기 실패 · {type(e).__name__}"]}
@@ -351,13 +398,14 @@ class Gates:
 
 
 def begin(day, run, sync_ok, live_p=None, folder=None, calendar_folder=None, smoke_folder=None):
-    """그 실행의 문을 새로 열고 공통 까닭을 셈: 저장소 맞추기(D6) · 판 고정 달력과 2차 대조(D5) · 시작 전 점검(§5).
-    예외 없음 — 셈 자체가 말썽이면 이 실행의 활성 판단을 닫음(fail-closed)."""
+    """그 실행의 문을 새로 열고 공통 까닭을 셈: 저장소 맞추기(D6) · 판 고정 달력과 2차 대조 · 세션(D5) · 시작 전 점검(§5) ·
+    첫 실행 확인(부트스트랩 문 · gates/ARMED.json). 예외 없음 — 셈 자체가 말썽이면 이 실행의 활성 판단을 닫음(fail-closed)."""
     g = Gates(day, run, folder)
     g.calendar_folder = calendar_folder
     steps = (("저장소 맞추기", lambda: g.set_sync(sync_ok)),
              ("달력", lambda: _calendar(g, day, live_p, calendar_folder)),
-             ("시작 전 점검", lambda: _smoke(g, day, smoke_folder)))
+             ("시작 전 점검", lambda: _smoke(g, day, smoke_folder)),
+             ("첫 실행 확인", lambda: _armed(g, day)))
     for name, fn in steps:
         try:
             fn()
@@ -375,6 +423,54 @@ def _smoke(g, day, folder):
     import gate_smoke
     ok, why, body = gate_smoke.status(day, folder=folder)
     g.set_smoke(ok, why, body)
+
+
+def _armed(g, day):
+    cal = (g.body["runs"].get(g.run) or {}).get("calendar") or {}
+    ok, why, info = armed_status(cal.get("sha256"), day, folder=g.folder)
+    g.set_armed(ok, why, info)
+
+
+def armed_status(calendar_sha256, day, folder=None):
+    """부트스트랩 문(GPT 구현 검토 6705430244 §4-4): 합친 뒤 첫 실제 실행 영수증(D · P · 세션 · 원천 지문 · 금지 매수 0)을 사람이 확인하기
+    전에는 새 위험 증가를 열지 않음. 문 폴더의 ARMED.json = {"calendar_sha256": 확인한 판 고정 달력 sha256(그 판의 정규화 지문),
+    "confirmed_on": 확인 날 YYYYMMDD, "run_id": 확인한 작업 번호} (사람이 쓰고 커밋 · 봇은 읽기만).
+    → (열림, 까닭, 기록 칸). 파일 없음 · 깨짐 · 칸 이상 · 확인 날이 오늘(day)보다 뒤 · 달력 sha256이 지금 판(calendar_sha256)과 다르면 닫힘
+    (까닭은 언제나 '첫 실행 확인 전'으로 시작). 예외 없음."""
+    folder = Path(folder) if folder is not None else FOLDER
+    info = {"file": (folder / ARMED).as_posix(), "calendar_sha256": None, "confirmed_on": None, "run_id": None,
+            "current_calendar_sha256": calendar_sha256}
+    try:
+        raw = (folder / ARMED).read_text(encoding="utf-8")
+    except OSError:
+        return False, f"{ARMED_WHY}(gates/{ARMED} 없음 · 첫 실제 실행 영수증을 사람이 확인한 뒤 적음)", info
+    try:
+        body = json.loads(raw)
+    except ValueError:
+        return False, f"{ARMED_WHY}(gates/{ARMED}가 깨짐)", info
+    if not isinstance(body, dict):
+        return False, f"{ARMED_WHY}(gates/{ARMED} 꼴이 이상함)", info
+    sha, on, rid = body.get("calendar_sha256"), body.get("confirmed_on"), body.get("run_id")
+    info.update(calendar_sha256=sha, confirmed_on=on, run_id=rid)
+    bad = []
+    if not (isinstance(sha, str) and re.fullmatch(r"[0-9a-f]{64}", sha)):
+        bad.append("달력 sha256 칸")
+    try:
+        datetime.strptime(str(on), "%Y%m%d")
+        if not re.fullmatch(r"\d{8}", str(on)):
+            raise ValueError
+    except ValueError:
+        bad.append("확인 날 칸")
+    if not re.fullmatch(r"[0-9]+", str(rid if rid is not None else "")):
+        bad.append("작업 번호 칸")
+    if bad:
+        return False, f"{ARMED_WHY}(gates/{ARMED}의 " + " · ".join(bad) + "이 이상함)", info
+    if str(on) > str(day):
+        return False, f"{ARMED_WHY}(확인 날 {on}이 오늘 {day}보다 뒤)", info
+    if not calendar_sha256 or sha != calendar_sha256:
+        return False, (f"{ARMED_WHY}(확인한 달력 sha256 {sha[:12]}이 지금 판 "
+                       f"{str(calendar_sha256)[:12] if calendar_sha256 else '없음'}과 다름 · 새 판이면 다시 확인)"), info
+    return True, "", info
 
 
 # ───────────────────────── D4 셈(증권사 없이 · 시험할 수 있게) ─────────────────────────

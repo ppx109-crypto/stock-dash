@@ -5,8 +5,11 @@
   ② 오늘 day_info: 오늘 · 앞 거래일(P) · 개장 · 마감을 정할 수 있는지
   ③ 문 출력 꼴: 문을 닫고 · 기록(snapshot) · 저장 · 다시 읽기가 정해진 꼴인지(임시 폴더에서)
   ④ 옛 출력 거부: D1 검증(paper_trade.d1_check)이 어제 날짜 · 14:30 전 · 시세 빠짐 · P 다름 본문을 거부하고 맞는 본문만 통과시키는지
-  ⑤ 공시 manifest 결속(2b단계 · D3): 바구니 문 검사(event_manifest.morning_check)가 맞는 아침 최종 확인만 통과시키고 19:20 정기만 ·
-     ok 거짓 · 판단 뒤 완료 · 질의 날 다름 · 트리 지문 다름을 거부하는지(합성 · 임시 폴더 · 실제 manifest가 있는지는 보지 않음)
+  ⑤ 공시 manifest 결속(2b단계 · D3 · 2c단계 범위): 바구니 문 검사(event_manifest.morning_check)가 맞는 아침 최종 확인(주말 낀 범위 ·
+     범위 안 주말 접수 사건 포함)만 통과시키고 19:20 정기만 · ok 거짓 · 판단 뒤 완료 · 질의 날 다름 · 질의 시작이 t0 하루 · 질의 지문 다름 ·
+     트리 지문 다름 · 범위 안 사건이 manifest에서 빠짐을 거부하는지(합성 · 임시 폴더 · 실제 manifest가 있는지는 보지 않음)
+  ⑥ 첫 실행 확인 문(2c단계 · GPT §4-4): gates.armed_status가 ARMED.json 없음 · 달력 sha256 다름 · 확인 날이 뒤를 거부하고 맞는 것만 통과시키는지
+     (합성 · 임시 폴더) · 오늘 판의 세션이 unknown이면 그것도 까닭으로 적음
 결과: gate-smoke/<날>-<작업 번호>-<시도>.json(ok · 판 · 까닭 · 로컬은 <날>-local-0.json) — 2b단계부터 작업마다 다른 이름이라 같은 날
 뒤 작업이 앞 작업 파일을 덮지 않고, 새 파일은 추적 밖이라 15:10 저장소 맞추기(git pull --rebase)를 막지 않음(로컬 커밋 필요 없음).
 봇은 **자기 작업 · 시도의 파일만** 읽고, 없거나 · 오늘 것이 아니거나 · 본문의 작업 번호 · 시도가 다르거나 · ok가 아니면 그 실행의
@@ -23,8 +26,8 @@ from zoneinfo import ZoneInfo
 
 KST = ZoneInfo("Asia/Seoul")
 FOLDER = Path("gate-smoke")
-SNAP_KEYS = ("decision", "open", "reasons", "run", "D", "P", "session", "calendar_sha256", "calendar_version",
-             "p_calendar_sha256", "live_p", "cross_ok", "sync_ok", "head", "smoke", "d1", "checks")
+SNAP_KEYS = ("decision", "open", "reasons", "run", "D", "P", "session", "session_kind", "session_sha256", "calendar_sha256",
+             "calendar_version", "p_calendar_sha256", "live_p", "cross_ok", "sync_ok", "head", "smoke", "armed", "d1", "checks")
 
 
 def _gate_shape(day):
@@ -70,35 +73,67 @@ def _old_output_rejected(day, p):
 
 
 def _manifest_binding(day, p):
-    """⑤ 공시 manifest 결속(합성 · 임시 폴더 · git 확인은 빼고 칸 · 지문만) → 까닭 목록."""
+    """⑤ 공시 manifest 결속(합성 · 임시 폴더 · git 확인은 빼고 칸 · 지문 · 범위만) → 까닭 목록.
+    합성 범위 = 'p 이틀 앞 ~ p'(주말을 낀 월요일 t0처럼) · 범위 첫날(주말) 접수 사건 1건 + t0 사건 1건."""
     from datetime import timedelta, timezone
     import event_manifest as M
     bad = []
     with tempfile.TemporaryDirectory() as tmp:
         data, folder = Path(tmp) / "event-data", Path(tmp) / "event-manifest"
         data.mkdir()
-        (data / "000001.json").write_text(json.dumps({"code": "000001", "rows": [{"date": p, "kind": "무상증자", "title": "점검"}]},
-                                                     ensure_ascii=False), encoding="utf-8")
+        t0 = datetime.strptime(p, "%Y%m%d")
+        begin = (t0 - timedelta(days=2)).strftime("%Y%m%d")
+        win = {"begin": begin, "end": p, "before": (t0 - timedelta(days=3)).strftime("%Y%m%d")}
+        rows = [{"date": begin, "kind": "무상증자", "title": "점검(주말 접수)"}, {"date": p, "kind": "무상증자", "title": "점검"}]
+        (data / "000001.json").write_text(json.dumps({"code": "000001", "rows": rows}, ensure_ascii=False), encoding="utf-8")
+        events = M.normalize([("000001", r["date"], r["kind"], r["title"]) for r in rows])
         decided = datetime(int(day[:4]), int(day[4:6]), int(day[6:]), 15, 10, tzinfo=KST)
         good = {k: None for k in M.FIELDS}
-        good.update(kind=M.KIND, version=M.VERSION, mode="final", t0=p, D=day, query_begin=p, query_end=p, ok=True, persisted=True,
-                    event_data_tree_digest=M.tree_digest(data), GITHUB_RUN_ID="1", GITHUB_RUN_ATTEMPT="1",
-                    completed_at_utc=(decided - timedelta(hours=6)).astimezone(timezone.utc).strftime(M.UTC_FORM))
+        good.update(kind=M.KIND, version=M.VERSION, mode="final", t0=p, D=day, query_begin=begin, query_end=p, ok=True, persisted=True,
+                    normalized_query_digest=M.query_digest(begin, p), normalized_event_digest=M.digest(events),
+                    stored_event_digest=M.digest(events), event_data_tree_digest=M.tree_digest(data), GITHUB_RUN_ID="1",
+                    GITHUB_RUN_ATTEMPT="1", completed_at_utc=(decided - timedelta(hours=6)).astimezone(timezone.utc).strftime(M.UTC_FORM))
 
         def opens(body):
             for f in folder.glob("*.json"):
                 f.unlink()
             M.write(body, folder)
-            return M.morning_check(p, day, decided, folder=folder, data=data, git=False)[0]
+            return M.morning_check(p, day, decided, folder=folder, data=data, git=False, window=win)[0]
         if not opens(good):
             bad.append("맞는 아침 확인 manifest를 거부함")
         late = (decided + timedelta(minutes=1)).astimezone(timezone.utc).strftime(M.UTC_FORM)
+        short = M.digest(events[1:])
         for name, change in (("19:20 정기만", {"mode": "regular"}), ("ok 거짓", {"ok": False}), ("판단 뒤 완료", {"completed_at_utc": late}),
-                             ("질의 날 다름", {"query_end": day}), ("트리 지문 다름", {"event_data_tree_digest": "0" * 64})):
+                             ("질의 날 다름", {"query_end": day}), ("질의 시작이 t0 하루", {"query_begin": p}),
+                             ("질의 지문 다름", {"normalized_query_digest": M.query_digest(p, p)}),
+                             ("트리 지문 다름", {"event_data_tree_digest": "0" * 64}),
+                             ("범위 안 사건 빠짐", {"normalized_event_digest": short, "stored_event_digest": short})):
             body = dict(good)
             body.update(change)
             if opens(body):
                 bad.append(f"{name} manifest를 통과시킴")
+    return bad
+
+
+def _armed_check(day):
+    """⑥ 첫 실행 확인 문(합성 · 임시 폴더) → 까닭 목록."""
+    import gates
+    bad = []
+    sha = "a" * 64
+    with tempfile.TemporaryDirectory() as tmp:
+        if gates.armed_status(sha, day, folder=tmp)[0]:
+            bad.append("ARMED.json이 없는데 통과시킴")
+        f = Path(tmp) / gates.ARMED
+        for name, body, want in (("맞는 확인", {"calendar_sha256": sha, "confirmed_on": day, "run_id": "1"}, True),
+                                 ("달력 sha256 다름", {"calendar_sha256": "b" * 64, "confirmed_on": day, "run_id": "1"}, False),
+                                 ("확인 날이 뒤", {"calendar_sha256": sha, "confirmed_on": "29991231", "run_id": "1"}, False),
+                                 ("작업 번호 없음", {"calendar_sha256": sha, "confirmed_on": day}, False)):
+            f.write_text(json.dumps(body), encoding="utf-8")
+            ok, why, _ = gates.armed_status(sha, day, folder=tmp)
+            if ok != want:
+                bad.append(f"첫 실행 확인 문이 '{name}'을 {'거부함' if want else '통과시킴'}")
+            elif not ok and not why.startswith(gates.ARMED_WHY):
+                bad.append("첫 실행 확인 문의 까닭 꼴이 다름")
     return bad
 
 
@@ -120,11 +155,15 @@ def check(day, calendar_folder=None):
         else:
             body["P"] = info["P"]
             body["trading"] = info["trading"]
+            body["session"] = info.get("session")
             if not info["trading"]:
                 reasons.append("달력에서 오늘은 휴장")
+            elif info.get("session") == "unknown":
+                reasons.append("달력에 오늘 세션 원천이 없음(session unknown)")
         reasons += _gate_shape(day)
         reasons += _old_output_rejected(day, (info or {}).get("P") or "20000101")
-        reasons += _manifest_binding(day, (info or {}).get("P") or "20000101")
+        reasons += _manifest_binding(day, (info or {}).get("P") or "20000110")
+        reasons += _armed_check(day)
     except Exception as e:
         reasons.append(f"점검 중 오류 · {type(e).__name__}")
     body["reasons"] = reasons

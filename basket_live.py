@@ -158,6 +158,20 @@ def load_events(codes=None, folder="event-data"):
     return out
 
 
+def window_matches(gate, t0, before):
+    """BOOST-0001-D D3(2c단계): 바구니가 쓴 사건 창(before < 접수일 ≤ t0)이 문 기록(gates snapshot)의 공시 확인 범위
+    checks.events.window = [begin, end]와 같은가(begin = before 다음 달력일 · end = t0). 꼴이 이상하거나 모르면 거짓."""
+    from datetime import date, timedelta
+    try:
+        win = ((gate.get("checks") or {}).get("events") or {}).get("window")
+        if not (t0 and before and isinstance(win, list) and len(win) == 2):
+            return False
+        nxt = (date(int(before[:4]), int(before[4:6]), int(before[6:])) + timedelta(days=1)).strftime("%Y%m%d")
+        return [str(win[0]), str(win[1])] == [nxt, str(t0)]
+    except Exception:
+        return False
+
+
 def held_now(account):
     """바구니 장부 수량(계좌에 실제로 있는 만큼까지)."""
     book = _load(BOOK, {"orders": [], "held": {}})
@@ -169,7 +183,8 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
     avail: 쓸 수 있는 현금 · others: 다른 규칙 · 엔진이 들고 있는 종목(바구니는 안 삼 · 한 종목 40% 한도 지키기) ·
     quote(code) → 지금 값 또는 None · days: 오늘까지 거래일(오래된 → 오늘).
     BOOST-0001-D: 새 위험 증가가 막힌 날은 부르는 쪽이 capital = avail = 0을 넘김(step이 사지 않고 20거래일 팔기만 함) ·
-    gate = 문 기록(gates.Gates.snapshot('basket') · 판단 기록 곁 칸에만 씀).
+    gate = 문 기록(gates.Gates.snapshot('basket') · 판단 기록 곁 칸) — 2c단계: 문 기록이 있으면 여기서 실제로 쓴 사건 창(before < 접수일 ≤ t0)이
+    문이 확인한 공시 범위(checks.events.window)와 같을 때만 삼(다르면 돈 0 · 팔기는 그대로 · 증권사 앞 거래일이 문 셈 뒤 바뀐 날 막기).
     돌려줌: (디스코드 줄들, 오늘 주문 뒤 바구니 평가액, 오늘 바구니가 쓴 현금(산 것 − 판 것))."""
     import broker_kis
     import data_guard
@@ -191,6 +206,10 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
         ev = todays_events(load_events(), t0, before)
     else:                                            # 어제 거래일을 못 알면 새로 사지 않고 팔 것만
         before, react, inside, ev = None, {}, set(), []
+    window_note = None
+    if isinstance(gate, dict) and (capital > 0 or avail > 0) and not window_matches(gate, t0, before):
+        capital, avail = 0.0, 0.0                    # BOOST-0001-D D3: 확인 안 된 창으로는 새로 사지 않음(팔기는 그대로)
+        window_note = f"⚠️ 바구니 사건 창({before} < 접수일 ≤ {t0})이 공시 확인 범위와 달라 새로 안 삼(팔기는 그대로)"
     pos = {d: i for i, d in enumerate(days)}
 
     def days_since(d):
@@ -211,6 +230,8 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
     ds_calls = []
     orders, new_state, why = step(state, day, t0, _audit.recorder(days_since, ds_calls) if _audit else days_since, ev, react, inside,
                                   held, now_price, capital=max(0.0, capital), avail=avail, names=names, others=set(others))
+    if window_note:
+        why.insert(0, window_note)
     if _audit:
         _audit.safe(lambda: _audit.record(STATE, day, "basket", basket_in, {"orders": orders, "new_state": new_state, "why": why},
                                           ledgers=(BOOK, STATE), code=_CODE, extra={
@@ -250,6 +271,8 @@ def run(client, broker, day, account, total, capital, avail, quote, days, others
                                "price": now_price.get(code)})
         mark = "✅ 접수" if status.startswith("접수") else "❌ 거절"
         short.append(f"🧺 {'매수' if side == 'buy' else '매도'} {names.get(code, code)} {qty:,}주 → {mark} · {reason.split(' — ')[-1]}")
+    if window_note:
+        short.insert(0, window_note)
     book["orders"] = book["orders"][-5000:]
     _save(BOOK, book)
     _save(STATE, new_state)
