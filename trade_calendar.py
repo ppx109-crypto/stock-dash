@@ -1,4 +1,5 @@
 """판 고정 거래 달력 읽기 · 검증(BOOST-0001-D 사전등록 판 3 §1.4 · D5 · 1단계: 읽기 · 검증만 · 만드는 도구는 다음 단계).
+2a단계: last_days(D4 '최근 5거래일') · latest_done(수급 · 거래량 수집기 목표 날)을 더함 — 둘 다 같은 판만 읽음.
 
 - 파일: calendar/krx-<해>-v<번호>.json. 공지가 바뀌면 새 번호 판을 더하고 옛 판은 덮지 않음 → 그 해의 **가장 큰 번호 판**만 씀
   (가장 큰 판이 깨졌거나 지문이 안 맞으면 작은 판으로 내려가지 않고 '못 정함' · 옛 공지로 조용히 돌아가지 않게).
@@ -120,6 +121,40 @@ def day_info(day, folder=None):
             "close": entry["close"] if entry else None, "P": p,
             "sha256": cur["sha256"], "version": cur["version"], "file": cur["path"],
             "p_sha256": py["sha256"], "p_version": py["version"], "p_file": py["path"]}
+
+
+def last_days(day, n, folder=None):
+    """D 앞 거래일 n개(오래된 → 새 · 마지막 = P) — 판 고정 달력만으로(D4 '최근 5거래일').
+    못 정하면 None(판 없음 · 지문 불일치 · 판에 없는 날을 만남 · 해가 바뀌면 전해 판도 있어야 함)."""
+    try:
+        day, n = str(day), int(n)
+        d = date(int(day[:4]), int(day[4:6]), int(day[6:]))
+    except (TypeError, ValueError):
+        return None
+    if n < 1:
+        return None
+    years, out = {}, []
+    for _ in range(BACK * n):
+        d -= timedelta(days=1)
+        k = d.strftime("%Y%m%d")
+        if k[:4] not in years:
+            years[k[:4]] = load_year(k[:4], folder)
+        y = years[k[:4]]
+        if y is None or k not in y["days"]:
+            return None
+        if y["days"][k] is not None:
+            out.append(k)
+            if len(out) == n:
+                return out[::-1]
+    return None
+
+
+def latest_done(today, folder=None):
+    """수집기 목표 날(D4 수급 · D7 거래량): today(한국 날짜 YYYYMMDD) 앞 마지막 거래일 = 장이 끝나 자료가 다 나왔을 가장 늦은 거래일(P).
+    밤(자정 뒤)에 도는 수집이면 바로 그날 장, 자정 전에 돌면 그 앞 거래일(예전 '실행 시각의 어제'와 같은 날).
+    판 고정 달력으로 못 정하면 None(부르는 쪽은 예전 방식 그대로 · 수집을 멈추지 않음)."""
+    info = day_info(today, folder=folder)
+    return info["P"] if info else None
 
 
 def cross_check(info, live_p):

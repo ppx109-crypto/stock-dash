@@ -227,6 +227,19 @@ def history(code, day):
     return [float(c) for d, c in body.get("closes", []) if c and str(d) < day]
 
 
+def etf_last_days(day):
+    """BOOST-0001-D D2: 엔진 ETF 7개(CODES)마다 판단에 쓴 종가의 마지막 날(history와 같은 거르기 · D 앞 · 못 읽으면 None · 예외 없음)."""
+    out = {}
+    for code in CODES:
+        try:
+            body = _load(Path("etf-data") / f"{code}.json", {})
+            used = [str(d) for d, c in body.get("closes", []) if c and str(d) < day]
+            out[code] = used[-1] if used else None
+        except Exception:
+            out[code] = None
+    return out
+
+
 def live_breadth(client, day):
     """1일봉 봇과 같은 길로 지금 시장 폭(%)을 셈(전날 시총 150위 지금 값 → final_group.compute)."""
     import caps
@@ -358,6 +371,8 @@ def run(now=None):
         h = history(code, day)
         if code in now_price and len(h) >= 25:
             px[code] = np.array(h + [now_price[code]])
+    # BOOST-0001-D D2: 엔진 ETF 7개가 판단에 쓴 종가 마지막 날 = 달력 P인지(하나라도 아니면 엔진만 새 매수 막음 · 바구니 · 덧붙임은 그대로)
+    gate.check_etf(etf_last_days(day))
     try:
         breadth = live_breadth(client, day)
     except Exception as e:           # 시장 폭을 못 세면 새로 사지 않고 팔 것만(엔진 끔으로 봄)

@@ -20,7 +20,7 @@ from zoneinfo import ZoneInfo
 KST = ZoneInfo("Asia/Seoul")
 FOLDER = Path("gate-smoke")
 SNAP_KEYS = ("decision", "open", "reasons", "run", "D", "P", "session", "calendar_sha256", "calendar_version",
-             "p_calendar_sha256", "live_p", "cross_ok", "sync_ok", "head", "smoke", "d1")
+             "p_calendar_sha256", "live_p", "cross_ok", "sync_ok", "head", "smoke", "d1", "checks")
 
 
 def _gate_shape(day):
@@ -36,7 +36,8 @@ def _gate_shape(day):
             bad.append("닫기 · 열림 판정이 이상함")
         for d in gates.DECISIONS:
             snap = g.snapshot(d)
-            if tuple(snap) != SNAP_KEYS or not isinstance(snap["open"], bool) or not isinstance(snap["reasons"], list):
+            if tuple(snap) != SNAP_KEYS or not isinstance(snap["open"], bool) or not isinstance(snap["reasons"], list) \
+                    or not isinstance(snap["checks"], dict):
                 bad.append(f"{d} 기록 꼴이 다름")
         if g.save() is None:
             bad.append("문 파일을 쓰지 못함")

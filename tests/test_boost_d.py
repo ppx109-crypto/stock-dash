@@ -1,10 +1,12 @@
-"""BOOST-0001-D 1단계(사전등록 판 3 §4-1 가운데 1단계 반례) 시험.
+"""BOOST-0001-D 1단계 · 2a단계(사전등록 판 3 §4-1 반례) 시험.
 
 - 공통 문(gates) · 판 고정 달력(trade_calendar) · 시작 전 점검(gate_smoke) · D6(저장소 맞추기 실패) · D1(15:05 같은 작업 안 다시 셈) ·
   덧붙임 buy_ok(교체면 매도만 + applied = "pending") · 판단 기록 곁 칸 gates · 기록 · 문 파일 쓰기 실패가 매매를 멈추지 않음.
 - **문이 모두 열리면 고치기 전 코드와 주문 · 장부 · 알림이 바이트까지 같음**: 같은 가짜 세상(가짜 증권사 · 가짜 시계 · 임시 폴더)을
   고치기 전 판(BASE · origin/main)으로 돌린 결과를 tests/fixtures/boost_d_golden.json에 얼려 두고 지금 코드 결과와 견줌.
   BASE 커밋이 있는 곳(로컬)에서는 그 얼린 결과가 정말 BASE 코드의 결과인지도 다시 돌려 확인(얕은 받기 CI에서는 그 하나만 건너뜀).
+- 2a단계: D2(엔진 ETF 마지막 날 = 달력 P → 엔진만 닫음) · D4 두 층(풀 건강도 89% / 90% · 후보 단계 주문 안전 거르기 ·
+  낡은 상위 1 + 정상 차순위 1 + 빈 칸 1 → 정상 차순위를 삼) · 수급 수집 목표 P · D7 거래량 건너뛰기 · 감사 셈 문 양방향(끝까지 이은 시험).
 - 실제 증권사 · DART를 부르지 않음 · 비밀값 없음(가짜 키 글자만)."""
 import copy
 import hashlib
@@ -27,7 +29,7 @@ KST = ZoneInfo("Asia/Seoul")
 BASE = "f1ee92c6f1f61af54d73ac1183c71c822f458123"          # 고치기 전 판(origin/main · 이 가지가 갈라진 곳)
 CHANGED = ("paper_trade.py", "idle_live.py", "daily_live.py", "basket_live.py", "overlay_live.py", "hourly_a.py")
 GOLDEN = ROOT / "tests" / "fixtures" / "boost_d_golden.json"
-SCENARIOS = ("engine", "engine_room", "engine_swap", "daily")
+SCENARIOS = ("engine", "engine_room", "engine_swap", "daily", "daily_multi")
 DAY, P = "20261111", "20261110"                            # 수요일 · 앞 거래일(화)
 HOLIDAYS_2026 = ("20261005", "20261009", "20261225", "20261231")
 MARK = "@@BOOSTD@@"
@@ -75,6 +77,25 @@ def write_calendar(folder, year, version=1, **kw):
 
 STOCKS = {"000010": ("가", 50000.0), "000020": ("나", 10000.0), "000030": ("다", 20000.0), "000040": ("라", 5000.0)}
 FOUND = {"date": DAY, "breadth": 40.0, "picks": [{"code": "000030", "name": "다", "갈래": ["추세 규칙"]}], "b_group": []}
+# 1일봉 후보 여럿(기울기 차례 · 빈 칸 자르기까지 고치기 전과 같은지 · 2a단계 얼린 장면 daily_multi)
+FOUND_MULTI = {"date": DAY, "breadth": 40.0, "b_group": [], "picks": [
+    {"code": "000040", "name": "라", "갈래": ["정배열 추세"], "추세 기울기": 2.0},
+    {"code": "000030", "name": "다", "갈래": ["추세 규칙"], "추세 기울기": 3.0},
+    {"code": "000020", "name": "나", "갈래": ["정배열 추세"], "추세 기울기": 1.0}]}
+FLOW_COLS = ["date", "개인", "외국인", "기관", "투신", "연기금", "사모", "종가"]
+
+
+def flow_body(code, end=P, n=10, hole=None, empty=None):
+    """가짜 investor-data 한 종목(end까지 평일 n줄 · 외국인 · 투신 +, 개인 −) · hole = 뺄 날 · empty = 칸을 비울 (날, 칸)."""
+    rows = []
+    for d in weekdays_until(end, n):
+        if d == hole:
+            continue
+        row = [d, -10.0, 5.0, 3.0, 4.0, 1.0, 1.0, 100.0]
+        if empty and empty[0] == d:
+            row[FLOW_COLS.index(empty[1])] = None
+        rows.append(row)
+    return {"code": code, "cols": FLOW_COLS, "rows": rows, "처음까지": True}
 
 
 class Clock:
@@ -170,7 +191,8 @@ def build_world(root, kind, opt):
               "132030": [100.0] * 40 + [100.0 - 1.0 * (k + 1) / 20 for k in range(20)],
               "148070": [100.0] * 40 + [100.0 + 3.0 * (k + 1) / 20 for k in range(20)]}
     for code, xs in series.items():
-        w(f"etf-data/{code}.json", {"closes": [[d, x] for d, x in zip(days, xs)]})
+        rows = [[d, x] for d, x in zip(days, xs)]
+        w(f"etf-data/{code}.json", {"closes": rows[:-1] if code in opt.get("etf_stale", ()) else rows})   # etf_stale: P 줄이 빠짐(D2)
     px = {"069500": 100.0 if flat else 130.5, "138230": 100.0, "251340": 100.0, "229200": 100.0, "133690": 105.0,
           "132030": 99.0, "148070": 103.0, "122630": 10000.0, "114800": 5000.0}
     last5 = days[-5:] if opt.get("prices_last") is None else weekdays_until(opt["prices_last"], 5)
@@ -182,6 +204,9 @@ def build_world(root, kind, opt):
     for code, (name, v) in STOCKS.items():
         prices[code] = {"name": name, "rows": [(d, v) for d in last5]}
         px[code] = v
+    for code in prices:                                   # 수급(D4): 기본은 모두 P까지 · flow_stale은 P−1에서 끝남 · flow_files로 바꿔 끼움
+        w(f"investor-data/{code}.json", (opt.get("flow_files") or {}).get(code) or
+          flow_body(code, end=weekdays_until(P, 2)[0] if code in opt.get("flow_stale", ()) else P))
     w("event-data/000040.json", {"rows": [{"date": P, "kind": "무상증자", "title": "주요사항보고서(무상증자결정)"}]})
     room = kind == "engine_room"                          # 현금이 적어 15:10 예방 자리 내주기(엔진 것을 팖)가 생김
     engine_qty, daily_qty = (10000, 10) if room else (1000, 100)
@@ -192,9 +217,15 @@ def build_world(root, kind, opt):
                                  "last": {}})
     w("basket-live/paper-orders.json", {"orders": [], "held": {"000020": 200}})
     w("daily-live/paper-orders.json", {"orders": [], "held": {"000010": daily_qty}})
-    w("daily-live/state.json", {"positions": {"000010": {
+    cells = opt.get("daily_cells", 4)                     # 1일봉이 든 칸(daily_cells를 주면 팔지 않고 들고 감 → 빈 칸 = 10 − 이것)
+    held_days = 1 if "daily_cells" in opt else 9          # 9 → 오늘 10거래일 기간 청산 · 1 → 그대로 들고 감
+    d_pos = {"000010": {
         "code": "000010", "name": "가", "kind": "추세", "price": 45000.0, "peak": 50000.0, "max_close": 50000.0, "last_close": 50000.0,
-        "칸": 4, "처음칸": 4, "days": 9, "bought": days[-10], "why": "① 추세 조건"}}, "closed": []})
+        "칸": cells, "처음칸": cells, "days": held_days, "bought": days[-1 - held_days], "why": "① 추세 조건"}}
+    if kind == "daily_multi":                             # 팔지 않는 둘째 종목 4칸 → 빈 칸 6(기울기 차례 · 자르기가 결과를 가름)
+        d_pos["000100"] = {"code": "000100", "name": "종목0", "kind": "추세", "price": 1000.0, "peak": 1004.0, "max_close": 1004.0,
+                           "last_close": 1004.0, "칸": 4, "처음칸": 4, "days": 1, "bought": days[-2], "why": "① 추세 조건"}
+    w("daily-live/state.json", {"positions": d_pos, "closed": []})
     # 장중 판정(옛 꼴 · 15:05 · 오늘) — 고치기 전 코드는 이것으로 비켜 두기를 셈 · 새 코드는 검증 칸이 없어 쓰지 않고 15:05 다시 셈을 씀
     w("m15-live/near-now.json", opt.get("m15_body") or {
         "date": DAY, "at": f"{DAY[:4]}-{DAY[4:6]}-{DAY[6:]} 15:05", "breadth": 40.0,
@@ -231,7 +262,8 @@ def _snapshot_files(root):
 def world_run(kind, **opt):
     """가짜 세상에서 봇 한 번(engine* = idle_live.run 15:05 시작 · daily = daily_live.run 15:20 시작) → 결과 dict.
     opt: sync_ok(저장소 맞추기 값을 바꿔 끼움) · refresh(hourly_a.refresh_near를 바꿔 끼움) · missing(시세 없는 코드) ·
-    calendar · smoke(파일을 둘지) · live_p · prices_last · m15_body · block · block_dir · start(시 · 분 · 초) · spy(덧붙임 인자 기록)."""
+    calendar · smoke(파일을 둘지) · live_p · prices_last · m15_body · block · block_dir · start(시 · 분 · 초) · spy(덧붙임 인자 기록) ·
+    2a단계: etf_stale(P 줄이 빠진 엔진 ETF) · flow_stale(수급이 P−1에서 끝나는 종목) · flow_files · found(1일봉 후보) · daily_cells."""
     import importlib
     import acc_cap  # noqa: F401  (가짜 시계를 끼우기 전에 모두 불러 둠 · 실행 중 처음 불러 가짜 시계가 남지 않게)
     import audit_log  # noqa: F401
@@ -259,7 +291,7 @@ def world_run(kind, **opt):
     root.mkdir()
     runner.mkdir()
     old_cwd = os.getcwd()
-    clock = Clock(opt.get("start") or ((15, 20, 0) if kind == "daily" else (15, 5, 0)))
+    clock = Clock(opt.get("start") or ((15, 20, 0) if kind.startswith("daily") else (15, 5, 0)))
     sent = []
     spy = opt.get("spy")
     try:
@@ -295,7 +327,8 @@ def world_run(kind, **opt):
             st.enter_context(mock.patch.object(paper_trade, "BASKET_SHARE", 0.3))
             st.enter_context(mock.patch.object(study, "load_prices", lambda *a, **k: copy.deepcopy(prices)))
             st.enter_context(mock.patch.object(caps, "tag", lambda rows, top=100: [r.update({caps.RANK: i + 1}) for i, r in enumerate(rows)]))
-            st.enter_context(mock.patch.object(final_group, "compute", lambda prices=None, flow_day=None, calm=None: copy.deepcopy(FOUND)))
+            found = opt.get("found") or (FOUND_MULTI if kind == "daily_multi" else FOUND)
+            st.enter_context(mock.patch.object(final_group, "compute", lambda prices=None, flow_day=None, calm=None: copy.deepcopy(found)))
             st.enter_context(mock.patch.object(collect_kis_intraday, "market_open_today", lambda client, today, bots=True: True))
             st.enter_context(mock.patch.object(data_guard, "prev_trading_day", lambda client, day: opt.get("live_p", P)))
             st.enter_context(mock.patch.object(daily_live, "target_cut", lambda code, day, back_days=45: False))
@@ -317,13 +350,14 @@ def world_run(kind, **opt):
                 st.enter_context(mock.patch.object(overlay_live, "run", lambda *a, **k: spy.append(dict(k)) or real(*a, **k)))
             st.enter_context(mock.patch("builtins.print"))
             now = datetime.fromtimestamp(clock.t, KST)
-            rc = (daily_live.run(now) if kind == "daily" else idle_live.run(now))
+            rc = (daily_live.run(now) if kind.startswith("daily") else idle_live.run(now))
         after = _snapshot_files(root)
         files, audit = {}, {}
         for rel, text in after.items():
             if "/audit/" in rel:
                 body = json.loads(text)
-                audit[rel] = {"입력": body.get("입력"), "결과": body.get("결과"), "곁": body.get("곁"), "주문 결과": body.get("주문 결과")}
+                audit[rel] = {"입력": body.get("입력"), "결과": body.get("결과"), "곁": body.get("곁"), "주문 결과": body.get("주문 결과"),
+                              "날": body.get("날"), "오늘 장부 주문": body.get("오늘 장부 주문")}
             elif before.get(rel) != text:
                 files[rel] = text
         return {"rc": rc, "orders": broker.orders, "discord": sent, "files": files, "audit": audit, "runner": str(runner),
@@ -1098,6 +1132,482 @@ class Structure(unittest.TestCase):
         daily = (ROOT / "daily_live.py").read_text(encoding="utf-8")
         self.assertIn("sync_ok = _pt.sync_repo()", daily)
         self.assertLess(daily.index("cands = []           # 자료가 덜"), daily.index('if not gate.allows_new_risk("daily"):'))
+
+
+# ───────────────────────── 2a단계: 달력 최근 거래일 · 수집기 목표 날 ─────────────────────────
+
+class CalendarDays(TmpCwd):
+    def test_last_days_holidays_year_boundary_and_gaps(self):
+        import trade_calendar as C
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertEqual(C.last_days(DAY, 5), weekdays_until(P, 5))
+        self.assertEqual(C.last_days("20261012", 5), ["20261001", "20261002", "20261006", "20261007", "20261008"],
+                         "휴장(10-05 대체공휴일 · 10-09 한글날)은 건너뜀")
+        self.assertIsNone(C.last_days("20270105", 5), "새해 판이 없으면 못 정함")
+        write_calendar("calendar", 2027, holidays=("20270101",))
+        self.assertEqual(C.last_days("20270105", 5), ["20261224", "20261228", "20261229", "20261230", "20270104"], "해를 넘겨 전해 판에서")
+        self.assertIsNone(C.last_days(DAY, 0))
+        self.assertIsNone(C.last_days("2026-11-11", 5))
+        body = calendar_body(2026, holidays=HOLIDAYS_2026)
+        del body["days"]["20261105"]                                    # P − 3이 판에 없음
+        body["normalized_sha256"] = C.normalized_digest(body["days"])
+        Path("calendar/krx-2026-v2.json").write_text(json.dumps(body), encoding="utf-8")
+        self.assertEqual(C.day_info(DAY)["P"], P, "앞 거래일(P)은 그대로 정해짐")
+        self.assertIsNone(C.last_days(DAY, 5), "판에 없는 날을 만나면 못 정함(휴장으로 보지 않음)")
+
+    def test_latest_done(self):
+        import trade_calendar as C
+        self.assertIsNone(C.latest_done(DAY), "판이 없으면 None(수집기는 예전 방식)")
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertEqual(C.latest_done(DAY), P, "수요일 새벽 → 화요일 장")
+        self.assertEqual(C.latest_done("20261114"), "20261113", "토요일 새벽 → 금요일 장")
+        self.assertEqual(C.latest_done("20261010"), "20261008", "한글날(금) 다음 토요일 → 목요일 장")
+
+
+# ───────────────────────── 2a단계: D2 엔진 ETF 마지막 날 ─────────────────────────
+
+class GateEtf(TmpCwd):
+    def gate(self, calendar=True):
+        import gates
+        if calendar:
+            write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        Path("gate-smoke").mkdir(exist_ok=True)
+        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        return gates.begin(DAY, "engine", True, live_p=P)
+
+    def test_engine_only_with_code_and_day(self):
+        import idle_live
+        self.assertEqual(set(idle_live.CODES), {"069500", "138230", "251340", "229200", "133690", "132030", "148070"})
+        ok = {c: P for c in idle_live.CODES}
+        g = self.gate()
+        g.check_etf(ok)
+        self.assertTrue(all(g.allows_new_risk(d) for d in ("engine", "basket", "overlay")), g.reasons())
+        self.assertEqual(g.snapshot("engine")["checks"], {"etf_last": {"P": P, "last": dict(sorted(ok.items()))}})
+        g = self.gate()
+        g.check_etf(dict(ok, **{"133690": "20261109", "148070": None}))
+        self.assertFalse(g.allows_new_risk("engine"))
+        self.assertTrue(g.allows_new_risk("basket") and g.allows_new_risk("overlay"), "엔진만 닫음")
+        why = " / ".join(g.reasons(("engine",)))
+        self.assertIn("133690 20261109", why)
+        self.assertIn("148070 없음", why)
+        self.assertEqual(g.snapshot("basket")["checks"], {})
+        self.assertIn("빈칸 엔진", g.warn_line())
+        self.assertNotIn("사건 바구니", g.warn_line())
+
+    def test_unknown_p_closes_without_extra_reason(self):
+        import gates
+        g = gates.Gates(DAY, "engine")                                   # 달력 칸 없음 → P 모름 · 문은 열린 채
+        g.check_etf({"069500": P})
+        self.assertFalse(g.allows_new_risk("engine"), "P를 모르면 엔진은 닫힘(fail-closed)")
+        g = self.gate(calendar=False)                                    # 달력이 없으면 이미 D5 길로 닫힘
+        before = g.reasons(("engine",))
+        g.check_etf({"069500": P})
+        self.assertEqual(g.reasons(("engine",)), before, "D5 까닭에 D2 까닭을 더하지 않음")
+        g = self.gate()
+        g.check_etf(None)                                                # 셈 말썽 → 닫힘
+        self.assertFalse(g.allows_new_risk("engine"))
+
+    def test_etf_last_days_same_filter_as_history(self):
+        import idle_live
+        Path("etf-data").mkdir()
+        p1, p2 = weekdays_until(P, 3)[:2]
+        Path("etf-data/069500.json").write_text(json.dumps({"closes": [[p1, 100.0], [p2, 101.0], [P, None], [DAY, 102.0]]}),
+                                                encoding="utf-8")
+        got = idle_live.etf_last_days(DAY)
+        self.assertEqual(got["069500"], p2, "빈 값(P) · 오늘 줄은 history처럼 뺌")
+        self.assertEqual(len(idle_live.history("069500", DAY)), 2)
+        self.assertEqual(sorted(got), sorted(idle_live.CODES))
+        self.assertTrue(all(got[c] is None for c in idle_live.CODES if c != "069500"), "파일 없음 → None")
+
+
+# ───────────────────────── 2a단계: D4 수급 두 층 ─────────────────────────
+
+class FlowCwd(TmpCwd):
+    """D4 시험 도움(시험 없음): 달력 · 점검 파일을 둔 1일봉 문 · 가짜 investor-data 쓰기."""
+
+    def gate(self):
+        import gates
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        Path("gate-smoke").mkdir(exist_ok=True)
+        Path(f"gate-smoke/{DAY}.json").write_text(json.dumps({"date": DAY, "ok": True}), encoding="utf-8")
+        return gates.begin(DAY, "daily", True, live_p=P)
+
+    @staticmethod
+    def put(code, body):
+        Path("investor-data").mkdir(exist_ok=True)
+        Path(f"investor-data/{code}.json").write_text(json.dumps(body, ensure_ascii=False), encoding="utf-8")
+
+
+class GateFlow(FlowCwd):
+    def test_pool_health_89_closes_90_opens(self):
+        import final_group
+        import gates
+        codes = [f"{i:06d}" for i in range(1, 101)]
+        days5 = weekdays_until(P, 5)
+        for fresh, want in ((89, False), (90, True)):
+            for i, c in enumerate(codes):
+                self.put(c, flow_body(c, end=P if i < fresh else days5[-2]))
+            g = self.gate()
+            g.check_flow_pool(reversed(codes), DAY, final_group.flow_rows)
+            self.assertEqual(g.allows_new_risk("daily"), want, (fresh, g.reasons()))
+            fp = g.snapshot("daily")["checks"]["flow_pool"]
+            self.assertEqual((fp["P"], fp["days"], fp["n"], fp["exact"], fp["ratio"]), (P, days5, 100, fresh, fresh / 100))
+            self.assertEqual((fp["pool"], fp["sha256"]), (codes, gates.pool_digest(codes)), "풀 목록(정렬) · 지문")
+            self.assertEqual(fp["stale"], [[c, days5[-2]] for c in codes[fresh:]])
+            if not want:
+                self.assertTrue(any("수급 풀 건강도" in r and "89/100" in r for r in g.reasons(("daily",))), g.reasons())
+
+    def test_pool_without_5_days_empty_or_error_closes(self):
+        import final_group
+        import trade_calendar as C
+        self.put("000001", flow_body("000001"))
+        g = self.gate()
+        body = calendar_body(2026, holidays=HOLIDAYS_2026)
+        del body["days"]["20261105"]
+        body["normalized_sha256"] = C.normalized_digest(body["days"])
+        Path("calendar/krx-2026-v2.json").write_text(json.dumps(body), encoding="utf-8")
+        g.check_flow_pool(["000001"], DAY, final_group.flow_rows)       # P는 알지만 최근 5거래일을 못 정함
+        self.assertFalse(g.allows_new_risk("daily"))
+        self.assertTrue(any("최근 5거래일" in r for r in g.reasons(("daily",))))
+        self.assertEqual(g.keep_flow_exact([{"code": "000001", "name": "가"}], DAY, final_group.flow_rows)[0], [], "거르기도 모두 뺌")
+        Path("calendar/krx-2026-v2.json").unlink()
+        g = self.gate()
+        g.check_flow_pool([], DAY, final_group.flow_rows)
+        self.assertFalse(g.allows_new_risk("daily"), "빈 풀")
+
+        def boom(code):
+            raise RuntimeError("가짜 말썽")
+        g = self.gate()
+        g.check_flow_pool(["000001"], DAY, boom)
+        self.assertFalse(g.allows_new_risk("daily"))
+        self.assertTrue(any("셈 오류" in r for r in g.reasons(("daily",))))
+        g = self.gate()
+        g.check_flow_pool(["000001"], DAY, final_group.flow_rows)
+        self.assertTrue(g.allows_new_risk("daily"))
+        self.assertEqual(g.keep_flow_exact([{"code": "000001"}], DAY, boom), ([], [{"code": None, "name": None, "why": "거르기 오류 · RuntimeError"}]))
+        self.assertFalse(g.allows_new_risk("daily"), "거르기 말썽 → 닫힘")
+
+    def test_keep_exact_order_reasons_and_old_path(self):
+        import final_group
+        days5 = weekdays_until(P, 5)
+        files = {"000001": flow_body("000001"), "000002": flow_body("000002", end=days5[-2]),
+                 "000003": flow_body("000003", hole=days5[1]), "000004": flow_body("000004", empty=(days5[2], "투신")),
+                 "000005": flow_body("000005")}
+        for c, b in files.items():
+            self.put(c, b)
+        g = self.gate()
+        g.check_flow_pool(["000001", "000005"], DAY, final_group.flow_rows)
+        self.assertTrue(g.allows_new_risk("daily"))
+        cands = [{"code": c, "name": f"종목{c[-1]}", "추세 기울기": 9.0 - i, "칸": 2} for i, c in enumerate(files)]
+        keep, missed = g.keep_flow_exact(cands, DAY, final_group.flow_rows)
+        self.assertEqual([c["code"] for c in keep], ["000001", "000005"])
+        self.assertIs(keep[0], cands[0], "후보 dict · 차례 그대로(모두 맞으면 지금과 같은 후보)")
+        whys = {m["code"]: m["why"] for m in missed}
+        self.assertEqual(sorted(whys), ["000002", "000003", "000004"])
+        self.assertIn(f"마지막 날 {days5[-2]}", whys["000002"])
+        self.assertIn(f"줄 빠짐 · {days5[1]}", whys["000003"])
+        self.assertIn(f"칸 빔 · {days5[2]} 투신", whys["000004"])
+        self.assertEqual(g.snapshot("daily")["checks"]["flow_missed"], missed)
+        self.assertTrue(g.allows_new_risk("daily"), "후보를 빼도 문은 그대로")
+        rows = final_group.flow_rows("000002")
+        self.assertIsNotNone(final_group.flow_before(rows, DAY), "10일 낡음 허용 길은 P−1 자료를 받아 줌 → 거르기가 막아야 하는 것")
+        self.assertIsNotNone(final_group.flow_before(final_group.flow_rows("000003"), DAY), "중간이 빠져도 받아 줌")
+        exact = final_group.flow_before(final_group.flow_rows("000001"), DAY)
+        self.assertEqual((exact["외국인"], exact["투신"], exact["개인"], exact["끝날"]), (25.0, 20.0, -50.0, P),
+                         "통과한 종목은 달력 최근 5거래일 그대로 더한 값")
+        fresh = __import__("gates").Gates(DAY, "daily")                  # check_flow_pool 없이 → 모두 뺌
+        self.assertEqual(fresh.keep_flow_exact(cands, DAY, final_group.flow_rows)[0], [])
+
+
+class FlowBeforeCut(FlowCwd):
+    """사전등록 §1.3 (나) 합성 반례: 낡은 상위 1 + 정상 차순위 1 + 빈 칸 1 → 정상 차순위를 삼(거르기는 decide 정렬 · 자르기 앞)."""
+
+    def test_stale_top_normal_second_one_slot(self):
+        import daily_live
+        import final_group
+        self.put("A00001", flow_body("A00001", end=weekdays_until(P, 2)[0]))
+        self.put("B00001", flow_body("B00001"))
+        g = self.gate()
+        g.check_flow_pool(["B00001"], DAY, final_group.flow_rows)
+        state = {"positions": {"X00001": {"code": "X00001", "name": "엑스", "kind": "추세", "price": 100.0, "peak": 100.0,
+                                          "max_close": 100.0, "last_close": 100.0, "칸": 9, "처음칸": 9, "days": 1, "bought": P, "why": ""}}}
+        cands = [{"code": "A00001", "name": "낡음", "추세문": True, "추세 기울기": 9.0, "칸": 4},
+                 {"code": "B00001", "name": "정상", "추세문": True, "추세 기울기": 1.0, "칸": 4}]
+        px = {"X00001": 100.0, "A00001": 10.0, "B00001": 10.0}
+
+        def kin(code, holding):
+            return True
+        sells, before = daily_live.decide(state, cands, px, {}, {}, kin)
+        self.assertEqual((sells, [b["code"] for b in before]), ([], ["A00001"]), "거르기 없으면 빈 칸 1을 낡은 위 후보가 차지")
+        self.assertEqual([b for b in before if b["code"] != "A00001"], [], "매수 목록에서 뒤늦게 버리면 정상 차순위도 사라짐(쓰지 않는 방식)")
+        keep, missed = g.keep_flow_exact(cands, DAY, final_group.flow_rows)
+        _, after = daily_live.decide(state, keep, px, {}, {}, kin)
+        self.assertEqual([(b["code"], b["칸"]) for b in after], [("B00001", 1)], "후보 단계 거르기 → 정상 차순위를 삼")
+        self.assertEqual([m["code"] for m in missed], ["A00001"])
+
+
+class DailyFlowRun(unittest.TestCase):
+    STALE6 = ("000100", "000101", "000102", "000103", "000104", "000105")
+
+    def test_pool_health_88_9_closes_90_7_opens(self):
+        out = world_run("daily", flow_stale=self.STALE6)               # 48/54 = 88.9%
+        self.assertEqual(out["orders"], [["000010", "sell", 100]], "1일봉 매수 0 · 팔기는 그대로")
+        g = gates_file(out)
+        self.assertFalse(g["decisions"]["daily"]["open"])
+        self.assertTrue(any("수급 풀 건강도" in r and "48/54" in r for r in g["decisions"]["daily"]["reasons"]), g["decisions"]["daily"])
+        snap = audit_of(out, "daily")["곁"]["gates"]
+        self.assertEqual((snap["open"], snap["checks"]["flow_pool"]["n"], snap["checks"]["flow_pool"]["exact"]), (False, 54, 48))
+        self.assertEqual(audit_of(out, "daily")["입력"]["cands"], [])
+        self.assertTrue(any(r.startswith("⚠️ 새 매수 막음(1일봉)") for r in out["discord"][0]))
+        out = world_run("daily", flow_stale=self.STALE6[:5])            # 49/54 = 90.7%
+        self.assertEqual(out["orders"], [["000010", "sell", 100], ["000030", "buy", 571]])
+        self.assertTrue(gates_file(out)["decisions"]["daily"]["open"])
+
+    def test_stale_only_pick_is_missed_opportunity(self):
+        out = world_run("daily", flow_stale=("000030",))
+        self.assertEqual(out["orders"], [["000010", "sell", 100]], "낡은 후보는 안 삼 · 팔기는 그대로")
+        snap = audit_of(out, "daily")["곁"]["gates"]
+        self.assertTrue(snap["open"], "풀 53/54 → 문은 열림(종목 검사가 따로 막음)")
+        self.assertEqual([m["code"] for m in snap["checks"]["flow_missed"]], ["000030"])
+        self.assertIn("수급 마지막 날 20261109 ≠ 앞 거래일 20261110", snap["checks"]["flow_missed"][0]["why"])
+        self.assertEqual(audit_of(out, "daily")["입력"]["cands"], [])
+        self.assertTrue(any("빠진 기회" in r for r in out["discord"][0]), out["discord"][0])
+        self.assertFalse(any(r.startswith("⚠️ 새 매수 막음") for r in out["discord"][0]))
+
+    def test_stale_top_normal_second_one_slot_buys_second(self):
+        found = {"date": DAY, "breadth": 40.0, "b_group": [], "picks": [
+            {"code": "000040", "name": "라", "갈래": ["정배열 추세"], "추세 기울기": 9.0},
+            {"code": "000030", "name": "다", "갈래": ["추세 규칙"], "추세 기울기": 1.0}]}
+        out = world_run("daily", found=found, flow_stale=("000040",), daily_cells=9)
+        self.assertEqual([o[:2] for o in out["orders"]], [["000030", "buy"]], "정상 차순위를 삼(낡은 위 후보가 빈 칸을 차지하지 않음)")
+        self.assertEqual([c["code"] for c in audit_of(out, "daily")["입력"]["cands"]], ["000030"])
+        self.assertEqual([b["칸"] for b in audit_of(out, "daily")["결과"]["buys"]], [1])
+        out = world_run("daily", found=found, daily_cells=9)            # 대조: 둘 다 정상 자료면 빈 칸 1을 위 후보가 차지(지금과 같음)
+        self.assertEqual([o[:2] for o in out["orders"]], [["000040", "buy"]])
+
+
+class EngineEtfRun(unittest.TestCase):
+    def test_stale_etf_closes_engine_only(self):
+        out = world_run("engine", etf_stale=("133690",))
+        g = gates_file(out)
+        self.assertFalse(g["decisions"]["engine"]["open"])
+        self.assertTrue(g["decisions"]["basket"]["open"] and g["decisions"]["overlay"]["open"], g["decisions"])
+        self.assertTrue(any("133690 20261109" in r for r in g["decisions"]["engine"]["reasons"]), g["decisions"]["engine"]["reasons"])
+        self.assertEqual(sorted(o[0] for o in buys(out)), ["000040", "122630"], "바구니 · 덧붙임 매수는 그대로 · 엔진 매수만 빠짐")
+        self.assertIn(("138230", 1000), sells(out), "엔진 규칙 매도는 그대로")
+        snap = audit_of(out, "engine")["곁"]["gates"]
+        self.assertEqual((snap["open"], snap["checks"]["etf_last"]["last"]["133690"], snap["checks"]["etf_last"]["P"]),
+                         (False, "20261109", P))
+        self.assertTrue(audit_of(out, "basket")["곁"]["gates"]["open"] and audit_of(out, "overlay")["곁"]["gates"]["open"])
+        warn = [r for rows in out["discord"] for r in rows if r.startswith("⚠️ 새 매수 막음")]
+        self.assertEqual(len(warn), 1, out["discord"])
+        self.assertIn("빈칸 엔진", warn[0])
+        self.assertNotIn("사건 바구니", warn[0])
+
+
+# ───────────────────────── 2a단계: 감사 셈이 문이 뺀 주문을 거짓 '주문 빠짐'으로 세지 않음(끝까지 이은 시험) ─────────────────────────
+
+class AuditAfterGates(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        if str(ROOT / "research") not in sys.path:
+            sys.path.insert(0, str(ROOT / "research"))
+        import boost_audit
+        cls.B = boost_audit
+
+    def clean(self, out, bots):
+        for bot in bots:
+            self.assertEqual(self.B.orders_check(bot, audit_of(out, bot)), [], bot)
+
+    def test_blocked_runs_have_no_false_missing(self):
+        self.clean(world_run("engine"), ("engine", "basket", "overlay"))                      # 문 열림(바탕)
+        out = world_run("engine", sync_ok=False)                                              # 모두 닫힘
+        self.assertTrue(any(o[1] == "buy" for o in audit_of(out, "engine")["결과"]["orders"]), "판단 원본엔 엔진 매수가 있음")
+        self.assertTrue(audit_of(out, "overlay")["주문 결과"]["gate_dropped"])
+        self.clean(out, ("engine", "basket", "overlay"))
+        self.clean(world_run("engine", etf_stale=("133690",)), ("engine", "basket", "overlay"))   # D2: 엔진만 닫힘
+        self.clean(world_run("engine_swap", refresh=lambda *a, **k: 0), ("engine", "basket", "overlay"))  # D1 실패 · 교체는 매도만
+        self.clean(world_run("daily", sync_ok=False), ("daily",))
+        self.clean(world_run("daily", flow_stale=("000030",)), ("daily",))
+
+    def test_forbidden_buy_line_after_gate_is_caught(self):
+        out = world_run("engine", sync_ok=False)
+        eng = copy.deepcopy(audit_of(out, "engine"))
+        book = next(iter(eng["오늘 장부 주문"]))
+        eng["오늘 장부 주문"][book].append({"key": f"{DAY}:buy:133690", "code": "133690", "side": "buy", "status": "접수"})
+        self.assertEqual([t for t, _ in self.B.orders_check("engine", eng)], ["금지 주문"])
+        ov = copy.deepcopy(audit_of(out, "overlay"))
+        code = ov["주문 결과"]["gate_dropped"][0][0]
+        book = next(iter(ov["오늘 장부 주문"]))
+        ov["오늘 장부 주문"][book].append({"key": f"{DAY}:buy:{code}", "code": code, "side": "buy", "status": "접수"})
+        self.assertEqual([t for t, _ in self.B.orders_check("overlay", ov)], ["금지 주문"])
+
+
+# ───────────────────────── 2a단계: 수급 수집 목표 P · D7 거래량 건너뛰기 ─────────────────────────
+
+class InvestorTarget(TmpCwd):
+    DAYS = weekdays_until(P, 40)
+
+    class Fake:
+        """날짜를 주면 그날까지(그리고 upto까지) 서른 거래일을 주는 증권사 흉내(오래된 날 먼저)."""
+
+        def __init__(self, days, upto):
+            self.days, self.upto, self.asks = days, dict(upto), []
+
+        def investor_daily(self, code, day):
+            self.asks.append((code, day))
+            got = [d for d in self.days if d <= min(day, self.upto.get(code, day))]
+            return [{"date": d, "개인": -1.0, "외국인": 1.0, "기관": 0.0, "투신": 2.0, "연기금": 0.0, "사모": 0.0, "종가": 100.0}
+                    for d in got[-30:]]
+
+    def setUp(self):
+        super().setUp()
+        import collect_investor_history as C
+        self.C = C
+        self.keep = mock.patch.multiple(C, OUT=Path("investor-data"), START=self.DAYS[0])
+        self.keep.start()
+
+    def tearDown(self):
+        self.keep.stop()
+        super().tearDown()
+
+    def seed(self, code, last):
+        body = {"code": code, "cols": list(self.C.COLS), "rows": [[d, -1.0, 1.0, 0.0, 2.0, 0.0, 0.0, 100.0] for d in self.DAYS if d <= last],
+                "처음까지": True}
+        self.C.save(body)
+        return Path(f"investor-data/{code}.json").read_bytes()
+
+    def test_target_day(self):
+        C = self.C
+        mon = datetime(2026, 11, 9, 1, 0, tzinfo=KST)                 # 월요일 새벽
+        self.assertEqual(C.target_day(mon), ("20261108", False), "달력이 없으면 실행 시각의 어제(예전 방식 · 확인 없음)")
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertEqual(C.target_day(mon), ("20261106", True), "달력 P = 금요일")
+        self.assertEqual(C.target_day(datetime(2026, 11, 11, 2, 30, tzinfo=KST)), (P, True))
+
+    def test_fill_checks_last_day_and_keeps_file(self):
+        C = self.C
+        p1 = self.DAYS[-2]
+        self.seed("000001", self.DAYS[-4])
+        added, _ = C.fill(self.Fake(self.DAYS, {}), "000001", P, expect=P)
+        self.assertEqual((added, C.load("000001")["rows"][-1][0]), (3, P), "응답 마지막 날 = P → 붙임")
+        raw = self.seed("000002", self.DAYS[-4])
+        with self.assertRaises(C.NotLatest) as got:
+            C.fill(self.Fake(self.DAYS, {"000002": p1}), "000002", P, expect=P)
+        self.assertEqual(got.exception.args[0], p1)
+        self.assertEqual(Path("investor-data/000002.json").read_bytes(), raw, "응답 마지막 날 ≠ P → 파일을 고치지 않음")
+        with self.assertRaises(C.NotLatest):
+            C.fill(self.Fake(self.DAYS, {"000003": p1}), "000003", P, expect=P)
+        self.assertFalse(Path("investor-data/000003.json").exists(), "새 종목도 만들지 않음")
+        C.fill(self.Fake(self.DAYS, {"000002": p1}), "000002", P)          # 달력을 못 읽은 날(확인 없음) → 예전처럼 붙임
+        self.assertEqual(C.load("000002")["rows"][-1][0], p1)
+
+    def test_main_one_line_and_file_untouched(self):
+        import builtins
+        import broker_kis
+        C = self.C
+        self.seed("000001", self.DAYS[-4])
+        raw = self.seed("000002", self.DAYS[-4])
+        fake = self.Fake(self.DAYS, {"000002": self.DAYS[-2]})
+        with mock.patch.object(C, "codes_to_collect", lambda: ["000001", "000002"]), \
+                mock.patch.object(broker_kis, "market", lambda: fake), mock.patch.object(C, "target_day", lambda: (P, True)):
+            self.assertEqual(C.main(), 0)
+        self.assertEqual(C.load("000001")["rows"][-1][0], P)
+        self.assertEqual(Path("investor-data/000002.json").read_bytes(), raw)
+        said = [" ".join(str(a) for a in c.args) for c in builtins.print.call_args_list]
+        self.assertEqual(len([s for s in said if s.startswith("000002 · 응답 마지막 날")]), 1, said)
+        self.assertTrue(any(s.startswith("수급 목표 날 20261110 · 판 고정 달력") for s in said), said)
+        self.assertTrue(any("목표 날 아님(그대로) 1" in s for s in said), said)
+        self.assertEqual({d for _, d in fake.asks}, {P}, "목표 P를 밝혀 물음")
+
+
+class VolumeDone(TmpCwd):
+    def put(self, code, last, fetched="2026-11-11", n=130, empty=None):
+        import collect_volumes as V
+        rows = [[d, 1000, 2000, 110.0, 90.0] for d in weekdays_until(last, n)]
+        if empty:
+            rows[-1][1 + V.KEEP.index(empty)] = None
+        Path("volume-data").mkdir(exist_ok=True)
+        Path(f"volume-data/{code}.json").write_text(json.dumps({"code": code, "칸": ["날짜", *V.KEEP], "날": rows, "fetched": fetched}),
+                                                    encoding="utf-8")
+
+    def test_done_today(self):
+        import collect_volumes as V
+        today, p1 = "2026-11-11", weekdays_until(P, 2)[0]
+        self.put("000001", P)
+        self.assertTrue(V.done_today("000001", today, P))
+        self.put("000002", p1)
+        self.assertFalse(V.done_today("000002", today, P), "마지막 줄이 기대 날 앞 → 다시 받음")
+        self.assertTrue(V.done_today("000002", today), "기대 날을 모르면(달력 못 읽음) 예전 그대로")
+        self.put("000003", P, empty="거래대금")
+        self.assertFalse(V.done_today("000003", today, P), "마지막 줄 칸이 빔")
+        self.put("000004", P, fetched="2026-11-10")
+        self.assertFalse(V.done_today("000004", today, P))
+        self.put("000005", P, n=100)
+        self.assertFalse(V.done_today("000005", today, P))
+        Path("volume-data/000006.json").write_text("[1, 2]", encoding="utf-8")
+        self.assertFalse(V.done_today("000006", today, P), "꼴이 다르면 다시 받음")
+        self.assertFalse(V.done_today("000009", today, P), "파일 없음")
+
+    def test_expected_day(self):
+        import collect_volumes as V
+        now = datetime(2026, 11, 11, 2, 30, tzinfo=KST)
+        self.assertIsNone(V.expected_day(now))
+        write_calendar("calendar", 2026, holidays=HOLIDAYS_2026)
+        self.assertEqual(V.expected_day(now), P)
+
+    def test_main_recollects_only_stale(self):
+        import broker_kis
+        import collect_volumes as V
+        today = datetime.now(KST).strftime("%Y-%m-%d")
+        self.put("000001", P, fetched=today)
+        self.put("000002", weekdays_until(P, 2)[0], fetched=today)
+        asked = []
+
+        class Client:
+            def daily(self, code, start, end, detail=False):
+                asked.append(code)
+                return [(d, {"거래량": 1000, "거래대금": 2000, "고가": 110.0, "저가": 90.0}) for d in weekdays_until(P, 30)]
+
+            def history(self, code, days=0, detail=False):
+                asked.append(code)
+                return [(d, {"거래량": 1000, "거래대금": 2000, "고가": 110.0, "저가": 90.0}) for d in weekdays_until(P, 130)]
+        with mock.patch.object(V, "codes_to_collect", lambda: ["000001", "000002"]), \
+                mock.patch.object(broker_kis, "market", lambda: Client()), mock.patch.object(V, "expected_day", lambda: P), \
+                mock.patch.dict(os.environ, {"VOLUME_SKIP_DONE": "1"}):
+            self.assertEqual(V.main(), 0)
+        self.assertEqual(asked, ["000002"], "다 받은 종목은 건너뛰고 마지막 줄이 낡은 종목만 다시 받음")
+
+
+class Structure2a(unittest.TestCase):
+    def test_d2_d4_placement(self):
+        text = (ROOT / "idle_live.py").read_text(encoding="utf-8")
+        run = text[text.index("def run(now=None):"):]
+        marks = ['gate = gates.begin(day, "engine", sync_ok', "gate.check_etf(etf_last_days(day))", '_audit.record(STATE, day, "engine"',
+                 'if not gate.allows_new_risk("engine"):']
+        at = [run.index(m) for m in marks]
+        self.assertEqual(at, sorted(at), "D2는 판단 기록 · 엔진 매수 빼기 앞")
+        daily = (ROOT / "daily_live.py").read_text(encoding="utf-8")
+        run = daily[daily.index("def run(now=None):"):]
+        marks = ['gate = gates.begin(day, "daily", sync_ok', "gate.check_flow_pool(pool, day, flow_of)",
+                 "cands, flow_missed = gate.keep_flow_exact(cands, day, flow_of)", "cands = []           # 자료가 덜",
+                 "daily_in = _audit.safe(", "sells, buys = decide(state, cands,"]
+        at = [run.index(m) for m in marks]
+        self.assertEqual(at, sorted(at), "D4 (나)는 decide(정렬 · 자르기) 앞 · 판단 기록 입력 앞")
+
+    def test_workflow_smoke_before_first_order(self):
+        wf = (ROOT / ".github" / "workflows" / "daily-live.yml").read_text(encoding="utf-8")
+        smoke, first = wf.index("python gate_smoke.py"), wf.index("python idle_live.py")
+        self.assertLess(smoke, first, "시작 전 점검은 첫 15:10 주문 단계 앞")
+        step = wf[wf.rindex("- name:", 0, smoke):wf.index("- name:", smoke)]
+        self.assertIn("continue-on-error: true", step)
+        self.assertIn("timeout-minutes:", step)
+        idle = wf[wf.rindex("- name:", 0, first):wf.index("python daily_live.py")]
+        self.assertLess(idle.index('git commit -q -m "Gate smoke"'), idle.index("python idle_live.py"),
+                        "점검 파일은 봇의 저장소 맞추기(git pull --rebase) 전에 로컬 커밋")
+        for part in (idle, wf[wf.index("python daily_live.py"):]):
+            self.assertLess(part.index("mkdir -p gates gate-smoke"), part.index("git add -A gates gate-smoke"))
+        self.assertNotIn("tests.test_boost_d", wf, "매매 전 시험 단계는 그대로(무거운 시험은 CI 전체 discover)")
 
 
 if __name__ == "__main__" and "--golden" in sys.argv:
