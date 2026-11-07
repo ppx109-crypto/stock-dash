@@ -1,0 +1,9 @@
+{
+ "설계 커밋(셈 전)": "e35167438 research/pit26/STAGE0.md",
+ "stage0.py": "ea8bd51a0ac23844d4f0e1756326efa1a4ef42f3160c1c6fc8767f34c8f85544",
+ "바탕 csv(= seam/base_CONT 바이트 같음)": "890a315a2f84a0b6e819606d4ebbfa78e9bccb12404988345f6acb29ca4694b7",
+ "z100g 봇별 날 손익": "131afea97aa55442a8d9616eff8c99e79fd18d825a023c2664c44bbec6a62b43",
+ "연속 장부": "c97b1b9a4c7674c29081b1176006e31df5704ce74951735ac2a07691575e8f1a",
+ "베타 도구 시험": "합성 1.5 · 미래 바꿔도 과거 같음 · 당일 포함 돌연변이 잡힘 · 60일 미만 None — 모두 참",
+ "명령": "z100g(run_base.sh 환경 + Z_ATTR) → REG_BOX=MPOS-0012 python3 research/pit26/stage0.py run base_CONT.csv attr_CONT.csv stage0.json"
+}

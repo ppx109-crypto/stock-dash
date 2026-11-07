@@ -1,0 +1,26 @@
+{
+ "설계(셈 전)": "e759931b4 research/pit26/G2_TURNOVER.md",
+ "코드": {
+  "g2_cands.py": "731b326b28f2e630b518bc25b0ff081fd9c4c09b320a4f41dcfce4e3aa69cdd2",
+  "g2_turnover.py": "651ca52a486a6386dd9b2422be002230bb7f39e88c07e8376b9721bda258437f",
+  "honest_ledger.py": "5be7c9ec6029c896a4e66e66e78b6614cc0a024404887cad8e9a7a25e8cb5ac1",
+  "honest_cache.py": "6082aa3b661d379dd0433d2671d17b400c581843d5b75b3fe73706a7cb93054a"
+ },
+ "입력": {
+  "nrl_N.pkl": "cfc22c3ffb808af58460c069c5ff4bff19cc5a3bb20602e8352f08d7914ed132",
+  "full_next.json.pkl": "ddca611f11a57700bd0f234fd129fbe7d20574f416f6e505d34bd90533dc799d",
+  "short-data": "고정 나무 9743cb802 short-data/(270 파일)",
+  "short-data 묶음 지문(파일 이름순 sha256의 sha256)": "ac3d9871b2cc9bdefad61d6d5ab6c21815b5f2a007acba30b14f8379a8d16d4c"
+ },
+ "출력": {
+  "cands.json": "dfbffbc32a747d03b9b295e4ee0956359b989a6b67ddbf03955855275f23fa5e",
+  "g2.json": "e672cd3de77e6921ce9e477fe0b5b19404ba9d525a8ccfe099576d6771f9e15c",
+  "test.json": "cc4fa4e5853f0dfbdab88b3586e9903258c495a0eb13b33f5c7d3c2db581ccb0"
+ },
+ "연속 장부 재현": "c97b1b9a4c7674c29081b1176006e31df5704ce74951735ac2a07691575e8f1a(같음 · g2_cands.py assert)",
+ "명령": [
+  "cd 고정 나무 && env -i PYTHONHASHSEED=0 NRL_CACHE=nrl_N.pkl EX_HC=honest_cache.py EX_MODE=HONEST EX_FULL=full_next.json.pkl EX_CONT=1 EX_OUT=led.json G2_OUT=cands.json python3 tree_run.py cands.mods.json g2_cands.py",
+  "python3 g2_turnover.py cands.json 고정나무/short-data test.json test",
+  "python3 g2_turnover.py cands.json 고정나무/short-data g2.json"
+ ]
+}
