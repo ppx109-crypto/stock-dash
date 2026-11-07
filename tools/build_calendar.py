@@ -19,7 +19,11 @@
   증명하지 않으므로, 시각은 세션 overlay 파일 calendar/sessions-<해>.json의 **공식 원천 영수증**으로만 적음 — 도구가 그 주소를 직접 받아
   원문 sha256이 overlay에 적힌 값과 같을 때만 반영(주소는 https · krx.co.kr 공식 주소만).
   · regular(평소 세션): KRX 공식 정규장 시간 안내 주소 · 공지 번호(있으면) · 시행 날 · 원문 sha256 · 개장 · 마감.
-    없거나 · 못 받거나 · 지문이 다르면 **판을 새로 쓰지 않음**(옛 판 유지 · 까닭 출력).
+    없거나 · 못 받거나 · 지문이 다르거나 · **원문 표에서 읽은 정규장 시각이 overlay의 개장 · 마감과 다르면** 판을 새로 쓰지 않음
+    (옛 판 유지 · 까닭 출력). 원천(2026-11-07 고정): 한국거래소 규정/제도 사이트(regulation.krx.co.kr)의 유가증권시장
+    '매매거래제도일반 · 매매거래의 일반절차 휴장일' 탭 — '매매거래시간 및 호가접수시간' 표의 '정규장' 줄(매매거래시간 09:00 ~ 15:30).
+    regular_hours()가 그 표 머리(구분 · 매매거래시간 · 호가접수시간)와 '정규장' 줄을 읽어 개장 · 마감을 뽑음(사람이 옮겨 적은 값만 믿지 않음 ·
+    표 꼴이 바뀌면 짐작하지 않고 실패). 원문에 시행 날이 없어 시행 날은 처음 읽어 확인한 날(그 앞 거래일은 unknown).
   · special(특수 세션): 날마다 공식 공지 주소 · 번호 · 시행 날 · 원문 sha256 · 개장 · 마감 → 확인되면 그날 {"open", "close", "session": "special"}.
   · 세션 원천이 없는 거래일은 {"session": "unknown"}(개장 · 마감 없음 → 문이 그날 모든 활성 판단의 새 위험 증가를 막음):
     overlay 특수 세션인데 원천 확인 실패(못 받음 · 지문 다름) · overlay unknown 목록 · collect_kis_intraday.SPECIAL_HOURS에 있는데
@@ -28,7 +32,8 @@
   overlay 꼴: {"kind": "krx-session-overlay", "year": "2026",
                "regular": {"source_url", "notice_no", "effective_from", "raw_sha256", "open", "close"},
                "special": [{"date", "source_url", "notice_no", "effective_from", "raw_sha256", "open", "close"}], "unknown": ["YYYYMMDD"]}
-  주소 · 지문은 사람이 공식 원문을 읽고 적음(처음에는 마른 실행이 받아 둔 원문 · 지문을 보고 적음).
+  주소 · 지문은 사람이 공식 원문을 읽고 적음(처음에는 마른 실행이 받아 둔 원문 · 지문을 보고 적음). 특수 세션 공지는 꼴이 해마다 달라(PDF 등)
+  표를 읽지 않고 원문 지문 + 사람이 옮겨 적은 시각만 씀(평소 세션만 원문 표 대조).
 판 쓰기: 두 원천이 그해 모든 날에서 거래일 여부가 같고 평소 세션 영수증이 확인될 때만. 다르거나 · 한쪽이라도 조회 실패 · 그해를 다 못 받음 ·
   평소 세션 원천 없음이면 쓰지 않고 까닭을 찍음(어느 쪽도 다른 쪽을 조용히 덮지 않음).
   같은 내용(정규화 지문 = days + 세션 영수증 핵심이 그해 가장 큰 판과 같음)이면 새 판을 만들지 않음 · 다르면 번호를 하나 올린 새 파일
@@ -36,7 +41,8 @@
 마른 실행: python tools/build_calendar.py [해 …] --dry-run --out <폴더> → 같은 원천을 받아 같은 검증을 하되 calendar/에는 아무것도 쓰지 않고
   <폴더>/<해>/에 원문(raw/ · KRX 휴장일 · 세션 원천 · 평소 세션이 아직 고정되지 않았으면 후보 주소 원문) · 요약(summary.json: 원문 지문 ·
   정규화 지문 · 만들 판 번호 또는 같은 내용 · unknown 날과 까닭 · 실패 까닭) · 만들 판 후보(candidate.json)를 남김
-  (작업 흐름 calendar-dry.yml이 artifact로 올림). 증권사 응답 본문은 남기지 않음(지문 · 다른 날만).
+  (작업 흐름 calendar-dry.yml이 artifact로 올림). 증권사 응답 본문은 남기지 않음(지문 · 다른 날만). 작업 기록에도 요약 한 줄씩
+  (원문 이름 · sha256 · 크기 · 원문 표에서 읽은 정규장 시각 · 만들 판 · unknown 날 수)을 찍음(artifact를 못 받는 곳에서도 대조).
 사용: python tools/build_calendar.py [해 ...] [--dry-run --out 폴더]   (해를 안 주면 CAL_YEARS 환경 값 · 그것도 없으면 올해, 12월이면 다음 해도)
 끝 값: 0 = 모든 해가 새 판을 썼거나(마른 실행은 쓸 수 있거나) 같은 내용 · 1 = 한 해라도 못 씀(그 해는 아무것도 쓰지 않음).
 주문 없음 · 키 · 계좌 · 증권사 응답 본문은 찍지 않음.
@@ -49,6 +55,7 @@ import re
 import sys
 import time
 from datetime import date, datetime, timedelta, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -59,7 +66,7 @@ import trade_calendar  # noqa: E402
 
 KST = ZoneInfo("Asia/Seoul")
 FOLDER = Path("calendar")
-PARSER = "build_calendar 2"                 # 2c단계: 개장 · 마감은 세션 영수증으로만(1 = 09:00 ~ 15:30 상수)
+PARSER = "build_calendar 3"                 # 3: 평소 세션 원문 표 대조 · 2: 개장 · 마감은 세션 영수증으로만 · 1: 09:00 ~ 15:30 상수
 UTC_FORM = "%Y-%m-%dT%H:%M:%SZ"
 
 KRX_URL = "https://data.krx.co.kr/comm/bldAttendant/executeForResourceBundle.cmd"
@@ -80,9 +87,10 @@ KIS_MAX_CALLS = 60
 SESSION_NOTE = "개장 · 마감은 세션 overlay의 공식 원천 영수증(주소 · 원문 sha256)으로만 적음 · 원천이 없는 거래일은 session unknown"
 OVERLAY_KIND = "krx-session-overlay"
 SPECIAL_SOURCE = ROOT / "collect_kis_intraday.py"       # 봇 특수 세션 목록(SPECIAL_HOURS)을 글로 읽음(불러오지 않음)
-# 평소 세션 원천 후보(GPT 구현 검토 예시 · KRX 영문 사이트 정규장 시간 안내) — 마른 실행이 overlay에 평소 세션이 없을 때만 받아 원문 · 지문을 남김
-# (사람이 읽고 overlay에 적기 전에는 판에 쓰지 않음 · 이 환경에서는 막혀 있어 원문을 못 봄)
-REGULAR_CANDIDATES = ("https://global.krx.co.kr/contents/GLB/06/0602/0602010201/GLB0602010201T1.jsp",)
+# 평소 세션 원천 후보(한국거래소 규정/제도 · 유가증권시장 매매거래제도일반 · '매매거래의 일반절차 휴장일' 탭) — 마른 실행이 overlay에
+# 평소 세션이 없을 때만 받아 원문 · 지문 · 표에서 읽은 시각을 남김(사람이 읽고 overlay에 적기 전에는 판에 쓰지 않음)
+REGULAR_CANDIDATES = ("https://regulation.krx.co.kr/contents/RGL/03/03010100/RGL03010100T1.jsp",)
+REGULAR_ROW, REGULAR_COL, ORDER_COL = "정규장", "매매거래시간", "호가접수시간"   # 공식 원문 표: 줄 이름 · 매매 시각 칸 · 호가 접수 칸
 
 
 class CalendarError(RuntimeError):
@@ -300,9 +308,83 @@ def fetch_source(url, get):
     return bytes(r.content)
 
 
-def verify_receipt(entry, get, now=None, raws=None, name=None):
-    """overlay 한 칸 → 주소를 받아 원문 sha256이 적힌 값과 같으면 (영수증, '') · 아니면 (None, 까닭).
-    영수증 = 날(특수) + 세션 영수증 핵심 칸 + 받은 시각. 받은 원문은 raws[name]에 남김(마른 실행 artifact)."""
+class _Rows(HTMLParser):
+    """표의 줄마다 (머리 칸 글 목록, 값 칸 글 목록) — th · td 안의 글만(줄바꿈 · 공백은 한 칸으로 · &middot; 같은 글자 참조는 풂)."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.rows, self.row, self.cell = [], None, None
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "tr":
+            self.row = ([], [])
+        elif tag in ("th", "td") and self.row is not None:
+            self.cell = (tag, [])
+        elif tag == "br" and self.cell is not None:
+            self.cell[1].append(" ")
+
+    def handle_endtag(self, tag):
+        if tag in ("th", "td") and self.cell is not None and self.row is not None:
+            self.row[0 if self.cell[0] == "th" else 1].append(re.sub(r"\s+", " ", "".join(self.cell[1])).strip())
+            self.cell = None
+        elif tag == "tr" and self.row is not None:
+            self.rows.append(self.row)
+            self.row, self.cell = None, None
+
+    def handle_data(self, data):
+        if self.cell is not None:
+            self.cell[1].append(data)
+
+
+def regular_hours(raw):
+    """KRX 공식 정규장 시간 안내 원문 → ("HHMM", "HHMM") 개장 · 마감. 표 머리(구분 · 매매거래시간 · 호가접수시간)가 하나 ·
+    머리 칸이 '정규장' 하나뿐인 줄이 하나 · 그 줄의 칸 수 = 표 머리 값 칸 수 · 매매거래시간 칸이 'HH:MM ~ HH:MM'이어야 함.
+    아니면 CalendarError(표 꼴이 바뀌었으면 사람이 다시 읽고 overlay를 고침 · 시각을 짐작하지 않음)."""
+    try:
+        text = bytes(raw).decode("utf-8")
+    except (UnicodeDecodeError, TypeError):
+        raise CalendarError("평소 세션 원문이 UTF-8 글이 아님") from None
+    p = _Rows()
+    try:
+        p.feed(text)
+        p.close()
+    except Exception:                                   # html.parser는 거의 안 던지지만 꼴이 아주 깨졌으면 실패로
+        raise CalendarError("평소 세션 원문 표를 읽지 못함") from None
+    heads = [th for th, _ in p.rows if REGULAR_COL in th and ORDER_COL in th]
+    if len(heads) != 1:
+        raise CalendarError(f"평소 세션 원문에 '{REGULAR_COL} · {ORDER_COL}' 표 머리가 {len(heads)}개(하나여야 함)")
+    cols = [h for h in heads[0] if h in (REGULAR_COL, ORDER_COL)]
+    rows = [td for th, td in p.rows if th == [REGULAR_ROW]]
+    if len(rows) != 1:
+        raise CalendarError(f"평소 세션 원문에 '{REGULAR_ROW}' 줄이 {len(rows)}개(하나여야 함)")
+    if len(rows[0]) != len(cols):
+        raise CalendarError(f"평소 세션 원문의 '{REGULAR_ROW}' 줄 칸 수 {len(rows[0])}가 표 머리 {len(cols)}과 다름")
+    cell = rows[0][cols.index(REGULAR_COL)]
+    m = re.fullmatch(r"([01]\d|2[0-3]):([0-5]\d)\s*~\s*([01]\d|2[0-3]):([0-5]\d)", cell)
+    if not m:
+        raise CalendarError(f"평소 세션 원문의 '{REGULAR_ROW}' {REGULAR_COL} 칸이 'HH:MM ~ HH:MM' 꼴이 아님 · {cell[:30]!r}")
+    o, c = m.group(1) + m.group(2), m.group(3) + m.group(4)
+    if not o < c:
+        raise CalendarError(f"평소 세션 원문의 '{REGULAR_ROW}' 개장 {o}이 마감 {c}보다 늦음")
+    return o, c
+
+
+def regular_check(entry):
+    """평소 세션 overlay 칸 → 원문 검사 함수(원문 → '' 맞음 · 까닭). 원문 표에서 읽은 개장 · 마감 = overlay의 개장 · 마감이어야 함."""
+    def check(raw):
+        try:
+            o, c = regular_hours(raw)
+        except CalendarError as e:
+            return str(e)
+        if (o, c) != (entry.get("open"), entry.get("close")):
+            return f"공식 원문 표의 정규장 {o} ~ {c}이 overlay에 적힌 {entry.get('open')} ~ {entry.get('close')}과 다름"
+        return ""
+    return check
+
+
+def verify_receipt(entry, get, now=None, raws=None, name=None, check=None):
+    """overlay 한 칸 → 주소를 받아 원문 sha256이 적힌 값과 같고 · check(원문)가 ''이면(평소 세션: 원문 표 시각 = overlay 시각)
+    (영수증, '') · 아니면 (None, 까닭). 영수증 = 날(특수) + 세션 영수증 핵심 칸 + 받은 시각. 받은 원문은 raws[name]에 남김(마른 실행 artifact)."""
     try:
         raw = fetch_source(entry["source_url"], get)
     except CalendarError as e:
@@ -312,6 +394,9 @@ def verify_receipt(entry, get, now=None, raws=None, name=None):
     got = _sha(raw)
     if got != entry["raw_sha256"]:
         return None, f"원문 sha256 {got[:16]}이 overlay에 적힌 {str(entry['raw_sha256'])[:16]}과 다름"
+    why = check(raw) if check is not None else ""
+    if why:
+        return None, why
     rec = {"date": entry["date"]} if "date" in entry else {}
     rec.update({k: entry.get(k) for k in trade_calendar.SESSION_KEYS})
     rec["fetched_at_utc"] = _utc(now)
@@ -325,7 +410,7 @@ def plan_sessions(year, trading, overlay, get, now=None, raws=None, known=None):
     if not reg_entry:
         raise CalendarError(f"평소 세션 원천 영수증이 없음(calendar/sessions-{int(year):04d}.json의 regular — KRX 공식 정규장 시간 안내 "
                             "주소 · 원문 sha256 · 개장 · 마감)")
-    reg, why = verify_receipt(reg_entry, get, now, raws, "regular-session")
+    reg, why = verify_receipt(reg_entry, get, now, raws, "regular-session", check=regular_check(reg_entry))
     if reg is None:
         raise CalendarError(f"평소 세션 원천을 확인하지 못함 · {why}")
     tset = set(trading)
@@ -491,6 +576,11 @@ def write_dry(out, year, rec, get=None):
     for name, b in sorted(raws.items()):
         (base / "raw" / name).write_bytes(b)
         files[name] = {"sha256": _sha(b), "bytes": len(b)}
+        if name == "regular-session" or name.startswith("regular-candidate-"):
+            try:                                                # 원문 표에서 읽은 정규장 시각(사람이 overlay에 옮겨 적을 값 · 대조용)
+                files[name]["regular_hours"] = list(regular_hours(b))
+            except CalendarError as e:
+                files[name]["regular_hours_error"] = str(e)
     cand = rec.get("candidate")
     summary = {"kind": "calendar-dry-run", "year": f"{int(year):04d}", "parser_version": PARSER, "generated_at_utc": _utc(),
                "ok": not rec.get("error"), "error": rec.get("error"), "message": rec.get("message"),
@@ -502,6 +592,14 @@ def write_dry(out, year, rec, get=None):
     (base / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     if cand:
         (base / "candidate.json").write_text(json.dumps(cand, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    for name, f in files.items():                               # 작업 기록에도 원문 요약(artifact를 못 받는 곳에서 대조 · 본문은 안 찍음)
+        hours = f.get("regular_hours")
+        extra = (f" · 원문 표 정규장 {hours[0]} ~ {hours[1]}" if hours else
+                 (f" · 원문 표 못 읽음({f['regular_hours_error']})" if "regular_hours_error" in f else ""))
+        print(f"마른 실행 원문 · {int(year):04d} · {name} · sha256 {f['sha256']} · {f['bytes']}바이트{extra}")
+    print(f"마른 실행 요약 · {int(year):04d} · 만들 판 {summary['would_write_version']} · 같은 판 {summary['same_as_version']} · "
+          f"정규화 지문 {summary['normalized_sha256']} · 세션 unknown {len(summary['unknown'] or [])}일 · "
+          f"후보 주소 오류 {len(errors)}개" + (f" · {errors[0]}" if errors else ""))
     return base
 
 

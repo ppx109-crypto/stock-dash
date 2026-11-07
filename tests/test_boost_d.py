@@ -62,7 +62,9 @@ def weekdays_until(end, n):
     return out[::-1]
 
 
-REGULAR_URL = "https://global.krx.co.kr/contents/GLB/06/0602/0602010201/GLB0602010201T1.jsp"
+REGULAR_URL = "https://regulation.krx.co.kr/contents/RGL/03/03010100/RGL03010100T1.jsp"   # 거래소 규정/제도 · 유가증권시장 매매거래 일반절차 탭
+REAL_REGULAR = ROOT / "tests" / "fixtures" / "krx_regular_session_RGL03010100T1.html"     # 2026-11-07에 받은 그 화면 원문 사본
+REAL_REGULAR_SHA = "fb10f1d109b37e8ab1f06c277a7f4a091a73fd398e4c7b3890caae12efdc1ffb"
 
 
 def regular_receipt(year, sha="1" * 64, **kw):
@@ -2162,7 +2164,9 @@ def krx_raw(year, holidays):
 
 
 # 2c단계 세션 원천 고정 자료(가짜 원문 · 시험은 인터넷을 안 부름): 평소 정규장 안내 · 수능날 공지 · 새해 첫 거래일 공지
-REGULAR_RAW = "<html>KRX 정규장 매매 시간 09:00 ~ 15:30 (시험 고정 자료)</html>".encode("utf-8")
+REGULAR_RAW = ("<html><table><caption>매매거래시간 및 호가접수시간(시험 고정 자료)</caption><thead><tr><th colspan='2'>구분</th>"
+               "<th>매매거래시간</th><th>호가접수시간</th></tr></thead><tbody><tr><th colspan='2'>정규장</th><td>09:00 ~ 15:30</td>"
+               "<td>08:30 ~ 15:30</td></tr></tbody></table></html>").encode("utf-8")
 SUNEUNG_URL = "https://www.krx.co.kr/2026_suneung_ko.pdf"
 SUNEUNG_RAW = "%PDF-1.4 2026학년도 수능일 증권 · 파생상품시장 개장 10:00 · 마감 16:30 (시험 고정 자료)".encode("utf-8")
 NEWYEAR_URL = "https://www.krx.co.kr/2027_opening_ko.pdf"
@@ -2286,7 +2290,7 @@ class CalendarBuild(CalendarToolCwd):
         self.assertTrue(body["source_url"].startswith("https://data.krx.co.kr/comm/bldAttendant/executeForResourceBundle.cmd"))
         self.assertRegex(body["fetched_at_utc"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
         self.assertRegex(body["effective_from"], r"^\d{8}$")
-        self.assertEqual(body["parser_version"], "build_calendar 2")
+        self.assertEqual(body["parser_version"], "build_calendar 3")
         self.assertEqual((body["secondary"]["tr_id"], body["secondary"]["field"], body["secondary"]["agree_days"]), ("CTCA0903R", "opnd_yn", 365))
         self.assertEqual(body["secondary"]["calls"], len(kis.calls))
         self.assertEqual(len(kis.calls), 19, "기준일자를 받은 마지막 날 다음 날로 옮기며 그해를 다 덮음(20일씩 → 19번)")
@@ -3069,6 +3073,87 @@ class SessionBuild(CalendarToolCwd):
         self.assertEqual(summary["raw_files"]["regular-candidate-1"]["sha256"], hashlib.sha256(REGULAR_RAW).hexdigest(),
                          "사람이 읽고 overlay에 적을 원문 · 지문")
         self.assertFalse(Path("dry/2026/candidate.json").exists())
+        self.assertEqual(self.files(), [])
+
+
+class RegularSource(CalendarToolCwd):
+    """2c단계 고침(2026-11-07 · 마른 실행 실패 '평소 세션 원천 영수증이 없음'): 평소 세션 원천 = 거래소 규정/제도의 정규장 표.
+    실제 원문 사본으로 표 읽기 · 저장소 overlay(2026 · 2027)가 그 원문을 고정 · 원문 표 시각 ≠ overlay 시각 · 표 꼴이 바뀌면 새 판 없음."""
+
+    def page(self):
+        return REAL_REGULAR.read_bytes()
+
+    def test_real_page_parses_and_repo_overlays_pin_it(self):
+        raw = self.page()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(), REAL_REGULAR_SHA, "원문 사본 = 2026-11-07에 받은 바이트(줄 끝 바꿈 없음)")
+        self.assertEqual(self.B.regular_hours(raw), ("0900", "1530"), "표 '정규장' 줄의 매매거래시간 칸")
+        self.assertEqual(self.B.REGULAR_CANDIDATES, (REGULAR_URL,))
+        for year in (2026, 2027):
+            with self.subTest(year):
+                body, _ = self.B.load_overlay(year, folder=ROOT / "calendar")
+                reg = body["regular"]
+                self.assertEqual((reg["source_url"], reg["raw_sha256"], reg["open"], reg["close"], reg["effective_from"],
+                                  reg["notice_no"]), (REGULAR_URL, REAL_REGULAR_SHA, "0900", "1530", "20261107", None))
+                self.assertEqual(self.B.regular_check(reg)(raw), "", "저장소 overlay 시각 = 원문 표 시각")
+                self.assertEqual((body["special"], body["unknown"]), ([], []), "특수 세션은 공식 공지가 확인된 뒤에만 적음")
+
+    def test_build_with_real_page_and_changed_pages_keep_old_version(self):
+        raw = self.page()
+        write_overlay(2026, regular=regular_receipt(2026, sha=REAL_REGULAR_SHA, effective_from="20261107"))
+        get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages={REGULAR_URL: raw})
+        self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(KRX_2026)), 0)
+        v1 = Path("calendar/krx-2026-v1.json").read_bytes()
+        body = json.loads(v1)
+        self.assertEqual((body["parser_version"], body["days"]["20261118"]), ("build_calendar 3", {"open": "0900", "close": "1530"}))
+        self.assertEqual(body["days"]["20261106"], {"session": "unknown"}, "시행 날(처음 확인한 날 11-07) 앞 거래일은 unknown")
+        self.assertEqual(body["days"][SUNEUNG], {"session": "unknown"}, "수능 날은 공식 공지 overlay 전까지 unknown")
+        self.assertIn(REGULAR_URL, [c[0] for c in get.calls], "도구가 정규장 안내 주소를 직접 받음")
+        text = raw.decode("utf-8")
+        swap = (text.replace('<th scope="col">매매거래시간</th>', "@@").replace('<th scope="col">호가접수시간</th>', '<th scope="col">매매거래시간</th>')
+                .replace("@@", '<th scope="col">호가접수시간</th>'))
+        cases = {
+            "overlay 마감 16:00": (dict(close="1600"), text, "0900 ~ 1530이 overlay에 적힌 0900 ~ 1600과 다름"),
+            "overlay 개장 10:00": (dict(open="1000"), text, "overlay에 적힌 1000 ~ 1530과 다름"),
+            "표 열 차례 바뀜(호가접수시간을 읽게 됨)": ({}, swap, "0830 ~ 1530이 overlay에 적힌 0900 ~ 1530과 다름"),
+            "정규장 줄 없음": ({}, text.replace(">정규장<", ">정규 시장<"), "'정규장' 줄이 0개"),
+            "정규장 줄 둘": ({}, text.replace("</tbody>", "<tr><th>정규장</th><td>09:00 ~ 15:30</td><td>08:30 ~ 15:30</td></tr></tbody>"),
+                        "'정규장' 줄이 2개"),
+            "표 머리 없음": ({}, text.replace("호가접수시간", "접수시간"), "표 머리가 0개"),
+            "시각 꼴 바뀜": ({}, text.replace("<td>09:00 ~ 15:30</td>", "<td>9시 ~ 15시 30분</td>"), "'HH:MM ~ HH:MM' 꼴이 아님"),
+            "칸 수 다름": ({}, text.replace("<td>08:30 ~ 15:30</td>", ""), "줄 칸 수 1가 표 머리 2과 다름"),
+            "UTF-8 아님": ({}, None, "UTF-8 글이 아님"),
+        }
+        extra = KRX_2026 + ("20261120",)                                   # 새 휴장 공지가 있어도 평소 세션이 확인 안 되면 새 판을 안 씀
+        for name, (kw, page, word) in cases.items():
+            with self.subTest(name):
+                data = page.encode("utf-8") if page is not None else raw.decode("utf-8").encode("euc-kr", "replace")
+                write_overlay(2026, regular=regular_receipt(2026, sha=hashlib.sha256(data).hexdigest(), effective_from="20261107", **kw))
+                get = FakeGet({2026: krx_raw(2026, extra)}, pages={REGULAR_URL: data})
+                self.assertEqual(self.run_tool([2026], get=get, kis=FakeKis(extra)), 1, name)
+                self.assertEqual(self.files(), ["krx-2026-v1.json"], "옛 판 유지 · 새 판 없음")
+                self.assertEqual(Path("calendar/krx-2026-v1.json").read_bytes(), v1)
+                said = " ".join(" ".join(str(a) for a in c.args) for c in __import__("builtins").print.call_args_list[-2:])
+                self.assertIn("2026년 달력 판을 쓰지 않음 · 평소 세션 원천을 확인하지 못함", said)
+                self.assertIn(word, said)
+
+    def test_dry_run_logs_digest_and_hours(self):
+        import builtins
+        raw = self.page()
+        write_overlay(2026, regular=regular_receipt(2026, sha=REAL_REGULAR_SHA, effective_from="20261107"))
+        get = FakeGet({2026: krx_raw(2026, KRX_2026)}, pages={REGULAR_URL: raw})
+        self.assertEqual(self.B.main(["2026", "--dry-run", "--out", "dry"], client=FakeKis(KRX_2026), get=get, folder="calendar"), 0)
+        said = [" ".join(str(a) for a in c.args) for c in builtins.print.call_args_list]
+        self.assertIn(f"마른 실행 원문 · 2026 · regular-session · sha256 {REAL_REGULAR_SHA} · 4278바이트 · 원문 표 정규장 0900 ~ 1530",
+                      said)
+        self.assertTrue(any(x.startswith("마른 실행 요약 · 2026 · 만들 판 1 · 같은 판 None · 정규화 지문 ") for x in said), said[-3:])
+        summary = json.loads(Path("dry/2026/summary.json").read_text(encoding="utf-8"))
+        self.assertEqual(summary["raw_files"]["regular-session"]["regular_hours"], ["0900", "1530"])
+        Path("calendar/sessions-2026.json").unlink()                       # overlay가 없으면 후보 주소 원문 · 지문 · 표 시각을 남김(판은 안 씀)
+        builtins.print.reset_mock()
+        self.assertEqual(self.B.main(["2026", "--dry-run", "--out", "dry2"], client=FakeKis(KRX_2026), get=get, folder="calendar"), 1)
+        said = [" ".join(str(a) for a in c.args) for c in builtins.print.call_args_list]
+        self.assertIn(f"마른 실행 원문 · 2026 · regular-candidate-1 · sha256 {REAL_REGULAR_SHA} · 4278바이트 · 원문 표 정규장 0900 ~ 1530",
+                      said)
         self.assertEqual(self.files(), [])
 
 
