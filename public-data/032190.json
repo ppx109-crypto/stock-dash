@@ -389,7 +389,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-10-05",
+  "fetched": "2026-11-09",
   "disclosures": [
     {
       "title": "주식등의대량보유상황보고서(약식)",
@@ -410,11 +410,6 @@
       "title": "[기재정정]회사합병결정(종속회사의주요경영사항)              ",
       "date": "20260811",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260811900833"
-    },
-    {
-      "title": "지급수단별ㆍ지급기간별지급금액및분쟁조정기구에관한사항",
-      "date": "20260810",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260810000635"
     }
   ]
 }
