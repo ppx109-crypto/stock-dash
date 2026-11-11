@@ -38,8 +38,28 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-06",
+  "fetched": "2026-11-11",
   "disclosures": [
+    {
+      "title": "[기재정정]연결재무제표기준영업(잠정)실적(공정공시)(자회사의 주요경영사항)              ",
+      "date": "20261111",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261111800696"
+    },
+    {
+      "title": "[기재정정]연결재무제표기준영업(잠정)실적(공정공시)(자회사의 주요경영사항)              ",
+      "date": "20261111",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261111800585"
+    },
+    {
+      "title": "[기재정정]연결재무제표기준영업(잠정)실적(공정공시)              ",
+      "date": "20261111",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261111800559"
+    },
+    {
+      "title": "벌금등의부과(자회사의 주요경영사항)              ",
+      "date": "20261111",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261111800534"
+    },
     {
       "title": "[발행조건확정]증권신고서(채무증권)",
       "date": "20261106",
@@ -169,26 +189,6 @@
       "title": "증권발행실적보고서",
       "date": "20260914",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260914000279"
-    },
-    {
-      "title": "투자설명서(일괄신고)",
-      "date": "20260911",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000434"
-    },
-    {
-      "title": "일괄신고추가서류",
-      "date": "20260911",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260911000385"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260904",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260904800176"
-    },
-    {
-      "title": "증권발행실적보고서",
-      "date": "20260831",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260831001290"
     }
   ]
 }
