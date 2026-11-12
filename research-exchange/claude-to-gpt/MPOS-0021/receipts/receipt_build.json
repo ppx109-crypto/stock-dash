@@ -1,0 +1,96 @@
+{
+ "잠금": {
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+  "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+  "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+  "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+  "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+  "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03",
+  "diag12.json": "ca6e4462bbea07c9a6a235490ed220e870392df5a2fd84e26b0ad3910e55c69c",
+  "diag12.py": "a7275bb914f1bdb4241d00e082e66a496a874dc6c4384d6a1c620fd9ba0515b3",
+  "mpos12.py": "8a915a70d30953681cf8796856a923370250ab867b67c1c30adaa7682cc208b5",
+  "make_z100g.py": "50334b57c8a5e980e16a702a45c98aef53297df06b276a43fd05aa60c7594708",
+  "z100g.py": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+  "ex21.py": "085e3a90f98b0e8394e192e15c85039b03fb72d0740edd56d44c4e4fd0c23224",
+  "mpos21.py": "ebe5fc44f93dc202a18290b53dabe3d4cab546095546763d77e2478ac948fd56",
+  "parts21.py": "a024449d60f078ac8bc0d74c5e6d514afd29f02b498ee2e6ad74ae787af064ab",
+  "self21.py": "1e2164397ba3579b95e2dd080a808a3c7ef3f91e823914016ee60bc9fafb9dea",
+  "self21b.py": "8b85b771d039268ee36c77c15cb384ba7dc8a74c71c3fa5557a401753b219efe",
+  "NRL_CACHE /tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7",
+  "069500 (고정 나무 etf-data)": "362d358c8cc53145c6d73539a9639eb6891420247144ae54e33097ba72119db6"
+ },
+ "행": {
+  "BASE": {
+   "rc": 0,
+   "바탕 지문": "20115fa76e4a0fab1e5dedaa0d0c70cd1ca68e9ab0ab542603cb33a079c07af2",
+   "장부 지문": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+   "판정": "PASS",
+   "REPRO_G와 같음": true
+  },
+  "B50": {
+   "rc": 0,
+   "바탕 지문": "0108febcbff0d1b800eae2d26bcc0411abaf06001ae60e50079bf364bd3e992d",
+   "장부 지문": "18319a071f839d0bedb6928cfc122a05b2803fa0a22757ea38dfca913c219353",
+   "판정": "PASS"
+  },
+  "B60": {
+   "rc": 0,
+   "바탕 지문": "4370264789b325d0d6c09e2c49bfa00413eadecf9cfba2f956aa23dd7124a2d7",
+   "장부 지문": "6a708210d290b3d95f3ac097e063897c6cc2360a76a21e75f48cb71892764e5e",
+   "판정": "PASS"
+  },
+  "B70": {
+   "rc": 0,
+   "바탕 지문": "387794ae572741af2d5c387e442b8aad9a67d4f9ad2ad4d42cf725701e9f046b",
+   "장부 지문": "7788528cd4f44bf82eadfdab38fba2e22b088e75a04ed855d7b4297cf3971f9f",
+   "판정": "PASS"
+  },
+  "BX50": {
+   "rc": 0,
+   "바탕 지문": "c643c24e37dd00be26429e1fb8741dfd6485b3c9169706586f99cc1b39c961ad",
+   "장부 지문": "d90a5e740003a48a300f67d6564ded9164028e6f5711fd58c19b98c8e2ba109d",
+   "판정": "PASS"
+  },
+  "BX60": {
+   "rc": 0,
+   "바탕 지문": "2c037ce9c8cbc1b9f17e274f5855e6f29b9483b40db5687c32f133e219cf3d2b",
+   "장부 지문": "ae8d54e6880fa424c520a901c34d817c0c30aab8b3f80a8d225a109acd0100d1",
+   "판정": "PASS"
+  },
+  "BX70": {
+   "rc": 0,
+   "바탕 지문": "ae5a2d5465a148ad19aab1ee872d0def64a0dd29951c50608558e886a3a501e7",
+   "장부 지문": "d7c767d18f33a4bfdd6e5135bce9fbb88715145f55b73d18143cea071ea846fd",
+   "판정": "PASS"
+  },
+  "C0": {
+   "rc": 0,
+   "바탕 지문": "74ae8b2cc13d1e341b01e3371719e6898dde6cb4001e36d15bc18f4cd660e47d",
+   "장부 지문": "e0492d0af62d37627efe538a84378e97c3f0d9c763d9c896dded56a2f96a9764",
+   "판정": "PASS"
+  },
+  "C40": {
+   "rc": 0,
+   "바탕 지문": "80323ff4dfe694e3b5907a1bbd4194bb13952a3790dffd2780ea3d68577b9dbb",
+   "장부 지문": "4be4db4dadfb8389f9d4028030ddfca6f33408c20e172b9ae7925d6f4cc62da3",
+   "판정": "PASS"
+  },
+  "C60": {
+   "rc": 0,
+   "바탕 지문": "0ae3a27012c02bccc97a329da0d434006b48f6195cf44e845992a4e58d7ed8bb",
+   "장부 지문": "5c92ca79e98f2369dd89c54f3c07e0a6856bc72a739adbecf7164251b23b2b59",
+   "판정": "PASS"
+  },
+  "CT": {
+   "rc": 0,
+   "바탕 지문": "56a82002528fbf0e68e4414891f4f524ef8eeecb98a69309b9c87130d56d0da7",
+   "장부 지문": "3d50c81126f8bed7a9065c08b9597a0f3b6555b8900203e736e694eef4f6a944",
+   "판정": "PASS"
+  }
+ }
+}
