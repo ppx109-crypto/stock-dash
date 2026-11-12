@@ -1,0 +1,80 @@
+{
+ "task_id": "KMF-0022",
+ "candidate_id": "KMF-0022-P1",
+ "made_at_kst": "2026-11-12 17:03",
+ "data": {
+  "repo": "ppx109-crypto/stock-dash",
+  "commit": "dd2db8594062f5ee6728861d468f5b859bbab7b4",
+  "path": "futures-1m/mini_kospi200_futures_1min.csv"
+ },
+ "data_sha256": "40df0ea8994e2f8c53c84cba97eae243f674f28666c23a66a31d8be5f6df6a9b",
+ "judge_sha256": "2c12df60d1d9473fcf69675f8e2edefe2b258e4bd835a68a74a9bec4056d5f2b",
+ "judge_sha256_locked": "2c12df60d1d9473fcf69675f8e2edefe2b258e4bd835a68a74a9bec4056d5f2b",
+ "complete_days": {
+  "rule": "kmf13.complete_days(판정기 그대로)",
+  "warm": [
+   "20261013"
+  ],
+  "test2_first20": [
+   "20261014",
+   "20261016",
+   "20261019",
+   "20261020",
+   "20261021",
+   "20261022",
+   "20261023",
+   "20261026",
+   "20261027",
+   "20261028",
+   "20261029",
+   "20261030",
+   "20261102",
+   "20261103",
+   "20261104",
+   "20261105",
+   "20261109",
+   "20261110",
+   "20261111",
+   "20261112"
+  ],
+  "all_complete_from_start": 20,
+  "incomplete": {
+   "20261015": {
+    "rows": 366,
+    "unique_min": 366,
+    "dup_rows": 0,
+    "max_gap": 30,
+    "first_min": 540,
+    "last_min": 934
+   },
+   "20261106": {
+    "rows": 366,
+    "unique_min": 366,
+    "dup_rows": 0,
+    "max_gap": 30,
+    "first_min": 540,
+    "last_min": 934
+   }
+  }
+ },
+ "private_artifact": {
+  "locked_sha256": "82276c6833b15fd127f0cb41d87afc4b335453c381228afc3e88bd3f6ac6eaf3",
+  "repo": "ppx109-crypto/kiwoom-bots",
+  "branch": "backup/private-bot",
+  "commit": "ce48160fe1fba17fcb7c66dbf33080647c84bb50",
+  "committed_at": "2026-10-15T08:10:43+00:00",
+  "paths": [
+   "kmf-receipts/kmf0022_p1_private.tar",
+   "private_bot/receipt/kmf0022_p1_private.tar"
+  ],
+  "sha256_both": "82276c6833b15fd127f0cb41d87afc4b335453c381228afc3e88bd3f6ac6eaf3",
+  "match": true,
+  "inner_files_match_lock": true
+ },
+ "public_code_match_lock_commit": {
+  "commit": "b2ea82ec2394f578cbbfcf5f48221abfdb2f0803",
+  "match": true
+ },
+ "dev_data_match_lock": true,
+ "status": "OK"
+}
