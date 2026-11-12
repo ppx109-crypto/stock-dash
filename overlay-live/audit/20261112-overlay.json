@@ -1,0 +1,115 @@
+{
+ "날": "20261112",
+ "봇": "overlay",
+ "기록 시각(한국)": "2026-11-12 15:13:34",
+ "작업 번호": "43162884182",
+ "작업 시도": "1",
+ "부른 까닭": "workflow_dispatch",
+ "작업 코드 커밋": "5a8edbee45291ab0046ba1b5d4c4e4b4a1eb4ed5",
+ "판단 때 저장소 HEAD": "dd7559adff7b4054f0c0fcefd08460807f731315",
+ "코드": {
+  "overlay_live.py": "2d8fca8cac9fb47b98f24a791adc58fc7ec6b4c8"
+ },
+ "입력": {
+  "st": {
+   "held": {
+    "114800": 12653
+   },
+   "B": 14525644.0,
+   "applied": "횡보",
+   "rebalanced_month": "202611",
+   "last_day": "20261106",
+   "signal_day": "20261030",
+   "nav_day": "20261112",
+   "nav": 51685267.0,
+   "month_start_nav": 50000000.0
+  },
+  "day": "20261112",
+  "prev_day": "20261111",
+  "stale": false,
+  "state": "하락",
+  "nav": 51685267.0,
+  "rows_len": 5942,
+  "rows_last": [
+   [
+    "20261109",
+    78490.0
+   ],
+   [
+    "20261110",
+    82000.0
+   ],
+   [
+    "20261111",
+    84540.0
+   ]
+  ]
+ },
+ "결과": {
+  "rebalance": true
+ },
+ "입력 지문": "50d28a33f435bcb45a7cac7339f34d21313cec08a96ec6da546e214280b5f953",
+ "결과 지문": "7e7080e535f58a6a5e378367e420f7788dc431586be3fdd2e4a06760e2976d0a",
+ "장부 지문(판단 앞)": {
+  "overlay-live/state.json": "14411e1952a1995409bce1f7f17ccbb0ad6b46a69017fb246ece459285fe0cc0",
+  "overlay-live/paper-orders.json": "3997506923818ece968d71300cb702a572decbdc7a462918ff9ed80804510209"
+ },
+ "곁": {
+  "rows_digest": "c1e55ba7f5ae345cd6c088844d1e8d8b4c61e458128da963daf8eefa7c80eebd"
+ },
+ "주문 결과": {
+  "rebalance": true,
+  "target": {
+   "state": "하락",
+   "nav_total": 51685267.0,
+   "cash_b": 50306090.0,
+   "nav_b": 50306090.0,
+   "reserve": 0.0,
+   "price": null,
+   "cur": {
+    "114800": 12653
+   },
+   "want": 0,
+   "f": 0.0
+  },
+  "orders": [
+   [
+    "114800",
+    "sell",
+    12653
+   ]
+  ],
+  "sent": [
+   {
+    "code": "114800",
+    "side": "sell",
+    "qty": 12653,
+    "status": "접수",
+    "at": "15:13:40"
+   }
+  ],
+  "held_after": {},
+  "complete": true
+ },
+ "장부 지문(판단 뒤)": {
+  "overlay-live/state.json": "4615f3230278389a189c000563bc731544a60e972d2d6b5a6c9b247759365b0e",
+  "overlay-live/paper-orders.json": "893ce6d8bad7f6f1a190eb4737c27bf83280a2c8671ed5e6704d070bb387ccef"
+ },
+ "오늘 장부 주문": {
+  "overlay-live/paper-orders.json": [
+   {
+    "key": "20261112:sell:114800",
+    "at": "2026-11-12 15:13",
+    "code": "114800",
+    "name": "KODEX 인버스",
+    "side": "sell",
+    "qty": 12653,
+    "status": "접수",
+    "order_no": "0000042627",
+    "why": "국면 하락 · 목표 몫 0.00",
+    "price": 1257.0
+   }
+  ]
+ },
+ "덧붙인 시각(한국)": "2026-11-12 15:13:46"
+}
