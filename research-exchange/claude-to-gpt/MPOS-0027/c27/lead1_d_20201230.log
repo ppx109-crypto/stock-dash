@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/r8/research-exchange/claude-to-gpt/MPOS-0010/tree_run.py", line 55, in <module>
+    runpy.run_path(script, run_name="__main__")
+  File "<frozen runpy>", line 291, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/mpos27/confirm27.py", line 185, in <module>
+    rows += [(t["code"], t["산 날"], t["판 날"], t["손익"], t.get("자리") or 1) for t in g["매매목록"]]
+                                                                                         ~^^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
