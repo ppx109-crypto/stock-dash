@@ -389,8 +389,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-04",
+  "fetched": "2026-11-12",
   "disclosures": [
+    {
+      "title": "분기보고서 (2026.09)",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112000429"
+    },
+    {
+      "title": "기업설명회(IR)개최              ",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112900546"
+    },
     {
       "title": "전환가액의조정              ",
       "date": "20261015",

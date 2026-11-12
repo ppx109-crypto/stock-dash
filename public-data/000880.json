@@ -321,8 +321,33 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-11",
+  "fetched": "2026-11-12",
   "disclosures": [
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112000562"
+    },
+    {
+      "title": "주요사항보고서(자기주식취득결정)",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112000498"
+    },
+    {
+      "title": "주식소각결정              ",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112800725"
+    },
+    {
+      "title": "분기보고서 (2026.09)",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112000446"
+    },
+    {
+      "title": "[기재정정]특수관계인으로부터받은담보",
+      "date": "20261112",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261112000168"
+    },
     {
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20261111",
