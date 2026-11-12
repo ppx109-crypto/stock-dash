@@ -1,0 +1,18 @@
+{
+ "판": "2(1판 영수증 RECEIPT.json은 그대로 둠)",
+ "실행한 stage0.py(판 2 · isfinite 고치기 전)": "5c2904887b98879274f0cb6d4762ee4596e642d56087629dd9e7f69ebb0899a3",
+ "stage0_v2.json": "b49bfb7c36c66b72ca0673ae8d4a49e1ac4c6208afd28e76b5e2d08ecde3b023",
+ "입력": {
+  "바탕 csv": "890a315a2f84a0b6e819606d4ebbfa78e9bccb12404988345f6acb29ca4694b7",
+  "z100g 봇별 손익": "131afea97aa55442a8d9616eff8c99e79fd18d825a023c2664c44bbec6a62b43",
+  "연속 장부": "c97b1b9a4c7674c29081b1176006e31df5704ce74951735ac2a07691575e8f1a",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6"
+ },
+ "의존 코드": {
+  "mpos12.py(MPOS-0012 749d5b094)": "8a915a70d30953681cf8796856a923370250ab867b67c1c30adaa7682cc208b5",
+  "z100g.py": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+  "regime_dev.py(5dff6d067)": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc"
+ },
+ "명령": "REG_BOX=MPOS-0012 python3 research/pit26/stage0.py run base_CONT.csv attr_CONT.csv stage0_v2.json",
+ "지금 stage0.py(isfinite만 고침 · 다시 돌린 출력이 stage0_v2.json과 바이트 같음)": "4cc9dfd95b1c53c6b8ec085f0d7deaf7842e1571faad7aec53d272b266acf973"
+}
