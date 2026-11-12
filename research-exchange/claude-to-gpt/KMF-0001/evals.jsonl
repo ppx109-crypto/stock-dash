@@ -1,0 +1,40 @@
+{"status": "STARTED", "key": "botTR_spansfast_exit_gap1", "stage": "dev", "at": "2026-10-12 14:34:39"}
+{"status": "DONE", "key": "botTR_spansfast_exit_gap1", "stage": "dev", "dev_total_p": 70.62}
+{"status": "STARTED", "key": "botTR_spansfast_exit_gap2", "stage": "dev", "at": "2026-10-12 14:34:42"}
+{"status": "DONE", "key": "botTR_spansfast_exit_gap2", "stage": "dev", "dev_total_p": 120.26}
+{"status": "STARTED", "key": "botTR_spansmid_exit_gap1", "stage": "dev", "at": "2026-10-12 14:34:45"}
+{"status": "DONE", "key": "botTR_spansmid_exit_gap1", "stage": "dev", "dev_total_p": 7.9}
+{"status": "STARTED", "key": "botTR_spansmid_exit_gap2", "stage": "dev", "at": "2026-10-12 14:34:48"}
+{"status": "DONE", "key": "botTR_spansmid_exit_gap2", "stage": "dev", "dev_total_p": 141.86}
+{"status": "STARTED", "key": "botTR_spansslow_exit_gap1", "stage": "dev", "at": "2026-10-12 14:34:51"}
+{"status": "DONE", "key": "botTR_spansslow_exit_gap1", "stage": "dev", "dev_total_p": -22.08}
+{"status": "STARTED", "key": "botTR_spansslow_exit_gap2", "stage": "dev", "at": "2026-10-12 14:34:54"}
+{"status": "DONE", "key": "botTR_spansslow_exit_gap2", "stage": "dev", "dev_total_p": -31.66}
+{"status": "STARTED", "key": "botMR_k2.0_band60_line20", "stage": "dev", "at": "2026-10-12 14:34:57"}
+{"status": "DONE", "key": "botMR_k2.0_band60_line20", "stage": "dev", "dev_total_p": -10.38}
+{"status": "STARTED", "key": "botMR_k2.0_band60_line60", "stage": "dev", "at": "2026-10-12 14:34:58"}
+{"status": "DONE", "key": "botMR_k2.0_band60_line60", "stage": "dev", "dev_total_p": -160.66}
+{"status": "STARTED", "key": "botMR_k2.0_band120_line20", "stage": "dev", "at": "2026-10-12 14:35:00"}
+{"status": "DONE", "key": "botMR_k2.0_band120_line20", "stage": "dev", "dev_total_p": 11.62}
+{"status": "STARTED", "key": "botMR_k2.0_band120_line60", "stage": "dev", "at": "2026-10-12 14:35:01"}
+{"status": "DONE", "key": "botMR_k2.0_band120_line60", "stage": "dev", "dev_total_p": -15.78}
+{"status": "STARTED", "key": "botMR_k2.5_band60_line20", "stage": "dev", "at": "2026-10-12 14:35:03"}
+{"status": "DONE", "key": "botMR_k2.5_band60_line20", "stage": "dev", "dev_total_p": 39.82}
+{"status": "STARTED", "key": "botMR_k2.5_band60_line60", "stage": "dev", "at": "2026-10-12 14:35:04"}
+{"status": "DONE", "key": "botMR_k2.5_band60_line60", "stage": "dev", "dev_total_p": -73.9}
+{"status": "STARTED", "key": "botMR_k2.5_band120_line20", "stage": "dev", "at": "2026-10-12 14:35:06"}
+{"status": "DONE", "key": "botMR_k2.5_band120_line20", "stage": "dev", "dev_total_p": -22.38}
+{"status": "STARTED", "key": "botMR_k2.5_band120_line60", "stage": "dev", "at": "2026-10-12 14:35:07"}
+{"status": "DONE", "key": "botMR_k2.5_band120_line60", "stage": "dev", "dev_total_p": -55.34}
+{"status": "STARTED", "key": "botORB_or15_filterTrue", "stage": "dev", "at": "2026-10-12 14:35:09"}
+{"status": "DONE", "key": "botORB_or15_filterTrue", "stage": "dev", "dev_total_p": 153.72}
+{"status": "STARTED", "key": "botORB_or15_filterFalse", "stage": "dev", "at": "2026-10-12 14:35:12"}
+{"status": "DONE", "key": "botORB_or15_filterFalse", "stage": "dev", "dev_total_p": 74.58}
+{"status": "STARTED", "key": "botORB_or30_filterTrue", "stage": "dev", "at": "2026-10-12 14:35:15"}
+{"status": "DONE", "key": "botORB_or30_filterTrue", "stage": "dev", "dev_total_p": 179.26}
+{"status": "STARTED", "key": "botORB_or30_filterFalse", "stage": "dev", "at": "2026-10-12 14:35:17"}
+{"status": "DONE", "key": "botORB_or30_filterFalse", "stage": "dev", "dev_total_p": 205.46}
+{"status": "STARTED", "key": "botTR_spansmid_exit_gap2", "stage": "val", "at": "2026-10-12 14:35:21"}
+{"status": "DONE", "key": "botTR_spansmid_exit_gap2", "stage": "val", "val_total_p": -93.34}
+{"status": "STARTED", "key": "botORB_or30_filterFalse", "stage": "val", "at": "2026-10-12 14:35:25"}
+{"status": "DONE", "key": "botORB_or30_filterFalse", "stage": "val", "val_total_p": 136.86}
