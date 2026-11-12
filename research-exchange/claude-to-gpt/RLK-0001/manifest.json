@@ -1,0 +1,14 @@
+{
+ "schema_version": 1,
+ "task_id": "RLK-0001",
+ "chain_id": "RLK-0001",
+ "round": 1,
+ "status": "READY",
+ "kind": "QUESTION",
+ "source_pr": null,
+ "source_head_sha": null,
+ "code_commit": null,
+ "evidence_paths": ["research-exchange/claude-to-gpt/RLK-0001/QUESTION.md"],
+ "completed_at_kst": "이 head 커밋 시각(git)",
+ "limit": "질문 단계 · 실행 결과 없음"
+}
