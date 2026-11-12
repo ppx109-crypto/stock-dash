@@ -1,0 +1,36 @@
+name: Shadow diff (research vs paper)
+# 연구 셈 vs 실제 모의투자 날마다 차이(research/shadow_diff.py · 사용자 2026-10-14 요청).
+# 저장소 자료만 읽고 shadow/만 올림 — 증권사 · 디스코드 비밀값을 쓰지 않음 · 주문 없음.
+on:
+  schedule:
+    - cron: '22 9 * * 1-5'    # 한국 시각 18:22(평일) — 17:50 ETF 종가 수집 뒤(빈칸 엔진 · 덧붙임 · 흔들림 상한)
+    - cron: '40 22 * * 0-4'   # 한국 시각 다음 날 07:40(평일) — 밤사이 주식 일봉 · 07:05 종가 확인 뒤(1일봉 · 바구니)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: shadow-diff
+  cancel-in-progress: false
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # 장부의 날짜별 판(git 기록)을 읽음
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Shadow diff
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python research/shadow_diff.py
+          git add shadow
+          if ! git diff --cached --quiet; then
+            git commit -q -m 'Shadow diff: 연구 셈 vs 실제 모의투자'
+            for try in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q && break; git rebase --abort 2>/dev/null || true; sleep $((try * 7)); done
+          fi
