@@ -1,0 +1,88 @@
+{
+ "⑧ num_same": {
+  "사례": [
+   [
+    "1.0",
+    "inf",
+    false,
+    false
+   ],
+   [
+    "1.0",
+    "-inf",
+    false,
+    false
+   ],
+   [
+    "inf",
+    "-inf",
+    false,
+    false
+   ],
+   [
+    "1.0",
+    "nan",
+    false,
+    false
+   ],
+   [
+    "nan",
+    "nan",
+    true,
+    true
+   ],
+   [
+    "inf",
+    "inf",
+    true,
+    true
+   ],
+   [
+    "-inf",
+    "-inf",
+    true,
+    true
+   ],
+   [
+    "1.0",
+    "1.000000000001",
+    true,
+    true
+   ],
+   [
+    "1.0",
+    "1.001",
+    false,
+    false
+   ]
+  ],
+  "잡힘": true
+ },
+ "⑨ rows_diff_strict 칸 오염": {
+  "잡힘 사례": {
+   "유한 대 +inf": true,
+   "유한 대 −inf": true,
+   "유한 대 NaN": true,
+   "bool 대 int": true
+  },
+  "int 1 대 float 1.0 같음(수치 호환)": true,
+  "잡힘": true
+ },
+ "⑩ keyed_diff 양쪽 키": {
+  "A에만": 1,
+  "B에만": 2,
+  "값 다름": 1,
+  "None 대 숫자": 1,
+  "c 뒤 키 무시": true,
+  "잡힘": true
+ },
+ "⑪ shape_diff": {
+  "같은 배열 통과": true,
+  "B에만 종목": 1,
+  "길이 모자람": 1,
+  "inf 부호": 1,
+  "NaN 위치": 1,
+  "잡힘": true
+ },
+ "모두 통과": true
+}

@@ -1,0 +1,28 @@
+{
+ "정의 커밋(셈 전)": "43ab62de6 research/pit26/RECOUNT.md",
+ "코드 지문": {
+  "honest_cache.py": "6082aa3b661d379dd0433d2671d17b400c581843d5b75b3fe73706a7cb93054a",
+  "honest_ledger.py": "1a0ea9bbcc2be3897b3c0f001cf56c030e4170af20560cd3b0c423c697ef8fe4",
+  "make_honest_nrl.py": "4d5bf1d799a599d6fc6503165ac8f7c05e20144ee3d9f7e3841b59579cc1df08",
+  "recount_acct.py": "19944dd9042496c98a0bfd331de99a22174fc0e2860f53ebb0c691892e735c07"
+ },
+ "z100g": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+ "장부": {
+  "원판 z055_d1_raw(같은 코드 BASE 모드로 바이트 재현)": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "led_BASE 재현": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "led_HONEST": "e84427d075eafc6af41f9f0b1ccd8c7778f9c1c86c828402c08a67d7e5cad5e0"
+ },
+ "NRL 캐시": {
+  "옛 /tmp/maxret-0026-cache.pkl": "03dcdd00…(앞 영수증)",
+  "정직 nrl_honest.pkl": "cfc22c3ffb808af58460c069c5ff4bff19cc5a3bb20602e8352f08d7914ed132",
+  "정직 캐시 next pkl": "28b4fcb771d53ddce4bdd5328d84d2e800279621bc19f204b3596c96fb6fd50e"
+ },
+ "바탕 csv": {
+  "REPRO_G": "20115fa76e4a0fab1e5dedaa0d0c70cd1ca68e9ab0ab542603cb33a079c07af2",
+  "HONEST": "6c8017cd3abc365fd19ec52da02b5cd2e8b739fd1885e109dfcab4e9ac0eacf5",
+  "HLED_OLDNRL": "2d43da1dba50349d91b041a6cc1185228232ebd69fad34cd1f9110a4d3f0e066"
+ },
+ "REPRO_G 원판 바탕과 같음": true,
+ "명령": "장부 · 캐시: research/pit26/RECOUNT_RESULT.md 4절 · 바탕: recount/run_base.sh · 계좌: python3 recount_acct.py recount.json 이름=바탕=장부 …",
+ "가격 차이": "정직 캐시 가격판(study.load_prices) 대 옛 NRL 캐시 가격: 507종목 중 095340 하나 다름"
+}
