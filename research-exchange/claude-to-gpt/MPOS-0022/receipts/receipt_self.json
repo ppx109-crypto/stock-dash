@@ -1,0 +1,144 @@
+{
+ "잠금": {
+  "/tmp/mix0054-bases/d0.5_b0.3_no15m.csv": "6bacf87ea66e8cde576e7d8b3cd533e2b18ccd78ed8afdb7e79d5ebb72824531",
+  "/home/user/stock-dash/research/regime_dev.py": "9b8c18720c489707ca6fc0ab71e888cc6a5dab5e54bcd4d6eb20265cd58fe0bc",
+  "/home/user/stock-dash/research/mix54_run.py": "b77ba1c1a68d7d6e242f30f4a3ed3c6fc654dd57e3a6dc44ab96852faf7bbd6e",
+  "/tmp/rev-full.pkl": "540114ff96929ceb3e9d6420887e5f5457df4ab65c4457377b9bec13a1fa06a6",
+  "/tmp/claude-0/-home-user-stock-dash/bd390ad5-dee2-599f-8c35-772051ecfbb8/scratchpad/z055_d1_raw.json": "0ec97a14ba3d9b81168906eb332c6753d576ff57601e526c935345aafac75c99",
+  "inputs/etf-data/069500.json": "7b4135e184867729ef4dbbe958bf448a845defed90453aba416a28dfc2940473",
+  "inputs/etf-data/114800.json": "ca62396f67508ff955322f5c393db9882e766128ae791540f2c726316bcccb60",
+  "inputs/etf-data/122630.json": "c4a43c963067809b90302ae0ffe391ca229d3d8424fa06fabeff834ed0973255",
+  "inputs/etf-data/252670.json": "fb616d9f365144106defd63b113ced435fa9082bcaa81d536613eb27b1f5da29",
+  "inputs/market-data/index_KOSPI.json": "608d6c8cb031a0170c74479a9789f1a0487046f09d2e081d95fc4ee04940aa0d",
+  "inputs/market-data/investor_KSP.json": "7d0cd8fb3aab1f91fba6f0ca418a936b98b7ee1785518203bd83e934d8462e03",
+  "diag12.json": "ca6e4462bbea07c9a6a235490ed220e870392df5a2fd84e26b0ad3910e55c69c",
+  "diag12.py": "a7275bb914f1bdb4241d00e082e66a496a874dc6c4384d6a1c620fd9ba0515b3",
+  "mpos12.py": "8a915a70d30953681cf8796856a923370250ab867b67c1c30adaa7682cc208b5",
+  "make_z100g.py": "50334b57c8a5e980e16a702a45c98aef53297df06b276a43fd05aa60c7594708",
+  "z100g.py": "8f98f97a3d90764fe5306f575d03113768928e56b1ce6db747fffa8c9f959f4f",
+  "ex22.py": "a98ecf0f96641111795297a1b357e3a82008aa3ebbe5cfa370b9f9ac0b990c64",
+  "mpos22.py": "4a7e111ab07b49e69cda789936071bfcb40ae73aa3408673230d7da24bfbfa09",
+  "parts22.py": "9a176836e3932389cb70921092a94918804c919805d844a0fcf4eef3658c5293",
+  "self22.py": "6a235238f22b17383997834009a32c400252984c1910bb680f65296dde3f190d",
+  "self22b.py": "40436d8720e6e373d754faa863fdfe43e77055647cb9c00667af4d81a95915a9",
+  "NRL_CACHE /tmp/maxret-0026-cache.pkl": "03dcdd0042b333f5a02e0e65d01518d97ae6efe8e7cb03bb84d4ed3e37b340d7"
+ },
+ "행": [
+  {
+   "시험": "창은 판단 날 전 거래일까지(그날 종가 안 씀) · 열쇠 = (시작, 끝)",
+   "판정": "PASS"
+  },
+  {
+   "시험": "누수 시험 창은 판단 날 뒤까지 읽음",
+   "판정": "PASS"
+  },
+  {
+   "시험": "앞 자료 모자라면 None",
+   "판정": "PASS"
+  },
+  {
+   "시험": "자기 자신과 상관 1",
+   "판정": "PASS"
+  },
+  {
+   "시험": "부호 뒤집으면 상관 −1",
+   "판정": "PASS"
+  },
+  {
+   "시험": "겹친 날 40 미만이면 None",
+   "판정": "PASS"
+  },
+  {
+   "시험": "구간으로 맞춤(빠진 구간은 빼고 셈)",
+   "판정": "PASS"
+  },
+  {
+   "시험": "결측 바: 끝 날만 같고 시작 날 다른 수익은 짝 안 지음",
+   "판정": "PASS"
+  },
+  {
+   "시험": "상수 수익열은 None",
+   "판정": "PASS"
+  },
+  {
+   "시험": "고정 난수: 같은 입력 같은 값 · [0, 1)",
+   "판정": "PASS"
+  },
+  {
+   "시험": "고정 난수 < 0.2 몫이 0.2 근처(±0.01)",
+   "판정": "PASS",
+   "몫": 0.2006
+  },
+  {
+   "시험": "앞 기간 고르기 · 가까운 동률이면 앞 반 연이 큰 칸",
+   "판정": "PASS",
+   "얻음": "K80"
+  },
+  {
+   "시험": "앞 기간 고르기 · 완전 동률이면 고정 순서 첫 칸",
+   "판정": "PASS"
+  },
+  {
+   "시험": "실행",
+   "판정": "PASS"
+  },
+  {
+   "시험": "같은 날 여러 진입 · 자리 부족: 요청 칸과 배정 칸이 다르게 기록",
+   "판정": "PASS",
+   "얻음": [
+    [
+     "A",
+     "20200102",
+     2,
+     2
+    ],
+    [
+     "B",
+     "20200102",
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "시험": "다음 날 보유 칸 관찰 = 배정 칸(A 2 · B 1)",
+   "판정": "PASS",
+   "얻음": {
+    "A": 2,
+    "B": 1
+   }
+  },
+  {
+   "시험": "끝까지 안 판 보유도 진입 기록에 남음(장부 줄 없음)",
+   "판정": "PASS"
+  },
+  {
+   "시험": "덮개 없는 판과 보유 칸 같음(결정 안 바뀜)",
+   "판정": "PASS",
+   "덮개없음": {
+    "A": 2,
+    "B": 1
+   }
+  },
+  {
+   "시험": "자리 3 · 요청 4 → 배정 3",
+   "판정": "PASS",
+   "얻음": [
+    [
+     "A",
+     "20200102",
+     4,
+     3
+    ]
+   ]
+  },
+  {
+   "시험": "B 실행 · 바깥 모듈 없음 · 부품 지문",
+   "판정": "PASS"
+  }
+ ],
+ "영수증 지문": [
+  "c19ae15720140db9691df7fd524ea8afc3fbbccc01a69ef95293d500296b1dc8",
+  "8944b7fe5ccf9dbfa24bdfc06c0bcb3c76b4f64c4765f02c5b00583c97876b31"
+ ]
+}
