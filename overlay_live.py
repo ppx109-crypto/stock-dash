@@ -326,8 +326,11 @@ def nav_watch(st, day, nav):
 
 # ───────────────────────── 하루 실행(15:10 엔진 뒤) ─────────────────────────
 
-def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None):
-    """덧붙임 하루 실행. 디스코드 줄들을 돌려줌. 꺼져 있으면 빈 목록."""
+def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None, buy_ok=True, gate=None):
+    """덧붙임 하루 실행. 디스코드 줄들을 돌려줌. 꺼져 있으면 빈 목록.
+    buy_ok=False(BOOST-0001-D · 새 위험 증가 막음 · 사전등록 판 3 §0.1): 목표가 들고 있는 수보다 큰 매수 다리만 빼고
+    매도 · 줄이기 · prepare(15:20 1일봉 몫 덜어 두기)는 그대로. 매수 다리를 뺀 맞춤(교체면 옛 종목 매도까지만)은 '맞춤 끝'으로 적지 않고
+    applied = "pending"으로 남겨 다음 거래일에 다시 판단(needs_rebalance가 참). gate = 문 기록(판단 기록 곁 칸에만 씀)."""
     now = now or datetime.now(KST)
     if not active(day):
         return []
@@ -355,7 +358,7 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     reb = (not stale) and needs_rebalance(st, state, day)
     if _audit:
         _audit.safe(lambda: _audit.record(STATE, day, "overlay", ov_in, {"rebalance": reb}, ledgers=(STATE, BOOK), code=_CODE,
-                                          extra={"rows_digest": _audit.digest(rows)}))
+                                          extra={"rows_digest": _audit.digest(rows), "buy_ok": buy_ok, "gates": gate}))
     if stale or not reb:
         save_state(st)                               # 손실 알림 기록 먼저(prepare가 장부를 다시 읽음)
         prepare(broker, reserve, now, quote)         # 맞추지 않는 날도 15:20 1일봉 몫은 비켜 둠
@@ -397,10 +400,12 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
             orders.append((code_new, "sell", -diff))
         elif diff > 0:
             orders.append((code_new, "buy", diff))
+    # 새 위험 증가가 막힌 날(BOOST-0001-D): 매수 다리만 뺌(목표가 들고 있는 수보다 클 때만 생김) · 매도 · 줄이기는 그대로
+    dropped = [] if buy_ok else [o for o in orders if o[1] == "buy"]
     before = {p["code"]: int(p["quantity"]) for p in raw.get("positions", [])}
     done, sells, buy_failed = [], {}, False
     sent = []                                         # 판단 기록장용(주문마다 접수 결과 · 주문 · 장부는 그대로)
-    for c, side, q in sorted(orders, key=lambda o: o[1] != "sell"):      # 팔기 먼저(연속 매매라 판 돈이 바로 풀림)
+    for c, side, q in sorted([o for o in orders if o not in dropped], key=lambda o: o[1] != "sell"):      # 팔기 먼저(연속 매매라 판 돈이 바로 풀림)
         broker._overlay_buying = side == "buy"
         no, status = "", ""
         try:
@@ -441,12 +446,12 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     keep = {k: st[k] for k in ("nav_day", "nav", "month_start_nav") if k in st}
     codes = set(cur) | ({code_new} if code_new else set())
     if after is None:                                # 잔고를 못 읽음 → 추정하지 않고 맞춤 전 장부 그대로 · 다음 실행이 실제 잔고와 맞추고 다시 맞춤
-        st = {"held": cur, "B": float(st.get("B") or 0), "applied": None, "rebalanced_month": st.get("rebalanced_month"),
-              "last_day": day, "pending": sorted(codes), **keep}
+        st = {"held": cur, "B": float(st.get("B") or 0), "applied": "pending" if dropped else None,
+              "rebalanced_month": st.get("rebalanced_month"), "last_day": day, "pending": sorted(codes), **keep}
         save_state(st)
         if _audit:
             _audit.safe(lambda: _audit.after(STATE, day, "overlay", {"rebalance": True, "target": target_in, "orders": orders,
-                                                                     "sent": sent, "after_balance": None},
+                                                                     "sent": sent, "after_balance": None, "gate_dropped": dropped},
                                              ledgers=(STATE, BOOK), books=(BOOK,)))
         return lines + ["⚠️ 덧붙임: 주문 뒤 잔고를 못 읽어 장부를 그대로 두고 내일 다시 맞춤"]
     held, px = {}, {}
@@ -459,18 +464,24 @@ def run(broker, client, day, reserve=0.0, now=None, quote=_quote, prev_day=None)
     left = {c: q for c, q in held.items() if c != code_new}
     complete = not left and not buy_failed            # 사기가 실패했으면 '맞춤 끝'으로 적지 않음 → 다음 거래일에 다시 맞춤
     # B = 맞춘 뒤 덧붙임 평가액(남은 옛 종목 포함 · 그때 값) · 다 못 팔았으면 '맞춤 끝'으로 적지 않아 다음 실행에 다시 맞춤
+    # 매수 다리를 문이 뺐으면(BOOST-0001-D) applied = "pending"(완료 아님 · 다음 거래일에 다시 판단) · 그달 맞춤도 끝으로 적지 않음
     st = {"held": held, "B": round(sum(q * px[c] for c, q in held.items()), 2) if held else 0.0,
-          "applied": state if complete else None, "rebalanced_month": day[:6] if complete else st.get("rebalanced_month"),
+          "applied": "pending" if dropped else (state if complete else None),
+          "rebalanced_month": day[:6] if complete and not dropped else st.get("rebalanced_month"),
           "last_day": day, "signal_day": rows[-1][0], **keep}
     if left:
         st["unconfirmed"] = {"left": left, "at": now.strftime("%Y-%m-%d %H:%M")}
         lines.append("⚠️ 덧붙임: 옛 종목 " + " · ".join(f"{NAME.get(c, c)} {q:,}주" for c, q in left.items()) + " 매도가 다 체결되지 않음 → 장부에 남기고 내일 다시 맞춤")
     if buy_failed:
         lines.append(f"⚠️ 덧붙임: {NAME.get(code_new, code_new)} 사기가 안 됨 → 장부에 '맞춤 끝'으로 적지 않고 다음 거래일에 다시 맞춤")
+    if dropped:
+        lines.append(f"⚠️ 덧붙임: 새 매수 막음 → {NAME.get(code_new, code_new)} 사기를 빼고 팔기 · 줄이기만 함"
+                     " · 장부에 '맞춤 끝'으로 적지 않고 다음 거래일에 다시 판단")
     save_state(st)
     if _audit:
         _audit.safe(lambda: _audit.after(STATE, day, "overlay", {"rebalance": True, "target": target_in, "orders": orders,
-                                                                 "sent": sent, "held_after": held, "complete": complete},
+                                                                 "sent": sent, "held_after": held, "complete": complete,
+                                                                 "gate_dropped": dropped},
                                          ledgers=(STATE, BOOK), books=(BOOK,)))
     lines.insert(0, f"레버리지 봇 {int(day[4:6])}월 {int(day[6:])}일, 국면 {state}(어제 장 끝 기준), 목표 {NAME.get(code_new, '없음')} {f * 100:.0f}%")
     return lines

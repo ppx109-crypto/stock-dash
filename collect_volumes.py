@@ -6,6 +6,9 @@
 
 그래서 거래량과 거래대금을 따로 모읍니다. 일봉 파일은 건드리지 않습니다.
 서른 해치를 다시 받는 일이라, 끊기면 그 자리에서 이어받습니다.
+
+BOOST-0001-D D7: '오늘 받음'으로 건너뛰는 것은 받은 날 = 오늘 · 120줄에 더해 마지막 줄 = 기대 날(판 고정 달력의 앞 거래일)이고
+그 줄의 칸이 다 있을 때만입니다. 달력을 못 읽으면 예전처럼 받은 날과 줄 수만 봅니다(수집을 멈추지 않음).
 """
 import json
 import os
@@ -96,12 +99,36 @@ def catch_up(client, code, have, back=25):
     return sorted(merged.items()), f"이어받음 · 새 {len(fresh) - len(shared)}일"
 
 
-def done_today(code, on_day):
+def expected_day(now=None, folder=None):
+    """D7 기대 날 = 판 고정 달력의 앞 거래일(오늘 한국 날짜 앞 마지막 거래일 · 장이 끝나 자료가 다 나왔을 가장 늦은 날).
+    못 읽으면 None(예전처럼 마지막 줄을 안 봄)."""
+    today = (now or datetime.now(ZoneInfo("Asia/Seoul"))).strftime("%Y%m%d")
+    try:
+        import trade_calendar
+        return trade_calendar.latest_done(today, folder=folder)
+    except Exception:
+        return None
+
+
+def done_today(code, on_day, expect=None):
+    """오늘 이미 받아 둔 종목이면 참(건너뜀): 받은 날 = 오늘 · 120줄 이상. expect(D7 기대 날)를 주면 마지막 줄 = expect이고
+    그 줄의 거래량 · 거래대금 · 고가 · 저가가 모두 있어야 참(빈 칸 · 낡은 마지막 줄이면 다시 받음). expect가 없으면 예전 그대로."""
     try:
         kept = json.loads((OUT / f"{code}.json").read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return False
-    return kept.get("fetched") == on_day and len(kept.get("날") or []) >= 120
+    if not isinstance(kept, dict):
+        return False
+    rows = kept.get("날") or []
+    if not (kept.get("fetched") == on_day and len(rows) >= 120):
+        return False
+    if expect is None:
+        return True
+    last = rows[-1]
+    if not isinstance(last, list) or not last or str(last[0]) != str(expect):
+        return False
+    got = dict(zip((kept.get("칸") or ["날짜", *KEEP])[1:], last[1:]))
+    return all(got.get(name) is not None for name in KEEP)
 
 
 def main():
@@ -111,8 +138,11 @@ def main():
         return 1
     today = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%Y-%m-%d")
     if os.getenv("VOLUME_SKIP_DONE", "1").strip() not in ("0", "false", "False"):
+        expect = expected_day()          # BOOST-0001-D D7: 마지막 줄로 기대하는 날(달력을 못 읽으면 None = 예전처럼)
+        print("건너뛰기 기준 · 받은 날 오늘 · 120줄 · " + (f"마지막 줄 {expect}(판 고정 달력) · 칸 다 있음" if expect
+                                                        else "달력을 못 읽어 마지막 줄은 안 봄(예전 방식)"))
         before = len(codes)
-        codes = [c for c in codes if not done_today(c, today)]
+        codes = [c for c in codes if not done_today(c, today, expect)]
         if before != len(codes):
             print(f"오늘 이미 받아 둔 {before - len(codes)}종목은 건너뜁니다.")
         if not codes:

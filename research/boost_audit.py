@@ -501,8 +501,32 @@ def broker_check(bot, body):
     return out
 
 
+def gate_shut(bot, body):
+    """BOOST-0001-D 문: 기록 곁 칸 gates가 그 봇 판단의 문이 닫혔다고 하는가. 꼴이 맞을 때만 참
+    (칸 없음 · dict 아님 · open이 참/거짓 아님 · 판단 id가 다름 → 거짓 = 예전 대조 그대로)."""
+    g = (body.get("곁") or {}).get("gates")
+    return isinstance(g, dict) and g.get("decision") == bot and g.get("open") is False
+
+
+def gate_dropped(body):
+    """BOOST-0001-D 덧붙임: 주문 결과 gate_dropped(문이 뺀 매수 다리) → {코드}. 곁 칸 buy_ok가 거짓이고 꼴이 맞을 때만
+    (칸 없음 · 목록 아님 · 매수 아닌 다리 · buy_ok가 거짓 아님 → 빈 모음 = 예전 대조 그대로)."""
+    got = (body.get("주문 결과") or {}).get("gate_dropped")
+    if not isinstance(got, list) or not got or (body.get("곁") or {}).get("buy_ok") is not False:
+        return set()
+    codes = set()
+    for o in got:
+        if not (isinstance(o, (list, tuple)) and len(o) >= 2 and isinstance(o[0], str) and o[1] == "buy"):
+            return set()
+        codes.add(o[0])
+    return codes
+
+
 def orders_check(bot, body):
-    """판단한 주문이 장부에 있는지(늦은 날은 SCHEDULER가 덮음). 없으면 '주문 빠짐'."""
+    """판단한 주문이 장부에 있는지(늦은 날은 SCHEDULER가 덮음). 없으면 '주문 빠짐'.
+    막는 장치가 판단 기록 뒤 매수를 뺀 날은 양방향으로 봄(판 3 고침 8 꼴): 판단 원본 매수의 장부 부재는 정상 · 그 매수 장부 줄은 '금지 주문'.
+    엔진 = 흔들림 상한(곁 stop_buys) 또는 BOOST-0001-D 문 닫힘(곁 gates) · 덧붙임 = 주문 결과 gate_dropped의 매수 다리.
+    바구니 · 1일봉은 문이 닫히면 판단에 매수가 없으므로 그대로 대조."""
     res, out = body.get("주문 결과"), []
     if res is None or res.get("late") or (body.get("곁") or {}).get("late"):
         return out
@@ -511,21 +535,34 @@ def orders_check(bot, body):
     if bot in ("engine", "basket"):
         # 흔들림 상한이 막힌 날(기록 곁 칸 stop_buys)은 엔진이 판단 기록 뒤 매수를 뺌(idle_live.drop_buys · 설계대로) → 팔기만 대조(판 3 고침 8)
         stop = bot == "engine" and (body.get("곁") or {}).get("stop_buys") is True
+        shut = bot == "engine" and gate_shut("engine", body)      # BOOST-0001-D 문이 닫힌 날도 같은 길(drop_buys)
         for o in (body.get("결과") or {}).get("orders", []):
-            if stop and o[1] == "buy":                # 판단 원본의 매수는 막힌 날 실제 주문 계약 밖(없어야 정상)
+            if (stop or shut) and o[1] == "buy":      # 판단 원본의 매수는 막힌 날 실제 주문 계약 밖(없어야 정상)
                 continue
             if f"{day}:{o[1]}:{o[0]}" not in keys:
                 out.append(("주문 빠짐", f"{o[0]} {o[1]} 판단했으나 장부에 없음"))
-        if stop:                                     # 반대 방향: 막힌 날 엔진 장부에 매수 줄(접수 · 시도 · 실패 모두)이 있으면 금지 주문
+        if stop or shut:                             # 반대 방향: 막힌 날 엔진 장부에 매수 줄(접수 · 시도 · 실패 모두)이 있으면 금지 주문
+            why = " · ".join(w for w, on in (("흔들림 상한이", stop), ("문(BOOST-0001-D)이", shut)) if on)
             for o in rows:
                 if str(o.get("side", "")) == "buy" or str(o.get("key", "")).startswith(f"{day}:buy:"):
-                    out.append(("금지 주문", f"{o.get('key')} 흔들림 상한이 막힌 날 엔진 매수 장부 줄 · {str(o.get('status', ''))[:20]}"))
+                    out.append(("금지 주문", f"{o.get('key')} {why} 막힌 날 엔진 매수 장부 줄 · {str(o.get('status', ''))[:20]}"))
 
     elif bot == "overlay":
         sent = {(o.get("code"), o.get("side")) for o in res.get("sent") or []}
+        dropped = gate_dropped(body)                 # BOOST-0001-D: 문이 뺀 매수 다리(장부 부재 정상)
         for o in res.get("orders") or []:
+            if o[1] == "buy" and o[0] in dropped:
+                continue
             if (o[0], o[1]) not in sent and f"{day}:{o[1]}:{o[0]}" not in keys:
                 out.append(("주문 빠짐", f"{o[0]} {o[1]} 판단했으나 주문 줄 없음"))
+        for code in sorted(dropped):                 # 반대 방향: 문이 뺀 종목의 매수 줄(장부 · 보낸 주문)이 있으면 금지 주문
+            hit = [o for o in rows if str(o.get("key", "")) == f"{day}:buy:{code}"
+                   or (str(o.get("code")) == code and str(o.get("side", "")) == "buy")]
+            if not hit:
+                hit = [o for o in res.get("sent") or [] if (o.get("code"), o.get("side")) == (code, "buy")]
+            for o in hit:
+                out.append(("금지 주문", f"{o.get('key') or code} 문(BOOST-0001-D)이 뺀 덧붙임 매수 다리인데 매수 줄 있음 · "
+                                       f"{str(o.get('status', ''))[:20]}"))
     elif bot == "daily":
         lines = [str(s) for s in res.get("paper") or []]
         for x in (body.get("결과") or {}).get("sells", []) + (body.get("결과") or {}).get("buys", []):
