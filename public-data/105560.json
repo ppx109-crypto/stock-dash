@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-12",
+  "fetched": "2026-11-16",
   "disclosures": [
+    {
+      "title": "분기보고서 (2026.09)",
+      "date": "20261116",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261116002225"
+    },
     {
       "title": "증권발행실적보고서",
       "date": "20261112",
@@ -184,11 +189,6 @@
       "title": "기타안내사항(안내공시)              ",
       "date": "20260928",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260928800208"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260915",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260915800456"
     }
   ]
 }

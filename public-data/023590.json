@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-13",
+  "fetched": "2026-11-16",
   "disclosures": [
+    {
+      "title": "분기보고서 (2026.09)",
+      "date": "20261116",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261116001710"
+    },
     {
       "title": "타법인주식및출자증권취득결정              ",
       "date": "20261104",
