@@ -47,7 +47,10 @@ class Recent(unittest.TestCase):
         def dart(self, endpoint, **params):
             self.calls.append(params)
             assert "corp_code" not in params
-            return {"list": self.pages[params["page_no"] - 1], "total_page": len(self.pages)}
+            # OpenDART 공시검색 응답 꼴 그대로(BOOST-0001-D D3부터 쪽 완결성을 status · page_no · total_count · total_page로 봄)
+            return {"status": "000", "message": "정상", "page_no": params["page_no"], "page_count": params["page_count"],
+                    "total_count": sum(len(x) for x in self.pages), "total_page": len(self.pages),
+                    "list": self.pages[params["page_no"] - 1]}
 
     def test_appends_only_wanted_codes_and_dedupes(self):
         pages = [[{"stock_code": "000080", "report_nm": "유상증자결정", "rcept_dt": "20261002"},

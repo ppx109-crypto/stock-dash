@@ -58,6 +58,38 @@ jobs:
           KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
           KIS_CALL_GAP: '0.07'
           FIX_LANES: ${{ inputs.lanes || '4' }}
+      - name: 앞 거래일 수급 보충(1일봉 수급 풀 · 앞쪽만 · BOOST-0001-D D4)
+        # 저녁 사슬(daily-prices)이 자정 전에 수급 단계에 닿으면 목표 날이 그 앞 거래일이라 P 수급이 안 붙음
+        # (main 기록 10-14 ~ 11-06 18거래일 중 5일: 15:20 판단 때 수급 마지막 날 = P−1) → 아침에 판 고정 달력의 P를 목표로
+        # 빠진 종목만 붙임(15:20 1일봉 전에 · 이미 P가 있으면 묻지 않음 · 조회만 · 주문 없음). 실패해도 받은 것은 올리고 작업 실패로 드러냄.
+        if: ${{ !cancelled() }}
+        run: |
+          set -uo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          status=0; python collect_investor_history.py || status=$?
+          mkdir -p investor-data
+          git add -A investor-data || { echo '⚠️ 보충한 수급을 staging하지 못함'; exit 1; }
+          if git diff --cached --quiet; then
+            echo '보충할 수급이 없습니다(이미 P까지 있음).'
+          else
+            git commit -q -m "Daily close check: 앞 거래일 수급 보충"
+            ok=0
+            for try in 1 2 3 4 5; do
+              if git pull -q --rebase origin main && git push -q; then ok=1; break; fi
+              if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ]; then git rebase --abort; fi
+              echo "올리기 다시 시도 $try"; sleep $((try * 7))
+            done
+            [ "$ok" = 1 ] || { echo '⚠️ 보충한 수급을 올리지 못했습니다.'; exit 1; }
+          fi
+          exit $status
+        env:
+          KIS_APP_KEY: ${{ secrets.KIS_APP_KEY }}
+          KIS_APP_SECRET: ${{ secrets.KIS_APP_SECRET }}
+          KIS_ENV: real
+          KIS_TOKEN_FILE: ${{ runner.temp }}/kis-token.json
+          KIS_CALL_GAP: '0.07'
+          INVESTOR_TOPUP: '1'
       - name: 바뀐 게 있으면 A그룹 · 1시간봉 후보 다시 세기
         if: steps.fix.outputs.changed == '1'
         run: |

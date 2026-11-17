@@ -479,6 +479,71 @@ class Checks(unittest.TestCase):
         daily["주문 결과"]["paper"] = []
         self.assertEqual([t for t, _ in B.orders_check("daily", daily)], ["주문 빠짐"])
 
+    def test_gate_closed_engine_two_ways(self):
+        """BOOST-0001-D 문(곁 gates · 판단 id engine · open False): 고침 8과 같은 양방향 — 판단 원본 매수 부재는 정상 ·
+        그날 엔진 장부 매수 줄은 금지 주문 · 팔기 빠짐은 주문 빠짐 · 칸이 없거나 꼴이 이상하면 예전 대조."""
+        shut = {"decision": "engine", "open": False, "reasons": ["저장소를 최신으로 맞추지 못함"]}
+        sold = {"key": "20261109:sell:138230", "code": "138230", "side": "sell", "status": "접수"}
+        body = {"날": "20261109", "결과": {"orders": [["133690", "buy", 3, "r"], ["138230", "sell", 2, "r"]]}, "주문 결과": {"late": False},
+                "오늘 장부 주문": {"idle-live/paper-orders.json": [sold]}, "곁": {"stop_buys": False, "gates": shut}}
+        self.assertEqual(B.orders_check("engine", body), [])                                               # 1: 매수 없음 · 팔기 있음 → 0
+        for st in ("접수", "실패 · x"):
+            bad = dict(body, **{"오늘 장부 주문": {"idle-live/paper-orders.json": [
+                sold, {"key": "20261109:buy:133690", "code": "133690", "side": "buy", "status": st}]}})
+            got = B.orders_check("engine", bad)
+            self.assertEqual([t for t, _ in got], ["금지 주문"], st)                                       # 2: 금지 매수(접수든 실패든)
+            self.assertIn("문(BOOST-0001-D)이 막힌 날", got[0][1])
+        no_sell = dict(body, **{"오늘 장부 주문": {"idle-live/paper-orders.json": []}})
+        self.assertEqual([t for t, _ in B.orders_check("engine", no_sell)], ["주문 빠짐"])                  # 3: 팔기 빠짐
+        both = dict(bad, **{"곁": {"stop_buys": True, "gates": shut}})
+        got = B.orders_check("engine", both)
+        self.assertEqual([t for t, _ in got], ["금지 주문"], "흔들림 상한 · 문이 함께 막아도 줄 하나에 하나")
+        self.assertIn("흔들림 상한이 · 문(BOOST-0001-D)이", got[0][1])
+        opened = dict(body, **{"곁": {"gates": dict(shut, open=True)}})
+        self.assertEqual([t for t, _ in B.orders_check("engine", opened)], ["주문 빠짐"], "문이 열렸으면 매수 부재는 주문 빠짐")
+        for broken in ({}, {"gates": None}, {"gates": "닫힘"}, {"gates": dict(shut, open="false")}, {"gates": dict(shut, open=None)},
+                       {"gates": dict(shut, decision="basket")}, {"gates": {"open": False}}):
+            self.assertEqual([t for t, _ in B.orders_check("engine", dict(body, **{"곁": broken}))], ["주문 빠짐"], broken)   # 4: 예전대로
+
+    def test_gate_closed_basket_and_daily_unchanged(self):
+        """바구니 · 1일봉은 문이 닫히면 판단에 매수가 없으므로 그대로(문 칸으로 면제하지 않음)."""
+        rows = [{"key": "20261109:sell:000020", "code": "000020", "side": "sell", "status": "접수"}]
+        basket = {"날": "20261109", "결과": {"orders": [["000020", "sell", 200, "r"]]}, "주문 결과": {"late": False},
+                  "오늘 장부 주문": {"basket-live/paper-orders.json": rows}, "곁": {"gates": {"decision": "basket", "open": False}}}
+        self.assertEqual(B.orders_check("basket", basket), [])
+        self.assertEqual([t for t, _ in B.orders_check("basket", dict(basket, **{"오늘 장부 주문": {}}))], ["주문 빠짐"])
+        odd = dict(basket, **{"결과": {"orders": [["000040", "buy", 5, "r"], ["000020", "sell", 200, "r"]]}})
+        self.assertEqual([t for t, _ in B.orders_check("basket", odd)], ["주문 빠짐"], "바구니 판단에 매수가 있으면 문 칸과 상관없이 대조")
+        daily = {"날": "20261109", "결과": {"sells": [{"code": "000010", "type": "sell"}], "buys": []}, "주문 결과": {"late": False, "paper": []},
+                 "오늘 장부 주문": {"daily-live/paper-orders.json": [{"key": "202611091520:sell:000010:20261109", "status": "접수"}]},
+                 "곁": {"gates": {"decision": "daily", "open": False}}}
+        self.assertEqual(B.orders_check("daily", daily), [])
+        self.assertEqual([t for t, _ in B.orders_check("daily", dict(daily, **{"오늘 장부 주문": {}}))], ["주문 빠짐"])
+
+    def test_overlay_gate_dropped_two_ways(self):
+        """덧붙임: 주문 결과 gate_dropped의 매수 다리(곁 buy_ok False)는 장부 부재 정상 · 그 종목 매수 줄(장부 · 보낸 주문)은 금지 주문."""
+        sell = {"key": "20261109:sell:122630", "code": "122630", "side": "sell", "status": "접수"}
+        body = {"날": "20261109", "곁": {"buy_ok": False, "gates": {"decision": "overlay", "open": False}},
+                "주문 결과": {"late": False, "orders": [["122630", "sell", 1000], ["114800", "buy", 500]],
+                            "sent": [{"code": "122630", "side": "sell", "status": "접수"}], "gate_dropped": [["114800", "buy", 500]]},
+                "오늘 장부 주문": {"overlay-live/paper-orders.json": [sell]}}
+        self.assertEqual(B.orders_check("overlay", body), [])
+        bought = {"key": "20261109:buy:114800", "code": "114800", "side": "buy", "status": "접수"}
+        bad = dict(body, **{"오늘 장부 주문": {"overlay-live/paper-orders.json": [sell, bought]}})
+        self.assertEqual([t for t, _ in B.orders_check("overlay", bad)], ["금지 주문"])
+        res = dict(body["주문 결과"], sent=body["주문 결과"]["sent"] + [{"code": "114800", "side": "buy", "status": "접수"}])
+        self.assertEqual([t for t, _ in B.orders_check("overlay", dict(body, **{"주문 결과": res}))], ["금지 주문"], "보낸 주문에만 있어도")
+        no_sell = dict(body, **{"주문 결과": dict(body["주문 결과"], sent=[]), "오늘 장부 주문": {}})
+        self.assertEqual([t for t, _ in B.orders_check("overlay", no_sell)], ["주문 빠짐"], "팔기 빠짐은 그대로")
+        for broken_res, broken_side in ((dict(body["주문 결과"], gate_dropped=None), body["곁"]),
+                                        (dict(body["주문 결과"], gate_dropped="114800"), body["곁"]),
+                                        (dict(body["주문 결과"], gate_dropped=[["114800"]]), body["곁"]),
+                                        (dict(body["주문 결과"], gate_dropped=[[114800, "buy", 500]]), body["곁"]),
+                                        (dict(body["주문 결과"], gate_dropped=[["114800", "sell", 500]]), body["곁"]),
+                                        (body["주문 결과"], {"buy_ok": True}), (body["주문 결과"], {})):
+            got = B.orders_check("overlay", dict(body, **{"주문 결과": broken_res, "곁": broken_side}))
+            self.assertEqual([t for t, _ in got], ["주문 빠짐"], (broken_res.get("gate_dropped"), broken_side))       # 예전대로
+
     HEAD = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     RAW = json.loads((ROOT / "tests" / "fixtures" / "boost_run_42227497428.json").read_text(encoding="utf-8"))  # 실제 API 응답 원문
 

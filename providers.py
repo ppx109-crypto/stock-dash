@@ -190,6 +190,18 @@ class Official:
             raise DataError(dart_error(payload.get("status")))
         return payload
 
+    def dart_raw(self, endpoint, **params):
+        """OpenDART 응답 본문 그대로(status를 풀지 않음) — BOOST-0001-D D3 공시 manifest가 쪽마다 status · total_count ·
+        total_page · page_no를 적고 완결성을 보려고 씀. 연결 · HTTP · 형식 오류만 DataError(키 · 본문은 찍지 않음)."""
+        try:
+            payload = get("https://opendart.fss.or.kr/api/" + endpoint,
+                          {"crtfc_key": self.dart_key, **params}).json()
+        except ValueError:
+            raise DataError("DART 응답 형식 오류") from None
+        if not isinstance(payload, dict):
+            raise DataError("DART 응답 형식 오류")
+        return payload
+
     def corp(self, code):
         if self.corps is None:
             raw = get("https://opendart.fss.or.kr/api/corpCode.xml", {"crtfc_key": self.dart_key}).content
