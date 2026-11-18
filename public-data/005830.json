@@ -38,8 +38,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-16",
+  "fetched": "2026-11-18",
   "disclosures": [
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20261118",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261118800397"
+    },
+    {
+      "title": "주식등의대량보유상황보고서(일반)",
+      "date": "20261118",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261118000230"
+    },
     {
       "title": "분기보고서 (2026.09)",
       "date": "20261116",

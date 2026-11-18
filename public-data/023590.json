@@ -389,7 +389,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-16",
+  "fetched": "2026-11-18",
   "disclosures": [
     {
       "title": "분기보고서 (2026.09)",
@@ -430,11 +430,6 @@
       "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
       "date": "20260828",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001921"
-    },
-    {
-      "title": "주식등의대량보유상황보고서(일반)",
-      "date": "20260819",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819000364"
     }
   ]
 }

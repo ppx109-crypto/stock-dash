@@ -389,7 +389,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-13",
+  "fetched": "2026-11-18",
   "disclosures": [
     {
       "title": "신주인수권행사가액의조정              ",
@@ -445,11 +445,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260820",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820000131"
-    },
-    {
-      "title": "증권발행결과(자율공시)              ",
-      "date": "20260819",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260819900418"
     }
   ]
 }
