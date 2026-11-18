@@ -35,6 +35,7 @@ HOME = Path("daily-live")
 STATE = HOME / "state.json"
 RESULT = HOME / "today.json"
 ALERTS = HOME / "alerts.json"
+LATE_NOTE = HOME / "late_warned.json"   # 늦은 날 경고를 보낸 날(장부 밖 · 감사 장부 지문에 안 들어감)
 SLOTS = 10
 POOL = 150                 # 전날 시총 150위까지 지금 값을 받아 셈(100위 안 판정 · 시장 폭에 넉넉히)
 DECIDE_AT, LAST_ORDER, SETTLE_AT = "1520", "1528", "1532"
@@ -301,8 +302,11 @@ def run(now=None):
         return 0
     if now.weekday() >= 5 or now.strftime("%H%M") > "1600":
         print("장이 끝난 지 오래되었거나 주말이라 넘어갑니다.")
-        if now.weekday() < 5:                # 평일인데 늦게 돈 것 — 그날 판단이 빠졌음을 알림(2026-10-13 GitHub 예약 7시간 늦음)
-            send([f"⚠️ 1일봉 {day[4:6]}-{day[6:]} 판단 못 함 · 작업이 {now.strftime('%H:%M')}에야 돌아 장이 끝남(휴장일이면 무시)"])
+        # 평일인데 늦게 돈 것 — 그날 판단이 빠졌음을 알림(2026-10-13 GitHub 예약 7시간 늦음).
+        # 늦은 예약이 하루 여섯 번까지 떠서 같은 경고가 거듭 옴 → 그날 처음 한 번만(사용자 2026-11-16 "계속오는데 조치해줘")
+        if now.weekday() < 5 and _load(LATE_NOTE, {}).get("day") != day:
+            if send([f"⚠️ 1일봉 {day[4:6]}-{day[6:]} 판단 못 함 · 작업이 {now.strftime('%H:%M')}에야 돌아 장이 끝남(휴장일이면 무시)"]):
+                _save(LATE_NOTE, {"day": day, "at": now.strftime("%H:%M")})   # 보내기 실패면 다음 늦은 실행이 다시 보냄
         return 0
     _wait_until(DECIDE_AT)
     import paper_trade as _pt
@@ -336,6 +340,7 @@ def run(now=None):
     prices = study.load_prices()
     # 자료 확인(사용자 2026-10-02): 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼 · 모자라면 팔기만 함(data_guard)
     import data_guard
+    prices = data_guard.before_day(prices, day)      # 오늘 줄이 미리 들어와 있어도 어제까지로 셈(2026-11-18)
     ready, last, why = data_guard.daily_ready(prices, data_guard.prev_trading_day(client, day))
     print("자료 확인 ·", why)
     if not last or last >= day:

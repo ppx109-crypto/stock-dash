@@ -105,6 +105,32 @@ class CatchUp(unittest.TestCase):
 
 
 
+class Settled(unittest.TestCase):
+    """장 마감 전에는 '오늘' 줄을 적지 않음(2026-11-18 새벽 05:40 수집이 장 전 오늘 줄을 498종목에 적은 일)."""
+
+    def at(self, ymd, hhmm):
+        return datetime.strptime(ymd + hhmm, "%Y%m%d%H%M").replace(tzinfo=ZoneInfo("Asia/Seoul"))
+
+    def test_before_the_close_today_is_dropped(self):
+        rows = [("20261116", 1.0), ("20261117", 2.0), ("20261118", 2.0)]
+        self.assertEqual(collect_prices.settled(rows, self.at("20261118", "0540")), rows[:2])
+        self.assertEqual(collect_prices.settled(rows, self.at("20261118", "1539")), rows[:2])
+
+    def test_after_the_close_today_is_kept(self):
+        rows = [("20261117", 2.0), ("20261118", 3.0)]
+        self.assertEqual(collect_prices.settled(rows, self.at("20261118", "1540")), rows)
+        self.assertEqual(collect_prices.settled(rows, self.at("20261118", "2230")), rows)
+
+    def test_catch_up_does_not_append_todays_early_row(self):
+        have = history(count=200, first=205)
+        fresh = [(d, c) for d, c in have[-10:]] + [(day(1), 500.0), (day(0), 500.0)]
+        client = Mock()
+        client.daily.return_value = fresh
+        rows, how = collect_prices.catch_up(client, "005930", have)
+        now = datetime.now(ZoneInfo("Asia/Seoul")).strftime("%H%M")
+        self.assertEqual(rows[-1][0], day(1) if now < collect_prices.SETTLED_AT else day(0))
+
+
 class VolumeCatchUp(unittest.TestCase):
     """거래량 수집기도 같은 셈입니다. 둘 다 같은 줄에 서 있어, 한쪽이 하루를
     다 쓰면 다른 쪽이 못 돕니다."""

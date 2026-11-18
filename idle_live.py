@@ -233,7 +233,7 @@ def live_breadth(client, day):
     import final_group
     import study
     import data_guard
-    prices = study.load_prices()
+    prices = data_guard.before_day(study.load_prices(), day)      # 오늘 줄이 미리 들어와 있어도 어제까지로(2026-11-18)
     _, last, _ = data_guard.daily_ready(prices, data_guard.prev_trading_day(client, day))
     yest = [{"code": c, "date": v["rows"][-1][0], "price": v["rows"][-1][1]} for c, v in prices.items() if v["rows"][-1][0] == last]
     caps.tag(yest, 150)

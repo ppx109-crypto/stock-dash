@@ -27,6 +27,8 @@ YEARS = int(os.getenv("PRICE_YEARS", "30"))
 # 그러면 특징표에 적어 둔 자리(i)가 밀리고, 매매 시뮬이 **하루 어긋난 종가**로
 # 사고팝니다. 47회차에 500종목 중 68종목이 그 상태였습니다.
 SINCE = os.getenv("PRICE_SINCE", "19900101").strip()
+# 장이 끝나기 전(한국 시각 15:40 전)에는 '오늘' 줄을 적지 않습니다(settled).
+SETTLED_AT = "1540"
 
 
 def codes_to_collect():
@@ -100,6 +102,19 @@ def kept_rows(code):
             if re.fullmatch(r"[0-9]{8}", str(d)) and c is not None]
 
 
+def settled(rows, now=None):
+    """아직 안 끝난 날의 줄을 뺍니다 — 15:40(한국 시각) 전이면 오늘 줄과 그 뒤 줄을 버립니다.
+
+    2026-11-18: 저녁 수집이 깃허브 예약 지연으로 다음 날 새벽 05:40에 돌았고, 한투가 장 전에 내준
+    '오늘' 줄(전날 종가 그대로)을 498종목 전부에 적었습니다. 그러자 마지막 날이 어제인 종목이 0개가 되어
+    1일봉은 '오늘 값으로 셈하지 못했습니다', 빈칸 엔진은 '시장 폭을 못 세어 엔진 끔'(국고채10년 팖)이 났습니다.
+    """
+    now = now or datetime.now(ZoneInfo("Asia/Seoul"))
+    edge = now if now.strftime("%H%M") < SETTLED_AT else now + timedelta(days=1)
+    cut = edge.strftime("%Y%m%d")
+    return [(day, close) for day, close in rows if str(day) < cut]
+
+
 def catch_up(client, code, have, back=25):
     """이미 받아 둔 종목은 빠진 날만 받습니다.
 
@@ -121,7 +136,7 @@ def catch_up(client, code, have, back=25):
     # 메울 수 없습니다.
     if (today - edge).days > 130:
         return None, "너무 오래 비었음"
-    fresh = client.daily(code, edge.strftime("%Y%m%d"), today.strftime("%Y%m%d"))
+    fresh = settled(client.daily(code, edge.strftime("%Y%m%d"), today.strftime("%Y%m%d")))
     if not fresh:
         return have, "새로 나온 날 없음"
     was = dict(have)
@@ -187,7 +202,7 @@ def main():
     def fetch(code):
         rows, how = catch_up(client, code, kept_rows(code))
         if rows is None:
-            return client.history(code, days=_reach()), how
+            return settled(client.history(code, days=_reach())), how
         return rows, how
 
     saved, skipped, failed, caught = 0, 0, [], 0

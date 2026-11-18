@@ -129,5 +129,49 @@ class Alerts(unittest.TestCase):
         self.assertIn("사고팔 것이 없어요", D.decision_lines("20261002", 40.0, [], [], [], {}, {})[-1])
 
 
+class LateRun(unittest.TestCase):
+    """늦은 예약(16시 뒤)이 하루 여러 번 떠도 '판단 못 함' 경고는 그날 한 번만(사용자 2026-11-16)."""
+
+    def setUp(self):
+        import tempfile
+        from pathlib import Path
+        from unittest import mock
+        self.tmp = Path(tempfile.mkdtemp())
+        self.sent = []
+        self.ok = True
+        for name, value in (("STATE", self.tmp / "state.json"), ("LATE_NOTE", self.tmp / "late_warned.json"),
+                            ("send", lambda rows: self.sent.append(rows) or self.ok)):
+            p = mock.patch.object(D, name, value)
+            p.start()
+            self.addCleanup(p.stop)
+
+    def at(self, day, hhmm):
+        from datetime import datetime
+        return datetime.strptime(day + hhmm, "%Y%m%d%H%M").replace(tzinfo=D.KST)
+
+    def test_warns_once_a_day(self):
+        for hhmm in ("1611", "1900", "2222", "2239"):
+            self.assertEqual(D.run(self.at("20261116", hhmm)), 0)
+        self.assertEqual(len(self.sent), 1)
+        self.assertIn("11-16 판단 못 함", self.sent[0][0])
+        self.assertIn("16:11", self.sent[0][0])
+        D.run(self.at("20261117", "1630"))                     # 다음 날 늦으면 다시 한 번
+        self.assertEqual(len(self.sent), 2)
+
+    def test_failed_send_is_retried_and_weekend_is_silent(self):
+        self.ok = False
+        D.run(self.at("20261116", "1611"))
+        self.ok = True
+        D.run(self.at("20261116", "1900"))
+        D.run(self.at("20261116", "2222"))
+        self.assertEqual(len(self.sent), 2)                    # 못 보낸 첫 번 뒤 한 번 더 · 그 뒤로는 조용
+        D.run(self.at("20261121", "1700"))                     # 토요일
+        self.assertEqual(len(self.sent), 2)
+
+    def test_ledger_untouched(self):
+        D.run(self.at("20261116", "1611"))
+        self.assertFalse(D.STATE.exists())                     # 장부(state.json · 감사 장부 지문)는 안 건드림
+
+
 if __name__ == "__main__":
     unittest.main()

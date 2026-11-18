@@ -41,6 +41,19 @@ def last_days(prices):
     return {c: str(v["rows"][-1][0]) for c, v in prices.items() if v.get("rows")}
 
 
+def before_day(prices, day):
+    """일봉에서 day(오늘) 줄과 그 뒤 줄을 뺌 — 판단은 '어제 종가까지 + 지금 값'으로 하므로 오늘 줄이 미리 있으면 안 됨.
+    2026-11-18: 늦게 뜬 새벽 수집이 장 전 '오늘' 줄(전날 종가 그대로)을 498종목 전부에 적어, 마지막 날이 어제인 종목이 0개 →
+    1일봉 '오늘 값으로 셈하지 못했습니다' · 빈칸 엔진 '시장 폭을 못 세어 엔진 끔' · 1시간봉 '어제 일봉이 없어' 건너뜀."""
+    out = {}
+    for code, v in prices.items():
+        rows = v.get("rows") or []
+        if rows and str(rows[-1][0]) >= day:
+            v = dict(v, rows=[r for r in rows if str(r[0]) < day])
+        out[code] = v
+    return out
+
+
 def daily_ready(prices, expect=None, share=SHARE):
     """일봉이 expect(어제 거래일)까지 충분히 들어왔나 → (됨, 기대일, 문장).
     expect가 없으면 가장 많은 종목이 가진 마지막 날을 씀(그때는 자료끼리만 견줌)."""

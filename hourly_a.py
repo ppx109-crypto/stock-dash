@@ -537,7 +537,8 @@ def refresh_near(now=None, client=None, out=None):
     if not I.market_open_today(client, day):
         print(f"{day}은 장이 열리지 않은 날로 보여 충족 미달 다시 세기는 넘어갑니다.")
         return 0
-    prices = study.load_prices()
+    import data_guard
+    prices = data_guard.before_day(study.load_prices(), day)      # 오늘 줄이 미리 들어와 있어도 어제까지로(2026-11-18)
     last = max((v["rows"][-1][0] for v in prices.values() if v.get("rows") and v["rows"][-1][0] < day), default=None)
     if not last:
         print("어제 일봉이 없어 충족 미달 다시 세기는 넘어갑니다.")
