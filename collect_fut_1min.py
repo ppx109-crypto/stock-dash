@@ -9,7 +9,7 @@
 - 응답 본문은 찍지 않습니다. 줄 수 · 시각 범위 · 칸 이름만 찍습니다.
 
 python collect_fut_1min.py probe          # 종목 목록 · 분봉 한 번씩 찔러 보기(저장 없음)
-python collect_fut_1min.py collect [날짜]  # 그날 1분봉을 futures-1m/에 덧붙임(날짜 없으면 오늘)
+python collect_fut_1min.py collect [날짜]  # 그날 1분봉을 futures-1m/에 덧붙임(날짜 없으면 마지막으로 끝난 장 — last_session)
 """
 import csv
 import io
@@ -35,6 +35,7 @@ PRODUCTS = {
     "kosdaq150": ("kosdaq150_futures_1min.csv", "A06", True),
 }
 MONTH_CH = "123456789ABC"
+READY = "15:50"  # 장 끝(15:45 단일가) 뒤 — 이 시각 전이면 오늘 장은 아직 안 끝난 것으로 봄
 
 
 def second_thursday(y, m):
@@ -216,6 +217,15 @@ def probe():
                 print("   ", c, day, "줄", len(got), "시각", span, "칸", sorted(got[0].keys()) if got else [])
 
 
+def last_session(now):
+    """날을 안 주면 받을 날 = 마지막으로 끝난 장: READY 뒤면 오늘, 그 전이면 앞 날 · 토 · 일이면 금요일로 물림(공휴일은 자료가 없어 저장 안 함).
+    2026-11-18 사용자 승인 «B»: 깃허브 예약(16:00)이 실제로는 다음 날 밤 0 ~ 2시에 떠서 «오늘»(= 다음 날 · 장 전)을 받아 늘 빈손이었음(11/16 빠짐)."""
+    d = now.date() if now.strftime("%H:%M") >= READY else now.date() - timedelta(days=1)
+    while d.weekday() >= 5:
+        d -= timedelta(days=1)
+    return d
+
+
 def collect(day):
     from broker_kis import market
     rows = master_rows()
@@ -240,5 +250,5 @@ if __name__ == "__main__":
     if mode == "probe":
         probe()
     else:
-        d = datetime.strptime(sys.argv[2], "%Y%m%d").date() if len(sys.argv) > 2 else datetime.now(KST).date()
+        d = datetime.strptime(sys.argv[2], "%Y%m%d").date() if len(sys.argv) > 2 else last_session(datetime.now(KST))
         sys.exit(collect(d))

@@ -1,6 +1,6 @@
 import tempfile
 import unittest
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import collect_fut_1min as C
@@ -67,6 +67,20 @@ class Append(unittest.TestCase):
             C.append(p, b[:1])
             self.assertEqual(C.append(p, b), 3)
             self.assertTrue(p.read_text(encoding="utf-8-sig").startswith("datetime,code,open,high,low,close,volume\n"))
+
+
+class LastSession(unittest.TestCase):
+    def test_late_schedule_takes_last_finished_session(self):
+        # 깃허브 예약이 실제로 뜬 시각들(한국 시각) → 받을 날
+        cases = [((2026, 11, 18, 1, 39), date(2026, 11, 17)),   # 수 새벽 → 화
+                 ((2026, 11, 14, 0, 5), date(2026, 11, 13)),    # 토 새벽 → 금
+                 ((2026, 11, 16, 1, 0), date(2026, 11, 13)),    # 월 새벽 → 금(토 · 일 건너뜀)
+                 ((2026, 11, 15, 18, 0), date(2026, 11, 13)),   # 일 저녁 → 금
+                 ((2026, 11, 6, 23, 47), date(2026, 11, 6)),    # 그날 밤 → 그날
+                 ((2026, 11, 18, 15, 49), date(2026, 11, 17)),  # 장 끝 전 → 앞 날
+                 ((2026, 11, 18, 15, 50), date(2026, 11, 18))]  # 장 끝 뒤 → 오늘
+        for t, want in cases:
+            self.assertEqual(C.last_session(datetime(*t, tzinfo=C.KST)), want, t)
 
 
 if __name__ == "__main__":
