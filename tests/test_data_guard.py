@@ -17,6 +17,23 @@ class FakeClient:
         return [{"date": d, "종가": 100.0} for d in self.days]
 
 
+class BeforeDay(unittest.TestCase):
+    def test_todays_early_row_is_dropped_so_yesterday_is_last(self):
+        """2026-11-18: 새벽 수집이 장 전 '오늘' 줄을 498종목 전부에 적음 → 어제가 마지막인 종목 0개 → 판단 통째로 빠짐."""
+        px = {f"{n:06d}": {"name": "x", "rows": [("20261116", 1.0), ("20261117", 2.0), ("20261118", 2.0)]} for n in range(498)}
+        self.assertEqual(sum(v["rows"][-1][0] == "20261117" for v in px.values()), 0)
+        got = G.before_day(px, "20261118")
+        self.assertEqual(sum(v["rows"][-1][0] == "20261117" for v in got.values()), 498)
+        self.assertEqual(got["000000"]["name"], "x")
+        self.assertEqual(len(px["000000"]["rows"]), 3)            # 원본은 그대로
+        ok, _, why = G.daily_ready(got, "20261117")
+        self.assertTrue(ok, why)
+
+    def test_normal_day_is_untouched(self):
+        px = {"005930": {"rows": [("20261116", 1.0), ("20261117", 2.0)]}}
+        self.assertIs(G.before_day(px, "20261118")["005930"], px["005930"])
+
+
 class DailyReady(unittest.TestCase):
     def test_incident_19_of_498_is_not_ready(self):
         ok, expect, why = G.daily_ready(prices(["20261001"] * 19 + ["20260930"] * 479), "20261001")

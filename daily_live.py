@@ -340,6 +340,7 @@ def run(now=None):
     prices = study.load_prices()
     # 자료 확인(사용자 2026-10-02): 어제 거래일 종가가 90% 넘는 종목에 있어야 새로 삼 · 모자라면 팔기만 함(data_guard)
     import data_guard
+    prices = data_guard.before_day(prices, day)      # 오늘 줄이 미리 들어와 있어도 어제까지로 셈(2026-11-18)
     ready, last, why = data_guard.daily_ready(prices, data_guard.prev_trading_day(client, day))
     print("자료 확인 ·", why)
     if not last or last >= day:
