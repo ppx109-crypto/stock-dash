@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-17",
+  "fetched": "2026-11-19",
   "disclosures": [
+    {
+      "title": "최대주주등소유주식변동신고서              ",
+      "date": "20261119",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261119800497"
+    },
     {
       "title": "[기재정정]일괄신고서",
       "date": "20261117",
@@ -184,11 +189,6 @@
       "title": "투자설명서(일괄신고)",
       "date": "20261006",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261006000411"
-    },
-    {
-      "title": "일괄신고추가서류",
-      "date": "20261006",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261006000400"
     }
   ]
 }

@@ -117,7 +117,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-13",
+  "fetched": "2026-11-19",
   "disclosures": [
     {
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
@@ -203,11 +203,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20260821",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821000523"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820800702"
     }
   ]
 }

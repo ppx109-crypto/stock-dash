@@ -389,8 +389,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-18",
+  "fetched": "2026-11-19",
   "disclosures": [
+    {
+      "title": "주요사항보고서(회사합병결정)",
+      "date": "20261119",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261119000398"
+    },
     {
       "title": "신주인수권행사가액의조정              ",
       "date": "20261113",
@@ -435,16 +440,6 @@
       "title": "전환가액의조정              ",
       "date": "20260828",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828900517"
-    },
-    {
-      "title": "주식등의대량보유상황보고서(일반)",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820000132"
-    },
-    {
-      "title": "임원ㆍ주요주주특정증권등소유상황보고서",
-      "date": "20260820",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260820000131"
     }
   ]
 }
