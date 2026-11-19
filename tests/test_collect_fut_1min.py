@@ -51,6 +51,14 @@ class FetchDay(unittest.TestCase):
         self.assertEqual(C.gaps([r["stck_cntg_hour"] for r in got]), [])
         self.assertTrue(any("빈 곳 1238~1308(29분)" in l for l in logs))
 
+    def test_late_close_day_gets_bars_after_1600(self):
+        # 2026-11-19 수능날: 선물 09:45 ~ 16:45(16:35 ~ 16:44 단일가) — 16:00 부터 받으면 16:01 뒤가 빠졌음
+        fc = FakeClient(drop_once=False)
+        fc.minutes = [m + 60 for m in fc.minutes]
+        got = C.fetch_day(fc, "A05612", date(2026, 11, 19), log=lambda *_: None)
+        self.assertEqual(len(got), 411)
+        self.assertEqual(got[-1]["stck_cntg_hour"], "164500")
+
     def test_auction_gap_is_not_a_hole(self):
         self.assertEqual(C.gaps(["153400", "154500"]), [])
         self.assertEqual(C.gaps(["123800", "130800"]), [("123800", "130800", 29)])
