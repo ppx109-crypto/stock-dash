@@ -168,6 +168,16 @@ class LateRun(unittest.TestCase):
         D.run(self.at("20261121", "1700"))                     # 토요일
         self.assertEqual(len(self.sent), 2)
 
+    def test_special_hours_day_is_silent(self):
+        """장 시간이 다른 날(수능날 2026-11-19)은 봇이 일부러 쉼 → 늦은 실행이 여러 번 떠도 경고 안 함(사용자 2026-11-19)."""
+        for hhmm in ("1653", "1929", "2240"):
+            self.assertEqual(D.run(self.at("20261119", hhmm)), 0)
+        self.assertEqual(self.sent, [])
+        self.assertFalse(D.LATE_NOTE.exists())
+        D.run(self.at("20261120", "1700"))                     # 다음 날(보통 날) 늦으면 그대로 경고
+        self.assertEqual(len(self.sent), 1)
+        self.assertIn("11-20 판단 못 함", self.sent[0][0])
+
     def test_ledger_untouched(self):
         D.run(self.at("20261116", "1611"))
         self.assertFalse(D.STATE.exists())                     # 장부(state.json · 감사 장부 지문)는 안 건드림

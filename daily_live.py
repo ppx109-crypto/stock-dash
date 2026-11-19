@@ -304,7 +304,11 @@ def run(now=None):
         print("장이 끝난 지 오래되었거나 주말이라 넘어갑니다.")
         # 평일인데 늦게 돈 것 — 그날 판단이 빠졌음을 알림(2026-10-13 GitHub 예약 7시간 늦음).
         # 늦은 예약이 하루 여섯 번까지 떠서 같은 경고가 거듭 옴 → 그날 처음 한 번만(사용자 2026-11-16 "계속오는데 조치해줘")
-        if now.weekday() < 5 and _load(LATE_NOTE, {}).get("day") != day:
+        # 장 시간이 다른 날(수능날 등)은 봇이 일부러 쉬는 날이라 판단이 빠진 게 아님 → 경고 안 함(사용자 2026-11-19 "올려줘")
+        import collect_kis_intraday as I
+        if I.special_hours(day):
+            print(f"{day}은 장 시간이 다른 날({I.special_hours(day)})이라 봇이 쉬는 날입니다 — 경고 안 보냄.")
+        elif now.weekday() < 5 and _load(LATE_NOTE, {}).get("day") != day:
             if send([f"⚠️ 1일봉 {day[4:6]}-{day[6:]} 판단 못 함 · 작업이 {now.strftime('%H:%M')}에야 돌아 장이 끝남(휴장일이면 무시)"]):
                 _save(LATE_NOTE, {"day": day, "at": now.strftime("%H:%M")})   # 보내기 실패면 다음 늦은 실행이 다시 보냄
         return 0
