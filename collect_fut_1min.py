@@ -130,7 +130,9 @@ def fetch_day(client, code, day, log=print):
     쪽마다 받은 시각을 남기고(줄 수 · 시각만), 받은 뒤 빈 곳이 있으면 빈 곳 끝 시각부터 다시 요청해 채움(최대 3번)."""
     ymd = day.strftime("%Y%m%d")
     got = {}
-    hour = "160000"
+    # 장 끝보다 뒤에서 시작 — 16:00 부터면 장이 늦게 끝나는 날(2026-11-19 수능날 선물 09:45 ~ 16:45)의 16:01 뒤 봉이 빠짐(사용자 2026-11-19).
+    # 평소 날은 15:45 뒤 봉이 없어 받는 것이 같음.
+    hour = "170000"
     pages = []
     for _ in range(12):
         fresh, lo, hi = _take(_ask(client, code, ymd, hour), ymd, got)
