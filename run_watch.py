@@ -7,13 +7,16 @@
   15분봉  : m15-live/state.json last_bar가 오늘 15:00 뒤 봉인지
   레버리지 봇(최종 판 MIX-0054 · MIX54_START부터): overlay-live/state.json last_day가 오늘인지 · 오늘 주문 가운데 실패가 있는지(2026-10-12 첫날 매수 실패가 알림 없이 지나감)
 알림이 오면 GitHub Actions에서 그 작업을 '수동 실행(Run workflow)'할 수 있음(이미 늦었으면 다음 날 판단부터 정상).
+볼 날(2026-11-20 · 사용자 «PR 올리기»): 16시(한국 시각) 전에 돌면 — 깃허브 예약이 밤 · 새벽으로 밀린 경우(11/17~20 01~02시) — 그날 봇은
+  아직 안 돌았으므로 앞 거래일을 봄(«오늘 돌지 않았어요» 거짓 경고 막기) · 장 시간이 다른 날(collect_kis_intraday.SPECIAL_HOURS ·
+  봇이 쉬는 날)은 안 봄 · WATCH_DAY 를 주면 그 날을 그대로 봄.
 """
 from __future__ import annotations
 
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -33,6 +36,19 @@ def trading_day(day: str) -> bool:
     from idle_live import HOLIDAYS
     d = datetime.strptime(day, "%Y%m%d")
     return d.weekday() < 5 and day not in HOLIDAYS
+
+
+def watch_day(now: datetime) -> str:
+    """지킴이가 볼 날. 16시 전이면 앞 거래일(주말 · 휴장 건너뜀), 16시부터는 그날."""
+    today = now.strftime("%Y%m%d")
+    if now.hour >= 16:
+        return today
+    d = now.date()
+    for _ in range(15):
+        d -= timedelta(days=1)
+        if trading_day(d.strftime("%Y%m%d")):
+            return d.strftime("%Y%m%d")
+    return today
 
 
 def check(day: str, daily: dict, idle: dict, m15: dict, overlay: dict | None = None, overlay_book: dict | None = None) -> list[str]:
@@ -61,9 +77,13 @@ def check(day: str, daily: dict, idle: dict, m15: dict, overlay: dict | None = N
 
 
 def main() -> int:
-    day = os.environ.get("WATCH_DAY") or datetime.now(KST).strftime("%Y%m%d")
+    day = os.environ.get("WATCH_DAY") or watch_day(datetime.now(KST))
     if not trading_day(day):
         print(f"{day} 휴장 · 안 봄")
+        return 0
+    from collect_kis_intraday import special_hours
+    if special_hours(day):
+        print(f"{day} 장 시간이 다른 날({special_hours(day)}) · 봇이 쉬는 날이라 안 봄")
         return 0
     bad = check(day, _load("daily-live/today.json"), _load("idle-live/today.json"), _load("m15-live/state.json"),
                 _load("overlay-live/state.json"), _load("overlay-live/paper-orders.json"))
