@@ -3,9 +3,9 @@
  "B": 0.0,
  "applied": "하락",
  "rebalanced_month": "202611",
- "last_day": "20261118",
+ "last_day": "20261120",
  "signal_day": "20261111",
- "nav_day": "20261118",
- "nav": 51657085.0,
+ "nav_day": "20261120",
+ "nav": 51654180.0,
  "month_start_nav": 50000000.0
 }
