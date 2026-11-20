@@ -1,4 +1,9 @@
+import io
+import os
 import unittest
+from contextlib import redirect_stdout
+from datetime import datetime
+from unittest import mock
 
 import run_watch as W
 
@@ -37,6 +42,22 @@ class WatchTest(unittest.TestCase):
         self.assertFalse(W.trading_day("20261005"))      # 개천절 대체공휴일
         self.assertFalse(W.trading_day("20261010"))      # 토요일
         self.assertTrue(W.trading_day("20261006"))
+
+
+    def test_watch_day_late_run_uses_previous_trading_day(self):
+        k = W.KST
+        self.assertEqual(W.watch_day(datetime(2026, 11, 20, 1, 31, tzinfo=k)), "20261119")    # 예약이 새벽으로 밀림 → 앞 거래일
+        self.assertEqual(W.watch_day(datetime(2026, 11, 20, 16, 10, tzinfo=k)), "20261120")   # 평소 16:10 → 그날
+        self.assertEqual(W.watch_day(datetime(2026, 11, 21, 1, 30, tzinfo=k)), "20261120")    # 토요일 새벽 → 금요일
+        self.assertEqual(W.watch_day(datetime(2026, 11, 23, 0, 40, tzinfo=k)), "20261120")    # 월요일 새벽 → 금요일
+        self.assertEqual(W.watch_day(datetime(2026, 10, 6, 1, 0, tzinfo=k)), "20261002")      # 주말 · 10/5 대체공휴일 건너뜀
+
+    def test_special_hours_day_is_silent(self):
+        out = io.StringIO()
+        with mock.patch.dict(os.environ, {"WATCH_DAY": "20261119", "DISCORD_WEBHOOK_URL": ""}), redirect_stdout(out):
+            self.assertEqual(W.main(), 0)
+        self.assertIn("장 시간이 다른 날", out.getvalue())
+        self.assertNotIn("돌지 않았어요", out.getvalue())
 
 
 if __name__ == "__main__":
