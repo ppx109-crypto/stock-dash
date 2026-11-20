@@ -117,7 +117,7 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-19",
+  "fetched": "2026-11-20",
   "disclosures": [
     {
       "title": "주식등의대량보유상황보고서(약식)",
@@ -258,16 +258,6 @@
       "title": "[첨부정정]주요사항보고서(회사합병결정)",
       "date": "20260824",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824000219"
-    },
-    {
-      "title": "기업가치제고계획(자율공시)              ",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800122"
-    },
-    {
-      "title": "주주명부폐쇄기간또는기준일설정              ",
-      "date": "20260821",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260821800113"
     }
   ]
 }
