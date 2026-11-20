@@ -237,18 +237,63 @@ def _line_icon(line):
     return "▫️"
 
 
+# ── 모음 글은 아주 짧게(사용자 2026-11-20 «불필요한 말이 너무 많고 말이 어렵고 길어») — 각 봇이 남긴 줄은 그대로 두고 여기서만 줄임.
+#    아는 꼴(장부 맞춰보기 · 검산 · 1일봉 · 빈칸 엔진 · 레버리지)은 한 줄로, 모르는 꼴은 다듬기(tidy)만 해서 실음 · 문제는 ⚠️.
+def _md(m, d):
+    return f"{int(m)}/{int(d)}"
+
+
+def _clean(line):
+    """아랫줄(주문 등): 꾸밈 · '모의투자(덧붙임)' · '접수'를 빼고, 실패 · 거절은 ⚠️."""
+    t = tidy(line)
+    t = re.sub(r"^(?:[^,]*?\s)?모의(?:투자)?(?:\([^)]*\))?\s+", "", t)     # tidy 가 바꾼 '레버리지 봇 모의 ' · '1일봉 모의 ' 같은 머리도 뺌
+    t = re.sub(r",?\s*접수$", "", t)
+    t = re.sub(r"^(매수|매도),\s*", r"\1 ", t)
+    return ("⚠️ " + t) if re.search(r"실패|거절", t) else t
+
+
+def _short(rows):
+    """알림 한 건(머리줄 + 아랫줄) → 짧은 줄들(아랫줄은 두 칸 들여 씀)."""
+    head, rest = rows[0], rows[1:]
+    m = re.match(r"장부 맞춰보기 (\d+)월 (\d+)일(.*)", head)
+    if m:
+        pairs = re.findall(r"(1시간봉|1일봉)(?: 같은 매매)? (\d+)/(\d+)", m.group(3))
+        eng, chk = re.search(r"엔진 주문 (\d+)", m.group(3)), re.search(r"검산 다름 (\d+)/(\d+)", m.group(3))
+        bad = [f"{k} {a}/{b}" for k, a, b in pairs if a != b]
+        n = sum(int(b) for _, _, b in pairs) + (int(eng.group(1)) if eng else 0)
+        s = f"{_md(m.group(1), m.group(2))} 장부 대조: " + (f"⚠️ 다름 {' · '.join(bad)}" if bad else f"매매 {n}건 · 이상 없음")
+        if chk and chk.group(1) != "0":
+            s += f" · ⚠️ 종가 검산 {chk.group(1)}/{chk.group(2)} 다름"
+        return [s]
+    m = re.match(r"검산 (\d+)월 (\d+)일, 확정 일봉과도 종가 다름 (\d+)/(\d+)", head)
+    if m:
+        return [f"⚠️ {_md(m.group(1), m.group(2))} 종가 검산: {m.group(3)}/{m.group(4)} 다름"]
+    m = re.match(r"1일봉 봇 \d+월 \d+일 .*?들고 있는 종목 (\d+)개", head)
+    if m:
+        orders = [_clean(r) for r in rest if "사고팔 것 없음" not in r]
+        return [f"1일봉: {f'주문 {len(orders)}건' if orders else '매매 없음'} (보유 {m.group(1)})"] + [f"  {r}" for r in orders]
+    if re.match(r"빈칸 엔진 \d+월 \d+일", head):
+        lines = [_clean(r) for r in rest]
+        n = sum(1 for r in lines if re.search(r"매수|매도", r))
+        return [f"빈칸 엔진: {f'주문 {n}건' if n else '매매 없음'}"] + [f"  {r}" for r in lines]
+    m = re.match(r"레버리지 봇 \d+월 \d+일, 국면 ([^,(]+)", head)
+    if m:
+        lines = [_clean(r) for r in rest]
+        return [f"레버리지: 국면 {m.group(1).strip()}" + ("" if lines else " · 매매 없음")] + [f"  {r}" for r in lines]
+    return [tidy(head)] + [f"  {_clean(r)}" for r in rest]
+
+
 def digest_text(items, title):
-    """모은 알림 → 한 통 글(이모지는 여기서만 붙임 · 본문은 tidy로 다듬음 · 같은 줄은 한 번만)."""
-    out, seen = [f"📬 {title}"], set()
-    for it in sorted(items, key=lambda x: x.get("t", "")):
-        rows = [tidy(r) for r in it.get("rows", [])]
-        rows = [r for r in rows if r and r not in seen]
+    """모은 알림 → 한 통 글(아주 짧게 · 같은 줄은 한 번만 · 그날 봇 결과 먼저, 장부 대조 · 검산은 뒤에)."""
+    out, seen = [title], set()
+    late = lambda it: 1 if any(k in str((it.get("rows") or [""])[0]) for k in ("장부 맞춰보기", "검산")) else 0
+    for it in sorted(items, key=lambda x: (late(x), x.get("t", ""))):
+        rows = [r for r in (it.get("rows") or []) if tidy(r)]
         if not rows:
             continue
-        seen.update(rows)
-        head, rest = rows[0], rows[1:]
-        out.append(f"{_icon(head)} {it.get('t', '')[11:16]} {head}")
-        out += [f"  {_line_icon(r)} {r}" for r in rest]
+        lines = [ln for ln in _short(rows) if ln.strip() and ln not in seen]
+        seen.update(lines)
+        out += [ln if ln.startswith("  ") else f"· {ln}" for ln in lines]
     return out if len(out) > 1 else []
 
 

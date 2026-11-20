@@ -124,9 +124,38 @@ class Message(unittest.TestCase):
                 os.environ.pop("DISCORD_WEBHOOK_URL", None); os.environ.pop("DISCORD_DIGEST", None)
         self.assertEqual(len(sent), 2)
         msg = sent[1]
-        self.assertIn("📬 한투 모의투자 10-15 장 마감 모음", msg)
-        self.assertIn("📅", msg); self.assertIn("⏱️", msg); self.assertIn("🟢", msg); self.assertIn("✂️", msg)
+        self.assertIn("한투 모의투자 10-15 장 마감 모음", msg)       # 2026-11-20부터 짧게: 📬 · 시각 · 줄 그림 없음
+        self.assertNotIn("📬", msg)
+        self.assertIn("· 1일봉 봇 오늘 판단", msg); self.assertIn("  삼성전자 매수 10주", msg)
         self.assertEqual(msg.count("SK하이닉스 손절"), 1)
+
+    def test_digest_short_20261120(self):
+        """모음은 아주 짧게(사용자 2026-11-20 «불필요한 말이 너무 많고 말이 어렵고 길어») — 그날 봇 먼저, 장부 대조 · 검산은 뒤에."""
+        items = [
+            {"t": "2026-11-20 11:18", "rows": ["장부 맞춰보기 11월 19일 · 1시간봉 같은 매매 0/0 · 1일봉 0/0 · 엔진 주문 0"]},
+            {"t": "2026-11-20 12:07", "rows": ["검산 11월 19일, 확정 일봉과도 종가 다름 397/424 · 000080 000120 000150 000210 000240"]},
+            {"t": "2026-11-20 15:23", "rows": ["1일봉 봇 11월 20일 15시 20분 판단, 시장 폭 29.0%, 들고 있는 종목 0개",
+                                              "1일봉은 오늘 사고팔 것 없음(다른 봇 주문은 각 봇 줄에)"]},
+        ]
+        self.assertEqual(N.digest_text(items, "11/20 마감"),
+                         ["11/20 마감", "· 1일봉: 매매 없음 (보유 0)", "· 11/19 장부 대조: 매매 0건 · 이상 없음", "· ⚠️ 11/19 종가 검산: 397/424 다름"])
+        more = [
+            {"t": "2026-11-18 15:20", "rows": ["빈칸 엔진 11월 18일 판단, 시장 폭 모름%, 규칙이 쓴 몫 0%",
+                                              "🧪 매도 KOSEF 국고채10년 57주 → ✅ 접수", "\u3000까닭: 돌리기 멈춤(엔진 끔)"]},
+            {"t": "2026-11-12 15:20", "rows": ["레버리지 봇 11월 12일, 국면 하락(어제 장 끝 기준), 목표 없음 0%",
+                                              "🧪 모의투자(덧붙임) 매도 · KODEX 인버스(114800) 12,653주 · 접수"]},
+            {"t": "2026-11-12 11:00", "rows": ["장부 맞춰보기 11월 11일 · 1시간봉 같은 매매 1/2 · 1일봉 2/2"]},
+            {"t": "2026-11-12 15:21", "rows": ["1일봉 봇 11월 12일 15시 20분 판단, 시장 폭 55.0%, 들고 있는 종목 3개", "매수: 삼성전자 2칸 사기",
+                                              "손절: SK하이닉스 1칸 팔기"]},
+            {"t": "2026-11-12 15:22", "rows": ["15분봉 봇 주문 실패", "삼성전자 매수 거절"]},
+        ]
+        out = N.digest_text(more, "t")
+        self.assertEqual(out[1:3], ["· 레버리지: 국면 하락", "  매도 KODEX 인버스(114800) 12,653주"])
+        self.assertIn("· 빈칸 엔진: 주문 1건", out); self.assertIn("  매도 KOSEF 국고채10년 57주", out)
+        self.assertIn("  까닭: 돌리기 멈춤(엔진 끔)", out)
+        self.assertIn("· 1일봉: 주문 2건 (보유 3)", out); self.assertIn("  매수: 삼성전자 2칸 사기", out)
+        self.assertIn("  ⚠️ 삼성전자 매수 거절", out)
+        self.assertEqual(out[-1], "· 11/11 장부 대조: ⚠️ 다름 1시간봉 1/2")      # 장부 대조 · 검산은 뒤에
 
     def test_digest_flush_keeps_files_when_send_fails(self):
         """보내기에 실패하면 파일을 지우지 않아 다음 모음에 다시 실림."""
