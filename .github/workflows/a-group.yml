@@ -73,7 +73,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git pull -q --rebase --autostash origin main || true   # 다른 작업이 올린 모음 파일까지 받음
-          python notify_discord.py --digest-flush discord-digest "한투 저녁 모음 $(TZ=Asia/Seoul date +%m-%d)" || echo '디스코드 모음 보내기 실패'
+          python notify_discord.py --digest-flush discord-digest "$(TZ=Asia/Seoul date +%-m/%-d) 저녁" || echo '디스코드 모음 보내기 실패'
           mkdir -p discord-digest && git add -A discord-digest
           if ! git diff --cached --quiet; then
             git commit -q -m "Discord evening digest sent"
