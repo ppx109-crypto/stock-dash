@@ -38,8 +38,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-20",
+  "fetched": "2026-11-23",
   "disclosures": [
+    {
+      "title": "[기재정정]상각형조건부자본증권발행결정(자회사의 주요경영사항)              ",
+      "date": "20261123",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261123800110"
+    },
     {
       "title": "대표이사(대표집행임원)변경(안내공시)              ",
       "date": "20261120",
@@ -184,11 +189,6 @@
       "title": "임원ㆍ주요주주특정증권등소유상황보고서",
       "date": "20261019",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261019000211"
-    },
-    {
-      "title": "기업설명회(IR)개최(안내공시)              ",
-      "date": "20261015",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261015800283"
     }
   ]
 }

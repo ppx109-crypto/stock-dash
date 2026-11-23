@@ -117,8 +117,13 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-20",
+  "fetched": "2026-11-23",
   "disclosures": [
+    {
+      "title": "소송등의제기ㆍ신청(일정금액이상의청구)              ",
+      "date": "20261123",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261123800003"
+    },
     {
       "title": "주식등의대량보유상황보고서(약식)",
       "date": "20261119",
@@ -253,11 +258,6 @@
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20260826",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260826800361"
-    },
-    {
-      "title": "[첨부정정]주요사항보고서(회사합병결정)",
-      "date": "20260824",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260824000219"
     }
   ]
 }
