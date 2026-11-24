@@ -38,8 +38,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-18",
+  "fetched": "2026-11-24",
   "disclosures": [
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20261124",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000447"
+    },
+    {
+      "title": "특수관계인과의수익증권거래",
+      "date": "20261124",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261124000443"
+    },
     {
       "title": "최대주주등소유주식변동신고서              ",
       "date": "20261118",
