@@ -1,0 +1,70 @@
+{
+ "날": "20261126",
+ "봇": "overlay",
+ "기록 시각(한국)": "2026-11-26 15:13:51",
+ "작업 번호": "45763082771",
+ "작업 시도": "1",
+ "부른 까닭": "workflow_dispatch",
+ "작업 코드 커밋": "bdb28fcb956a9b876bfa59eabd4a7eea39f13818",
+ "판단 때 저장소 HEAD": "bdb28fcb956a9b876bfa59eabd4a7eea39f13818",
+ "코드": {
+  "overlay_live.py": "2d8fca8cac9fb47b98f24a791adc58fc7ec6b4c8"
+ },
+ "입력": {
+  "st": {
+   "held": {},
+   "B": 0.0,
+   "applied": "하락",
+   "rebalanced_month": "202611",
+   "last_day": "20261125",
+   "signal_day": "20261111",
+   "nav_day": "20261126",
+   "nav": 51684295.0,
+   "month_start_nav": 50000000.0
+  },
+  "day": "20261126",
+  "prev_day": "20261125",
+  "stale": false,
+  "state": "하락",
+  "nav": 51684295.0,
+  "rows_len": 5952,
+  "rows_last": [
+   [
+    "20261123",
+    73770.0
+   ],
+   [
+    "20261124",
+    78660.0
+   ],
+   [
+    "20261125",
+    73140.0
+   ]
+  ]
+ },
+ "결과": {
+  "rebalance": false
+ },
+ "입력 지문": "3bce8135d39ba444e4257be03e92405d4d98473a0fa3cc821b93cfda16197ad8",
+ "결과 지문": "74da5a617acc92997253a4b3b77e899f8775eb74500917aaa032ddebbc341024",
+ "장부 지문(판단 앞)": {
+  "overlay-live/state.json": "39852009db90e99d7e35f4420e245b8b92ec471bf2cb8930500f7be14f4198fe",
+  "overlay-live/paper-orders.json": "893ce6d8bad7f6f1a190eb4737c27bf83280a2c8671ed5e6704d070bb387ccef"
+ },
+ "곁": {
+  "rows_digest": "b944da82b97cfbf6e53dc9a80e108344deeccc35a7895d61b30acb35ae69f7d7"
+ },
+ "주문 결과": {
+  "rebalance": false,
+  "stale": false
+ },
+ "장부 지문(판단 뒤)": {
+  "overlay-live/state.json": "0e090c72a7ab179f38e1960192c96d67b3534bf7add1c84755ba7306f87dfc3d",
+  "overlay-live/paper-orders.json": "893ce6d8bad7f6f1a190eb4737c27bf83280a2c8671ed5e6704d070bb387ccef"
+ },
+ "오늘 장부 주문": {
+  "overlay-live/paper-orders.json": []
+ },
+ "덧붙인 시각(한국)": "2026-11-26 15:13:51"
+}
