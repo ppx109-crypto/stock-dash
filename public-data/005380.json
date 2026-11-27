@@ -389,8 +389,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-24",
+  "fetched": "2026-11-27",
   "disclosures": [
+    {
+      "title": "특수관계인으로부터기타유가증권매수",
+      "date": "20261127",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127001743"
+    },
+    {
+      "title": "대규모기업집단현황공시[분기별공시(대표회사용)]",
+      "date": "20261127",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127000563"
+    },
     {
       "title": "자기주식처분결과보고서",
       "date": "20261124",
@@ -530,16 +540,6 @@
       "title": "기업설명회(IR)개최(안내공시)              ",
       "date": "20260903",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260903800271"
-    },
-    {
-      "title": "생산재개(자율공시)              ",
-      "date": "20260902",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260902800437"
-    },
-    {
-      "title": "영업(잠정)실적(공정공시)              ",
-      "date": "20260901",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260901800400"
     }
   ]
 }

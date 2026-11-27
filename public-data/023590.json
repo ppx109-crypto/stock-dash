@@ -389,8 +389,18 @@
   ],
   "basis": "CFS",
   "business_excerpt": "",
-  "fetched": "2026-11-18",
+  "fetched": "2026-11-27",
   "disclosures": [
+    {
+      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
+      "date": "20261127",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127001979"
+    },
+    {
+      "title": "증권신고서(채무증권)",
+      "date": "20261127",
+      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20261127001813"
+    },
     {
       "title": "분기보고서 (2026.09)",
       "date": "20261116",
@@ -425,11 +435,6 @@
       "title": "단일판매ㆍ공급계약체결              ",
       "date": "20260910",
       "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260910800311"
-    },
-    {
-      "title": "대규모기업집단현황공시[분기별공시(개별회사용)]",
-      "date": "20260828",
-      "url": "https://dart.fss.or.kr/dsaf001/main.do?rcpNo=20260828001921"
     }
   ]
 }
